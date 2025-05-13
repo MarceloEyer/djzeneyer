@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: 13, 150, 255;       /* Electric Blue */
+  --color-secondary: 157, 0, 255;      /* Neon Purple */
+  --color-accent: 255, 0, 128;         /* Vibrant Pink */
+  --color-success: 0, 210, 91;         /* Bright Green */
+  --color-warning: 255, 167, 0;        /* Amber */
+  --color-error: 255, 45, 85;          /* Vibrant Red */
+  --color-background: 6, 6, 10;        /* Almost Black */
+  --color-surface: 18, 18, 29;         /* Dark Blue-Gray */
+  --color-text: 255, 255, 255;         /* White */
+}
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-white;
+    scroll-behavior: smooth;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+    @apply font-bold;
+  }
+
+  body {
+    @apply antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-surface;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded-full;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-3 rounded-md font-medium transition-all duration-200 focus:outline-none;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-dark;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-secondary-dark;
+  }
+  
+  .btn-accent {
+    @apply bg-accent text-white hover:bg-accent-dark;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white;
+  }
+
+  .card {
+    @apply bg-surface rounded-xl shadow-lg overflow-hidden;
+  }
+
+  .nav-link {
+    @apply relative px-3 py-2 text-white/80 hover:text-white transition-colors duration-200;
+  }
+  
+  .nav-link.active {
+    @apply text-primary;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full;
+  }
+
+  .badge {
+    @apply inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply bg-primary/20 text-primary-light;
+  }
+
+  .badge-secondary {
+    @apply bg-secondary/20 text-secondary-light;
+  }
+
+  .badge-accent {
+    @apply bg-accent/20 text-accent-light;
+  }
+
+  .audio-progress {
+    @apply relative h-1 w-full bg-white/20 rounded-full overflow-hidden;
+  }
+  
+  .audio-progress-bar {
+    @apply absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-100;
+  }
+
+  .glow {
+    @apply relative;
+  }
+  
+  .glow::before {
+    content: '';
+    @apply absolute inset-0 -z-10 bg-gradient-to-r from-primary to-secondary rounded-xl blur-xl opacity-30;
+    transform: translateY(10%) scale(0.95);
+  }
+}
+
+.waveform {
+  position: relative;
+  height: 60px;
+  width: 100%;
+}
+
+.waveform span {
+  position: absolute;
+  bottom: 0;
+  display: block;
+  width: 6px;
+  margin-right: 1px;
+  background-color: rgba(var(--color-primary), 0.8);
+  animation: waveform-animation 1.2s infinite ease-in-out;
+  border-radius: 50px 50px 0 0;
+}
+
+@keyframes waveform-animation {
+  0%, 100% { height: 20%; }
+  50% { height: 80%; }
+}
+
+.waveform span:nth-child(1) { left: 0; animation-delay: 0s; }
+.waveform span:nth-child(2) { left: 8px; animation-delay: 0.1s; }
+.waveform span:nth-child(3) { left: 16px; animation-delay: 0.2s; }
+.waveform span:nth-child(4) { left: 24px; animation-delay: 0.3s; }
+.waveform span:nth-child(5) { left: 32px; animation-delay: 0.4s; }
+.waveform span:nth-child(6) { left: 40px; animation-delay: 0.3s; }
+.waveform span:nth-child(7) { left: 48px; animation-delay: 0.2s; }
+.waveform span:nth-child(8) { left: 56px; animation-delay: 0.1s; }
+.waveform span:nth-child(9) { left: 64px; animation-delay: 0s; }
+.waveform span:nth-child(10) { left: 72px; animation-delay: 0.1s; }
+.waveform span:nth-child(11) { left: 80px; animation-delay: 0.2s; }
+.waveform span:nth-child(12) { left: 88px; animation-delay: 0.3s; }
+.waveform span:nth-child(13) { left: 96px; animation-delay: 0.4s; }
