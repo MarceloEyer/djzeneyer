@@ -1,50 +1,81 @@
-{/* Events Calendar */}
-<section className="py-12 md:py-16 bg-surface" id="calendar">
+{/* Achievement System */}
+<section className="py-16 bg-background" id="achievement-system">
   <div className="container mx-auto px-4">
-    <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 font-display">
-      Event Calendar
-    </h2>
-    
-    <div className="card p-4 md:p-6 overflow-hidden">
-      <div className="relative pb-4">
-        <div className="mb-4 flex justify-between items-center">
-          <p className="text-white/70">
-            View and subscribe to DJ Zen Eyer's official event calendar
-          </p>
-          <a 
-            href="https://calendar.google.com/calendar/u/0?cid=ZXllci5tYXJjZWxvQGdtYWlsLmNvbQ" 
-             
-            rel="noopener noreferrer"
-            className="text-primary hover:text-primary-light transition-colors flex items-center text-sm"
-          >
-            <span>Add to your calendar</span>
-            <ArrowRight size={14} className="ml-1" aria-hidden="true" />
-          </a>
-        </div>
+    <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+      <motion.div 
+        className="lg:w-1/2"
+        initial={{ opacity: 0, x: -30 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-2xl md:text-3xl font-bold mb-4 font-display">
+          Level Up Your Music Journey
+        </h2>
+        <p className="text-lg md:text-xl text-white/70 mb-6">
+          The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.
+        </p>
         
-        <div className="w-full overflow-hidden rounded-lg shadow-lg bg-white/5">
-          <div className="aspect-[4/3] md:aspect-[16/9] w-full">
-            <iframe 
-              src="https://calendar.google.com/calendar/embed?src=eyer.marcelo%40gmail.com&ctz=America%2FSao_Paulo&bgcolor=%23121212&color=%23039BE5&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=1" 
-              style={{ border: 0 }} 
-              width="100%" 
-              height="100%" 
-              frameBorder="0" 
-              scrolling="no"
-              title="DJ Zen Eyer Event Calendar"
-              className="w-full h-full"
-              loading="lazy"
-            ></iframe>
+        <div className="space-y-4 mb-8">
+          <div className="flex items-start group transition-all duration-300 hover:bg-white/5 p-2 rounded-lg">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+              <TrendingUp className="text-primary" size={20} aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Experience Points (XP)</h3>
+              <p className="text-white/70">
+                Earn XP for every action you take, from listening to tracks to attending events.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-start group transition-all duration-300 hover:bg-white/5 p-2 rounded-lg">
+            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+              <Award className="text-secondary" size={20} aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Digital Badges</h3>
+              <p className="text-white/70">
+                Unlock collectible badges for special achievements and milestones in your journey.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-start group transition-all duration-300 hover:bg-white/5 p-2 rounded-lg">
+            <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+              <Gift className="text-accent" size={20} aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Rewards & Perks</h3>
+              <p className="text-white/70">
+                Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-start group transition-all duration-300 hover:bg-white/5 p-2 rounded-lg">
+            <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center mr-4 mt-1 flex-shrink-0">
+              <Clock className="text-success" size={20} aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Daily Streaks</h3>
+              <p className="text-white/70">
+                Maintain your engagement streak for bonus XP and special streak-only rewards.
+              </p>
+            </div>
           </div>
         </div>
-        
-        <div className="mt-4 text-center text-sm text-white/50">
-          <p>
-            Calendar is updated regularly with all upcoming events. 
-            Click on any event for details and ticket information.
-          </p>
-        </div>
-      </div>
+      </motion.div>
+      
+      <motion.div 
+        className="lg:w-1/2"
+        initial={{ opacity: 0, x: 30 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        {/* Resto do código... */}
+      </motion.div>
     </div>
   </div>
 </section>
