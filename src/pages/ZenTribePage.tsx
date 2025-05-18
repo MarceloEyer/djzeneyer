@@ -252,4 +252,56 @@ const ZenTribePage = () => {
           <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
             <motion.div 
               className="lg:w-1/2"
-              initial={{ opacity: 0, x
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 font-display">Level Up Your Experience</h2>
+              <p className="text-lg text-white/70 mb-8">
+                Earn achievements, unlock exclusive rewards, and track your progress as you engage with DJ Zen Eyer's music and events.
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <Clock className="text-primary mr-3 mt-1" size={20} aria-hidden="true" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Track Your Journey</h3>
+                    <p className="text-white/70">Monitor your listening time and event attendance.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <Gift className="text-secondary mr-3 mt-1" size={20} aria-hidden="true" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Unlock Rewards</h3>
+                    <p className="text-white/70">Earn exclusive content and special perks as you level up.</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <Zap className="text-accent mr-3 mt-1" size={20} aria-hidden="true" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Complete Challenges</h3>
+                    <p className="text-white/70">Participate in special events and community challenges.</p>
+                  </div>
+                </li>
+              </ul>
+            </motion.div>
+            <motion.div 
+              className="lg:w-1/2"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              {/* Achievement visualization component would go here */}
+              <div className="bg-surface rounded-lg p-8">
+                <h3 className="text-xl font-semibold mb-6">Your Progress</h3>
+                {/* Progress visualization would go here */}
+                <p className="text-white/70">Achievement system visualization coming soon!</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default ZenTribePage;
