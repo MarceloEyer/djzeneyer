@@ -29,6 +29,8 @@
   body {
     @apply antialiased;
     overflow-x: hidden;
+    background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
+    background-attachment: fixed;
   }
 
   /* Custom scrollbar */
@@ -117,39 +119,3 @@
     transform: translateY(10%) scale(0.95);
   }
 }
-
-.waveform {
-  position: relative;
-  height: 60px;
-  width: 100%;
-}
-
-.waveform span {
-  position: absolute;
-  bottom: 0;
-  display: block;
-  width: 6px;
-  margin-right: 1px;
-  background-color: rgba(var(--color-primary), 0.8);
-  animation: waveform-animation 1.2s infinite ease-in-out;
-  border-radius: 50px 50px 0 0;
-}
-
-@keyframes waveform-animation {
-  0%, 100% { height: 20%; }
-  50% { height: 80%; }
-}
-
-.waveform span:nth-child(1) { left: 0; animation-delay: 0s; }
-.waveform span:nth-child(2) { left: 8px; animation-delay: 0.1s; }
-.waveform span:nth-child(3) { left: 16px; animation-delay: 0.2s; }
-.waveform span:nth-child(4) { left: 24px; animation-delay: 0.3s; }
-.waveform span:nth-child(5) { left: 32px; animation-delay: 0.4s; }
-.waveform span:nth-child(6) { left: 40px; animation-delay: 0.3s; }
-.waveform span:nth-child(7) { left: 48px; animation-delay: 0.2s; }
-.waveform span:nth-child(8) { left: 56px; animation-delay: 0.1s; }
-.waveform span:nth-child(9) { left: 64px; animation-delay: 0s; }
-.waveform span:nth-child(10) { left: 72px; animation-delay: 0.1s; }
-.waveform span:nth-child(11) { left: 80px; animation-delay: 0.2s; }
-.waveform span:nth-child(12) { left: 88px; animation-delay: 0.3s; }
-.waveform span:nth-child(13) { left: 96px; animation-delay: 0.4s; }

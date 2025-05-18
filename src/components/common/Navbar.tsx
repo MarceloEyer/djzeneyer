@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Music, Calendar, Users, Menu, X } from 'lucide-react';
+import { Music, Calendar, Users, Menu, X, Briefcase } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
 
@@ -15,12 +15,10 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
   const { user } = useUser();
   const location = useLocation();
 
-  // Close mobile menu when changing routes
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // Track scroll position to change navbar styling
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -44,7 +42,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="relative h-10 w-10 flex items-center justify-center">
               <Music 
@@ -62,7 +59,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <NavLink to="/" className="nav-link">
               Home
@@ -79,9 +75,17 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
               <Users size={16} />
               <span>Zen Tribe</span>
             </NavLink>
+            <a 
+              href="https://work.djzeneyer.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="nav-link flex items-center space-x-1"
+            >
+              <Briefcase size={16} />
+              <span>Work With Me</span>
+            </a>
           </nav>
 
-          {/* User Actions */}
           <div className="hidden md:flex items-center space-x-4">
             {user?.isLoggedIn ? (
               <UserMenu />
@@ -103,7 +107,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button 
             className="md:hidden text-white" 
             onClick={toggleMenu}
@@ -114,7 +117,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <div 
         className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${
           isMenuOpen ? 'max-h-screen border-b border-white/10' : 'max-h-0'
@@ -137,6 +139,15 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
               <Users size={18} />
               <span>Zen Tribe</span>
             </NavLink>
+            <a 
+              href="https://work.djzeneyer.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="nav-link text-lg flex items-center space-x-2"
+            >
+              <Briefcase size={18} />
+              <span>Work With Me</span>
+            </a>
           </nav>
 
           <div className="mt-6 flex flex-col space-y-3">
