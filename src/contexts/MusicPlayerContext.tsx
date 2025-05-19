@@ -35,27 +35,27 @@ const MusicPlayerContext = createContext<MusicPlayerContextType | undefined>(und
 const sampleTracks: Track[] = [
   {
     id: '1',
-    title: 'Zouk Mix 2024',
-    artist: 'DJ Zen Eyer',
+    title: 'Crazy Afro Zouk Remix',
+    artist: 'Zen Eyer',
     duration: 3600,
-    artwork: 'https://instagram.com/p/DCutxU6x0SH/media/?size=l',
+    artwork: 'https://img.youtube.com/vi/${track.youtubeId}/hqdefault.jpg',
     youtubeId: '0f5MvgMnprY',
   },
   {
     id: '2',
-    title: 'Best of Brazilian Zouk',
-    artist: 'DJ Zen Eyer',
+    title: 'Birds & Bleeding',
+    artist: 'Zen Eyer & Kakah',
     duration: 3000,
-    artwork: 'https://instagram.com/p/DARmE6XvU2y/media/?size=l',
-    youtubeId: '0f5MvgMnprY',
+    artwork: 'https://img.youtube.com/vi/${track.youtubeId}/hqdefault.jpg',
+    youtubeId: 'E0IRL1vewhs',
   },
   {
     id: '3',
     title: 'Zouk Unity Mix',
     artist: 'DJ Zen Eyer',
     duration: 2700,
-    artwork: 'https://instagram.com/p/DARmE6XvU2y/media/?size=l',
-    youtubeId: '0f5MvgMnprY',
+    artwork: 'https://img.youtube.com/vi/${track.youtubeId}/hqdefault.jpg',
+    youtubeId: 'fIoQI4Ko-ak',
   },
 ];
 
