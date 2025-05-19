@@ -73,6 +73,21 @@ const MembershipCard = memo(({ tier, user }) => (
   </motion.div>
 ));
 
+// Achievement Card Component
+const AchievementCard = memo(({ emoji, title, description, unlocked }) => (
+  <div className={`bg-surface/50 rounded-lg p-4 ${unlocked ? '' : 'opacity-50'}`}>
+    <div className="text-4xl mb-3">{emoji}</div>
+    <h4 className="font-display text-lg mb-1">{title}</h4>
+    <p className="text-sm text-white/70">{description}</p>
+    {!unlocked && (
+      <div className="mt-2 text-xs text-white/50 flex items-center">
+        <Lock size={12} className="mr-1" />
+        Locked
+      </div>
+    )}
+  </div>
+));
+
 const ZenTribePage = () => {
   const { user } = useUser();
 
@@ -132,6 +147,16 @@ const ZenTribePage = () => {
       icon: <Shield size={24} aria-hidden="true" />,
       popular: false,
     },
+  ];
+
+  // Achievement data
+  const achievements = [
+    { emoji: '🎧', title: 'First Beat', description: 'Welcome to the Zen Tribe', unlocked: true },
+    { emoji: '🚀', title: 'Early Adopter', description: 'Joined during the launch phase', unlocked: true },
+    { emoji: '🔍', title: 'Music Explorer', description: 'Listened to 10 different tracks', unlocked: false },
+    { emoji: '🦋', title: 'Social Butterfly', description: 'Connected with 5 tribe members', unlocked: false },
+    { emoji: '🎪', title: 'Event Attendee', description: 'Attended your first live event', unlocked: false },
+    { emoji: '⏱️', title: 'Consistent Fan', description: 'Maintained a 7-day streak', unlocked: false },
   ];
 
   // Scroll to section function
@@ -315,38 +340,16 @@ const ZenTribePage = () => {
                 <h3 className="text-2xl font-display">Achievement Showcase</h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-background/50 rounded-lg p-4 text-center">
-                  <div className="w-16 h-16 mx-auto mb-3">
-                    <Award className="w-full h-full text-primary" />
-                  </div>
-                  <h4 className="font-display mb-1">First Beat</h4>
-                  <p className="text-sm text-white/70">Welcome to the Zen Tribe</p>
-                </div>
-
-                <div className="bg-background/50 rounded-lg p-4 text-center">
-                  <div className="w-16 h-16 mx-auto mb-3">
-                    <Star className="w-full h-full text-secondary" />
-                  </div>
-                  <h4 className="font-display mb-1">Early Adopter</h4>
-                  <p className="text-sm text-white/70">Joined during the launch phase</p>
-                </div>
-
-                <div className="bg-background/50 rounded-lg p-4 text-center">
-                  <div className="w-16 h-16 mx-auto mb-3">
-                    <Users className="w-full h-full text-accent" />
-                  </div>
-                  <h4 className="font-display mb-1">Social Butterfly</h4>
-                  <p className="text-sm text-white/70">Connected with 5 tribe members</p>
-                </div>
-
-                <div className="bg-background/50 rounded-lg p-4 text-center">
-                  <div className="w-16 h-16 mx-auto mb-3">
-                    <Shield className="w-full h-full text-success" />
-                  </div>
-                  <h4 className="font-display mb-1">Event Attendee</h4>
-                  <p className="text-sm text-white/70">Attended your first live event</p>
-                </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {achievements.map((achievement, index) => (
+                  <AchievementCard
+                    key={index}
+                    emoji={achievement.emoji}
+                    title={achievement.title}
+                    description={achievement.description}
+                    unlocked={achievement.unlocked}
+                  />
+                ))}
               </div>
 
               <div className="mt-8">
