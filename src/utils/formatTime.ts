@@ -1,3 +1,4 @@
+// utils/formatTime.ts
 export const formatTime = (seconds: number): string => {
   if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
   
