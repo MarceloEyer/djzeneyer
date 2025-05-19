@@ -132,4 +132,137 @@ const MusicPlayer: React.FC = () => {
       // Limpar o intervalo quando o vídeo pausa ou termina
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+    }
+  };
+
+  if (!currentTrack) return null;
+
+  const currentTime = currentTrack ? progress * currentTrack.duration : 0;
+
+  return (
+    <div className={`fixed bottom-0 left-0 right-0 bg-surface border-t border-white/10 shadow-lg transition-all duration-300 ${expanded ? 'h-96' : 'h-20'}`}>
+      <button 
+        onClick={toggleExpanded}
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-surface border border-white/10 rounded-full p-1"
+      >
+        {expanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+      </button>
+      
+      <div className="relative h-full">
+        {/* YouTube player invisível mas funcional */}
+        <div className="absolute inset-0 pointer-events-none opacity-0">
+          <YouTube
+            videoId={currentTrack.youtubeId}
+            opts={{
+              height: '100%',
+              width: '100%',
+              playerVars: {
+                autoplay: isPlaying ? 1 : 0,
+                controls: 0,
+                modestbranding: 1,
+              },
+            }}
+            onReady={onReady}
+            onStateChange={onStateChange}
+          />
+        </div>
         
+        <div className="container mx-auto px-4 h-full flex flex-col">
+          {/* Área expandida (visível apenas quando expanded=true) */}
+          {expanded && (
+            <div className="flex-1 py-6">
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <img 
+                    src={currentTrack.artwork} 
+                    alt={currentTrack.title}
+                    className="w-48 h-48 mx-auto rounded-lg object-cover mb-4"
+                  />
+                  <h3 className="text-xl font-bold">{currentTrack.title}</h3>
+                  <p className="text-white/70">{currentTrack.artist}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Controles do player (sempre visíveis) */}
+          <div className="h-20 flex items-center justify-between w-full">
+            <div className="flex items-center space-x-4">
+              <img 
+                src={currentTrack.artwork} 
+                alt={currentTrack.title}
+                className="w-12 h-12 rounded object-cover"
+              />
+              <div>
+                <h4 className="font-medium">{currentTrack.title}</h4>
+                <p className="text-sm text-white/70">{currentTrack.artist}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center space-y-2">
+              <div className="flex items-center space-x-4">
+                <button onClick={previousTrack}>
+                  <SkipBack size={20} />
+                </button>
+                <button 
+                  onClick={togglePlayPause}
+                  className="w-10 h-10 rounded-full bg-primary flex items-center justify-center"
+                >
+                  {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                </button>
+                <button onClick={nextTrack}>
+                  <SkipForward size={20} />
+                </button>
+              </div>
+              
+              <div className="flex items-center space-x-2 w-full">
+                <span className="text-xs text-white/70">
+                  {formatTime(currentTime)}
+                </span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.001"
+                  value={progress}
+                  onChange={handleProgressChange}
+                  className="w-64"
+                />
+                <span className="text-xs text-white/70">
+                  {formatTime(currentTrack.duration)}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <button onClick={toggleMute}>
+                {volume === 0 ? <VolumeX size={20} /> : volume < 0.5 ? <Volume1 size={20} /> : <Volume2 size={20} />}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="w-24"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Barra de progresso na parte inferior */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
+          <div 
+            className="h-full bg-primary"
+            style={{ width: `${progress * 100}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MusicPlayer;
