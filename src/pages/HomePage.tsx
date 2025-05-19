@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PlayCircle, Calendar, Users, Music, Award, TrendingUp } from 'lucide-react';
@@ -8,19 +8,25 @@ import { useUser } from '../contexts/UserContext';
 const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
   const { user, unlockAchievement } = useUser();
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   // Trigger achievement for visiting home page
   useEffect(() => {
-    if (user) {
+    if (user && !user.achievements?.includes('first-login')) {
       unlockAchievement('first-login');
     }
-  }, [user]);
+  }, [user, unlockAchievement]);
 
   // Play the first track
   const handlePlayFeatured = () => {
     if (queue.length > 0) {
       playTrack(queue[0]);
     }
+  };
+
+  // Handle image loading errors
+  const handleImageError = (id: string) => {
+    setImageErrors(prev => ({ ...prev, [id]: true }));
   };
 
   // Animation variants
@@ -52,7 +58,7 @@ const HomePage: React.FC = () => {
           <div 
             className="w-full h-full bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: "url('https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=1920')",
+              backgroundImage: "url('/images/hero-background.jpg')",
             }}
           ></div>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30"></div>
@@ -75,6 +81,8 @@ const HomePage: React.FC = () => {
               <button 
                 onClick={handlePlayFeatured}
                 className="btn btn-primary flex items-center space-x-2"
+                aria-label="Play featured mix"
+                disabled={queue.length === 0}
               >
                 <PlayCircle size={20} />
                 <span>Play Featured Mix</span>
@@ -133,7 +141,7 @@ const HomePage: React.FC = () => {
               variants={itemVariants}
             >
               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-                <Music className="text-primary" size={24} />
+                <Music className="text-primary" size={24} aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Exclusive Music</h3>
               <p className="text-white/70">
@@ -147,7 +155,7 @@ const HomePage: React.FC = () => {
               variants={itemVariants}
             >
               <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-4">
-                <Award className="text-secondary" size={24} />
+                <Award className="text-secondary" size={24} aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Achievement System</h3>
               <p className="text-white/70">
@@ -161,7 +169,7 @@ const HomePage: React.FC = () => {
               variants={itemVariants}
             >
               <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mb-4">
-                <Users className="text-accent" size={24} />
+                <Users className="text-accent" size={24} aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Community Connection</h3>
               <p className="text-white/70">
@@ -175,7 +183,7 @@ const HomePage: React.FC = () => {
               variants={itemVariants}
             >
               <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center mb-4">
-                <Calendar className="text-success" size={24} />
+                <Calendar className="text-success" size={24} aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-2">VIP Event Access</h3>
               <p className="text-white/70">
@@ -189,7 +197,7 @@ const HomePage: React.FC = () => {
               variants={itemVariants}
             >
               <div className="w-12 h-12 rounded-full bg-warning/20 flex items-center justify-center mb-4">
-                <PlayCircle className="text-warning" size={24} />
+                <PlayCircle className="text-warning" size={24} aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Playlist Creation</h3>
               <p className="text-white/70">
@@ -203,7 +211,7 @@ const HomePage: React.FC = () => {
               variants={itemVariants}
             >
               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-                <TrendingUp className="text-primary" size={24} />
+                <TrendingUp className="text-primary" size={24} aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Streak Rewards</h3>
               <p className="text-white/70">
@@ -222,45 +230,60 @@ const HomePage: React.FC = () => {
             <Link to="/music" className="text-primary hover:underline">View All</Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {queue.map((track) => (
-              <motion.div 
-                key={track.id}
-                className="card overflow-hidden group"
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
-                <div className="relative aspect-square overflow-hidden">
-                  <img 
-                    src={track.artwork} 
-                    alt={track.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button 
-                      onClick={() => playTrack(track)}
-                      className="w-16 h-16 rounded-full bg-primary/90 text-white flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300"
+          <React.Suspense fallback={<div className="text-center p-12">Loading latest releases...</div>}>
+            {queue.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {queue.map((track) => {
+                  const formattedDuration = useMemo(() => {
+                    return `${Math.floor(track.duration / 60)}:${(track.duration % 60).toString().padStart(2, '0')}`;
+                  }, [track.duration]);
+                  
+                  return (
+                    <motion.div 
+                      key={track.id}
+                      className="card overflow-hidden group"
+                      whileHover={{ y: -5, transition: { duration: 0.2 } }}
                     >
-                      <PlayCircle size={32} />
-                    </button>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold line-clamp-1">{track.title}</h3>
-                  <p className="text-white/70">{track.artist}</p>
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-sm text-white/50">
-                      {Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}
-                    </span>
-                    <span className="badge badge-primary">New Release</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                      <div className="relative aspect-square overflow-hidden">
+                        <img 
+                          src={imageErrors[track.id] ? '/images/fallback-cover.jpg' : track.artwork} 
+                          alt={`${track.title} by ${track.artist}`} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          onError={() => handleImageError(track.id)}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <button 
+                            onClick={() => playTrack(track)}
+                            className="w-16 h-16 rounded-full bg-primary/90 text-white flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300"
+                            aria-label={`Play ${track.title} by ${track.artist}`}
+                          >
+                            <PlayCircle size={32} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold line-clamp-1">{track.title}</h3>
+                        <p className="text-white/70">{track.artist}</p>
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className="text-sm text-white/50">{formattedDuration}</span>
+                          <span className="badge badge-primary">New Release</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="card p-8 text-center">
+                <p className="text-white/70">No tracks available at the moment. Check back soon!</p>
+              </div>
+            )}
+          </React.Suspense>
         </div>
       </section>
 
-      {/* Upcoming Events */}
+      {/* Upcoming Events - Google Calendar Integration */}
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
@@ -268,88 +291,29 @@ const HomePage: React.FC = () => {
             <Link to="/events" className="text-primary hover:underline">View All</Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Event 1 */}
-            <motion.div 
-              className="card overflow-hidden group"
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src="https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=600" 
-                  alt="Zen Nightclub" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-3 left-3 bg-primary/90 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  JUN 15
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-semibold mb-2">Cosmic Enlightenment Tour</h3>
-                <p className="text-white/70 mb-3">Zen Nightclub, New York</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-white/60">8:00 PM - 2:00 AM</span>
-                  <Link to="/events" className="btn btn-outline py-1 px-3 text-sm">
-                    Details
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Event 2 */}
-            <motion.div 
-              className="card overflow-hidden group"
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=600" 
-                  alt="Echo Festival" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-3 left-3 bg-secondary/90 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  JUL 22-24
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-semibold mb-2">Echo Festival</h3>
-                <p className="text-white/70 mb-3">Sunset Beach, Miami</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-white/60">3-Day Event</span>
-                  <Link to="/events" className="btn btn-outline py-1 px-3 text-sm">
-                    Details
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Event 3 */}
-            <motion.div 
-              className="card overflow-hidden group"
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src="https://images.pexels.com/photos/1694900/pexels-photo-1694900.jpeg?auto=compress&cs=tinysrgb&w=600" 
-                  alt="Zen Lounge" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-3 left-3 bg-accent/90 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  AUG 10
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-semibold mb-2">Neural Pathways Experience</h3>
-                <p className="text-white/70 mb-3">Zen Lounge, Los Angeles</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-white/60">9:00 PM - 3:00 AM</span>
-                  <Link to="/events" className="btn btn-outline py-1 px-3 text-sm">
-                    Details
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <motion.div 
+            className="card p-4 overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="relative w-full overflow-hidden rounded-lg">
+              <iframe 
+                src="https://calendar.google.com/calendar/embed?height=500&wkst=1&ctz=America%2FSao_Paulo&showPrint=0&title=DJ%20Zen%20Eyer%20Events&mode=AGENDA&src=ZXllci5tYXJjZWxvQGdtYWlsLmNvbQ&color=%23EF6C00" 
+                style={{ border: 0 }} 
+                width="100%" 
+                height="600" 
+                frameBorder="0" 
+                scrolling="no"
+                title="DJ Zen Eyer Event Calendar"
+                className="bg-surface rounded-lg"
+              ></iframe>
+            </div>
+            <p className="text-center mt-4 text-white/60 text-sm">
+              All events are in Brasília Time (UTC-3). Click on an event for more details.
+            </p>
+          </motion.div>
         </div>
       </section>
 
