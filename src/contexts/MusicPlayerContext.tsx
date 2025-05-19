@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useRef } from 'react';
 import YouTube from 'react-youtube';
 
 // Types
@@ -27,6 +27,7 @@ type MusicPlayerContextType = {
   addToQueue: (track: Track) => void;
   removeFromQueue: (trackId: string) => void;
   clearQueue: () => void;
+  playerRef: React.RefObject<YouTube>;
 };
 
 const MusicPlayerContext = createContext<MusicPlayerContextType | undefined>(undefined);
@@ -38,7 +39,7 @@ const sampleTracks: Track[] = [
     title: 'Crazy Afro Zouk Remix',
     artist: 'Zen Eyer',
     duration: 3600,
-    artwork: 'https://img.youtube.com/vi/${track.youtubeId}/hqdefault.jpg',
+    artwork: `https://img.youtube.com/vi/0f5MvgMnprY/hqdefault.jpg`,
     youtubeId: '0f5MvgMnprY',
   },
   {
@@ -46,7 +47,7 @@ const sampleTracks: Track[] = [
     title: 'Birds & Bleeding',
     artist: 'Zen Eyer & Kakah',
     duration: 3000,
-    artwork: 'https://img.youtube.com/vi/${track.youtubeId}/hqdefault.jpg',
+    artwork: `https://img.youtube.com/vi/E0IRL1vewhs/hqdefault.jpg`,
     youtubeId: 'E0IRL1vewhs',
   },
   {
@@ -54,7 +55,7 @@ const sampleTracks: Track[] = [
     title: 'Zouk Unity Mix',
     artist: 'DJ Zen Eyer',
     duration: 2700,
-    artwork: 'https://img.youtube.com/vi/${track.youtubeId}/hqdefault.jpg',
+    artwork: `https://img.youtube.com/vi/fIoQI4Ko-ak/hqdefault.jpg`,
     youtubeId: 'fIoQI4Ko-ak',
   },
 ];
@@ -65,6 +66,7 @@ export const MusicPlayerProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [volume, setVolume] = useState(0.8);
   const [progress, setProgress] = useState(0);
   const [queue, setQueue] = useState<Track[]>(sampleTracks);
+  const playerRef = useRef<YouTube>(null);
 
   const playTrack = (track: Track) => {
     setCurrentTrack(track);
@@ -73,10 +75,16 @@ export const MusicPlayerProvider: React.FC<{ children: ReactNode }> = ({ childre
   };
 
   const pauseTrack = () => {
+    if (playerRef.current?.internalPlayer) {
+      playerRef.current.internalPlayer.pauseVideo();
+    }
     setIsPlaying(false);
   };
 
   const resumeTrack = () => {
+    if (playerRef.current?.internalPlayer) {
+      playerRef.current.internalPlayer.playVideo();
+    }
     setIsPlaying(true);
   };
 
@@ -110,6 +118,13 @@ export const MusicPlayerProvider: React.FC<{ children: ReactNode }> = ({ childre
     setIsPlaying(false);
   };
 
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume);
+    if (playerRef.current?.internalPlayer) {
+      playerRef.current.internalPlayer.setVolume(newVolume * 100);
+    }
+  };
+
   return (
     <MusicPlayerContext.Provider
       value={{
@@ -122,12 +137,13 @@ export const MusicPlayerProvider: React.FC<{ children: ReactNode }> = ({ childre
         resumeTrack,
         nextTrack,
         previousTrack,
-        setVolume,
+        setVolume: handleVolumeChange,
         setProgress,
         queue,
         addToQueue,
         removeFromQueue,
         clearQueue,
+        playerRef,
       }}
     >
       {children}
