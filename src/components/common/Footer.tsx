@@ -50,7 +50,7 @@ const Footer: React.FC = () => {
             <div className="flex space-x-4">
               <a 
                 href="https://instagram.com/djzeneyer" 
-                 
+                
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="Instagram"
@@ -59,7 +59,7 @@ const Footer: React.FC = () => {
               </a>
               <a 
                 href="https://soundcloud.com/djzeneyer" 
-                 
+                
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="SoundCloud"
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
               </a>
               <a 
                 href="https://youtube.com/djzeneyer" 
-                 
+                
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="Youtube"
@@ -77,7 +77,7 @@ const Footer: React.FC = () => {
               </a>
               <a 
                 href="https://facebook.com/djzeneyer" 
-                 
+                
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="Facebook"
@@ -87,10 +87,111 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Resto do código permanece igual */}
-          {/* ... */}
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-display font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/" className="text-white/70 hover:text-primary transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/music" className="text-white/70 hover:text-primary transition-colors">
+                  Music
+                </Link>
+              </li>
+              <li>
+                <Link to="/events" className="text-white/70 hover:text-primary transition-colors">
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link to="/tribe" className="text-white/70 hover:text-primary transition-colors">
+                  Zen Tribe
+                </Link>
+              </li>
+              <li>
+                <a href="#contact" className="text-white/70 hover:text-primary transition-colors">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-lg font-display font-semibold mb-4">Legal</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/privacy" className="text-white/70 hover:text-primary transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-white/70 hover:text-primary transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="text-white/70 hover:text-primary transition-colors">
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/licenses" className="text-white/70 hover:text-primary transition-colors">
+                  Licenses
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h3 className="text-lg font-display font-semibold mb-4">Join the Tribe</h3>
+            <p className="text-white/70 mb-4">
+              Subscribe to get exclusive updates, new releases, and VIP event access.
+            </p>
+            
+            {isSubscribed ? (
+              <div className="bg-success/20 border border-success/30 rounded-md p-3">
+                <span>Thanks for subscribing!</span>
+              </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="space-y-2">
+                {error && (
+                  <div className="text-error text-sm">{error}</div>
+                )}
+                <div>
+                  <label htmlFor="email-subscription" className="sr-only">Email address</label>
+                  <input 
+                    id="email-subscription"
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Your email" 
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-white"
+                    required
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  className="w-full btn btn-primary disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-12 pt-6 border-t border-white/10 text-center text-white/50 text-sm">
+          <p>© {currentYear} DJ Zen Eyer. All rights reserved.</p>
         </div>
       </div>
     </footer>
   );
 };
+
+export default Footer;
