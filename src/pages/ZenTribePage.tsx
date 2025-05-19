@@ -249,52 +249,117 @@ const ZenTribePage = () => {
       {/* Achievement System */}
       <section className="py-16 bg-background" id="achievement-system">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
             <motion.div 
               className="lg:w-1/2"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl md:text-3xl font-bold mb-6 font-display">Level Up Your Experience</h2>
+              <h2 className="text-4xl font-bold mb-6 font-display">Level Up Your Music Journey</h2>
               <p className="text-lg text-white/70 mb-8">
-                Earn achievements, unlock exclusive rewards, and track your progress as you engage with DJ Zen Eyer's music and events.
+                The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.
               </p>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Clock className="text-primary mr-3 mt-1" size={20} aria-hidden="true" />
+              
+              <div className="space-y-8">
+                <div className="flex items-start">
+                  <TrendingUp className="text-primary mr-4 mt-1" size={24} />
                   <div>
-                    <h3 className="font-semibold mb-1">Track Your Journey</h3>
-                    <p className="text-white/70">Monitor your listening time and event attendance.</p>
+                    <h3 className="text-xl font-display mb-2">Experience Points (XP)</h3>
+                    <p className="text-white/70">
+                      Earn XP for every action you take, from listening to tracks to attending events.
+                    </p>
                   </div>
-                </li>
-                <li className="flex items-start">
-                  <Gift className="text-secondary mr-3 mt-1" size={20} aria-hidden="true" />
+                </div>
+
+                <div className="flex items-start">
+                  <Award className="text-secondary mr-4 mt-1" size={24} />
                   <div>
-                    <h3 className="font-semibold mb-1">Unlock Rewards</h3>
-                    <p className="text-white/70">Earn exclusive content and special perks as you level up.</p>
+                    <h3 className="text-xl font-display mb-2">Digital Badges</h3>
+                    <p className="text-white/70">
+                      Unlock collectible badges for special achievements and milestones in your journey.
+                    </p>
                   </div>
-                </li>
-                <li className="flex items-start">
-                  <Zap className="text-accent mr-3 mt-1" size={20} aria-hidden="true" />
+                </div>
+
+                <div className="flex items-start">
+                  <Gift className="text-accent mr-4 mt-1" size={24} />
                   <div>
-                    <h3 className="font-semibold mb-1">Complete Challenges</h3>
-                    <p className="text-white/70">Participate in special events and community challenges.</p>
+                    <h3 className="text-xl font-display mb-2">Rewards & Perks</h3>
+                    <p className="text-white/70">
+                      Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.
+                    </p>
                   </div>
-                </li>
-              </ul>
+                </div>
+
+                <div className="flex items-start">
+                  <Clock className="text-success mr-4 mt-1" size={24} />
+                  <div>
+                    <h3 className="text-xl font-display mb-2">Daily Streaks</h3>
+                    <p className="text-white/70">
+                      Maintain your engagement streak for bonus XP and special streak-only rewards.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </motion.div>
+
             <motion.div 
-              className="lg:w-1/2"
+              className="lg:w-1/2 bg-surface rounded-xl p-8"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {/* Achievement visualization component would go here */}
-              <div className="bg-surface rounded-lg p-8">
-                <h3 className="text-xl font-semibold mb-6">Your Progress</h3>
-                {/* Progress visualization would go here */}
-                <p className="text-white/70">Achievement system visualization coming soon!</p>
+              <div className="flex items-center gap-2 mb-8">
+                <Zap className="text-primary" size={24} />
+                <h3 className="text-2xl font-display">Achievement Showcase</h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-background/50 rounded-lg p-4 text-center">
+                  <div className="w-16 h-16 mx-auto mb-3">
+                    <Award className="w-full h-full text-primary" />
+                  </div>
+                  <h4 className="font-display mb-1">First Beat</h4>
+                  <p className="text-sm text-white/70">Welcome to the Zen Tribe</p>
+                </div>
+
+                <div className="bg-background/50 rounded-lg p-4 text-center">
+                  <div className="w-16 h-16 mx-auto mb-3">
+                    <Star className="w-full h-full text-secondary" />
+                  </div>
+                  <h4 className="font-display mb-1">Early Adopter</h4>
+                  <p className="text-sm text-white/70">Joined during the launch phase</p>
+                </div>
+
+                <div className="bg-background/50 rounded-lg p-4 text-center">
+                  <div className="w-16 h-16 mx-auto mb-3">
+                    <Users className="w-full h-full text-accent" />
+                  </div>
+                  <h4 className="font-display mb-1">Social Butterfly</h4>
+                  <p className="text-sm text-white/70">Connected with 5 tribe members</p>
+                </div>
+
+                <div className="bg-background/50 rounded-lg p-4 text-center">
+                  <div className="w-16 h-16 mx-auto mb-3">
+                    <Shield className="w-full h-full text-success" />
+                  </div>
+                  <h4 className="font-display mb-1">Event Attendee</h4>
+                  <p className="text-sm text-white/70">Attended your first live event</p>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <div className="flex justify-between items-center mb-2">
+                  <h4 className="text-xl font-display">Current Level</h4>
+                  <span className="text-2xl text-primary">3</span>
+                </div>
+                <h5 className="text-lg mb-4">Zen Apprentice</h5>
+                <p className="text-sm text-white/70 mb-2">Progress to Level 4</p>
+                <div className="h-2 bg-background rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full" style={{ width: '87.5%' }}></div>
+                </div>
+                <p className="text-right text-sm text-white/70 mt-1">350/400 XP</p>
               </div>
             </motion.div>
           </div>
