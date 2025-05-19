@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
+import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap, Lock } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 
 // Componente memoizado para cards de benefícios
