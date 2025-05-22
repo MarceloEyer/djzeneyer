@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
               <span 
                 className="absolute inset-0 flex items-center justify-center text-xl font-display font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               >
-                ZE
+                ZEN
               </span>
             </div>
             <span className="text-xl font-display font-bold tracking-wide">
