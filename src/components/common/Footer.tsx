@@ -112,7 +112,7 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a href="#contact" className="text-white/70 hover:text-primary transition-colors">
+                <a href="mailto:contact@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">
                   Contact
                 </a>
               </li>
