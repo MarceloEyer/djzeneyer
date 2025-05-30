@@ -17,30 +17,32 @@ const MainLayout: React.FC = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // DEBUG: Log showAuthModal state changes (DESCOMENTADO)
   useEffect(() => {
-    // console.log('[MainLayout] Estado showAuthModal mudou para:', showAuthModal);
+    console.log('[MainLayout] Estado showAuthModal mudou para:', showAuthModal);
   }, [showAuthModal]);
 
   const openLoginModal = () => {
-    // console.log('[MainLayout] openLoginModal chamada!');
+    console.log('[MainLayout] openLoginModal chamada!'); // <<< DESCOMENTADO
     setAuthMode('login');
     setShowAuthModal(true);
   };
 
-  // Mantida caso haja necessidade futura de abrir modal diretamente em modo registro de outro local
-  // const openRegisterModal = () => {
-  //   console.log('[MainLayout] openRegisterModal chamada!');
-  //   setAuthMode('register');
-  //   setShowAuthModal(true);
-  // };
+  // A função openRegisterModal é mantida caso queira usá-la de outro lugar,
+  // mas os logs principais para o fluxo atual estão em openLoginModal.
+  const openRegisterModal = () => {
+    console.log('[MainLayout] openRegisterModal chamada! (se usada)');
+    setAuthMode('register');
+    setShowAuthModal(true);
+  };
 
   const closeAuthModal = () => {
-    // console.log('[MainLayout] closeAuthModal chamada!');
+    console.log('[MainLayout] closeAuthModal chamada!'); // <<< DESCOMENTADO
     setShowAuthModal(false);
   };
 
   const toggleAuthMode = () => {
-    // console.log('[MainLayout] toggleAuthMode chamada! Modo anterior:', authMode);
+    console.log('[MainLayout] toggleAuthMode chamada! Modo anterior:', authMode); // <<< DESCOMENTADO
     setAuthMode(prevMode => (prevMode === 'login' ? 'register' : 'login'));
   };
 
@@ -48,11 +50,10 @@ const MainLayout: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar 
         onLoginClick={openLoginModal} 
-        // onRegisterClick não é mais passada, pois Navbar foi simplificado
       />
       
       <main className="flex-grow">
-        <Outlet /> {/* É aqui que seus componentes de página como HomePage são renderizados */}
+        <Outlet /> 
       </main>
       
       {currentTrack && (
