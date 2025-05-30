@@ -1,4 +1,4 @@
-// Caminho: src/layouts/MainLayout.tsx
+// src/layouts/MainLayout.tsx
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/common/Navbar'; // Ajuste o caminho se necessário
@@ -25,13 +25,13 @@ const MainLayout: React.FC = () => {
 
   const openLoginModal = () => {
     console.log('[MainLayout] openLoginModal chamada!');
-    setAuthMode('login');
+    setAuthMode('login'); // Garante que o modal abra no modo login
     setShowAuthModal(true);
   };
 
+  // A função openRegisterModal é mantida caso você queira um gatilho
+  // específico para registro em outro lugar do app, ou para o toggle do modal.
   const openRegisterModal = () => {
-    // Esta função ainda existe aqui caso você queira um link direto para registro em outro lugar,
-    // mas o Navbar agora usará principalmente openLoginModal para o botão unificado.
     console.log('[MainLayout] openRegisterModal chamada!');
     setAuthMode('register');
     setShowAuthModal(true);
@@ -43,21 +43,20 @@ const MainLayout: React.FC = () => {
   };
 
   const toggleAuthMode = () => {
-    console.log('[MainLayout] toggleAuthMode chamada!');
+    console.log('[MainLayout] toggleAuthMode chamada! Modo anterior:', authMode);
     setAuthMode(prevMode => (prevMode === 'login' ? 'register' : 'login'));
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Passando openLoginModal para ambos os clicks no Navbar, 
-        já que o modal tem um toggle interno.
-        Ou você pode criar uma função unificada como handleOpenAuth('login') aqui.
-        Para manter a lógica de um único botão no Navbar simples, ele pode
-        apenas chamar openLoginModal, e o usuário alterna no modal se necessário.
-      */}
       <Navbar 
         onLoginClick={openLoginModal} 
-        onRegisterClick={openRegisterModal} // Mantido caso Navbar ainda o use, mas focaremos em um botão
+        // onRegisterClick={openRegisterModal} // Removido, pois Navbar agora usa onLoginClick para o botão principal
+                                            // e o AuthModal tem seu próprio toggle.
+                                            // Se você quiser manter um botão "Join Tribe" separado no Navbar
+                                            // que abre diretamente em modo register, você pode descomentar
+                                            // e ajustar o Navbar para usar onRegisterClick para esse botão específico.
+                                            // Por enquanto, o Navbar foi simplificado.
       />
       
       <main className="flex-grow">
