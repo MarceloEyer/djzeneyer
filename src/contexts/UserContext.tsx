@@ -43,7 +43,7 @@ type UserContextType = {
   session: Session | null; // Exporta a sessão também, pode ser útil
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>; // <<< LINHA CORRIGIDA
   loginWithGoogle: () => Promise<void>;
   updateProfileData: (data: Partial<User['profile']>) => Promise<void>;
   earnXP: (amount: number) => Promise<void>;
