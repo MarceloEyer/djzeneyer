@@ -2,31 +2,28 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Music, Calendar, Users, Menu, X, Briefcase, LogIn } from 'lucide-react';
-import { useUser } from '../../contexts/UserContext'; // Ajuste o caminho se necessário
-import UserMenu from './UserMenu'; // Ajuste o caminho se necessário
+import { useUser } from '../../contexts/UserContext'; // Ajuste o caminho se for diferente
+import UserMenu from './UserMenu'; // Ajuste o caminho se for diferente
 
 interface NavbarProps {
-  onLoginClick: () => void; // Função para abrir o modal de autenticação (modo login)
+  onLoginClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useUser(); // logout é pego dentro do UserMenu agora, se necessário
+  const { user } = useUser();
   const location = useLocation();
 
-  // Fecha o menu mobile ao mudar de rota
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // Controla o estilo do Navbar com o scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
-    // Limpa o event listener quando o componente é desmontado
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -35,8 +32,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   }, []);
 
   const handleLoginButtonClick = useCallback(() => {
-    console.log('[Navbar] Botão Login clicado!');
-    onLoginClick(); // Abre o modal no modo 'login' por padrão
+    // console.log('[Navbar] Botão Login clicado!');
+    onLoginClick();
   }, [onLoginClick]);
 
   return (
@@ -66,7 +63,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             </span>
           </Link>
 
-          {/* Navegação Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
             <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Home</NavLink>
             <NavLink to="/music" className={({ isActive }) => isActive ? "nav-link active flex items-center space-x-1" : "nav-link flex items-center space-x-1"}><Music size={16} /><span>Music</span></NavLink>
@@ -83,7 +79,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             </a>
           </nav>
 
-          {/* Botão de Usuário/Login Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             {user?.isLoggedIn ? (
               <UserMenu />
@@ -98,7 +93,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             )}
           </div>
 
-          {/* Botão do Menu Mobile */}
           <button 
             className="md:hidden text-white" 
             onClick={toggleMenu}
@@ -109,7 +103,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         </div>
       </div>
 
-      {/* Menu Mobile Dropdown */}
       <div 
         className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${
           isMenuOpen ? 'max-h-screen border-b border-white/10' : 'max-h-0'
@@ -136,10 +129,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             {user?.isLoggedIn ? (
               <UserMenu orientation="vertical" /> 
             ) : (
-              // Botão ÚNICO para mobile quando deslogado
               <button 
                 onClick={handleLoginButtonClick} 
-                className="w-full btn btn-primary flex items-center justify-center space-x-2" // Estilo primário e centralizado
+                className="w-full btn btn-primary flex items-center justify-center space-x-2"
               >
                 <LogIn size={18} />
                 <span>Login / Sign Up</span>
@@ -150,6 +142,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
       </div>
     </header>
   );
-}); // Envolvido com React.memo
+});
 
 export default Navbar;
