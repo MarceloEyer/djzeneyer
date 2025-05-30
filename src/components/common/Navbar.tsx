@@ -32,7 +32,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   }, []);
 
   const handleLoginButtonClick = useCallback(() => {
-    // console.log('[Navbar] Botão Login clicado!');
+    // Passo 1 de depuração: Log dentro da função chamada pelo botão
+    console.log('[Navbar] Botão Login clicado! (handleLoginButtonClick foi chamada)');
     onLoginClick();
   }, [onLoginClick]);
 
@@ -84,7 +85,11 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
               <UserMenu />
             ) : (
               <button 
-                onClick={handleLoginButtonClick} 
+                onClick={() => {
+                  // Passo 2 de depuração: Log direto no onClick do botão
+                  console.log('TESTE CLIQUE DIRETO NO BOTÃO DESKTOP (Navbar.tsx)'); 
+                  handleLoginButtonClick(); 
+                }}
                 className="btn btn-primary flex items-center space-x-2"
               >
                 <LogIn size={18} /> 
@@ -130,7 +135,11 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
               <UserMenu orientation="vertical" /> 
             ) : (
               <button 
-                onClick={handleLoginButtonClick} 
+                onClick={() => {
+                  // Adicionando log direto aqui também para o botão mobile
+                  console.log('TESTE CLIQUE DIRETO NO BOTÃO MOBILE (Navbar.tsx)');
+                  handleLoginButtonClick();
+                }}
                 className="w-full btn btn-primary flex items-center justify-center space-x-2"
               >
                 <LogIn size={18} />
