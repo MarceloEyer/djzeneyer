@@ -1,49 +1,43 @@
-// Caminho: src/components/common/Navbar.tsx
-import React, { useState, useEffect } from 'react';
+// src/components/common/Navbar.tsx
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Music, Calendar, Users, Menu, X, Briefcase, LogIn } from 'lucide-react'; // Adicionado LogIn
+import { Music, Calendar, Users, Menu, X, Briefcase, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext'; // Ajuste o caminho se necessário
 import UserMenu from './UserMenu'; // Ajuste o caminho se necessário
 
 interface NavbarProps {
-  onLoginClick: () => void;
-  // onRegisterClick não é mais estritamente necessário se o modal tem um toggle
-  // e o botão principal abre o modal em modo login.
-  // Mas MainLayout ainda a define, então podemos mantê-la ou refatorar depois.
-  onRegisterClick: () => void; // Mantendo por enquanto, mas o botão principal usará onLoginClick
+  onLoginClick: () => void; // Função para abrir o modal de autenticação (modo login)
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
+const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, logout } = useUser(); // Adicionado logout aqui para o UserMenu
+  const { user } = useUser(); // logout é pego dentro do UserMenu agora, se necessário
   const location = useLocation();
 
+  // Fecha o menu mobile ao mudar de rota
   useEffect(() => {
-    setIsMenuOpen(false); // Fecha o menu mobile ao mudar de rota
+    setIsMenuOpen(false);
   }, [location.pathname]);
 
+  // Controla o estilo do Navbar com o scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
+    // Limpa o event listener quando o componente é desmontado
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prevIsMenuOpen => !prevIsMenuOpen);
+  }, []);
 
-  const handleAuthButtonClick = () => {
-    console.log('[Navbar] Botão de Autenticação (Acessar Zen Tribe / Login) clicado!');
+  const handleLoginButtonClick = useCallback(() => {
+    console.log('[Navbar] Botão Login clicado!');
     onLoginClick(); // Abre o modal no modo 'login' por padrão
-  };
-
-  const handleJoinTribeMobileClick = () => {
-    console.log('[Navbar] Botão Join Tribe (mobile) clicado!');
-    onRegisterClick(); // Abre o modal no modo 'register'
-  }
+  }, [onLoginClick]);
 
   return (
     <header 
@@ -72,6 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
             </span>
           </Link>
 
+          {/* Navegação Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
             <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Home</NavLink>
             <NavLink to="/music" className={({ isActive }) => isActive ? "nav-link active flex items-center space-x-1" : "nav-link flex items-center space-x-1"}><Music size={16} /><span>Music</span></NavLink>
@@ -88,21 +83,22 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
             </a>
           </nav>
 
+          {/* Botão de Usuário/Login Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             {user?.isLoggedIn ? (
               <UserMenu />
             ) : (
-              // Botão ÚNICO para desktop quando deslogado
               <button 
-                onClick={handleAuthButtonClick} 
+                onClick={handleLoginButtonClick} 
                 className="btn btn-primary flex items-center space-x-2"
               >
                 <LogIn size={18} /> 
-                <span>Acessar Zen Tribe</span>
+                <span>Login</span>
               </button>
             )}
           </div>
 
+          {/* Botão do Menu Mobile */}
           <button 
             className="md:hidden text-white" 
             onClick={toggleMenu}
@@ -113,7 +109,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
         </div>
       </div>
 
-      {/* Menu Mobile */}
+      {/* Menu Mobile Dropdown */}
       <div 
         className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${
           isMenuOpen ? 'max-h-screen border-b border-white/10' : 'max-h-0'
@@ -138,29 +134,22 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
 
           <div className="mt-6 pt-4 border-t border-white/10 flex flex-col space-y-3">
             {user?.isLoggedIn ? (
-              <UserMenu orientation="vertical" /> // Supondo que UserMenu aceite 'orientation'
+              <UserMenu orientation="vertical" /> 
             ) : (
-              <>
-                {/* No mobile, mantive os dois botões separados por clareza, mas você pode unificar também */}
-                <button 
-                  onClick={handleAuthButtonClick} 
-                  className="w-full py-3 text-center text-white/90 hover:text-white transition-colors border border-white/20 rounded-md"
-                >
-                  Login
-                </button>
-                <button 
-                  onClick={handleJoinTribeMobileClick} // Chama a função que abre o modal em modo 'register'
-                  className="w-full btn btn-primary"
-                >
-                  Join Tribe
-                </button>
-              </>
+              // Botão ÚNICO para mobile quando deslogado
+              <button 
+                onClick={handleLoginButtonClick} 
+                className="w-full btn btn-primary flex items-center justify-center space-x-2" // Estilo primário e centralizado
+              >
+                <LogIn size={18} />
+                <span>Login / Sign Up</span>
+              </button>
             )}
           </div>
         </div>
       </div>
     </header>
   );
-};
+}); // Envolvido com React.memo
 
 export default Navbar;
