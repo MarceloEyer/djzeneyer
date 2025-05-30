@@ -1,29 +1,32 @@
+// Caminho: src/components/common/Navbar.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Music, Calendar, Users, Menu, X, Briefcase } from 'lucide-react';
-import { useUser } from '../../contexts/UserContext';
-import UserMenu from './UserMenu';
+import { Music, Calendar, Users, Menu, X, Briefcase, LogIn } from 'lucide-react'; // Adicionado LogIn
+import { useUser } from '../../contexts/UserContext'; // Ajuste o caminho se necessário
+import UserMenu from './UserMenu'; // Ajuste o caminho se necessário
 
 interface NavbarProps {
   onLoginClick: () => void;
-  onRegisterClick: () => void;
+  // onRegisterClick não é mais estritamente necessário se o modal tem um toggle
+  // e o botão principal abre o modal em modo login.
+  // Mas MainLayout ainda a define, então podemos mantê-la ou refatorar depois.
+  onRegisterClick: () => void; // Mantendo por enquanto, mas o botão principal usará onLoginClick
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useUser();
+  const { user, logout } = useUser(); // Adicionado logout aqui para o UserMenu
   const location = useLocation();
 
   useEffect(() => {
-    setIsMenuOpen(false);
+    setIsMenuOpen(false); // Fecha o menu mobile ao mudar de rota
   }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -31,6 +34,16 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const handleAuthButtonClick = () => {
+    console.log('[Navbar] Botão de Autenticação (Acessar Zen Tribe / Login) clicado!');
+    onLoginClick(); // Abre o modal no modo 'login' por padrão
+  };
+
+  const handleJoinTribeMobileClick = () => {
+    console.log('[Navbar] Botão Join Tribe (mobile) clicado!');
+    onRegisterClick(); // Abre o modal no modo 'register'
+  }
 
   return (
     <header 
@@ -60,21 +73,10 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <NavLink to="/" className="nav-link">
-              Home
-            </NavLink>
-            <NavLink to="/music" className="nav-link flex items-center space-x-1">
-              <Music size={16} />
-              <span>Music</span>
-            </NavLink>
-            <NavLink to="/events" className="nav-link flex items-center space-x-1">
-              <Calendar size={16} />
-              <span>Events</span>
-            </NavLink>
-            <NavLink to="/tribe" className="nav-link flex items-center space-x-1">
-              <Users size={16} />
-              <span>Zen Tribe</span>
-            </NavLink>
+            <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Home</NavLink>
+            <NavLink to="/music" className={({ isActive }) => isActive ? "nav-link active flex items-center space-x-1" : "nav-link flex items-center space-x-1"}><Music size={16} /><span>Music</span></NavLink>
+            <NavLink to="/events" className={({ isActive }) => isActive ? "nav-link active flex items-center space-x-1" : "nav-link flex items-center space-x-1"}><Calendar size={16} /><span>Events</span></NavLink>
+            <NavLink to="/tribe" className={({ isActive }) => isActive ? "nav-link active flex items-center space-x-1" : "nav-link flex items-center space-x-1"}><Users size={16} /><span>Zen Tribe</span></NavLink>
             <a 
               href="https://work.djzeneyer.com" 
               target="_blank" 
@@ -90,20 +92,14 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
             {user?.isLoggedIn ? (
               <UserMenu />
             ) : (
-              <>
-                <button 
-                  onClick={onLoginClick} 
-                  className="text-white/90 hover:text-white transition-colors"
-                >
-                  Login
-                </button>
-                <button 
-                  onClick={onRegisterClick} 
-                  className="btn btn-primary"
-                >
-                  Join Tribe
-                </button>
-              </>
+              // Botão ÚNICO para desktop quando deslogado
+              <button 
+                onClick={handleAuthButtonClick} 
+                className="btn btn-primary flex items-center space-x-2"
+              >
+                <LogIn size={18} /> 
+                <span>Acessar Zen Tribe</span>
+              </button>
             )}
           </div>
 
@@ -117,6 +113,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
         </div>
       </div>
 
+      {/* Menu Mobile */}
       <div 
         className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${
           isMenuOpen ? 'max-h-screen border-b border-white/10' : 'max-h-0'
@@ -124,21 +121,10 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
       >
         <div className="container mx-auto px-4 py-4">
           <nav className="flex flex-col space-y-4">
-            <NavLink to="/" className="nav-link text-lg">
-              Home
-            </NavLink>
-            <NavLink to="/music" className="nav-link text-lg flex items-center space-x-2">
-              <Music size={18} />
-              <span>Music</span>
-            </NavLink>
-            <NavLink to="/events" className="nav-link text-lg flex items-center space-x-2">
-              <Calendar size={18} />
-              <span>Events</span>
-            </NavLink>
-            <NavLink to="/tribe" className="nav-link text-lg flex items-center space-x-2">
-              <Users size={18} />
-              <span>Zen Tribe</span>
-            </NavLink>
+            <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active text-lg" : "nav-link text-lg"}>Home</NavLink>
+            <NavLink to="/music" className={({ isActive }) => isActive ? "nav-link active text-lg flex items-center space-x-2" : "nav-link text-lg flex items-center space-x-2"}><Music size={18} /><span>Music</span></NavLink>
+            <NavLink to="/events" className={({ isActive }) => isActive ? "nav-link active text-lg flex items-center space-x-2" : "nav-link text-lg flex items-center space-x-2"}><Calendar size={18} /><span>Events</span></NavLink>
+            <NavLink to="/tribe" className={({ isActive }) => isActive ? "nav-link active text-lg flex items-center space-x-2" : "nav-link text-lg flex items-center space-x-2"}><Users size={18} /><span>Zen Tribe</span></NavLink>
             <a 
               href="https://work.djzeneyer.com" 
               target="_blank" 
@@ -150,21 +136,20 @@ const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onRegisterClick }) => {
             </a>
           </nav>
 
-          <div className="mt-6 flex flex-col space-y-3">
+          <div className="mt-6 pt-4 border-t border-white/10 flex flex-col space-y-3">
             {user?.isLoggedIn ? (
-              <div className="py-2">
-                <UserMenu orientation="vertical" />
-              </div>
+              <UserMenu orientation="vertical" /> // Supondo que UserMenu aceite 'orientation'
             ) : (
               <>
+                {/* No mobile, mantive os dois botões separados por clareza, mas você pode unificar também */}
                 <button 
-                  onClick={onLoginClick} 
+                  onClick={handleAuthButtonClick} 
                   className="w-full py-3 text-center text-white/90 hover:text-white transition-colors border border-white/20 rounded-md"
                 >
                   Login
                 </button>
                 <button 
-                  onClick={onRegisterClick} 
+                  onClick={handleJoinTribeMobileClick} // Chama a função que abre o modal em modo 'register'
                   className="w-full btn btn-primary"
                 >
                   Join Tribe
