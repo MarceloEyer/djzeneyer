@@ -1,7 +1,7 @@
-// Seu AuthModal.tsx (o que você acabou de colar)
-import React, { useState } from 'react'; // Mantive seus imports originais desta versão
+// src/components/auth/AuthModal.tsx
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { useUser } from '../../contexts/UserContext';
+import { useUser } from '../../contexts/UserContext'; // <<< AJUSTE O CAMINHO SE NECESSÁRIO
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -11,24 +11,38 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMode }) => {
-  // ADICIONE ESTA LINHA DE DEBUG AQUI:
-  console.log(`[AuthModal - Versão Atual Fornecida] Renderizando/Atualizado. isOpen: ${isOpen}, Mode: ${mode}`);
+  console.log(`[AuthModal] Renderizando/Atualizado. isOpen: ${isOpen}, Mode: ${mode}`);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // ... resto do seu código AuthModal.tsx ...
-  // (continua igual ao que você me enviou)
-
   const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false); // Este é o loading local desta versão do AuthModal
-  const [error, setError] = useState<string | null>(null);
-  
-  const { login, register } = useUser(); // Funções do UserContext
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // Usando 'loading' do UserContext para desabilitar elementos durante operações de auth
+  const { login, register, loginWithGoogle, loading, user } = useUser();
+
+  // Limpa os campos e erro local quando o modo muda ou o modal é fechado/aberto
+  useEffect(() => {
+    if (isOpen) { // Limpa apenas quando for abrir ou quando o modo mudar com ele aberto
+      setEmail('');
+      setPassword('');
+      setName('');
+      setLocalError(null);
+    }
+  }, [mode, isOpen]);
+
+  // Fecha o modal se o usuário logar com sucesso (vindo do context)
+  useEffect(() => {
+    if (user && user.isLoggedIn && isOpen) {
+      console.log('[AuthModal] Usuário agora está logado (contexto), fechando modal.');
+      onClose();
+    }
+  }, [user, isOpen, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true); // Usa o loading local
+    setLocalError(null);
+    // O 'loading' do context será true se login/register estiverem em progresso
     
     try {
       if (mode === 'login') {
@@ -36,112 +50,148 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
       } else {
         await register(name, email, password);
       }
-      
-      // A lógica para fechar o modal após sucesso no UserContext (observando 'user')
-      // ou aqui diretamente chamando onClose() se o UserContext não fechar.
-      // Para simplificar, se não houver erro, chamaremos onClose.
-      // Em um fluxo ideal, o UserContext atualizaria o 'user', e um useEffect no AuthModal
-      // ou MainLayout fecharia o modal. Mas vamos manter simples por agora.
-      onClose(); 
-      
-      setEmail('');
-      setPassword('');
-      setName('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-    } finally {
-      setLoading(false); // Reseta o loading local
+      // O useEffect acima (que observa 'user') deve cuidar de fechar o modal em caso de sucesso.
+      // Se não houver erro, o usuário será logado, e o modal fechará.
+    } catch (err: any) {
+      console.error("[AuthModal] Erro no handleSubmit:", err);
+      setLocalError(err.message || 'Ocorreu um erro inesperado.');
     }
+    // Não precisa de setLoading(false) local aqui, pois usamos o 'loading' do context.
   };
 
-  if (!isOpen) return null;
+  const handleGoogleAuthClick = async () => {
+    setLocalError(null);
+    try {
+      await loginWithGoogle();
+      // O useEffect que observa 'user' deve cuidar de fechar o modal em caso de sucesso.
+    } catch (err: any) {
+      console.error("[AuthModal] Erro no login com Google:", err);
+      setLocalError(err.message || 'Falha no login com Google.');
+    }
+  };
+  
+  const handleFacebookAuthClick = () => {
+    setLocalError(null);
+    console.log("Login com Facebook clicado - funcionalidade a ser implementada no UserContext.");
+    alert("Login com Facebook ainda não implementado.");
+    // Quando implementar, chame algo como:
+    // try {
+    //   await loginWithFacebook(); 
+    // } catch (err: any) {
+    //   setLocalError(err.message || 'Falha no login com Facebook.');
+    // }
+  };
+
+  if (!isOpen) {
+    return null;
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true" // Adicionado aria-hidden para o overlay
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"> {/* Adicionado padding para telas menores */}
+      <div
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={!loading ? onClose : undefined} // Não fecha no clique do overlay se estiver carregando
+        aria-hidden="true"
       ></div>
       
-      <div className="relative z-10 bg-surface rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden">
-        {/* Header */}
+      <div
+        className="relative z-[101] bg-surface rounded-xl shadow-2xl max-w-md w-full mx-auto overflow-hidden border border-white/10" // mx-auto para centralizar se p-4 estiver ativo
+        role="dialog"
+        aria-labelledby="auth-modal-title"
+        aria-modal="true"
+      >
         <div className="flex justify-between items-center p-5 border-b border-white/10">
-          <h2 id="auth-modal-title" className="text-xl font-display font-bold"> {/* Adicionado id para aria-labelledby */}
+          <h2 id="auth-modal-title" className="text-xl font-display font-bold text-white">
             {mode === 'login' ? 'Login to Zen Tribe' : 'Join the Zen Tribe'}
           </h2>
           <button
-            onClick={onClose}
-            className="text-white/70 hover:text-white transition-colors"
-            aria-label="Close modal" // Melhorado aria-label
+            onClick={!loading ? onClose : undefined}
+            className="text-white/70 hover:text-white transition-colors disabled:opacity-50"
+            aria-label="Close modal"
+            disabled={loading}
           >
-            <X size={20} />
+            <X size={24} />
           </button>
         </div>
         
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5">
-          {error && (
-            <div className="mb-4 py-2 px-3 bg-red-500/20 border border-red-500/30 rounded-md text-sm text-red-400" role="alert"> {/* Estilo de erro melhorado */}
-              {error}
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {localError && (
+            <div className="mb-4 py-2.5 px-4 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400" role="alert">
+              {localError}
             </div>
           )}
           
           {mode === 'register' && (
-            <div className="mb-4">
-              <label htmlFor="auth-name" className="block text-sm font-medium mb-1"> {/* Associado htmlFor ao id */}
+            <div>
+              <label htmlFor="auth-name" className="block text-sm font-medium text-white/80 mb-1.5">
                 Name
               </label>
               <input
-                id="auth-name" // Adicionado id
+                id="auth-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                 placeholder="Your name"
                 required
-                autoComplete="name" // Adicionado autocomplete
+                autoComplete="name"
+                disabled={loading}
               />
             </div>
           )}
           
-          <div className="mb-4">
-            <label htmlFor="auth-email" className="block text-sm font-medium mb-1"> {/* Associado htmlFor ao id */}
+          <div>
+            <label htmlFor="auth-email" className="block text-sm font-medium text-white/80 mb-1.5">
               Email
             </label>
             <input
-              id="auth-email" // Adicionado id
+              id="auth-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
               placeholder="your@email.com"
               required
-              autoComplete="email" // Adicionado autocomplete
+              autoComplete="email"
+              disabled={loading}
             />
           </div>
           
-          <div className="mb-6">
-            <label htmlFor="auth-password" className="block text-sm font-medium mb-1"> {/* Associado htmlFor ao id */}
+          <div>
+            <label htmlFor="auth-password" className="block text-sm font-medium text-white/80 mb-1.5">
               Password
             </label>
             <input
-              id="auth-password" // Adicionado id
+              id="auth-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
               placeholder="••••••••"
               required
               minLength={6}
-              autoComplete={mode === 'login' ? "current-password" : "new-password"} // Adicionado autocomplete
+              autoComplete={mode === 'login' ? "current-password" : "new-password"}
+              disabled={loading}
             />
           </div>
           
+          {mode === 'login' && (
+            <div className="text-right -mt-2 mb-1">
+              <button
+                type="button"
+                // onClick={handleForgotPassword} // Implementar esta função se necessário
+                className="text-sm text-primary/80 hover:text-primary hover:underline focus:outline-none disabled:opacity-50"
+                disabled={loading}
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={loading} // Usa o loading local desta versão do AuthModal
-            className="w-full btn btn-primary mb-4 disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={loading} // Usa o loading do UserContext
+            className="w-full btn btn-primary py-3 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? 'Loading...' : mode === 'login' ? 'Login' : 'Create Account'}
           </button>
@@ -152,8 +202,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                 Don't have an account?{' '}
                 <button
                   type="button"
-                  onClick={onToggleMode}
-                  className="text-primary hover:underline focus:outline-none"
+                  onClick={!loading ? onToggleMode : undefined}
+                  className="font-semibold text-primary hover:underline focus:outline-none disabled:opacity-50"
+                  disabled={loading}
                 >
                   Sign up
                 </button>
@@ -163,8 +214,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                 Already have an account?{' '}
                 <button
                   type="button"
-                  onClick={onToggleMode}
-                  className="text-primary hover:underline focus:outline-none"
+                  onClick={!loading ? onToggleMode : undefined}
+                  className="font-semibold text-primary hover:underline focus:outline-none disabled:opacity-50"
+                  disabled={loading}
                 >
                   Log in
                 </button>
@@ -173,44 +225,35 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
           </div>
         </form>
         
-        {/* Social Login Options - SVGs embutidos como na sua versão */}
-        <div className="p-5 border-t border-white/10">
-          <div className="relative flex items-center justify-center mb-4">
+        <div className="px-6 pb-6 pt-5 border-t border-white/10">
+          <div className="relative flex items-center justify-center mb-5">
             <div className="flex-grow h-px bg-white/10"></div>
-            <span className="mx-3 text-sm text-white/50">or continue with</span>
+            <span className="mx-4 text-xs text-white/50 uppercase">or continue with</span>
             <div className="flex-grow h-px bg-white/10"></div>
           </div>
           
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
-              // onClick={handleFacebookAuth} // Implementar handleFacebookAuth
-              className="flex items-center justify-center py-2 px-3 rounded border border-white/10 hover:bg-white/5 transition-colors text-sm font-medium"
-              aria-label="Login with Facebook" // Adicionado aria-label
+              onClick={!loading ? handleFacebookAuthClick : undefined}
+              disabled={true || loading} // Facebook ainda não implementado funcionalmente no UserContext
+              className="flex items-center justify-center py-2.5 px-4 rounded-lg border border-white/10 hover:bg-white/5 transition-colors text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Login with Facebook"
             >
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* SVG do Facebook (como você forneceu) */}
-                <path d="M12 0C5.373 0 0 5.373 0 12C0 18.627 5.373 24 12 24C18.627 24 24 18.627 24 12C24 5.373 18.627 0 12 0ZM17.292 9.292H15.825C15.562 9.292 15.292 9.625 15.292 9.956V11H17.292L16.992 13H15.292V19H13.292V13H11.792V11H13.292V10.042C13.292 8.333 14.392 7 15.825 7H17.292V9.292Z" fill="#1877F2"/>
-              </svg>
+              {/* SVG do Facebook (como na sua versão "que não dava erro") */}
+              <svg className="w-5 h-5 mr-2.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="12" fill="#1877F2"/><path d="M16.6711 15.4688L17.2031 12H13.875V9.75C13.875 8.8008 14.3391 7.875 15.8297 7.875H17.3438V4.9219C17.3438 4.9219 15.9703 4.6875 14.6578 4.6875C11.9156 4.6875 10.125 6.3516 10.125 9.3516V12H7.07812V15.4688H10.125V23.8547C10.7367 23.9508 11.3625 24 12 24C12.6375 24 13.2633 23.9508 13.875 23.8547V15.4688H16.6711Z" fill="white"/></svg>
               Facebook
             </button>
             
             <button
               type="button"
-              // onClick={handleGoogleAuth} // Implementar handleGoogleAuth
-              className="flex items-center justify-center py-2 px-3 rounded border border-white/10 hover:bg-white/5 transition-colors text-sm font-medium"
-              aria-label="Login with Google" // Adicionado aria-label
+              onClick={!loading ? handleGoogleAuthClick : undefined} // Conectado
+              disabled={loading}
+              className="flex items-center justify-center py-2.5 px-4 rounded-lg border border-white/10 hover:bg-white/5 transition-colors text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Login with Google"
             >
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                {/* SVG do Google (como você forneceu) */}
-                <path d="M12 0C5.373 0 0 5.373 0 12C0 18.627 5.373 24 12 24C18.627 24 24 18.627 24 12C24 5.373 18.627 0 12 0ZM17.855 11.982H12.872C12.872 11.982 12.872 15.912 12.872 15.937C12.872 16.498 12.416 16.955 11.855 16.955C11.293 16.955 10.837 16.498 10.837 15.937C10.837 15.912 10.837 12.982 10.837 12.982C10.837 12.982 8.419 12.982 8.376 12.982C7.815 12.982 7.358 12.525 7.358 11.964C7.358 11.402 7.815 10.946 8.376 10.946C8.419 10.946 10.837 10.946 10.837 10.946C10.837 10.946 10.837 8.964 10.837 8.919C10.837 8.357 11.293 7.901 11.855 7.901C12.416 7.901 12.872 8.357 12.872 8.919C12.872 8.964 12.872 10.946 12.872 10.946C12.872 10.946 16.801 10.946 16.837 10.946C17.398 10.946 17.855 11.402 17.855 11.964C17.855 12.525 17.398 11.982 16.837 11.982C16.801 11.982 17.855 11.982 17.855 11.982Z" fill="#DB4437"/>
-                {/* Adicionei os outros paths do ícone do Google que podem estar faltando no seu exemplo */}
-                <path d="M12 0C5.373 0 0 5.373 0 12S5.373 24 12 24 24 18.627 24 12S18.627 0 12 0zm0 21.818c-5.41 0-9.818-4.408-9.818-9.818S6.59 2.182 12 2.182s9.818 4.408 9.818 9.818-4.408 9.818-9.818 9.818z" fill="#4285F4"/>
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
+              {/* SVG do Google (versão completa) */}
+              <svg className="w-5 h-5 mr-2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
               Google
             </button>
           </div>
