@@ -3,49 +3,51 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import { supabase } from '../utils/supabaseClient'; // <<< VERIFIQUE ESTE CAMINHO!
 import { Session, User as SupabaseAuthUser } from '@supabase/supabase-js';
 
-// Suas types (mantidas como você definiu)
+// Tipos (mantidos como você definiu)
 export type Achievement = {
-  id: string; // Corresponde a all_achievements.id
+  id: string;
   name: string;
   description: string;
   icon: string;
-  unlockedAt: Date | null; // Vem de user_achievements.unlocked_at
+  unlockedAt: Date | null;
 };
 
 export type Badge = {
-  id: string; // Corresponde a all_badges.id
+  id: string;
   name: string;
   description: string;
   image: string;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  acquiredAt: Date | null; // Vem de user_badges.acquired_at
+  acquiredAt: Date | null;
 };
 
-// User type combinando Supabase Auth User com seus dados de perfil e gamificação
+export type UserProfile = {
+  full_name: string | null;
+  avatar_url: string | null;
+  level: number;
+  xp: number;
+  rank: string;
+  joinDate?: Date;
+  streakDays?: number;
+  lastActive?: Date;
+};
+
+// Tipo User combinado
 export type User = SupabaseAuthUser & {
-  profile: { // Dados da tabela 'profiles'
-    full_name: string | null;
-    avatar_url: string | null;
-    level: number;
-    xp: number;
-    rank: string;
-    joinDate?: Date; // O joinDate original virá do created_at do SupabaseAuthUser
-    streakDays?: number; // Estes podem ser calculados ou armazenados
-    lastActive?: Date;   // Estes podem ser calculados ou armazenados
-  };
-  achievements: Achievement[]; // Virá de 'user_achievements' e 'all_achievements'
-  badges: Badge[];           // Virá de 'user_badges' e 'all_badges'
-  isLoggedIn: boolean; // Controlado pela sessão do Supabase
+  profile: UserProfile;
+  achievements: Achievement[];
+  badges: Badge[];
+  isLoggedIn: boolean;
 };
 
 type UserContextType = {
   user: User | null;
-  session: Session | null; // Exporta a sessão também, pode ser útil
+  session: Session | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>; // <<< LINHA CORRIGIDA
+  register: (name: string, email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
-  updateProfileData: (data: Partial<User['profile']>) => Promise<void>;
+  updateProfileData: (data: Partial<UserProfile>) => Promise<void>;
   earnXP: (amount: number) => Promise<void>;
   unlockAchievement: (achievementId: string) => Promise<void>;
   acquireBadge: (badgeId: string) => Promise<void>;
@@ -63,33 +65,45 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const fetchSessionAndProfile = async () => {
+      // console.log('[UserContext] fetchSessionAndProfile: Iniciando...');
       setLoadingInitial(true);
       const { data: { session: currentSession } } = await supabase.auth.getSession();
       setSession(currentSession);
 
       if (currentSession?.user) {
+        // console.log('[UserContext] fetchSessionAndProfile: Sessão encontrada, carregando perfil para:', currentSession.user.id);
         await loadUserProfile(currentSession.user);
       } else {
+        // console.log('[UserContext] fetchSessionAndProfile: Sem sessão, usuário definido como null.');
         setUser(null);
       }
       setLoadingInitial(false);
+      // console.log('[UserContext] fetchSessionAndProfile: Finalizado.');
     };
 
     fetchSessionAndProfile();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (_event, newSession) => {
+        // console.log('[UserContext] onAuthStateChange disparado. Evento:', _event, 'Nova sessão ID:', newSession?.user?.id, 'Sessão antiga ID:', session?.user?.id);
+        
+        // Evita re-execuções desnecessárias se a sessão essencialmente não mudou
         if (newSession?.access_token === session?.access_token && newSession?.user?.id === session?.user?.id && newSession !== null) {
-          if(!user && newSession?.user) await loadUserProfile(newSession.user);
-          setLoadingInitial(false);
+          if(!user && newSession?.user) { // Apenas carrega perfil se user era null mas agora temos uma sessão
+            // console.log('[UserContext] onAuthStateChange: Sessão parece a mesma, mas user era null. Carregando perfil.');
+            await loadUserProfile(newSession.user);
+          }
+          setLoadingInitial(false); // Garante que o loading pare se ainda estava ativo
           return;
         }
 
         setLoadingInitial(true);
         setSession(newSession);
         if (newSession?.user) {
+          // console.log('[UserContext] onAuthStateChange: Nova sessão/usuário, carregando perfil para:', newSession.user.id);
           await loadUserProfile(newSession.user);
         } else {
+          // console.log('[UserContext] onAuthStateChange: Usuário deslogado, definindo user para null.');
           setUser(null);
         }
         setLoadingInitial(false);
@@ -97,11 +111,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 
     return () => {
+      // console.log('[UserContext] Desinscrevendo authListener.');
       authListener?.subscription.unsubscribe();
     };
-  }, []);
+  }, []); // Array de dependências vazio para rodar apenas no mount e desmontar no unmount
 
   const loadUserProfile = async (authUser: SupabaseAuthUser) => {
+    // console.log('[UserContext] loadUserProfile: Carregando perfil para usuário ID:', authUser.id);
     try {
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
@@ -109,95 +125,80 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .eq('id', authUser.id)
         .single();
 
-      if (profileError && profileError.code !== 'PGRST116') {
-        console.error('Erro ao buscar perfil:', profileError);
-        setUser({
-            ...authUser,
-            profile: { 
-              full_name: (authUser.email?.split('@')[0] ?? 'Zen Fan'), 
-              avatar_url: null, 
-              level: 1, 
-              xp: 0,
-              rank: 'Zen Newcomer' 
-            },
-            achievements: [],
-            badges: [],
-            isLoggedIn: true,
-        } as User);
+      if (profileError && profileError.code !== 'PGRST116') { // PGRST116: 'single row not found'
+        console.error('[UserContext] loadUserProfile: Erro ao buscar perfil:', profileError);
+        // Define um perfil padrão mínimo se o perfil não for encontrado ou houver erro
+        const defaultProfile: UserProfile = {
+          full_name: authUser.email?.split('@')[0] || 'Zen Fan',
+          avatar_url: null,
+          level: 1,
+          xp: 0,
+          rank: 'Zen Newcomer',
+          joinDate: new Date(authUser.created_at),
+        };
+        setUser({ ...authUser, profile: defaultProfile, achievements: [], badges: [], isLoggedIn: true });
         return;
       }
 
-      const { data: userAchievementsData, error: userAchievementsError } = await supabase
+      // console.log('[UserContext] loadUserProfile: Dados do perfil básico:', profileData);
+
+      const { data: userAchievementsData } = await supabase
         .from('user_achievements')
-        .select(`
-          unlocked_at,
-          all_achievements (id, name, description, icon)
-        `)
+        .select('unlocked_at, all_achievements (id, name, description, icon)')
         .eq('user_id', authUser.id);
-      
-      if (userAchievementsError) console.error('Erro ao buscar achievements do usuário:', userAchievementsError);
       
       const achievements: Achievement[] = userAchievementsData?.map((ua: any) => ({
         ...(ua.all_achievements as any),
         unlockedAt: new Date(ua.unlocked_at),
       })) || [];
+      // console.log('[UserContext] loadUserProfile: Achievements carregados:', achievements);
 
-      const { data: userBadgesData, error: userBadgesError } = await supabase
+      const { data: userBadgesData } = await supabase
         .from('user_badges')
-        .select(`
-          acquired_at,
-          all_badges (id, name, description, image, rarity)
-        `)
+        .select('acquired_at, all_badges (id, name, description, image, rarity)')
         .eq('user_id', authUser.id);
-
-      if (userBadgesError) console.error('Erro ao buscar badges do usuário:', userBadgesError);
 
       const badges: Badge[] = userBadgesData?.map((ub: any) => ({
         ...(ub.all_badges as any), 
         acquiredAt: new Date(ub.acquired_at),
       })) || [];
+      // console.log('[UserContext] loadUserProfile: Badges carregados:', badges);
       
-      const fullUser: User = {
-        ...authUser,
-        profile: {
-          full_name: profileData?.full_name || (authUser.email?.split('@')[0] ?? 'Zen Fan'),
-          avatar_url: profileData?.avatar_url || null,
-          level: profileData?.level || 1,
-          xp: profileData?.xp || 0, // <<< LINHA CORRIGIDA
-          rank: profileData?.rank || 'Zen Newcomer',
-          joinDate: new Date(authUser.created_at),
-        },
-        achievements,
-        badges,
-        isLoggedIn: true,
+      const userProfile: UserProfile = {
+        full_name: profileData?.full_name || authUser.email?.split('@')[0] || 'Zen Fan',
+        avatar_url: profileData?.avatar_url || null,
+        level: profileData?.level || 1,
+        xp: profileData?.xp || 0,
+        rank: profileData?.rank || 'Zen Newcomer',
+        joinDate: new Date(authUser.created_at),
       };
-      setUser(fullUser);
+
+      setUser({ ...authUser, profile: userProfile, achievements, badges, isLoggedIn: true });
+      // console.log('[UserContext] loadUserProfile: Usuário completo definido no estado.');
 
     } catch (e) {
-      console.error("Erro carregando perfil completo:", e);
-      setUser({
-        ...authUser,
-        profile: { 
-          full_name: (authUser.email?.split('@')[0] ?? 'Zen Fan'), 
-          avatar_url: null, 
-          level: 1, 
-          xp: 0, 
-          rank: 'Zen Newcomer' 
-        },
-        achievements: [],
-        badges: [],
-        isLoggedIn: true,
-      } as User);
+      console.error("[UserContext] loadUserProfile: Erro inesperado carregando perfil completo:", e);
+      const fallbackProfile: UserProfile = {
+        full_name: authUser.email?.split('@')[0] || 'Zen Fan',
+        avatar_url: null,
+        level: 1,
+        xp: 0,
+        rank: 'Zen Newcomer',
+        joinDate: new Date(authUser.created_at),
+      };
+      setUser({ ...authUser, profile: fallbackProfile, achievements: [], badges: [], isLoggedIn: true });
     }
   };
 
   const login = async (email: string, password: string) => {
     setLoading(true);
+    // console.log('[UserContext] login: Tentando login para:', email);
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      // onAuthStateChange cuidará de chamar loadUserProfile
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('[UserContext] login: Falha no login:', error);
       throw error; 
     } finally {
       setLoading(false);
@@ -206,15 +207,18 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = async () => {
     setLoading(true);
+    // console.log('[UserContext] logout: Deslogando usuário.');
     const { error } = await supabase.auth.signOut();
     if (error) {
-        console.error("Error logging out:", error)
+        console.error("[UserContext] logout: Erro ao deslogar:", error);
     }
+    // onAuthStateChange cuidará de setar user para null.
     setLoading(false);
   };
 
   const register = async (name: string, email: string, password: string) => {
     setLoading(true);
+    // console.log('[UserContext] register: Tentando registrar:', email);
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -226,7 +230,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (error) throw error;
       alert('Registro realizado! Verifique seu e-mail para confirmação (se a opção estiver habilitada no Supabase).');
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('[UserContext] register: Falha no registro:', error);
       throw error; 
     } finally {
       setLoading(false);
@@ -235,29 +239,36 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   const loginWithGoogle = async () => {
     setLoading(true);
+    // console.log('[UserContext] loginWithGoogle: Iniciando login com Google.');
     try {
+        // Não especificamos 'redirectTo' aqui, Supabase usará a URL da página atual
+        // ou o 'Site URL' configurado no painel Supabase,
+        // desde que estejam na lista de Redirect URLs permitidas.
         const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
         if (error) {
-            console.error('Google login failed before redirect:', error);
+            console.error('[UserContext] loginWithGoogle: Falha no login com Google antes do redirect:', error);
             setLoading(false); 
             throw error;
         }
     } catch (error) {
-        console.error('Google login failed unexpectedly:', error);
+        console.error('[UserContext] loginWithGoogle: Falha inesperada no login com Google:', error);
         setLoading(false);
         throw error;
     }
+    // O setLoading(false) aqui pode não ser atingido se o redirect ocorrer.
+    // O loading será resetado pelo onAuthStateChange ou no início da próxima operação.
   };
 
-  const updateProfileData = async (data: Partial<User['profile']>) => {
+  const updateProfileData = async (data: Partial<UserProfile>) => {
     if (!user?.id) {
-      console.error("Usuário não logado, impossível atualizar perfil.");
+      console.error("[UserContext] updateProfileData: Usuário não logado, impossível atualizar perfil.");
       return;
     }
     setLoading(true);
+    // console.log('[UserContext] updateProfileData: Atualizando perfil para user ID:', user.id, 'com dados:', data);
     try {
       const dataToUpdate = { ...data, updated_at: new Date().toISOString() };
-      Object.keys(dataToUpdate).forEach(key => dataToUpdate[key] === undefined && delete dataToUpdate[key]);
+      Object.keys(dataToUpdate).forEach(key => (dataToUpdate as any)[key] === undefined && delete (dataToUpdate as any)[key]);
 
       const { error } = await supabase
         .from('profiles')
@@ -267,16 +278,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       setUser(prevUser => {
         if (!prevUser) return null;
-        // Cria um novo objeto de perfil para garantir a imutabilidade
-        const newProfile = { ...prevUser.profile, ...data } as User['profile'];
+        const newProfile = { ...prevUser.profile, ...data } as UserProfile; // Cast para UserProfile
         return {
           ...prevUser,
           profile: newProfile,
         };
       });
-
+      // console.log('[UserContext] updateProfileData: Perfil atualizado com sucesso no estado local.');
     } catch (error) {
-      console.error('Falha ao atualizar perfil:', error);
+      console.error('[UserContext] updateProfileData: Falha ao atualizar perfil:', error);
     } finally {
       setLoading(false);
     }
@@ -289,32 +299,27 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const currentLevel = user.profile.level || 1;
     const newXP = currentXP + amount;
     
-    // Lógica de Level Up (exemplo: a cada 100 XP)
     let newLevel = currentLevel;
-    let xpForNextLevel = currentLevel * 100; // XP necessário para o próximo nível atual
-    let tempNewXP = newXP;
+    let xpForNextLevel = currentLevel * 100;
+    let tempUserXP = newXP; // Usar uma variável temporária para o cálculo de múltiplos níveis
 
-    while (tempNewXP >= xpForNextLevel) {
+    while (tempUserXP >= xpForNextLevel && newLevel < 100) { // Adicionado limite de nível para evitar loop infinito
       newLevel++;
-      tempNewXP -= xpForNextLevel; // Subtrai o XP usado para upar
-      xpForNextLevel = newLevel * 100; // Calcula o XP para o *próximo* novo nível
+      tempUserXP -= xpForNextLevel; 
+      xpForNextLevel = newLevel * 100;
     }
-    // O XP do usuário deve ser o total acumulado ou o restante após o level up,
-    // dependendo de como você quer que o sistema funcione.
-    // Se o XP reseta a cada nível: tempNewXP
-    // Se o XP é cumulativo: newXP
-    // Vamos manter cumulativo por enquanto para consistência com `updateProfileData`.
 
     let newRank = user.profile.rank;
     if (newLevel >= 10) newRank = 'Zen Master';
     else if (newLevel >= 5) newRank = 'Zen Adept';
-    else if (newLevel >= 1) newRank = 'Zen Novice'; // Ou mantenha o rank anterior se o nível não mudar o suficiente
+    else if (newLevel >= 1) newRank = 'Zen Novice';
 
-    setLoading(true);
+    // console.log(`[UserContext] earnXP: Ganhando ${amount} XP. Novo XP: ${newXP}, Novo Nível: ${newLevel}, Novo Rank: ${newRank}`);
+    setLoading(true); // Adicionado para consistência, embora updateProfileData já tenha
     try {
       await updateProfileData({ xp: newXP, level: newLevel, rank: newRank, lastActive: new Date() });
     } catch (error) {
-      console.error("Falha ao registrar XP:", error);
+      console.error("[UserContext] earnXP: Falha ao registrar XP:", error);
     } finally {
       setLoading(false);
     }
@@ -323,23 +328,21 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const unlockAchievement = async (achievementId: string) => {
     if (!user?.id || !user.profile) return;
     if (user.achievements.find(ach => ach.id === achievementId && ach.unlockedAt)) {
-      console.log(`Achievement ${achievementId} já desbloqueado.`);
+      // console.log(`[UserContext] unlockAchievement: Achievement ${achievementId} já desbloqueado.`);
       return;
     }
-
     setLoading(true);
     try {
+      // console.log(`[UserContext] unlockAchievement: Desbloqueando achievement ${achievementId} para user ID: ${user.id}`);
       const { error: insertError } = await supabase
         .from('user_achievements')
         .insert({ user_id: user.id, achievement_id: achievementId, unlocked_at: new Date().toISOString() });
       
       if (insertError) throw insertError;
       
-      // Atualiza localmente de forma otimista
       const { data: achievementDetails, error: fetchError } = await supabase.from('all_achievements').select('*').eq('id', achievementId).single();
       if (fetchError || !achievementDetails) {
-          console.error("Falha ao buscar detalhes do achievement após desbloqueio:", fetchError);
-          // Mesmo se falhar ao buscar detalhes, tenta dar XP
+          console.error("[UserContext] unlockAchievement: Falha ao buscar detalhes do achievement:", fetchError);
           await earnXP(50); 
           return;
       }
@@ -357,8 +360,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }) : null);
       
       await earnXP(50); 
+      // console.log(`[UserContext] unlockAchievement: Achievement ${achievementId} desbloqueado e XP ganho.`);
     } catch (error) {
-      console.error("Falha ao desbloquear achievement:", error);
+      console.error("[UserContext] unlockAchievement: Falha ao desbloquear achievement:", error);
     } finally {
       setLoading(false);
     }
@@ -367,12 +371,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const acquireBadge = async (badgeId: string) => {
     if (!user?.id || !user.profile) return;
     if (user.badges.find(b => b.id === badgeId && b.acquiredAt)) {
-        console.log(`Badge ${badgeId} já adquirido.`);
+        // console.log(`[UserContext] acquireBadge: Badge ${badgeId} já adquirido.`);
         return;
     }
-
     setLoading(true);
     try {
+      // console.log(`[UserContext] acquireBadge: Adquirindo badge ${badgeId} para user ID: ${user.id}`);
       const { error: insertError } = await supabase
         .from('user_badges')
         .insert({ user_id: user.id, badge_id: badgeId, acquired_at: new Date().toISOString() });
@@ -380,7 +384,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const { data: badgeDetails, error: fetchError } = await supabase.from('all_badges').select('*').eq('id', badgeId).single();
       if (fetchError || !badgeDetails) {
-          console.error("Falha ao buscar detalhes do badge após aquisição:", fetchError);
+          console.error("[UserContext] acquireBadge: Falha ao buscar detalhes do badge:", fetchError);
           await earnXP(100);
           return;
       }
@@ -397,8 +401,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         badges: [...prevUser.badges, newBadge],
       }) : null);
       await earnXP(100);
+      // console.log(`[UserContext] acquireBadge: Badge ${badgeId} adquirido e XP ganho.`);
     } catch (error) {
-      console.error("Falha ao adquirir badge:", error);
+      console.error("[UserContext] acquireBadge: Falha ao adquirir badge:", error);
     } finally {
       setLoading(false);
     }
