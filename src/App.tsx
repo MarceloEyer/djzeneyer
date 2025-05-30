@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -9,7 +10,8 @@ import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import EventsPage from './pages/EventsPage';
 import MusicPage from './pages/MusicPage';
-import ZenTribePage from './pages/ZenTribePage';
+import ZenTribePage from './pages/ZenTribePage'; // Página informativa pública sobre a tribo
+import DashboardPage from './pages/DashboardPage'; // <<< NOVA PÁGINA PARA USUÁRIOS LOGADOS
 import NotFoundPage from './pages/NotFoundPage';
 
 // Context Providers
@@ -26,7 +28,8 @@ function App() {
               <Route index element={<HomePage />} />
               <Route path="events" element={<EventsPage />} />
               <Route path="music" element={<MusicPage />} />
-              <Route path="tribe" element={<ZenTribePage />} />
+              <Route path="tribe" element={<ZenTribePage />} /> {/* Página pública sobre a Zen Tribe */}
+              <Route path="dashboard" element={<DashboardPage />} /> {/* <<< NOVA ROTA PROTEGIDA */}
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
