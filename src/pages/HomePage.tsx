@@ -60,8 +60,6 @@ const HomePage: React.FC = () => {
             className="w-full h-full bg-cover bg-center bg-no-repeat"
             style={{
               backgroundImage: "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/hero-background.webp')",
-              // AJUSTE AQUI: Mude '0.3' para mais (ex: 0.5) se precisar de mais contraste,
-              // ou para menos (ex: 0.15) se quiser a imagem mais clara.
             }}
           ></div>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30"></div>
@@ -74,10 +72,11 @@ const HomePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 font-display [text-shadow:_0_2px_10px_rgb(var(--color-primary)_/_20%)]">
+            {/* MODIFICAÇÃO NO TEXT-SHADOW ABAIXO PARA MELHOR LEGIBILIDADE */}
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 font-display [text-shadow:_1px_1px_3px_rgba(0,0,0,0.5),_0_0_5px_rgba(var(--color-primary),0.1)]">
               Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-white/80">
+            <p className="text-xl md:text-2xl mb-8 text-white/80 [text-shadow:_1px_1px_2px_rgba(0,0,0,0.7)]"> {/* Adicionada sombra sutil ao parágrafo também */}
               Join the Zen Tribe and embark on a journey through immersive soundscapes and rhythmic meditation.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -90,7 +89,7 @@ const HomePage: React.FC = () => {
                 <PlayCircle size={20} />
                 <span>Play Featured Mix</span>
               </button>
-              <Link to="/events" className="btn btn-outline flex items-center space-x-2">
+              <Link to="/events" className="btn btn-outline flex items-center space-x-2"> {/* Este botão usará o .btn-outline modificado */}
                 <Calendar size={20} />
                 <span>Upcoming Events</span>
               </Link>
@@ -199,7 +198,6 @@ const HomePage: React.FC = () => {
       <section className="py-24 bg-surface">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
-            {/* LINHA CORRIGIDA ABAIXO */}
             <h2 className="text-3xl font-bold font-display">Latest Releases</h2>
             <Link to="/music" className="text-primary hover:underline">View All</Link>
           </div>
@@ -316,7 +314,7 @@ const HomePage: React.FC = () => {
             <Link to="/tribe" className="btn btn-primary px-8 py-4">
               Join Now
             </Link>
-            <Link to="/music" className="btn btn-outline px-8 py-4">
+            <Link to="/music" className="btn btn-outline px-8 py-4"> {/* Este botão usará o .btn-outline modificado */}
               Explore Music
             </Link>
           </div>
