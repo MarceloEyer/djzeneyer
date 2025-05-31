@@ -1,30 +1,76 @@
+// src/components/common/Footer.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Music, Instagram, Facebook, Youtube, Music2 } from 'lucide-react';
+import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react'; // Adicionado MessageCircle para WhatsApp e Send para o botão
+import { supabase } from '../../utils/supabaseClient'; // <<< VERIFIQUE ESTE CAMINHO!
+
+// Ícone do Facebook (SVG embutido para consistência, já que não há em lucide-react)
+const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 20, className = "" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+  </svg>
+);
+
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
+
+  const whatsappNumber = "+5521987413091"; // Seu número de WhatsApp
+  const whatsappMessage = "Hello DJ Zen Eyer!";
+  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(null);
+    setSubmitMessage(null);
+    setSubmitSuccess(null);
+
+    if (!email) {
+      setSubmitMessage('Please enter a valid email address.');
+      setSubmitSuccess(false);
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      // Simulando uma chamada de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Aqui você faria a chamada real para sua API
-      // await api.subscribe(email);
-      
-      setIsSubscribed(true);
-      setEmail('');
-    } catch (err) {
-      setError('Failed to subscribe. Please try again.');
+      // Insere o e-mail na tabela 'subscribers' do Supabase
+      const { error } = await supabase
+        .from('subscribers')
+        .insert({ email: email, subscribed_at: new Date().toISOString() }); // Adicionando is_confirmed: false se quiser um fluxo de double opt-in
+
+      if (error) {
+        console.error('Supabase subscription error:', error);
+        // Verifica se o erro é de e-mail duplicado (código 23505 para unique constraint violation)
+        if (error.code === '23505') {
+          setSubmitMessage('This email is already subscribed!');
+          setSubmitSuccess(true); // Considerar como "sucesso" no sentido de que o objetivo foi alcançado
+        } else {
+          throw error; // Re-lança outros erros
+        }
+      } else {
+        setSubmitMessage('Thanks for subscribing! Please check your email to confirm (if required).');
+        setSubmitSuccess(true);
+        setEmail(''); // Limpa o campo após sucesso
+      }
+    } catch (err: any) {
+      console.error('Subscription submission error:', err);
+      setSubmitMessage(err.message || 'Failed to subscribe. Please try again.');
+      setSubmitSuccess(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -32,10 +78,10 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-background border-t border-white/10">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           {/* Logo and about */}
-          <div className="md:col-span-1">
+          <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
@@ -44,150 +90,121 @@ const Footer: React.FC = () => {
                 <span className="text-primary">DJ</span> Zen Eyer
               </span>
             </div>
-            <p className="text-white/70 mb-4">
+            <p className="text-white/70 mb-4 text-sm leading-relaxed">
               Music producer and DJ creating immersive audio experiences for the mind, body, and soul.
             </p>
             <div className="flex space-x-4">
               <a 
                 href="https://instagram.com/djzeneyer" 
-                
+                target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="Instagram"
               >
-                <Instagram size={20} />
+                <Instagram size={22} />
               </a>
               <a 
                 href="https://soundcloud.com/djzeneyer" 
-                
+                target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="SoundCloud"
               >
-                <Music2 size={20} />
+                <Music2 size={22} /> {/* Ícone para SoundCloud */}
               </a>
               <a 
-                href="https://youtube.com/djzeneyer" 
-                
+                href="https://www.youtube.com/@djzeneyer"  // <<< COLOQUE SEU LINK CORRETO DO YOUTUBE AQUI
+                target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="Youtube"
               >
-                <Youtube size={20} />
+                <Youtube size={22} />
               </a>
               <a 
                 href="https://facebook.com/djzeneyer" 
-                
+                target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="Facebook"
               >
-                <Facebook size={20} />
+                <FacebookIcon size={22} />
+              </a>
+              <a 
+                href={whatsappLink}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-white/70 hover:text-primary transition-colors"
+                aria-label="WhatsApp"
+              >
+                <MessageCircle size={22} /> {/* Ou um SVG de WhatsApp mais específico */}
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-display font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-white/70 hover:text-primary transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/music" className="text-white/70 hover:text-primary transition-colors">
-                  Music
-                </Link>
-              </li>
-              <li>
-                <Link to="/events" className="text-white/70 hover:text-primary transition-colors">
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link to="/tribe" className="text-white/70 hover:text-primary transition-colors">
-                  Zen Tribe
-                </Link>
-              </li>
-              <li>
-                <a href="mailto:contact@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">
-                  Contact
-                </a>
-              </li>
+          <div className="lg:ml-auto"> {/* Alinha à direita em telas maiores */}
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">Quick Links</h3>
+            <ul className="space-y-2.5">
+              <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">Home</Link></li>
+              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">Music</Link></li>
+              <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">Events</Link></li>
+              <li><Link to="/tribe" className="text-white/70 hover:text-primary transition-colors">Zen Tribe Info</Link></li>
+              <li><a href="mailto:contact@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">Contact</a></li>
             </ul>
           </div>
 
-          {/* Legal */}
-          <div>
-            <h3 className="text-lg font-display font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/privacy" className="text-white/70 hover:text-primary transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-white/70 hover:text-primary transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link to="/cookies" className="text-white/70 hover:text-primary transition-colors">
-                  Cookie Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/licenses" className="text-white/70 hover:text-primary transition-colors">
-                  Licenses
-                </Link>
-              </li>
+          {/* Legal / Sugestões */}
+          <div className="lg:ml-auto"> {/* Alinha à direita em telas maiores */}
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">Discover More</h3>
+            <ul className="space-y-2.5">
+              <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">Music Philosophy</Link></li>
+              <li><Link to="/press-kit" className="text-white/70 hover:text-primary transition-colors">Press Kit / Booking</Link></li>
+              <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">Support the Artist</a></li>
+              {/* Adicione mais links relevantes aqui */}
             </ul>
           </div>
 
           {/* Newsletter */}
-          <div>
-            <h3 className="text-lg font-display font-semibold mb-4">Join the Tribe</h3>
-            <p className="text-white/70 mb-4">
-              Subscribe to get exclusive updates, new releases, and VIP event access.
+          <div className="md:col-span-2 lg:col-span-1"> {/* Ajuste de coluna para melhor layout */}
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">Join the Newsletter</h3>
+            <p className="text-white/70 mb-4 text-sm leading-relaxed">
+              Get exclusive updates, new releases, and VIP event access directly to your inbox.
             </p>
             
-            {isSubscribed ? (
-              <div className="bg-success/20 border border-success/30 rounded-md p-3">
-                <span>Thanks for subscribing!</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSubscribe} className="space-y-2">
-                {error && (
-                  <div className="text-error text-sm">{error}</div>
-                )}
-                <div>
-                  <label htmlFor="email-subscription" className="sr-only">Email address</label>
-                  <input 
-                    id="email-subscription"
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Your email" 
-                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-white"
-                    required
-                  />
-                </div>
-                <button 
-                  type="submit" 
-                  className="w-full btn btn-primary disabled:opacity-70 disabled:cursor-not-allowed"
+            <form onSubmit={handleSubscribe} className="space-y-3">
+              <div>
+                <label htmlFor="footer-email-subscription" className="sr-only">Email address</label>
+                <input 
+                  id="footer-email-subscription"
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email address" 
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
+                  required
                   disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-                </button>
-              </form>
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={isSubmitting}
+              >
+                <Send size={16} />
+                <span>{isSubmitting ? 'Subscribing...' : 'Subscribe'}</span>
+              </button>
+            </form>
+            {submitMessage && (
+              <p className={`mt-3 text-sm ${submitSuccess ? 'text-success' : 'text-error'}`}>
+                {submitMessage}
+              </p>
             )}
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-white/10 text-center text-white/50 text-sm">
-          <p>© {currentYear} DJ Zen Eyer. All rights reserved.</p>
+        <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-xs md:text-sm">
+          <p>© {currentYear} DJ Zen Eyer. All rights reserved. Elevating vibes, one beat at a time.</p>
         </div>
       </div>
     </footer>
