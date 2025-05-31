@@ -4,6 +4,7 @@
 
 :root {
   --color-primary: 13, 150, 255;       /* Electric Blue */
+  --color-primary-darker: 10, 120, 200; /* Um azul um pouco mais escuro para hover */
   --color-secondary: 157, 0, 255;      /* Neon Purple */
   --color-accent: 255, 0, 128;         /* Vibrant Pink */
   --color-success: 0, 210, 91;         /* Bright Green */
@@ -54,16 +55,15 @@
   }
   
   .btn-primary {
-    @apply bg-primary text-[rgb(var(--color-text-dark))] /* Texto escuro para contraste */
+    @apply bg-primary text-white /* Texto branco e fundo azul como original */
            transition-all duration-200
-           hover:brightness-90 /* Escurece levemente o botão no hover */
+           hover:bg-[rgb(var(--color-primary-darker))] /* Fundo azul mais escuro no hover */
            focus-visible:ring-primary;
-    /* A classe brightness-90 do Tailwind escurece um pouco a cor de fundo original */
   }
   
   .btn-secondary {
     @apply bg-secondary text-white 
-           hover:brightness-90 
+           hover:brightness-90 /* Mantém escurecimento sutil para outras cores */
            focus-visible:ring-secondary;
   }
   
