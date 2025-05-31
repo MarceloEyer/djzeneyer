@@ -1,10 +1,10 @@
 // src/components/common/Footer.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react'; // Adicionado MessageCircle para WhatsApp e Send para o botão
+import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
 import { supabase } from '../../utils/supabaseClient'; // <<< VERIFIQUE ESTE CAMINHO!
 
-// Ícone do Facebook (SVG embutido para consistência, já que não há em lucide-react)
+// Ícone do Facebook (SVG embutido)
 const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 20, className = "" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +22,6 @@ const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 
   </svg>
 );
 
-
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
@@ -30,7 +29,7 @@ const Footer: React.FC = () => {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
 
-  const whatsappNumber = "+5521987413091"; // Seu número de WhatsApp
+  const whatsappNumber = "+5521987413091";
   const whatsappMessage = "Hello DJ Zen Eyer!";
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
 
@@ -48,27 +47,34 @@ const Footer: React.FC = () => {
     }
 
     try {
-      // Insere o e-mail na tabela 'subscribers' do Supabase
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('subscribers')
-        .insert({ email: email, subscribed_at: new Date().toISOString() }); 
+        .insert([{ 
+            email: email, 
+            // subscribed_at é DEFAULT NOW() no banco, 
+            // is_confirmed é DEFAULT FALSE no banco
+        }])
+        .select(); // Adiciona .select() para obter a resposta e verificar o erro corretamente
 
       if (error) {
         console.error('Supabase subscription error:', error);
-        if (error.code === '23505') {
-          setSubmitMessage('This email is already subscribed!');
+        if (error.code === '23505') { // Código para violação de constraint UNIQUE (e-mail já existe)
+          setSubmitMessage('This email is already subscribed. Thank you!');
           setSubmitSuccess(true); 
         } else {
-          throw error; 
+          setSubmitMessage(`Error: ${error.message}`);
+          setSubmitSuccess(false);
         }
       } else {
-        setSubmitMessage('Thanks for subscribing! Please check your email to confirm (if required).');
+        console.log('Subscription successful:', data);
+        setSubmitMessage('Thanks for subscribing! Keep an eye on your inbox.'); // Mensagem genérica por enquanto
+        // Idealmente, aqui você iniciaria um fluxo de double opt-in enviando um e-mail de confirmação.
         setSubmitSuccess(true);
         setEmail(''); 
       }
     } catch (err: any) {
-      console.error('Subscription submission error:', err);
-      setSubmitMessage(err.message || 'Failed to subscribe. Please try again.');
+      console.error('Unexpected subscription submission error:', err);
+      setSubmitMessage('Failed to subscribe due to an unexpected error. Please try again.');
       setSubmitSuccess(false);
     } finally {
       setIsSubmitting(false);
@@ -80,7 +86,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           {/* Logo and about */}
-          <div className="lg:col-span-1"> {/* Mantém col-span-1 para LG */}
+          <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
@@ -93,55 +99,15 @@ const Footer: React.FC = () => {
               Music producer and DJ creating immersive audio experiences for the mind, body, and soul.
             </p>
             <div className="flex space-x-4">
-              <a 
-                href="https://instagram.com/djzeneyer" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-white/70 hover:text-primary transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={22} />
-              </a>
-              <a 
-                href="https://soundcloud.com/djzeneyer" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-white/70 hover:text-primary transition-colors"
-                aria-label="SoundCloud"
-              >
-                <Music2 size={22} />
-              </a>
-              <a 
-                href="https://www.youtube.com/@djzeneyer" // <<< COLOQUE SEU LINK CORRETO DO YOUTUBE AQUI
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-white/70 hover:text-primary transition-colors"
-                aria-label="Youtube"
-              >
-                <Youtube size={22} />
-              </a>
-              <a 
-                href="https://facebook.com/djzeneyer" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-white/70 hover:text-primary transition-colors"
-                aria-label="Facebook"
-              >
-                <FacebookIcon size={22} />
-              </a>
-              <a 
-                href={whatsappLink}
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-white/70 hover:text-primary transition-colors"
-                aria-label="WhatsApp"
-              >
-                <MessageCircle size={22} />
-              </a>
+              <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram"><Instagram size={22} /></a>
+              <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud"><Music2 size={22} /></a>
+              <a href="YOUR_YOUTUBE_LINK_HERE" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube"><Youtube size={22} /></a> {/* <<< ATUALIZE O LINK DO YOUTUBE */}
+              <a href="https://facebook.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook"><FacebookIcon size={22} /></a>
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp"><MessageCircle size={22} /></a>
             </div>
           </div>
 
-          {/* Quick Links - Removido lg:ml-auto */}
+          {/* Quick Links */}
           <div> 
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2.5">
@@ -153,7 +119,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Discover More (antigo Legal) - Removido lg:ml-auto */}
+          {/* Discover More */}
           <div> 
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Discover More</h3>
             <ul className="space-y-2.5">
@@ -163,7 +129,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Newsletter - Removido md:col-span-2 para um layout 2x2 em MD, mantido lg:col-span-1 */}
+          {/* Newsletter */}
           <div className="lg:col-span-1"> 
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Join the Newsletter</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
@@ -186,7 +152,7 @@ const Footer: React.FC = () => {
               </div>
               <button 
                 type="submit" 
-                className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed" // .btn-primary usará o novo hover
                 disabled={isSubmitting}
               >
                 <Send size={16} />
@@ -194,7 +160,7 @@ const Footer: React.FC = () => {
               </button>
             </form>
             {submitMessage && (
-              <p className={`mt-3 text-sm ${submitSuccess ? 'text-success' : 'text-error'}`}>
+              <p className={`mt-3 text-sm ${submitSuccess ? 'text-green-400' : 'text-red-400'}`}> {/* Cores de feedback mais claras */}
                 {submitMessage}
               </p>
             )}
@@ -210,3 +176,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
