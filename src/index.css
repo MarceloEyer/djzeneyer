@@ -9,9 +9,11 @@
   --color-success: 0, 210, 91;         /* Bright Green */
   --color-warning: 255, 167, 0;        /* Amber */
   --color-error: 255, 45, 85;          /* Vibrant Red */
-  --color-background: 6, 6, 10;        /* Almost Black */
-  --color-surface: 18, 18, 29;         /* Dark Blue-Gray */
-  --color-text: 255, 255, 255;         /* White */
+  --color-background: 6, 6, 10;         /* Almost Black */
+  --color-surface: 18, 18, 29;          /* Dark Blue-Gray */
+  --color-text: 255, 255, 255;          /* White */
+  /* Adicionando uma cor de texto escura para contraste em fundos claros, se necessário */
+  --color-text-dark: 20, 20, 30;      /* Um cinza muito escuro, quase preto */
 }
 
 @layer base {
@@ -49,23 +51,33 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center px-5 py-3 rounded-md font-medium transition-all duration-200 focus:outline-none;
+    @apply inline-flex items-center justify-center px-5 py-3 rounded-md font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    /* Adicionado focus-visible para melhor acessibilidade de foco */
   }
   
   .btn-primary {
-    @apply bg-primary text-white hover:bg-primary-dark;
+    /* Usando texto escuro para melhor contraste com o fundo azul primário */
+    @apply bg-primary text-[rgb(var(--color-text-dark))] hover:bg-opacity-80 focus-visible:ring-primary;
+    /* Ajustado hover e adicionado focus-visible:ring-primary */
   }
   
   .btn-secondary {
-    @apply bg-secondary text-white hover:bg-secondary-dark;
+    @apply bg-secondary text-white hover:bg-opacity-80 focus-visible:ring-secondary;
+     /* Ajustado hover e adicionado focus-visible:ring-secondary */
   }
   
   .btn-accent {
-    @apply bg-accent text-white hover:bg-accent-dark;
+    @apply bg-accent text-white hover:bg-opacity-80 focus-visible:ring-accent;
+     /* Ajustado hover e adicionado focus-visible:ring-accent */
   }
   
+  /* MODIFICAÇÃO NO .btn-outline ABAIXO */
   .btn-outline {
-    @apply border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white;
+    @apply border-2 border-white text-white bg-transparent 
+           hover:bg-white hover:text-[rgb(var(--color-primary))] 
+           focus-visible:ring-white;
+    /* Estado normal: Borda branca, texto branco, fundo transparente */
+    /* Hover: Fundo branco, texto primário (azul) */
   }
 
   .card {
@@ -90,15 +102,15 @@
   }
 
   .badge-primary {
-    @apply bg-primary/20 text-primary-light;
+    @apply bg-primary/20 text-primary-light; /* Certifique-se que text-primary-light tem bom contraste com bg-primary/20 */
   }
 
   .badge-secondary {
-    @apply bg-secondary/20 text-secondary-light;
+    @apply bg-secondary/20 text-secondary-light; /* Idem para secondary */
   }
 
   .badge-accent {
-    @apply bg-accent/20 text-accent-light;
+    @apply bg-accent/20 text-accent-light; /* Idem para accent */
   }
 
   .audio-progress {
