@@ -51,14 +51,12 @@ const Footer: React.FC = () => {
         .from('subscribers')
         .insert([{ 
             email: email, 
-            // subscribed_at é DEFAULT NOW() no banco, 
-            // is_confirmed é DEFAULT FALSE no banco
         }])
-        .select(); // Adiciona .select() para obter a resposta e verificar o erro corretamente
+        .select(); 
 
       if (error) {
         console.error('Supabase subscription error:', error);
-        if (error.code === '23505') { // Código para violação de constraint UNIQUE (e-mail já existe)
+        if (error.code === '23505') { 
           setSubmitMessage('This email is already subscribed. Thank you!');
           setSubmitSuccess(true); 
         } else {
@@ -67,8 +65,7 @@ const Footer: React.FC = () => {
         }
       } else {
         console.log('Subscription successful:', data);
-        setSubmitMessage('Thanks for subscribing! Keep an eye on your inbox.'); // Mensagem genérica por enquanto
-        // Idealmente, aqui você iniciaria um fluxo de double opt-in enviando um e-mail de confirmação.
+        setSubmitMessage('Thanks for subscribing! Keep an eye on your inbox.');
         setSubmitSuccess(true);
         setEmail(''); 
       }
@@ -101,7 +98,7 @@ const Footer: React.FC = () => {
             <div className="flex space-x-4">
               <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram"><Instagram size={22} /></a>
               <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud"><Music2 size={22} /></a>
-              <a href="YOUR_YOUTUBE_LINK_HERE" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube"><Youtube size={22} /></a> {/* <<< ATUALIZE O LINK DO YOUTUBE */}
+              <a href="https://www.youtube.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube"><Youtube size={22} /></a> {/* <<< COLOQUE SEU LINK DO YOUTUBE AQUI */}
               <a href="https://facebook.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook"><FacebookIcon size={22} /></a>
               <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp"><MessageCircle size={22} /></a>
             </div>
@@ -152,7 +149,7 @@ const Footer: React.FC = () => {
               </div>
               <button 
                 type="submit" 
-                className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed" // .btn-primary usará o novo hover
+                className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
                 <Send size={16} />
@@ -160,7 +157,7 @@ const Footer: React.FC = () => {
               </button>
             </form>
             {submitMessage && (
-              <p className={`mt-3 text-sm ${submitSuccess ? 'text-green-400' : 'text-red-400'}`}> {/* Cores de feedback mais claras */}
+              <p className={`mt-3 text-sm ${submitSuccess ? 'text-green-400' : 'text-red-400'}`}>
                 {submitMessage}
               </p>
             )}
@@ -176,4 +173,3 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
-
