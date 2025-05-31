@@ -51,21 +51,20 @@ const Footer: React.FC = () => {
       // Insere o e-mail na tabela 'subscribers' do Supabase
       const { error } = await supabase
         .from('subscribers')
-        .insert({ email: email, subscribed_at: new Date().toISOString() }); // Adicionando is_confirmed: false se quiser um fluxo de double opt-in
+        .insert({ email: email, subscribed_at: new Date().toISOString() }); 
 
       if (error) {
         console.error('Supabase subscription error:', error);
-        // Verifica se o erro é de e-mail duplicado (código 23505 para unique constraint violation)
         if (error.code === '23505') {
           setSubmitMessage('This email is already subscribed!');
-          setSubmitSuccess(true); // Considerar como "sucesso" no sentido de que o objetivo foi alcançado
+          setSubmitSuccess(true); 
         } else {
-          throw error; // Re-lança outros erros
+          throw error; 
         }
       } else {
         setSubmitMessage('Thanks for subscribing! Please check your email to confirm (if required).');
         setSubmitSuccess(true);
-        setEmail(''); // Limpa o campo após sucesso
+        setEmail(''); 
       }
     } catch (err: any) {
       console.error('Subscription submission error:', err);
@@ -81,7 +80,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           {/* Logo and about */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1"> {/* Mantém col-span-1 para LG */}
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
@@ -110,10 +109,10 @@ const Footer: React.FC = () => {
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="SoundCloud"
               >
-                <Music2 size={22} /> {/* Ícone para SoundCloud */}
+                <Music2 size={22} />
               </a>
               <a 
-                href="https://www.youtube.com/@djzeneyer"  // <<< COLOQUE SEU LINK CORRETO DO YOUTUBE AQUI
+                href="https://www.youtube.com/@djzeneyer" // <<< COLOQUE SEU LINK CORRETO DO YOUTUBE AQUI
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-white/70 hover:text-primary transition-colors"
@@ -137,13 +136,13 @@ const Footer: React.FC = () => {
                 className="text-white/70 hover:text-primary transition-colors"
                 aria-label="WhatsApp"
               >
-                <MessageCircle size={22} /> {/* Ou um SVG de WhatsApp mais específico */}
+                <MessageCircle size={22} />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="lg:ml-auto"> {/* Alinha à direita em telas maiores */}
+          {/* Quick Links - Removido lg:ml-auto */}
+          <div> 
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2.5">
               <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">Home</Link></li>
@@ -154,19 +153,18 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Legal / Sugestões */}
-          <div className="lg:ml-auto"> {/* Alinha à direita em telas maiores */}
+          {/* Discover More (antigo Legal) - Removido lg:ml-auto */}
+          <div> 
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Discover More</h3>
             <ul className="space-y-2.5">
               <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">Music Philosophy</Link></li>
               <li><Link to="/press-kit" className="text-white/70 hover:text-primary transition-colors">Press Kit / Booking</Link></li>
               <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">Support the Artist</a></li>
-              {/* Adicione mais links relevantes aqui */}
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div className="md:col-span-2 lg:col-span-1"> {/* Ajuste de coluna para melhor layout */}
+          {/* Newsletter - Removido md:col-span-2 para um layout 2x2 em MD, mantido lg:col-span-1 */}
+          <div className="lg:col-span-1"> 
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Join the Newsletter</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
               Get exclusive updates, new releases, and VIP event access directly to your inbox.
