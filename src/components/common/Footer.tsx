@@ -35,45 +35,54 @@ const Footer: React.FC = () => {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[Footer] handleSubscribe: Iniciado.');
     setIsSubmitting(true);
     setSubmitMessage(null);
     setSubmitSuccess(null);
 
     if (!email) {
+      console.log('[Footer] handleSubscribe: E-mail vazio.');
       setSubmitMessage('Please enter a valid email address.');
       setSubmitSuccess(false);
       setIsSubmitting(false);
       return;
     }
 
+    console.log('[Footer] handleSubscribe: Tentando inscrever e-mail:', email);
     try {
-      const { data, error } = await supabase
+      const payload = { email: email, subscribed_at: new Date().toISOString() };
+      console.log('[Footer] handleSubscribe: Payload para Supabase:', payload);
+
+      // Chamada de insert simplificada, sem .select() explícito
+      const { error } = await supabase
         .from('subscribers')
-        .insert([{ 
-            email: email, 
-        }])
-        .select(); 
+        .insert([payload]); 
+
+      console.log('[Footer] handleSubscribe: Resposta do Supabase - error:', error);
 
       if (error) {
-        console.error('Supabase subscription error:', error);
-        if (error.code === '23505') { 
+        console.error('[Footer] Supabase subscription error object:', JSON.stringify(error, null, 2));
+        if (error.code === '23505') { // Código para violação de constraint UNIQUE (e-mail já existe)
           setSubmitMessage('This email is already subscribed. Thank you!');
           setSubmitSuccess(true); 
         } else {
-          setSubmitMessage(`Error: ${error.message}`);
+          // Se o erro for de RLS (como 42501), ele será capturado aqui
+          setSubmitMessage(`Error: ${error.message} (Code: ${error.code})`);
           setSubmitSuccess(false);
         }
       } else {
-        console.log('Subscription successful:', data);
+        // Se não houve erro, consideramos a inserção bem-sucedida
+        console.log('[Footer] Subscription insert attempted successfully (no client-side error).');
         setSubmitMessage('Thanks for subscribing! Keep an eye on your inbox.');
         setSubmitSuccess(true);
         setEmail(''); 
       }
-    } catch (err: any) {
-      console.error('Unexpected subscription submission error:', err);
-      setSubmitMessage('Failed to subscribe due to an unexpected error. Please try again.');
+    } catch (err: any) { 
+      console.error('[Footer] handleSubscribe: ERRO INESPERADO no bloco try/catch:', err);
+      setSubmitMessage(err.message || 'Failed to subscribe due to an unexpected error. Please try again.');
       setSubmitSuccess(false);
     } finally {
+      console.log('[Footer] handleSubscribe: Bloco finally executado.');
       setIsSubmitting(false);
     }
   };
@@ -98,7 +107,7 @@ const Footer: React.FC = () => {
             <div className="flex space-x-4">
               <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram"><Instagram size={22} /></a>
               <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud"><Music2 size={22} /></a>
-              <a href="https://www.youtube.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube"><Youtube size={22} /></a> {/* <<< COLOQUE SEU LINK DO YOUTUBE AQUI */}
+              <a href="YOUR_YOUTUBE_CHANNEL_LINK_HERE" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube"><Youtube size={22} /></a> {/* <<< ATUALIZE ESTE LINK DO YOUTUBE PARA O SEU CANAL */}
               <a href="https://facebook.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook"><FacebookIcon size={22} /></a>
               <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp"><MessageCircle size={22} /></a>
             </div>
