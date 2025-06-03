@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
-import { supabase } from '../../utils/supabaseClient'; // <<< VERIFIQUE ESTE CAMINHO!
 
 // Ícone do Facebook (SVG embutido)
 const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 20, className = "" }) => (
