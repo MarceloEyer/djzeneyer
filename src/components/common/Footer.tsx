@@ -3,6 +3,17 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
 
+// Certifique-se de que window.wpData está acessível globalmente
+declare global {
+  interface Window {
+    wpData: {
+      siteUrl: string;
+      restUrl: string; // Ex: https://djzeneyer.com/wp-json/
+      nonce: string;
+    };
+  }
+}
+
 // Ícone do Facebook (SVG embutido)
 const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 20, className = "" }) => (
   <svg
@@ -30,7 +41,7 @@ const Footer: React.FC = () => {
 
   const whatsappNumber = "+5521987413091";
   const whatsappMessage = "Hello DJ Zen Eyer!";
-  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = `https://wa.me/<span class="math-inline">\{whatsappNumber\.replace\(/\\D/g, ''\)\}?text\=</span>{encodeURIComponent(whatsappMessage)}`;
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,34 +60,29 @@ const Footer: React.FC = () => {
 
     console.log('[Footer] handleSubscribe: Tentando inscrever e-mail:', email);
     try {
-      const payload = { email: email, subscribed_at: new Date().toISOString() };
-      console.log('[Footer] handleSubscribe: Payload para Supabase:', payload);
+      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Não precisa de nonce aqui, pois o endpoint está definido como permission_callback' => '__return_true'
+        },
+        body: JSON.stringify({ email: email }),
+      });
 
-      // Chamada de insert simplificada, sem .select() explícito
-      const { error } = await supabase
-        .from('subscribers')
-        .insert([payload]); 
+      const data = await response.json();
+      console.log('[Footer] handleSubscribe: Resposta do WP API:', data, 'status:', response.status);
 
-      console.log('[Footer] handleSubscribe: Resposta do Supabase - error:', error);
-
-      if (error) {
-        console.error('[Footer] Supabase subscription error object:', JSON.stringify(error, null, 2));
-        if (error.code === '23505') { // Código para violação de constraint UNIQUE (e-mail já existe)
-          setSubmitMessage('This email is already subscribed. Thank you!');
-          setSubmitSuccess(true); 
-        } else {
-          // Se o erro for de RLS (como 42501), ele será capturado aqui
-          setSubmitMessage(`Error: ${error.message} (Code: ${error.code})`);
-          setSubmitSuccess(false);
-        }
-      } else {
-        // Se não houve erro, consideramos a inserção bem-sucedida
-        console.log('[Footer] Subscription insert attempted successfully (no client-side error).');
-        setSubmitMessage('Thanks for subscribing! Keep an eye on your inbox.');
+      if (response.ok) { // Status 2xx
+        setSubmitMessage(data.message || 'Thanks for subscribing! Keep an eye on your inbox.');
         setSubmitSuccess(true);
-        setEmail(''); 
+        setEmail('');
+      } else { // Erros (status 4xx, 5xx)
+        const errorMessage = data.message || 'Failed to subscribe. Please try again.';
+        setSubmitMessage(errorMessage);
+        setSubmitSuccess(false);
+        console.error('[Footer] WP API subscription error:', data);
       }
-    } catch (err: any) { 
+    } catch (err: any) {
       console.error('[Footer] handleSubscribe: ERRO INESPERADO no bloco try/catch:', err);
       setSubmitMessage(err.message || 'Failed to subscribe due to an unexpected error. Please try again.');
       setSubmitSuccess(false);
@@ -113,7 +119,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Quick Links */}
-          <div> 
+          <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2.5">
               <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">Home</Link></li>
@@ -125,7 +131,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Discover More */}
-          <div> 
+          <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Discover More</h3>
             <ul className="space-y-2.5">
               <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">Music Philosophy</Link></li>
@@ -135,28 +141,28 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Newsletter */}
-          <div className="lg:col-span-1"> 
+          <div className="lg:col-span-1">
             <h3 className="text-lg font-display font-semibold mb-4 text-white">Join the Newsletter</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
               Get exclusive updates, new releases, and VIP event access directly to your inbox.
             </p>
-            
+
             <form onSubmit={handleSubscribe} className="space-y-3">
               <div>
                 <label htmlFor="footer-email-subscription" className="sr-only">Email address</label>
-                <input 
+                <input
                   id="footer-email-subscription"
-                  type="email" 
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address" 
+                  placeholder="Your email address"
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                   required
                   disabled={isSubmitting}
                 />
               </div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
