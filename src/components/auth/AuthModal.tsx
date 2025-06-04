@@ -7,7 +7,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'login' | 'register';
-  onToggleMode: () => void;
+  onToggleMode: () => void; // Manter para caso queira alternar modos internamente, mas o botão de registro vai redirecionar
 }
 
 // Certifique-se de que window.wpData está acessível globalmente
@@ -54,29 +54,33 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
     e.preventDefault();
     setLocalError(null);
 
+    // Se o modo for registro, redirecionamos para a página padrão do WP.
+    // O formulário de registro dentro do modal não será mais usado para o registro direto via API.
+    if (mode === 'register') {
+      handleRegisterRedirect(); // Redireciona em vez de tentar a API
+      return; // Sai da função para não tentar o registro via API
+    }
+
     try {
       if (mode === 'login') {
         await login(email, password);
-      } else {
-        await register(name, email, password);
-      }
+      } 
+      // A lógica de 'else { await register(name, email, password); }'
+      // foi movida para o redirecionamento acima para o modo 'register'.
     } catch (err: any) {
       console.error("[AuthModal] Erro no handleSubmit:", err);
-      // Aqui, o erro pode vir com HTML. Usamos textContent para extrair o texto puro
-      // ou diretamente o erro.message se ele já for texto.
-      // Se o erro.message já contiver HTML, precisamos usar dangerouslySetInnerHTML.
-      // A mensagem de erro do WordPress (como "senha incorreta") vem com HTML.
       setLocalError(err.message || 'Ocorreu um erro inesperado.');
     }
   };
 
-  // --- FUNÇÃO ATUALIZADA PARA ESQUECI A SENHA ---
   const handleForgotPassword = () => {
-    // Redireciona para a página padrão de recuperação de senha do WordPress
-    // Isso é mais robusto do que a página do WooCommerce, que pode ter problemas de roteamento em setups headless.
     window.location.href = `${window.wpData.siteUrl}/wp-login.php?action=lostpassword`;
   };
-  // --- FIM DA FUNÇÃO ATUALIZADA ---
+
+  // Redireciona para a página padrão de registro do WP
+  const handleRegisterRedirect = () => {
+    window.location.href = `${window.wpData.siteUrl}/wp-login.php?action=register`;
+  };
 
   if (!isOpen) {
     return null;
@@ -119,71 +123,115 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
             ></div>
           )}
           
+          {/* O formulário de registro dentro do modal não será mais usado para o registro direto via API.
+              Ele será apenas um placeholder visual que redireciona. */}
           {mode === 'register' && (
-            <div>
-              <label htmlFor="auth-name" className="block text-sm font-medium text-white/80 mb-1.5">
-                Name
-              </label>
-              <input
-                id="auth-name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
-                placeholder="Your name"
-                required
-                autoComplete="name"
-                disabled={loading}
-              />
-            </div>
+            <>
+              <p className="text-white/70 text-center">Para criar sua conta, você será redirecionado para a página de registro segura do WordPress.</p>
+              {/* Campos de email, password, name podem ser removidos ou mantidos desabilitados
+                  se você quiser que o usuário veja os campos antes de redirecionar.
+                  Por simplicidade, vamos manter os campos, mas a submissão redireciona. */}
+              <div>
+                <label htmlFor="auth-name" className="block text-sm font-medium text-white/80 mb-1.5">
+                  Nome
+                </label>
+                <input
+                  id="auth-name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
+                  placeholder="Seu nome"
+                  required
+                  autoComplete="name"
+                  disabled={loading} // Desabilitado se estiver carregando
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="auth-email" className="block text-sm font-medium text-white/80 mb-1.5">
+                  Email
+                </label>
+                <input
+                  id="auth-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
+                  placeholder="seu@email.com"
+                  required
+                  autoComplete="email"
+                  disabled={loading}
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="auth-password" className="block text-sm font-medium text-white/80 mb-1.5">
+                  Senha
+                </label>
+                <input
+                  id="auth-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
+                  placeholder="••••••••"
+                  required
+                  minLength={7} // ALTERADO PARA 7 DÍGITOS
+                  autoComplete={"new-password"}
+                  disabled={loading}
+                />
+              </div>
+            </>
           )}
           
-          <div>
-            <label htmlFor="auth-email" className="block text-sm font-medium text-white/80 mb-1.5">
-              Email
-            </label>
-            <input
-              id="auth-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
-              placeholder="your@email.com"
-              required
-              autoComplete="email"
-              disabled={loading}
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="auth-password" className="block text-sm font-medium text-white/80 mb-1.5">
-              Password
-            </label>
-            <input
-              id="auth-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
-              placeholder="••••••••"
-              required
-              minLength={6}
-              autoComplete={mode === 'login' ? "current-password" : "new-password"}
-              disabled={loading}
-            />
-          </div>
-          
           {mode === 'login' && (
-            <div className="text-right -mt-2 mb-1">
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-primary/80 hover:text-primary hover:underline focus:outline-none disabled:opacity-50"
-                disabled={loading}
-              >
-                Forgot password?
-              </button>
-            </div>
+            <>
+              <div>
+                <label htmlFor="auth-email" className="block text-sm font-medium text-white/80 mb-1.5">
+                  Email
+                </label>
+                <input
+                  id="auth-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
+                  placeholder="seu@email.com"
+                  required
+                  autoComplete="email"
+                  disabled={loading}
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="auth-password" className="block text-sm font-medium text-white/80 mb-1.5">
+                  Senha
+                </label>
+                <input
+                  id="auth-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
+                  placeholder="••••••••"
+                  required
+                  minLength={7} // ALTERADO PARA 7 DÍGITOS
+                  autoComplete={"current-password"}
+                  disabled={loading}
+                />
+              </div>
+              <div className="text-right -mt-2 mb-1">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="text-sm text-primary/80 hover:text-primary hover:underline focus:outline-none disabled:opacity-50"
+                  disabled={loading}
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
+            </>
           )}
 
           <button
@@ -191,32 +239,32 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
             disabled={loading}
             className="w-full btn btn-primary py-3 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {loading ? 'Loading...' : mode === 'login' ? 'Login' : 'Create Account'}
+            {loading ? 'Carregando...' : mode === 'login' ? 'Login' : 'Criar Conta'}
           </button>
           
           <div className="text-center text-sm text-white/70">
             {mode === 'login' ? (
               <>
-                Don't have an account?{' '}
+                Não tem uma conta?{' '}
                 <button
                   type="button"
-                  onClick={!loading ? onToggleMode : undefined}
+                  onClick={!loading ? handleRegisterRedirect : undefined} // Botão "Sign up" agora redireciona
                   className="font-semibold text-primary hover:underline focus:outline-none disabled:opacity-50"
                   disabled={loading}
                 >
-                  Sign up
+                  Cadastre-se
                 </button>
               </>
             ) : (
               <>
-                Already have an account?{' '}
+                Já tem uma conta?{' '}
                 <button
                   type="button"
-                  onClick={!loading ? onToggleMode : undefined}
+                  onClick={!loading ? onToggleMode : undefined} // Este botão ainda alterna para o modo login
                   className="font-semibold text-primary hover:underline focus:outline-none disabled:opacity-50"
                   disabled={loading}
                 >
-                  Log in
+                  Login
                 </button>
               </>
             )}
