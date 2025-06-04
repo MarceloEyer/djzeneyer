@@ -70,14 +70,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
     }
   };
 
-  // --- NOVA FUNÇÃO PARA ESQUECI A SENHA ---
+  // --- FUNÇÃO ATUALIZADA PARA ESQUECI A SENHA ---
   const handleForgotPassword = () => {
-    // Redireciona para a página padrão de recuperação de senha do WooCommerce/WordPress
-    // A URL é geralmente /my-account/lost-password/ se o WooCommerce estiver configurado
-    // Ou /wp-login.php?action=lostpassword para o WordPress puro
-    window.location.href = `${window.wpData.siteUrl}/my-account/lost-password/`;
+    // Redireciona para a página padrão de recuperação de senha do WordPress
+    // Isso é mais robusto do que a página do WooCommerce, que pode ter problemas de roteamento em setups headless.
+    window.location.href = `${window.wpData.siteUrl}/wp-login.php?action=lostpassword`;
   };
-  // --- FIM DA NOVA FUNÇÃO ---
+  // --- FIM DA FUNÇÃO ATUALIZADA ---
 
   if (!isOpen) {
     return null;
@@ -116,8 +115,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
             <div 
               className="mb-4 py-2.5 px-4 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400" 
               role="alert"
-              // Usamos dangerouslySetInnerHTML para renderizar o HTML da mensagem de erro do WordPress
-              // Isso é seguro aqui porque a fonte da mensagem é a API do WordPress.
               dangerouslySetInnerHTML={{ __html: localError }}
             ></div>
           )}
@@ -180,7 +177,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
             <div className="text-right -mt-2 mb-1">
               <button
                 type="button"
-                onClick={handleForgotPassword} // AGORA ESTÁ ATIVO!
+                onClick={handleForgotPassword}
                 className="text-sm text-primary/80 hover:text-primary hover:underline focus:outline-none disabled:opacity-50"
                 disabled={loading}
               >
