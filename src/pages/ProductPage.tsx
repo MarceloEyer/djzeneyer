@@ -21,7 +21,7 @@ interface Product {
   description: string;
   price: string;
   regular_price: string;
-  sale_price: string;
+  sale_price: boolean; // Corrigido para boolean
   on_sale: boolean;
   images: { src: string; alt: string; }[];
   // ... outras propriedades que você possa precisar
