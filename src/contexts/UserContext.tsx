@@ -27,8 +27,7 @@ interface UserContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  // Removendo loginWithGoogle e outros específicos do Supabase
+  register: (name: string, email: string, password: string) => Promise<void>; // Manter a assinatura, mas a implementação pode ser um no-op ou throw error
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -101,43 +100,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // A função register no UserContext agora não será mais chamada diretamente pelo AuthModal
+  // porque o AuthModal redireciona para a página de registro padrão do WP.
+  // Mantemos a assinatura aqui para compatibilidade de tipo, mas a implementação pode ser um no-op.
   const register = async (nameParam: string, emailParam: string, passwordParam: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Endpoint para registro de novo usuário. Requer "Qualquer um pode se registrar" ativo no WP.
-      const response = await fetch(`${window.wpData.restUrl}wp/v2/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Não precisa de Authorization Bearer para registrar se "Qualquer um pode se registrar" estiver ativo
-          // E o nonce não é tipicamente usado para POST /users para registro aberto.
-        },
-        body: JSON.stringify({
-            username: emailParam, // O WP REST API usa 'username' para o login do usuário
-            email: emailParam,
-            password: passwordParam,
-            name: nameParam // Para o nome completo do usuário
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.id) {
-        console.log('Cadastro bem-sucedido!', data);
-        // Após o registro, tente logar o usuário automaticamente
-        await login(emailParam, passwordParam);
-      } else {
-        const errorMessage = data.message?.rendered || data.message || "Erro no registro.";
-        setError(errorMessage);
-        throw new Error(errorMessage);
-      }
-    } catch (err: any) {
-      console.error("[UserContext] Erro no registro:", err);
-      setError(err.message || 'Erro ao tentar se cadastrar.');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+    console.warn("[UserContext] A função de registro da API REST não é mais usada diretamente. O modal de autenticação agora redireciona para a página de registro padrão do WordPress.");
+    // Você pode lançar um erro ou apenas retornar, dependendo de como quer lidar com chamadas inesperadas.
+    // throw new Error("A criação de conta é feita via redirecionamento para a página padrão do WordPress.");
+    return Promise.resolve(); // Retorna uma Promise resolvida para não quebrar o fluxo
   };
 
   const logout = () => {
@@ -146,9 +116,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('wp_user_data');
     console.log('Usuário deslogado.');
   };
-
-  // Removendo funções específicas do Supabase que não se aplicam mais
-  // loginWithGoogle, updateProfileData, earnXP, unlockAchievement, acquireBadge
 
   const value = {
     user,
