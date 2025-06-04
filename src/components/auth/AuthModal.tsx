@@ -74,6 +74,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
   };
 
   const handleForgotPassword = () => {
+    // Redireciona para a página padrão de recuperação de senha do WordPress
     window.location.href = `${window.wpData.siteUrl}/wp-login.php?action=lostpassword`;
   };
 
@@ -177,7 +178,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                   placeholder="••••••••"
                   required
-                  minLength={7} // ALTERADO PARA 7 DÍGITOS
+                  minLength={3} // ALTERADO PARA 3 DÍGITOS
                   autoComplete={"new-password"}
                   disabled={loading}
                 />
@@ -216,7 +217,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                   placeholder="••••••••"
                   required
-                  minLength={7} // ALTERADO PARA 7 DÍGITOS
+                  minLength={3} // ALTERADO PARA 3 DÍGITOS
                   autoComplete={"current-password"}
                   disabled={loading}
                 />
