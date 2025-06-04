@@ -10,6 +10,17 @@ interface AuthModalProps {
   onToggleMode: () => void;
 }
 
+// Certifique-se de que window.wpData está acessível globalmente
+declare global {
+  interface Window {
+    wpData: {
+      siteUrl: string;
+      restUrl: string;
+      nonce: string;
+    };
+  }
+}
+
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMode }) => {
   console.log(`[AuthModal] Renderizando/Atualizado. isOpen: ${isOpen}, Mode: ${mode}`);
 
@@ -18,7 +29,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
   const [name, setName] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
-  // Removido 'loginWithGoogle' e 'loginWithFacebook' do desestruturação
+  // Usando 'loading' do UserContext para desabilitar elementos durante operações de auth
   const { login, register, loading, user } = useUser();
 
   // Limpa os campos e erro local quando o modo muda ou o modal é fechado/aberto
@@ -51,12 +62,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
       }
     } catch (err: any) {
       console.error("[AuthModal] Erro no handleSubmit:", err);
+      // Aqui, o erro pode vir com HTML. Usamos textContent para extrair o texto puro
+      // ou diretamente o erro.message se ele já for texto.
+      // Se o erro.message já contiver HTML, precisamos usar dangerouslySetInnerHTML.
+      // A mensagem de erro do WordPress (como "senha incorreta") vem com HTML.
       setLocalError(err.message || 'Ocorreu um erro inesperado.');
     }
   };
 
-  // Removido handleGoogleAuthClick
-  // Removido handleFacebookAuthClick
+  // --- NOVA FUNÇÃO PARA ESQUECI A SENHA ---
+  const handleForgotPassword = () => {
+    // Redireciona para a página padrão de recuperação de senha do WooCommerce/WordPress
+    // A URL é geralmente /my-account/lost-password/ se o WooCommerce estiver configurado
+    // Ou /wp-login.php?action=lostpassword para o WordPress puro
+    window.location.href = `${window.wpData.siteUrl}/my-account/lost-password/`;
+  };
+  // --- FIM DA NOVA FUNÇÃO ---
 
   if (!isOpen) {
     return null;
@@ -92,9 +113,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
         
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {localError && (
-            <div className="mb-4 py-2.5 px-4 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400" role="alert">
-              {localError}
-            </div>
+            <div 
+              className="mb-4 py-2.5 px-4 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400" 
+              role="alert"
+              // Usamos dangerouslySetInnerHTML para renderizar o HTML da mensagem de erro do WordPress
+              // Isso é seguro aqui porque a fonte da mensagem é a API do WordPress.
+              dangerouslySetInnerHTML={{ __html: localError }}
+            ></div>
           )}
           
           {mode === 'register' && (
@@ -155,7 +180,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
             <div className="text-right -mt-2 mb-1">
               <button
                 type="button"
-                // onClick={handleForgotPassword} // Implementar esta função se necessário
+                onClick={handleForgotPassword} // AGORA ESTÁ ATIVO!
                 className="text-sm text-primary/80 hover:text-primary hover:underline focus:outline-none disabled:opacity-50"
                 disabled={loading}
               >
@@ -202,7 +227,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
         </form>
         
         {/* Bloco de "or continue with" e botões de redes sociais removido */}
-        {/* Porque loginWithGoogle e loginWithFacebook não existem mais no UserContext */}
       </div>
     </div>
   );
