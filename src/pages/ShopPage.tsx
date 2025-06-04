@@ -21,7 +21,7 @@ interface Product {
   slug: string; // Para usar na URL do produto
   price: string;
   regular_price: string;
-  sale_price: string;
+  sale_price: boolean; // Corrigido para boolean
   on_sale: boolean;
   images: { src: string; alt: string; }[];
   short_description: string; // Descrição curta para listagem
@@ -55,6 +55,35 @@ const ShopPage: React.FC = () => {
 
     fetchProducts();
   }, []);
+
+  // Função para adicionar ao carrinho (você já tem a base disso)
+  const addToCart = async (productId: number, quantity: number = 1) => {
+    try {
+        const response = await fetch(`${window.wpData.restUrl}wc/store/v1/cart/add-item`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-WP-Nonce': window.wpData.nonce,
+            },
+            body: JSON.stringify({
+                id: productId,
+                quantity: quantity
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Erro ao adicionar ao carrinho: ${response.status}`);
+        }
+
+        const cartData = await response.json();
+        alert("Produto adicionado ao carrinho! Redirecionando para o checkout...");
+        window.location.href = `${window.wpData.siteUrl}/checkout/`; // Redireciona para o checkout
+    } catch (err: any) {
+        console.error("Erro ao adicionar ao carrinho:", err);
+        alert(`Erro ao adicionar ao carrinho: ${err.message}`);
+    }
+  };
 
   if (loading) {
     return (
@@ -119,7 +148,12 @@ const ShopPage: React.FC = () => {
                   </p>
                 </div>
               </Link>
-              {/* Botão Adicionar ao Carrinho viria aqui, você o adicionará depois */}
+              <button
+                onClick={() => addToCart(product.id)}
+                className="w-full btn btn-primary py-2 mt-2"
+              >
+                Adicionar ao Carrinho
+              </button>
             </div>
           ))
         )}
