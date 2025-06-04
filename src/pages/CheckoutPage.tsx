@@ -15,16 +15,11 @@ declare global {
 
 const CheckoutPage: React.FC = () => {
   useEffect(() => {
-    // A página de checkout do WordPress é renderizada pelo seu page-react-app.php
+    // A página de checkout do WordPress é renderizada pelo seu page-react-app.php (agora woocommerce.php)
     // O JavaScript do WooCommerce vai procurar por um div com id="woocommerce" ou classes específicas
     // e injetar o formulário de checkout lá.
     // Não precisamos de um redirecionamento complexo aqui, apenas garantimos que o React renderize
     // um container onde o WP/WooCommerce pode atuar.
-
-    // Para garantir que o WooCommerce execute seus scripts de checkout,
-    // é comum que ele procure por um container ou que seus scripts sejam carregados.
-    // O ideal é que o page-react-app.php já inclua wp_footer() e wp_head() para isso.
-    // Aqui no React, apenas garantimos a estrutura básica e podemos adicionar um loader.
 
     // Se a página for acessada diretamente, pode levar um tempo para o WooCommerce carregar.
     // Você pode adicionar um loader ou uma mensagem.
