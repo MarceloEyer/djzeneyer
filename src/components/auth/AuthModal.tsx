@@ -7,7 +7,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'login' | 'register';
-  onToggleMode: () => void; // Manter para caso queira alternar modos internamente, mas o botão de registro vai redirecionar
+  onToggleMode: () => void; // Manter para caso queira alternar modos internamente
 }
 
 // Certifique-se de que window.wpData está acessível globalmente
@@ -15,8 +15,8 @@ declare global {
   interface Window {
     wpData: {
       siteUrl: string;
-      restUrl: string;
-      nonce: string;
+      restUrl: string; // Ex: https://djzeneyer.com/wp-json/
+      nonce: string; // Nonce para requisições WP REST API (útil para algumas, mas JWT para auth)
     };
   }
 }
@@ -54,19 +54,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
     e.preventDefault();
     setLocalError(null);
 
-    // Se o modo for registro, redirecionamos para a página padrão do WP.
-    // O formulário de registro dentro do modal não será mais usado para o registro direto via API.
-    if (mode === 'register') {
-      handleRegisterRedirect(); // Redireciona em vez de tentar a API
-      return; // Sai da função para não tentar o registro via API
-    }
-
     try {
       if (mode === 'login') {
         await login(email, password);
-      } 
-      // A lógica de 'else { await register(name, email, password); }'
-      // foi movida para o redirecionamento acima para o modo 'register'.
+      } else { // Agora o modo register TENTA A API novamente
+        await register(name, email, password);
+      }
     } catch (err: any) {
       console.error("[AuthModal] Erro no handleSubmit:", err);
       // Aqui, o erro pode vir com HTML. Usamos textContent para extrair o texto puro
@@ -81,9 +74,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
     window.location.href = `${window.wpData.siteUrl}/wp-login.php?action=lostpassword`;
   };
 
-  // Redireciona para a página padrão de registro do WP
-  const handleRegisterRedirect = () => {
-    window.location.href = `${window.wpData.siteUrl}/wp-login.php?action=register`;
+  // Esta função agora será chamada apenas pelo botão de alternar modo, não pelo submit para registro.
+  const handleRegisterModeToggle = () => {
+    onToggleMode(); // Volta para o comportamento original de alternar modo
   };
 
   if (!isOpen) {
@@ -123,14 +116,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
             <div 
               className="mb-4 py-2.5 px-4 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400" 
               role="alert"
-              // AQUI ESTÁ A CORREÇÃO: Usamos dangerouslySetInnerHTML para renderizar o HTML
               dangerouslySetInnerHTML={{ __html: localError }}
             ></div>
           )}
           
           {mode === 'register' && (
             <>
-              <p className="text-white/70 text-center">Para criar sua conta, você será redirecionado para a página de registro segura do WordPress.</p>
+              {/* Removido o parágrafo de redirecionamento, pois agora tenta API */}
               <div>
                 <label htmlFor="auth-name" className="block text-sm font-medium text-white/80 mb-1.5">
                   Nome
@@ -177,7 +169,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                   placeholder="••••••••"
                   required
-                  minLength={3} // ALTERADO PARA 3 DÍGITOS
+                  minLength={3}
                   autoComplete={"new-password"}
                   disabled={loading}
                 />
@@ -216,7 +208,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                   placeholder="••••••••"
                   required
-                  minLength={3} // ALTERADO PARA 3 DÍGITOS
+                  minLength={3}
                   autoComplete={"current-password"}
                   disabled={loading}
                 />
@@ -248,7 +240,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                 Não tem uma conta?{' '}
                 <button
                   type="button"
-                  onClick={!loading ? handleRegisterRedirect : undefined} // Botão "Sign up" agora redireciona
+                  onClick={!loading ? handleRegisterModeToggle : undefined} // Botão "Cadastre-se" AGORA CHAMA handleRegisterModeToggle
                   className="font-semibold text-primary hover:underline focus:outline-none disabled:opacity-50"
                   disabled={loading}
                 >
@@ -260,7 +252,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                 Já tem uma conta?{' '}
                 <button
                   type="button"
-                  onClick={!loading ? onToggleMode : undefined} // Este botão ainda alterna para o modo login
+                  onClick={!loading ? onToggleMode : undefined} // Este botão alterna para o modo login
                   className="font-semibold text-primary hover:underline focus:outline-none disabled:opacity-50"
                   disabled={loading}
                 >
