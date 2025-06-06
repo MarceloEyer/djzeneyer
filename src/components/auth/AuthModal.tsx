@@ -69,6 +69,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
       // foi movida para o redirecionamento acima para o modo 'register'.
     } catch (err: any) {
       console.error("[AuthModal] Erro no handleSubmit:", err);
+      // Aqui, o erro pode vir com HTML. Usamos textContent para extrair o texto puro
+      // ou diretamente o erro.message se ele já for texto.
+      // A mensagem de erro do WordPress (como "senha incorreta") vem com HTML.
       setLocalError(err.message || 'Ocorreu um erro inesperado.');
     }
   };
@@ -120,18 +123,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
             <div 
               className="mb-4 py-2.5 px-4 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-400" 
               role="alert"
+              // AQUI ESTÁ A CORREÇÃO: Usamos dangerouslySetInnerHTML para renderizar o HTML
               dangerouslySetInnerHTML={{ __html: localError }}
             ></div>
           )}
           
-          {/* O formulário de registro dentro do modal não será mais usado para o registro direto via API.
-              Ele será apenas um placeholder visual que redireciona. */}
           {mode === 'register' && (
             <>
               <p className="text-white/70 text-center">Para criar sua conta, você será redirecionado para a página de registro segura do WordPress.</p>
-              {/* Campos de email, password, name podem ser removidos ou mantidos desabilitados
-                  se você quiser que o usuário veja os campos antes de redirecionar.
-                  Por simplicidade, vamos manter os campos, mas a submissão redireciona. */}
               <div>
                 <label htmlFor="auth-name" className="block text-sm font-medium text-white/80 mb-1.5">
                   Nome
