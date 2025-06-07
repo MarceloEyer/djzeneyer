@@ -27,7 +27,8 @@ interface UserContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<void>; // Manter a assinatura, mas a implementação pode ser um no-op ou throw error
+  register: (name: string, email: string, password: string) => Promise<void>; 
+  loginWithGoogle: () => Promise<void>; // Adicionado de volta para o Google Login
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -46,40 +47,58 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const parsedUser = JSON.parse(storedUserData);
         setUser({ ...parsedUser, isLoggedIn: true, token: storedToken });
       } catch (e) {
+lz-user-context-final-token-validation-error-fix
         console.error("Falha ao analisar dados do usuário armazenados ou token inválido", e);
         localStorage.clear(); // Limpa dados inválidos
       }
     }
   }, []);
 
-  // --- Funções de Autenticação com WordPress JWT ---
+  // --- Funções de Autenticação com Simple JWT Login ---
 
   const login = async (emailParam: string, passwordParam: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${window.wpData.restUrl}jwt-auth/v1/token`, {
+      // Endpoint de login do Simple JWT Login (geralmente /auth)
+      const response = await fetch(`${window.wpData.restUrl}simple-jwt-login/v1/auth`, { // <--- ENDPOINT CORRETO AQUI
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: emailParam, password: passwordParam }), // JWT Auth usa 'username' para email
+        body: JSON.stringify({ email: emailParam, password: passwordParam }), // Simple JWT Login usa 'email'
       });
 
       const data = await response.json();
-      if (response.ok && data.token) {
-        // Para obter o ID e o nome completo, podemos fazer uma requisição adicional
-        // ou inferir do email/nome de usuário se a API JWT não retornar tudo.
-        // O JWT Authentication plugin retorna user_email e user_display_name
+      if (response.ok && data.success && data.data?.jwt) {
+        // O Simple JWT Login retorna 'jwt' dentro de 'data'
+        const token = data.data.jwt;
+        // Para obter os dados completos do usuário, podemos precisar de um endpoint /me
+        // Por enquanto, podemos usar os dados do JWT se o plugin retorna, ou fazer uma busca adicional.
+        // O Simple JWT Login não retorna user_email/user_display_name diretamente aqui.
+        // Vamos usar o endpoint /wp/v2/users/me para obter os dados do usuário.
+        const userResponse = await fetch(`${window.wpData.restUrl}wp/v2/users/me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'X-WP-Nonce': window.wpData.nonce // Nonce pode ser necessário
+            }
+        });
+        const userData = await userResponse.json();
+
+        if (!userResponse.ok || userData.code) { // userData.code indica erro na API WP
+            setError(userData.message || "Erro ao obter dados do usuário logado.");
+            throw new Error(userData.message || "Erro ao obter dados do usuário logado.");
+        }
+
         const loggedInUser: WordPressUser = {
-          id: data.data?.user?.id || 0, // Pode não vir no retorno direto do JWT, precisaria de /wp/v2/users/me
-          email: data.user_email,
-          name: data.user_display_name,
+          id: userData.id,
+          email: userData.email,
+          name: userData.name || userData.slug, // Usa name ou slug como fallback
           isLoggedIn: true,
-          token: data.token,
+          token: token,
         };
         setUser(loggedInUser);
-        localStorage.setItem('jwt_token', data.token);
+        localStorage.setItem('jwt_token', token);
         localStorage.setItem('wp_user_data', JSON.stringify({
             id: loggedInUser.id,
             email: loggedInUser.email,
@@ -87,7 +106,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }));
         console.log('Login bem-sucedido!', loggedInUser);
       } else {
-        const errorMessage = data.message || "Credenciais inválidas.";
+        const errorMessage = data.data?.message || data.message || "Credenciais inválidas.";
         setError(errorMessage);
         throw new Error(errorMessage);
       }
@@ -100,14 +119,45 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // A função register no UserContext agora não será mais chamada diretamente pelo AuthModal
-  // porque o AuthModal redireciona para a página de registro padrão do WP.
-  // Mantemos a assinatura aqui para compatibilidade de tipo, mas a implementação pode ser um no-op.
   const register = async (nameParam: string, emailParam: string, passwordParam: string) => {
-    console.warn("[UserContext] A função de registro da API REST não é mais usada diretamente. O modal de autenticação agora redireciona para a página de registro padrão do WordPress.");
-    // Você pode lançar um erro ou apenas retornar, dependendo de como quer lidar com chamadas inesperadas.
-    // throw new Error("A criação de conta é feita via redirecionamento para a página padrão do WordPress.");
-    return Promise.resolve(); // Retorna uma Promise resolvida para não quebrar o fluxo
+    setLoading(true);
+    setError(null);
+    try {
+      // Endpoint de registro do Simple JWT Login (geralmente /register)
+      const response = await fetch(`${window.wpData.restUrl}simple-jwt-login/v1/users/register`, { // <--- ENDPOINT CORRETO AQUI
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': window.wpData.nonce, // Nonce pode ser necessário para endpoints WP padrão, mesmo com JWT.
+        },
+        body: JSON.stringify({
+            email: emailParam,
+            password: passwordParam,
+            user_login: emailParam, // O Simple JWT Login espera user_login ou email como username
+            display_name: nameParam,
+            first_name: nameParam // Para facilitar a exibição do nome
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) { // Simple JWT Login retorna 'success: true'
+        console.log('Cadastro bem-sucedido!', data);
+        // Após o registro, se a opção "Initialize force login after register" estiver ativa no plugin,
+        // o usuário será logado automaticamente.
+        // Caso contrário, podemos tentar logar manualmente aqui.
+        await login(emailParam, passwordParam);
+      } else {
+        const errorMessage = data.data?.message || data.message || "Erro no registro.";
+        setError(errorMessage);
+        throw new Error(errorMessage);
+      }
+    } catch (err: any) {
+      console.error("[UserContext] Erro no registro:", err);
+      setError(err.message || 'Erro ao tentar se cadastrar.');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
@@ -115,6 +165,34 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('wp_user_data');
     console.log('Usuário deslogado.');
+    window.location.href = window.wpData.siteUrl; 
+  };
+
+  const loginWithGoogle = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // O Simple JWT Login, em beta, pode ter uma rota direta para isso.
+      // A documentação menciona: beta Google OAuth Integration / beta Google JWT on all endpoints
+      // Você precisaria verificar a rota exata que o plugin gera para isso.
+      // Por exemplo, pode ser: `${window.wpData.restUrl}simple-jwt-login/v1/google-auth`
+      // Ou ele pode esperar um token do Google (ID Token) que você passaria para ele.
+      // A forma mais comum com plugins de social login é redirecionar.
+
+      // Para o Simple JWT Login e Google:
+      // O jeito mais simples é redirecionar o usuário para a página de login do WP
+      // onde o botão do Google do plugin estará disponível.
+      window.location.href = `${window.wpData.siteUrl}/wp-login.php?loginSocial=google`;
+      // Ou, se o Simple JWT Login tiver uma URL específica para iniciar o OAuth Google, use-a.
+      // Ex: `${window.wpData.restUrl}simple-jwt-login/v1/auth/google` (verificar docs do plugin)
+
+    } catch (err: any) {
+      console.error("[UserContext] Erro ao iniciar login com Google:", err);
+      setError(err.message || 'Falha ao iniciar login com Google.');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const value = {
@@ -124,6 +202,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     login,
     logout,
     register,
+    loginWithGoogle,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
