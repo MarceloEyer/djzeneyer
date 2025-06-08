@@ -308,7 +308,7 @@ const HomePage: React.FC = () => {
             Ready to Join the <span className="text-primary">Zen Tribe</span>?
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10">
-            Become part of our growing community of electronic music enthusiasts. Unlock exclusive content, earn rewards, and connect with like-minded fans.
+            Become part of our growing community of brazilian zouk music enthusiasts. Unlock exclusive content, earn rewards, and connect with like-minded fans.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/tribe" className="btn btn-primary px-8 py-4">
