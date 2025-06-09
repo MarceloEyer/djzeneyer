@@ -212,11 +212,25 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         display_name: nameParam,
         first_name: nameParam 
       };
-      // Use SDK's registerUser method
-      // The SDK automatically calls the correct endpoint based on its internal configuration
-      const data = await simpleJwtLoginRef.current.registerUser(registerParams); 
+      // *** CORREÇÃO AQUI: Chamar o endpoint /users diretamente via fetch, pois o SDK's registerUser parece usar /users/register ***
+      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/users`, { // <-- Endpoint CORRIGIDO para /users
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': wpData.nonce, // Nonce may be required even for public endpoints
+        },
+        body: JSON.stringify({
+            email: emailParam,
+            password: passwordParam,
+            user_login: emailParam, 
+            display_name: nameParam,
+            first_name: nameParam 
+        }),
+        credentials: 'include' 
+      });
 
-      if (data.success) { 
+      const data = await response.json();
+      if (response.ok && data.success) { 
         console.log('Registration successful!', data);
         await login(emailParam, passwordParam); // Attempt to log in user automatically after successful registration
       } else {
