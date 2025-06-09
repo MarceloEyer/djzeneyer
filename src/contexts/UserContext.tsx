@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react'; // Added useRef
 import { SimpleJwtLogin, RegisterUserInterface, AuthenticateInterface } from 'simple-jwt-login'; // Import the SDK
 
 // Ensure window.wpData is globally accessible (provided by WordPress)
@@ -8,6 +8,12 @@ declare global {
       siteUrl: string;
       restUrl: string; // e.g., https://djzeneyer.com/wp-json/
       nonce: string; // Nonce for WP REST API requests
+      jwtAuthKey?: string; // Auth key from plugin settings, if available
+      jwtSettings?: { // JWT plugin settings, if available
+        allowRegister: boolean;
+        requireNonce: boolean;
+        endpoint: string;
+      };
     };
   }
 }
@@ -47,11 +53,27 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Initialize SimpleJwtLogin SDK instance safely within useEffect
   useEffect(() => {
+    // Define wpData with robust fallbacks
+    const wpData = window.wpData || {
+      siteUrl: 'http://localhost:8000',
+      restUrl: 'http://localhost:8000/wp-json/',
+      nonce: '',
+      jwtAuthKey: 'YOUR_AUTH_KEY_FALLBACK', // Ensure a fallback is here
+      jwtSettings: {
+        allowRegister: true,
+        requireNonce: false,
+        endpoint: '/simple-jwt-login/v1'
+      }
+    };
+
     // Only initialize if wpData is available and the ref hasn't been set yet
-    if (window.wpData && !simpleJwtLoginRef.current) {
+    if (wpData.siteUrl && !simpleJwtLoginRef.current) { // Use wpData from the local constant
         // Use the actual wpData if available, otherwise fallback to development defaults
-        const actualWpData = window.wpData;
-        simpleJwtLoginRef.current = new SimpleJwtLogin(actualWpData.siteUrl, '/simple-jwt-login/v1', 'AUTH_KEY'); 
+        simpleJwtLoginRef.current = new SimpleJwtLogin(
+          wpData.siteUrl, 
+          wpData.jwtSettings?.endpoint || '/simple-jwt-login/v1', // Use endpoint from jwtSettings or fallback
+          wpData.jwtAuthKey || 'AUTH_KEY' // Use authKey from wpData or fallback
+        ); 
         console.log("[UserContext] SimpleJwtLogin SDK initialized.");
 
         // After SDK is initialized, try to fetch user details if a token is stored
@@ -69,10 +91,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             logout(); 
           }
         }
-    } else if (!window.wpData) {
+    } else if (!wpData.siteUrl) { // Check siteUrl property instead of window.wpData directly
       // If wpData is not present, set an error to indicate authentication service is not ready
       setError("Authentication service not ready. Please ensure WordPress is running and configured correctly.");
-      console.error("[UserContext] window.wpData is not available. Authentication services will not function.");
+      console.error("[UserContext] wpData is not available. Authentication services will not function.");
     }
   }, []); // Run once on mount to initialize SDK
 
@@ -84,10 +106,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     try {
-      const userResponse = await fetch(`${window.wpData.restUrl}wp/v2/users/me`, {
+      // Use wpData from the local constant, as it's guaranteed to be available here
+      const userResponse = await fetch(`${wpData.restUrl}wp/v2/users/me`, {
         headers: {
             'Authorization': `Bearer ${token}`, // Authenticate with JWT
-            'X-WP-Nonce': window.wpData.nonce // Nonce can be useful even with JWT
+            'X-WP-Nonce': wpData.nonce // Nonce can be useful even with JWT
         },
         credentials: 'include' // CRITICAL: This sends session cookies which are needed for /users/me
       });
@@ -190,7 +213,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         first_name: nameParam 
       };
       // Use SDK's registerUser method
-      // *** CORREÇÃO AQUI: Endpoint para simple-jwt-login/v1/users ***
+      // The SDK automatically calls the correct endpoint based on its internal configuration
       const data = await simpleJwtLoginRef.current.registerUser(registerParams); 
 
       if (data.success) { 
