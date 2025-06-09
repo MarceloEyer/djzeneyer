@@ -1,5 +1,9 @@
-For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
+For all designs I ask you to make, have them be beautiful and original, not cookie cutter. Make webpages that are fully featured and worthy for production, being fully responsive for mobile, tablet, and desktop, and prioritizing accessibility.
 
 By default, this template supports JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
 
 Use icons from lucide-react for logos.
+
+Implement robust error handling and provide clear and friendly user feedback (never use alert() or confirm()). The code should be well-commented and self-contained.
+
+For global state management in React, prefer React Context or Zustand. When interacting with external APIs (like WordPress REST API), include loading indicators. The database management for this project will be handled directly within WordPress; do not use Firestore or Firebase.
