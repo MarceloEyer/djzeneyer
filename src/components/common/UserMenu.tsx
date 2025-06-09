@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Settings, LogOut, Award, Music, ChevronDown } from 'lucide-react';
+import { User, Settings, LogOut, Award, Music, ChevronDown, ShoppingBag } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 
 interface UserMenuProps {
@@ -35,25 +35,25 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
     <div ref={menuRef} className="relative">
       {/* User menu button */}
       <button 
-        className={`flex items-center space-x-2 focus:outline-none ${
+        className={`flex items-center space-x-2 focus:outline-none transition-all duration-200 hover:bg-white/5 rounded-lg p-2 ${
           orientation === 'vertical' ? 'w-full' : ''
         }`}
         onClick={toggleMenu}
       >
         <div className="relative">
           <img 
-            src={user.avatar} 
+            src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0d96ff&color=fff`}
             alt={user.name} 
             className="w-8 h-8 rounded-full object-cover border-2 border-primary"
           />
           <span className="absolute -bottom-1 -right-1 bg-success text-xs rounded-full w-4 h-4 flex items-center justify-center border border-background">
-            {user.level}
+            3
           </span>
         </div>
         <div className={orientation === 'vertical' ? 'flex flex-col items-start' : ''}>
           <span className="text-sm font-medium">{user.name}</span>
           {orientation === 'vertical' && (
-            <span className="text-xs text-white/60">{user.rank}</span>
+            <span className="text-xs text-white/60">Zen Apprentice</span>
           )}
         </div>
         <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -61,55 +61,64 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className={`absolute z-20 w-56 mt-2 py-2 bg-surface rounded-md shadow-lg border border-white/10 ${
+        <div className={`absolute z-20 w-64 mt-2 py-2 bg-surface rounded-lg shadow-xl border border-white/10 ${
           orientation === 'vertical' ? 'left-0' : 'right-0'
         }`}>
-          <div className="px-4 py-2 border-b border-white/10">
+          <div className="px-4 py-3 border-b border-white/10">
             <p className="text-sm font-medium">{user.name}</p>
-            <div className="flex items-center space-x-1 text-xs text-white/60">
-              <span>{user.rank}</span>
+            <p className="text-xs text-white/60">{user.email}</p>
+            <div className="flex items-center space-x-1 text-xs text-white/60 mt-1">
+              <span>Zen Apprentice</span>
               <span>•</span>
-              <span>Level {user.level}</span>
+              <span>Level 3</span>
             </div>
             <div className="mt-2 h-2 bg-white/10 rounded-full">
               <div 
-                className="h-full bg-primary rounded-full"
-                style={{ width: `${(user.xp % 100)}%` }}
+                className="h-full bg-primary rounded-full transition-all duration-300"
+                style={{ width: '87.5%' }}
               ></div>
             </div>
             <p className="text-xs text-white/60 mt-1">
-              {user.xp % 100}/100 XP to next level
+              350/400 XP to next level
             </p>
           </div>
           
           <div className="py-1">
             <Link
-              to="/profile"
-              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2"
+              to="/my-account"
+              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <User size={16} />
-              <span>Profile</span>
+              <span>My Account</span>
             </Link>
             <Link
-              to="/achievements"
-              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2"
+              to="/my-account"
+              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              <ShoppingBag size={16} />
+              <span>My Orders</span>
+            </Link>
+            <Link
+              to="/my-account"
+              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <Award size={16} />
               <span>Achievements</span>
             </Link>
             <Link
-              to="/playlists"
-              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2"
+              to="/my-account"
+              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <Music size={16} />
-              <span>My Playlists</span>
+              <span>My Music</span>
             </Link>
             <Link
-              to="/settings"
-              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2"
+              to="/my-account"
+              className="block px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center space-x-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <Settings size={16} />
@@ -119,7 +128,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
           
           <div className="border-t border-white/10 pt-1">
             <button
-              className="block w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-white/5 flex items-center space-x-2"
+              className="block w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-white/5 flex items-center space-x-2 transition-colors"
               onClick={() => {
                 logout();
                 setIsOpen(false);

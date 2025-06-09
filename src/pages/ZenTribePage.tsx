@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, memo } from 'react';
 import { motion } from 'framer-motion';
-import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap, Lock } from 'lucide-react';
+import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 
 // Componente memoizado para cards de benefícios
@@ -73,16 +73,18 @@ const MembershipCard = memo(({ tier, user }) => (
   </motion.div>
 ));
 
-// Achievement Card Component
+// Achievement Card Component - Removed locked status display
 const AchievementCard = memo(({ emoji, title, description, unlocked }) => (
-  <div className={`bg-surface/50 rounded-lg p-4 ${unlocked ? '' : 'opacity-50'}`}>
+  <div className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 ${unlocked ? 'hover:bg-surface/70' : 'opacity-60'}`}>
     <div className="text-4xl mb-3">{emoji}</div>
     <h4 className="font-display text-lg mb-1">{title}</h4>
     <p className="text-sm text-white/70">{description}</p>
-    {!unlocked && (
-      <div className="mt-2 text-xs text-white/50 flex items-center">
-        <Lock size={12} className="mr-1" />
-        Locked
+    {unlocked && (
+      <div className="mt-2 text-xs text-success flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Unlocked
       </div>
     )}
   </div>
