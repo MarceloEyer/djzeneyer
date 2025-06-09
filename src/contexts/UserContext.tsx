@@ -4,7 +4,7 @@ import { SimpleJwtLogin, RegisterUserInterface, AuthenticateInterface } from 'si
 // Ensure window.wpData is globally accessible (provided by WordPress)
 declare global {
   interface Window {
-    wpData: {
+    wpData?: {
       siteUrl: string;
       restUrl: string; // e.g., https://djzeneyer.com/wp-json/
       nonce: string; // Nonce for WP REST API requests
@@ -42,9 +42,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Safely access wpData with fallback for development environment
+  const wpData = window.wpData || {
+    siteUrl: 'http://localhost:8000',
+    restUrl: 'http://localhost:8000/wp-json/',
+    nonce: ''
+  };
+
   // Initialize SimpleJwtLogin SDK instance
-  // The SDK will handle API_BASE_URL (window.wpData.restUrl) internally
-  const simpleJwtLogin = new SimpleJwtLogin(window.wpData.siteUrl, '/simple-jwt-login/v1', 'AUTH_KEY'); 
+  // The SDK will handle API_BASE_URL (wpData.restUrl) internally
+  const simpleJwtLogin = new SimpleJwtLogin(wpData.siteUrl, '/simple-jwt-login/v1', 'AUTH_KEY'); 
   // 'AUTH_KEY' is passed as a placeholder for authCodeKey, but it's often not needed 
   // if you're not using auth codes in the URL. Your current setup doesn't use it.
 
@@ -54,10 +61,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Use the SDK's validateToken method to get user info if needed,
       // or directly fetch from /wp/v2/users/me with the token.
       // We will stick to fetching /wp/v2/users/me as it gives more comprehensive data.
-      const userResponse = await fetch(`${window.wpData.restUrl}wp/v2/users/me`, {
+      const userResponse = await fetch(`${wpData.restUrl}wp/v2/users/me`, {
         headers: {
             'Authorization': `Bearer ${token}`, // Authenticate with JWT
-            'X-WP-Nonce': window.wpData.nonce // Nonce can be useful even with JWT
+            'X-WP-Nonce': wpData.nonce // Nonce can be useful even with JWT
         },
         credentials: 'include' // CRITICAL: This sends session cookies which are needed for /users/me
       });
@@ -197,7 +204,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('wp_user_data');
     console.log('User logged out.');
     // Optional: Redirect to home or login page after logout
-    window.location.href = window.wpData.siteUrl; 
+    window.location.href = wpData.siteUrl; 
   };
 
   const loginWithGoogle = async () => {
@@ -207,7 +214,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Redirects user to the WP login page where the Google button from Simple JWT Login is available.
       // The plugin handles the OAuth flow and user creation/authentication in WordPress.
       // UserContext detects the login via its initial useEffect logic.
-      window.location.href = `${window.wpData.siteUrl}/wp-login.php?loginSocial=google`; 
+      window.location.href = `${wpData.siteUrl}/wp-login.php?loginSocial=google`; 
     } catch (err: any) {
       console.error("[UserContext] Google login error:", err);
       const cleanErrorMessage = err.message ? err.message.replace(/<[^>]*>?/gm, '') : 'Failed to initiate Google login.';
