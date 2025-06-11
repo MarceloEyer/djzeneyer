@@ -1,4 +1,4 @@
-// src/pages/ShopPage.tsx
+// src/pages/ShopPage.tsx - Versão Simplificada
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -52,28 +52,44 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, []);
 
+  // Usar o endpoint personalizado que criamos
   const addToCart = async (productId: number, quantity: number = 1) => {
     setAddingToCart(productId);
+    
     try {
-      const response = await fetch(`${window.wpData.restUrl}wc/store/v1/cart/add-item`, {
+      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/add-to-cart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-WP-Nonce': window.wpData.nonce
         },
-        body: JSON.stringify({ id: productId, quantity }),
+        body: JSON.stringify({ 
+          product_id: productId, 
+          quantity 
+        }),
         credentials: 'include'
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Error adding to cart: ${response.status}`);
+        throw new Error(data.message || `Error adding to cart: ${response.status}`);
       }
 
-      alert("Produto adicionado ao carrinho! Redirecionando ao checkout...");
-      window.location.href = `${window.wpData.siteUrl}/checkout/`;
+      if (data.success) {
+        alert("Produto adicionado ao carrinho! Redirecionando ao checkout...");
+        // Usar a URL do checkout retornada pela API
+        window.location.href = data.checkout_url || `${window.wpData.siteUrl}/checkout/`;
+      } else {
+        throw new Error(data.message || 'Failed to add product to cart');
+      }
+
     } catch (err: any) {
+      console.error('Add to cart error:', err);
       alert(`Erro ao adicionar ao carrinho: ${err.message || 'Tente novamente.'}`);
+      
+      // Fallback: usar o método tradicional do WooCommerce
+      window.location.href = `${window.wpData.siteUrl}/?add-to-cart=${productId}&quantity=${quantity}`;
     } finally {
       setAddingToCart(null);
     }
