@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Loader2, ShoppingCart } from 'lucide-react';
 
-// Certifique-se de que window.wpData está acessível
 declare global {
   interface Window {
     wpData: {
@@ -14,40 +14,36 @@ declare global {
   }
 }
 
-// Definição de tipo simplificada para um produto do WooCommerce
 interface Product {
   id: number;
   name: string;
-  slug: string; // Para usar na URL do produto
+  slug: string;
   price: string;
   regular_price: string;
-  sale_price: boolean; // Corrigido para boolean
+  sale_price: boolean;
   on_sale: boolean;
-  images: { src: string; alt: string; }[];
-  short_description: string; // Descrição curta para listagem
+  images: { src: string; alt: string }[];
+  short_description: string;
 }
 
 const ShopPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addingToCart, setAddingToCart] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${window.wpData.restUrl}wc/v3/products`, {
-          headers: {
-            'X-WP-Nonce': window.wpData.nonce,
-          }
+        const response = await fetch(`${window.wpData.restUrl}wc/v3/products?per_page=10`, {
+          headers: { 'X-WP-Nonce': window.wpData.nonce }
         });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setProducts(data);
       } catch (err: any) {
-        console.error("Erro ao buscar produtos:", err);
-        setError("Não foi possível carregar os produtos da loja.");
+        console.error("Error fetching products:", err);
+        setError("Could not load products from the shop.");
       } finally {
         setLoading(false);
       }
@@ -56,56 +52,45 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // Função para adicionar ao carrinho (você já tem a base disso)
   const addToCart = async (productId: number, quantity: number = 1) => {
+    setAddingToCart(productId);
     try {
-        const response = await fetch(`${window.wpData.restUrl}wc/store/v1/cart/add-item`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-WP-Nonce': window.wpData.nonce,
-            },
-            body: JSON.stringify({
-                id: productId,
-                quantity: quantity
-            })
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Erro ao adicionar ao carrinho: ${response.status}`);
-        }
+      const response = await fetch(`${window.wpData.restUrl}wc/store/v1/cart/add-item`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': window.wpData.nonce
+        },
+        body: JSON.stringify({ id: productId, quantity }),
+        credentials: 'include'
+      });
 
-        const cartData = await response.json();
-        alert("Produto adicionado ao carrinho! Redirecionando para o checkout...");
-        window.location.href = `${window.wpData.siteUrl}/checkout/`; // Redireciona para o checkout
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error adding to cart: ${response.status}`);
+      }
+
+      alert("Produto adicionado ao carrinho! Redirecionando ao checkout...");
+      window.location.href = `${window.wpData.siteUrl}/checkout/`;
     } catch (err: any) {
-        console.error("Erro ao adicionar ao carrinho:", err);
-        alert(`Erro ao adicionar ao carrinho: ${err.message}`);
+      alert(`Erro ao adicionar ao carrinho: ${err.message || 'Tente novamente.'}`);
+    } finally {
+      setAddingToCart(null);
     }
   };
 
   if (loading) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="min-h-screen flex items-center justify-center bg-background text-white p-4"
-      >
-        <p>Carregando Loja Zen...</p>
+      <motion.div className="min-h-screen flex flex-col items-center justify-center bg-background text-white">
+        <Loader2 className="animate-spin text-primary" size={36} />
+        <p className="mt-4 text-lg">Carregando Zen Shop...</p>
       </motion.div>
     );
   }
 
   if (error) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="min-h-screen flex items-center justify-center bg-background text-red-500 p-4"
-      >
+      <motion.div className="min-h-screen flex items-center justify-center text-red-500 text-lg">
         <p>{error}</p>
       </motion.div>
     );
@@ -113,48 +98,72 @@ const ShopPage: React.FC = () => {
 
   return (
     <motion.div
+      className="container mx-auto px-4 py-10 text-white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container mx-auto px-4 py-8 text-white min-h-[60vh]"
     >
-      <h1 className="text-4xl font-bold font-display mb-8 text-center">Nossa Loja Zen</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <h1 className="text-4xl md:text-5xl font-extrabold font-display text-center mb-12 tracking-tight">
+        Zen Shop
+      </h1>
+
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.length === 0 ? (
-          <p className="col-span-full text-center text-white/70">Nenhum produto encontrado ainda.</p>
+          <p className="col-span-full text-center text-white/70">Nenhum produto disponível no momento.</p>
         ) : (
-          products.map(product => (
-            <div key={product.id} className="bg-surface rounded-lg shadow-lg overflow-hidden border border-white/10">
-              <Link to={`/product/${product.slug}`} className="block">
-                {product.images && product.images.length > 0 && (
+          products.map((product) => (
+            <motion.div
+              key={product.id}
+              whileHover={{ scale: 1.02 }}
+              className="bg-surface border border-white/10 rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-xl"
+            >
+              <Link to={`/product/${product.slug}`}>
+                {product.images[0] && (
                   <img
                     src={product.images[0].src}
                     alt={product.images[0].alt || product.name}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-56 object-cover"
                   />
                 )}
-                <div className="p-5">
-                  <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-                  <div dangerouslySetInnerHTML={{ __html: product.short_description }} className="text-white/70 text-sm mb-3" />
-                  <p className="text-lg font-bold">
-                    R$ {product.on_sale ? (
-                      <>
-                        <span className="line-through text-white/50 mr-2">{product.regular_price}</span>
-                        <span className="text-primary">{product.price}</span>
-                      </>
-                    ) : (
-                      product.price
-                    )}
-                  </p>
-                </div>
               </Link>
-              <button
-                onClick={() => addToCart(product.id)}
-                className="w-full btn btn-primary py-2 mt-2"
-              >
-                Adicionar ao Carrinho
-              </button>
-            </div>
+
+              <div className="p-5">
+                <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
+                <div
+                  className="text-sm text-white/70 mb-4 line-clamp-3"
+                  dangerouslySetInnerHTML={{ __html: product.short_description }}
+                />
+
+                <p className="text-lg font-bold mb-4">
+                  {product.on_sale ? (
+                    <>
+                      <span className="line-through text-white/50 mr-2">R$ {product.regular_price}</span>
+                      <span className="text-primary">R$ {product.price}</span>
+                    </>
+                  ) : (
+                    <>R$ {product.price}</>
+                  )}
+                </p>
+
+                <button
+                  onClick={() => addToCart(product.id)}
+                  className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-primary text-white font-medium hover:bg-primary/90 transition disabled:opacity-50"
+                  disabled={addingToCart === product.id}
+                >
+                  {addingToCart === product.id ? (
+                    <>
+                      <Loader2 className="animate-spin" size={18} />
+                      <span>Adicionando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart size={18} />
+                      <span>Adicionar ao Carrinho</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
           ))
         )}
       </div>
