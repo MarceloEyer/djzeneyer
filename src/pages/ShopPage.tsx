@@ -1,8 +1,8 @@
-// src/pages/ShopPage.tsx - Versão Simplificada
+// src/pages/ShopPage.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, ShoppingCart } from 'lucide-react';
+import { Loader2, ShoppingCart } from 'lucide-react'; // Import Loader2 and ShoppingCart
 
 declare global {
   interface Window {
@@ -30,13 +30,13 @@ const ShopPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [addingToCart, setAddingToCart] = useState<number | null>(null);
+  const [addingToCart, setAddingToCart] = useState<number | null>(null); // Track which product is being added
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${window.wpData.restUrl}wc/v3/products?per_page=10`, {
-          headers: { 'X-WP-Nonce': window.wpData.nonce }
+        const response = await fetch(`${window.wpData.restUrl}wc/v3/products?per_page=10`, { // Fetch a reasonable number of products
+          headers: { 'X-WP-Nonce': window.wpData.nonce } // Nonce is sent here too, if it becomes protected
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
@@ -52,47 +52,15 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // Usar o endpoint personalizado que criamos
-  const addToCart = async (productId: number, quantity: number = 1) => {
-    setAddingToCart(productId);
+  // Simplified addToCart function using the most reliable method (direct URL redirection)
+  const addToCart = (productId: number, quantity: number = 1) => {
+    setAddingToCart(productId); // Set loading state for this specific product
     
-    try {
-      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/add-to-cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': window.wpData.nonce
-        },
-        body: JSON.stringify({ 
-          product_id: productId, 
-          quantity 
-        }),
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || `Error adding to cart: ${response.status}`);
-      }
-
-      if (data.success) {
-        alert("Produto adicionado ao carrinho! Redirecionando ao checkout...");
-        // Usar a URL do checkout retornada pela API
-        window.location.href = data.checkout_url || `${window.wpData.siteUrl}/checkout/`;
-      } else {
-        throw new Error(data.message || 'Failed to add product to cart');
-      }
-
-    } catch (err: any) {
-      console.error('Add to cart error:', err);
-      alert(`Erro ao adicionar ao carrinho: ${err.message || 'Tente novamente.'}`);
-      
-      // Fallback: usar o método tradicional do WooCommerce
-      window.location.href = `${window.wpData.siteUrl}/?add-to-cart=${productId}&quantity=${quantity}`;
-    } finally {
-      setAddingToCart(null);
-    }
+    // Redirect directly using WooCommerce's traditional add-to-cart method
+    // This bypasses complex AJAX/Nonce validation issues with wc/store/v1/cart/add-item API.
+    window.location.href = `${window.wpData.siteUrl}/?add-to-cart=${productId}&quantity=${quantity}`;
+    // The browser handles the redirection and WooCommerce processes the addition on its own.
+    // The loading state will typically end when the new page loads.
   };
 
   if (loading) {
@@ -151,7 +119,7 @@ const ShopPage: React.FC = () => {
                 />
 
                 <p className="text-lg font-bold mb-4">
-                  {product.on_sale ? (
+                  R$ {product.on_sale ? (
                     <>
                       <span className="line-through text-white/50 mr-2">R$ {product.regular_price}</span>
                       <span className="text-primary">R$ {product.price}</span>
@@ -164,9 +132,9 @@ const ShopPage: React.FC = () => {
                 <button
                   onClick={() => addToCart(product.id)}
                   className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-primary text-white font-medium hover:bg-primary/90 transition disabled:opacity-50"
-                  disabled={addingToCart === product.id}
+                  disabled={addingToCart === product.id} // Disable button when adding this product
                 >
-                  {addingToCart === product.id ? (
+                  {addingToCart === product.id ? ( // Show spinner and "Adicionando..." text
                     <>
                       <Loader2 className="animate-spin" size={18} />
                       <span>Adicionando...</span>
