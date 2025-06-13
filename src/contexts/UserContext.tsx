@@ -1,25 +1,10 @@
+// src/contexts/UserContext.tsx
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { SimpleJwtLogin, RegisterUserInterface, AuthenticateInterface } from 'simple-jwt-login';
 
-// Ensure window.wpData is globally accessible (provided by WordPress)
-declare global {
-  interface Window {
-    wpData?: {
-      siteUrl: string;
-      restUrl: string;
-      nonce: string;
-      // Adicionando propriedades específicas do Simple JWT Login
-      jwtAuthKey?: string; // Chave de autenticação do plugin
-      jwtSettings?: {
-        allowRegister: boolean;
-        requireNonce: boolean;
-        endpoint: string;
-      };
-    };
-  }
-}
+// NOTA: As interfaces do simple-jwt-login não são necessárias aqui,
+// uma vez que estamos a fazer chamadas diretas à API com fetch.
 
-// User type definition for WordPress User
+// Tipagem para o utilizador do WordPress
 export interface WordPressUser {
   id: number;
   email: string;
@@ -27,10 +12,10 @@ export interface WordPressUser {
   isLoggedIn: boolean;
   token?: string;
   roles?: string[];
-  avatar_urls?: { [size: string]: string };
   avatar?: string;
 }
 
+// Tipagem para o contexto
 interface UserContextType {
   user: WordPressUser | null;
   loading: boolean;
@@ -38,7 +23,7 @@ interface UserContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<void>; 
-  loginWithGoogle: () => Promise<void>;
+  loginWithGoogle: () => void; // Não precisa ser async se apenas redireciona
   clearError: () => void;
 }
 
@@ -46,226 +31,131 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<WordPressUser | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Começa true para validar o token inicial
   const [error, setError] = useState<string | null>(null);
 
-  // Configuração com fallback mais robusto
-  const wpData = window.wpData || {
-    siteUrl: 'http://localhost:8000',
-    restUrl: 'http://localhost:8000/wp-json/',
-    nonce: '',
-    jwtAuthKey: 'your-jwt-auth-key', // Você precisa configurar isso no plugin
-    jwtSettings: {
-      allowRegister: true,
-      requireNonce: false,
-      endpoint: '/simple-jwt-login/v1'
-    }
-  };
-
-  // Initialize SimpleJwtLogin SDK - Configuração corrigida
-  const simpleJwtLogin = new SimpleJwtLogin(
-    wpData.siteUrl,
-    wpData.jwtSettings?.endpoint || '/simple-jwt-login/v1',
-    wpData.jwtAuthKey || 'AUTH_KEY'
-  );
-
-  // Função para validar token JWT
+  // Função para validar um token JWT no backend
   const validateToken = async (token: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/auth/validate`, {
+      const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/auth/validate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ JWT: token })
       });
-      
       const data = await response.json();
       return data.success === true;
-    } catch (error) {
-      console.error('Token validation failed:', error);
+    } catch (e) {
+      console.error('Token validation failed:', e);
       return false;
     }
   };
 
-  // Function to fetch full user details after successful authentication
-  const fetchUserDetails = async (token: string, email: string) => {
-    try {
-      console.log('Fetching user details with token:', token.substring(0, 20) + '...');
-      
-      // Primeiro tenta validar o token
-      const isValidToken = await validateToken(token);
-      console.log('Token validation result:', isValidToken);
-      
-      if (!isValidToken) {
-        console.warn('Token validation failed, but proceeding with user creation...');
-      }
+  // Função para obter os detalhes do utilizador e definir o estado de login
+  const fetchUserDetailsAndLogin = async (token: string, email: string) => {
+    // Para o Simple JWT Login, não há um endpoint /me.
+    // Criamos um utilizador básico no frontend.
+    const basicUser: WordPressUser = {
+      id: Date.now(), // ID temporário
+      email: email,
+      name: email.split('@')[0],
+      isLoggedIn: true,
+      token: token,
+      roles: ['subscriber'],
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(email.split('@')[0])}&background=6366F1&color=fff`
+    };
 
-      // Cria um usuário básico com os dados que temos
-      // Já que o Simple JWT Login não tem um endpoint específico para buscar dados do usuário
-      const basicUser: WordPressUser = {
-        id: Date.now(), // ID temporário
-        email: email,
-        name: email.split('@')[0], // Nome baseado no email
-        isLoggedIn: true,
-        token: token,
-        roles: ['subscriber'],
-        avatar_urls: {},
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(email.split('@')[0])}&background=0d96ff&color=fff`
-      };
-
-      console.log('Created basic user:', basicUser);
-      
-      setUser(basicUser);
-      localStorage.setItem('jwt_token', token);
-      localStorage.setItem('wp_user_data', JSON.stringify({
-        id: basicUser.id,
-        email: basicUser.email,
-        name: basicUser.name,
-        roles: basicUser.roles,
-        avatar_urls: basicUser.avatar_urls,
-        avatar: basicUser.avatar
-      }));
-      
-      console.log('User login successful!', basicUser);
-      return basicUser;
-
-    } catch (err: any) {
-      console.error("[UserContext] Error in fetchUserDetails:", err);
-      throw err;
-    }
+    setUser(basicUser);
+    localStorage.setItem('jwt_token', token);
+    localStorage.setItem('wp_user_data', JSON.stringify(basicUser));
   };
 
-  // Load user from localStorage on initial load and validate session
+  // Efeito para verificar o token no arranque da aplicação
   useEffect(() => {
-    const storedToken = localStorage.getItem('jwt_token');
-    const storedUserData = localStorage.getItem('wp_user_data');
-    
-    if (storedToken && storedUserData) {
-      try {
-        const parsedUser = JSON.parse(storedUserData);
-        console.log('Loading stored user:', parsedUser);
-        
-        // Valida o token armazenado
-        validateToken(storedToken).then(isValid => {
-          console.log('Stored token validation:', isValid);
-          if (isValid) {
-            setUser({
-              ...parsedUser,
-              isLoggedIn: true,
-              token: storedToken
-            });
-          } else {
-            console.warn('Stored token invalid, logging out');
-            logout();
-          }
-        }).catch((err) => {
-          console.warn('Token validation error:', err);
-          logout();
-        });
-      } catch (e) {
-        console.error("Failed to parse stored user data", e);
-        logout();
+    const checkStoredToken = async () => {
+      const storedToken = localStorage.getItem('jwt_token');
+      const storedUserData = localStorage.getItem('wp_user_data');
+      
+      if (storedToken && storedUserData) {
+        const isValid = await validateToken(storedToken);
+        if (isValid) {
+          setUser({ ...JSON.parse(storedUserData), isLoggedIn: true, token: storedToken });
+        } else {
+          logout(); // Limpa se o token for inválido
+        }
       }
-    }
+      setLoading(false);
+    };
+
+    checkStoredToken();
   }, []);
 
-  // Login function with improved error handling
-  const login = async (emailParam: string, passwordParam: string) => {
+
+  // --- FUNÇÕES DE AUTENTICAÇÃO ---
+
+  const login = async (email: string, password: string) => {
     setLoading(true);
     setError(null);
-    
     try {
-      console.log('Attempting login for:', emailParam);
-      
-      // Chamada direta para a API do Simple JWT Login
-      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/auth`, {
+      const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/auth`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: emailParam,
-          password: passwordParam
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
       });
-      
-      console.log('Login response status:', response.status);
       const data = await response.json();
-      console.log('Login response data:', data);
-
       if (data.success && data.data?.jwt) {
-        const token = data.data.jwt;
-        console.log('JWT token received:', token.substring(0, 20) + '...');
-        await fetchUserDetails(token, emailParam);
+        await fetchUserDetailsAndLogin(data.data.jwt, email);
       } else {
-        const errorMessage = data.data?.message || data.message || "Credenciais inválidas.";
-        console.error('Login failed:', errorMessage);
-        setError(errorMessage);
-        throw new Error(errorMessage);
+        throw new Error(data.data?.message || "Credenciais inválidas.");
       }
     } catch (err: any) {
-      console.error("[UserContext] Login error:", err);
-      const cleanErrorMessage = err.message 
-        ? err.message.replace(/<[^>]*>?/gm, '') 
-        : 'Falha no login. Verifique suas credenciais.';
-      setError(cleanErrorMessage);
+      setError(err.message);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // Register function with improved error handling
-  const register = async (nameParam: string, emailParam: string, passwordParam: string) => {
+  const register = async (name: string, email: string, password: string) => {
     setLoading(true);
     setError(null);
-    
     try {
-      console.log('Attempting registration for:', emailParam);
-      
-      // Chamada direta para a API do Simple JWT Login usando /register
-      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/register`, {
+      const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: emailParam,
-          password: passwordParam,
-          user_login: emailParam,
-          display_name: nameParam,
-          first_name: nameParam.split(' ')[0] || nameParam,
-          last_name: nameParam.split(' ').slice(1).join(' ') || ''
+          email,
+          password,
+          user_login: email,
+          display_name: name,
         })
       });
-      
-      console.log('Registration response status:', response.status);
       const data = await response.json();
-      console.log('Registration response data:', data);
-
       if (data.success) {
-        console.log('Registration successful!', data);
-        // Aguarda um pouco antes de tentar fazer login
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // Tenta fazer login automaticamente após o registro
-        await login(emailParam, passwordParam);
+        // Tenta fazer login automaticamente após o registo
+        await login(email, password);
       } else {
-        const errorMessage = data.data?.message || data.message || "Falha no cadastro.";
-        console.error('Registration failed:', errorMessage);
-        setError(errorMessage);
-        throw new Error(errorMessage);
+        throw new Error(data.data?.message || "Falha no registo.");
       }
     } catch (err: any) {
-      console.error("[UserContext] Registration error:", err);
-      const cleanErrorMessage = err.message 
-        ? err.message.replace(/<[^>]*>?/gm, '') 
-        : 'Falha ao criar conta. Tente novamente.';
-      setError(cleanErrorMessage);
+      setError(err.message);
       throw err;
     } finally {
       setLoading(false);
     }
+  };
+
+  const loginWithGoogle = () => {
+    setLoading(true);
+    setError(null);
+    
+    // --- CORREÇÃO PRINCIPAL (80/20) ---
+    // Este é o URL correto que o seu plugin Simple-JWT-Login espera.
+    // O frontend redireciona o utilizador para o backend, que trata da autenticação
+    // com o Google e depois redireciona de volta para o frontend com o token JWT.
+    const googleLoginUrl = `${window.wpData?.siteUrl}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
+    
+    // Redireciona o browser do utilizador
+    window.location.href = googleLoginUrl;
   };
 
   const logout = () => {
@@ -273,56 +163,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('wp_user_data');
-    console.log('User logged out.');
-    
-    // Opcional: Invalidar o token no servidor
-    const token = localStorage.getItem('jwt_token');
-    if (token) {
-      fetch(`${wpData.restUrl}simple-jwt-login/v1/auth/revoke`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ JWT: token })
-      }).catch(err => console.warn('Failed to revoke token:', err));
-    }
-  };
-
-  const loginWithGoogle = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Redireciona para o login social do plugin
-      const googleLoginUrl = `${wpData.siteUrl}/wp-login.php?loginSocial=google&redirect_to=${encodeURIComponent(window.location.href)}`;
-      window.location.href = googleLoginUrl;
-    } catch (err: any) {
-      console.error("[UserContext] Google login error:", err);
-      const cleanErrorMessage = err.message 
-        ? err.message.replace(/<[^>]*>?/gm, '') 
-        : 'Falha ao iniciar login com Google.';
-      setError(cleanErrorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
   };
 
   const clearError = () => {
     setError(null);
   };
 
-  const value = {
-    user,
-    loading,
-    error,
-    login,
-    logout,
-    register,
-    loginWithGoogle,
-    clearError,
-  };
+  const value = { user, loading, error, login, logout, register, loginWithGoogle, clearError };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
