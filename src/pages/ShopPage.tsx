@@ -1,9 +1,9 @@
 // src/pages/ShopPage.tsx
-import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, ShoppingCart, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
-import { useUser } from '../contexts/UserContext'; 
+import { useUser } from '../contexts/UserContext'; // A importação correta, sem simulações.
 
 declare global {
   interface Window {
@@ -26,12 +26,12 @@ interface Product {
   stock_status: string;
 }
 
-const ShopPageComponent: React.FC = () => {
+const ShopPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cartStatus, setCartStatus] = useState<Record<number, 'idle' | 'adding' | 'added' | 'error'>>({});
-  const { user } = useUser(); // Obter o estado real do utilizador a partir do seu UserContext
+  const { user } = useUser(); // Obter o estado real do utilizador a partir do seu UserContext.
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -67,10 +67,8 @@ const ShopPageComponent: React.FC = () => {
     
     setCartStatus(prev => ({ ...prev, [productId]: 'adding' }));
 
-    // Constrói os cabeçalhos dinamicamente para autenticação.
     const headers: HeadersInit = { 'Content-Type': 'application/json' };
     
-    // Se o utilizador estiver logado (e tiver um token JWT), adiciona-o ao cabeçalho.
     if (user && user.token) {
       headers['Authorization'] = `Bearer ${user.token}`;
     } else if (window.wpData.nonce) {
@@ -90,7 +88,6 @@ const ShopPageComponent: React.FC = () => {
       }
       
       setCartStatus(prev => ({ ...prev, [productId]: 'added' }));
-      
       setTimeout(() => setCartStatus(prev => ({ ...prev, [productId]: 'idle' })), 2000);
     } catch (err: any) {
       alert(`Erro: ${err.message}`);
@@ -178,12 +175,5 @@ const ShopPageComponent: React.FC = () => {
     </motion.div>
   );
 };
-
-// Componente Wrapper para fornecer o contexto simulado (APENAS PARA PRÉ-VISUALIZAÇÃO)
-const ShopPage = () => (
-    <MockUserProvider>
-        <ShopPageComponent />
-    </MockUserProvider>
-);
 
 export default ShopPage;
