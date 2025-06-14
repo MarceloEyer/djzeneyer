@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    https: true,
+    // Remove https: true to avoid self-signed certificate issues in development
+    // https: true,
   },
   build: {
     // Output to WordPress theme directory
