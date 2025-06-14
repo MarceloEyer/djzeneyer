@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, ShoppingCart, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
-import { useUser } from '../contexts/UserContext'; // A importação correta, sem simulações.
+import { useUser } from '../contexts/UserContext';
 
 declare global {
   interface Window {
@@ -31,11 +31,23 @@ const ShopPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cartStatus, setCartStatus] = useState<Record<number, 'idle' | 'adding' | 'added' | 'error'>>({});
-  const { user } = useUser(); // Obter o estado real do utilizador a partir do seu UserContext.
+  const { user } = useUser();
 
+  // CORRIGIDO: Esta função agora inclui autenticação para a API do WooCommerce.
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
+
+    // Pega as chaves de API das variáveis de ambiente que o Vite fornece
+    const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
+    const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
+
+    // Validação: Verifica se as chaves foram carregadas do arquivo .env.local
+    if (!consumerKey || !consumerSecret) {
+      setError("Erro de Configuração: As chaves da API do WooCommerce não foram encontradas. Verifique seu arquivo .env.local e reinicie o servidor.");
+      setLoading(false);
+      return;
+    }
 
     if (!window.wpData?.restUrl) {
       setError("Erro de Configuração: Não foi possível conectar ao WordPress.");
@@ -43,9 +55,15 @@ const ShopPage: React.FC = () => {
       return;
     }
 
+    // Monta a URL completa COM as chaves de autenticação como parâmetros
+    const apiUrl = `${window.wpData.restUrl}wc/v3/products?per_page=12&status=publish&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
+
     try {
-      const response = await fetch(`${window.wpData.restUrl}wc/v3/products?per_page=12&status=publish`);
-      if (!response.ok) throw new Error(`Erro na rede: ${response.statusText}`);
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Erro na API do WooCommerce: ${errorData.message || response.statusText}`);
+      }
       const data = await response.json();
       setProducts(data);
     } catch (err: any) {
@@ -158,14 +176,14 @@ const ShopPage: React.FC = () => {
               ) : (
                 <button
                   onClick={() => addToCart(product.id)}
-                  className={`w-full btn py-3 transition-all duration-300 ${
-                    cartStatus[product.id] === 'added' ? 'bg-green-500' : 'bg-primary hover:bg-primary/90'
+                  className={`w-full btn py-3 transition-all duration-300 flex items-center justify-center gap-2 ${
+                    cartStatus[product.id] === 'added' ? 'bg-green-500 hover:bg-green-600' : 'bg-primary hover:bg-primary/90'
                   }`}
                   disabled={cartStatus[product.id] === 'adding'}
                 >
                   {cartStatus[product.id] === 'adding' && <><Loader2 className="animate-spin" size={18} /><span>A adicionar...</span></>}
                   {cartStatus[product.id] === 'added' && <><CheckCircle size={18} /><span>Adicionado!</span></>}
-                  {cartStatus[product.id] !== 'adding' && cartStatus[product.id] !== 'added' && <><ShoppingCart size={18} /><span>Adicionar</span></>}
+                  {(!cartStatus[product.id] || cartStatus[product.id] === 'idle' || cartStatus[product.id] === 'error') && <><ShoppingCart size={18} /><span>Adicionar</span></>}
                 </button>
               )}
             </div>
