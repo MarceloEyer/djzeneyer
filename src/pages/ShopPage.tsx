@@ -6,7 +6,6 @@ import { Loader2, ShoppingCart, CheckCircle, AlertTriangle } from 'lucide-react'
 
 declare global {
   interface Window {
-    // Marcar wpData como opcional para lidar com ambientes de desenvolvimento
     wpData?: {
       siteUrl: string;
       restUrl: string;
@@ -31,27 +30,32 @@ const ShopPage: React.FC = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      // --- CORREÇÃO PRINCIPAL (80/20) ---
-      // Verificamos se window.wpData existe ANTES de o usar.
-      // Se não existir (como num ambiente de desenvolvimento como o Bolt.new),
-      // mostramos um erro claro em vez de a aplicação quebrar.
       if (!window.wpData?.restUrl) {
-        console.error("Erro de Configuração: o objeto window.wpData não foi encontrado. Certifique-se de que o script do WordPress está a ser carregado corretamente.");
+        console.error("Erro de Configuração: o objeto window.wpData não foi encontrado.");
         setError("Não foi possível conectar ao WordPress para carregar os produtos.");
         setLoading(false);
-        return; // Interrompe a execução da função
+        return;
       }
 
       try {
-        const response = await fetch(`${window.wpData.restUrl}wc/v3/products?per_page=12&status=publish`);
+        // --- CORREÇÃO APLICADA AQUI ---
+        // Adicionámos novamente o `headers` com o nonce de segurança,
+        // que é necessário para autenticar o pedido ao seu WordPress.
+        const response = await fetch(`${window.wpData.restUrl}wc/v3/products?per_page=12&status=publish`, {
+          headers: {
+            'X-WP-Nonce': window.wpData.nonce
+          }
+        });
+        
         if (!response.ok) {
-          throw new Error(`Ocorreu um erro na rede: ${response.statusText}`);
+          // O erro 401 será capturado aqui
+          throw new Error(`Ocorreu um erro na rede: ${response.statusText} (Status: ${response.status})`);
         }
         const data = await response.json();
         setProducts(data);
       } catch (err: any) {
         console.error("Erro ao buscar produtos:", err);
-        setError("Não foi possível carregar os produtos da loja.");
+        setError("Não foi possível carregar os produtos da loja. Verifique se está logado no WordPress, se necessário.");
       } finally {
         setLoading(false);
       }
@@ -101,7 +105,7 @@ const ShopPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-yellow-400">
+      <div className="min-h-screen flex flex-col items-center justify-center text-yellow-400 p-4">
         <AlertTriangle size={40} className="mb-4" />
         <h2 className="text-2xl font-bold mb-2">Erro de Conexão</h2>
         <p className="text-center max-w-md">{error}</p>
