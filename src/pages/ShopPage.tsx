@@ -55,87 +55,67 @@ const ShopPage: React.FC = () => {
     logDebugInfo();
 
     try {
-      // Estratégia 1: Tentar usar as credenciais do .env primeiro
-      const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
-      const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
-      
-      let apiUrl = '';
-      let headers: HeadersInit = {
-        'Content-Type': 'application/json'
-      };
-
-      // Verificar se temos acesso ao wpData
-      if (!window.wpData?.restUrl) {
-        // Se não temos wpData, tentar construir a URL manualmente
-        const baseUrl = window.location.origin;
-        apiUrl = `${baseUrl}/wp-json/wc/v3/products`;
-      } else {
-        apiUrl = `${window.wpData.restUrl}wc/v3/products`;
-      }
-
-      // Adicionar parâmetros de consulta
-      const params = new URLSearchParams({
-        per_page: '12',
-        status: 'publish',
-        orderby: 'date',
-        order: 'desc'
-      });
-
-      // Estratégia de autenticação
-      if (consumerKey && consumerSecret) {
-        // Usar Consumer Key/Secret se disponível
-        params.append('consumer_key', consumerKey);
-        params.append('consumer_secret', consumerSecret);
-      } else if (user?.token) {
-        // Usar JWT se disponível
-        headers['Authorization'] = `Bearer ${user.token}`;
-      } else if (window.wpData?.nonce) {
-        // Usar nonce como fallback
-        headers['X-WP-Nonce'] = window.wpData.nonce;
-      }
-
-      const finalUrl = `${apiUrl}?${params.toString()}`;
-      console.log('Fetching from:', finalUrl);
-
-      const response = await fetch(finalUrl, {
-        method: 'GET',
-        headers: headers,
-        credentials: 'include' // Importante para WordPress
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        
-        // Tentar estratégias alternativas se a primeira falhar
-        if (response.status === 401 || response.status === 403) {
-          return await fetchProductsAlternative();
-        }
-        
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
-
-      const data = await response.json();
-      console.log('Products received:', data);
-
-      if (Array.isArray(data)) {
-        setProducts(data);
-      } else {
-        throw new Error('Resposta inválida da API');
-      }
-
+      // Primeiro, tentar método alternativo que não requer autenticação
+      await fetchProductsAlternative();
     } catch (err: any) {
       console.error('Fetch error:', err);
-      setError(`Erro ao carregar produtos: ${err.message}`);
       
-      // Tentar método alternativo
+      // Se falhar, tentar método tradicional com autenticação
       try {
-        await fetchProductsAlternative();
-      } catch (altErr: any) {
-        setError(`Todos os métodos falharam. Último erro: ${altErr.message}`);
+        const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
+        const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
+        
+        if (!consumerKey || !consumerSecret) {
+          throw new Error('Chaves da API WooCommerce não configuradas. Verifique seu arquivo .env.local');
+        }
+
+        let apiUrl = '';
+        if (!window.wpData?.restUrl) {
+          const baseUrl = window.location.origin;
+          apiUrl = `${baseUrl}/wp-json/wc/v3/products`;
+        } else {
+          apiUrl = `${window.wpData.restUrl}wc/v3/products`;
+        }
+
+        // Usar Basic Auth em vez de query params (mais seguro)
+        const credentials = btoa(`${consumerKey}:${consumerSecret}`);
+        const params = new URLSearchParams({
+          per_page: '12',
+          status: 'publish',
+          orderby: 'date',
+          order: 'desc'
+        });
+
+        const finalUrl = `${apiUrl}?${params.toString()}`;
+        console.log('Trying authenticated request to:', finalUrl);
+
+        const response = await fetch(finalUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Basic ${credentials}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Authenticated request failed:', errorText);
+          throw new Error(`Falha na autenticação: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Products received via authenticated request:', data);
+
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          throw new Error('Resposta inválida da API');
+        }
+
+      } catch (authErr: any) {
+        console.error('Authenticated fetch also failed:', authErr);
+        setError(`Não foi possível carregar os produtos. Verifique as configurações da API WooCommerce. Erro: ${authErr.message}`);
       }
     } finally {
       setLoading(false);
@@ -148,18 +128,27 @@ const ShopPage: React.FC = () => {
     
     const baseUrl = window.wpData?.restUrl || `${window.location.origin}/wp-json/`;
     
-    // Tentar diferentes endpoints
+    // Tentar diferentes endpoints com melhor tratamento de erro
     const endpoints = [
-      `${baseUrl}wc/store/v1/products`, // WooCommerce Store API
-      `${baseUrl}cocart/v2/products`, // CoCart API
-      `${baseUrl}wp/v2/product` // WP REST API para Custom Post Type
+      {
+        url: `${baseUrl}wc/store/v1/products`,
+        name: 'WooCommerce Store API'
+      },
+      {
+        url: `${baseUrl}cocart/v2/products`, 
+        name: 'CoCart API'
+      },
+      {
+        url: `${baseUrl}wp/v2/product`,
+        name: 'WordPress REST API'
+      }
     ];
 
     for (const endpoint of endpoints) {
       try {
-        console.log(`Tentando endpoint: ${endpoint}`);
+        console.log(`Tentando ${endpoint.name}: ${endpoint.url}`);
         
-        const response = await fetch(`${endpoint}?per_page=12&status=publish`, {
+        const response = await fetch(`${endpoint.url}?per_page=12&status=publish`, {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
@@ -167,35 +156,59 @@ const ShopPage: React.FC = () => {
           }
         });
 
+        console.log(`${endpoint.name} response status:`, response.status);
+        
         if (response.ok) {
-          const data = await response.json();
-          console.log(`Sucesso com ${endpoint}:`, data);
+          const contentType = response.headers.get('content-type');
+          console.log(`${endpoint.name} content-type:`, contentType);
           
-          // Normalizar dados se necessário
-          const normalizedProducts = Array.isArray(data) ? data.map(normalizeProduct) : [];
-          setProducts(normalizedProducts);
-          return;
+          // Verificar se a resposta é JSON
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            console.log(`Sucesso com ${endpoint.name}:`, data);
+            
+            // Normalizar dados se necessário
+            const normalizedProducts = Array.isArray(data) ? data.map(normalizeProduct) : [];
+            if (normalizedProducts.length > 0) {
+              setProducts(normalizedProducts);
+              return;
+            }
+          } else {
+            console.log(`${endpoint.name} não retornou JSON válido`);
+            const text = await response.text();
+            console.log('Response text preview:', text.substring(0, 200));
+          }
+        } else {
+          const errorText = await response.text();
+          console.log(`${endpoint.name} error:`, response.status, errorText.substring(0, 200));
         }
-      } catch (err) {
-        console.log(`Falhou ${endpoint}:`, err);
+      } catch (err: any) {
+        console.log(`${endpoint.name} exception:`, err.message);
         continue;
       }
     }
     
-    throw new Error('Todos os endpoints alternativos falharam');
+    throw new Error('Nenhum endpoint alternativo funcionou. Verifique se o WooCommerce está instalado e ativado.');
   }, []);
 
   // Função para normalizar dados de produto de diferentes APIs
   const normalizeProduct = (product: any): Product => {
+    // Log para debug
+    console.log('Normalizing product:', product);
+    
     return {
-      id: product.id,
-      name: product.name || product.title?.rendered,
-      slug: product.slug,
-      price: product.price || product.prices?.price || '0',
+      id: product.id || 0,
+      name: product.name || product.title?.rendered || 'Produto sem nome',
+      slug: product.slug || `product-${product.id}`,
+      price: product.price || product.prices?.price || product.regular_price || '0',
       on_sale: product.on_sale || false,
       regular_price: product.regular_price || product.prices?.regular_price || product.price || '0',
-      sale_price: product.sale_price || product.prices?.sale_price,
-      images: product.images || [{ src: product.featured_media_src_url || '', alt: product.name }],
+      sale_price: product.sale_price || product.prices?.sale_price || '',
+      images: product.images && product.images.length > 0 
+        ? product.images 
+        : product.featured_media_src_url 
+        ? [{ src: product.featured_media_src_url, alt: product.name || 'Produto' }]
+        : [{ src: '', alt: product.name || 'Produto' }],
       stock_status: product.stock_status || 'instock',
       type: product.type || 'simple',
       status: product.status || 'publish'
