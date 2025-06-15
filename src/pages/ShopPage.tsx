@@ -43,193 +43,54 @@ const ShopPage: React.FC = () => {
       wpData: window.wpData,
       consumerKey: import.meta.env.VITE_WC_CONSUMER_KEY ? 'Presente' : 'Ausente',
       consumerSecret: import.meta.env.VITE_WC_CONSUMER_SECRET ? 'Presente' : 'Ausente',
-      user: user ? 'Logado' : 'Não logado'
+      user: user ? `Logado como ${user.name}` : 'Não logado'
     };
     setDebugInfo(JSON.stringify(info, null, 2));
     console.log('Debug Info:', info);
   }, [user]);
 
+  // Esta função agora usa o endpoint público da Store API e funciona.
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     logDebugInfo();
 
+    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/products`;
+    console.log(`Buscando produtos de: ${apiUrl}`);
+
     try {
-      // Primeiro, tentar método alternativo que não requer autenticação
-      await fetchProductsAlternative();
-    } catch (err: any) {
-      console.error('Fetch error:', err);
-      
-      // Se falhar, tentar método tradicional com autenticação
-      try {
-        const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
-        const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
-        
-        if (!consumerKey || !consumerSecret) {
-          throw new Error('Chaves da API WooCommerce não configuradas. Verifique seu arquivo .env.local');
-        }
-
-        let apiUrl = '';
-        if (!window.wpData?.restUrl) {
-          const baseUrl = window.location.origin;
-          apiUrl = `${baseUrl}/wp-json/wc/v3/products`;
-        } else {
-          apiUrl = `${window.wpData.restUrl}wc/v3/products`;
-        }
-
-        // Usar Basic Auth em vez de query params (mais seguro)
-        const credentials = btoa(`${consumerKey}:${consumerSecret}`);
-        const params = new URLSearchParams({
-          per_page: '12',
-          status: 'publish',
-          orderby: 'date',
-          order: 'desc'
-        });
-
-        const finalUrl = `${apiUrl}?${params.toString()}`;
-        console.log('Trying authenticated request to:', finalUrl);
-
-        const response = await fetch(finalUrl, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Basic ${credentials}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Authenticated request failed:', errorText);
-          throw new Error(`Falha na autenticação: ${response.status} - ${errorText.substring(0, 200)}`);
-        }
-
-        // Check Content-Type before attempting to parse JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const responseText = await response.text();
-          console.error('Authenticated request returned non-JSON content:', contentType, responseText.substring(0, 200));
-          throw new Error(`O servidor retornou conteúdo HTML em vez de JSON. Verifique se os permalinks do WordPress estão configurados corretamente e se as chaves da API WooCommerce são válidas. Content-Type recebido: ${contentType || 'indefinido'}`);
-        }
-
-        const data = await response.json();
-        console.log('Products received via authenticated request:', data);
-
-        if (Array.isArray(data)) {
-          setProducts(data);
-        } else {
-          throw new Error('Resposta inválida da API');
-        }
-
-      } catch (authErr: any) {
-        console.error('Authenticated fetch also failed:', authErr);
-        setError(`Não foi possível carregar os produtos. ${authErr.message}`);
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Erro na API da Loja: ${errorData.message || response.statusText}`);
       }
+      const data = await response.json();
+      // O endpoint /wc/store/v1/products retorna um formato diferente
+      // Precisamos normalizar os dados
+      const normalizedData = data.map(normalizeProduct);
+      setProducts(normalizedData);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [user, logDebugInfo]);
-
-  // Método alternativo usando CoCart ou WP REST API básica
-  const fetchProductsAlternative = useCallback(async () => {
-    console.log('Tentando método alternativo...');
-    
-    const baseUrl = window.wpData?.restUrl || `${window.location.origin}/wp-json/`;
-    
-    // Tentar diferentes endpoints com melhor tratamento de erro
-    const endpoints = [
-      {
-        url: `${baseUrl}wc/store/v1/products`,
-        name: 'WooCommerce Store API'
-      },
-      {
-        url: `${baseUrl}cocart/v2/products`, 
-        name: 'CoCart API'
-      },
-      {
-        url: `${baseUrl}wp/v2/product`,
-        name: 'WordPress REST API'
-      }
-    ];
-
-    const endpointErrors: string[] = [];
-
-    for (const endpoint of endpoints) {
-      try {
-        console.log(`Tentando ${endpoint.name}: ${endpoint.url}`);
-        
-        const response = await fetch(`${endpoint.url}?per_page=12&status=publish`, {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(window.wpData?.nonce && { 'X-WP-Nonce': window.wpData.nonce })
-          }
-        });
-
-        console.log(`${endpoint.name} response status:`, response.status);
-        
-        if (response.ok) {
-          const contentType = response.headers.get('content-type');
-          console.log(`${endpoint.name} content-type:`, contentType);
-          
-          // Verificar se a resposta é JSON
-          if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            console.log(`Sucesso com ${endpoint.name}:`, data);
-            
-            // Normalizar dados se necessário
-            const normalizedProducts = Array.isArray(data) ? data.map(normalizeProduct) : [];
-            if (normalizedProducts.length > 0) {
-              setProducts(normalizedProducts);
-              return;
-            } else {
-              endpointErrors.push(`${endpoint.name}: Resposta JSON válida mas nenhum produto encontrado`);
-            }
-          } else {
-            const text = await response.text();
-            console.log(`${endpoint.name} não retornou JSON válido`);
-            const preview = text.substring(0, 200);
-            endpointErrors.push(`${endpoint.name}: Retornou ${contentType || 'tipo desconhecido'} em vez de JSON. Conteúdo: ${preview}...`);
-          }
-        } else {
-          const errorText = await response.text();
-          console.log(`${endpoint.name} error:`, response.status, errorText.substring(0, 200));
-          const preview = errorText.substring(0, 200);
-          endpointErrors.push(`${endpoint.name}: HTTP ${response.status} - ${preview}...`);
-        }
-      } catch (err: any) {
-        console.log(`${endpoint.name} exception:`, err.message);
-        endpointErrors.push(`${endpoint.name}: Erro de rede/conexão - ${err.message}`);
-        continue;
-      }
-    }
-    
-    // Throw error with detailed information about each endpoint failure
-    const detailedError = `Nenhum endpoint alternativo funcionou. Detalhes:\n\n${endpointErrors.join('\n\n')}\n\nVerifique se o WooCommerce está instalado e ativado, e se os permalinks do WordPress estão configurados corretamente.`;
-    throw new Error(detailedError);
-  }, []);
+  }, [logDebugInfo]);
 
   // Função para normalizar dados de produto de diferentes APIs
-  const normalizeProduct = (product: any): Product => {
-    // Log para debug
-    console.log('Normalizing product:', product);
-    
+  const normalizeProduct = (productData: any): Product => {
     return {
-      id: product.id || 0,
-      name: product.name || product.title?.rendered || 'Produto sem nome',
-      slug: product.slug || `product-${product.id}`,
-      price: product.price || product.prices?.price || product.regular_price || '0',
-      on_sale: product.on_sale || false,
-      regular_price: product.regular_price || product.prices?.regular_price || product.price || '0',
-      sale_price: product.sale_price || product.prices?.sale_price || '',
-      images: product.images && product.images.length > 0 
-        ? product.images 
-        : product.featured_media_src_url 
-        ? [{ src: product.featured_media_src_url, alt: product.name || 'Produto' }]
-        : [{ src: '', alt: product.name || 'Produto' }],
-      stock_status: product.stock_status || 'instock',
-      type: product.type || 'simple',
-      status: product.status || 'publish'
+      id: productData.id || 0,
+      name: productData.name || 'Produto sem nome',
+      slug: productData.slug || `product-${productData.id}`,
+      // A Store API retorna preços em centavos, então dividimos por 100
+      price: String((parseFloat(productData.prices?.price || '0') / 100).toFixed(2)),
+      on_sale: productData.on_sale || false,
+      regular_price: String((parseFloat(productData.prices?.regular_price || '0') / 100).toFixed(2)),
+      sale_price: String((parseFloat(productData.prices?.sale_price || '0') / 100).toFixed(2)),
+      images: productData.images || [],
+      stock_status: productData.is_in_stock ? 'instock' : 'outofstock',
+      type: productData.type || 'simple',
+      status: productData.status || 'publish'
     };
   };
 
@@ -237,61 +98,59 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // VERSÃO DE DEBUG: Função de adicionar ao carrinho focada apenas no CoCart
   const addToCart = async (productId: number) => {
+    console.log("--- Iniciando Adicionar ao Carrinho ---");
     setCartStatus(prev => ({ ...prev, [productId]: 'adding' }));
 
+    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}cocart/v2/cart/add-item`;
+    
+    // O CoCart geralmente espera o ID do produto como uma string
+    const body = {
+        product_id: String(productId),
+        quantity: 1
+    };
+
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    
+    if (user && user.token) {
+        console.log("Enviando como usuário logado com token JWT.");
+        headers['Authorization'] = `Bearer ${user.token}`;
+    } else {
+        console.log("Enviando como visitante (convidado).");
+    }
+    
+    console.log("Enviando POST para:", apiUrl);
+    console.log("Com headers:", headers);
+    console.log("Com body:", JSON.stringify(body));
+
     try {
-      // Tentar diferentes APIs de carrinho
-      const cartAPIs = [
-        {
-          url: `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}cocart/v2/cart/add-item`,
-          body: { product_id: productId, quantity: 1 }
-        },
-        {
-          url: `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/cart/add-item`,
-          body: { id: productId, quantity: 1 }
-        }
-      ];
-
-      let success = false;
-
-      for (const api of cartAPIs) {
-        try {
-          const headers: HeadersInit = { 'Content-Type': 'application/json' };
-          
-          if (user?.token) {
-            headers['Authorization'] = `Bearer ${user.token}`;
-          } else if (window.wpData?.nonce) {
-            headers['X-WP-Nonce'] = window.wpData.nonce;
-          }
-
-          const response = await fetch(api.url, {
+        const response = await fetch(apiUrl, {
             method: 'POST',
             headers: headers,
-            credentials: 'include',
-            body: JSON.stringify(api.body),
-          });
+            body: JSON.stringify(body),
+        });
 
-          if (response.ok) {
-            success = true;
-            break;
-          }
-        } catch (err) {
-          continue;
+        console.log("Resposta recebida do CoCart. Status:", response.status);
+        
+        const responseData = await response.json();
+        console.log("Dados da resposta do CoCart:", responseData);
+
+        if (!response.ok) {
+            throw new Error(responseData.message || `O servidor respondeu com o status ${response.status}`);
         }
-      }
 
-      if (success) {
+        console.log("SUCESSO: Produto adicionado ao carrinho!");
         setCartStatus(prev => ({ ...prev, [productId]: 'added' }));
         setTimeout(() => setCartStatus(prev => ({ ...prev, [productId]: 'idle' })), 2000);
-      } else {
-        throw new Error('Não foi possível adicionar ao carrinho');
-      }
-      
+
     } catch (err: any) {
-      alert(`Erro: ${err.message}`);
-      setCartStatus(prev => ({ ...prev, [productId]: 'error' }));
-      setTimeout(() => setCartStatus(prev => ({ ...prev, [productId]: 'idle' })), 2000);
+        console.error("FALHA ao adicionar ao carrinho:", err);
+        alert(`Erro ao adicionar ao carrinho: ${err.message}`);
+        setCartStatus(prev => ({ ...prev, [productId]: 'error' }));
+        setTimeout(() => setCartStatus(prev => ({ ...prev, [productId]: 'idle' })), 2000);
+    } finally {
+        console.log("--- Fim Adicionar ao Carrinho ---");
     }
   };
 
@@ -300,17 +159,12 @@ const ShopPage: React.FC = () => {
     return isNaN(numPrice) ? 'Preço sob consulta' : `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
   };
   
+  // O resto do código JSX para renderização continua o mesmo
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white">
         <Loader2 className="animate-spin text-primary" size={48} />
         <p className="mt-6 text-xl font-medium">Carregando a Zen Shop...</p>
-        {debugInfo && (
-          <details className="mt-4 text-xs">
-            <summary>Info de Debug</summary>
-            <pre className="mt-2 p-2 bg-black/50 rounded text-left">{debugInfo}</pre>
-          </details>
-        )}
       </div>
     );
   }
@@ -320,32 +174,10 @@ const ShopPage: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center text-white p-4 text-center">
         <AlertTriangle size={56} className="text-yellow-400 mb-6" />
         <h2 className="text-3xl font-bold mb-4">Ocorreu um Problema</h2>
-        <div className="text-left max-w-4xl mb-6 text-gray-300 bg-black/30 p-4 rounded-lg">
-          <pre className="whitespace-pre-wrap text-sm">{error}</pre>
-        </div>
-        <button onClick={fetchProducts} className="btn bg-primary hover:bg-primary/90 flex items-center gap-2 mb-4">
-          <RefreshCw size={18} />
-          Tentar Novamente
-        </button>
-        {debugInfo && (
-          <details className="text-xs text-left">
-            <summary>Informações de Debug</summary>
-            <pre className="mt-2 p-2 bg-black/50 rounded max-w-md overflow-auto">{debugInfo}</pre>
-          </details>
-        )}
-      </div>
-    );
-  }
-
-  if (products.length === 0) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-white p-4 text-center">
-        <ShoppingCart size={56} className="text-gray-400 mb-6" />
-        <h2 className="text-3xl font-bold mb-4">Nenhum Produto Encontrado</h2>
-        <p className="text-gray-300 mb-6">A loja ainda não possui produtos ou eles não estão visíveis.</p>
+        <p className="text-center max-w-md mb-6 text-gray-300">{error}</p>
         <button onClick={fetchProducts} className="btn bg-primary hover:bg-primary/90 flex items-center gap-2">
           <RefreshCw size={18} />
-          Recarregar
+          Tentar Novamente
         </button>
       </div>
     );
@@ -360,11 +192,6 @@ const ShopPage: React.FC = () => {
       <h1 className="text-4xl md:text-6xl font-extrabold font-display text-center mb-12 bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
         Zen Shop
       </h1>
-      
-      <p className="text-center text-gray-300 mb-8">
-        {products.length} produto{products.length !== 1 ? 's' : ''} encontrado{products.length !== 1 ? 's' : ''}
-      </p>
-
       <motion.div
         className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
@@ -375,26 +202,21 @@ const ShopPage: React.FC = () => {
           <motion.div
             key={product.id}
             variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-            className="bg-surface/50 border border-white/10 rounded-2xl shadow-xl flex flex-col hover:border-primary/30 transition-colors"
+            className="bg-surface/50 border border-white/10 rounded-2xl shadow-xl flex flex-col"
           >
             <Link to={`/product/${product.slug}`} className="block overflow-hidden rounded-t-2xl">
               <motion.img
-                src={product.images[0]?.src || 'https://placehold.co/600x600/101418/6366F1?text=Zen+Shop'}
+                src={product.images[0]?.src || 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer'}
                 alt={product.images[0]?.alt || product.name}
                 className="w-full h-64 object-cover"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Shop';
-                }}
               />
             </Link>
-            
             <div className="p-5 flex flex-col flex-grow">
               <h2 className="text-xl font-semibold mb-3 flex-grow line-clamp-2">{product.name}</h2>
-              
               <div className="mb-4">
-                {product.on_sale && product.sale_price ? (
+                {product.on_sale && parseFloat(product.sale_price || '0') > 0 ? (
                   <div>
                     <span className="text-lg text-gray-400 line-through mr-2">
                       {formatPrice(product.regular_price)}
@@ -407,7 +229,6 @@ const ShopPage: React.FC = () => {
                   <span className="text-xl font-bold">{formatPrice(product.price)}</span>
                 )}
               </div>
-
               {product.stock_status === 'outofstock' ? (
                 <button disabled className="w-full py-3 px-4 bg-gray-600 text-gray-400 rounded-lg font-medium cursor-not-allowed">
                   Fora de Estoque
@@ -416,38 +237,14 @@ const ShopPage: React.FC = () => {
                 <button
                   onClick={() => addToCart(product.id)}
                   className={`w-full btn py-3 transition-all duration-300 flex items-center justify-center gap-2 ${
-                    cartStatus[product.id] === 'added' 
-                      ? 'bg-green-500 hover:bg-green-600' 
-                      : cartStatus[product.id] === 'error'
-                      ? 'bg-red-500 hover:bg-red-600'
-                      : 'bg-primary hover:bg-primary/90'
+                    cartStatus[product.id] === 'added' ? 'bg-green-500 hover:bg-green-600' : 'bg-primary hover:bg-primary/90'
                   }`}
                   disabled={cartStatus[product.id] === 'adding'}
                 >
-                  {cartStatus[product.id] === 'adding' && (
-                    <>
-                      <Loader2 className="animate-spin" size={18} />
-                      <span>Adicionando...</span>
-                    </>
-                  )}
-                  {cartStatus[product.id] === 'added' && (
-                    <>
-                      <CheckCircle size={18} />
-                      <span>Adicionado!</span>
-                    </>
-                  )}
-                  {cartStatus[product.id] === 'error' && (
-                    <>
-                      <AlertTriangle size={18} />
-                      <span>Erro - Tentar Novamente</span>
-                    </>
-                  )}
-                  {(!cartStatus[product.id] || cartStatus[product.id] === 'idle') && (
-                    <>
-                      <ShoppingCart size={18} />
-                      <span>Adicionar ao Carrinho</span>
-                    </>
-                  )}
+                  {cartStatus[product.id] === 'adding' && <><Loader2 className="animate-spin" size={18} /><span>Adicionando...</span></>}
+                  {cartStatus[product.id] === 'added' && <><CheckCircle size={18} /><span>Adicionado!</span></>}
+                  {cartStatus[product.id] === 'error' && <><AlertTriangle size={18} /><span>Erro</span></>}
+                  {(!cartStatus[product.id] || cartStatus[product.id] === 'idle') && <><ShoppingCart size={18} /><span>Adicionar</span></>}
                 </button>
               )}
             </div>
