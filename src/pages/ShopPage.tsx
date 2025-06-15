@@ -101,7 +101,15 @@ const ShopPage: React.FC = () => {
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Authenticated request failed:', errorText);
-          throw new Error(`Falha na autenticação: ${response.status}`);
+          throw new Error(`Falha na autenticação: ${response.status} - ${errorText.substring(0, 200)}`);
+        }
+
+        // Check Content-Type before attempting to parse JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const responseText = await response.text();
+          console.error('Authenticated request returned non-JSON content:', contentType, responseText.substring(0, 200));
+          throw new Error(`O servidor retornou conteúdo HTML em vez de JSON. Verifique se os permalinks do WordPress estão configurados corretamente e se as chaves da API WooCommerce são válidas. Content-Type recebido: ${contentType || 'indefinido'}`);
         }
 
         const data = await response.json();
@@ -115,7 +123,7 @@ const ShopPage: React.FC = () => {
 
       } catch (authErr: any) {
         console.error('Authenticated fetch also failed:', authErr);
-        setError(`Não foi possível carregar os produtos. Verifique as configurações da API WooCommerce. Erro: ${authErr.message}`);
+        setError(`Não foi possível carregar os produtos. ${authErr.message}`);
       }
     } finally {
       setLoading(false);
@@ -143,6 +151,8 @@ const ShopPage: React.FC = () => {
         name: 'WordPress REST API'
       }
     ];
+
+    const endpointErrors: string[] = [];
 
     for (const endpoint of endpoints) {
       try {
@@ -172,23 +182,31 @@ const ShopPage: React.FC = () => {
             if (normalizedProducts.length > 0) {
               setProducts(normalizedProducts);
               return;
+            } else {
+              endpointErrors.push(`${endpoint.name}: Resposta JSON válida mas nenhum produto encontrado`);
             }
           } else {
-            console.log(`${endpoint.name} não retornou JSON válido`);
             const text = await response.text();
-            console.log('Response text preview:', text.substring(0, 200));
+            console.log(`${endpoint.name} não retornou JSON válido`);
+            const preview = text.substring(0, 200);
+            endpointErrors.push(`${endpoint.name}: Retornou ${contentType || 'tipo desconhecido'} em vez de JSON. Conteúdo: ${preview}...`);
           }
         } else {
           const errorText = await response.text();
           console.log(`${endpoint.name} error:`, response.status, errorText.substring(0, 200));
+          const preview = errorText.substring(0, 200);
+          endpointErrors.push(`${endpoint.name}: HTTP ${response.status} - ${preview}...`);
         }
       } catch (err: any) {
         console.log(`${endpoint.name} exception:`, err.message);
+        endpointErrors.push(`${endpoint.name}: Erro de rede/conexão - ${err.message}`);
         continue;
       }
     }
     
-    throw new Error('Nenhum endpoint alternativo funcionou. Verifique se o WooCommerce está instalado e ativado.');
+    // Throw error with detailed information about each endpoint failure
+    const detailedError = `Nenhum endpoint alternativo funcionou. Detalhes:\n\n${endpointErrors.join('\n\n')}\n\nVerifique se o WooCommerce está instalado e ativado, e se os permalinks do WordPress estão configurados corretamente.`;
+    throw new Error(detailedError);
   }, []);
 
   // Função para normalizar dados de produto de diferentes APIs
@@ -302,7 +320,9 @@ const ShopPage: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center text-white p-4 text-center">
         <AlertTriangle size={56} className="text-yellow-400 mb-6" />
         <h2 className="text-3xl font-bold mb-4">Ocorreu um Problema</h2>
-        <p className="text-center max-w-md mb-6 text-gray-300">{error}</p>
+        <div className="text-left max-w-4xl mb-6 text-gray-300 bg-black/30 p-4 rounded-lg">
+          <pre className="whitespace-pre-wrap text-sm">{error}</pre>
+        </div>
         <button onClick={fetchProducts} className="btn bg-primary hover:bg-primary/90 flex items-center gap-2 mb-4">
           <RefreshCw size={18} />
           Tentar Novamente
