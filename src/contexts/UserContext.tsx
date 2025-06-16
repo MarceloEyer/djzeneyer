@@ -2,7 +2,6 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
-// Adicionando os imports do SDK novamente
 import { SimpleJwtLogin, AuthenticateInterface } from 'simple-jwt-login';
 
 // Interface para o token decodificado (formato "plano")
@@ -140,7 +139,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initializeAuth();
   }, []);
 
-  // ATUALIZADO: Voltamos a usar o SDK para o login tradicional, com logs detalhados
+  // VERSÃO FINAL: Usando o SDK e com a lógica de verificação corrigida
   const login = async (email: string, password: string) => {
     setLoading(true);
     setError(null);
@@ -152,16 +151,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       console.log('[UserContext] Resposta do SDK:', data);
 
-      if (data && data.jwt) {
-        console.log('[UserContext] SUCESSO: Token JWT encontrado diretamente na resposta.');
-        setUserFromToken(data.jwt);
-      } else if (data && data.success && data.data?.jwt) {
-        console.log('[UserContext] SUCESSO: Token JWT encontrado dentro de data.data.jwt.');
+      // LÓGICA SIMPLIFICADA E CORRIGIDA:
+      // Verificamos o caminho exato que o log nos mostrou: data.data.jwt
+      if (data && data.success && data.data?.jwt) {
+        console.log('[UserContext] SUCESSO: Login bem-sucedido e token encontrado!');
         setUserFromToken(data.data.jwt);
-      }
-      else {
-        console.error('[UserContext] FALHA: A resposta do SDK não continha um JWT.', data);
-        throw new Error(data.message || 'Credenciais inválidas ou erro no SDK.');
+      } else {
+        // Se o caminho exato falhar, lançamos o erro.
+        console.error('[UserContext] FALHA: A resposta do SDK não tinha o formato esperado.', data);
+        throw new Error(data.message || 'Credenciais inválidas ou erro na resposta do servidor.');
       }
     } catch (err: any) {
       console.error('[UserContext] Erro pego no bloco catch do login:', err);
@@ -173,7 +171,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Função de registro usa fetch direto, pois já estava correta.
   const register = async (name: string, email: string, password: string) => {
     setLoading(true);
     setError(null);
@@ -198,7 +195,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Função de login com Google usa fetch direto, pois já estava correta.
   const loginWithGoogle = () => {
     setLoading(true);
     setError(null);
