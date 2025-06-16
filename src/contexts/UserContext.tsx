@@ -2,8 +2,10 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
+// Adicionando os imports do SDK novamente
+import { SimpleJwtLogin, AuthenticateInterface } from 'simple-jwt-login';
 
-// ALTERADO: A interface agora reflete a estrutura "plana" do token.
+// Interface para o token decodificado (formato "plano")
 interface DecodedJwt {
   id: string;
   email: string;
@@ -46,6 +48,9 @@ declare global {
   }
 }
 
+// Inicializamos o SDK para usá-lo na função de login
+const simpleJwtLogin = new SimpleJwtLogin(window.wpData?.siteUrl || '');
+
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<WordPressUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,45 +67,42 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return headers;
   };
 
-  // CORRIGIDO: Esta função agora lê a estrutura "plana" correta do token.
+  const logout = () => {
+    setUser(null);
+    setError(null);
+    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('wp_user_data');
+  };
+
   const setUserFromToken = (token: string) => {
     try {
-      console.log('[UserContext] Processando token JWT...');
       const decoded: DecodedJwt = jwtDecode(token);
-      console.log('[UserContext] Token decodificado:', decoded);
-
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        console.warn('[UserContext] Token expirado, fazendo logout');
         logout();
         return;
       }
-      
       const loggedInUser: WordPressUser = {
         id: parseInt(decoded.id, 10),
         email: decoded.email,
         name: decoded.display_name || decoded.email.split('@')[0],
         isLoggedIn: true,
         token: token,
-        roles: decoded.roles || ['subscriber'], // Ainda precisamos adicionar as roles no backend
+        roles: decoded.roles || ['subscriber'],
         avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(decoded.display_name || decoded.email.split('@')[0])}&background=6366F1&color=fff`
       };
-      
       setUser(loggedInUser);
       localStorage.setItem('jwt_token', token);
       localStorage.setItem('wp_user_data', JSON.stringify(loggedInUser));
-      console.log('[UserContext] Usuário configurado com sucesso:', loggedInUser);
     } catch (e) {
       console.error('[UserContext] Erro ao processar token:', e);
       logout();
     }
   };
-  
+
   const validateToken = async (token: string): Promise<boolean> => {
     try {
       const decoded: DecodedJwt = jwtDecode(token);
-      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        return false;
-      }
+      if (decoded.exp && decoded.exp * 1000 < Date.now()) return false;
       const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/auth/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -114,21 +116,18 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const initializeAuth = async () => {
+      setLoading(true);
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const jwtFromUrl = urlParams.get('jwt');
         if (jwtFromUrl) {
           setUserFromToken(jwtFromUrl);
           window.history.replaceState({}, document.title, window.location.pathname);
-          setLoading(false);
-          return;
-        }
-
-        const storedToken = localStorage.getItem('jwt_token');
-        if (storedToken) {
-          if (await validateToken(storedToken)) {
+        } else {
+          const storedToken = localStorage.getItem('jwt_token');
+          if (storedToken && await validateToken(storedToken)) {
             setUserFromToken(storedToken);
-          } else {
+          } else if (storedToken) {
             logout();
           }
         }
@@ -141,24 +140,32 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initializeAuth();
   }, []);
 
+  // ATUALIZADO: Voltamos a usar o SDK para o login tradicional, com logs detalhados
   const login = async (email: string, password: string) => {
     setLoading(true);
     setError(null);
+    console.log('[UserContext] Tentando login com o SDK...');
+    
     try {
-      const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/auth`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify({ email, password })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || `Erro HTTP: ${response.status}`);
-      if (data.success && data.jwt) { // O token vem em data.jwt no sucesso
+      const params: AuthenticateInterface = { email, password };
+      const data = await simpleJwtLogin.authenticate(params);
+
+      console.log('[UserContext] Resposta do SDK:', data);
+
+      if (data && data.jwt) {
+        console.log('[UserContext] SUCESSO: Token JWT encontrado diretamente na resposta.');
         setUserFromToken(data.jwt);
-      } else {
-        throw new Error(data.data?.message || 'Token JWT não foi retornado pelo servidor');
+      } else if (data && data.success && data.data?.jwt) {
+        console.log('[UserContext] SUCESSO: Token JWT encontrado dentro de data.data.jwt.');
+        setUserFromToken(data.data.jwt);
+      }
+      else {
+        console.error('[UserContext] FALHA: A resposta do SDK não continha um JWT.', data);
+        throw new Error(data.message || 'Credenciais inválidas ou erro no SDK.');
       }
     } catch (err: any) {
-      const errorMessage = err.message || 'Erro desconhecido no login';
+      console.error('[UserContext] Erro pego no bloco catch do login:', err);
+      const errorMessage = err.message || 'Erro desconhecido ao tentar fazer login.';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -166,6 +173,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // Função de registro usa fetch direto, pois já estava correta.
   const register = async (name: string, email: string, password: string) => {
     setLoading(true);
     setError(null);
@@ -173,27 +181,24 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/register`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify({
-          email, password,
-          user_login: email, display_name: name,
-        })
+        body: JSON.stringify({ email, password, user_login: email, display_name: name })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || `Erro HTTP: ${response.status}`);
       if (data.success) {
         await login(email, password);
       } else {
-        throw new Error(data.message || 'Falha no registro');
+        throw new Error(data.message || 'Falha no registro.');
       }
     } catch (err: any) {
-      const errorMessage = err.message || 'Erro desconhecido no registro';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  // Função de login com Google usa fetch direto, pois já estava correta.
   const loginWithGoogle = () => {
     setLoading(true);
     setError(null);
@@ -214,16 +219,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
       window.location.href = authUrl;
     } catch (err: any) {
-      setError('Erro ao iniciar login com Google');
+      setError('Erro ao iniciar login com Google.');
       setLoading(false);
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setError(null);
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('wp_user_data');
   };
 
   const clearError = () => setError(null);
