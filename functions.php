@@ -109,7 +109,7 @@ function djzeneyer_jwt_cors_setup() {
 }
 add_action('init', 'djzeneyer_jwt_cors_setup');
 
-// Configurar headers para JWT
+// Configurar headers para JWT em servidores Apache
 function djzeneyer_jwt_headers($headers) {
     if (!isset($headers['Authorization'])) {
         if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
@@ -141,3 +141,17 @@ function djzeneyer_cocart_config() {
     add_filter('cocart_merge_cart_content', '__return_true');
 }
 add_action('init', 'djzeneyer_cocart_config');
+
+// --- ADICIONADO POR NÓS: CORREÇÃO ESSENCIAL PARA O LOGIN DE ADMIN ---
+/**
+ * Adiciona as funções (roles) do usuário ao payload do token do Simple JWT Login.
+ * Isso garante que o frontend saiba se um usuário é 'administrator', 'subscriber', etc.
+ */
+function djzeneyer_add_roles_to_jwt_payload( $payload_data, $user ) {
+    if ( isset( $user->roles ) && is_array( $user->roles ) ) {
+        // Adiciona o array de roles dentro da chave 'user' do payload
+        $payload_data['user']['roles'] = $user->roles;
+    }
+    return $payload_data;
+}
+add_filter( 'simple_jwt_login_payload_data', 'djzeneyer_add_roles_to_jwt_payload', 10, 2 );
