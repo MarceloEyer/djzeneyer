@@ -9,18 +9,11 @@ export default defineConfig({
     // https: true,
   },
   build: {
-    // Output to WordPress theme directory
     outDir: 'dist',
-    // Generate manifest for WordPress enqueue
     manifest: true,
 
-    // ADIÇÃO RECOMENDADA: Garante uma build de produção limpa e otimizada
-    minify: 'terser', // Usa o minificador 'terser'
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove todos os `console.log` do código final
-      },
-    },
+    // A seção 'minify' e 'terserOptions' foi REMOVIDA.
+    // O Vite agora usará o padrão 'esbuild' automaticamente durante o build.
 
     rollupOptions: {
       output: {
