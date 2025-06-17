@@ -34,30 +34,14 @@ const ShopPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cartStatus, setCartStatus] = useState<Record<number, 'idle' | 'adding' | 'added' | 'error'>>({});
-  const [debugInfo, setDebugInfo] = useState<string>('');
   const { user } = useUser();
 
-  // Função para fazer debug das configurações
-  const logDebugInfo = useCallback(() => {
-    const info = {
-      wpData: window.wpData,
-      consumerKey: import.meta.env.VITE_WC_CONSUMER_KEY ? 'Presente' : 'Ausente',
-      consumerSecret: import.meta.env.VITE_WC_CONSUMER_SECRET ? 'Presente' : 'Ausente',
-      user: user ? `Logado como ${user.name}` : 'Não logado'
-    };
-    setDebugInfo(JSON.stringify(info, null, 2));
-    console.log('Debug Info:', info);
-  }, [user]);
-
-  // Esta função agora usa o endpoint público da Store API e funciona.
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
-    logDebugInfo();
 
     const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/products`;
-    console.log(`Buscando produtos de: ${apiUrl}`);
-
+    
     try {
       const response = await fetch(apiUrl);
       if (!response.ok) {
@@ -65,8 +49,6 @@ const ShopPage: React.FC = () => {
         throw new Error(`Erro na API da Loja: ${errorData.message || response.statusText}`);
       }
       const data = await response.json();
-      // O endpoint /wc/store/v1/products retorna um formato diferente
-      // Precisamos normalizar os dados
       const normalizedData = data.map(normalizeProduct);
       setProducts(normalizedData);
     } catch (err: any) {
@@ -74,15 +56,13 @@ const ShopPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [logDebugInfo]);
+  }, []);
 
-  // Função para normalizar dados de produto de diferentes APIs
   const normalizeProduct = (productData: any): Product => {
     return {
       id: productData.id || 0,
       name: productData.name || 'Produto sem nome',
       slug: productData.slug || `product-${productData.id}`,
-      // A Store API retorna preços em centavos, então dividimos por 100
       price: String((parseFloat(productData.prices?.price || '0') / 100).toFixed(2)),
       on_sale: productData.on_sale || false,
       regular_price: String((parseFloat(productData.prices?.regular_price || '0') / 100).toFixed(2)),
@@ -98,32 +78,24 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // VERSÃO DE DEBUG: Função de adicionar ao carrinho focada apenas no CoCart
   const addToCart = async (productId: number) => {
     console.log("--- Iniciando Adicionar ao Carrinho ---");
     setCartStatus(prev => ({ ...prev, [productId]: 'adding' }));
 
     const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}cocart/v2/cart/add-item`;
     
-    // O CoCart geralmente espera o ID do produto como uma string
+    // CORREÇÃO APLICADA AQUI: mudamos 'product_id' para 'id' para corresponder à mensagem de erro
     const body = {
-        product_id: String(productId),
+        id: String(productId),
         quantity: 1
     };
 
     const headers: HeadersInit = { 'Content-Type': 'application/json' };
     
     if (user && user.token) {
-        console.log("Enviando como usuário logado com token JWT.");
         headers['Authorization'] = `Bearer ${user.token}`;
-    } else {
-        console.log("Enviando como visitante (convidado).");
     }
     
-    console.log("Enviando POST para:", apiUrl);
-    console.log("Com headers:", headers);
-    console.log("Com body:", JSON.stringify(body));
-
     try {
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -131,16 +103,13 @@ const ShopPage: React.FC = () => {
             body: JSON.stringify(body),
         });
 
-        console.log("Resposta recebida do CoCart. Status:", response.status);
-        
         const responseData = await response.json();
-        console.log("Dados da resposta do CoCart:", responseData);
 
         if (!response.ok) {
             throw new Error(responseData.message || `O servidor respondeu com o status ${response.status}`);
         }
 
-        console.log("SUCESSO: Produto adicionado ao carrinho!");
+        console.log("SUCESSO: Produto adicionado ao carrinho!", responseData);
         setCartStatus(prev => ({ ...prev, [productId]: 'added' }));
         setTimeout(() => setCartStatus(prev => ({ ...prev, [productId]: 'idle' })), 2000);
 
@@ -158,8 +127,7 @@ const ShopPage: React.FC = () => {
     const numPrice = parseFloat(price);
     return isNaN(numPrice) ? 'Preço sob consulta' : `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
   };
-  
-  // O resto do código JSX para renderização continua o mesmo
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white">
