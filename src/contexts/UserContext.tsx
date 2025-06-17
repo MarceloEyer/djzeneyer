@@ -42,7 +42,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 // Declaração global para o objeto wpData
 declare global {
   interface Window {
-    wpData: {
+    wpData?: {
       siteUrl: string;
       restUrl: string;
       nonce: string;
@@ -50,29 +50,61 @@ declare global {
   }
 }
 
-// Inicializa o SDK fora do componente
-const simpleJwtLogin = new SimpleJwtLogin(window.wpData?.siteUrl || '');
+// Função para obter configurações do WordPress com fallbacks
+const getWpConfig = () => {
+  // Verifica se wpData existe, senão usa valores padrão ou variáveis de ambiente
+  const siteUrl = window.wpData?.siteUrl || 
+                  import.meta.env.VITE_WP_SITE_URL || 
+                  window.location.origin;
+  
+  const restUrl = window.wpData?.restUrl || 
+                  `${siteUrl}/wp-json/`;
+
+  return { siteUrl, restUrl };
+};
 
 // --- O Componente Provedor ---
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<WordPressUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [simpleJwtLogin, setSimpleJwtLogin] = useState<SimpleJwtLogin | null>(null);
+
+  // Inicializa o SDK quando o componente monta
+  useEffect(() => {
+    const config = getWpConfig();
+    try {
+      const sdk = new SimpleJwtLogin(config.siteUrl);
+      setSimpleJwtLogin(sdk);
+    } catch (error) {
+      console.error('[UserContext] Erro ao inicializar SDK:', error);
+      setError('Erro na configuração do sistema de autenticação');
+    }
+  }, []);
 
   const logout = () => {
     setUser(null);
     setError(null);
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('wp_user_data');
+    // Usar try/catch para localStorage em caso de problemas de permissão
+    try {
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem('wp_user_data');
+    } catch (e) {
+      console.warn('[UserContext] Erro ao limpar localStorage:', e);
+    }
   };
 
   const setUserFromToken = (token: string) => {
     try {
       const decoded: DecodedJwt = jwtDecode(token);
+      
+      // Verifica se o token não expirou
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+        console.warn('[UserContext] Token expirado');
         logout();
         return;
       }
+
       const loggedInUser: WordPressUser = {
         id: parseInt(decoded.id, 10),
         email: decoded.email,
@@ -80,13 +112,23 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isLoggedIn: true,
         token: token,
         roles: decoded.roles || ['subscriber'],
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(decoded.display_name || decoded.email.split('@')[0])}&background=6366F1&color=fff`
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          decoded.display_name || decoded.email.split('@')[0]
+        )}&background=6366F1&color=fff`
       };
+
       setUser(loggedInUser);
-      localStorage.setItem('jwt_token', token);
-      localStorage.setItem('wp_user_data', JSON.stringify(loggedInUser));
+      
+      // Salvar no localStorage com tratamento de erro
+      try {
+        localStorage.setItem('jwt_token', token);
+        localStorage.setItem('wp_user_data', JSON.stringify(loggedInUser));
+      } catch (e) {
+        console.warn('[UserContext] Erro ao salvar no localStorage:', e);
+      }
     } catch (e) {
       console.error('[UserContext] Erro ao processar token:', e);
+      setError('Token inválido');
       logout();
     }
   };
@@ -94,58 +136,100 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const validateToken = async (token: string): Promise<boolean> => {
     try {
       const decoded: DecodedJwt = jwtDecode(token);
-      if (decoded.exp && decoded.exp * 1000 < Date.now()) return false;
-      const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/auth/validate`, {
+      
+      // Verificação básica de expiração
+      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+        return false;
+      }
+
+      const config = getWpConfig();
+      const response = await fetch(`${config.restUrl}simple-jwt-login/v1/auth/validate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${token}` 
+        },
         body: JSON.stringify({ JWT: token })
       });
-      return response.ok && (await response.json()).success === true;
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+      return data.success === true;
     } catch (e) {
+      console.error('[UserContext] Erro ao validar token:', e);
       return false;
     }
   };
 
+  // Inicialização da autenticação
   useEffect(() => {
     const initializeAuth = async () => {
       setLoading(true);
       try {
+        // Verifica se há JWT na URL (redirect do Google)
         const urlParams = new URLSearchParams(window.location.search);
         const jwtFromUrl = urlParams.get('jwt');
+        
         if (jwtFromUrl) {
           setUserFromToken(jwtFromUrl);
-          window.history.replaceState({}, document.title, window.location.pathname);
+          // Remove o JWT da URL
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete('jwt');
+          window.history.replaceState({}, document.title, newUrl.pathname + newUrl.search);
         } else {
-          const storedToken = localStorage.getItem('jwt_token');
-          if (storedToken && await validateToken(storedToken)) {
-            setUserFromToken(storedToken);
-          } else if (storedToken) {
-            logout();
+          // Verifica token armazenado
+          let storedToken: string | null = null;
+          try {
+            storedToken = localStorage.getItem('jwt_token');
+          } catch (e) {
+            console.warn('[UserContext] Erro ao acessar localStorage:', e);
+          }
+
+          if (storedToken) {
+            const isValid = await validateToken(storedToken);
+            if (isValid) {
+              setUserFromToken(storedToken);
+            } else {
+              console.log('[UserContext] Token inválido, fazendo logout');
+              logout();
+            }
           }
         }
       } catch (error) {
         console.error('[UserContext] Erro na inicialização:', error);
+        setError('Erro ao inicializar autenticação');
       } finally {
         setLoading(false);
       }
     };
+
     initializeAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (!simpleJwtLogin) {
+      throw new Error('Sistema de autenticação não inicializado');
+    }
+
     setLoading(true);
     setError(null);
+    
     try {
       const params: AuthenticateInterface = { email, password };
       const data = await simpleJwtLogin.authenticate(params);
+      
       if (data && data.success && data.data?.jwt) {
         setUserFromToken(data.data.jwt);
       } else {
-        throw new Error(data.message || 'Credenciais inválidas ou erro na resposta do servidor.');
+        throw new Error(data?.message || 'Credenciais inválidas ou erro na resposta do servidor.');
       }
     } catch (err: any) {
-      setError(err.message);
-      throw err;
+      const errorMessage = err.message || 'Erro ao fazer login';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -154,22 +238,36 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const register = async (name: string, email: string, password: string) => {
     setLoading(true);
     setError(null);
+    
     try {
-      const response = await fetch(`${window.wpData?.restUrl}simple-jwt-login/v1/register`, {
+      const config = getWpConfig();
+      const response = await fetch(`${config.restUrl}simple-jwt-login/v1/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, user_login: email, display_name: name })
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          user_login: email, 
+          display_name: name 
+        })
       });
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || `Erro HTTP: ${response.status}`);
+      
+      if (!response.ok) {
+        throw new Error(data.message || `Erro HTTP: ${response.status}`);
+      }
+
       if (data.success) {
+        // Após registro bem-sucedido, faz login automaticamente
         await login(email, password);
       } else {
         throw new Error(data.message || 'Falha no registro.');
       }
     } catch (err: any) {
-      setError(err.message);
-      throw err;
+      const errorMessage = err.message || 'Erro ao registrar usuário';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -178,13 +276,18 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const loginWithGoogle = () => {
     setLoading(true);
     setError(null);
+    
     try {
       const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      if (!GOOGLE_CLIENT_ID) throw new Error("Client ID do Google não configurado.");
-      
-      const REDIRECT_URI = `${window.wpData?.siteUrl}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
+      if (!GOOGLE_CLIENT_ID) {
+        throw new Error("Client ID do Google não configurado nas variáveis de ambiente.");
+      }
+
+      const config = getWpConfig();
+      const REDIRECT_URI = `${config.siteUrl}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
       const finalRedirectUrl = window.location.origin;
       const state = btoa(`redirect_uri=${finalRedirectUrl}`);
+      
       const params = new URLSearchParams({
         client_id: GOOGLE_CLIENT_ID,
         redirect_uri: REDIRECT_URI,
@@ -194,23 +297,34 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         prompt: 'consent',
         state: state
       });
+
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
       window.location.href = authUrl;
     } catch (err: any) {
-      setError(err.message || 'Erro ao iniciar login com Google.');
+      const errorMessage = err.message || 'Erro ao iniciar login com Google.';
+      setError(errorMessage);
       setLoading(false);
     }
   };
 
   const clearError = () => setError(null);
 
-  const value = { user, loading, error, login, logout, register, loginWithGoogle, clearError, setUserFromToken };
+  const value = { 
+    user, 
+    loading, 
+    error, 
+    login, 
+    logout, 
+    register, 
+    loginWithGoogle, 
+    clearError, 
+    setUserFromToken 
+  };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 // --- O HOOK DE EXPORTAÇÃO ---
-// Esta é a parte que o erro diz que está faltando.
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
