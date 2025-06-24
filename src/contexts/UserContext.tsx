@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react'; // Added useRef
-// Removed SimpleJwtLogin SDK import as we're reverting to direct fetch
+import { jwtDecode } from 'jwt-decode'; // Ensure jwt-decode is installed: npm install jwt-decode
+import { SimpleJwtLogin, RegisterUserInterface, AuthenticateInterface } from 'simple-jwt-login'; // Import the SDK
 
 // Ensure window.wpData is globally accessible (provided by WordPress)
 declare global {
@@ -16,6 +17,15 @@ declare global {
       };
     };
   }
+}
+
+// Interface para o token decodificado
+interface DecodedJwt {
+  id: string;
+  email: string;
+  display_name?: string;
+  roles?: string[];
+  exp?: number;
 }
 
 // User type definition for WordPress User, updated to match WP API response
@@ -65,6 +75,7 @@ interface UserContextType {
   register: (name: string, email: string, password: string) => Promise<void>; 
   loginWithGoogle: () => Promise<void>;
   clearError: () => void; 
+  setUserFromToken: (token: string) => void; // Made available in context
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -74,10 +85,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // simpleJwtLoginRef is also not needed anymore, as SDK methods are not called directly
-  // const simpleJwtLoginRef = useRef<SimpleJwtLogin | null>(null);
+  // Use useRef to store the SimpleJwtLogin instance
+  const simpleJwtLoginRef = useRef<SimpleJwtLogin | null>(null);
 
   // Define wpData with robust fallbacks
+  // This constant is now defined outside the useEffect but used inside it
   const wpData = window.wpData || {
     siteUrl: 'http://localhost:8000',
     restUrl: 'http://localhost:8000/wp-json/',
@@ -90,28 +102,140 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // Function to set user state from a JWT token
+  const setUserFromToken = (token: string) => {
+    try {
+      const decoded: DecodedJwt = jwtDecode(token);
+      
+      // Check if the token has expired
+      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+        console.warn('[UserContext] Token expired');
+        logout();
+        return;
+      }
+
+      const loggedInUser: WordPressUser = {
+        id: parseInt(decoded.id, 10),
+        email: decoded.email,
+        name: decoded.display_name || decoded.email.split('@')[0] || 'User',
+        isLoggedIn: true,
+        token: token,
+        roles: decoded.roles || ['subscriber'], // Use roles from JWT if available, else default
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          decoded.display_name || decoded.email.split('@')[0] || 'User'
+        )}&background=0d96ff&color=fff`
+      };
+
+      setUser(loggedInUser);
+      // Save to localStorage with error handling
+      try {
+        localStorage.setItem('jwt_token', token);
+        localStorage.setItem('wp_user_data', JSON.stringify(loggedInUser));
+      } catch (e) {
+        console.warn('[UserContext] Error saving to localStorage:', e);
+      }
+    } catch (e) {
+      console.error('[UserContext] Error processing token:', e);
+      setError('Invalid token');
+      logout();
+    }
+  };
+
+
+  // Initialize SimpleJwtLogin SDK instance safely within useEffect
+  // and handle initial authentication check
+  useEffect(() => {
+    // Only initialize if wpData is available and the ref hasn't been set yet
+    if (window.wpData && window.wpData.siteUrl && !simpleJwtLoginRef.current) { 
+        // Use the actual wpData from window
+        simpleJwtLoginRef.current = new SimpleJwtLogin(
+          window.wpData.siteUrl, 
+          window.wpData.jwtSettings?.endpoint || '/simple-jwt-login/v1', 
+          window.wpData.jwtAuthKey || 'AUTH_KEY' 
+        ); 
+        console.log("[UserContext] SimpleJwtLogin SDK initialized.");
+
+        // After SDK is initialized, try to fetch user details if a token is stored
+        const storedToken = localStorage.getItem('jwt_token');
+        const storedUserData = localStorage.getItem('wp_user_data');
+        if (storedToken && storedUserData) {
+          try {
+            const parsedUser = JSON.parse(storedUserData);
+            // Validate stored token and then fetch user details
+            validateToken(storedToken).then(isValid => {
+              if (isValid) {
+                // If token is valid, try to fetch fresh user details (including GamiPress)
+                fetchUserDetails(storedToken, parsedUser.email).catch((err) => {
+                  console.warn("Stored JWT token or session invalid, clearing user data after init:", err);
+                  logout(); 
+                });
+              } else {
+                console.warn('Stored token invalid, logging out');
+                logout();
+              }
+            }).catch((err) => {
+              console.error('Error validating token on initialization:', err);
+              logout();
+            });
+          } catch (e) {
+            console.error("Failed to parse stored user data or invalid token on init", e);
+            logout();
+          }
+        } else {
+            setLoading(false); // Stop loading if no token is stored on initial load
+        }
+    } else if (!window.wpData || !window.wpData.siteUrl) { 
+      // If wpData is not present, set an error to indicate authentication service is not ready
+      setError("Authentication service not ready. Please ensure WordPress is running and configured correctly.");
+      console.error("[UserContext] window.wpData is not available. Authentication services will not function.");
+      setLoading(false); // Stop loading if wpData is not available
+    }
+  }, []); // Run once on mount to initialize SDK
+
+  // Function to validate JWT token (backend validation)
+  const validateToken = async (token: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/auth/validate`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ JWT: token })
+      });
+
+      const data = await response.json();
+      return data.success === true;
+    } catch (e) {
+      console.error('[UserContext] Error validating token (backend call):', e);
+      return false;
+    }
+  };
+
   // Function to fetch full user details AND GamiPress data after successful authentication or on page load
   const fetchUserDetails = async (token: string, email: string) => {
-    // No SDK instance check needed here as we use direct fetch
+    // Ensure SDK is initialized before making requests
+    if (!window.wpData || !window.wpData.siteUrl) { // Use wpData from global scope or its fallback
+        throw new Error("Authentication service not ready. (wpData missing)");
+    }
+
     try {
-      // Use wpData from the local constant, as it's guaranteed to be available here
-      // This remains a call to the native WP REST API users/me endpoint
+      // Tenta buscar dados do usuário do WordPress (ideal)
       const userResponse = await fetch(`${wpData.restUrl}wp/v2/users/me`, {
         headers: {
-            'Authorization': `Bearer ${token}`, // Authenticate with JWT
-            'X-WP-Nonce': wpData.nonce // Nonce can be useful even with JWT
+            'Authorization': `Bearer ${token}`, // Autenticar com JWT
+            'X-WP-Nonce': wpData.nonce // Nonce pode ser útil mesmo com JWT
         },
-        credentials: 'include' // CRITICAL: This sends session cookies which are needed for /users/me
+        credentials: 'include' // CRÍTICO: Isto envia cookies de sessão que são necessários para /users/me
       });
       const userData = await userResponse.json();
 
       if (!userResponse.ok || userData.code) { 
-          // If /users/me fails (e.g., 403 for non-admins), try to populate user from JWT token directly
-          console.warn("[UserContext] /wp/v2/users/me failed. Attempting to get user data from JWT payload.");
-          const decoded: DecodedJwt = jwtDecode(token); // Decode the token (needs jwt-decode library)
-          
+          console.warn("[UserContext] /wp/v2/users/me failed. Attempting to get user data from JWT payload instead.");
+          // Fallback: Se /users/me falha (ex: 403 para não-admins), popula o usuário do payload do JWT diretamente
+          const decoded: DecodedJwt = jwtDecode(token);
           if (!decoded || !decoded.id || !decoded.email) {
-            throw new Error("Could not decode valid user data from JWT payload.");
+            throw new Error("Could not decode valid user data from JWT payload for fallback.");
           }
 
           const basicUserFromJwt: WordPressUser = {
@@ -120,20 +244,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             name: decoded.display_name || decoded.email.split('@')[0] || 'User',
             isLoggedIn: true,
             token: token,
-            roles: decoded.roles || ['subscriber'], // Use roles from JWT if available, else default
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(decoded.display_name || decoded.email.split('@')[0])}&background=0d96ff&color=fff`
+            roles: decoded.roles || ['subscriber'], 
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(decoded.display_name || decoded.email.split('@')[0] || 'User')}&background=0d96ff&color=fff`
           };
           setUser(basicUserFromJwt);
           localStorage.setItem('jwt_token', token);
           localStorage.setItem('wp_user_data', JSON.stringify(basicUserFromJwt));
-          console.log('Login successful and basic user details fetched from JWT!', basicUserFromJwt);
-          return basicUserFromJwt; // Return the basic user
-
-          // Original error if basic user from JWT fails too
-          // throw new Error(userData.message || "Failed to retrieve logged-in user data from /wp/v2/users/me.");
+          console.log('Login successful and basic user details fetched from JWT (fallback)!', basicUserFromJwt);
+          return basicUserFromJwt; 
       }
 
-      // Determine the best avatar URL to use
+      // Se /users/me funcionar, usa esses dados
       const defaultUiAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || userData.slug || 'User')}&background=0d96ff&color=fff`;
       const finalAvatar = userData.avatar_urls?.['96'] || defaultUiAvatar;
 
@@ -145,17 +266,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       let gamipressXP: number = 0;
       let gamipressRankName: string = 'N/A';
       let gamipressXPToNextLevel: number = 0;
-      let gamipressXPProgress: number = number = 0;
+      let gamipressXPProgress: number = 0;
 
       try {
-        // Fetch User Points (replace 'points' with your actual point type slug if different)
+        // Fetch User Points 
         const pointsResponse = await fetch(`${wpData.restUrl}gamipress/v1/users/${userData.id}/points`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (pointsResponse.ok) {
-          const pointsData = await pointsResponse.json();
-          gamipressPoints = pointsData; 
-          gamipressXP = pointsData.points || 0; 
+          gamipressPoints = await pointsResponse.json(); 
+          gamipressXP = gamipressPoints.points || 0; 
         }
 
         // Fetch User Achievements
@@ -163,8 +283,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (achievementsResponse.ok) {
-          const achievementsData = await achievementsResponse.json();
-          gamipressAchievements = achievementsData.map((ach: any) => ({
+          gamipressAchievements = (await achievementsResponse.json()).map((ach: any) => ({
             id: ach.id,
             title: ach.title,
             status: ach.status,
@@ -173,7 +292,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }));
         }
 
-        // Fetch User Ranks (Assuming only one main rank type)
+        // Fetch User Ranks 
         const ranksResponse = await fetch(`${wpData.restUrl}gamipress/v1/users/${userData.id}/ranks`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -191,10 +310,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log("[UserContext] GamiPress data fetched:", { gamipressPoints, gamipressAchievements, gamipressRanks });
 
       } catch (gamipressErr) {
-        console.warn("[UserContext] Falha ao buscar dados do GamiPress:", gamipressErr);
+        console.warn("[UserContext] Failed to fetch GamiPress data:", gamipressErr);
       }
-      // --- End GamiPress data fetch ---
-
 
       const loggedInUser: WordPressUser = {
         id: userData.id,
@@ -303,7 +420,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       // Chamada direta para a API do Simple JWT Login (endpoint /auth)
-      const response = await fetch(`${window.wpData.restUrl}simple-jwt-login/v1/auth`, { 
+      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/auth`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -349,12 +466,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         display_name: nameParam,
         first_name: nameParam 
       };
-      // *** Endpoint CORRIGIDO para /users (conforme a lista de rotas do plugin) ***
-      const response = await fetch(`${window.wpData.restUrl}simple-jwt-login/v1/users`, { 
+      // Endpoint CORRIGIDO para /users (conforme a lista de rotas do plugin)
+      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/users`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': window.wpData.nonce, 
+          'X-WP-Nonce': wpData.nonce, 
         },
         body: JSON.stringify({
             email: emailParam,
@@ -391,7 +508,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('wp_user_data');
     console.log('Utilizador terminou sessão.');
-    window.location.href = window.wpData.siteUrl; 
+    window.location.href = wpData.siteUrl; 
   };
 
   const loginWithGoogle = async () => {
@@ -405,7 +522,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     
     try {
-      window.location.href = `${window.wpData.siteUrl}/wp-login.php?loginSocial=google`; 
+      window.location.href = `${wpData.siteUrl}/wp-login.php?loginSocial=google`; 
     } catch (err: any) {
       console.error("[UserContext] Erro de login Google:", err);
       const cleanErrorMessage = err.message ? err.message.replace(/<[^>]*>?/gm, '') : 'Falha ao iniciar sessão com Google.';
