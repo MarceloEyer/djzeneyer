@@ -88,64 +88,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Use useRef to store the SimpleJwtLogin instance
   const simpleJwtLoginRef = useRef<SimpleJwtLogin | null>(null);
 
-  // Define wpData with robust fallbacks
-  // This constant is now defined outside the useEffect but used inside it
-  const wpData = window.wpData || {
-    siteUrl: 'http://localhost:8000',
-    restUrl: 'http://localhost:8000/wp-json/',
-    nonce: '',
-    jwtAuthKey: 'YOUR_AUTH_KEY_FALLBACK', // Ensure a fallback is here
-    jwtSettings: {
-      allowRegister: true,
-      requireNonce: false,
-      endpoint: '/simple-jwt-login/v1'
-    }
-  };
-
-  // Function to set user state from a JWT token
-  const setUserFromToken = (token: string) => {
-    try {
-      const decoded: DecodedJwt = jwtDecode(token);
-      
-      // Check if the token has expired
-      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        console.warn('[UserContext] Token expired');
-        logout();
-        return;
-      }
-
-      const loggedInUser: WordPressUser = {
-        id: parseInt(decoded.id, 10),
-        email: decoded.email,
-        name: decoded.display_name || decoded.email.split('@')[0] || 'User',
-        isLoggedIn: true,
-        token: token,
-        roles: decoded.roles || ['subscriber'], // Use roles from JWT if available, else default
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-          decoded.display_name || decoded.email.split('@')[0] || 'User'
-        )}&background=0d96ff&color=fff`
-      };
-
-      setUser(loggedInUser);
-      // Save to localStorage with error handling
-      try {
-        localStorage.setItem('jwt_token', token);
-        localStorage.setItem('wp_user_data', JSON.stringify(loggedInUser));
-      } catch (e) {
-        console.warn('[UserContext] Error saving to localStorage:', e);
-      }
-    } catch (e) {
-      console.error('[UserContext] Error processing token:', e);
-      setError('Invalid token');
-      logout();
-    }
-  };
-
-
   // Initialize SimpleJwtLogin SDK instance safely within useEffect
   // and handle initial authentication check
   useEffect(() => {
-    // Only initialize if wpData is available and the ref hasn't been set yet
+    // Only initialize if window.wpData is available and the ref hasn't been set yet
     if (window.wpData && window.wpData.siteUrl && !simpleJwtLoginRef.current) { 
         // Use the actual wpData from window
         simpleJwtLoginRef.current = new SimpleJwtLogin(
