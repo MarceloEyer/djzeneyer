@@ -91,13 +91,26 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Initialize SimpleJwtLogin SDK instance safely within useEffect
   // and handle initial authentication check
   useEffect(() => {
-    // Only initialize if window.wpData is available and the ref hasn't been set yet
-    if (window.wpData && window.wpData.siteUrl && !simpleJwtLoginRef.current) { 
-        // Use the actual wpData from window
+    // Define wpData with robust fallbacks
+    // Use the actual wpData if available, otherwise fallback to development defaults
+    const currentWpData = window.wpData || {
+      siteUrl: 'http://localhost:8000',
+      restUrl: 'http://localhost:8000/wp-json/',
+      nonce: '',
+      jwtAuthKey: 'YOUR_AUTH_KEY_FALLBACK', // Ensure a fallback is here
+      jwtSettings: {
+        allowRegister: true,
+        requireNonce: false,
+        endpoint: '/simple-jwt-login/v1'
+      }
+    };
+
+    // Only initialize if wpData is available and the ref hasn't been set yet
+    if (currentWpData.siteUrl && !simpleJwtLoginRef.current) { 
         simpleJwtLoginRef.current = new SimpleJwtLogin(
-          window.wpData.siteUrl, 
-          window.wpData.jwtSettings?.endpoint || '/simple-jwt-login/v1', 
-          window.wpData.jwtAuthKey || 'AUTH_KEY' 
+          currentWpData.siteUrl, 
+          currentWpData.jwtSettings?.endpoint || '/simple-jwt-login/v1', 
+          currentWpData.jwtAuthKey || 'AUTH_KEY' 
         ); 
         console.log("[UserContext] SimpleJwtLogin SDK initialized.");
 
@@ -130,7 +143,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
             setLoading(false); // Stop loading if no token is stored on initial load
         }
-    } else if (!window.wpData || !window.wpData.siteUrl) { 
+    } else if (!currentWpData.siteUrl) { 
       // If wpData is not present, set an error to indicate authentication service is not ready
       setError("Authentication service not ready. Please ensure WordPress is running and configured correctly.");
       console.error("[UserContext] window.wpData is not available. Authentication services will not function.");
@@ -141,7 +154,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Function to validate JWT token (backend validation)
   const validateToken = async (token: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${wpData.restUrl}simple-jwt-login/v1/auth/validate`, {
+      const response = await fetch(`${currentWpData.restUrl}simple-jwt-login/v1/auth/validate`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json', 
@@ -161,16 +174,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Function to fetch full user details AND GamiPress data after successful authentication or on page load
   const fetchUserDetails = async (token: string, email: string) => {
     // Ensure SDK is initialized before making requests
-    if (!window.wpData || !window.wpData.siteUrl) { // Use wpData from global scope or its fallback
+    if (!currentWpData || !currentWpData.siteUrl) { // Use wpData from global scope or its fallback
         throw new Error("Authentication service not ready. (wpData missing)");
     }
 
     try {
       // Tenta buscar dados do usuário do WordPress (ideal)
-      const userResponse = await fetch(`${wpData.restUrl}wp/v2/users/me`, {
+      const userResponse = await fetch(`${currentWpData.restUrl}wp/v2/users/me`, {
         headers: {
             'Authorization': `Bearer ${token}`, // Autenticar com JWT
-            'X-WP-Nonce': wpData.nonce // Nonce pode ser útil mesmo com JWT
+            'X-WP-Nonce': currentWpData.nonce // Nonce can be useful even with JWT
         },
         credentials: 'include' // CRÍTICO: Isto envia cookies de sessão que são necessários para /users/me
       });
@@ -178,7 +191,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!userResponse.ok || userData.code) { 
           console.warn("[UserContext] /wp/v2/users/me failed. Attempting to get user data from JWT payload instead.");
-          // Fallback: Se /users/me falha (ex: 403 para não-admins), popula o usuário do payload do JWT diretamente
+          // Fallback: Se /users/me falha (e.g., 403 para não-admins), popula o usuário do payload do JWT diretamente
           const decoded: DecodedJwt = jwtDecode(token);
           if (!decoded || !decoded.id || !decoded.email) {
             throw new Error("Could not decode valid user data from JWT payload for fallback.");
@@ -216,7 +229,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       try {
         // Fetch User Points 
-        const pointsResponse = await fetch(`${wpData.restUrl}gamipress/v1/users/${userData.id}/points`, {
+        const pointsResponse = await fetch(`${currentWpData.restUrl}gamipress/v1/users/${userData.id}/points`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (pointsResponse.ok) {
@@ -225,7 +238,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         // Fetch User Achievements
-        const achievementsResponse = await fetch(`${wpData.restUrl}gamipress/v1/users/${userData.id}/achievements`, {
+        const achievementsResponse = await fetch(`${currentWpData.restUrl}gamipress/v1/users/${userData.id}/achievements`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (achievementsResponse.ok) {
@@ -239,7 +252,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         // Fetch User Ranks 
-        const ranksResponse = await fetch(`${wpData.restUrl}gamipress/v1/users/${userData.id}/ranks`, {
+        const ranksResponse = await fetch(`${currentWpData.restUrl}gamipress/v1/users/${userData.id}/ranks`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (ranksResponse.ok) {
