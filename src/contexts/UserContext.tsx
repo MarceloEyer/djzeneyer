@@ -30,7 +30,7 @@ interface DecodedJwt {
 
 // Interface unificada para earnings do GamiPress
 interface GamiPressEarning {
-  id: number;;
+  id: number; // Corrected: Removed extra semicolon
   title: { rendered: string };
   status: string; 
   post_type: 'points_award' | 'achievement' | 'rank'; 
@@ -281,7 +281,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Load user from localStorage on initial load and validate session
   useEffect(() => {
     // Only initialize if window.wpData is available
-    if (!window.wpData) {
+    if (!window.wpData || !window.wpData.siteUrl) {
       setError("Serviço de autenticação não pronto. Por favor, recarregue a página.");
       console.error("[UserContext] window.wpData não está disponível. Os serviços de autenticação não funcionarão.");
       setLoading(false); 
