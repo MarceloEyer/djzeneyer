@@ -30,7 +30,7 @@ interface DecodedJwt {
 
 // Interface unificada para earnings do GamiPress
 interface GamiPressEarning {
-  id: number; // Corrected: Removed extra semicolon
+  id: number;
   title: { rendered: string };
   status: string; 
   post_type: 'points_award' | 'achievement' | 'rank'; 
@@ -92,115 +92,27 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   const simpleJwtLoginRef = useRef<SimpleJwtLogin | null>(null);
 
-  // Function to set user state from a JWT token
-  const setUserFromToken = (token: string) => {
+  const logout = () => {
+    setUser(null);
+    setError(null);
     try {
-      const decoded: DecodedJwt = jwtDecode(token);
-      
-      // Check if the token has expired
-      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        console.warn('[UserContext] Token expirado');
-        logout(); // Call the outer logout function
-        return;
-      }
-
-      const loggedInUser: WordPressUser = {
-        id: parseInt(decoded.id, 10),
-        email: decoded.email,
-        name: decoded.display_name || decoded.email.split('@')[0],
-        isLoggedIn: true,
-        token: token,
-        roles: decoded.roles || ['subscriber'], 
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(decoded.display_name || decoded.email.split('@')[0] || 'User')}&background=0d96ff&color=fff`
-      };
-
-      setUser(loggedInUser);
-      // Save to localStorage with error handling
-      try {
-        localStorage.setItem('jwt_token', token);
-        localStorage.setItem('wp_user_data', JSON.stringify(loggedInUser));
-      } catch (e) {
-        console.warn('[UserContext] Erro ao salvar no localStorage:', e);
-      }
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem('wp_user_data');
     } catch (e) {
-      console.error('[UserContext] Erro ao processar token:', e);
-      setError('Token inválido');
-      logout(); // Call the outer logout function
+      console.warn('[UserContext] Erro ao limpar localStorage:', e);
+    }
+    try {
+      const wpConfig = getWpData();
+      window.location.href = wpConfig.siteUrl;
+    } catch (e) {
+      console.warn('[UserContext] wpData não disponível para redirecionar, recarregando:', e);
+      window.location.reload();
     }
   };
 
-
-  // Initialize SimpleJwtLogin SDK instance safely within useEffect
-  // and handle initial authentication check
-  useEffect(() => {
-    // Definir wpData com fallbacks robustos
-    const initialWpData = window.wpData || {
-      siteUrl: 'http://localhost:8000',
-      restUrl: 'http://localhost:8000/wp-json/',
-      nonce: '',
-      jwtAuthKey: 'YOUR_AUTH_KEY_FALLBACK', // Ensure a fallback is here
-      jwtSettings: {
-        allowRegister: true,
-        requireNonce: false,
-        endpoint: '/simple-jwt-login/v1'
-      }
-    };
-
-    // Only initialize if window.wpData is available and the ref hasn't been set yet
-    if (initialWpData.siteUrl && !simpleJwtLoginRef.current) { 
-        simpleJwtLoginRef.current = new SimpleJwtLogin(
-          initialWpData.siteUrl, 
-          initialWpData.jwtSettings?.endpoint || '/simple-jwt-login/v1', 
-          initialWpData.jwtAuthKey || 'AUTH_KEY' 
-        ); 
-        console.log("[UserContext] SimpleJwtLogin SDK initialized.");
-
-        // After SDK is initialized, try to fetch user details if a token is stored
-        const storedToken = localStorage.getItem('jwt_token');
-        const storedUserData = localStorage.getItem('wp_user_data');
-        if (storedToken && storedUserData) {
-          try {
-            const parsedUser = JSON.parse(storedUserData);
-            // Validate stored token and then fetch user details
-            validateToken(storedToken).then(isValid => {
-              if (isValid) {
-                // If token is valid, try to fetch fresh user details (including GamiPress)
-                fetchUserDetails(storedToken, parsedUser.email).catch((err) => {
-                  console.warn("Token JWT armazenado ou sessão inválida, limpando dados do utilizador após inicialização:", err);
-                  // Call the outer logout function defined below
-                  logout(); 
-                });
-              } else {
-                console.warn('Token armazenado inválido, terminando sessão');
-                // Call the outer logout function defined below
-                logout();
-              }
-            }).catch((err) => {
-              console.error('Erro na validação do token ao inicializar:', err);
-              // Call the outer logout function defined below
-              logout();
-            });
-          } catch (e) {
-            console.error("Falha ao analisar dados do utilizador armazenados", e);
-            // Call the outer logout function defined below
-            logout();
-          }
-        } else {
-            setLoading(false); // Stop loading if no token is stored on initial load
-        }
-    } else if (!initialWpData.siteUrl) { 
-      // If wpData is not present, set an error to indicate authentication service is not ready
-      setError("Serviço de autenticação não pronto. Por favor, recarregue a página.");
-      console.error("[UserContext] window.wpData não está disponível. Os serviços de autenticação não funcionarão.");
-      setLoading(false); // Stop loading if wpData is not available
-    }
-  }, []); // Run once on mount to initialize SDK
-
-
-  // Function to validate JWT token (backend validation)
   const validateToken = async (token: string): Promise<boolean> => {
     try {
-      const wpConfig = getWpData(); // Use helper function to get wpData
+      const wpConfig = getWpData(); 
       const response = await fetch(`${wpConfig.restUrl}simple-jwt-login/v1/auth/validate`, { 
         method: 'POST',
         headers: { 
@@ -218,7 +130,59 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Function to fetch full user details AND GamiPress data after successful authentication or on page load
+  const fetchGamipressData = async (token: string, userId: number) => {
+    try {
+      const wpConfig = getWpData(); 
+      // Correct GamiPress API endpoint for fetching all user earnings
+      const allEarningsResponse = await fetch(
+        `${wpConfig.restUrl}wp/v2/gamipress-user-earnings?user_id=${userId}&per_page=100&context=view`, 
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      if (!allEarningsResponse.ok) {
+        console.warn("[UserContext] Falha ao buscar ganhos GamiPress (resposta não OK):", allEarningsResponse.status);
+        return null;
+      }
+
+      const allEarnings: GamiPressEarning[] = await allEarningsResponse.json();
+
+      // Filter earnings by type
+      const points = allEarnings.filter(e => e.post_type === 'points_award').reduce((acc, curr) => {
+        const type = curr.points_type || 'points'; 
+        acc[type] = (acc[type] || 0) + (curr.points || 0);
+        return acc;
+      }, {} as { [key: string]: number });
+
+      const achievements = allEarnings.filter(e => e.post_type === 'achievement' && e.status === 'publish');
+      const ranks = allEarnings.filter(e => e.post_type === 'rank' && e.status === 'publish');
+      
+      const gamipressXP = points.points || 0;
+      const gamipressLevel = ranks.length; 
+      const gamipressRankName = ranks.length > 0
+        ? ranks.sort((a, b) => b.id - a.id)[0].title.rendered 
+        : 'N/A';
+
+      const gamipressXPToNextLevel = 0; 
+      const gamipressXPProgress = 0; 
+
+      return {
+        gamipress_points: points,
+        gamipress_achievements: achievements,
+        gamipress_ranks: ranks,
+        gamipress_level: gamipressLevel,
+        gamipress_xp: gamipressXP,
+        gamipress_rank_name: gamipressRankName,
+        gamipress_xp_to_next_level: gamipressXPToNextLevel,
+        gamipress_xp_progress: gamipressXPProgress,
+      };
+    } catch (error) {
+      console.warn("[UserContext] Falha ao buscar dados GamiPress (bloco catch):", error);
+      return null;
+    }
+  };
+
   const fetchUserDetails = async (token: string, email: string) => {
     try {
       const wpConfig = getWpData(); 
@@ -275,14 +239,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         avatar: finalAvatar, 
         
         // Assign GamiPress data to user object
-        gamipress_points: gamipressData?.gamipress_points,
-        gamipress_achievements: gamipressData?.gamipress_achievements,
-        gamipress_ranks: gamipressData?.gamipress_ranks,
-        gamipress_level: gamipressData?.gamipress_level,
-        gamipress_xp: gamipressData?.gamipress_xp,
-        gamipress_rank_name: gamipressData?.gamipress_rank_name,
-        gamipress_xp_to_next_level: gamipressData?.gamipress_xp_to_next_level,
-        gamipress_xp_progress: gamipressData?.gamipress_xp_progress,
+        gamipress_points: gamipressPoints,
+        gamipress_achievements: gamipressAchievements,
+        gamipress_ranks: gamipressRanks,
+        gamipress_level: gamipressLevel,
+        gamipress_xp: gamipressXP,
+        gamipress_rank_name: gamipressRankName,
+        gamipress_xp_to_next_level: gamipressXPToNextLevel,
+        gamipress_xp_progress: gamipressXPProgress,
       };
       setUser(loggedInUser);
       localStorage.setItem('jwt_token', token);
