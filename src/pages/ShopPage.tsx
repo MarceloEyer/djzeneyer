@@ -2,31 +2,35 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, ShoppingCart } from 'lucide-react'; // Import Loader2 and ShoppingCart
+import { Loader2, ShoppingCart } from 'lucide-react'; // Import Loader2 and ShoppingCart icons
+import { useLanguage } from '../../contexts/LanguageContext'; // Import useLanguage for translations
 
+// Ensure window.wpData is globally accessible (provided by WordPress)
 declare global {
   interface Window {
     wpData: {
       siteUrl: string;
       restUrl: string;
-      nonce: string;
+      nonce: string; // Nonce for WP REST API requests
     };
   }
 }
 
+// Simplified product type definition for WooCommerce
 interface Product {
   id: number;
   name: string;
-  slug: string;
+  slug: string; // Used for product URL
   price: string;
   regular_price: string;
-  sale_price: boolean;
+  sale_price: boolean; // Corrected to boolean
   on_sale: boolean;
   images: { src: string; alt: string }[];
-  short_description: string;
+  short_description: string; // Short description for listing
 }
 
 const ShopPage: React.FC = () => {
+  const { t } = useLanguage(); // Get translation function
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,29 +39,31 @@ const ShopPage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${window.wpData.restUrl}wc/v3/products?per_page=10`, { 
-          headers: { 'X-WP-Nonce': window.wpData.nonce } 
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        // Calling the custom endpoint to fetch products publicly
+        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/products-public?per_page=10`); 
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setProducts(data);
       } catch (err: any) {
         console.error("Error fetching products:", err);
-        setError("Could not load products from the shop.");
+        setError(t('shop_error_loading_products')); // Translated error message
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [t]); // Re-fetch products if translation function (or implicitly language) changes
 
-  // Use the custom endpoint to add to cart
+  // Function to add product to cart using the custom endpoint
   const addToCart = async (productId: number, quantity: number = 1) => {
-    setAddingToCart(productId); 
+    setAddingToCart(productId); // Set loading state for this specific product
     try {
-        // --- CALLING YOUR CUSTOM ADD-TO-CART ENDPOINT ---
-        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/add-to-cart`, { // <-- Calling CUSTOM endpoint here
+        // Calling your custom add-to-cart endpoint
+        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/add-to-cart`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,22 +78,22 @@ const ShopPage: React.FC = () => {
             credentials: 'include' // Ensure cookies (for session) are sent
         });
         
-        const data = await response.json(); 
+        const data = await response.json(); // Parse response data immediately
 
         if (response.ok && data.success) { // Check for success flag from your custom endpoint
             console.log("Product added to cart via custom endpoint:", data);
-            alert("Produto adicionado ao carrinho! Redirecionando ao checkout...");
+            alert(t('shop_product_added_alert')); // Translated alert message
             // Use the checkout URL returned by your custom API, or fallback to default
             window.location.href = data.checkout_url || `${window.wpData.siteUrl}/checkout/`; 
         } else {
             // Throw an error with the message from your custom API response
-            throw new Error(data.message || `Error adding to cart via custom endpoint: ${response.status}`);
+            throw new Error(data.message || t('shop_add_to_cart_error_generic')); // Translated generic error
         }
     } catch (err: any) {
         console.error("Custom Add to Cart API Error:", err);
-        alert(`Erro ao adicionar ao carrinho: ${err.message || 'Tente novamente.'}`);
+        alert(`${t('shop_add_to_cart_error_prefix')} ${err.message || t('shop_try_again_suffix')}`); // Translated error message
     } finally {
-      setAddingToCart(null); 
+      setAddingToCart(null); // Clear loading state
     }
   };
 
@@ -95,7 +101,7 @@ const ShopPage: React.FC = () => {
     return (
       <motion.div className="min-h-screen flex flex-col items-center justify-center bg-background text-white">
         <Loader2 className="animate-spin text-primary" size={36} />
-        <p className="mt-4 text-lg">Carregando Zen Shop...</p>
+        <p className="mt-4 text-lg">{t('shop_loading_text')}</p> {/* Translated text */}
       </motion.div>
     );
   }
@@ -116,12 +122,12 @@ const ShopPage: React.FC = () => {
       exit={{ opacity: 0 }}
     >
       <h1 className="text-4xl md:text-5xl font-extrabold font-display text-center mb-12 tracking-tight">
-        Zen Shop
+        {t('shop_page_title')} {/* Translated title */}
       </h1>
 
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.length === 0 ? (
-          <p className="col-span-full text-center text-white/70">Nenhum produto disponível no momento.</p>
+          <p className="col-span-full text-center text-white/70">{t('shop_no_products_found')}</p> {/* Translated text */}
         ) : (
           products.map((product) => (
             <motion.div
@@ -130,7 +136,7 @@ const ShopPage: React.FC = () => {
               className="bg-surface border border-white/10 rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-xl"
             >
               <Link to={`/product/${product.slug}`}>
-                {product.images[0] && (
+                {product.images && product.images.length > 0 && (
                   <img
                     src={product.images[0].src}
                     alt={product.images[0].alt || product.name}
@@ -149,28 +155,28 @@ const ShopPage: React.FC = () => {
                 <p className="text-lg font-bold mb-4">
                   R$ {product.on_sale ? (
                     <>
-                      <span className="line-through text-white/50 mr-2">{product.regular_price}</span>
+                      <span className="line-through text-white/50 mr-2">R$ {product.regular_price}</span>
                       <span className="text-primary">R$ {product.price}</span>
                     </>
                   ) : (
-                    <>R$ {product.price}</>
+                    product.price
                   )}
                 </p>
 
                 <button
                   onClick={() => addToCart(product.id)}
                   className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-primary text-white font-medium hover:bg-primary/90 transition disabled:opacity-50"
-                  disabled={addingToCart === product.id} 
+                  disabled={addingToCart === product.id} // Disable button when adding this product
                 >
-                  {addingToCart === product.id ? (
+                  {addingToCart === product.id ? ( // Show spinner and "Adicionando..." text
                     <>
                       <Loader2 size={18} className="animate-spin" />
-                      <span>Adicionando...</span>
+                      <span>{t('shop_adding_text')}</span> {/* Translated text */}
                     </>
                   ) : (
                     <>
                       <ShoppingCart size={18} />
-                      <span>Adicionar ao Carrinho</span>
+                      <span>{t('shop_add_to_cart_button')}</span> {/* Translated text */}
                     </>
                   )}
                 </button>
