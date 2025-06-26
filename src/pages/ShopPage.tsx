@@ -127,7 +127,8 @@ const ShopPage: React.FC = () => {
 
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.length === 0 ? (
-          <p className="col-span-full text-center text-white/70">{t('shop_no_products_found')}</p> {/* Translated text */}
+          // CORREÇÃO DE SINTAXE AQUI: Envolver a tag <p> com parênteses
+          <p className="col-span-full text-center text-white/70">{t('shop_no_products_found')}</p> 
         ) : (
           products.map((product) => (
             <motion.div
@@ -166,17 +167,17 @@ const ShopPage: React.FC = () => {
                 <button
                   onClick={() => addToCart(product.id)}
                   className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-primary text-white font-medium hover:bg-primary/90 transition disabled:opacity-50"
-                  disabled={addingToCart === product.id} // Disable button when adding this product
+                  disabled={addingToCart === product.id} 
                 >
-                  {addingToCart === product.id ? ( // Show spinner and "Adicionando..." text
+                  {addingToCart === product.id ? ( 
                     <>
                       <Loader2 size={18} className="animate-spin" />
-                      <span>{t('shop_adding_text')}</span> {/* Translated text */}
+                      <span>{t('shop_adding_text')}</span> 
                     </>
                   ) : (
                     <>
                       <ShoppingCart size={18} />
-                      <span>{t('shop_add_to_cart_button')}</span> {/* Translated text */}
+                      <span>{t('shop_add_to_cart_button')}</span> 
                     </>
                   )}
                 </button>
