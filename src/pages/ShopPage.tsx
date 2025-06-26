@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, ShoppingCart } from 'lucide-react'; // Import Loader2 and ShoppingCart icons
-import { useLanguage } from '../../contexts/LanguageContext'; // Import useLanguage for translations
+import { useLanguage } from '../contexts/LanguageContext'; // CORRECTED: Import useLanguage for translations
 
 // Ensure window.wpData is globally accessible (provided by WordPress)
 declare global {
