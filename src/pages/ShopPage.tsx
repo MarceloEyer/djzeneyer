@@ -1,8 +1,8 @@
 // src/pages/ShopPage.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Importe useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, ShoppingCart, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Loader2, ShoppingCart, AlertCircle, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 declare global {
@@ -20,38 +20,51 @@ interface Product {
   name: string;
   slug: string;
   price: string;
+  on_sale: boolean;
+  regular_price: string;
+  sale_price: string;
   images: { src: string; alt: string }[];
-  // Adicione outras propriedades que você usa
+  short_description: string;
 }
 
 const ShopPage: React.FC = () => {
   const { t } = useLanguage();
-  const navigate = useNavigate(); // Hook para navegação
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
 
+  // CORRIGIDO: Esta função agora sabe como encontrar a imagem na API oficial
   const normalizeProduct = useCallback((productData: any): Product => {
     let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer'; // Imagem padrão
-    if (productData.images && productData.images.length > 0) {
-      imageUrl = productData.images[0].src;
-    } else if (productData.featured_media_src_url) {
-      imageUrl = productData.featured_media_src_url;
-    }
+    let imageAlt = productData.name || 'Imagem do produto';
 
+    // A API da Loja WC retorna um array de imagens. Vamos verificar com segurança.
+    if (productData.images && productData.images.length > 0) {
+      const firstImage = productData.images[0];
+      // A URL pode estar em diferentes propriedades dependendo da versão/contexto
+      imageUrl = firstImage.src || firstImage.url || firstImage.full_src || imageUrl;
+      imageAlt = firstImage.alt || imageAlt;
+    }
+    
     return {
       id: productData.id || 0,
       name: productData.name || 'Produto sem nome',
       slug: productData.slug || `product-${productData.id}`,
       price: String((parseFloat(productData.prices?.price || '0') / 100).toFixed(2)),
-      images: [{ src: imageUrl, alt: productData.name || 'Imagem do produto' }],
+      on_sale: productData.on_sale || false,
+      regular_price: String((parseFloat(productData.prices?.regular_price || '0') / 100).toFixed(2)),
+      sale_price: String((parseFloat(productData.prices?.sale_price || '0') / 100).toFixed(2)),
+      images: [{ src: imageUrl, alt: imageAlt }],
+      short_description: productData.description || '', // A Store API usa 'description' para a descrição curta
     };
   }, []);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
+    // Usando a API oficial e pública do WooCommerce, que é a melhor prática
     const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/products`;
     try {
       const response = await fetch(apiUrl);
@@ -69,6 +82,7 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Usando o endpoint customizado do nosso functions.php
   const addToCart = async (productId: number) => {
     setAddingToCart(productId);
     try {
@@ -83,22 +97,22 @@ const ShopPage: React.FC = () => {
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'Não foi possível adicionar ao carrinho.');
       }
-      // SUCESSO: Redireciona para o checkout
+      // Redireciona para o checkout para agilizar a venda de ingressos
       navigate('/checkout');
     } catch (err: any) {
       alert(`Erro: ${err.message}`);
       setAddingToCart(null);
     }
   };
-
+  
   const formatPrice = (price: string) => `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
 
-  if (loading) return <div className="min-h-screen flex justify-center items-center"><Loader2 className="animate-spin" size={48} /></div>;
+  if (loading) return <div className="min-h-screen flex justify-center items-center"><Loader2 className="animate-spin text-primary" size={48} /></div>;
   if (error) return <div className="min-h-screen flex justify-center items-center text-red-500"><AlertCircle className="mr-2" /> {error}</div>;
 
   return (
-    <motion.div className="container mx-auto px-4 py-16 text-white" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <h1 className="text-3xl md:text-4xl font-extrabold font-display text-center mb-12">Loja de Ingressos</h1>
+    <motion.div className="container mx-auto px-4 py-24 text-white" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <h1 className="text-3xl md:text-4xl font-extrabold font-display text-center mb-16">Loja de Ingressos</h1>
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
           <motion.div key={product.id} className="bg-surface/50 border border-white/10 rounded-2xl flex flex-col">
@@ -107,11 +121,11 @@ const ShopPage: React.FC = () => {
             </Link>
             <div className="p-5 flex flex-col flex-grow">
               <h2 className="text-xl font-semibold mb-3 flex-grow">{product.name}</h2>
-              <p className="text-xl font-bold mb-4">{formatPrice(product.price)}</p>
+              <div className="text-xl font-bold mb-4" dangerouslySetInnerHTML={{ __html: product.price_html || formatPrice(product.price) }} />
               <button
                 onClick={() => addToCart(product.id)}
-                disabled={addingToCart === product.id}
-                className="w-full btn bg-primary hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50"
+                disabled={!!addingToCart}
+                className="w-full btn bg-primary hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50 mt-auto"
               >
                 {addingToCart === product.id ? (
                   <Loader2 size={18} className="animate-spin" />
