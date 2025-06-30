@@ -35,15 +35,12 @@ const ShopPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
 
-  // CORRIGIDO: Esta função agora sabe como encontrar a imagem na API oficial
   const normalizeProduct = useCallback((productData: any): Product => {
-    let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer'; // Imagem padrão
+    let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer';
     let imageAlt = productData.name || 'Imagem do produto';
 
-    // A API da Loja WC retorna um array de imagens. Vamos verificar com segurança.
     if (productData.images && productData.images.length > 0) {
       const firstImage = productData.images[0];
-      // A URL pode estar em diferentes propriedades dependendo da versão/contexto
       imageUrl = firstImage.src || firstImage.url || firstImage.full_src || imageUrl;
       imageAlt = firstImage.alt || imageAlt;
     }
@@ -57,14 +54,13 @@ const ShopPage: React.FC = () => {
       regular_price: String((parseFloat(productData.prices?.regular_price || '0') / 100).toFixed(2)),
       sale_price: String((parseFloat(productData.prices?.sale_price || '0') / 100).toFixed(2)),
       images: [{ src: imageUrl, alt: imageAlt }],
-      short_description: productData.description || '', // A Store API usa 'description' para a descrição curta
+      short_description: productData.description || '',
     };
   }, []);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
-    // Usando a API oficial e pública do WooCommerce, que é a melhor prática
     const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/products`;
     try {
       const response = await fetch(apiUrl);
@@ -82,7 +78,6 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Usando o endpoint customizado do nosso functions.php
   const addToCart = async (productId: number) => {
     setAddingToCart(productId);
     try {
@@ -97,7 +92,6 @@ const ShopPage: React.FC = () => {
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'Não foi possível adicionar ao carrinho.');
       }
-      // Redireciona para o checkout para agilizar a venda de ingressos
       navigate('/checkout');
     } catch (err: any) {
       alert(`Erro: ${err.message}`);
@@ -121,7 +115,23 @@ const ShopPage: React.FC = () => {
             </Link>
             <div className="p-5 flex flex-col flex-grow">
               <h2 className="text-xl font-semibold mb-3 flex-grow">{product.name}</h2>
-              <div className="text-xl font-bold mb-4" dangerouslySetInnerHTML={{ __html: product.price_html || formatPrice(product.price) }} />
+              
+              {/* TRECHO DO PREÇO MODIFICADO */}
+              <div className="text-xl font-bold mb-4 h-14 flex items-center">
+                  {product.on_sale ? (
+                    <div>
+                      <span className="text-lg text-gray-400 line-through mr-2">
+                        {formatPrice(product.regular_price)}
+                      </span>
+                      <span className="text-primary">
+                        {formatPrice(product.price)}
+                      </span>
+                    </div>
+                  ) : (
+                    <span>{formatPrice(product.price)}</span>
+                  )}
+              </div>
+
               <button
                 onClick={() => addToCart(product.id)}
                 disabled={!!addingToCart}
