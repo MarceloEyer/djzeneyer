@@ -9,6 +9,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Mock WordPress data for development environment -->
+    <script>
+      window.wpData = {
+        siteUrl: 'http://localhost:5173',
+        restUrl: 'http://localhost:5173/wp-json/wp/v2',
+        nonce: 'dev-nonce-placeholder',
+        jwtAuthKey: 'dev-jwt-key-placeholder',
+        jwtSettings: {
+          endpoint: '/wp-json/jwt-auth/v1/token',
+          validate: '/wp-json/jwt-auth/v1/token/validate'
+        }
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>
