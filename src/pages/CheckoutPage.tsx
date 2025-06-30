@@ -1,11 +1,13 @@
 // src/pages/CheckoutPage.tsx
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCart } from '../contexts/CartContext';
+import { useUser } from '../contexts/UserContext'; // 1. Importamos o useUser
 import { Loader2, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const CheckoutPage: React.FC = () => {
   const { cart, getCart, loading: cartLoading } = useCart();
+  const { user } = useUser(); // 2. Pegamos o usuário do contexto
   const navigate = useNavigate();
   
   // Estado para o formulário
@@ -14,13 +16,26 @@ const CheckoutPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   
-  // Estado para o processo de finalização
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 3. Este useEffect preenche o formulário se o usuário estiver logado
   useEffect(() => {
-    getCart();
-  }, [getCart]);
+    // Busca os dados do carrinho quando a página carrega
+    getCart(); 
+
+    // Se o usuário estiver logado, preenchemos os campos do formulário
+    if (user) {
+      // Tenta dividir o nome completo em nome e sobrenome
+      const nameParts = user.name.split(' ');
+      const userFirstName = nameParts[0] || '';
+      const userLastName = nameParts.slice(1).join(' ') || '';
+
+      setFirstName(userFirstName);
+      setLastName(userLastName);
+      setEmail(user.email);
+    }
+  }, [user, getCart]); // Roda sempre que o objeto 'user' mudar ou ao carregar
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,8 +66,6 @@ const CheckoutPage: React.FC = () => {
       console.log("Pedido criado com sucesso!", responseData);
       alert("Pedido realizado com sucesso! Em breve, você será redirecionado para o pagamento.");
       
-      // No futuro, aqui você redirecionaria para responseData.payment_url
-      // Por enquanto, vamos para a página inicial
       navigate('/');
 
     } catch (err: any) {
@@ -62,6 +75,8 @@ const CheckoutPage: React.FC = () => {
       setIsPlacingOrder(false);
     }
   };
+  
+  // ... (o resto do código JSX continua o mesmo) ...
 
   const formatPrice = (price: string) => `R$ ${(parseFloat(price) / 100).toFixed(2).replace('.', ',')}`;
 
@@ -119,6 +134,7 @@ const CheckoutPage: React.FC = () => {
                   <p>{formatPrice(item.totals.line_total)}</p>
                 </div>
               ))}
+              <hr className="border-white/10 my-4" />
               <div className="flex justify-between font-bold text-xl pt-4">
                 <p>Total</p>
                 <p>{formatPrice(cart.totals.total_price)}</p>
