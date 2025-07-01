@@ -1,41 +1,36 @@
 // src/pages/CheckoutPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../contexts/CartContext';
-import { useUser } from '../contexts/UserContext'; // 1. Importamos o useUser
-import { Loader2, Lock } from 'lucide-react';
+import { useUser } from '../contexts/UserContext';
+import { Loader2, Lock, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const CheckoutPage: React.FC = () => {
   const { cart, getCart, loading: cartLoading } = useCart();
-  const { user } = useUser(); // 2. Pegamos o usuário do contexto
+  const { user } = useUser();
   const navigate = useNavigate();
   
-  // Estado para o formulário
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 3. Este useEffect preenche o formulário se o usuário estiver logado
+  // Estado para a Gamificação
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [earnedRewards, setEarnedRewards] = useState<{description: string, points: number}[]>([]);
+
   useEffect(() => {
-    // Busca os dados do carrinho quando a página carrega
-    getCart(); 
-
-    // Se o usuário estiver logado, preenchemos os campos do formulário
+    getCart();
     if (user) {
-      // Tenta dividir o nome completo em nome e sobrenome
       const nameParts = user.name.split(' ');
-      const userFirstName = nameParts[0] || '';
-      const userLastName = nameParts.slice(1).join(' ') || '';
-
-      setFirstName(userFirstName);
-      setLastName(userLastName);
+      setFirstName(nameParts[0] || '');
+      setLastName(nameParts.slice(1).join(' ') || '');
       setEmail(user.email);
     }
-  }, [user, getCart]); // Roda sempre que o objeto 'user' mudar ou ao carregar
+  }, [user, getCart]);
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +41,7 @@ const CheckoutPage: React.FC = () => {
       first_name: firstName,
       last_name: lastName,
       email: email,
-      phone: phone,
+      // Telefone removido para simplificar
     };
 
     try {
@@ -64,9 +59,13 @@ const CheckoutPage: React.FC = () => {
       }
 
       console.log("Pedido criado com sucesso!", responseData);
-      alert("Pedido realizado com sucesso! Em breve, você será redirecionado para o pagamento.");
       
-      navigate('/');
+      // Simula recompensas ganhas. No futuro, isso virá da resposta da API.
+      setEarnedRewards([
+        { description: 'Completou a Primeira Compra', points: 50 },
+        { description: 'Comprou Ingresso reZENha', points: 25 },
+      ]);
+      setShowSuccessAnimation(true);
 
     } catch (err: any) {
       console.error("Erro ao finalizar pedido:", err);
@@ -75,8 +74,6 @@ const CheckoutPage: React.FC = () => {
       setIsPlacingOrder(false);
     }
   };
-  
-  // ... (o resto do código JSX continua o mesmo) ...
 
   const formatPrice = (price: string) => `R$ ${(parseFloat(price) / 100).toFixed(2).replace('.', ',')}`;
 
@@ -85,67 +82,103 @@ const CheckoutPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-24 text-white">
-      <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-12">Finalizar Compra</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-        {/* Lado do Formulário */}
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Seus Dados de Contato</h2>
-          <form onSubmit={handlePlaceOrder} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium mb-2">Nome</label>
-                <input type="text" id="firstName" value={firstName} onChange={e => setFirstName(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
-              </div>
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium mb-2">Sobrenome</label>
-                <input type="text" id="lastName" value={lastName} onChange={e => setLastName(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
-              </div>
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">Email</label>
-              <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium mb-2">Telefone (com DDD)</label>
-              <input type="tel" id="phone" value={phone} onChange={e => setPhone(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
-            </div>
-            
-            {error && <p className="text-red-500">{error}</p>}
-            
-            <button type="submit" disabled={isPlacingOrder || !cart || cart.items.length === 0} className="w-full btn btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50">
-              {isPlacingOrder ? <Loader2 className="animate-spin" /> : <Lock />}
-              {isPlacingOrder ? 'Processando...' : 'Finalizar Pedido'}
-            </button>
-          </form>
-        </div>
-
-        {/* Lado do Resumo do Pedido */}
-        <div className="bg-surface/50 p-8 rounded-2xl border border-white/10">
-          <h2 className="text-2xl font-bold mb-6">Resumo do Pedido</h2>
-          {cart && cart.items.length > 0 ? (
-            <div className="space-y-4">
-              {cart.items.map((item: any) => (
-                <div key={item.key} className="flex justify-between items-center border-b border-white/10 pb-4">
-                  <div>
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-gray-400">Quantidade: {item.quantity}</p>
-                  </div>
-                  <p>{formatPrice(item.totals.line_total)}</p>
+    <>
+      <div className="container mx-auto px-4 py-24 text-white">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-12">Finalizar Compra</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          {/* Formulário */}
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Seus Dados</h2>
+            <form onSubmit={handlePlaceOrder} className="space-y-6">
+              {/* Campos de Nome, Sobrenome, Email */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium mb-2">Nome</label>
+                  <input type="text" id="firstName" value={firstName} onChange={e => setFirstName(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
                 </div>
-              ))}
-              <hr className="border-white/10 my-4" />
-              <div className="flex justify-between font-bold text-xl pt-4">
-                <p>Total</p>
-                <p>{formatPrice(cart.totals.total_price)}</p>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium mb-2">Sobrenome</label>
+                  <input type="text" id="lastName" value={lastName} onChange={e => setLastName(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
+                </div>
               </div>
-            </div>
-          ) : (
-            <p>Seu carrinho está vazio. Adicione um ingresso na loja para continuar.</p>
-          )}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium mb-2">Email</label>
+                <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
+              </div>
+
+              {error && <p className="text-red-500">{error}</p>}
+              
+              <button type="submit" disabled={isPlacingOrder || !cart || cart.items.length === 0} className="w-full btn btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50">
+                {isPlacingOrder ? <Loader2 className="animate-spin" /> : <Lock />}
+                {isPlacingOrder ? 'Processando...' : 'Finalizar Pedido'}
+              </button>
+            </form>
+          </div>
+
+          {/* Resumo do Pedido */}
+          <div className="bg-surface/50 p-8 rounded-2xl border border-white/10">
+            <h2 className="text-2xl font-bold mb-6">Seu Pedido</h2>
+            {cart && cart.items.length > 0 ? (
+              <div className="space-y-4">
+                {cart.items.map((item: any) => (
+                  <div key={item.key} className="flex justify-between items-center border-b border-white/10 pb-4">
+                    <p className="font-semibold">{item.name} <span className="text-sm text-gray-400">x {item.quantity}</span></p>
+                    <p>{formatPrice(item.totals.line_total)}</p>
+                  </div>
+                ))}
+                <div className="flex justify-between font-bold text-xl pt-4">
+                  <p>Total</p>
+                  <p>{formatPrice(cart.totals.total_price)}</p>
+                </div>
+              </div>
+            ) : ( <p>Seu carrinho está vazio.</p> )}
+            
+            {/* Seção de Gamificação Preview */}
+            {cart && cart.items.length > 0 && (
+              <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-primary/10 rounded-lg border border-purple-500/30">
+                <h3 className="text-lg font-bold mb-3 flex items-center gap-2"><Award className="text-yellow-400" /> Recompensas desta compra</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2"><span className="text-green-400 font-semibold">+50</span><span>pontos por completar sua primeira compra!</span></div>
+                  <div className="flex items-center gap-2"><span className="text-green-400 font-semibold">+25</span><span>pontos por comprar um Ingresso reZENha.</span></div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Animação de Sucesso */}
+      {showSuccessAnimation && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+        >
+          <motion.div 
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-surface p-8 rounded-2xl max-w-md w-full mx-4 text-center border border-white/10"
+          >
+            <div className="text-6xl mb-4">🎉</div>
+            <h2 className="text-2xl font-bold mb-4">Pedido Confirmado!</h2>
+            {earnedRewards.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3 text-green-400">Você ganhou:</h3>
+                {earnedRewards.map((reward, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-primary/20 rounded-lg mb-2">
+                    <span>{reward.description}</span>
+                    <span className="text-yellow-400 font-bold">+{reward.points} XP</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => navigate('/')} className="btn btn-primary">
+              Voltar para o Início
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </>
   );
 };
 
