@@ -1,58 +1,63 @@
 // src/layouts/MainLayout.tsx
-
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-
-// Importe os componentes que o layout utiliza
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import AuthModal from '../components/auth/AuthModal';
 
 const MainLayout: React.FC = () => {
-  // Estado para controlar a visibilidade do modal de autenticação
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  
-  // Estado para controlar se o modal está em modo 'login' ou 'register'
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
-  // Função para abrir o modal, que será passada para o Navbar
-  const handleOpenAuthModal = (mode: 'login' | 'register') => {
+  // Funções para controlar o AuthModal a partir do MainLayout
+  const openAuthModal = (mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
 
-  // Função para fechar o modal
-  const handleCloseAuthModal = () => {
+  const closeAuthModal = () => {
     setIsAuthModalOpen(false);
   };
 
-  // Função para alternar entre os modos de login e registro dentro do modal
-  const handleToggleAuthMode = () => {
+  const toggleAuthMode = () => {
     setAuthMode(prevMode => (prevMode === 'login' ? 'register' : 'login'));
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-white">
-      {/* Passamos a função para abrir o modal para o Navbar. 
-        O Navbar não precisa saber os detalhes, apenas como pedir para abrir.
-      */}
-      <Navbar onLoginClick={() => handleOpenAuthModal('login')} />
+      {/* O Navbar agora recebe a função para abrir o modal */}
+      <Navbar onLoginClick={() => openAuthModal('login')} />
 
       <main className="flex-grow pt-20"> {/* pt-20 para dar espaço para o Navbar fixo */}
-        {/* O <Outlet /> renderiza a página da rota atual (Home, Shop, etc.) aqui */}
+        
+        {/* --- TESTE DA IMPRESSÃO DIGITAL --- */}
+        <h2 style={{ 
+          color: 'yellow', 
+          backgroundColor: 'red', 
+          padding: '15px', 
+          textAlign: 'center', 
+          fontSize: '22px', 
+          fontWeight: 'bold',
+          position: 'sticky', // Garante que ele fique visível mesmo com scroll
+          top: '80px',      // Abaixo do navbar
+          zIndex: 9999
+        }}>
+          BUILD ATUALIZADO - TESTE DE DEPLOY
+        </h2>
+        {/* --- FIM DO TESTE --- */}
+
+        {/* O Outlet renderiza a página da rota atual (Home, Work With Me, etc.) aqui */}
         <Outlet />
       </main>
 
       <Footer />
 
-      {/* O AuthModal é renderizado aqui e sua visibilidade e modo 
-        são controlados pelo estado do MainLayout.
-      */}
+      {/* O AuthModal é controlado pelo estado deste layout */}
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={handleCloseAuthModal}
+        onClose={closeAuthModal}
         mode={authMode}
-        onToggleMode={handleToggleAuthMode}
+        onToggleMode={toggleAuthMode}
       />
     </div>
   );
