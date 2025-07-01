@@ -1,10 +1,11 @@
 // src/components/common/Navbar.tsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Music, Calendar, Users, Menu, X, Briefcase, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-import LanguageSwitcher from './LanguageSwitcher'; // O seletor de idiomas que criamos
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -49,9 +50,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           
-          {/* --- LOGO ATUALIZADO --- */}
+          {/* LOGO ATUALIZADO */}
           <div className="flex items-center gap-4">
-            {/* O seletor de idioma AGORA VIVE AQUI */}
+            {/* O seletor de idioma agora vive aqui */}
             <LanguageSwitcher />
 
             <Link to="/" className="flex items-center">
@@ -61,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             </Link>
           </div>
 
-          {/* --- MENU DESKTOP --- */}
+          {/* MENU DESKTOP */}
           <nav className="hidden md:flex items-center space-x-8">
             <NavLink to="/" className={navLinkClass}>Home</NavLink>
             <NavLink to="/music" className={navLinkWithIconClass}><Music size={16} /><span>Music</span></NavLink>
@@ -70,7 +71,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             <NavLink to="/work-with-me" className={navLinkWithIconClass}><Briefcase size={16} /><span>Work With Me</span></NavLink>
           </nav>
 
-          {/* O LanguageSwitcher foi REMOVIDO daqui */}
           <div className="hidden md:flex items-center">
             {user?.isLoggedIn ? (
               <UserMenu />
@@ -88,7 +88,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         </div>
       </div>
 
-      {/* --- MENU MOBILE --- */}
+      {/* MENU MOBILE */}
       <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-b border-white/10' : 'max-h-0'}`}>
         <div className="container mx-auto px-4 py-4">
           <nav className="flex flex-col space-y-4">
@@ -99,15 +99,22 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             <NavLink to="/work-with-me" className={mobileNavLinkWithIconClass}><Briefcase size={18} /><span>Work With Me</span></NavLink>
           </nav>
 
-          <div className="mt-6 pt-4 border-t border-white/10">
-            {user?.isLoggedIn ? (
-              <UserMenu orientation="vertical" /> 
-            ) : (
-              <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2">
-                <LogIn size={18} />
-                <span>Login / Sign Up</span>
-              </button>
-            )}
+          {/* BOTÃO DE LOGIN E SELETOR DE IDIOMA NO MOBILE */}
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+            <div className="flex-grow pr-4">
+              {user?.isLoggedIn ? (
+                <UserMenu orientation="vertical" /> 
+              ) : (
+                <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2">
+                  <LogIn size={18} />
+                  <span>Login / Sign Up</span>
+                </button>
+              )}
+            </div>
+            <div className="flex-shrink-0">
+              {/* ADICIONADO AQUI */}
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </div>
