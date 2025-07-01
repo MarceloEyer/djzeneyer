@@ -1,4 +1,12 @@
 // src/contexts/LanguageContext.tsx
+// ... (código que já tínhamos, mas agora com o objeto 'en' preenchido)
+const translations = {
+  'pt-BR': { /* ... suas traduções em português ... */ },
+  'en': {
+    welcome_back: 'Welcome Back',
+    // ... adicione todas as outras traduções aqui ...
+  }
+};
 
 import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
 
