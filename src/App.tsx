@@ -1,4 +1,5 @@
-// src/App.tsx
+// src/App.tsx (VERSÃO DE TESTE)
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -13,6 +14,7 @@ import MusicPage from './pages/MusicPage';
 import ZenTribePage from './pages/ZenTribePage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
+import PressKitPage from './pages/PressKitPage';
 
 // Pages (Loja)
 import ShopPage from './pages/ShopPage';
@@ -21,7 +23,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import MyAccountPage from './pages/MyAccountPage';
 
-// Context Providers - TODOS JUNTOS AQUI
+// Context Providers
 import { LanguageProvider } from './contexts/LanguageContext';
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
@@ -29,7 +31,6 @@ import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
 function App() {
   return (
-    // A ordem dos providers é importante. Envolvemos o app com tudo o que é global.
     <LanguageProvider>
       <UserProvider>
         <CartProvider>
@@ -37,23 +38,14 @@ function App() {
             <AnimatePresence mode="wait">
               <Routes>
                 <Route path="/" element={<MainLayout />}>
-                  {/* Rotas Principais */}
-                  <Route index element={<HomePage />} />
-                  <Route path="events" element={<EventsPage />} />
-                  <Route path="music" element={<MusicPage />} />
+                  {/* ... outras rotas ... */}
                   <Route path="tribe" element={<ZenTribePage />} />
                   
-                  {/* Rota do Dashboard (protegida pelo AdminRoute que configuramos) */}
+                  {/* ALTERAÇÃO DE TESTE ABAIXO */}
+                  <Route path="work-with-me" element={<HomePage />} /> 
+                  
                   <Route path="dashboard" element={<DashboardPage />} /> 
-
-                  {/* Rotas da Loja */}
-                  <Route path="shop" element={<ShopPage />} />
-                  <Route path="product/:slug" element={<ProductPage />} />
-                  <Route path="cart" element={<CartPage />} />
-                  <Route path="checkout" element={<CheckoutPage />} />
-                  <Route path="my-account" element={<MyAccountPage />} />
-
-                  {/* Rota 404 (sempre por último) */}
+                  {/* ... outras rotas ... */}
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
               </Routes>
