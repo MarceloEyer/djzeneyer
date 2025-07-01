@@ -1,75 +1,28 @@
 // src/layouts/MainLayout.tsx
-import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import Navbar from '../components/common/Navbar'; // Ajuste o caminho se for diferente
-import Footer from '../components/common/Footer';   // Ajuste o caminho se for diferente
-import MusicPlayer from '../components/music/MusicPlayer'; // Ajuste o caminho se for diferente
-import AuthModal from '../components/auth/AuthModal';     // Ajuste o caminho se for diferente
-import { useMusicPlayer } from '../contexts/MusicPlayerContext'; // Ajuste o caminho se for diferente
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Navbar from '../components/common/Navbar';
+import Footer from '../components/common/Footer';
+// ...
 
 const MainLayout: React.FC = () => {
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const location = useLocation();
-  const { currentTrack } = useMusicPlayer();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  // DEBUG: Log showAuthModal state changes (DESCOMENTADO)
-  useEffect(() => {
-    console.log('[MainLayout] Estado showAuthModal mudou para:', showAuthModal);
-  }, [showAuthModal]);
-
-  const openLoginModal = () => {
-    console.log('[MainLayout] openLoginModal chamada!'); // <<< DESCOMENTADO
-    setAuthMode('login');
-    setShowAuthModal(true);
-  };
-
-  // A função openRegisterModal é mantida caso queira usá-la de outro lugar,
-  // mas os logs principais para o fluxo atual estão em openLoginModal.
-  const openRegisterModal = () => {
-    console.log('[MainLayout] openRegisterModal chamada! (se usada)');
-    setAuthMode('register');
-    setShowAuthModal(true);
-  };
-
-  const closeAuthModal = () => {
-    console.log('[MainLayout] closeAuthModal chamada!'); // <<< DESCOMENTADO
-    setShowAuthModal(false);
-  };
-
-  const toggleAuthMode = () => {
-    console.log('[MainLayout] toggleAuthMode chamada! Modo anterior:', authMode); // <<< DESCOMENTADO
-    setAuthMode(prevMode => (prevMode === 'login' ? 'register' : 'login'));
-  };
-
+  // ...
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar 
-        onLoginClick={openLoginModal} 
-      />
-      
-      <main className="flex-grow">
+    <div className="flex flex-col min-h-screen bg-background">
+      <Navbar onLoginClick={...} />
+
+      <main className="flex-grow pt-20">
+
+        {/* ADICIONE ESTA LINHA PARA O TESTE */}
+        <h1 style={{ color: 'lime', backgroundColor: 'black', padding: '20px', textAlign: 'center', fontSize: '24px', fontWeight: 'bold' }}>
+          TESTE DE DEPLOY - VERSÃO ATUALIZADA
+        </h1>
+
         <Outlet /> 
       </main>
-      
-      {currentTrack && (
-        <div className="sticky bottom-0 z-30">
-          <MusicPlayer />
-        </div>
-      )}
-      
+
       <Footer />
-      
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={closeAuthModal} 
-        mode={authMode} 
-        onToggleMode={toggleAuthMode} 
-      />
+      {/* ... */}
     </div>
   );
 };
