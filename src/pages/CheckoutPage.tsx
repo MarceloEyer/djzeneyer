@@ -1,4 +1,5 @@
 // src/pages/CheckoutPage.tsx
+
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useUser } from '../contexts/UserContext';
@@ -11,14 +12,16 @@ const CheckoutPage: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   
+  // Estados do formulário
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   
+  // Estados do processo de checkout
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Estado para a Gamificação
+  // Estados para a Gamificação
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [earnedRewards, setEarnedRewards] = useState<{description: string, points: number}[]>([]);
 
@@ -41,14 +44,20 @@ const CheckoutPage: React.FC = () => {
       first_name: firstName,
       last_name: lastName,
       email: email,
-      // Telefone removido para simplificar
     };
 
     try {
       const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}djzeneyer/v1/checkout`;
+      
+      // CORREÇÃO ESSENCIAL: Preparamos os headers com o Nonce
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (window.wpData?.nonce) {
+        headers['X-WP-Nonce'] = window.wpData.nonce;
+      }
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers, // Usamos os headers com o nonce
         body: JSON.stringify(orderData),
         credentials: 'include',
       });
@@ -60,12 +69,12 @@ const CheckoutPage: React.FC = () => {
 
       console.log("Pedido criado com sucesso!", responseData);
       
-      // Simula recompensas ganhas. No futuro, isso virá da resposta da API.
+      // Simula recompensas ganhas para a animação
       setEarnedRewards([
         { description: 'Completou a Primeira Compra', points: 50 },
         { description: 'Comprou Ingresso reZENha', points: 25 },
       ]);
-      setShowSuccessAnimation(true);
+      setShowSuccessAnimation(true); // Ativa a animação de sucesso
 
     } catch (err: any) {
       console.error("Erro ao finalizar pedido:", err);
@@ -90,7 +99,6 @@ const CheckoutPage: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold mb-6">Seus Dados</h2>
             <form onSubmit={handlePlaceOrder} className="space-y-6">
-              {/* Campos de Nome, Sobrenome, Email */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium mb-2">Nome</label>
@@ -106,7 +114,7 @@ const CheckoutPage: React.FC = () => {
                 <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full p-3 bg-surface/50 border border-white/10 rounded-lg" />
               </div>
 
-              {error && <p className="text-red-500">{error}</p>}
+              {error && <p className="text-red-500 bg-red-500/10 p-3 rounded-lg">{error}</p>}
               
               <button type="submit" disabled={isPlacingOrder || !cart || cart.items.length === 0} className="w-full btn btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50">
                 {isPlacingOrder ? <Loader2 className="animate-spin" /> : <Lock />}
