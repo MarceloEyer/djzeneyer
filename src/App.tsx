@@ -1,6 +1,26 @@
 // src/App.tsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Helmet, HelmetProvider } from 'react-helmet-async'; // 1. Importe
+// ... outros imports
+
+function App() {
+  return (
+    <HelmetProvider> {/* 2. Adicione por fora de tudo */}
+      <LanguageProvider>
+        <UserProvider>
+          {/* ... etc ... */}
+        </UserProvider>
+      </LanguageProvider>
+    </HelmetProvider>
+  );
+}
+
+export default App;
+
+// src/App.tsx
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
