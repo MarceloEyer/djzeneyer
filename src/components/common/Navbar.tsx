@@ -1,4 +1,4 @@
-// src/components/common/Navbar.tsx - Versão Final Dinâmica
+// src/components/common/Navbar.tsx
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
@@ -12,7 +12,6 @@ interface NavbarProps {
   onLoginClick: () => void;
 }
 
-// Nova interface para os itens de menu que vêm da API
 interface MenuItem {
   ID: number;
   title: string;
@@ -24,21 +23,17 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
-  const { language } = useLanguage(); // Pega o idioma atual do contexto
+  const { language } = useLanguage();
   const location = useLocation();
-  
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]); // Estado para guardar os itens do menu
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
-  // Busca o menu da API sempre que o idioma mudar
   useEffect(() => {
     const fetchMenu = async () => {
       if (!window.wpData?.restUrl) return;
-
       try {
         const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/menu?lang=${language}`);
+        if (!response.ok) throw new Error('Falha ao buscar o menu');
         const data = await response.json();
-        
-        // Transforma a URL completa (ex: https://site.com/events) em uma rota interna (/events)
         const formattedData = data.map((item: any) => ({
           ...item,
           url: item.url.replace(window.wpData.siteUrl, '') || '/',
@@ -46,13 +41,14 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         setMenuItems(formattedData);
       } catch (error) {
         console.error("Falha ao buscar menu:", error);
+        setMenuItems([]); // Em caso de erro, o menu fica vazio
       }
     };
-
     fetchMenu();
-  }, [language]); // A dependência é o idioma, então ele busca novamente quando o idioma muda
+  }, [language]);
 
   useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
+  
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
@@ -60,11 +56,10 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   }, []);
 
   const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
-  
+
   const navLinkClass = ({ isActive }: { isActive: boolean }) => isActive ? "nav-link active" : "nav-link";
   const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) => isActive ? "nav-link active text-lg" : "nav-link text-lg";
 
-  // Componente para renderizar os links, para não repetir código
   const renderNavLinks = (isMobile = false) => (
     menuItems.map((item) => (
       <NavLink 
@@ -94,7 +89,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           <div className="hidden md:flex items-center">
             {user?.isLoggedIn ? <UserMenu /> : <button onClick={onLoginClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>Login</span></button>}
           </div>
-          <button className="md:hidden text-white" onClick={toggleMenu}><span className="sr-only">Toggle menu</span>{isMenuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+          <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
       <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-b border-white/10' : 'max-h-0'}`}>
@@ -103,7 +100,10 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             {renderNavLinks(true)}
           </nav>
           <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-             {/* ... (lógica de login/user menu para mobile) ... */}
+            <div className="flex-grow pr-4">
+              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>Login / Sign Up</span></button>}
+            </div>
+            <div className="flex-shrink-0"><LanguageSwitcher /></div>
           </div>
         </div>
       </div>
