@@ -1,13 +1,11 @@
 // src/App.tsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
-// Layouts e Wrappers
+// Layouts
 import MainLayout from './layouts/MainLayout';
-import LanguageWrapper from './components/common/LanguageWrapper'; // 1. Importamos nosso novo componente
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -38,22 +36,19 @@ function App() {
             <MusicPlayerProvider>
               <AnimatePresence mode="wait">
                 <Routes>
-                  {/* 2. Criamos uma rota pai que captura o idioma opcional */}
-                  <Route path="/:lang(en)?" element={<LanguageWrapper />}>
-                    <Route element={<MainLayout />}>
-                      <Route index element={<HomePage />} />
-                      <Route path="events" element={<EventsPage />} />
-                      <Route path="music" element={<MusicPage />} />
-                      <Route path="tribe" element={<ZenTribePage />} />
-                      <Route path="work-with-me" element={<PressKitPage />} />
-                      <Route path="dashboard" element={<DashboardPage />} />
-                      <Route path="shop" element={<ShopPage />} />
-                      <Route path="product/:slug" element={<ProductPage />} />
-                      <Route path="cart" element={<CartPage />} />
-                      <Route path="checkout" element={<CheckoutPage />} />
-                      <Route path="my-account" element={<MyAccountPage />} />
-                      <Route path="*" element={<NotFoundPage />} />
-                    </Route>
+                  <Route path="/" element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="events" element={<EventsPage />} />
+                    <Route path="music" element={<MusicPage />} />
+                    <Route path="tribe" element={<ZenTribePage />} />
+                    <Route path="work-with-me" element={<PressKitPage />} />
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="shop" element={<ShopPage />} />
+                    <Route path="product/:slug" element={<ProductPage />} />
+                    <Route path="cart" element={<CartPage />} />
+                    <Route path="checkout" element={<CheckoutPage />} />
+                    <Route path="my-account" element={<MyAccountPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Routes>
               </AnimatePresence>
