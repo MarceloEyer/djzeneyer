@@ -5,7 +5,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Music, Calendar, Users, Menu, X, Briefcase, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-import LanguageSwitcher from './LanguageSwitcher';
+// import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -53,7 +53,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           {/* LOGO ATUALIZADO */}
           <div className="flex items-center gap-4">
             {/* O seletor de idioma agora vive aqui */}
-            <LanguageSwitcher />
+  
+// <LanguageSwitcher />
 
             <Link to="/" className="flex items-center">
               <span className="text-xl font-display font-bold tracking-wide">
