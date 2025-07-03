@@ -17,6 +17,8 @@ import ZenTribePage from './pages/ZenTribePage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PressKitPage from './pages/PressKitPage';
+
+// Pages (Loja)
 import ShopPage from './pages/ShopPage';
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
@@ -29,18 +31,17 @@ import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
 // Importa a configuração do i18n para garantir que ele seja inicializado
-import '../i18n'; 
+import './i18n'; // CAMINHO CORRIGIDO
 
 function App() {
   return (
     <HelmetProvider>
-      {/* O LanguageProvider foi removido daqui pois o i18next agora gerencia o estado globalmente */}
       <UserProvider>
         <CartProvider>
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
-                {/* ALTERAÇÃO IMPORTANTE AQUI: a rota agora só espera por 'pt' como opcional */}
+                {/* A rota pai agora captura o idioma opcional '/pt' */}
                 <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
