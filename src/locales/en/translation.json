@@ -5,6 +5,11 @@
   "menu_tribe": "Zen Tribe",
   "menu_work": "Work With Me",
   "menu_shop": "Shop",
+  "shop_page_title": "Tickets Shop",
+  "shop_loading_text": "Loading products...",
+  "shop_add_to_cart_button": "Buy Ticket",
+  "shop_adding_text": "Adding...",
+  "shop_out_of_stock": "Out of Stock",
   "presskit_seo_title": "Press Kit & Booking | DJ Zen Eyer",
   "presskit_seo_desc": "Official press kit, bio, photos, logos, and booking information for the international Brazilian Zouk DJ, Zen Eyer.",
   "presskit_main_title": "Work With Me",
@@ -26,17 +31,4 @@
   "presskit_contact_subtitle": "Ready to take your event to the next level? Get in touch and let's talk about the possibilities.",
   "presskit_contact_button": "Contact on WhatsApp",
   "whatsapp_message": "Hello, Zen Eyer! I'm interested in booking you for a Zouk event. Can we talk?"
-}
-{
-  "menu_home": "Home",
-  "menu_music": "Music",
-  "menu_events": "Events",
-  "menu_tribe": "Zen Tribe",
-  "menu_work": "Work With Me",
-  "menu_shop": "Shop",
-  "shop_page_title": "Tickets Shop",
-  "shop_loading_text": "Loading products...",
-  "shop_add_to_cart_button": "Buy Ticket",
-  "shop_adding_text": "Adding...",
-  "shop_out_of_stock": "Out of Stock"
 }
