@@ -5,9 +5,14 @@
   "menu_tribe": "Zen Tribe",
   "menu_work": "Contrate",
   "menu_shop": "Loja",
+  "shop_page_title": "Loja de Ingressos",
+  "shop_loading_text": "Carregando produtos...",
+  "shop_add_to_cart_button": "Comprar Ingresso",
+  "shop_adding_text": "Adicionando...",
+  "shop_out_of_stock": "Esgotado",
   "presskit_seo_title": "Press Kit & Contratação | DJ Zen Eyer",
   "presskit_seo_desc": "Material de imprensa, biografia, fotos oficiais, logos e informações para contratar o DJ de Zouk internacional, Zen Eyer para seu evento.",
-  "presskit_main_title": "Work With Me",
+  "presskit_main_title": "Contrate",
   "presskit_main_subtitle": "Recursos para contratantes, imprensa e parceiros. Encontre tudo o que você precisa para levar a experiência Zen Eyer ao seu evento.",
   "presskit_bio_title": "Minha Jornada no Zouk",
   "presskit_bio_text": "Referência global na cena do Zouk, DJ Zen Eyer é um produtor e artista visionário cuja paixão é criar conexões profundas na pista de dança. Com uma carreira consolidada nos principais eventos do Brasil, sua sonoridade única já viajou o mundo, com passagens por palcos na Alemanha, Austrália, Suíça, Holanda, República Checa e Estados Unidos. Vencedor de prêmios como o 'Zouk DJ Championship' e 'Melhor Remix de Zouk', ele se prepara para sua próxima turnê europeia, começando pela Polônia.",
@@ -26,17 +31,4 @@
   "presskit_contact_subtitle": "Pronto para levar seu evento para o próximo nível? Entre em contato e vamos conversar sobre as possibilidades.",
   "presskit_contact_button": "Falar no WhatsApp",
   "whatsapp_message": "Olá, Zen Eyer! Tenho interesse em uma contratação para um evento de Zouk. Podemos conversar?"
-}
-{
-  "menu_home": "Início",
-  "menu_music": "Música",
-  "menu_events": "Eventos",
-  "menu_tribe": "Zen Tribe",
-  "menu_work": "Contrate",
-  "menu_shop": "Loja",
-  "shop_page_title": "Loja de Ingressos",
-  "shop_loading_text": "Carregando produtos...",
-  "shop_add_to_cart_button": "Comprar Ingresso",
-  "shop_adding_text": "Adicionando...",
-  "shop_out_of_stock": "Esgotado"
 }
