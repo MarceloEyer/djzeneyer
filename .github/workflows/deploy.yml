@@ -36,7 +36,7 @@ jobs:
           # --- ATENÇÃO: EDITE A LINHA ABAIXO COM O NOME DA PASTA DO SEU TEMA ---
           # Pasta de destino no seu servidor Hostinger.
           # Altere 'NOME_DO_SEU_TEMA' para o nome correto da pasta do seu tema no WordPress.
-          server-dir: ./public_html/wp-content/themes/zentheme/dist/
+          server-dir: ./dist/
           
           # Opções extras para garantir uma sincronização limpa
           # Apaga arquivos no destino que não existem mais na origem
