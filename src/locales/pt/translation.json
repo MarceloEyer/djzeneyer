@@ -27,3 +27,16 @@
   "presskit_contact_button": "Falar no WhatsApp",
   "whatsapp_message": "Olá, Zen Eyer! Tenho interesse em uma contratação para um evento de Zouk. Podemos conversar?"
 }
+{
+  "menu_home": "Início",
+  "menu_music": "Música",
+  "menu_events": "Eventos",
+  "menu_tribe": "Zen Tribe",
+  "menu_work": "Contrate",
+  "menu_shop": "Loja",
+  "shop_page_title": "Loja de Ingressos",
+  "shop_loading_text": "Carregando produtos...",
+  "shop_add_to_cart_button": "Comprar Ingresso",
+  "shop_adding_text": "Adicionando...",
+  "shop_out_of_stock": "Esgotado"
+}
