@@ -5,8 +5,9 @@ import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
-// Layouts
+// Layouts e Wrappers
 import MainLayout from './layouts/MainLayout';
+import LanguageWrapper from './components/common/LanguageWrapper';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -16,8 +17,6 @@ import ZenTribePage from './pages/ZenTribePage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PressKitPage from './pages/PressKitPage';
-
-// Pages (Loja)
 import ShopPage from './pages/ShopPage';
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
@@ -25,21 +24,25 @@ import CheckoutPage from './pages/CheckoutPage';
 import MyAccountPage from './pages/MyAccountPage';
 
 // Context Providers
-import { LanguageProvider } from './contexts/LanguageContext';
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
+// Importa a configuração do i18n para garantir que ele seja inicializado
+import '../i18n'; 
+
 function App() {
   return (
     <HelmetProvider>
-      <LanguageProvider>
-        <UserProvider>
-          <CartProvider>
-            <MusicPlayerProvider>
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route path="/" element={<MainLayout />}>
+      {/* O LanguageProvider foi removido daqui pois o i18next agora gerencia o estado globalmente */}
+      <UserProvider>
+        <CartProvider>
+          <MusicPlayerProvider>
+            <AnimatePresence mode="wait">
+              <Routes>
+                {/* ALTERAÇÃO IMPORTANTE AQUI: a rota agora só espera por 'pt' como opcional */}
+                <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
+                  <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
                     <Route path="events" element={<EventsPage />} />
                     <Route path="music" element={<MusicPage />} />
@@ -53,12 +56,12 @@ function App() {
                     <Route path="my-account" element={<MyAccountPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
-                </Routes>
-              </AnimatePresence>
-            </MusicPlayerProvider>
-          </CartProvider>
-        </UserProvider>
-      </LanguageProvider>
+                </Route>
+              </Routes>
+            </AnimatePresence>
+          </MusicPlayerProvider>
+        </CartProvider>
+      </UserProvider>
     </HelmetProvider>
   );
 }
