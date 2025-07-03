@@ -1,59 +1,43 @@
 // src/components/common/Navbar.tsx
 
-import React, { useState, useRef, useEffect, useCallback } from 'react'; // useRef foi adicionado aqui
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Calendar, Users, Menu, X, Briefcase, LogIn, Globe, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-import { motion, AnimatePresence } from 'framer-motion';
 
-// O seletor de idiomas agora faz parte do Navbar para simplificar
-const LanguageSwitcher: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { i18n } = useTranslation();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+// O seletor de idiomas como um componente interno para organização
+const LanguageToggle: React.FC = () => {
+    const { i18n } = useTranslation();
 
-  const languages = [
-    { code: 'pt', name: 'Português' },
-    { code: 'en', name: 'English' },
-  ];
-
-  // Fecha o dropdown se clicar fora dele
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+    const toggleLanguage = () => {
+        const newLang = i18n.language.startsWith('pt') ? 'en' : 'pt';
+        i18n.changeLanguage(newLang);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <motion.button onClick={() => setIsOpen(!isOpen)} className="text-white/70 hover:text-white transition-colors" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-        <Globe size={24} />
-      </motion.button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 lg:left-0 mt-2 w-40 bg-surface border border-white/10 rounded-lg shadow-lg z-50">
-            <ul className="py-1">
-              {languages.map((lang) => (
-                <li key={lang.code}>
-                  <button onClick={() => { i18n.changeLanguage(lang.code); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-primary/20 flex items-center justify-between">
-                    <span>{lang.name}</span>
-                    {i18n.language.startsWith(lang.code) && <Check size={16} className="text-primary" />}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+    const spring = {
+        type: "spring",
+        stiffness: 700,
+        damping: 30
+    };
+
+    return (
+        <div
+            onClick={toggleLanguage}
+            className={`flex items-center w-[60px] h-8 p-1 cursor-pointer rounded-full transition-colors duration-300 bg-surface/50 border border-white/10`}
+            data-is-portuguese={i18n.language.startsWith('pt')}
+        >
+            <motion.div className="w-6 h-6 bg-white rounded-full" layout transition={spring} />
+            <div className="absolute inset-0 flex justify-around items-center px-2">
+                <span className={`text-xs font-bold transition-colors ${i18n.language === 'en' ? 'text-primary' : 'text-white/50'}`}>EN</span>
+                <span className={`text-xs font-bold transition-colors ${i18n.language.startsWith('pt') ? 'text-primary' : 'text-white/50'}`}>PT</span>
+            </div>
+        </div>
+    );
 };
+
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -83,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         const data = await response.json();
         const formattedData = data.map((item: any) => ({
           ...item,
-          url: item.url.replace((window as any).wpData.siteUrl, '') || '/',
+          url: (item.url.replace((window as any).wpData.siteUrl, '') || '/').replace(/^\/en\//, '/').replace(/^\/pt\//, '/pt/'),
         }));
         setMenuItems(formattedData);
       } catch (error) {
@@ -120,7 +104,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <LanguageSwitcher />
+            {/* O INTERRUPTOR DE IDIOMA NO LUGAR DO LOGO */}
+            <LanguageToggle />
             <Link to="/" className="flex items-center">
               <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
             </Link>
@@ -141,11 +126,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           <nav className="flex flex-col space-y-4">
             {renderNavLinks(true)}
           </nav>
-          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            <div className="flex-grow pr-4">
-              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
-            </div>
-            {/* O seletor de idiomas no mobile já está no logo, mas poderia ser movido para cá se preferir */}
+          <div className="mt-6 pt-4 border-t border-white/10">
+            {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
           </div>
         </div>
       </div>
