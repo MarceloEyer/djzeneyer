@@ -1,9 +1,10 @@
 // src/main.tsx
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import './styles/index.css';
+import './index.css'; // CAMINHO CORRIGIDO: Apontando para o arquivo na mesma pasta src
 
 import './i18n'; // Inicializa o i18next
 
