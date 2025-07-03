@@ -48,7 +48,7 @@ jobs:
           local-dir: ./dist/
           
           # Destino: O caminho exato e funcional para a sua conta
-          server-dir: public_html/wp-content/themes/zentheme/dist/
+          server-dir: wp-content/themes/zentheme/dist/
 
 
           
