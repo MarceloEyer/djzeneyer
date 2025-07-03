@@ -49,8 +49,6 @@ jobs:
           
           # Destino: O caminho exato e funcional para a sua conta
           server-dir: wp-content/themes/zentheme/dist/
-
-
           
           # Limpa o destino antes de enviar os arquivos novos (nosso método mais simples)
           dangerous-clean-slate: true
