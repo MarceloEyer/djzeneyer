@@ -10,28 +10,28 @@ on:
 jobs:
   build-and-deploy:
     name: Build and Deploy
-    runs-on: ubuntu-latest # Usar um ambiente virtual para rodar a ação
+    runs-on: ubuntu-latest
     steps:
-      # 1. Baixa o código do seu repositório para o ambiente virtual
+      # 1. Baixa o código do seu repositório
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # 2. Configura o ambiente Node.js para poder construir o projeto
+      # 2. Configura o ambiente Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Usa uma versão recente do Node.js
-          cache: 'npm' # Ativa o cache para acelerar instalações futuras
+          node-version: '20'
+          cache: 'npm'
 
-      # 3. Instala todas as dependências do seu projeto (React, Vite, etc.)
+      # 3. Instala todas as dependências
       - name: Install Dependencies
         run: npm install
 
-      # 4. EXECUTA O BUILD! Este comando cria a pasta 'dist' com os arquivos finais.
+      # 4. Cria a pasta 'dist' com os arquivos finais
       - name: Build Project
         run: npm run build
 
-      # 5. Envia o conteúdo da pasta 'dist' (que agora existe) para o seu servidor via FTP
+      # 5. Envia o conteúdo da pasta 'dist' para o seu servidor
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -39,12 +39,9 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           
-          # Origem: A pasta 'dist' que acabamos de criar no passo anterior
+          # --- ADICIONE ESTA LINHA PARA UMA CONEXÃO SEGURA ---
+          security: 'loose'
+
           local-dir: ./dist/
-          
-          # Destino: A pasta 'dist' dentro do seu tema no WordPress
-          # (Assumindo que seu usuário FTP cai direto na pasta do tema)
           server-dir: ./dist/
-          
-          # Parâmetro para limpar o diretório de destino antes de enviar os arquivos novos
           dangerous-clean-slate: true
