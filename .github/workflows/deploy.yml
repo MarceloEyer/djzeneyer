@@ -1,43 +1,50 @@
 # Nome da sua automação
-name: Deploy to Hostinger
+name: Build and Deploy to Hostinger
 
 # Gatilho: Executar sempre que houver um 'push' na branch 'main'
 on:
   push:
     branches:
-      - main  # ou 'master', se sua branch principal tiver esse nome
+      - main
 
 jobs:
-  ftp-deploy:
-    name: FTP Deploy
-    # Usar um ambiente virtual Ubuntu para rodar a ação
-    runs-on: ubuntu-latest
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest # Usar um ambiente virtual para rodar a ação
     steps:
+      # 1. Baixa o código do seu repositório para o ambiente virtual
       - name: Check out repository
-        # Passo 1: Baixar o código do seu repositório para o ambiente virtual
         uses: actions/checkout@v4
 
-      - name: FTP Deploy Action
-        # Passo 2: Usar uma ação pronta para enviar os arquivos via FTP
+      # 2. Configura o ambiente Node.js para poder construir o projeto
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Usa uma versão recente do Node.js
+          cache: 'npm' # Ativa o cache para acelerar instalações futuras
+
+      # 3. Instala todas as dependências do seu projeto (React, Vite, etc.)
+      - name: Install Dependencies
+        run: npm install
+
+      # 4. EXECUTA O BUILD! Este comando cria a pasta 'dist' com os arquivos finais.
+      - name: Build Project
+        run: npm run build
+
+      # 5. Envia o conteúdo da pasta 'dist' (que agora existe) para o seu servidor via FTP
+      - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          # Servidor FTP (pega do Secret que você criou)
           server: ${{ secrets.FTP_SERVER }}
-          # Usuário FTP (pega do Secret)
           username: ${{ secrets.FTP_USERNAME }}
-          # Senha FTP (pega do Secret)
           password: ${{ secrets.FTP_PASSWORD }}
           
-          # --- ATENÇÃO: EDITE A LINHA ABAIXO, SE NECESSÁRIO ---
-          # Pasta de origem no repositório GitHub.
-          # Queremos enviar apenas o conteúdo da pasta 'dist'.
+          # Origem: A pasta 'dist' que acabamos de criar no passo anterior
           local-dir: ./dist/
-
-          # --- ATENÇÃO: EDITE A LINHA ABAIXO COM O NOME DA PASTA DO SEU TEMA ---
-          # Pasta de destino no seu servidor Hostinger.
-          # Altere 'NOME_DO_SEU_TEMA' para o nome correto da pasta do seu tema no WordPress.
+          
+          # Destino: A pasta 'dist' dentro do seu tema no WordPress
+          # (Assumindo que seu usuário FTP cai direto na pasta do tema)
           server-dir: ./dist/
           
-          # Opções extras para garantir uma sincronização limpa
-          # Apaga arquivos no destino que não existem mais na origem
-          delete-existing: true
+          # Parâmetro para limpar o diretório de destino antes de enviar os arquivos novos
+          dangerous-clean-slate: true
