@@ -1,496 +1,181 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+// src/pages/MyAccountPage.tsx
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
-import { 
-  User, 
-  Settings, 
-  ShoppingBag, 
-  Heart, 
-  Award, 
-  Music, 
-  Calendar,
-  Download,
-  CreditCard,
-  MapPin,
-  Phone,
-  Mail,
-  Edit3,
-  LogOut,
-  TrendingUp,
-  Star,
-  AlertCircle
-} from 'lucide-react';
+import { Shield, User, Trophy, ShoppingBag, Phone, Save, Eye, EyeOff } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-// Interfaces melhoradas
-interface Order {
-  id: number;
-  status: string;
-  date_created: string;
-  total: string;
-  line_items: Array<{
-    name: string;
-    quantity: number;
-    total: string;
-  }>;
-}
-
-interface UserStats {
-  level: number;
-  xp: number;
-  rank: string;
-  xpToNext: number;
-  totalAchievements: number;
-  recentAchievements: number;
-}
-
-const MyAccountPage: React.FC = () => {
-  const { user, loading, logout } = useUser();
+export default function MyAccountPage() {
+  const { user, logout } = useUser();
   const navigate = useNavigate();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loadingOrders, setLoadingOrders] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
-
-  // Computar estatísticas do usuário usando dados reais do GamiPress
-  const userStats: UserStats = useMemo(() => {
-    if (!user) {
-      return {
-        level: 0,
-        xp: 0,
-        rank: 'New Member',
-        xpToNext: 0,
-        totalAchievements: 0,
-        recentAchievements: 0
-      };
-    }
-
-    const totalPoints = user.gamipress_points?.points || 0;
-    const level = user.gamipress_level || 1;
-    const rank = user.gamipress_rank_name || 'Zen Newcomer';
-    const xpToNext = user.gamipress_xp_to_next_level || 0;
-    const totalAchievements = user.gamipress_achievements?.length || 0;
-    
-    // Calcular conquistas recentes (últimos 7 dias - seria melhor ter timestamp)
-    const recentAchievements = user.gamipress_achievements?.slice(-2).length || 0;
-
-    return {
-      level,
-      xp: totalPoints,
-      rank,
-      xpToNext,
-      totalAchievements,
-      recentAchievements
-    };
-  }, [user]);
+  
+  const [profileForm, setProfileForm] = useState({ displayName: '', phone: '' });
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
 
   useEffect(() => {
-    if (!loading && !user?.isLoggedIn) {
-      navigate('/');
-    }
-  }, [user, loading, navigate]);
-
-  useEffect(() => {
-    if (user?.isLoggedIn) {
-      fetchOrders();
-    }
-  }, [user]);
-
-  const fetchOrders = async () => {
-    if (!user?.token) return;
-    
-    try {
-      const response = await fetch(`${window.wpData.restUrl}wc/v3/orders?customer=${user.id}`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-          'X-WP-Nonce': window.wpData.nonce,
-        }
+    if (user) {
+      setProfileForm({
+        displayName: user.name || '',
+        phone: '' // O telefone será buscado separadamente no futuro, se necessário
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(data.slice(0, 5));
-      } else {
-        console.warn('Failed to fetch orders:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-    } finally {
-      setLoadingOrders(false);
+    } else if (!user && logout) {
+      navigate('/');
     }
+  }, [user, navigate]);
+
+  const formatPhoneNumber = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 10) return numbers.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    return numbers.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
   };
 
-  const handleLogout = async () => {
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProfileForm({ ...profileForm, phone: formatPhoneNumber(e.target.value) });
+  };
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProfileLoading(true);
     try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Forçar navegação mesmo se logout falhar
-      navigate('/');
+      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/user/update-profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user?.token}` },
+        body: JSON.stringify(profileForm)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Erro ao atualizar o perfil.');
+      alert('🎉 Perfil atualizado com sucesso!');
+    } catch (error: any) {
+      alert(`❌ ${error.message}`);
+    } finally {
+      setIsProfileLoading(false);
     }
   };
 
-  // Componente de Loading reutilizável
-  const LoadingSpinner = ({ message = "Loading..." }: { message?: string }) => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen flex items-center justify-center bg-background text-white p-4"
-    >
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-lg">{message}</p>
-      </div>
-    </motion.div>
-  );
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert('❌ As novas senhas não coincidem!');
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      alert('❌ A nova senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    setIsPasswordLoading(true);
+    try {
+      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/user/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user?.token}` },
+        body: JSON.stringify(passwordForm)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Erro ao alterar a senha.');
+      alert('🔒 Senha alterada com sucesso! Por segurança, faça o login novamente.');
+      logout();
+    } catch (error: any) {
+      alert(`❌ ${error.message}`);
+    } finally {
+      setIsPasswordLoading(false);
+    }
+  };
 
-  if (loading) {
-    return <LoadingSpinner message="Loading your Zen account..." />;
+  const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
+    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  if (!user) {
+    return <div className="min-h-screen flex items-center justify-center text-white">Carregando...</div>;
   }
 
-  if (!user?.isLoggedIn) {
-    return null;
-  }
-
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: User },
-    { id: 'orders', label: 'Orders', icon: ShoppingBag },
-    { id: 'achievements', label: 'Achievements', icon: Award },
-    { id: 'music', label: 'My Music', icon: Music },
-    { id: 'settings', label: 'Settings', icon: Settings },
+  const userLevel = 1;
+  const achievements = [
+      { id: 1, name: '🏆 Primeiro Login', description: 'Fez seu primeiro login!', unlocked: true },
+      { id: 2, name: '📱 Perfil Completo', description: 'Completou todas as informações do perfil', unlocked: profileForm.phone !== '' },
   ];
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'overview':
-        return (
-          <div className="space-y-6">
-            {/* Welcome Section */}
-            <div className="bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl p-6 border border-white/10">
-              <h2 className="text-2xl font-bold mb-2">Welcome back, {user.name}!</h2>
-              <p className="text-white/70">Ready to dive into your Zen journey today?</p>
-            </div>
-
-            {/* Quick Stats com dados reais */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                <div className="flex items-center gap-3 mb-2">
-                  <TrendingUp className="text-primary" size={24} />
-                  <h3 className="font-semibold">Zen Level</h3>
-                </div>
-                <p className="text-2xl font-bold text-primary">Level {userStats.level}</p>
-                <p className="text-sm text-white/60">{userStats.rank}</p>
-              </div>
-              
-              <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                <div className="flex items-center gap-3 mb-2">
-                  <Star className="text-secondary" size={24} />
-                  <h3 className="font-semibold">Total XP</h3>
-                </div>
-                <p className="text-2xl font-bold text-secondary">{userStats.xp.toLocaleString()}</p>
-                <p className="text-sm text-white/60">
-                  {userStats.xpToNext > 0 ? `${userStats.xpToNext} to next level` : 'Max level reached'}
-                </p>
-              </div>
-              
-              <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                <div className="flex items-center gap-3 mb-2">
-                  <Award className="text-accent" size={24} />
-                  <h3 className="font-semibold">Achievements</h3>
-                </div>
-                <p className="text-2xl font-bold text-accent">{userStats.totalAchievements}</p>
-                <p className="text-sm text-white/60">
-                  {userStats.recentAchievements > 0 
-                    ? `${userStats.recentAchievements} unlocked recently`
-                    : 'Keep exploring to unlock more!'
-                  }
-                </p>
-              </div>
-            </div>
-
-            {/* Recent Activity - usando dados reais quando possível */}
-            <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-              <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
-              <div className="space-y-3">
-                {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
-                  user.gamipress_achievements.slice(-2).map((achievement, index) => (
-                    <div key={achievement.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                      <Award className="text-secondary" size={20} />
-                      <div>
-                        <p className="font-medium">Unlocked "{achievement.title.rendered}"</p>
-                        <p className="text-sm text-white/60">Recently achieved</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                      <Music className="text-primary" size={20} />
-                      <div>
-                        <p className="font-medium">Welcome to Zen Tribe!</p>
-                        <p className="text-sm text-white/60">Your journey begins now</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                      <Calendar className="text-accent" size={20} />
-                      <div>
-                        <p className="font-medium">Account created</p>
-                        <p className="text-sm text-white/60">Start exploring to see more activity</p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'achievements':
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Your Achievements</h2>
-              <div className="text-sm text-white/60">
-                {userStats.totalAchievements} unlocked
-              </div>
-            </div>
-            
-            {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {user.gamipress_achievements.map((achievement) => (
-                  <div 
-                    key={achievement.id} 
-                    className="bg-surface/50 rounded-lg p-4 border border-white/10"
-                  >
-                    <div className="text-4xl mb-3">🏆</div>
-                    <h4 className="font-display text-lg mb-1">{achievement.title.rendered}</h4>
-                    {achievement.content && (
-                      <p className="text-sm text-white/70" 
-                         dangerouslySetInnerHTML={{ __html: achievement.content.rendered }} />
-                    )}
-                    <div className="mt-2 text-xs text-success flex items-center">
-                      <Award size={12} className="mr-1" />
-                      Unlocked
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <Award className="mx-auto mb-4 text-white/30" size={48} />
-                <h3 className="text-xl font-semibold mb-2">No achievements yet</h3>
-                <p className="text-white/60 mb-6">Start exploring and engaging to unlock your first achievements!</p>
-                <Link to="/tribe" className="btn btn-primary">
-                  Join the Tribe
-                </Link>
-              </div>
-            )}
-
-            {/* Progresso para próxima conquista */}
-            {userStats.xpToNext > 0 && (
-              <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                <h3 className="text-lg font-semibold mb-3">Next Level Progress</h3>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>Level {userStats.level}</span>
-                      <span>Level {userStats.level + 1}</span>
-                    </div>
-                    <div className="w-full bg-white/10 rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full transition-all duration-500"
-                        style={{ 
-                          width: `${Math.max(10, ((userStats.xp) / (userStats.xp + userStats.xpToNext)) * 100)}%` 
-                        }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-white/60 mt-1">
-                      {userStats.xpToNext} XP needed for next level
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      case 'orders':
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Order History</h2>
-              <Link to="/shop" className="btn btn-primary">
-                Continue Shopping
-              </Link>
-            </div>
-
-            {/* Melhor tratamento de loading e estados vazios */}
-            {loadingOrders ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-                <p>Loading your orders...</p>
-              </div>
-            ) : orders.length > 0 ? (
-              <div className="space-y-4">
-                {orders.map((order) => (
-                  <div key={order.id} className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="font-semibold">Order #{order.id}</h3>
-                        <p className="text-sm text-white/60">
-                          {new Date(order.date_created).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">R$ {order.total}</p>
-                        <span className={`inline-block px-2 py-1 rounded text-xs ${getOrderStatusClass(order.status)}`}>
-                          {getOrderStatusText(order.status)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {order.line_items.map((item, index) => (
-                        <div key={index} className="flex justify-between text-sm">
-                          <span>{item.name} x{item.quantity}</span>
-                          <span>R$ {item.total}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <ShoppingBag className="mx-auto mb-4 text-white/30" size={48} />
-                <h3 className="text-xl font-semibold mb-2">No orders yet</h3>
-                <p className="text-white/60 mb-6">Start exploring our exclusive content and merchandise!</p>
-                <Link to="/shop" className="btn btn-primary">
-                  Browse Shop
-                </Link>
-              </div>
-            )}
-          </div>
-        );
-
-      // ... resto dos cases permanecem iguais
-      default:
-        return <div>Tab content not implemented</div>;
-    }
-  };
-
-  // Funções auxiliares para orders
-  const getOrderStatusClass = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-success/20 text-success';
-      case 'processing':
-        return 'bg-warning/20 text-warning';
-      case 'failed':
-        return 'bg-error/20 text-error';
-      default:
-        return 'bg-white/20 text-white/70';
-    }
-  };
-
-  const getOrderStatusText = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'Completed';
-      case 'processing':
-        return 'Processing';
-      case 'failed':
-        return 'Failed';
-      case 'cancelled':
-        return 'Cancelled';
-      default:
-        return status.charAt(0).toUpperCase() + status.slice(1);
-    }
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="container mx-auto px-4 py-8 min-h-screen"
-    >
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold font-display mb-2">
-            My Zen Account
-          </h1>
-          <p className="text-white/70">
-            Manage your profile, orders, and Zen Tribe membership
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-8 text-white">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="flex items-center gap-4 mb-8">
+          <h1 className="text-4xl font-bold">Minha Conta</h1>
+          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+            🎯 Nível {userLevel}
+          </div>
         </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar melhorado */}
-          <div className="lg:w-1/4">
-            <div className="bg-surface/50 rounded-lg p-6 border border-white/10 sticky top-24">
-              {/* User Info com dados reais */}
-              <div className="text-center mb-6 pb-6 border-b border-white/10">
-                <div className="relative mb-3">
-                  {user.avatar ? (
-                    <img 
-                      src={user.avatar} 
-                      alt={user.name}
-                      className="w-16 h-16 rounded-full mx-auto object-cover"
-                      onError={(e) => {
-                        // Fallback para ícone se imagem falhar
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        target.nextElementSibling?.classList.remove('hidden');
-                      }}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-                      <User className="text-primary" size={24} />
-                    </div>
-                  )}
-                </div>
-                <h3 className="font-semibold">{user.name}</h3>
-                <p className="text-sm text-white/60">{user.email}</p>
-                <div className="mt-2">
-                  <span className="inline-block px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">
-                    {userStats.rank}
-                  </span>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2 mb-6 border border-white/20">
+              <div className="flex space-x-2">
+                <button onClick={() => setActiveTab('profile')} className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${activeTab === 'profile' ? 'bg-gradient-to-r from-blue-500 to-purple-600' : 'hover:bg-white/10'}`}>
+                  <User size={20} /> Perfil
+                </button>
+                <button onClick={() => setActiveTab('security')} className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${activeTab === 'security' ? 'bg-gradient-to-r from-red-500 to-pink-600' : 'hover:bg-white/10'}`}>
+                  <Shield size={20} /> Segurança
+                </button>
+                <button onClick={() => setActiveTab('orders')} className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${activeTab === 'orders' ? 'bg-gradient-to-r from-green-500 to-teal-600' : 'hover:bg-white/10'}`}>
+                  <ShoppingBag size={20} /> Compras
+                </button>
               </div>
-
-              {/* Navigation */}
-              <nav className="space-y-2">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                        activeTab === tab.id
-                          ? 'bg-primary/20 text-primary'
-                          : 'text-white/70 hover:text-white hover:bg-white/5'
-                      }`}
-                    >
-                      <Icon size={18} />
-                      <span>{tab.label}</span>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+              {activeTab === 'profile' && (
+                <form onSubmit={handleProfileSubmit} className="space-y-6">
+                  <h2 className="text-2xl font-bold">Detalhes do Perfil</h2>
+                  <div>
+                    <label className="block text-sm mb-2">Nome de Exibição</label>
+                    <input type="text" value={profileForm.displayName} onChange={e => setProfileForm({ ...profileForm, displayName: e.target.value })} className="w-full p-3 bg-white/10 border border-white/20 rounded-xl" required />
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-2">Número de Telefone</label>
+                    <input type="tel" value={profileForm.phone} onChange={handlePhoneChange} className="w-full p-3 bg-white/10 border border-white/20 rounded-xl" placeholder="(31) 99999-9999" maxLength={15} />
+                  </div>
+                  <button type="submit" disabled={isProfileLoading} className="w-full bg-gradient-to-r from-blue-500 to-purple-600 py-3 rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+                    {isProfileLoading ? <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin"></div> : <Save size={20} />}
+                    <span>{isProfileLoading ? 'Salvando...' : 'Salvar Alterações'}</span>
+                  </button>
+                </form>
+              )}
+              {activeTab === 'security' && (
+                 <form onSubmit={handlePasswordSubmit} className="space-y-6">
+                    <h2 className="text-2xl font-bold">Alterar Senha</h2>
+                    <div>
+                        <label className="block text-sm mb-2">Senha Atual</label>
+                        <div className="relative"><input type={showPasswords.current ? "text" : "password"} value={passwordForm.currentPassword} onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })} className="w-full p-3 pr-12 bg-white/10 border border-white/20 rounded-xl" required /><button type="button" onClick={() => togglePasswordVisibility('current')} className="absolute inset-y-0 right-0 pr-4 flex items-center">{showPasswords.current ? <EyeOff size={20}/> : <Eye size={20}/>}</button></div>
+                    </div>
+                    <div>
+                        <label className="block text-sm mb-2">Nova Senha</label>
+                        <div className="relative"><input type={showPasswords.new ? "text" : "password"} value={passwordForm.newPassword} onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })} className="w-full p-3 pr-12 bg-white/10 border border-white/20 rounded-xl" required /><button type="button" onClick={() => togglePasswordVisibility('new')} className="absolute inset-y-0 right-0 pr-4 flex items-center">{showPasswords.new ? <EyeOff size={20}/> : <Eye size={20}/>}</button></div>
+                    </div>
+                    <div>
+                        <label className="block text-sm mb-2">Confirmar Nova Senha</label>
+                        <div className="relative"><input type={showPasswords.confirm ? "text" : "password"} value={passwordForm.confirmPassword} onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })} className="w-full p-3 pr-12 bg-white/10 border border-white/20 rounded-xl" required /><button type="button" onClick={() => togglePasswordVisibility('confirm')} className="absolute inset-y-0 right-0 pr-4 flex items-center">{showPasswords.confirm ? <EyeOff size={20}/> : <Eye size={20}/>}</button></div>
+                    </div>
+                    <button type="submit" disabled={isPasswordLoading} className="w-full bg-gradient-to-r from-red-500 to-pink-600 py-3 rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+                        {isPasswordLoading ? <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin"></div> : <Shield size={20} />}
+                        <span>{isPasswordLoading ? 'Alterando...' : 'Alterar Senha'}</span>
                     </button>
-                  );
-                })}
-              </nav>
+                 </form>
+              )}
+              {activeTab === 'orders' && (
+                <div><h2 className="text-2xl font-bold">Histórico de Compras</h2><div className="text-center py-12"><ShoppingBag className="w-16 h-16 text-white/30 mx-auto mb-4" /><h3 className="text-xl font-semibold">Nenhuma compra encontrada</h3></div></div>
+              )}
             </div>
           </div>
-
-          {/* Main Content */}
-          <div className="lg:w-3/4">
-            <div className="bg-surface/30 rounded-lg p-6 md:p-8 border border-white/10">
-              {renderTabContent()}
+          <div className="space-y-6">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-3"><Trophy className="text-yellow-400" /> Conquistas</h2>
+                 <div className="space-y-4">
+                    {achievements.map(ach => (<div key={ach.id} className={`p-3 rounded-lg border ${ach.unlocked ? 'bg-yellow-500/20 border-yellow-500/20' : 'bg-white/5 border-white/10'}`}><p className="font-semibold">{ach.name}</p><p className={`text-sm ${ach.unlocked ? 'text-yellow-200' : 'text-white/50'}`}>{ach.description}</p></div>))}
+                 </div>
             </div>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
-};
-
-export default MyAccountPage;
+}
