@@ -1,11 +1,9 @@
 // src/App.tsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
-// Layouts e Wrappers
 import MainLayout from './layouts/MainLayout';
 import LanguageWrapper from './components/common/LanguageWrapper';
 
@@ -17,8 +15,6 @@ import ZenTribePage from './pages/ZenTribePage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PressKitPage from './pages/PressKitPage';
-
-// Pages (Loja)
 import ShopPage from './pages/ShopPage';
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
@@ -30,8 +26,8 @@ import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
-// Importa a configuração do i18n para garantir que ele seja inicializado
-import './i18n'; // CAMINHO CORRIGIDO
+// Importa a configuração do i18n
+import './i18n';
 
 function App() {
   return (
@@ -41,7 +37,6 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
-                {/* A rota pai agora captura o idioma opcional '/pt' */}
                 <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
