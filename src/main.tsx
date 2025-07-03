@@ -4,9 +4,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import './index.css'; // CAMINHO CORRIGIDO: Apontando para o arquivo na mesma pasta src
+import './index.css';
 
-import './i18n'; // Inicializa o i18next
+import './i18n'; // Esta linha inicializa tudo
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
