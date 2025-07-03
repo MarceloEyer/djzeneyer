@@ -1,11 +1,14 @@
 # Nome da sua automação
 name: Build and Deploy to Hostinger
 
-# Gatilho: Executar sempre que houver um 'push' na branch 'main'
+# Gatilhos de execução
 on:
+  # 1. Deploy automático ao fazer push na branch 'main'
   push:
     branches:
       - main
+  # 2. Permite deploy manual pela interface do GitHub Actions
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -16,16 +19,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # 2. Configura o ambiente Node.js
-      - name: Setup Node.js
+      # 2. Configura o ambiente Node.js com cache embutido (mais simples e eficiente)
+      - name: Setup Node.js with Cache
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          # Esta linha ativa o cache para o npm, substituindo o passo extra de 'actions/cache'
           cache: 'npm'
 
-      # 3. Instala todas as dependências
+      # 3. Instala as dependências de forma otimizada
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       # 4. Cria a pasta 'dist' com os arquivos finais
       - name: Build Project
@@ -43,9 +47,8 @@ jobs:
           # Origem: A pasta 'dist' que acabamos de criar
           local-dir: ./dist/
           
-          # --- ATENÇÃO: CAMINHO DE DESTINO CORRIGIDO ---
-          # Como o usuário principal pousa na raiz, fornecemos o caminho completo
+          # Destino: O caminho exato e funcional para a sua conta
           server-dir: ./public_html/wp-content/themes/zentheme/dist/
           
-          # Limpa o destino antes de enviar os arquivos novos
+          # Limpa o destino antes de enviar os arquivos novos (nosso método mais simples)
           dangerous-clean-slate: true
