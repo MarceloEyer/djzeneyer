@@ -1,0 +1,43 @@
+# Nome da sua automação
+name: Deploy to Hostinger
+
+# Gatilho: Executar sempre que houver um 'push' na branch 'main'
+on:
+  push:
+    branches:
+      - main  # ou 'master', se sua branch principal tiver esse nome
+
+jobs:
+  ftp-deploy:
+    name: FTP Deploy
+    # Usar um ambiente virtual Ubuntu para rodar a ação
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        # Passo 1: Baixar o código do seu repositório para o ambiente virtual
+        uses: actions/checkout@v4
+
+      - name: FTP Deploy Action
+        # Passo 2: Usar uma ação pronta para enviar os arquivos via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          # Servidor FTP (pega do Secret que você criou)
+          server: ${{ secrets.FTP_SERVER }}
+          # Usuário FTP (pega do Secret)
+          username: ${{ secrets.FTP_USERNAME }}
+          # Senha FTP (pega do Secret)
+          password: ${{ secrets.FTP_PASSWORD }}
+          
+          # --- ATENÇÃO: EDITE A LINHA ABAIXO, SE NECESSÁRIO ---
+          # Pasta de origem no repositório GitHub.
+          # Queremos enviar apenas o conteúdo da pasta 'dist'.
+          local-dir: ./dist/
+
+          # --- ATENÇÃO: EDITE A LINHA ABAIXO COM O NOME DA PASTA DO SEU TEMA ---
+          # Pasta de destino no seu servidor Hostinger.
+          # Altere 'NOME_DO_SEU_TEMA' para o nome correto da pasta do seu tema no WordPress.
+          server-dir: ./public_html/wp-content/themes/zentheme/dist/
+          
+          # Opções extras para garantir uma sincronização limpa
+          # Apaga arquivos no destino que não existem mais na origem
+          delete-existing: true
