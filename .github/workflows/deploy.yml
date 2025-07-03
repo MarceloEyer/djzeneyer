@@ -1,7 +1,7 @@
 # Nome da sua automação
 name: Build and Deploy to Hostinger
 
-# Gatilho: Executar sempre que houver um 'push' na branch 'main'
+# Gatilho: Executar sempre que houver um 'push' na branch 'main' 
 on:
   push:
     branches:
