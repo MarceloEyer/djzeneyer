@@ -2,11 +2,57 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, LogIn } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Music, Calendar, Users, Menu, X, Briefcase, LogIn, Globe, Check } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
-import { useLanguage } from '../../contexts/LanguageContext';
 import UserMenu from './UserMenu';
-import LanguageSwitcher from './LanguageSwitcher';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// O seletor de idiomas agora faz parte do Navbar para simplificar
+const LanguageSwitcher: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { i18n } = useTranslation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const languages = [
+    { code: 'pt', name: 'Português' },
+    { code: 'en', name: 'English' },
+  ];
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <motion.button onClick={() => setIsOpen(!isOpen)} className="text-white/70 hover:text-white transition-colors" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+        <Globe size={24} />
+      </motion.button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 lg:left-0 mt-2 w-40 bg-surface border border-white/10 rounded-lg shadow-lg z-50">
+            <ul className="py-1">
+              {languages.map((lang) => (
+                <li key={lang.code}>
+                  <button onClick={() => { i18n.changeLanguage(lang.code); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-primary/20 flex items-center justify-between">
+                    <span>{lang.name}</span>
+                    {i18n.language.startsWith(lang.code) && <Check size={16} className="text-primary" />}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -20,10 +66,10 @@ interface MenuItem {
 }
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
+  const { i18n } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
-  const { language } = useLanguage();
   const location = useLocation();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
@@ -31,7 +77,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     const fetchMenu = async () => {
       if (!window.wpData?.restUrl) return;
       try {
-        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/menu?lang=${language}`);
+        // Usa o idioma do i18next para buscar o menu correto
+        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/menu?lang=${i18n.language}`);
         if (!response.ok) throw new Error('Falha ao buscar o menu');
         const data = await response.json();
         const formattedData = data.map((item: any) => ({
@@ -41,11 +88,11 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         setMenuItems(formattedData);
       } catch (error) {
         console.error("Falha ao buscar menu:", error);
-        setMenuItems([]); // Em caso de erro, o menu fica vazio
+        setMenuItems([]);
       }
     };
     fetchMenu();
-  }, [language]);
+  }, [i18n.language]); // Dependência: busca o menu sempre que o idioma muda
 
   useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
   
@@ -62,12 +109,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
   const renderNavLinks = (isMobile = false) => (
     menuItems.map((item) => (
-      <NavLink 
-        key={item.ID} 
-        to={item.url} 
-        target={item.target || '_self'}
-        className={isMobile ? mobileNavLinkClass : navLinkClass}
-      >
+      <NavLink key={item.ID} to={item.url} target={item.target || '_self'} className={isMobile ? mobileNavLinkClass : navLinkClass}>
         {item.title}
       </NavLink>
     ))
@@ -103,7 +145,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             <div className="flex-grow pr-4">
               {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>Login / Sign Up</span></button>}
             </div>
-            <div className="flex-shrink-0"><LanguageSwitcher /></div>
+            {/* Seletor de idioma no mobile pode ser adicionado aqui se desejado */}
           </div>
         </div>
       </div>
