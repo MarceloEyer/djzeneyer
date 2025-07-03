@@ -5,29 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-
-// Seletor de Idiomas com design melhorado
-const LanguageSelector: React.FC = () => {
-    const { i18n } = useTranslation();
-
-    const changeLanguage = (lng: 'pt' | 'en') => {
-        const currentPath = window.location.pathname.replace(/^\/(en|pt)/, '');
-        const newPath = lng === 'en' ? currentPath : `/${lng}${currentPath}`;
-        window.location.pathname = newPath === '' ? '/' : newPath;
-    };
-
-    return (
-        <div className="flex items-center gap-2 bg-surface/50 border border-white/10 rounded-full px-2 py-1">
-            <button onClick={() => changeLanguage('pt')} className={`px-2 py-1 text-xs font-bold rounded-full transition-colors ${i18n.language.startsWith('pt') ? 'bg-primary text-white' : 'text-white/60 hover:text-white'}`}>
-                PT
-            </button>
-            <button onClick={() => changeLanguage('en')} className={`px-2 py-1 text-xs font-bold rounded-full transition-colors ${i18n.language === 'en' ? 'bg-primary text-white' : 'text-white/60 hover:text-white'}`}>
-                EN
-            </button>
-        </div>
-    );
-};
-
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -57,10 +35,11 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         if (!response.ok) throw new Error('Falha ao buscar o menu');
         const data = await response.json();
         
-        const formattedData = data.map((item: any) => ({
-            ...item,
-            url: item.url.replace((window as any).wpData.siteUrl, '') || '/',
-        }));
+        const formattedData = data.map((item: any) => {
+            const urlObject = new URL(item.url);
+            // Retorna o caminho da URL, ex: /music ou /pt/events
+            return { ...item, url: urlObject.pathname || '/' };
+        });
         setMenuItems(formattedData);
       } catch (error) {
         console.error("Falha ao buscar menu:", error);
@@ -92,14 +71,14 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center">
+          <Link to={i18n.language.startsWith('pt') ? '/pt' : '/'} className="flex items-center">
             <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-8">
             {renderNavLinks()}
           </nav>
           <div className="hidden md:flex items-center space-x-4">
-            <LanguageSelector />
+            <LanguageSwitcher />
             {user?.isLoggedIn ? <UserMenu /> : <button onClick={onLoginClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>Login</span></button>}
           </div>
           <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
