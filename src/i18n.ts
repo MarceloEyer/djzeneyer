@@ -4,11 +4,11 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// CORRIGIDO: O caminho do import agora é relativo à pasta `src`
+// 1. O caminho agora aponta para dentro da pasta `src`, o que é o correto
 import translationEN from './locales/en/translation.json';
 import translationPT from './locales/pt/translation.json';
 
-// Criamos o objeto de recursos com as traduções importadas
+// 2. Criamos o objeto de recursos com as traduções importadas
 const resources = {
   en: {
     translation: translationEN,
@@ -22,8 +22,8 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources, // Usamos os recursos importados
-    fallbackLng: 'en',
+    resources, // 3. Usamos os recursos importados, sem "backend"
+    fallbackLng: 'en', // Idioma padrão: Inglês
     
     detection: {
       order: ['path', 'cookie', 'localStorage', 'navigator'],
@@ -31,7 +31,7 @@ i18n
     },
 
     interpolation: {
-      escapeValue: false,
+      escapeValue: false, 
     },
   });
 
