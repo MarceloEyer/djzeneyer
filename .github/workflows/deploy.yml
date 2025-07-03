@@ -1,7 +1,7 @@
 # Nome da sua automação
 name: Build and Deploy to Hostinger
 
-# Gatilho: Executar sempre que houver um 'push' na branch 'main' 
+# Gatilho: Executar sempre que houver um 'push' na branch 'main'
 on:
   push:
     branches:
@@ -38,10 +38,14 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          
-          # --- ADICIONE ESTA LINHA PARA UMA CONEXÃO SEGURA ---
           security: 'loose'
-
+          
+          # Origem: A pasta 'dist' que acabamos de criar
           local-dir: ./dist/
-          server-dir: ./dist/
+          
+          # --- ATENÇÃO: CAMINHO DE DESTINO CORRIGIDO ---
+          # Como o usuário principal pousa na raiz, fornecemos o caminho completo
+          server-dir: ./public_html/wp-content/themes/zentheme/dist/
+          
+          # Limpa o destino antes de enviar os arquivos novos
           dangerous-clean-slate: true
