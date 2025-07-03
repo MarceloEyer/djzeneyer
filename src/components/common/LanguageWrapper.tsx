@@ -2,26 +2,25 @@
 
 import React, { useEffect } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 const LanguageWrapper: React.FC = () => {
-  // Pega os parâmetros da URL. Ex: em /en/music, o 'lang' será 'en'.
-  const { lang } = useParams<{ lang: string }>();
-  const { setLanguage } = useLanguage();
+  // O parâmetro 'lang' agora será 'pt' ou ficará indefinido (undefined)
+  const { lang } = useParams<{ lang?: 'pt' }>();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
-    // Se a URL tiver '/en', muda o idioma do site para inglês.
-    if (lang === 'en') {
-      setLanguage('en');
-    } else {
-      // Se não, garante que o idioma seja português.
-      setLanguage('pt-BR');
-    }
-    // Roda sempre que o parâmetro 'lang' na URL mudar.
-  }, [lang, setLanguage]);
+    const targetLang = lang === 'pt' ? 'pt' : 'en';
 
-  // O <Outlet /> simplesmente renderiza o resto das rotas que estão aninhadas
-  // dentro deste componente no App.tsx.
+    // Apenas muda o idioma se ele for diferente do idioma atual
+    // Isso evita re-renderizações desnecessárias
+    if (i18n.language !== targetLang) {
+      console.log(`[LanguageWrapper] Mudando idioma para: ${targetLang}`);
+      i18n.changeLanguage(targetLang);
+    }
+  }, [lang, i18n]);
+
+  // O <Outlet /> renderiza a rota filha correspondente (HomePage, MusicPage, etc.)
   return <Outlet />;
 };
 
