@@ -1,6 +1,6 @@
 // src/components/common/Navbar.tsx
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react'; // useRef foi adicionado aqui
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Calendar, Users, Menu, X, Briefcase, LogIn, Globe, Check } from 'lucide-react';
@@ -19,6 +19,7 @@ const LanguageSwitcher: React.FC = () => {
     { code: 'en', name: 'English' },
   ];
 
+  // Fecha o dropdown se clicar fora dele
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -66,7 +67,7 @@ interface MenuItem {
 }
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
@@ -75,15 +76,14 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
   useEffect(() => {
     const fetchMenu = async () => {
-      if (!window.wpData?.restUrl) return;
+      if (!(window as any).wpData?.restUrl) return;
       try {
-        // Usa o idioma do i18next para buscar o menu correto
-        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/menu?lang=${i18n.language}`);
+        const response = await fetch(`${(window as any).wpData.restUrl}djzeneyer/v1/menu?lang=${i18n.language}`);
         if (!response.ok) throw new Error('Falha ao buscar o menu');
         const data = await response.json();
         const formattedData = data.map((item: any) => ({
           ...item,
-          url: item.url.replace(window.wpData.siteUrl, '') || '/',
+          url: item.url.replace((window as any).wpData.siteUrl, '') || '/',
         }));
         setMenuItems(formattedData);
       } catch (error) {
@@ -92,7 +92,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
       }
     };
     fetchMenu();
-  }, [i18n.language]); // Dependência: busca o menu sempre que o idioma muda
+  }, [i18n.language]);
 
   useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
   
@@ -129,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             {renderNavLinks()}
           </nav>
           <div className="hidden md:flex items-center">
-            {user?.isLoggedIn ? <UserMenu /> : <button onClick={onLoginClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>Login</span></button>}
+            {user?.isLoggedIn ? <UserMenu /> : <button onClick={onLoginClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>{t('sign_in')}</span></button>}
           </div>
           <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -143,9 +143,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           </nav>
           <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
             <div className="flex-grow pr-4">
-              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>Login / Sign Up</span></button>}
+              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
             </div>
-            {/* Seletor de idioma no mobile pode ser adicionado aqui se desejado */}
+            {/* O seletor de idiomas no mobile já está no logo, mas poderia ser movido para cá se preferir */}
           </div>
         </div>
       </div>
