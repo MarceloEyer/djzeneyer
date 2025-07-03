@@ -1,9 +1,10 @@
 // src/pages/ShopPage.tsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, ShoppingCart, AlertCircle, RefreshCw } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next'; // 1. Importa o hook correto
+import { Loader2, ShoppingCart, AlertCircle } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -24,11 +25,11 @@ interface Product {
   regular_price: string;
   sale_price: string;
   images: { src: string; alt: string }[];
-  short_description: string;
+  stock_status: string;
 }
 
 const ShopPage: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation(); // 2. Usa o novo hook
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +55,7 @@ const ShopPage: React.FC = () => {
       regular_price: String((parseFloat(productData.prices?.regular_price || '0') / 100).toFixed(2)),
       sale_price: String((parseFloat(productData.prices?.sale_price || '0') / 100).toFixed(2)),
       images: [{ src: imageUrl, alt: imageAlt }],
-      short_description: productData.description || '',
+      stock_status: productData.is_in_stock ? 'instock' : 'outofstock',
     };
   }, []);
 
@@ -101,12 +102,24 @@ const ShopPage: React.FC = () => {
   
   const formatPrice = (price: string) => `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
 
-  if (loading) return <div className="min-h-screen flex justify-center items-center"><Loader2 className="animate-spin text-primary" size={48} /></div>;
-  if (error) return <div className="min-h-screen flex justify-center items-center text-red-500"><AlertCircle className="mr-2" /> {error}</div>;
+  if (loading) return (
+    <div className="min-h-screen flex flex-col items-center justify-center text-white">
+      <Loader2 className="animate-spin text-primary" size={48} />
+      <p className="mt-6 text-xl font-medium">{t('shop_loading_text')}</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex justify-center items-center text-red-500">
+      <AlertCircle className="mr-2" /> {error}
+    </div>
+  );
 
   return (
     <motion.div className="container mx-auto px-4 py-24 text-white" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <h1 className="text-3xl md:text-4xl font-extrabold font-display text-center mb-16">Loja de Ingressos</h1>
+      <h1 className="text-3xl md:text-4xl font-extrabold font-display text-center mb-16">
+        {t('shop_page_title')}
+      </h1>
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
           <motion.div key={product.id} className="bg-surface/50 border border-white/10 rounded-2xl flex flex-col">
@@ -115,35 +128,30 @@ const ShopPage: React.FC = () => {
             </Link>
             <div className="p-5 flex flex-col flex-grow">
               <h2 className="text-xl font-semibold mb-3 flex-grow">{product.name}</h2>
-              
-              {/* TRECHO DO PREÇO MODIFICADO */}
               <div className="text-xl font-bold mb-4 h-14 flex items-center">
                   {product.on_sale ? (
                     <div>
-                      <span className="text-lg text-gray-400 line-through mr-2">
-                        {formatPrice(product.regular_price)}
-                      </span>
-                      <span className="text-primary">
-                        {formatPrice(product.price)}
-                      </span>
+                      <span className="text-lg text-gray-400 line-through mr-2">{formatPrice(product.regular_price)}</span>
+                      <span className="text-primary">{formatPrice(product.price)}</span>
                     </div>
                   ) : (
                     <span>{formatPrice(product.price)}</span>
                   )}
               </div>
-
-              <button
-                onClick={() => addToCart(product.id)}
-                disabled={!!addingToCart}
-                className="w-full btn bg-primary hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50 mt-auto"
-              >
-                {addingToCart === product.id ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <ShoppingCart size={18} />
-                )}
-                <span>{addingToCart === product.id ? 'Adicionando...' : 'Comprar Ingresso'}</span>
-              </button>
+              {product.stock_status === 'outofstock' ? (
+                <button disabled className="w-full btn bg-gray-600 text-gray-400 cursor-not-allowed">
+                  {t('shop_out_of_stock')}
+                </button>
+              ) : (
+                <button
+                  onClick={() => addToCart(product.id)}
+                  disabled={!!addingToCart}
+                  className="w-full btn bg-primary hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50 mt-auto"
+                >
+                  {addingToCart === product.id ? ( <Loader2 size={18} className="animate-spin" /> ) : ( <ShoppingCart size={18} /> )}
+                  <span>{addingToCart === product.id ? t('shop_adding_text') : t('shop_add_to_cart_button')}</span>
+                </button>
+              )}
             </div>
           </motion.div>
         ))}
