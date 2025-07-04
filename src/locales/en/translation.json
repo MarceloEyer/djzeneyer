@@ -30,5 +30,15 @@
   "presskit_contact_title": "Let's Create Something Amazing Together",
   "presskit_contact_subtitle": "Ready to take your event to the next level? Get in touch and let's talk about the possibilities.",
   "presskit_contact_button": "Contact on WhatsApp",
-  "whatsapp_message": "Hello, Zen Eyer! I'm interested in booking you for a Zouk event. Can we talk?"
+  "whatsapp_message": "Hello, Zen Eyer! I'm interested in booking you for a Zouk event. Can we talk?",
+  "home_headline": "Welcome to the <span class=\"text-primary\">Zen Experience</span>",
+  "home_subheadline": "Immerse yourself in the mesmerizing world of Brazilian Zouk with DJ Zen Eyer",
+  "play_featured_mix": "Play Featured Mix",
+  "upcoming_events": "Upcoming Events",
+  "home_features_title": "Experience the <span class=\"text-primary\">Zen Vibe</span>",
+  "home_features_subtitle": "Discover what makes the Zen Tribe community special",
+  "home_cta_title": "Ready to Join the <span class=\"text-primary\">Zen Tribe</span>?",
+  "home_cta_subtitle": "Become part of a global community of music lovers and experience exclusive content, events, and connections.",
+  "join_now_button": "Join the Tribe",
+  "explore_music_button": "Explore Music"
 }
