@@ -19,15 +19,9 @@ i18n
     fallbackLng: 'en',
     supportedLngs: ['en', 'pt'],
     detection: {
-      order: ['path', 'localStorage', 'cookie', 'navigator'],
-      lookupFromPathIndex: 0,
-      lookupFromSubdomainIndex: 0,
-      caches: ['localStorage', 'cookie'],
+      order: ['path', 'localStorage', 'cookie'],
     },
-    interpolation: { 
-      escapeValue: false 
-    },
-    debug: false, // Set to true for debugging
+    interpolation: { escapeValue: false },
   });
 
 export default i18n;
