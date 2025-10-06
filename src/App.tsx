@@ -1,8 +1,9 @@
-// src/App.tsx - VERSÃO DE TESTE
+// src/App.tsx
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Layouts
 import MainLayout from './layouts/MainLayout';
@@ -24,7 +25,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import MyAccountPage from './pages/MyAccountPage';
 
 // Context Providers
-// import { LanguageProvider } from './contexts/LanguageContext'; // TEMPORARIAMENTE DESATIVADO
+import { LanguageProvider } from './contexts/LanguageContext';
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
@@ -32,7 +33,7 @@ import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 function App() {
   return (
     <HelmetProvider>
-      {/* <LanguageProvider> */} {/* TEMPORARIAMENTE DESATIVADO */}
+      <LanguageProvider>
         <UserProvider>
           <CartProvider>
             <MusicPlayerProvider>
@@ -57,7 +58,7 @@ function App() {
             </MusicPlayerProvider>
           </CartProvider>
         </UserProvider>
-      {/* </LanguageProvider> */} {/* TEMPORARIAMENTE DESATIVADO */}
+      </LanguageProvider>
     </HelmetProvider>
   );
 }
