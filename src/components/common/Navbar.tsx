@@ -124,4 +124,18 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           </button>
         </div>
       </div>
-      <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow
+      <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex flex-col space-y-4">
+            {renderNavLinks(true)}
+          </nav>
+          <div className="mt-6 pt-4 border-t border-white/10">
+            {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+});
+
+export default Navbar;
