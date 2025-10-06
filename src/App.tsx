@@ -4,8 +4,8 @@ import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
+// Layouts
 import MainLayout from './layouts/MainLayout';
-import LanguageWrapper from './components/common/LanguageWrapper';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -22,23 +22,21 @@ import CheckoutPage from './pages/CheckoutPage';
 import MyAccountPage from './pages/MyAccountPage';
 
 // Context Providers
+import { LanguageProvider } from './contexts/LanguageContext';
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
-// Importa a configuração do i18n
-import './i18n';
-
 function App() {
   return (
     <HelmetProvider>
-      <UserProvider>
-        <CartProvider>
-          <MusicPlayerProvider>
-            <AnimatePresence mode="wait">
-              <Routes>
-                <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
-                  <Route element={<MainLayout />}>
+      <LanguageProvider>
+        <UserProvider>
+          <CartProvider>
+            <MusicPlayerProvider>
+              <AnimatePresence mode="wait">
+                <Routes>
+                  <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
                     <Route path="events" element={<EventsPage />} />
                     <Route path="music" element={<MusicPage />} />
@@ -52,12 +50,12 @@ function App() {
                     <Route path="my-account" element={<MyAccountPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
-                </Route>
-              </Routes>
-            </AnimatePresence>
-          </MusicPlayerProvider>
-        </CartProvider>
-      </UserProvider>
+                </Routes>
+              </AnimatePresence>
+            </MusicPlayerProvider>
+          </CartProvider>
+        </UserProvider>
+      </LanguageProvider>
     </HelmetProvider>
   );
 }
