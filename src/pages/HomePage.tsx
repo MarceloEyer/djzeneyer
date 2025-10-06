@@ -1,130 +1,112 @@
 // src/pages/HomePage.tsx
-
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next'; // 1. Importamos o hook correto
+import { useTranslation, Trans } from 'react-i18next';
 import { PlayCircle, Calendar, Users, Music, Award, TrendingUp } from 'lucide-react';
 import { useMusicPlayer } from '../contexts/MusicPlayerContext';
 
 const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
-  const { t } = useTranslation(); // 2. Usamos o novo hook para pegar a função de tradução 't'
+  const { t } = useTranslation();
 
   const handlePlayFeatured = () => {
-    if (queue.length > 0) {
+    if (queue && queue.length > 0) {
       playTrack(queue[0]);
     }
   };
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.5, ease: 'easeOut' },
-    },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
   };
 
   return (
     <>
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div 
-            className="w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/hero-background.webp')",
-            }}
-          ></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30"></div>
-        </div>
-
-        <div className="container mx-auto px-4 py-12 relative z-10">
+      <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-black">
           <motion.div 
-            className="max-w-3xl"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* 3. Textos agora usam a função t() do i18next */}
-            <h1 
-              className="text-4xl md:text-6xl font-bold mb-4 font-display [text-shadow:_1px_1px_3px_rgba(0,0,0,0.5)]"
-              dangerouslySetInnerHTML={{ __html: t('home_headline') }}
-            />
-            <p className="text-xl md:text-2xl mb-8 text-white/80 [text-shadow:_1px_1px_2px_rgba(0,0,0,0.7)]">
+            className="w-full h-full bg-cover bg-center bg-no-repeat opacity-50"
+            style={{ backgroundImage: "url('/images/hero-background.webp')" }}
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 10, ease: "linear" }}
+          ></motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+        </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div className="max-w-4xl mx-auto" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
+              <Trans i18nKey="home_headline">
+                Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
+              </Trans>
+            </h1>
+            <p className="text-xl md:text-2xl mt-6 max-w-2xl mx-auto text-white/90 [text-shadow:_1px_1px_5px_rgba(0,0,0,0.8)]">
               {t('home_subheadline')}
             </p>
-            <div className="flex flex-wrap gap-4">
-              <button onClick={handlePlayFeatured} className="btn btn-primary flex items-center space-x-2" disabled={queue.length === 0}>
-                <PlayCircle size={20} />
+            <div className="mt-10 flex flex-wrap gap-4 justify-center">
+              <button onClick={handlePlayFeatured} className="btn btn-primary btn-lg flex items-center gap-2" disabled={!queue || queue.length === 0}>
+                <PlayCircle size={22} />
                 <span>{t('play_featured_mix')}</span>
               </button>
-              <Link to="/events" className="btn btn-outline flex items-center space-x-2">
-                <Calendar size={20} />
+              <Link to="/events" className="btn btn-outline btn-lg flex items-center gap-2">
+                <Calendar size={22} />
                 <span>{t('upcoming_events')}</span>
               </Link>
             </div>
           </motion.div>
         </div>
-        
-        <div className="absolute bottom-0 left-0 right-0 h-24 z-10 bg-gradient-to-t from-background to-transparent">
-            {/* Animação de Waveform */}
-        </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-gradient-to-b from-background to-surface">
+      <section className="py-24 bg-surface">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={itemVariants}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display"
-              dangerouslySetInnerHTML={{ __html: t('home_features_title') }}
-            />
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              {t('home_features_subtitle')}
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold font-display">{t('home_features_title')}</h2>
+            <p className="text-lg text-white/70 max-w-2xl mx-auto mt-4">{t('home_features_subtitle')}</p>
           </motion.div>
-          {/* ... O resto da sua HomePage com os cards, etc ... */}
+
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+            <motion.div className="card p-8 text-center" variants={itemVariants}>
+              <Music className="text-primary mx-auto mb-4" size={32} />
+              <h3 className="text-xl font-semibold mb-2">Músicas Exclusivas</h3>
+              <p className="text-white/70">Acesso a tracks e remixes antes de todo mundo.</p>
+            </motion.div>
+            <motion.div className="card p-8 text-center" variants={itemVariants}>
+              <Award className="text-primary mx-auto mb-4" size={32} />
+              <h3 className="text-xl font-semibold mb-2">Sistema de Conquistas</h3>
+              <p className="text-white/70">Ganhe pontos e medalhas por sua participação.</p>
+            </motion.div>
+            <motion.div className="card p-8 text-center" variants={itemVariants}>
+              <Users className="text-primary mx-auto mb-4" size={32} />
+              <h3 className="text-xl font-semibold mb-2">Comunidade Privada</h3>
+              <p className="text-white/70">Conecte-se com outros fãs de Zouk e comigo.</p>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Join the Tribe CTA */}
-      <section className="py-28 bg-gradient-to-t from-background via-background to-surface relative overflow-hidden">
-        <motion.div 
-            className="container mx-auto px-4 text-center relative z-10"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display"
-            dangerouslySetInnerHTML={{ __html: t('home_cta_title') }}
-          />
-          <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10">
-            {t('home_cta_subtitle')}
-          </p>
+      {/* CTA Section */}
+      <section className="py-28 bg-background">
+        <motion.div className="container mx-auto px-4 text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={itemVariants}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display">
+             <Trans i18nKey="home_cta_title">
+                Ready to Join the <span className="text-primary">Zen Tribe</span>?
+             </Trans>
+          </h2>
+          <p className="text-xl text-white/80 max-w-3xl mx-auto mb-10">{t('home_cta_subtitle')}</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/tribe" className="btn btn-primary px-8 py-4">
-              {t('join_now_button')}
-            </Link>
-            <Link to="/music" className="btn btn-outline px-8 py-4">
-              {t('explore_music_button')}
-            </Link>
+            <Link to="/tribe" className="btn btn-primary btn-lg">{t('join_now_button')}</Link>
+            <Link to="/music" className="btn btn-outline btn-lg">{t('explore_music_button')}</Link>
           </div>
         </motion.div>
       </section>
