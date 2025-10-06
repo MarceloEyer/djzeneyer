@@ -1,0 +1,65 @@
+# .github/workflows/deploy.yml
+
+name: Build and Deploy to Hostinger
+
+# Gatilho: Roda sempre que houver um 'push' na branch 'main'
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # O robô usará um ambiente Linux
+
+    steps:
+      # 1. Baixa o seu código do repositório
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Node.js para o build
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # 3. Instala as dependências do projeto
+      - name: Install Dependencies
+        run: npm install
+
+      # 4. Roda o build para criar a pasta 'dist'
+      - name: Build Project
+        run: npm run build
+        env:
+          VITE_WP_SITE_URL: https://djzeneyer.com
+          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
+          # Adicione outras variáveis VITE se precisar, usando os secrets
+          # VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      # 5. Envia a pasta 'dist' para a Hostinger via FTP
+      - name: FTP Deploy (React App - dist folder)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ./public_html/wp-content/themes/zentheme/dist/
+          dangerous-clean-slate: true
+
+      # 6. Envia os arquivos do tema (functions.php, etc.)
+      - name: FTP Deploy (WordPress Theme Files)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          exclude: |
+            **/*
+            !/functions.php
+            !/index.php
+            !/style.css
+            !/woocommerce.php
+            !/page-react-app.php
+          server-dir: ./public_html/wp-content/themes/zentheme/
