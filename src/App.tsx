@@ -1,5 +1,4 @@
 // src/App.tsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -16,8 +15,6 @@ import ZenTribePage from './pages/ZenTribePage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 import PressKitPage from './pages/PressKitPage';
-
-// Pages (Loja)
 import ShopPage from './pages/ShopPage';
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
