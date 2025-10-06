@@ -1,5 +1,4 @@
 // src/App.tsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -27,6 +26,9 @@ import MyAccountPage from './pages/MyAccountPage';
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
+
+// Importa a configuração do i18n
+import './i18n';
 
 function App() {
   return (
