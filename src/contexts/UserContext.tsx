@@ -49,38 +49,34 @@ declare global {
 
 // --- Função Helper de Configuração ---
 const getWpConfig = () => {
-  // Prioridade 1: Usar os dados injetados pelo WordPress (para produção)
   if (window.wpData && window.wpData.restUrl) {
+    console.log('[Config] Usando wpData injetado pelo WordPress (Modo de Produção).');
     return {
       siteUrl: window.wpData.siteUrl,
       restUrl: window.wpData.restUrl,
       nonce: window.wpData.nonce,
     };
   }
-
-  // Prioridade 2: Usar as variáveis de ambiente (para desenvolvimento)
   if (import.meta.env.VITE_WP_REST_URL) {
+    console.log('[Config] Usando variáveis de ambiente .env (Modo de Desenvolvimento).');
     return {
       siteUrl: import.meta.env.VITE_WP_SITE_URL || '',
       restUrl: import.meta.env.VITE_WP_REST_URL || '',
-      nonce: 'dev-nonce', // Nonce não é crítico no dev para a maioria das ações
+      nonce: 'dev-nonce',
     };
   }
-
-  // Fallback final se nada for encontrado
   console.error('[Config] Nenhuma configuração de URL encontrada! Verifique seu functions.php e seu arquivo .env');
   return { siteUrl: '', restUrl: '', nonce: '' };
 };
 
-
+// --- O Componente Provedor ---
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<WordPressUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [simpleJwtLogin, setSimpleJwtLogin] = useState<SimpleJwtLogin | null>(null);
-  const [config] = useState(getWpConfig()); // Pega a config uma vez na inicialização
+  const [config] = useState(getWpConfig());
 
-  // Inicializa o SDK quando o componente monta
   useEffect(() => {
     if (config.siteUrl) {
       try {
@@ -128,7 +124,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const decoded: DecodedJwt = jwtDecode(token);
       if (decoded.exp && decoded.exp * 1000 < Date.now()) return false;
-      
       const response = await fetch(`${config.restUrl}simple-jwt-login/v1/auth/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -140,36 +135,51 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // EFEITO DE INICIALIZAÇÃO COM LOGS DETALHADOS
   useEffect(() => {
     const initializeAuth = async () => {
-      setLoading(true);
+      console.log('[Auth Init] 1. Iniciando verificação de autenticação...');
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const jwtFromUrl = urlParams.get('jwt');
         if (jwtFromUrl) {
+          console.log('[Auth Init] 2a. Encontrado JWT na URL. Processando...');
           setUserFromToken(jwtFromUrl);
           window.history.replaceState({}, document.title, window.location.pathname);
         } else {
+          console.log('[Auth Init] 2b. Nenhum JWT na URL. Verificando localStorage...');
           const storedToken = localStorage.getItem('jwt_token');
-          if (storedToken && await validateToken(storedToken)) {
-            setUserFromToken(storedToken);
-          } else if (storedToken) {
-            logout();
+          if (storedToken) {
+            console.log('[Auth Init] 3a. Token encontrado no localStorage. Validando...');
+            const isValid = await validateToken(storedToken);
+            if (isValid) {
+              console.log('[Auth Init] 4a. Token do localStorage é VÁLIDO.');
+              setUserFromToken(storedToken);
+            } else {
+              console.log('[Auth Init] 4b. Token do localStorage é INVÁLIDO.');
+              logout();
+            }
+          } else {
+             console.log('[Auth Init] 3b. Nenhum token no localStorage. Sessão de convidado.');
           }
         }
       } catch (error) {
-        console.error('[UserContext] Erro na inicialização:', error);
+        console.error('[Auth Init] 5. Erro CRÍTICO durante a inicialização:', error);
       } finally {
+        console.log('[Auth Init] 6. Processo finalizado. Setando loading para false.');
         setLoading(false);
       }
     };
-    if(config.siteUrl) initializeAuth();
-    else setLoading(false);
+    if (config.siteUrl) {
+        initializeAuth();
+    } else {
+        console.warn('[Auth Init] config.siteUrl está vazio. Abortando inicialização e setando loading para false.');
+        setLoading(false);
+    }
   }, [config.siteUrl]);
 
   const login = async (email: string, password: string) => {
     if (!simpleJwtLogin) throw new Error('Sistema de autenticação não inicializado');
-
     setLoading(true);
     setError(null);
     try {
@@ -218,7 +228,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
       if (!GOOGLE_CLIENT_ID) throw new Error("Client ID do Google não configurado.");
-      
       const REDIRECT_URI = `${config.siteUrl}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
       const finalRedirectUrl = window.location.origin;
       const state = btoa(`redirect_uri=${finalRedirectUrl}`);
