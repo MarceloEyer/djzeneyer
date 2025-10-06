@@ -27,8 +27,7 @@ import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
-// Importa a configuração do i18n
-import './i18n';
+// O import do i18n foi removido daqui, pois já está no main.tsx
 
 function App() {
   return (
