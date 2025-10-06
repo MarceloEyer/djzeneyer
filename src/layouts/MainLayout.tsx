@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import AuthModal from '../components/auth/AuthModal';
+import MusicPlayer from '../components/music/MusicPlayer';
 
 const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -26,10 +27,10 @@ const MainLayout: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-background text-white">
       <Navbar onLoginClick={() => openModal('login')} />
       <main className="flex-grow pt-20">
-        {/* O <Outlet /> renderiza a página da rota atual aqui */}
         <Outlet />
       </main>
       <Footer />
+      <MusicPlayer />
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={closeModal}

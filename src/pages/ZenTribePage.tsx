@@ -225,28 +225,28 @@ const ZenTribePage = () => {
             animate="visible"
           >
             <BenefitCard 
-              icon={<Award className="text-primary\" size={24} aria-hidden="true" />}
+              icon={<Award className="text-primary" size={24} aria-hidden="true" />}
               title="Exclusive Content"
               description="Get access to unreleased tracks, special mixes, and behind-the-scenes content only available to tribe members."
               color="primary"
             />
 
             <BenefitCard 
-              icon={<Star className="text-secondary\" size={24} aria-hidden="true" />}
+              icon={<Star className="text-secondary" size={24} aria-hidden="true" />}
               title="VIP Event Access"
               description="Receive early access to event tickets, exclusive meet-and-greet opportunities, and VIP areas at shows."
               color="secondary"
             />
 
             <BenefitCard 
-              icon={<TrendingUp className="text-accent\" size={24} aria-hidden="true" />}
+              icon={<TrendingUp className="text-accent" size={24} aria-hidden="true" />}
               title="Level Up & Earn"
               description="Progress through our rank system, earn badges, and unlock achievements for engaging with content and attending events."
               color="accent"
             />
 
             <BenefitCard 
-              icon={<Users className="text-success\" size={24} aria-hidden="true" />}
+              icon={<Users className="text-success" size={24} aria-hidden="true" />}
               title="Community Connection"
               description="Connect with like-minded music enthusiasts, share your experiences, and be part of a global tribe."
               color="success"
