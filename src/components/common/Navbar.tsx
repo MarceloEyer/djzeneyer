@@ -1,9 +1,8 @@
 // src/components/common/Navbar.tsx
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
@@ -16,7 +15,7 @@ const LanguageSelector: React.FC = () => {
 
     const changeLanguage = (lng: 'pt' | 'en') => {
         const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
-        if (lng === currentLang) return; // Não faz nada se já estiver no idioma selecionado
+        if (lng === currentLang) return;
 
         const currentPath = location.pathname.replace(/^\/(en|pt)/, '');
         const newPath = lng === 'en' ? (currentPath || '/') : `/pt${currentPath || '/'}`;
@@ -41,6 +40,7 @@ const LanguageSelector: React.FC = () => {
         </div>
     );
 };
+
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -73,7 +73,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         if (Array.isArray(data)) {
             const formattedData = data.map((item: any) => ({
                 ...item,
-                url: new URL(item.url).pathname || '/',
+                // Lógica mais segura para extrair o caminho da URL
+                url: item.url.replace(window.wpData.siteUrl, '') || '/',
             }));
             setMenuItems(formattedData);
         } else {
@@ -96,6 +97,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   }, []);
 
   const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
+  const handleLoginButtonClick = useCallback(() => onLoginClick(), [onLoginClick]);
 
   const renderNavLinks = (isMobile = false) => (
     menuItems.map((item) => (
@@ -115,9 +117,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {renderNavLinks()}
           </nav>
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center">
             <LanguageSelector />
-            {user?.isLoggedIn ? <UserMenu /> : <button onClick={onLoginClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>{t('sign_in')}</span></button>}
+            {user?.isLoggedIn ? <UserMenu /> : <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>{t('sign_in', 'Login')}</span></button>}
           </div>
           <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -129,8 +131,13 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           <nav className="flex flex-col space-y-4">
             {renderNavLinks(true)}
           </nav>
-          <div className="mt-6 pt-4 border-t border-white/10">
-            {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+            <div className="flex-grow pr-4">
+              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe','Login / Sign Up')}</span></button>}
+            </div>
+            <div className="flex-shrink-0">
+                <LanguageSelector />
+            </div>
           </div>
         </div>
       </div>
