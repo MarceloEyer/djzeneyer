@@ -2,13 +2,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useTranslation, Trans } from 'react-i18next';
-import { PlayCircle, Calendar, Users, Music, Award, TrendingUp } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next'; // 1. Importa as ferramentas de tradução
+import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
 import { useMusicPlayer } from '../contexts/MusicPlayerContext';
 
 const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
-  const { t } = useTranslation();
+  const { t } = useTranslation(); // 2. Pega a função de tradução 't'
 
   const handlePlayFeatured = () => {
     if (queue && queue.length > 0) {
@@ -18,12 +18,12 @@ const HomePage: React.FC = () => {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: 'easeOut' } },
   };
 
   return (
@@ -37,12 +37,13 @@ const HomePage: React.FC = () => {
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 10, ease: "linear" }}
-          ></motion.div>
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
         <div className="container mx-auto px-4 relative z-10">
           <motion.div className="max-w-4xl mx-auto" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
+              {/* 3. Usa o componente <Trans> para textos com HTML dentro */}
               <Trans i18nKey="home_headline">
                 Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
               </Trans>
@@ -94,7 +95,7 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
       </section>
-
+      
       {/* CTA Section */}
       <section className="py-28 bg-background">
         <motion.div className="container mx-auto px-4 text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={itemVariants}>

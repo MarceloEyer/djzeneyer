@@ -1,9 +1,10 @@
 // src/components/common/Navbar.tsx
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, LogIn } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, LogIn, Globe, Check } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
 
@@ -71,9 +72,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         
         const data = await response.json();
         if (Array.isArray(data)) {
+            // Lógica mais segura para extrair o caminho da URL
             const formattedData = data.map((item: any) => ({
                 ...item,
-                // Lógica mais segura para extrair o caminho da URL
                 url: item.url.replace(window.wpData.siteUrl, '') || '/',
             }));
             setMenuItems(formattedData);
@@ -119,7 +120,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           </nav>
           <div className="hidden md:flex items-center">
             <LanguageSelector />
-            {user?.isLoggedIn ? <UserMenu /> : <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>{t('sign_in', 'Login')}</span></button>}
+            {user?.isLoggedIn ? <UserMenu /> : <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>{t('sign_in')}</span></button>}
           </div>
           <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -133,7 +134,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           </nav>
           <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
             <div className="flex-grow pr-4">
-              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe','Login / Sign Up')}</span></button>}
+              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
             </div>
             <div className="flex-shrink-0">
                 <LanguageSelector />
