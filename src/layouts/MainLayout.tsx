@@ -9,13 +9,12 @@ const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
-  // Funções para controlar o AuthModal a partir do MainLayout
-  const openAuthModal = (mode: 'login' | 'register' = 'login') => {
+  const openModal = (mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
 
-  const closeAuthModal = () => {
+  const closeModal = () => {
     setIsAuthModalOpen(false);
   };
 
@@ -25,37 +24,15 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-white">
-      {/* O Navbar agora recebe a função para abrir o modal */}
-      <Navbar onLoginClick={() => openAuthModal('login')} />
-
-      <main className="flex-grow pt-20"> {/* pt-20 para dar espaço para o Navbar fixo */}
-        
-        {/* --- TESTE DA IMPRESSÃO DIGITAL --- */}
-        <h2 style={{ 
-          color: 'yellow', 
-          backgroundColor: 'red', 
-          padding: '15px', 
-          textAlign: 'center', 
-          fontSize: '22px', 
-          fontWeight: 'bold',
-          position: 'sticky', // Garante que ele fique visível mesmo com scroll
-          top: '80px',      // Abaixo do navbar
-          zIndex: 9999
-        }}>
-          BUILD ATUALIZADO - TESTE DE DEPLOY
-        </h2>
-        {/* --- FIM DO TESTE --- */}
-
-        {/* O Outlet renderiza a página da rota atual (Home, Work With Me, etc.) aqui */}
+      <Navbar onLoginClick={() => openModal('login')} />
+      <main className="flex-grow pt-20">
+        {/* O <Outlet /> renderiza a página da rota atual aqui */}
         <Outlet />
       </main>
-
       <Footer />
-
-      {/* O AuthModal é controlado pelo estado deste layout */}
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
+        onClose={closeModal}
         mode={authMode}
         onToggleMode={toggleAuthMode}
       />
