@@ -1,8 +1,8 @@
 // src/pages/PressKitPage.tsx
 
 import React from 'react';
+import { Download, Phone, FileText, ImageIcon, Headphones, Award, Globe, Bot, Users, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Download, Phone, FileText, ImageIcon, Headphones, Award, Globe, Bot } from 'lucide-react';
 
 // Componente para o Card de Destaque (Infográfico)
 const HighlightCard: React.FC<{ icon: React.ReactNode; title: string; subtitle: string }> = ({ icon, title, subtitle }) => (
@@ -15,8 +15,22 @@ const HighlightCard: React.FC<{ icon: React.ReactNode; title: string; subtitle: 
     </div>
 );
 
+// Componente para o Item de Download do Kit
+const KitItem: React.FC<{ icon: React.ReactNode; title: string; downloadLink: string }> = ({ icon, title, downloadLink }) => (
+    <a
+        href={downloadLink}
+        download
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-surface/30 p-8 rounded-lg text-center backdrop-blur-sm border border-white/10 transition-all hover:bg-primary/20 hover:border-primary"
+    >
+        <div className="text-primary mx-auto mb-4">{icon}</div>
+        <h3 className="font-bold text-xl text-white">{title}</h3>
+    </a>
+);
+
 const PressKitPage: React.FC = () => {
-    // Array com os itens do Media Kit
+    // Array com os itens do Media Kit para facilitar a manutenção
     const mediaKitItems = [
         { icon: <ImageIcon size={32} />, title: "Fotos Oficiais", path: "/caminho/para/fotos.zip" },
         { icon: <Bot size={32} />, title: "Logos Oficiais", path: "/caminho/para/logos.zip" },
@@ -52,7 +66,6 @@ const PressKitPage: React.FC = () => {
                                 className="w-48 h-48 md:w-64 md:h-64 object-cover rounded-full shadow-xl border-4 border-primary mx-auto md:mx-0 flex-shrink-0"
                             />
                             <p className="text-lg leading-relaxed text-white/90">
-                                {/* TEXTO ATUALIZADO COM SUAS INFORMAÇÕES */}
                                 Referência global na cena do Zouk, DJ Zen Eyer é um produtor e artista visionário cuja paixão é criar conexões profundas na pista de dança. Com uma carreira consolidada nos principais eventos do Brasil, sua sonoridade única já viajou o mundo, com passagens por palcos na Alemanha, Austrália, Suíça, Holanda, República Checa e Estados Unidos. Vencedor de prêmios como o "Zouk DJ Championship" e "Melhor Remix de Zouk", ele se prepara para sua próxima turnê europeia, começando pela Polônia.
                             </p>
                         </div>
@@ -73,17 +86,15 @@ const PressKitPage: React.FC = () => {
                         <h2 className="text-3xl font-bold mb-8 text-center">Media Kit para Contratantes</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {mediaKitItems.map((item, index) => (
-                                <a key={index} href={item.path} download target="_blank" rel="noopener noreferrer" className="bg-surface/30 p-8 rounded-lg text-center backdrop-blur-sm border border-white/10 transition-all hover:bg-primary/20 hover:border-primary">
-                                    <div className="text-primary mx-auto mb-4">{item.icon}</div>
-                                    <h3 className="font-bold text-xl text-white">{item.title}</h3>
-                                </a>
+                                <KitItem key={index} icon={item.icon} title={item.title} downloadLink={item.path} />
                             ))}
                         </div>
                     </motion.section>
                     
                     {/* Contato Final */}
                     <motion.section className="text-center border-t border-primary/20 pt-12 mt-20" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.5 }}>
-                        <h2 className="text-3xl font-bold font-display mb-4">Vamos Levar o Zouk ao seu Evento</h2>
+                        <h2 className="text-3xl font-bold font-display mb-4">Vamos Criar Algo Incrível Juntos</h2>
+                        <p className="text-white/70 mb-8 max-w-2xl mx-auto">Pronto para levar seu evento para o próximo nível? Entre em contato e vamos conversar sobre as possibilidades.</p>
                         <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-lg btn-success inline-flex items-center gap-3">
                             <Phone size={20} />
                             Falar no WhatsApp para Contratação
@@ -91,9 +102,8 @@ const PressKitPage: React.FC = () => {
                     </motion.section>
                 </div>
             </div>
-        </div>
-    </motion.div>
-  );
+        </motion.div> // <-- A TAG DE FECHAMENTO FOI CORRIGIDA AQUI
+    );
 };
 
 export default PressKitPage;
