@@ -1,33 +1,14 @@
-// src/App.tsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
-
-// Layouts e Wrappers
 import MainLayout from './layouts/MainLayout';
 import LanguageWrapper from './components/common/LanguageWrapper';
-
-// Pages
 import HomePage from './pages/HomePage';
-import EventsPage from './pages/EventsPage';
-import MusicPage from './pages/MusicPage';
-import ZenTribePage from './pages/ZenTribePage';
-import DashboardPage from './pages/DashboardPage';
-import NotFoundPage from './pages/NotFoundPage';
-import PressKitPage from './pages/PressKitPage';
-import ShopPage from './pages/ShopPage';
-import ProductPage from './pages/ProductPage';
-import CartPage from './pages/CartPage';
-import CheckoutPage from './pages/CheckoutPage';
-import MyAccountPage from './pages/MyAccountPage';
-
-// Context Providers
+// ... importe todas as suas outras páginas
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
-
-// O import do i18n foi removido daqui, pois já está no main.tsx
 
 function App() {
   return (
@@ -40,17 +21,7 @@ function App() {
                 <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
-                    <Route path="events" element={<EventsPage />} />
-                    <Route path="music" element={<MusicPage />} />
-                    <Route path="tribe" element={<ZenTribePage />} />
-                    <Route path="work-with-me" element={<PressKitPage />} />
-                    <Route path="dashboard" element={<DashboardPage />} />
-                    <Route path="shop" element={<ShopPage />} />
-                    <Route path="product/:slug" element={<ProductPage />} />
-                    <Route path="cart" element={<CartPage />} />
-                    <Route path="checkout" element={<CheckoutPage />} />
-                    <Route path="my-account" element={<MyAccountPage />} />
-                    <Route path="*" element={<NotFoundPage />} />
+                    {/* ... cole aqui todas as suas outras rotas ... */}
                   </Route>
                 </Route>
               </Routes>
@@ -61,5 +32,4 @@ function App() {
     </HelmetProvider>
   );
 }
-
 export default App;
