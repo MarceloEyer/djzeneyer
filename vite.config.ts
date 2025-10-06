@@ -1,6 +1,7 @@
 // vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path'; // Importa o módulo 'path' do Node.js, necessário para o alias
 
 export default defineConfig({
   plugins: [react()],
@@ -11,10 +12,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     manifest: true,
-
-    // A seção 'minify' e 'terserOptions' foi REMOVIDA.
-    // O Vite agora usará o padrão 'esbuild' automaticamente durante o build.
-
     rollupOptions: {
       output: {
         // Ensure asset names are WordPress friendly
@@ -26,5 +23,11 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+  },
+  // ADICIONADO: Configuração do atalho '@' para apontar para a pasta 'src'
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
 });
