@@ -54,9 +54,17 @@ const getWpConfig = () => {
     return { siteUrl: window.wpData.siteUrl, restUrl: window.wpData.restUrl, nonce: window.wpData.nonce };
   }
   if (import.meta.env.VITE_WP_REST_URL) {
-    return { siteUrl: import.meta.env.VITE_WP_SITE_URL || '', restUrl: import.meta.env.VITE_WP_REST_URL || '', nonce: 'dev-nonce' };
+    return {
+      siteUrl: import.meta.env.VITE_WP_SITE_URL || 'https://djzeneyer.com',
+      restUrl: import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json/',
+      nonce: 'dev-nonce'
+    };
   }
-  return { siteUrl: '', restUrl: '', nonce: '' };
+  return {
+    siteUrl: 'https://djzeneyer.com',
+    restUrl: 'https://djzeneyer.com/wp-json/',
+    nonce: ''
+  };
 };
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -210,7 +218,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearError = () => setError(null);
 
-  const value = { user, loading, error, login, logout, register, loginWithGoogle, clearError, setUserFromToken: fetchUserDetails };
+  const value = { user, loading, error, login, logout, register, loginWithGoogle, clearError };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

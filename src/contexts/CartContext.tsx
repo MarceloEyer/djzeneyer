@@ -25,14 +25,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getCart = useCallback(async () => {
     setLoading(true);
-    // Usaremos a API do WooCommerce para buscar o carrinho, pois ela respeita a sessão
-    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/cart`;
-    
+    const wpRestUrl = window.wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json/';
+    const apiUrl = `${wpRestUrl}wc/store/v1/cart`;
+
     try {
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Essencial para enviar cookies de sessão
+        credentials: 'include',
       });
       const responseData = await response.json();
       if (!response.ok) throw new Error(responseData.message || 'Falha ao buscar carrinho');
