@@ -1,13 +1,9 @@
-// src/main.tsx
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
-
-// ESTA LINHA "LIGA" O SISTEMA DE TRADUÇÃO PARA TODO O APP
-import './i18n'; 
+import './i18n'; // Liga o sistema de tradução
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
