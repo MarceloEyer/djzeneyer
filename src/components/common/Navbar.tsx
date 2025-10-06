@@ -1,25 +1,23 @@
 // src/components/common/Navbar.tsx
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, LogIn, Globe, Check } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
 
-// Componente interno para o seletor de idiomas
-const LanguageSelector: React.FC = () => {
+// O seletor de idiomas como um componente interno para organização
+const LanguageSwitcher: React.FC = () => {
     const { i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const changeLanguage = (lng: 'pt' | 'en') => {
-        const currentPath = location.pathname.replace(/^\/(en|pt)/, '');
+        const currentPath = window.location.pathname.replace(/^\/(en|pt)/, '');
         const newPath = lng === 'en' ? (currentPath || '/') : `/pt${currentPath || '/'}`;
-        setIsOpen(false);
-        navigate(newPath); // Usa o navigate para uma transição suave
+        window.location.pathname = newPath;
     };
 
     useEffect(() => {
@@ -42,13 +40,13 @@ const LanguageSelector: React.FC = () => {
                     <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute left-0 mt-2 w-40 bg-surface border border-white/10 rounded-lg shadow-lg z-50">
                         <ul className="py-1">
                             <li>
-                                <button onClick={() => changeLanguage('pt')} className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-primary/20 flex items-center justify-between">
+                                <button onClick={() => { changeLanguage('pt'); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-primary/20 flex items-center justify-between">
                                     <span>Português</span>
                                     {i18n.language.startsWith('pt') && <Check size={16} className="text-primary" />}
                                 </button>
                             </li>
                             <li>
-                                <button onClick={() => changeLanguage('en')} className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-primary/20 flex items-center justify-between">
+                                <button onClick={() => { changeLanguage('en'); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-primary/20 flex items-center justify-between">
                                     <span>English</span>
                                     {i18n.language === 'en' && <Check size={16} className="text-primary" />}
                                 </button>
@@ -83,19 +81,17 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
   useEffect(() => {
     const fetchMenu = async () => {
-      if (!window.wpData?.restUrl) return;
+      if (!(window as any).wpData?.restUrl) return;
       try {
         const langToFetch = i18n.language.startsWith('pt') ? 'pt' : 'en';
-        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/menu?lang=${langToFetch}`);
-        if (!response.ok) throw new Error('Falha ao buscar o menu do WordPress');
-        
+        const response = await fetch(`${(window as any).wpData.restUrl}djzeneyer/v1/menu?lang=${langToFetch}`);
+        if (!response.ok) throw new Error('Falha ao buscar o menu');
         const data = await response.json();
         
-        const formattedData = data.map((item: any) => ({
-            ...item,
-            // Lógica mais segura para extrair o caminho da URL
-            url: item.url.replace(window.wpData.siteUrl, '') || '/',
-        }));
+        const formattedData = data.map((item: any) => {
+            const urlObject = new URL(item.url);
+            return { ...item, url: urlObject.pathname || '/' };
+        });
         setMenuItems(formattedData);
       } catch (error) {
         console.error("Falha ao buscar menu:", error);
@@ -118,7 +114,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
   const renderNavLinks = (isMobile = false) => (
     menuItems.map((item) => (
-      <NavLink key={item.ID} to={item.url} target={item.target || '_self'} className={isMobile ? "nav-link text-lg block text-center" : "nav-link"}>
+      <NavLink key={item.ID} to={item.url} target={item.target || '_self'} className={isMobile ? "nav-link active text-lg" : "nav-link"}>
         {item.title}
       </NavLink>
     ))
@@ -154,7 +150,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             <div className="flex-grow pr-4">
               {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe','Login / Sign Up')}</span></button>}
             </div>
-            {/* O seletor de idiomas no mobile poderia ser colocado aqui, mas já está no topo com o logo. */}
           </div>
         </div>
       </div>
