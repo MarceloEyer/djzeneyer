@@ -1,47 +1,52 @@
 // src/components/common/Navbar.tsx
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
+import throttle from 'lodash.throttle';
 
-// Componente interno para o seletor de idiomas
-const LanguageSelector: React.FC = () => {
-  const { i18n } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
+// Contexto para configuração de API
+const ApiConfigContext = createContext<{ restUrl: string }>({ restUrl: '' });
+export const ApiConfigProvider: React.FC<{ restUrl: string }> = ({ restUrl, children }) => (
+  <ApiConfigContext.Provider value={{ restUrl }}>{children}</ApiConfigContext.Provider>
+);
 
-  // Detecta corretamente 'pt', 'pt-BR', 'pt_PT', 'en', 'en-US', etc
-  const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
-
-  const changeLanguage = (lng: 'pt' | 'en') => {
-    if (lng === currentLang) return;
-
-    const basePath = location.pathname.replace(/^\/(en|pt)/, '');
-    const newPath = lng === 'en' ? (basePath || '/') : `/pt${basePath || '/'}`;
-    navigate(newPath);
-  };
-
-  return (
-    <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
-      <button
-        onClick={() => changeLanguage('pt')}
-        className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-      >
-        PT
-      </button>
-      <span className="text-white/20">|</span>
-      <button
-        onClick={() => changeLanguage('en')}
-        className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-      >
-        EN
-      </button>
-    </div>
-  );
+// Hook para fetch do menu com cancelamento
+const useMenu = (lang: string) => {
+  const { restUrl } = useContext(ApiConfigContext);
+  const [items, setItems] = useState<MenuItem[]>([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${restUrl}djzeneyer/v1/menu?lang=${lang}`, { signal: controller.signal })
+      .then(res => {
+        if (!res.ok) throw new Error('Erro ao buscar menu');
+        return res.json();
+      })
+      .then((data: any[]) => {
+        const normalized = data.map(item => ({
+          ...item,
+          url: (() => {
+            let path = item.url.replace(restUrl.replace(/\/$/, ''), '');
+            path = path.replace(/^\/(en|pt)/, '');
+            return path.startsWith('/') ? path : `/${path}`;
+          })(),
+        }));
+        setItems(normalized);
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') console.error(err);
+      });
+    return () => controller.abort();
+  }, [restUrl, lang]);
+  return items;
 };
+
+// Helpers de responsividade
+const DesktopOnly: React.FC = ({ children }) => <div className="hidden md:flex">{children}</div>;
+const MobileOnly: React.FC = ({ children }) => <div className="md:hidden">{children}</div>;
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -56,122 +61,126 @@ interface MenuItem {
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const location = useLocation();
 
-  // Define o idioma atual para prefixar links
   const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
+  const menuItems = useMenu(currentLang);
 
+  // Listener de scroll otimizado
   useEffect(() => {
-    const fetchMenu = async () => {
-      if (!window.wpData?.restUrl) return;
-      try {
-        const langToFetch = i18n.language.startsWith('pt') ? 'pt' : 'en';
-        const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/menu?lang=${langToFetch}`);
-        if (!response.ok) throw new Error('Falha ao buscar o menu do WordPress');
-
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          const formattedData = data.map((item: any) => ({
-            ...item,
-            url: item.url.replace(window.wpData.siteUrl, '') || '/',
-          }));
-          setMenuItems(formattedData);
-        } else {
-          setMenuItems([]);
-        }
-      } catch (error) {
-        console.error("Falha ao buscar menu:", error);
-        setMenuItems([]);
-      }
+    const handleScroll = throttle(() => {
+      setIsScrolled(window.scrollY > 50);
+    }, 100);
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      handleScroll.cancel();
+      window.removeEventListener('scroll', handleScroll);
     };
-    fetchMenu();
-  }, [i18n.language]);
+  }, []);
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const changeLanguage = (lng: 'pt' | 'en') => {
+    if (lng === currentLang) return;
+    const base = location.pathname.replace(/^\/(en|pt)/, '');
+    navigate(lng === 'en' ? base || '/' : `/pt${base || '/'}`);
+  };
 
-  const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
-  const handleLoginButtonClick = useCallback(() => onLoginClick(), [onLoginClick]);
-
-  const renderNavLinks = (isMobile = false) => (
-    menuItems.map(item => (
-      <NavLink
-        key={item.ID}
-        to={`/${currentLang}${item.url}`}
-        target={item.target || '_self'}
-        className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}
-      >
-        {item.title}
-      </NavLink>
-    ))
+  const renderNavLinks = useCallback(
+    (isMobile = false) =>
+      menuItems.map(item => (
+        <NavLink
+          key={item.ID}
+          to={`/${currentLang}${item.url}`}
+          target={item.target || '_self'}
+          aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
+          className={isMobile ? 'nav-link text-lg block py-2 text-center' : 'nav-link'}
+        >
+          {item.title}
+        </NavLink>
+      )),
+    [menuItems, currentLang]
   );
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo leva para /pt ou / conforme idioma */}
-          <Link to={`/${currentLang}`} className="flex items-center">
-            <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
-          </Link>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'
+      }`}
+    >
+      <div className="container mx-auto px-4 md:px-6 flex items-center justify-between h-16">
+        {/* Logo */}
+        <Link to={`/${currentLang}`} aria-label={t('home')} className="flex items-center">
+          <span className="text-xl font-display font-bold tracking-wide">
+            <span className="text-primary">DJ</span> Zen Eyer
+          </span>
+        </Link>
 
-          {/* Navegação desktop */}
-          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
-            {renderNavLinks()}
-          </nav>
+        {/* Desktop nav */}
+        <DesktopOnly>
+          <nav className="items-center space-x-6 lg:space-x-8">{renderNavLinks()}</nav>
+        </DesktopOnly>
 
-          {/* Idioma e login desktop */}
-          <div className="hidden md:flex items-center">
-            <LanguageSelector />
-            {user?.isLoggedIn ? (
-              <UserMenu />
-            ) : (
-              <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2">
-                <LogIn size={18} /><span>{t('sign_in')}</span>
-              </button>
-            )}
-          </div>
+        {/* Actions desktop */}
+        <DesktopOnly>
+          <LanguageSelector />
+          {user?.isLoggedIn ? (
+            <UserMenu />
+          ) : (
+            <button
+              onClick={onLoginClick}
+              className="btn btn-primary flex items-center space-x-2"
+              aria-label={t('sign_in')}
+            >
+              <LogIn size={18} />
+              <span>{t('sign_in')}</span>
+            </button>
+          )}
+        </DesktopOnly>
 
-          {/* Toggle mobile */}
-          <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
+        {/* Mobile toggle */}
+        <MobileOnly>
+          <button
+            onClick={() => setIsMenuOpen(prev => !prev)}
+            aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}
+            className="text-white"
+          >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-        </div>
+        </MobileOnly>
       </div>
 
-      {/* Menu mobile */}
-      <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex flex-col space-y-4">
-            {renderNavLinks(true)}
-          </nav>
-          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            <div className="flex-grow pr-4">
-              {user?.isLoggedIn ? (
-                <UserMenu orientation="vertical" />
-              ) : (
-                <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2">
-                  <LogIn size={18} /><span>{t('join_the_tribe')}</span>
-                </button>
-              )}
-            </div>
-            <div className="flex-shrink-0">
-              <LanguageSelector />
-            </div>
+      {/* Mobile menu */}
+      <MobileOnly>
+        <div
+          className={`absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${
+            isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'
+          }`}
+        >
+          <nav className="flex flex-col space-y-4 p-4">{renderNavLinks(true)}</nav>
+          <div className="border-t border-white/10 pt-4 px-4 flex items-center justify-between">
+            {user?.isLoggedIn ? (
+              <UserMenu orientation="vertical" />
+            ) : (
+              <button
+                onClick={onLoginClick}
+                className="w-full btn btn-primary flex items-center justify-center space-x-2"
+                aria-label={t('sign_in')}
+              >
+                <LogIn size={18} />
+                <span>{t('sign_in')}</span>
+              </button>
+            )}
+            <LanguageSelector />
           </div>
         </div>
-      </div>
+      </MobileOnly>
     </header>
   );
 });
