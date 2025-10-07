@@ -23,7 +23,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources, // 3. Usamos os recursos importados, sem a opção 'backend'
-    fallbackLng: 'en', // Idioma padrão: Inglês americano
+    fallbackLng: 'en', // Idioma padrão: Inglês
     supportedLngs: ['en', 'pt'],
     
     detection: {
