@@ -49,38 +49,36 @@ const MainLayout: React.FC = () => {
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={siteConfig.twitterImage} />
 
-        {/* Preload de recursos críticos */}
-        <link rel="preload" href="/dist/assets/index.js" as="script" />
-        <link rel="preload" href="/dist/assets/index.css" as="style" />
+        {/* Preload de fontes (os bundles de JS/CSS são gerenciados pelo WordPress) */}
         {siteConfig.fontPreloads.map((href) => (
           <link key={href} rel="preload" href={href} as="font" type="font/woff2" crossOrigin="anonymous" />
         ))}
-      </Helmet>
-
-      {/* JSON-LD para AI crawlers e Google */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          '@context': 'https://schema.org',
-          '@graph': [
-            {
-              '@type': 'MusicGroup',
-              'name': 'DJ Zen Eyer',
-              'url': siteConfig.siteUrl,
-              'logo': siteConfig.logo,
-              'sameAs': siteConfig.socialProfiles,
-            },
-            {
-              '@type': 'WebSite',
-              'url': siteConfig.siteUrl,
-              'name': 'DJ Zen Eyer',
-              'publisher': {
-                '@type': 'MusicGroup',
-                'name': 'DJ Zen Eyer'
+        
+        {/* JSON-LD para AI crawlers e Google (agora dentro do Helmet) */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'MusicGroup', // Mais específico para um artista
+                'name': 'DJ Zen Eyer',
+                'url': siteConfig.siteUrl,
+                'logo': siteConfig.logo,
+                'sameAs': siteConfig.socialProfiles,
+              },
+              {
+                '@type': 'WebSite',
+                'url': siteConfig.siteUrl,
+                'name': 'DJ Zen Eyer',
+                'publisher': {
+                  '@type': 'MusicGroup',
+                  'name': 'DJ Zen Eyer'
+                }
               }
-            }
-          ],
-        })}
-      </script>
+            ],
+          })}
+        </script>
+      </Helmet>
 
       <div className="flex flex-col min-h-screen bg-background text-white">
         <Navbar onLoginClick={() => openModal('login')} />
