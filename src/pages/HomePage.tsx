@@ -2,13 +2,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useTranslation, Trans } from 'react-i18next'; // 1. Importa as ferramentas de tradução
+import { useTranslation, Trans } from 'react-i18next';
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
 import { useMusicPlayer } from '../contexts/MusicPlayerContext';
 
 const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
-  const { t } = useTranslation(); // 2. Pega a função de tradução 't'
+  const { t } = useTranslation();
 
   const handlePlayFeatured = () => {
     if (queue && queue.length > 0) {
@@ -28,7 +28,6 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-black">
           <motion.div 
@@ -43,7 +42,6 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10">
           <motion.div className="max-w-4xl mx-auto" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
-              {/* 3. Usa o componente <Trans> para textos com HTML dentro */}
               <Trans i18nKey="home_headline">
                 Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
               </Trans>
@@ -65,17 +63,15 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-24 bg-surface">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
             initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={itemVariants}
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display">{t('home_features_title')}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold font-display" dangerouslySetInnerHTML={{ __html: t('home_features_title') }} />
             <p className="text-lg text-white/70 max-w-2xl mx-auto mt-4">{t('home_features_subtitle')}</p>
           </motion.div>
-
           <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             <motion.div className="card p-8 text-center" variants={itemVariants}>
               <Music className="text-primary mx-auto mb-4" size={32} />
@@ -96,7 +92,6 @@ const HomePage: React.FC = () => {
         </div>
       </section>
       
-      {/* CTA Section */}
       <section className="py-28 bg-background">
         <motion.div className="container mx-auto px-4 text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={itemVariants}>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display">
