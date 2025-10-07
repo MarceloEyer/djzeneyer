@@ -1,14 +1,32 @@
 // src/pages/HomePage.tsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
 import { useMusicPlayer } from '../contexts/MusicPlayerContext';
+
+// --- Subcomponente Reutilizável (Sugestão 1 da análise) ---
+const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; description: string; variants: any; }> = ({ icon, title, description, variants }) => (
+    <motion.div className="card p-8 text-center" variants={variants}>
+        <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
+        <h3 className="text-xl font-semibold mb-2">{title}</h3>
+        <p className="text-white/70">{description}</p>
+    </motion.div>
+);
 
 const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
   const { t } = useTranslation();
+
+  // --- Array de Dados para os Cards (Sugestão 2 da análise) ---
+  const features = [
+    { id: 'music', icon: <Music size={32} />, titleKey: 'home_feat_exclusive_title', descKey: 'home_feat_exclusive_desc' },
+    { id: 'achievements', icon: <Award size={32} />, titleKey: 'home_feat_achievements_title', descKey: 'home_feat_achievements_desc' },
+    { id: 'community', icon: <Users size={32} />, titleKey: 'home_feat_community_title', descKey: 'home_feat_community_desc' },
+  ];
 
   const handlePlayFeatured = () => {
     if (queue && queue.length > 0) {
@@ -18,7 +36,7 @@ const HomePage: React.FC = () => {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
   };
 
   const itemVariants = {
@@ -28,6 +46,12 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      <Helmet>
+        <title>DJ Zen Eyer | Brazilian Zouk Innovator & Global DJ</title>
+        <meta name="description" content="Official website of DJ Zen Eyer. Discover exclusive music, upcoming events, and join the Zen Tribe community for Brazilian Zouk enthusiasts." />
+      </Helmet>
+
+      {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-black">
           <motion.div 
@@ -63,35 +87,32 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Features Section - Agora Refatorada */}
       <section className="py-24 bg-surface">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
             initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={itemVariants}
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display" dangerouslySetInnerHTML={{ __html: t('home_features_title') }} />
+            <h2 className="text-3xl md:text-4xl font-bold font-display">{t('home_features_title')}</h2>
             <p className="text-lg text-white/70 max-w-2xl mx-auto mt-4">{t('home_features_subtitle')}</p>
           </motion.div>
+
           <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            <motion.div className="card p-8 text-center" variants={itemVariants}>
-              <Music className="text-primary mx-auto mb-4" size={32} />
-              <h3 className="text-xl font-semibold mb-2">Músicas Exclusivas</h3>
-              <p className="text-white/70">Acesso a tracks e remixes antes de todo mundo.</p>
-            </motion.div>
-            <motion.div className="card p-8 text-center" variants={itemVariants}>
-              <Award className="text-primary mx-auto mb-4" size={32} />
-              <h3 className="text-xl font-semibold mb-2">Sistema de Conquistas</h3>
-              <p className="text-white/70">Ganhe pontos e medalhas por sua participação.</p>
-            </motion.div>
-            <motion.div className="card p-8 text-center" variants={itemVariants}>
-              <Users className="text-primary mx-auto mb-4" size={32} />
-              <h3 className="text-xl font-semibold mb-2">Comunidade Privada</h3>
-              <p className="text-white/70">Conecte-se com outros fãs de Zouk e comigo.</p>
-            </motion.div>
+            {features.map(feature => (
+              <FeatureCard
+                key={feature.id}
+                icon={feature.icon}
+                title={t(feature.titleKey as any)}
+                description={t(feature.descKey as any)}
+                variants={itemVariants}
+              />
+            ))}
           </motion.div>
         </div>
       </section>
       
+      {/* CTA Section */}
       <section className="py-28 bg-background">
         <motion.div className="container mx-auto px-4 text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={itemVariants}>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display">
