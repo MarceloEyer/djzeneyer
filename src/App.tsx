@@ -1,25 +1,48 @@
 // src/App.tsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-// ... (todos os seus outros imports)
-import LanguageWrapper from './components/common/LanguageWrapper';
+import { AnimatePresence } from 'framer-motion'; // <-- A LINHA QUE FALTAVA
+import { HelmetProvider } from 'react-helmet-async';
 import MainLayout from './layouts/MainLayout';
+import LanguageWrapper from './components/common/LanguageWrapper';
 import HomePage from './pages/HomePage';
+import EventsPage from './pages/EventsPage';
+import MusicPage from './pages/MusicPage';
+import ZenTribePage from './pages/ZenTribePage';
+import PressKitPage from './pages/PressKitPage';
+import ShopPage from './pages/ShopPage';
+// ... importe todas as suas outras páginas ...
+import NotFoundPage from './pages/NotFoundPage';
+import { UserProvider } from './contexts/UserContext';
+import { CartProvider } from './contexts/CartContext';
+import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
 function App() {
   return (
-    // ... (seus Providers: Helmet, User, Cart, MusicPlayer)
-    <AnimatePresence mode="wait">
-      <Routes>
-        <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
-          <Route element={<MainLayout />}>
-            <Route index element={<HomePage />} />
-            {/* Adicione todas as suas outras rotas aqui */}
-          </Route>
-        </Route>
-      </Routes>
-    </AnimatePresence>
-    // ... (fechamento dos seus Providers)
+    <HelmetProvider>
+      <UserProvider>
+        <CartProvider>
+          <MusicPlayerProvider>
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
+                  <Route element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="music" element={<MusicPage />} />
+                    <Route path="events" element={<EventsPage />} />
+                    <Route path="shop" element={<ShopPage />} />
+                    <Route path="tribe" element={<ZenTribePage />} />
+                    <Route path="work-with-me" element={<PressKitPage />} />
+                    {/* ... cole aqui todas as suas outras rotas ... */}
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Route>
+                </Route>
+              </Routes>
+            </AnimatePresence>
+          </MusicPlayerProvider>
+        </CartProvider>
+      </UserProvider>
+    </HelmetProvider>
   );
 }
 export default App;
