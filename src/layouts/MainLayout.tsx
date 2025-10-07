@@ -20,7 +20,8 @@ const MainLayout: React.FC = () => {
   const closeModal = () => setIsAuthModalOpen(false);
   const toggleAuthMode = () => setAuthMode(prev => (prev === 'login' ? 'register' : 'login'));
 
-  const canonicalUrl = `${siteConfig.siteUrl}${location.pathname}`;
+  // Remove barra extra do final da URL canônica para evitar duplicatas
+  const canonicalUrl = `${siteConfig.siteUrl}${location.pathname}`.replace(/\/$/, '');
   const title = siteConfig.defaultTitle;
   const description = siteConfig.defaultDescription;
 
@@ -47,8 +48,12 @@ const MainLayout: React.FC = () => {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={siteConfig.twitterImage} />
-  
-        {/* JSON-LD para AI crawlers e Google */}
+
+        {/* Multilíngue SEO */}
+        <link rel="alternate" href="https://djzeneyer.com/" hrefLang="en" />
+        <link rel="alternate" href="https://djzeneyer.com/pt/" hrefLang="pt" />
+
+        {/* JSON-LD para AI e buscadores */}
         <script type="application/ld+json">
           {JSON.stringify({
             '@context': 'https://schema.org',
@@ -56,6 +61,7 @@ const MainLayout: React.FC = () => {
               {
                 '@type': 'MusicGroup',
                 'name': 'DJ Zen Eyer',
+                'alternateName': 'Zen Eyer',
                 'url': siteConfig.siteUrl,
                 'logo': siteConfig.logo,
                 'sameAs': siteConfig.socialProfiles,
