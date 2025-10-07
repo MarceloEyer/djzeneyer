@@ -59,42 +59,54 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
-      <div className="container mx-auto px-4 md:px-6 flex items-center justify-between h-16">
-        {/* Logo */}
-        <Link to={currentLang === 'pt' ? '/pt' : '/'} aria-label={t('home')} className="flex items-center">
-          <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
-        </Link>
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to={currentLang === 'pt' ? '/pt' : '/'} aria-label={t('home')} className="flex items-center flex-shrink-0">
+            <span className="text-xl font-display font-bold tracking-wide">
+              <span className="text-primary">DJ</span> Zen Eyer
+            </span>
+          </Link>
 
-        <div className={DESKTOP_ONLY + " items-center space-x-6 lg:space-x-8"}>
-          <nav>{renderNavLinks(false)}</nav>
-          <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
-            {[ 'pt', 'en' ].map(lng => (
-              <button
-                key={lng}
-                onClick={() => changeLanguage(lng as 'pt' | 'en')}
-                className={`text-sm font-bold ${currentLang === lng ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-                aria-label={t(`change_language_${lng}`)}
-              >
-                {lng.toUpperCase()}
+          {/* Desktop Navigation */}
+          <nav className={DESKTOP_ONLY + " items-center flex-1 justify-center"}>
+            <div className="flex items-center gap-6 lg:gap-8">
+              {renderNavLinks(false)}
+            </div>
+          </nav>
+
+          {/* Desktop Actions */}
+          <div className={DESKTOP_ONLY + " items-center gap-4 flex-shrink-0"}>
+            <div className="flex items-center gap-2 border-r border-white/20 pr-4">
+              {[ 'pt', 'en' ].map(lng => (
+                <button
+                  key={lng}
+                  onClick={() => changeLanguage(lng as 'pt' | 'en')}
+                  className={`text-sm font-bold transition-all ${currentLang === lng ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+                  aria-label={t(`change_language_${lng}`)}
+                >
+                  {lng.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            {user?.isLoggedIn ? (
+              <UserMenu />
+            ) : (
+              <button onClick={onLoginClick} className="btn btn-primary flex items-center gap-2" aria-label={t('sign_in')}>
+                <LogIn size={18} /><span>{t('sign_in')}</span>
               </button>
-            ))}
+            )}
           </div>
-          {user?.isLoggedIn ? (
-            <UserMenu />
-          ) : (
-            <button onClick={onLoginClick} className="btn btn-primary flex items-center space-x-2" aria-label={t('sign_in')}>
-              <LogIn size={18} /><span>{t('sign_in')}</span>
-            </button>
-          )}
-        </div>
 
-        <button
-          className={MOBILE_ONLY + " text-white"}
-          onClick={() => setIsMenuOpen(prev => !prev)}
-          aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          {/* Mobile Menu Button */}
+          <button
+            className={MOBILE_ONLY + " text-white"}
+            onClick={() => setIsMenuOpen(prev => !prev)}
+            aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
       <div className={`${MOBILE_ONLY} absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
         <div className="container mx-auto px-4 py-4">
