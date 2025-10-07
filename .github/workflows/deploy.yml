@@ -5,38 +5,66 @@ name: Build and Deploy to Hostinger
 on:
   push:
     branches:
-      - main # Dispara a ação em qualquer push para a branch 'main'
+      - main
+  workflow_dispatch: # Permite executar manualmente
+
+env:
+  NODE_VERSION: '18'
+  VITE_WP_SITE_URL: https://djzeneyer.com
+  VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest # Usa um servidor Linux para rodar os comandos
-
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-      # 1. Baixa o seu código do repositório
-      - name: Checkout Repository
+      # 1. Checkout com fetch mínimo para performance
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      # 2. Configura o ambiente Node.js para o build
-      - name: Setup Node.js
+      # 2. Setup Node.js com cache otimizado
+      - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      # 3. Instala as dependências do projeto
-      - name: Install Dependencies
-        run: npm install
+      # 3. Instala dependências
+      - name: 📦 Install Dependencies
+        run: npm ci --prefer-offline --no-audit
 
-      # 4. Roda o build para criar a pasta 'dist'
-      - name: Build Project
+      # 4. Build do projeto
+      - name: 🏗️ Build Project
         run: npm run build
         env:
-          # CORRIGIDO: Sintaxe correta para as variáveis de ambiente
-          VITE_WP_SITE_URL: https://djzeneyer.com
-          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
+          VITE_WP_SITE_URL: ${{ env.VITE_WP_SITE_URL }}
+          VITE_WP_REST_URL: ${{ env.VITE_WP_REST_URL }}
+          NODE_ENV: production
 
-      # 5. Envia a pasta 'dist' para a Hostinger via FTP
-      - name: FTP Deploy (React App - dist folder)
+      # 5. Valida se o build foi criado
+      - name: ✅ Verify Build Output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "❌ Build folder 'dist' not found!"
+            exit 1
+          fi
+          echo "✅ Build folder verified"
+
+      # 6. Prepara lista de arquivos do tema para deploy
+      - name: 📋 Prepare Theme Files
+        run: |
+          mkdir -p .deploy-temp
+          for file in functions.php index.php style.css woocommerce.php page-react-app.php; do
+            if [ -f "$file" ]; then
+              cp "$file" .deploy-temp/
+            fi
+          done
+
+      # 7. Deploy da pasta dist (React App)
+      - name: 🚀 Deploy React App (dist folder)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -44,20 +72,19 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
           server-dir: ./wp-content/themes/zentheme/dist/
-          dangerous-clean-slate: true
+          dangerous-clean-slate: true # <-- CORRIGIDO AQUI
 
-      # 6. Envia os arquivos do tema (functions.php, etc.)
-      - name: FTP Deploy (WordPress Theme Files)
+      # 8. Deploy dos arquivos do tema WordPress
+      - name: 🎨 Deploy WordPress Theme Files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          exclude: |
-            **/*
-            !/functions.php
-            !/index.php
-            !/style.css
-            !/woocommerce.php
-            !/page-react-app.php
+          local-dir: ./.deploy-temp/
           server-dir: ./wp-content/themes/zentheme/
+      
+      # 9. Cleanup
+      - name: 🧹 Cleanup
+        if: always()
+        run: rm -rf .deploy-temp
