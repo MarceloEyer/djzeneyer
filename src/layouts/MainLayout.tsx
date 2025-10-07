@@ -47,12 +47,7 @@ const MainLayout: React.FC = () => {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={siteConfig.twitterImage} />
-
-        {/* Preload de fontes */}
-        {siteConfig.fontPreloads.map((href) => (
-          <link key={href} rel="preload" href={href} as="font" type="font/woff2" crossOrigin="anonymous" />
-        ))}
-        
+  
         {/* JSON-LD para AI crawlers e Google */}
         <script type="application/ld+json">
           {JSON.stringify({
