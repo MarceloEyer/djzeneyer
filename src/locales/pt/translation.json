@@ -16,5 +16,11 @@
   "home_cta_title": "Pronto para se Juntar à <1>Zen Tribe</1>?",
   "home_cta_subtitle": "Torne-se parte de nossa crescente comunidade de entusiastas do brazilian zouk. Desbloqueie conteúdo exclusivo, ganhe recompensas e conecte-se com fãs que pensam como você.",
   "join_now_button": "Junte-se Agora",
-  "explore_music_button": "Explorar Músicas"
+  "explore_music_button": "Explorar Músicas",
+  "home_feat_exclusive_title": "Músicas Exclusivas",
+  "home_feat_exclusive_desc": "Tenha acesso a faixas não lançadas, mixes exclusivos e conteúdo de edição limitada apenas para membros da Tribo.",
+  "home_feat_achievements_title": "Sistema de Conquistas",
+  "home_feat_achievements_desc": "Ganhe medalhas, desbloqueie conquistas e suba de nível em seu ranking Zen ao se engajar com as músicas e eventos.",
+  "home_feat_community_title": "Conexão com a Comunidade",
+  "home_feat_community_desc": "Conecte-se com outros entusiastas da música, compartilhe playlists e participe de eventos exclusivos da comunidade."
 }
