@@ -1,20 +1,33 @@
+// src/App.tsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
+
+// Layouts e Wrappers
 import MainLayout from './layouts/MainLayout';
 import LanguageWrapper from './components/common/LanguageWrapper';
+
+// Pages
 import HomePage from './pages/HomePage';
 import EventsPage from './pages/EventsPage';
 import MusicPage from './pages/MusicPage';
 import ZenTribePage from './pages/ZenTribePage';
 import PressKitPage from './pages/PressKitPage';
 import ShopPage from './pages/ShopPage';
-// ... outras páginas ...
+import ProductPage from './pages/ProductPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import MyAccountPage from './pages/MyAccountPage';
+import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
+
+// Context Providers
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
+
+import './i18n';
 
 function App() {
   return (
@@ -24,15 +37,52 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
+                {/* Wrapper multilíngue captura / e /pt */}
                 <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
+                    {/* Home */}
                     <Route index element={<HomePage />} />
-                    <Route path="music" element={<MusicPage />} />
+
+                    {/* Eventos */}
                     <Route path="events" element={<EventsPage />} />
-                    <Route path="shop" element={<ShopPage />} />
+                    <Route path="eventos" element={<EventsPage />} />
+
+                    {/* Música */}
+                    <Route path="music" element={<MusicPage />} />
+                    <Route path="musica" element={<MusicPage />} />
+
+                    {/* Zen Tribe */}
                     <Route path="tribe" element={<ZenTribePage />} />
+                    <Route path="tribo" element={<ZenTribePage />} />
+
+                    {/* Work With Me / Press Kit */}
                     <Route path="work-with-me" element={<PressKitPage />} />
-                    {/* Outras rotas */}
+                    <Route path="contrate" element={<PressKitPage />} />
+
+                    {/* Loja */}
+                    <Route path="shop" element={<ShopPage />} />
+                    <Route path="loja" element={<ShopPage />} />
+
+                    {/* Minha Conta */}
+                    <Route path="my-account" element={<MyAccountPage />} />
+                    <Route path="minha-conta" element={<MyAccountPage />} />
+
+                    {/* Carrinho */}
+                    <Route path="cart" element={<CartPage />} />
+                    <Route path="carrinho" element={<CartPage />} />
+
+                    {/* Finalizar Compra */}
+                    <Route path="checkout" element={<CheckoutPage />} />
+                    <Route path="finalizar-compra" element={<CheckoutPage />} />
+
+                    {/* Dashboard (não traduz) */}
+                    <Route path="dashboard" element={<DashboardPage />} />
+
+                    {/* Produto (detalhes) */}
+                    <Route path="product/:slug" element={<ProductPage />} />
+                    <Route path="pt/product/:slug" element={<ProductPage />} />
+
+                    {/* 404 */}
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Route>
@@ -44,4 +94,5 @@ function App() {
     </HelmetProvider>
   );
 }
+
 export default App;
