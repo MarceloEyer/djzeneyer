@@ -1,230 +1,175 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions
+ * v4.0.0 - Final Consolidated Version
  */
 
-// Enqueue scripts and styles
-function djzeneyer_enqueue_scripts() {
-    // Enqueue main stylesheet
-    wp_enqueue_style('djzeneyer-style', get_stylesheet_uri());
-
-    // Enqueue React built assets (JavaScript and CSS)
-    // The 'index.js' should be inside the 'dist/assets' folder of your React build.
-    // Added 'crossorigin' attribute for better preload handling (Rocket Loader)
-    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', array(), '1.0.0', true);
-    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css');
-
-    // Pass important WordPress data to the React JavaScript (global 'wpData' object)
-    wp_localize_script('djzeneyer-react', 'wpData', array(
-        'siteUrl' => get_site_url(), // Base URL of your site
-        'restUrl' => get_rest_url(), // Base URL of the WordPress REST API
-        'nonce' => wp_create_nonce('wp_rest') // Security nonce for REST API requests
-    ));
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
 }
-add_action('wp_enqueue_scripts', 'djzeneyer_enqueue_scripts');
 
-/**
- * Adds the 'type="module"' attribute AND 'crossorigin="use-credentials"' to the React script tag.
- * This is essential for modern browsers to correctly interpret ES Modules (ESM) and for better preload handling.
- */
-function djzeneyer_add_type_attribute_to_react_script( $tag, $handle, $src ) {
-    // Check if it's our React script's handle
-    if ( 'djzeneyer-react' === $handle ) {
-        // Reconstruct the script tag adding type="module" AND crossorigin="use-credentials"
-        $tag = '<script type="module" src="' . esc_url( $src ) . '" id="' . $handle . '-js" crossorigin="use-credentials"></script>';
+// 1. ENQUEUE SCRIPTS AND STYLES
+add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_style('djzeneyer-style', get_stylesheet_uri());
+    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', array(), '4.0.0', true);
+    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css');
+    
+    wp_localize_script('djzeneyer-react', 'wpData', array(
+        'siteUrl' => get_site_url(),
+        'restUrl' => get_rest_url(),
+        'nonce'   => wp_create_nonce('wp_rest')
+    ));
+});
+
+// Add module type to the React script tag
+add_filter('script_loader_tag', function ($tag, $handle, $src) {
+    if ('djzeneyer-react' === $handle) {
+        return '<script type="module" src="' . esc_url($src) . '" id="' . $handle . '-js" crossorigin="use-credentials"></script>';
     }
     return $tag;
-}
-add_filter( 'script_loader_tag', 'djzeneyer_add_type_attribute_to_react_script', 10, 3 );
+}, 10, 3);
 
-// Enable CORS for frontend requests and allow credentials
-add_action('init', 'handle_cors');
-function handle_cors() {
-    // ESSENTIAL: Use get_site_url() for Access-Control-Allow-Origin when Allow-Credentials is true
-    header("Access-Control-Allow-Origin: " . get_site_url()); 
+
+// 2. THEME SUPPORT
+add_action('after_setup_theme', function () {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('woocommerce');
+    // Habilita a página de Menus no painel do WordPress
+    register_nav_menus(array(
+        'primary_menu' => __('Menu Principal', 'djzeneyer'),
+    ));
+});
+
+
+// 3. CORS & APACHE AUTH HEADER FIX
+add_action('init', function () {
+    if (is_admin() || headers_sent()) return;
+    
+    header("Access-Control-Allow-Origin: " . get_site_url());
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-WP-Nonce"); // Ensure X-WP-Nonce is allowed
-    header("Access-Control-Allow-Credentials: true");
-
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-WP-Nonce");
+    header("Access-Control-Allow-Credentials: true);
     if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+        status_header(200);
         exit(0);
     }
-}
+});
 
-// Add theme support
-function djzeneyer_theme_support() {
-    add_theme_support('title-tag'); 
-    add_theme_support('post-thumbnails'); 
-    add_theme_support('woocommerce'); 
-}
-add_action('after_setup_theme', 'djzeneyer_theme_support');
+add_filter('apache_request_headers', function ($headers) {
+    if (!isset($headers['Authorization']) && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+    }
+    return $headers;
+});
 
-// Register REST API endpoints
-function djzeneyer_register_rest_routes() {
-    // Custom endpoint for menu items
-    register_rest_route('djzeneyer/v1', '/menu', array(
+
+// 4. JWT & USER ROLES FIX
+add_filter('simple_jwt_login_payload_data', function ($payload_data, $user) {
+    if (isset($user->roles) && is_array($user->roles)) {
+        $payload_data['user']['roles'] = $user->roles;
+    }
+    return $payload_data;
+}, 10, 2);
+
+
+// 5. CUSTOM REST API ENDPOINTS
+add_action('rest_api_init', function () {
+    $namespace = 'djzeneyer/v1';
+
+    // Endpoint para o Menu Multilíngue
+    register_rest_route($namespace, '/menu', [
         'methods' => 'GET',
-        'callback' => 'djzeneyer_get_menu_items',
-        'permission_callback' => '__return_true'
-    ));
+        'callback' => 'djzeneyer_get_menu_items_callback',
+        'permission_callback' => '__return_true',
+        'args' => ['lang' => ['validate_callback' => function($param) { return is_string($param); }]]
+    ]);
 
-    // Custom endpoint for newsletter subscription
-    register_rest_route('djzeneyer/v1', '/subscribe', array(
-        'methods' => 'POST',
-        'callback' => 'djzeneyer_handle_newsletter_subscription',
-        'permission_callback' => '__return_true', // Allow public access without authentication
-        'args' => array(
-            'email' => array(
-                'required' => true,
-                'validate_callback' => function($param, $request, $key) {
-                    return is_email($param);
-                }
-            ),
-        ),
-    ));
+    // Endpoint para Checkout
+    register_rest_route($namespace, '/checkout', [
+        'methods'  => 'POST',
+        'callback' => 'djzeneyer_process_checkout_callback',
+        'permission_callback' => function($request) { return wp_verify_nonce($request->get_header('X-WP-Nonce'), 'wp_rest'); }
+    ]);
 
-    // Custom Endpoint to Get a Fresh Nonce
-    register_rest_route('djzeneyer/v1', '/nonce', array(
-        'methods' => 'GET',
-        'callback' => 'djzeneyer_get_fresh_nonce',
-        'permission_callback' => '__return_true' // Publicly accessible to get nonce
-    ));
+    // Endpoints para Gerenciamento de Usuário
+    register_rest_route($namespace, '/user/update-profile', ['methods'  => 'POST', 'callback' => 'djzeneyer_update_profile_callback', 'permission_callback' => 'is_user_logged_in']);
+    register_rest_route($namespace, '/user/change-password', ['methods'  => 'POST', 'callback' => 'djzeneyer_change_password_callback', 'permission_callback' => 'is_user_logged_in']);
+});
 
-    // Endpoint personalizado para adicionar ao carrinho
-    // Este endpoint NÃO requer Nonce e usa a sessão do WooCommerce diretamente.
-    register_rest_route('djzeneyer/v1', '/add-to-cart', array(
-        'methods' => 'POST',
-        'callback' => 'djzeneyer_add_to_cart',
-        'permission_callback' => '__return_true', // Permitir acesso público (para convidados)
-        'args' => array(
-            'product_id' => array(
-                'required' => true,
-                'validate_callback' => function($param) {
-                    return is_numeric($param);
-                }
-            ),
-            'quantity' => array(
-                'default' => 1,
-                'validate_callback' => function($param) {
-                    return is_numeric($param) && $param > 0;
-                }
-            ),
-        ),
-    ));
-}
-add_action('rest_api_init', 'djzeneyer_register_rest_routes'); 
 
-// Get menu items for the REST API
-function djzeneyer_get_menu_items() {
-    $menu_items = wp_get_nav_menu_items('primary-menu'); 
+// --- Callback Functions for REST API ---
+
+function djzeneyer_get_menu_items_callback(WP_REST_Request $request) {
+    $lang = $request->get_param('lang') ?: 'en';
+    $menu_name = ($lang === 'pt') ? 'Menu Principal PT' : 'Menu Principal EN';
+    $menu_items = wp_get_nav_menu_items($menu_name);
+
+    if (empty($menu_items)) {
+        $locations = get_nav_menu_locations();
+        if (isset($locations['primary_menu'])) {
+             $menu_items = wp_get_nav_menu_items($locations['primary_menu']);
+        }
+    }
+    if (empty($menu_items)) {
+        return new WP_Error('no_menu_found', 'Nenhum item de menu encontrado.', ['status' => 404]);
+    }
     return rest_ensure_response($menu_items);
 }
 
-// Callback function to handle newsletter subscription using MailPoet
-function djzeneyer_handle_newsletter_subscription(WP_REST_Request $request) {
-    $email = sanitize_email($request['email']);
-
-    if (!is_email($email)) {
-        return new WP_Error('invalid_email', 'Invalid email.', array('status' => 400));
-    }
-
-    if (!function_exists('mailpoet_api_get') || !class_exists(\MailPoet\API\API::class)) {
-        return new WP_Error('mailpoet_not_ready', 'Newsletter service not available. Please install and activate MailPoet.', array('status' => 500));
-    }
-
-    try {
-        $mailpoet_api = \MailPoet\API\API::getInstance();
-        
-        // !!! IMPORTANT: REPLACE 'YOUR_MAILPOET_LIST_ID' with the actual ID of your MailPoet subscriber list.
-        // You can find the list ID in the URL when editing a list in MailPoet (e.g., ...&list_id=X)
-        $list_id = 1; // <--- REPLACE THIS VALUE WITH THE ACTUAL ID OF YOUR MAILPOET LIST (e.g., 1, 2, etc.)
-
-        // Check if subscriber already exists
-        $subscriber = $mailpoet_api->getSubscriber($email);
-
-        if ($subscriber) {
-            // If subscriber exists, check if already subscribed to the list
-            $subscriber_status = $mailpoet_api->getSubscriberStatus($subscriber['id'], $list_id);
-
-            if ($subscriber_status['status'] === 'subscribed') {
-                return new WP_REST_Response(array('message' => 'This email is already subscribed. Thank you!'), 200);
-            } else {
-                $mailpoet_api->subscribeToList($subscriber['id'], $list_id);
-                return new WP_REST_Response(array('message' => 'Successfully subscribed to the newsletter!'), 200);
-            }
-        } else {
-            // Subscriber does not exist, create a new one and subscribe them to the list
-            $mailpoet_api->addSubscriber([
-                'email' => $email,
-                'status' => \MailPoet\API\API::STATUS_SUBSCRIBED
-            ], [$list_id]);
-
-            return new WP_REST_Response(array('message' => 'Thanks for subscribing! Keep an eye on your inbox.'), 200);
-        }
-    } catch (\Exception $e) {
-        error_log('MailPoet API error: ' . $e->getMessage()); 
-        return new WP_Error('mailpoet_error', 'Error processing subscription: ' . $e->getMessage(), array('status' => 500));
-    }
-}
-
-/**
- * Custom Callback function to generate and return a fresh nonce.
- */
-function djzeneyer_get_fresh_nonce( WP_REST_Request $request ) {
-    return rest_ensure_response( array(
-        'nonce' => wp_create_nonce( 'wp_rest' ),
-    ) );
-}
-
-/**
- * Callback function to add products to cart via custom API endpoint.
- * This function bypasses the default wc/store/v1/cart/add-item nonce validation issues.
- * It manually adds the product to the WooCommerce cart using WC()->cart->add_to_cart().
- */
-function djzeneyer_add_to_cart( WP_REST_Request $request ) {
-    $product_id = absint( $request['product_id'] );
-    $quantity = absint( $request['quantity'] );
-
-    if ( empty( $product_id ) ) {
-        return new WP_Error( 'invalid_product', 'Invalid product ID.', array( 'status' => 400 ) );
-    }
-    // Check if WooCommerce is active
-    if ( !class_exists( 'WooCommerce' ) ) {
-        return new WP_Error( 'woocommerce_not_active', 'WooCommerce is not active.', array( 'status' => 500 ) );
-    }
-
-    // Rely on WooCommerce to initialize cart and session when WC()->cart is accessed.
-    // Removed explicit session_start() and set_customer_session_cookie() calls here.
-    if ( null === WC()->cart ) {
-        wc_load_cart();
-    }
+function djzeneyer_process_checkout_callback(WP_REST_Request $request) {
+    if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->session)) { WC()->session = new WC_Session_Handler(); WC()->session->init(); }
+    if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->cart)) { wc_load_cart(); }
+    if (!class_exists('WooCommerce') || null === WC()->cart || WC()->cart->is_empty()) { return new WP_Error('wc_cart_not_ready', 'O carrinho está vazio ou indisponível.', ['status' => 400]); }
     
-    // Add product to cart
-    $cart_item_key = WC()->cart->add_to_cart( $product_id, $quantity );
-
-    if ( $cart_item_key ) {
-        return rest_ensure_response( array(
-            'success' => true,
-            'message' => 'Product added to cart successfully!',
-            'cart_item_key' => $cart_item_key,
-            'cart_url' => wc_get_cart_url(),
-            'checkout_url' => wc_get_checkout_url()
-        ) );
-    } else {
-        return new WP_Error( 'add_to_cart_failed', 'Failed to add product to cart. Product ID: ' . $product_id, array( 'status' => 400 ) ); // Added product ID to error
+    $params = $request->get_json_params();
+    $required_fields = ['first_name', 'last_name', 'email'];
+    foreach ($required_fields as $field) {
+        if (empty($params[$field])) { return new WP_Error('missing_fields', "O campo '{$field}' é obrigatório.", ['status' => 400]); }
     }
-}
 
-/**
- * Redirects users to the "My Account" page after successful login.
- * This is useful when the frontend is a React application and login occurs via wp-login.php.
- */
-function custom_login_redirect( $redirect_to, $request, $user ) {
-    if ( ! is_wp_error( $user ) ) {
-        if ( ! empty( $request ) && ( strpos( $request, 'wp-login.php' ) !== false ) ) {
-            return home_url( '/my-account' ); 
+    $order = wc_create_order(['customer_id' => get_current_user_id()]);
+    try {
+        $order->set_billing_first_name(sanitize_text_field($params['first_name']));
+        $order->set_billing_last_name(sanitize_text_field($params['last_name']));
+        $order->set_billing_email(sanitize_email($params['email']));
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            $order->add_product($cart_item['data'], $cart_item['quantity']);
         }
+        $order->calculate_totals();
+        $order->save();
+        WC()->cart->empty_cart();
+        return rest_ensure_response(['success' => true, 'order_id' => $order->get_id()]);
+    } catch (Exception $e) {
+        return new WP_Error('order_creation_failed', $e->getMessage(), ['status' => 500]);
     }
-    return $redirect_to; 
 }
-add_filter( 'login_redirect', 'custom_login_redirect', 10, 3 );
+
+function djzeneyer_update_profile_callback(WP_REST_Request $request) {
+    $user_id = get_current_user_id();
+    if (0 === $user_id) return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+    $params = $request->get_json_params();
+    $user_data = ['ID' => $user_id];
+    if (isset($params['displayName'])) { $user_data['display_name'] = sanitize_text_field($params['displayName']); }
+    $result = wp_update_user($user_data);
+    if (is_wp_error($result)) { return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]); }
+    if (isset($params['phone'])) { update_user_meta($user_id, 'billing_phone', sanitize_text_field($params['phone'])); }
+    return rest_ensure_response(['success' => true, 'message' => 'Perfil atualizado com sucesso!']);
+}
+
+function djzeneyer_change_password_callback(WP_REST_Request $request) {
+    $user = wp_get_current_user();
+    if (0 === $user->ID) return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+    $params = $request->get_json_params();
+    if (empty($params['currentPassword']) || empty($params['newPassword'])) { return new WP_Error('missing_params', 'Senha atual e nova senha são obrigatórias.', ['status' => 400]); }
+    if (!wp_check_password($params['currentPassword'], $user->user_pass, $user->ID)) { return new WP_Error('wrong_password', 'A senha atual está incorreta.', ['status' => 403]); }
+    wp_set_password($params['newPassword'], $user->ID);
+    return rest_ensure_response(['success' => true, 'message' => 'Senha alterada com sucesso!']);
+}
+
+
+// 6. DJ USER ROLE
+add_action('after_switch_theme', function () {
+    add_role('dj', 'DJ', ['read' => true]);
+});
