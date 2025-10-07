@@ -14,9 +14,3 @@ export const siteConfig = {
     'https://www.facebook.com/djzeneyer',
     'https://www.youtube.com/c/djzeneyer', // Exemplo
   ],
-  // URLs das fontes que estamos usando, para o preload
-  fontPreloads: [
-    'https://fonts.gstatic.com/s/orbitron/v31/yMJRMIlzdpvBhQQL_SCqsYlRFyV1p9YO.woff2',
-    'https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuU_AA6hc.woff2',
-  ],
-};
