@@ -1,8 +1,3 @@
-<?php
-/**
- * O cabeçalho para o nosso tema.
- */
-?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -12,4 +7,3 @@
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
-    <div id="root">
