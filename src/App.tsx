@@ -37,52 +37,37 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
-                {/* Wrapper multilíngue captura / e /pt */}
                 <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
-                    {/* Home */}
                     <Route index element={<HomePage />} />
-
-                    {/* Eventos */}
+                    
                     <Route path="events" element={<EventsPage />} />
                     <Route path="eventos" element={<EventsPage />} />
-
-                    {/* Música */}
+                    
                     <Route path="music" element={<MusicPage />} />
                     <Route path="musica" element={<MusicPage />} />
-
-                    {/* Zen Tribe */}
+                    
                     <Route path="tribe" element={<ZenTribePage />} />
                     <Route path="tribo" element={<ZenTribePage />} />
-
-                    {/* Work With Me / Press Kit */}
+                    
                     <Route path="work-with-me" element={<PressKitPage />} />
                     <Route path="contrate" element={<PressKitPage />} />
-
-                    {/* Loja */}
+                    
                     <Route path="shop" element={<ShopPage />} />
                     <Route path="loja" element={<ShopPage />} />
 
-                    {/* Minha Conta */}
                     <Route path="my-account" element={<MyAccountPage />} />
                     <Route path="minha-conta" element={<MyAccountPage />} />
-
-                    {/* Carrinho */}
+                    
                     <Route path="cart" element={<CartPage />} />
                     <Route path="carrinho" element={<CartPage />} />
 
-                    {/* Finalizar Compra */}
                     <Route path="checkout" element={<CheckoutPage />} />
                     <Route path="finalizar-compra" element={<CheckoutPage />} />
-
-                    {/* Dashboard (não traduz) */}
+                    
                     <Route path="dashboard" element={<DashboardPage />} />
-
-                    {/* Produto (detalhes) */}
                     <Route path="product/:slug" element={<ProductPage />} />
-                    <Route path="pt/product/:slug" element={<ProductPage />} />
-
-                    {/* 404 */}
+                    
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Route>
