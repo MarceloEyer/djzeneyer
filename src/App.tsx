@@ -37,47 +37,4 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
-                <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
-                  <Route element={<MainLayout />}>
-                    <Route index element={<HomePage />} />
-                    
-                    <Route path="events" element={<EventsPage />} />
-                    <Route path="eventos" element={<EventsPage />} />
-                    
-                    <Route path="music" element={<MusicPage />} />
-                    <Route path="musica" element={<MusicPage />} />
-                    
-                    <Route path="tribe" element={<ZenTribePage />} />
-                    <Route path="tribo" element={<ZenTribePage />} />
-                    
-                    <Route path="work-with-me" element={<PressKitPage />} />
-                    <Route path="contrate" element={<PressKitPage />} />
-                    
-                    <Route path="shop" element={<ShopPage />} />
-                    <Route path="loja" element={<ShopPage />} />
-
-                    <Route path="my-account" element={<MyAccountPage />} />
-                    <Route path="minha-conta" element={<MyAccountPage />} />
-                    
-                    <Route path="cart" element={<CartPage />} />
-                    <Route path="carrinho" element={<CartPage />} />
-
-                    <Route path="checkout" element={<CheckoutPage />} />
-                    <Route path="finalizar-compra" element={<CheckoutPage />} />
-                    
-                    <Route path="dashboard" element={<DashboardPage />} />
-                    <Route path="product/:slug" element={<ProductPage />} />
-                    
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Route>
-                </Route>
-              </Routes>
-            </AnimatePresence>
-          </MusicPlayerProvider>
-        </CartProvider>
-      </UserProvider>
-    </HelmetProvider>
-  );
-}
-
-export default App;
+                {/* Captura / e /pt */}
