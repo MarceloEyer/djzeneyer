@@ -1,6 +1,6 @@
 // src/components/common/Navbar.tsx
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, LogIn } from 'lucide-react';
@@ -13,8 +13,10 @@ const LanguageSelector: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // Detecta corretamente 'pt', 'pt-BR', 'pt_PT', 'en', 'en-US', etc
+    const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
+
     const changeLanguage = (lng: 'pt' | 'en') => {
-        const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
         if (lng === currentLang) return;
 
         const basePath = location.pathname.replace(/^\/(en|pt)/, '');
@@ -26,14 +28,14 @@ const LanguageSelector: React.FC = () => {
         <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
             <button 
                 onClick={() => changeLanguage('pt')} 
-                className={`text-sm font-bold transition-colors ${i18n.language.startsWith('pt') ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+                className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
             >
                 PT
             </button>
             <span className="text-white/20">|</span>
             <button 
                 onClick={() => changeLanguage('en')} 
-                className={`text-sm font-bold transition-colors ${i18n.language === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+                className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
             >
                 EN
             </button>
