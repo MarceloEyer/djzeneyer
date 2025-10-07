@@ -1,7 +1,6 @@
 <?php
 /**
- * Arquivo de template principal.
+ * Main template file - Headless Only
  */
-get_header();
-// O React vai ser montado no #root que está no header.php
-get_footer();
+?>
+<div id="root"></div>
