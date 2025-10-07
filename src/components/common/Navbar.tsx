@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-import throttle from 'lodash.throttle';
+import { throttle } from 'lodash';
 
 // Contexto para configuração de API
 const ApiConfigContext = createContext<{ restUrl: string }>({ restUrl: '' });
@@ -129,7 +129,23 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
         {/* Actions desktop */}
         <DesktopOnly>
-          <LanguageSelector />
+          <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
+            <button
+              onClick={() => changeLanguage('pt')}
+              aria-label={t('change_language_pt')}
+              className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+            >
+              PT
+            </button>
+            <span className="text-white/20">|</span>
+            <button
+              onClick={() => changeLanguage('en')}
+              aria-label={t('change_language_en')}
+              className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+            >
+              EN
+            </button>
+          </div>
           {user?.isLoggedIn ? (
             <UserMenu />
           ) : (
@@ -177,7 +193,23 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                 <span>{t('sign_in')}</span>
               </button>
             )}
-            <LanguageSelector />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => changeLanguage('pt')}
+                aria-label={t('change_language_pt')}
+                className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+              >
+                PT
+              </button>
+              <span className="text-white/20">|</span>
+              <button
+                onClick={() => changeLanguage('en')}
+                aria-label={t('change_language_en')}
+                className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+              >
+                EN
+              </button>
+            </div>
           </div>
         </div>
       </MobileOnly>
