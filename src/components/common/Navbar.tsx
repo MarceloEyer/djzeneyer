@@ -1,218 +1,127 @@
 // src/components/common/Navbar.tsx
 
-import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-import { throttle } from 'lodash';
+import { useMenu } from '../../hooks/useMenu';
+import throttle from 'lodash.throttle';
 
-// Contexto para configuração de API
-const ApiConfigContext = createContext<{ restUrl: string }>({ restUrl: '' });
-export const ApiConfigProvider: React.FC<{ restUrl: string }> = ({ restUrl, children }) => (
-  <ApiConfigContext.Provider value={{ restUrl }}>{children}</ApiConfigContext.Provider>
-);
-
-// Hook para fetch do menu com cancelamento
-const useMenu = (lang: string) => {
-  const { restUrl } = useContext(ApiConfigContext);
-  const [items, setItems] = useState<MenuItem[]>([]);
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(`${restUrl}djzeneyer/v1/menu?lang=${lang}`, { signal: controller.signal })
-      .then(res => {
-        if (!res.ok) throw new Error('Erro ao buscar menu');
-        return res.json();
-      })
-      .then((data: any[]) => {
-        const normalized = data.map(item => ({
-          ...item,
-          url: (() => {
-            let path = item.url.replace(restUrl.replace(/\/$/, ''), '');
-            path = path.replace(/^\/(en|pt)/, '');
-            return path.startsWith('/') ? path : `/${path}`;
-          })(),
-        }));
-        setItems(normalized);
-      })
-      .catch(err => {
-        if (err.name !== 'AbortError') console.error(err);
-      });
-    return () => controller.abort();
-  }, [restUrl, lang]);
-  return items;
-};
-
-// Helpers de responsividade
-const DesktopOnly: React.FC = ({ children }) => <div className="hidden md:flex">{children}</div>;
-const MobileOnly: React.FC = ({ children }) => <div className="md:hidden">{children}</div>;
+const NAV_LINK_CLASS = "text-white/80 hover:text-primary transition-colors";
+const DESKTOP_ONLY = "hidden md:flex";
+const MOBILE_ONLY = "md:hidden";
 
 interface NavbarProps {
   onLoginClick: () => void;
-}
-
-interface MenuItem {
-  ID: number;
-  title: string;
-  url: string;
-  target: string;
 }
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
 
   const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
   const menuItems = useMenu(currentLang);
 
-  // Listener de scroll otimizado
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   useEffect(() => {
-    const handleScroll = throttle(() => {
-      setIsScrolled(window.scrollY > 50);
-    }, 100);
+    const handleScroll = throttle(() => setIsScrolled(window.scrollY > 50), 200);
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      handleScroll.cancel();
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
+  useEffect(() => setIsMenuOpen(false), [location.pathname]);
 
-  const changeLanguage = (lng: 'pt' | 'en') => {
+  const changeLanguage = useCallback((lng: 'pt' | 'en') => {
     if (lng === currentLang) return;
     const base = location.pathname.replace(/^\/(en|pt)/, '');
     navigate(lng === 'en' ? base || '/' : `/pt${base || '/'}`);
-  };
+  }, [currentLang, location.pathname, navigate]);
 
-  const renderNavLinks = useCallback(
-    (isMobile = false) =>
-      menuItems.map(item => (
-        <NavLink
-          key={item.ID}
-          to={`/${currentLang}${item.url}`}
-          target={item.target || '_self'}
-          aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
-          className={isMobile ? 'nav-link text-lg block py-2 text-center' : 'nav-link'}
-        >
-          {item.title}
-        </NavLink>
-      )),
-    [menuItems, currentLang]
+  const renderNavLinks = (isMobile = false) => (
+    menuItems.map(item => (
+      <NavLink
+        key={item.ID}
+        to={item.url}
+        target={item.target || '_self'}
+        className={`${NAV_LINK_CLASS} ${isMobile ? "text-lg block py-2 text-center" : ""}`}
+        aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
+      >
+        {item.title}
+      </NavLink>
+    ))
   );
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'
-      }`}
-    >
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link to={`/${currentLang}`} aria-label={t('home')} className="flex items-center">
-          <span className="text-xl font-display font-bold tracking-wide">
-            <span className="text-primary">DJ</span> Zen Eyer
-          </span>
+        <Link to={currentLang === 'pt' ? '/pt' : '/'} aria-label={t('home')} className="flex items-center">
+          <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
         </Link>
 
-        {/* Desktop nav */}
-        <DesktopOnly>
-          <nav className="items-center space-x-6 lg:space-x-8">{renderNavLinks()}</nav>
-        </DesktopOnly>
-
-        {/* Actions desktop */}
-        <DesktopOnly>
+        <div className={DESKTOP_ONLY + " items-center space-x-6 lg:space-x-8"}>
+          <nav>{renderNavLinks(false)}</nav>
           <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
-            <button
-              onClick={() => changeLanguage('pt')}
-              aria-label={t('change_language_pt')}
-              className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-            >
-              PT
-            </button>
-            <span className="text-white/20">|</span>
-            <button
-              onClick={() => changeLanguage('en')}
-              aria-label={t('change_language_en')}
-              className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-            >
-              EN
-            </button>
+            {[ 'pt', 'en' ].map(lng => (
+              <button
+                key={lng}
+                onClick={() => changeLanguage(lng as 'pt' | 'en')}
+                className={`text-sm font-bold ${currentLang === lng ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+                aria-label={t(`change_language_${lng}`)}
+              >
+                {lng.toUpperCase()}
+              </button>
+            ))}
           </div>
           {user?.isLoggedIn ? (
             <UserMenu />
           ) : (
-            <button
-              onClick={onLoginClick}
-              className="btn btn-primary flex items-center space-x-2"
-              aria-label={t('sign_in')}
-            >
-              <LogIn size={18} />
-              <span>{t('sign_in')}</span>
+            <button onClick={onLoginClick} className="btn btn-primary flex items-center space-x-2" aria-label={t('sign_in')}>
+              <LogIn size={18} /><span>{t('sign_in')}</span>
             </button>
           )}
-        </DesktopOnly>
+        </div>
 
-        {/* Mobile toggle */}
-        <MobileOnly>
-          <button
-            onClick={() => setIsMenuOpen(prev => !prev)}
-            aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}
-            className="text-white"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </MobileOnly>
-      </div>
-
-      {/* Mobile menu */}
-      <MobileOnly>
-        <div
-          className={`absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${
-            isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'
-          }`}
+        <button
+          className={MOBILE_ONLY + " text-white"}
+          onClick={() => setIsMenuOpen(prev => !prev)}
+          aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}
         >
-          <nav className="flex flex-col space-y-4 p-4">{renderNavLinks(true)}</nav>
-          <div className="border-t border-white/10 pt-4 px-4 flex items-center justify-between">
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+      <div className={`${MOBILE_ONLY} absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex flex-col space-y-4">{renderNavLinks(true)}</nav>
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
             {user?.isLoggedIn ? (
               <UserMenu orientation="vertical" />
             ) : (
-              <button
-                onClick={onLoginClick}
-                className="w-full btn btn-primary flex items-center justify-center space-x-2"
-                aria-label={t('sign_in')}
-              >
-                <LogIn size={18} />
-                <span>{t('sign_in')}</span>
+              <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2" aria-label={t('sign_in')}>
+                <LogIn size={18} /><span>{t('join_the_tribe')}</span>
               </button>
             )}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => changeLanguage('pt')}
-                aria-label={t('change_language_pt')}
-                className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-              >
-                PT
-              </button>
-              <span className="text-white/20">|</span>
-              <button
-                onClick={() => changeLanguage('en')}
-                aria-label={t('change_language_en')}
-                className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-              >
-                EN
-              </button>
+            <div className="flex flex-shrink-0 items-center gap-2">
+              {[ 'pt', 'en' ].map(lng => (
+                <button
+                  key={lng}
+                  onClick={() => changeLanguage(lng as 'pt' | 'en')}
+                  className={`text-sm font-bold ${currentLang === lng ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+                  aria-label={t(`change_language_${lng}`)}
+                >
+                  {lng.toUpperCase()}
+                </button>
+              ))}
             </div>
           </div>
         </div>
-      </MobileOnly>
+      </div>
     </header>
   );
 });
