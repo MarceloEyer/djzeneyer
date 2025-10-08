@@ -27,6 +27,8 @@ import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 
+import './i18n';
+
 function App() {
   return (
     <HelmetProvider>
@@ -37,7 +39,7 @@ function App() {
               <Routes>
                 <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
-                    <Route index element={<HomePage />} /> {/* CORRIGIDO AQUI */}
+                    <Route index element={<HomePage />} />
                     
                     <Route path="events" element={<EventsPage />} />
                     <Route path="eventos" element={<EventsPage />} />
@@ -73,7 +75,7 @@ function App() {
             </AnimatePresence>
           </MusicPlayerProvider>
         </CartProvider>
-      </User-Provider>
+      </UserProvider> {/* <-- CORRIGIDO AQUI */}
     </HelmetProvider>
   );
 }
