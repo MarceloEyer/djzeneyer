@@ -6,12 +6,31 @@ import { useTranslation } from 'react-i18next';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-import { useMenu } from '../../hooks/useMenu';
-import throttle from 'lodash.throttle';
+import { useMenu } from '../../hooks/useMenu'; // 1. Importamos nosso novo hook
 
-const NAV_LINK_CLASS = "text-white/80 hover:text-primary transition-colors";
-const DESKTOP_ONLY = "hidden md:flex";
-const MOBILE_ONLY = "md:hidden";
+// O LanguageSelector pode continuar como um componente interno ou ser movido para um arquivo próprio
+const LanguageSelector: React.FC = () => {
+    const { i18n } = useTranslation();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const changeLanguage = (lng: 'pt' | 'en') => {
+        const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
+        if (lng === currentLang) return;
+
+        const basePath = location.pathname.replace(/^\/(en|pt)/, '');
+        const newPath = lng === 'en' ? (basePath || '/') : `/pt${basePath || '/'}`;
+        navigate(newPath);
+    };
+
+    return (
+        <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
+            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${i18n.language.startsWith('pt') ? 'text-primary' : 'text-white/60 hover:text-white'}`}>PT</button>
+            <span className="text-white/20">|</span>
+            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${i18n.language === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>EN</button>
+        </div>
+    );
+};
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -19,39 +38,28 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useUser();
-
-  const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
-  const menuItems = useMenu(currentLang);
-
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useUser();
+  const location = useLocation();
+  
+  // 2. Usamos o hook para buscar os itens do menu. Simples assim!
+  const menuItems = useMenu(); 
 
+  useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
+  
   useEffect(() => {
-    const handleScroll = throttle(() => setIsScrolled(window.scrollY > 50), 200);
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => setIsMenuOpen(false), [location.pathname]);
-
-  const changeLanguage = useCallback((lng: 'pt' | 'en') => {
-    if (lng === currentLang) return;
-    const base = location.pathname.replace(/^\/(en|pt)/, '');
-    navigate(lng === 'en' ? base || '/' : `/pt${base || '/'}`);
-  }, [currentLang, location.pathname, navigate]);
+  const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
+  const handleLoginButtonClick = useCallback(() => onLoginClick(), [onLoginClick]);
 
   const renderNavLinks = (isMobile = false) => (
-    menuItems.map(item => (
-      <NavLink
-        key={item.ID}
-        to={item.url}
-        target={item.target || '_self'}
-        className={`${NAV_LINK_CLASS} ${isMobile ? "text-lg block py-2 text-center" : ""}`}
-        aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
-      >
+    menuItems.map((item) => (
+      <NavLink key={item.ID} to={item.url} target={item.target || '_self'} className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}>
         {item.title}
       </NavLink>
     ))
@@ -61,75 +69,32 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to={currentLang === 'pt' ? '/pt' : '/'} aria-label={t('home')} className="flex items-center flex-shrink-0">
-            <span className="text-xl font-display font-bold tracking-wide">
-              <span className="text-primary">DJ</span> Zen Eyer
-            </span>
+          <Link to={i18n.language.startsWith('pt') ? '/pt' : '/'} className="flex items-center">
+            <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className={DESKTOP_ONLY + " items-center flex-1 justify-center"}>
-            <div className="flex items-center gap-6 lg:gap-8">
-              {renderNavLinks(false)}
-            </div>
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            {renderNavLinks()}
           </nav>
-
-          {/* Desktop Actions */}
-          <div className={DESKTOP_ONLY + " items-center gap-4 flex-shrink-0"}>
-            <div className="flex items-center gap-2 border-r border-white/20 pr-4">
-              {[ 'pt', 'en' ].map(lng => (
-                <button
-                  key={lng}
-                  onClick={() => changeLanguage(lng as 'pt' | 'en')}
-                  className={`text-sm font-bold transition-all ${currentLang === lng ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-                  aria-label={t(`change_language_${lng}`)}
-                >
-                  {lng.toUpperCase()}
-                </button>
-              ))}
-            </div>
-            {user?.isLoggedIn ? (
-              <UserMenu />
-            ) : (
-              <button onClick={onLoginClick} className="btn btn-primary flex items-center gap-2" aria-label={t('sign_in')}>
-                <LogIn size={18} /><span>{t('sign_in')}</span>
-              </button>
-            )}
+          <div className="hidden md:flex items-center">
+            <LanguageSelector />
+            {user?.isLoggedIn ? <UserMenu /> : <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>{t('sign_in')}</span></button>}
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className={MOBILE_ONLY + " text-white"}
-            onClick={() => setIsMenuOpen(prev => !prev)}
-            aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}
-          >
+          <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
-      <div className={`${MOBILE_ONLY} absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
+      <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
         <div className="container mx-auto px-4 py-4">
-          <nav className="flex flex-col space-y-4">{renderNavLinks(true)}</nav>
+          <nav className="flex flex-col space-y-4">
+            {renderNavLinks(true)}
+          </nav>
           <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            {user?.isLoggedIn ? (
-              <UserMenu orientation="vertical" />
-            ) : (
-              <button onClick={onLoginClick} className="w-full btn btn-primary flex items-center justify-center space-x-2" aria-label={t('sign_in')}>
-                <LogIn size={18} /><span>{t('join_the_tribe')}</span>
-              </button>
-            )}
-            <div className="flex flex-shrink-0 items-center gap-2">
-              {[ 'pt', 'en' ].map(lng => (
-                <button
-                  key={lng}
-                  onClick={() => changeLanguage(lng as 'pt' | 'en')}
-                  className={`text-sm font-bold ${currentLang === lng ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-                  aria-label={t(`change_language_${lng}`)}
-                >
-                  {lng.toUpperCase()}
-                </button>
-              ))}
+            <div className="flex-grow pr-4">
+              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
+            </div>
+            <div className="flex-shrink-0">
+                <LanguageSelector />
             </div>
           </div>
         </div>
