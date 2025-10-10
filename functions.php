@@ -72,7 +72,7 @@ add_filter('apache_request_headers', function ($headers) {
     return $headers;
 });
 
-// Rate limiting REST API
+// Rate limiting REST API 
 add_filter('rest_pre_dispatch', function($response, $server, $request) {
     if (strpos($request->get_route(), '/djzeneyer/v1/') === 0) {
         $ip = $_SERVER['REMOTE_ADDR'];
