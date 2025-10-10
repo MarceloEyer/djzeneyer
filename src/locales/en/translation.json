@@ -111,5 +111,69 @@
   "subscribe": "Subscribe",
   "subscribing": "Subscribing...",
   "email_placeholder": "Your email address",
-  "copyright": "© {{year}} DJ Zen Eyer. All rights reserved. Elevating vibes, one beat at a time."
+  "copyright": "© {{year}} DJ Zen Eyer. All rights reserved. Elevating vibes, one beat at a time.",
+
+  "home_feat_exclusive_title": "Exclusive Content",
+  "home_feat_exclusive_desc": "Drops, early access and backstage moments only for the Tribe — earn points for participating.",
+  "home_feat_achievements_title": "Milestones & Achievements",
+  "home_feat_achievements_desc": "Log your milestones and collect badges for shows, challenges and collabs.",
+  "home_feat_community_title": "Zen Tribe",
+  "home_feat_community_desc": "The official community: meetups, exchanges and friendly challenges to level up.",
+
+  "menu_tooltip_xp": "Earn XP for taking part",
+  "badge_new": "New",
+  "badge_featured": "Featured",
+
+  "shop_empty_cta": "Nothing here yet — check back or explore music",
+  "shop_vibe_tag": "Limited edition",
+
+  "cart_note_voucher": "Enter a coupon for discounts",
+  "checkout_secure": "Secure and protected checkout",
+
+  "profile_edit_tip": "Update your avatar to unlock recognition",
+  "social_share_cta": "Share with the Tribe and earn points",
+
+  "error_404_title": "Page not found",
+  "error_404_subtitle": "Looks like this spot is quiet. Head back to the map.",
+  "go_home_button": "Go back home",
+
+  "extras_contact": "Contact",
+  "extras_press": "Press",
+  "extras_terms": "Terms",
+  "extras_privacy": "Privacy Policy",
+  "extras_careers": "Careers",
+  "extras_faq": "FAQ",
+  "extras_support": "Support",
+
+  "onboarding_welcome": "Welcome to the Tribe — start your journey",
+  "onboarding_tip_1": "Complete your profile to earn 50 XP",
+  "onboarding_tip_2": "Attending an event unlocks a badge",
+
+  "notif_new_event": "New event available",
+  "notif_ticket_sale": "Tickets on sale",
+  "notif_message": "You have a new message",
+
+  "search_no_results": "No results found",
+  "filter_clear": "Clear filters",
+  "sort_newest": "Newest",
+  "sort_popular": "Most popular",
+
+  "profile_settings": "Profile Settings",
+  "billing_history": "Billing History",
+  "subscriptions": "Subscriptions",
+  "manage_subscription": "Manage Subscription",
+
+  "toast_saved": "Changes saved",
+  "toast_error": "Error saving",
+
+  "admin_dashboard": "Admin Dashboard",
+  "admin_users": "Users",
+  "admin_content": "Content",
+  "admin_settings": "Settings",
+
+  "empty_state_title": "Nothing here",
+  "empty_state_subtitle": "There's no content to show yet",
+
+  "feedback_prompt": "Give feedback",
+  "feedback_thanks": "Thanks for the feedback"
 }
