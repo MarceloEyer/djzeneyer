@@ -71,7 +71,7 @@ jobs:
           name: dist-zip
           path: ./deploy
 
-      - name: Install lftp
+      - name: Install lftp and unzip
         run: sudo apt-get update -y && sudo apt-get install -y lftp unzip
 
       - name: Prepare local unpack
