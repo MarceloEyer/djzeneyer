@@ -1,15 +1,51 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions
- * v6.0.7 - Routing Reset
+ * v6.0.8 - SPA Routing Fix
  */
 if (!defined('ABSPATH')) exit;
+
+// --- Nova Função: Força o Template Base para Rotas SPA ---
+add_action('template_redirect', 'djzeneyer_spa_routing_redirect');
+
+function djzeneyer_spa_routing_redirect() {
+    global $wp;
+
+    // Obter o caminho da URL atual (excluindo query string)
+    $current_path = '/' . trim($wp->request, '/') . '/';
+
+    // Definir padrões para identificar rotas SPA válidas
+    // Adapte esta lista conforme suas páginas reais no React
+    $spa_routes = [
+        'shop', 'loja', 'events', 'eventos', 'profile', 'perfil', 'login', 'register', 'about', 'sobre', 'contact', 'contato', 'dashboard', 'painel'
+    ];
+
+    // Verificar se a rota começa com o prefixo de idioma 'pt' ou é a raiz
+    $is_root_or_pt = preg_match('#^(/pt/|/?)$#', $current_path);
+
+    // Verificar se a rota atual parece ser uma rota SPA válida (baseada na lista ou padrão)
+    $is_spa_route = false;
+    foreach ($spa_routes as $route) {
+        if (preg_match("#^(/$route|/pt/$route)#", $current_path)) {
+            $is_spa_route = true;
+            break;
+        }
+    }
+
+    // Se for uma rota SPA válida ou a raiz/pt, mas NÃO for uma rota do WordPress (post, page, etc.)
+    if (($is_root_or_pt || $is_spa_route) && !is_404() && !is_admin() && !is_embed() && !is_feed() && !is_trackback() && !is_search() && !is_robots() && !is_preview() && !is_singular() && !is_archive() && !is_home() && !is_404() && get_post_type() === false) {
+        // Carregar o template base do tema (que inclui o React)
+        include( get_template_directory() . '/index.php' );
+        exit;
+    }
+}
+// --- Fim da Nova Função ---
 
 // Enqueue scripts & styles
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('djzeneyer-style', get_stylesheet_uri());
-    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', [], '6.0.7', true);
-    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css', [], '6.0.7');
+    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', [], '6.0.8', true);
+    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css', [], '6.0.8');
     wp_localize_script('djzeneyer-react', 'wpData', [
         'siteUrl' => get_site_url(),
         'restUrl' => get_rest_url(),
