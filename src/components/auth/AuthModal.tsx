@@ -1,8 +1,9 @@
 // src/components/auth/AuthModal.tsx
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next'; // 1. Importa o hook correto
+import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Eye, EyeOff, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
+import { googleAuth } from '../../services/googleAuth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ declare global {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMode }) => {
-  const { t } = useTranslation(); // 2. Usa o novo hook
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,9 +32,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
   const [localError, setLocalError] = useState<string | null>(null);
   const [localSuccess, setLocalSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const googleButtonRef = useRef<HTMLDivElement>(null);
 
-  const { login, register, loginWithGoogle, loading: globalLoading, user } = useUser();
+  const { login, register, loading: globalLoading, user } = useUser();
   const loading = isSubmitting || globalLoading;
+
+  console.log('[AuthModal] Renderizado. Mode:', mode, 'IsOpen:', isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -114,9 +118,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
     window.open(`${window.wpData.siteUrl}/wp-login.php?action=lostpassword`, '_blank');
   };
 
-  const handleGoogleAuthClick = async () => {
-    // ... (sua lógica existente, já deve estar ok)
-  };
+  // Inicializa botão Google quando modal abre
+  useEffect(() => {
+    if (isOpen && googleButtonRef.current && mode === 'login') {
+      console.log('[AuthModal] Inicializando botão Google Sign-In');
+      googleAuth.initializeGoogleButton(googleButtonRef.current);
+    }
+  }, [isOpen, mode]);
 
   if (!isOpen) {
     return null;
@@ -159,6 +167,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
                 <button type="submit" disabled={loading} className="w-full btn btn-primary py-3 flex items-center justify-center gap-2">
                     {loading ? <Loader2 className="animate-spin"/> : (mode === 'login' ? t('sign_in') : t('create_account'))}
                 </button>
+
+                {mode === 'login' && (
+                    <>
+                        <div className="relative flex items-center py-3">
+                            <div className="flex-grow border-t border-white/10"></div>
+                            <span className="flex-shrink mx-4 text-white/60 text-sm">{t('or_continue_with')}</span>
+                            <div className="flex-grow border-t border-white/10"></div>
+                        </div>
+                        <div ref={googleButtonRef} className="w-full flex justify-center"></div>
+                    </>
+                )}
+
                 <div className="text-center text-sm pt-4 border-t border-white/10">
                     {mode === 'login' ? (
                         <>{t('no_account')} <button type="button" onClick={!loading ? onToggleMode : undefined} className="font-semibold text-primary hover:underline">{t('join_the_tribe')}</button></>

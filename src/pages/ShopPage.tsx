@@ -30,14 +30,16 @@ interface Product {
 
 const ShopPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const currentLang = i18n.language.split('-')[0]; // Obtém o idioma atual via i18n
-  console.log("ShopPage - Renderizando. Idioma atual do i18n:", i18n.language, "currentLang:", currentLang);
-
+  const currentLang = i18n.language.split('-')[0]; // 'en' ou 'pt'
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
+
+  console.log('[ShopPage] Renderizando componente');
+  console.log('[ShopPage] Idioma i18n completo:', i18n.language);
+  console.log('[ShopPage] Idioma extraído:', currentLang);
 
   const normalizeProduct = useCallback((productData: any): Product => {
     let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer';
@@ -68,31 +70,53 @@ const ShopPage: React.FC = () => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
-    console.log("ShopPage - fetchProducts chamado. Idioma para API:", currentLang);
+
+    console.log('[ShopPage] 🔄 Iniciando fetchProducts');
+    console.log('[ShopPage] Idioma para filtro de produtos:', currentLang);
 
     const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
     const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
     if (!consumerKey || !consumerSecret) {
-        console.error("As credenciais da API WooCommerce (VITE_WC_CONSUMER_KEY, VITE_WC_CONSUMER_SECRET) não estão definidas no .env");
-        setError("Erro de configuração: Credenciais da API ausentes.");
-        setLoading(false);
-        return;
+      console.error('[ShopPage] ❌ Credenciais WooCommerce ausentes no .env');
+      console.error('[ShopPage] VITE_WC_CONSUMER_KEY:', consumerKey ? 'definida' : 'AUSENTE');
+      console.error('[ShopPage] VITE_WC_CONSUMER_SECRET:', consumerSecret ? 'definida' : 'AUSENTE');
+      setError("Erro de configuração: Credenciais da API ausentes.");
+      setLoading(false);
+      return;
     }
 
-    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/v3/products?lang=${currentLang}&status=publish&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
+    const baseUrl = window.wpData?.restUrl || `${window.location.origin}/wp-json/`;
+    // Adiciona lang para Polylang/WPML + per_page para paginação
+    const apiUrl = `${baseUrl}wc/v3/products?lang=${currentLang}&status=publish&per_page=100&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
+
+    console.log('[ShopPage] 📡 URL da API:', apiUrl.replace(consumerKey, 'ck_***').replace(consumerSecret, 'cs_***'));
+
     try {
       const response = await fetch(apiUrl);
-      console.log("ShopPage - Resposta da API:", response.status); // Log de depuração
-      if (!response.ok) throw new Error(`Falha ao buscar produtos: ${response.status} ${response.statusText}`);
+      console.log('[ShopPage] 📥 Status da resposta:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[ShopPage] ❌ Erro na API:', errorText);
+        throw new Error(`Falha ao buscar produtos: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
-      console.log("ShopPage - Produtos recebidos da API:", data); // Log de depuração
-      setProducts(data.map(normalizeProduct));
+      console.log('[ShopPage] ✅ Produtos recebidos:', data.length);
+      console.log('[ShopPage] Dados brutos dos produtos:', data);
+
+      const normalizedProducts = data.map(normalizeProduct);
+      setProducts(normalizedProducts);
+
+      console.log('[ShopPage] ✅ Produtos normalizados e salvos:', normalizedProducts.length);
     } catch (err: any) {
-      console.error("Erro ao buscar produtos:", err);
+      console.error('[ShopPage] ❌ Erro ao buscar produtos:', err);
+      console.error('[ShopPage] Stack trace:', err.stack);
       setError(err.message || "Erro desconhecido ao buscar produtos.");
     } finally {
       setLoading(false);
+      console.log('[ShopPage] 🏁 fetchProducts finalizado');
     }
   }, [normalizeProduct, currentLang]);
 
