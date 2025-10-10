@@ -32,6 +32,8 @@ import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 import './i18n';
 
 function App() {
+  console.log("App.tsx - Componente App renderizado!"); // Log de verificação
+
   return (
     <HelmetProvider>
       <UserProvider>
