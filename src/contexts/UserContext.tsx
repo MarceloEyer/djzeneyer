@@ -1,11 +1,12 @@
 // src/contexts/UserContext.tsx
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import SimpleJwtLogin from 'simple-jwt-login';
 
 // --- Interfaces ---
 interface DecodedJwt { id?: string | number; email?: string; display_name?: string; roles?: string[]; exp?: number; }
 export interface WordPressUser { id: number; email: string; name: string; isLoggedIn: boolean; token?: string; roles?: string[]; avatar?: string; }
+interface AuthenticateInterface { email: string; password: string; }
 interface UserContextType {
   user: WordPressUser | null;
   loading: boolean;
