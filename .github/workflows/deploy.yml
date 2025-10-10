@@ -10,12 +10,12 @@ permissions:
 
 env:
   NODE_VERSION: '18'
-  DIST_DIR: ./dist
-  REMOTE_DIST_DIR: /wp-content/themes/zentheme/dist
-  REMOTE_THEME_DIR: /wp-content/themes/zentheme
+  REMOTE_DIR: /wp-content/themes/zentheme/dist
+  ZIP_NAME: site-dist.zip
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,6 +26,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-build-
 
       - name: Install dependencies
         run: npm ci
@@ -42,32 +50,32 @@ jobs:
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist-build
-          path: ${{ env.DIST_DIR }}
+          name: dist
+          path: ./dist
 
   deploy-dist:
+    name: Deploy dist to Hostinger (FTPS)
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Download dist artifact
         uses: actions/download-artifact@v4
         with:
-          name: dist-build
+          name: dist
           path: ./dist
 
-      - name: Deploy dist to Hostinger (FTPS)
+      - name: Deploy dist (FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          server-dir: ${{ env.REMOTE_DIST_DIR }}
+          server-dir: ${{ env.REMOTE_DIR }}
           protocol: ftps
-          # keep it simple and fast: do not use dangerous-clean-slate for theme dist
-          # If you want full clean, set dangerous-clean-slate: true (not recommended)
 
   deploy-theme:
+    name: Deploy theme files (non-destructive)
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -76,14 +84,14 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Deploy theme files (only core files, non-destructive)
+      - name: Deploy theme files (FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: ${{ env.REMOTE_THEME_DIR }}
+          server-dir: /wp-content/themes/zentheme
           protocol: ftps
           exclude: |
             **/node_modules/**
