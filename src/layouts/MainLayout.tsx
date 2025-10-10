@@ -1,11 +1,11 @@
 // src/layouts/MainLayout.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import { AuthModal } from '../components/auth/AuthModal';
+import AuthModal from '../components/auth/AuthModal';
 import { siteConfig } from '../config/siteConfig';
 
 const MainLayout: React.FC = () => {
@@ -13,17 +13,50 @@ const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
-  const openModal = (mode: 'login' | 'register' = 'login') => {
+  // Callbacks otimizados com useCallback
+  const openModal = useCallback((mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
-  };
-  const closeModal = () => setIsAuthModalOpen(false);
-  const toggleAuthMode = () => setAuthMode(prev => (prev === 'login' ? 'register' : 'login'));
+  }, []);
 
-  // Remove barra extra do final da URL canônica para evitar duplicatas
-  const canonicalUrl = `${siteConfig.siteUrl}${location.pathname}`.replace(/\/$/, '');
+  const closeModal = useCallback(() => setIsAuthModalOpen(false), []);
+
+  const toggleAuthMode = useCallback(() => {
+    setAuthMode(prev => (prev === 'login' ? 'register' : 'login'));
+  }, []);
+
+  // Memoização de valores computados
+  const canonicalUrl = useMemo(
+    () => `${siteConfig.siteUrl}${location.pathname}`.replace(/\/$/, ''),
+    [location.pathname]
+  );
+
   const title = siteConfig.defaultTitle;
   const description = siteConfig.defaultDescription;
+
+  // JSON-LD memoizado para performance
+  const schemaJson = useMemo(() => JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'MusicGroup',
+        'name': 'DJ Zen Eyer',
+        'alternateName': 'Zen Eyer',
+        'url': siteConfig.siteUrl,
+        'logo': siteConfig.logo,
+        'sameAs': siteConfig.socialProfiles,
+      },
+      {
+        '@type': 'WebSite',
+        'url': siteConfig.siteUrl,
+        'name': 'DJ Zen Eyer',
+        'publisher': {
+          '@type': 'MusicGroup',
+          'name': 'DJ Zen Eyer'
+        }
+      }
+    ],
+  }), []);
 
   return (
     <>
@@ -32,7 +65,9 @@ const MainLayout: React.FC = () => {
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonicalUrl} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta httpEquiv="Content-Language" content="pt-br, en" />
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
@@ -52,31 +87,11 @@ const MainLayout: React.FC = () => {
         {/* Multilíngue SEO */}
         <link rel="alternate" href="https://djzeneyer.com/" hrefLang="en" />
         <link rel="alternate" href="https://djzeneyer.com/pt/" hrefLang="pt" />
+        <link rel="alternate" href="https://djzeneyer.com/" hrefLang="x-default" />
 
         {/* JSON-LD para AI e buscadores */}
         <script type="application/ld+json">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@graph': [
-              {
-                '@type': 'MusicGroup',
-                'name': 'DJ Zen Eyer',
-                'alternateName': 'Zen Eyer',
-                'url': siteConfig.siteUrl,
-                'logo': siteConfig.logo,
-                'sameAs': siteConfig.socialProfiles,
-              },
-              {
-                '@type': 'WebSite',
-                'url': siteConfig.siteUrl,
-                'name': 'DJ Zen Eyer',
-                'publisher': {
-                  '@type': 'MusicGroup',
-                  'name': 'DJ Zen Eyer'
-                }
-              }
-            ],
-          })}
+          {schemaJson}
         </script>
       </Helmet>
 
