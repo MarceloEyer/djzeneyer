@@ -1,15 +1,15 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions
- * v6.0.6 - Final Routing Fix using pre_get_posts
+ * v6.0.7 - Routing Reset
  */
 if (!defined('ABSPATH')) exit;
 
 // Enqueue scripts & styles
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('djzeneyer-style', get_stylesheet_uri());
-    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', [], '6.0.6', true);
-    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css', [], '6.0.6');
+    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', [], '6.0.7', true);
+    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css', [], '6.0.7');
     wp_localize_script('djzeneyer-react', 'wpData', [
         'siteUrl' => get_site_url(),
         'restUrl' => get_rest_url(),
@@ -127,34 +127,5 @@ add_action('rest_api_init', function(){
         },
         'schema' => null,
     ]);
-});
-
-/**
- * Modifica a query principal do WordPress para carregar o App React
- * em qualquer rota de idioma (/en/ ou /pt/), evitando erros 404.
- * Esta é a abordagem mais robusta para integração de SPA (Single Page App).
- */
-add_action('pre_get_posts', function($query) {
-    // Roda apenas para a query principal no frontend
-    if ( ! $query->is_main_query() || is_admin() ) {
-        return;
-    }
-
-    $request_path = strtok($_SERVER['REQUEST_URI'], '?');
-
-    // Se a URL corresponder ao nosso padrão de idiomas
-    if (preg_match('#^/(en|pt)(/.*|/?)?$#', $request_path)) {
-        // ID da sua página principal do React
-        $react_app_page_id = 157;
-
-        // Modifica a query ANTES que ela seja executada
-        $query->set('page_id', $react_app_page_id);
-        
-        // Ajusta as flags da query para que o WordPress entenda que é uma página válida
-        $query->is_page = true;
-        $query->is_singular = true;
-        $query->is_home = false;
-        $query->is_404 = false; // <-- O mais importante: desativa o 404
-    }
 });
 ?>
