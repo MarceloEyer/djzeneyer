@@ -1,8 +1,10 @@
+// src/components/auth/AuthModal.tsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Eye, EyeOff, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
-import { initializeGoogleButton } from '../../services/googleAuth';
+import { googleAuth } from '../../services/googleAuth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -66,7 +68,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
     const el = googleButtonRef.current;
     if (!el) return;
     try {
-      initializeGoogleButton(el, { loginWithGoogleToken });
+      googleAuth.initializeGoogleButton(el, async (credential) => {
+        await loginWithGoogleToken(credential);
+      });
     } catch (e) {
       console.warn('Falha ao inicializar Google Button', e);
     }
@@ -310,4 +314,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, mode, onToggleMo
   );
 };
 
+// Exports: both default and named for flexibility
+export { AuthModal };
 export default AuthModal;
