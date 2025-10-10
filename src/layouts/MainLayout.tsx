@@ -5,7 +5,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import AuthModal from '../components/auth/AuthModal';
+import { AuthModal } from '../components/auth/AuthModal';
 import { siteConfig } from '../config/siteConfig';
 
 const MainLayout: React.FC = () => {
