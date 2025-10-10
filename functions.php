@@ -1,15 +1,15 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions
- * v6.0.3 - Força o roteamento para o App React
+ * v6.0.4 - Syntax Error Fix on line 163
  */
 if (!defined('ABSPATH')) exit;
 
 // Enqueue scripts & styles
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('djzeneyer-style', get_stylesheet_uri());
-    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', [], '6.0.3', true);
-    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css', [], '6.0.3');
+    wp_enqueue_script('djzeneyer-react', get_template_directory_uri() . '/dist/assets/index.js', [], '6.0.4', true);
+    wp_enqueue_style('djzeneyer-react-styles', get_template_directory_uri() . '/dist/assets/index.css', [], '6.0.4');
     wp_localize_script('djzeneyer-react', 'wpData', [
         'siteUrl' => get_site_url(),
         'restUrl' => get_rest_url(),
@@ -106,12 +106,129 @@ add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
 // Endpoints: menu, newsletter, perfil, senha, checkout
 add_action('rest_api_init', function () {
     $namespace = 'djzeneyer/v1';
-    // ... (Seu código de endpoints continua o mesmo)
-    register_rest_route($namespace, '/menu', [ 'methods' => 'GET', 'callback' => function($request) { $lang = sanitize_text_field($request->get_param('lang') ?: 'en'); if (function_exists('pll_set_language')) pll_set_language($lang); $menu_name = ($lang === 'pt') ? 'Menu Principal PT' : 'Menu Principal EN'; $menu_items = wp_get_nav_menu_items($menu_name); if (empty($menu_items)) { $locations = get_nav_menu_locations(); if (isset($locations['primary_menu'])) { $menu_items = wp_get_nav_menu_items($locations['primary_menu']); } } $formatted_items = []; foreach ((array)$menu_items as $item) { if ($item->menu_item_parent == 0) { $formatted_items[] = [ 'ID' => $item->ID, 'title' => $item->title, 'url' => $item->url, 'target' => $item->target ?: '_self' ]; } } return $formatted_items; }, 'permission_callback' => '__return_true' ]);
-    register_rest_route($namespace, '/subscribe', [ 'methods' => 'POST', 'callback' => function($request) { $email = sanitize_email($request->get_param('email')); if (!is_email($email)) return new WP_Error('invalid_email', 'Invalid email address.', ['status' => 400]); if (class_exists(\MailPoet\API\API::class)) { try { $mailpoet_api = \MailPoet\API\API::MP('v1'); $mailpoet_api->addSubscriber(['email' => $email, 'lists' => [1]]); return ['success' => true, 'message' => 'Successfully subscribed! Check your inbox.']; } catch (\Exception $e) { return new WP_Error('subscription_failed', $e->getMessage(), ['status' => 500]); } } return new WP_Error('mailpoet_not_found', 'MailPoet plugin not active.', ['status' => 500]); }, 'permission_callback' => '__return_true' ]);
-    register_rest_route($namespace, '/user/update-profile', [ 'methods' => 'POST', 'callback' => function($request) { $user_id = get_current_user_id(); if (0 === $user_id) return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]); $params = $request->get_json_params(); $user_data = ['ID' => $user_id]; if (isset($params['displayName'])) $user_data['display_name'] = sanitize_text_field($params['displayName']); $result = wp_update_user($user_data); if (is_wp_error($result)) return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]); if (isset($params['phone'])) update_user_meta($user_id, 'billing_phone', sanitize_text_field($params['phone'])); return ['success' => true, 'message' => 'Perfil atualizado com sucesso!']; }, 'permission_callback' => 'is_user_logged_in' ]);
-    register_rest_route($namespace, '/user/change-password', [ 'methods' => 'POST', 'callback' => function($request) { $user = wp_get_current_user(); if (0 === $user->ID) return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]); $params = $request->get_json_params(); if (empty($params['currentPassword']) || empty($params['newPassword'])) return new WP_Error('missing_params', 'Senha atual e nova senha são obrigatórias.', ['status' => 400]); if (!wp_check_password($params['currentPassword'], $user->user_pass, $user->ID)) return new WP_Error('wrong_password', 'A senha atual está incorreta.', ['status' => 403]); wp_set_password($params['newPassword'], $user->ID); return ['success' => true, 'message' => 'Senha alterada com sucesso!']; }, 'permission_callback' => 'is_user_logged_in' ]);
-    register_rest_route($namespace, '/checkout', [ 'methods' => 'POST', 'callback' => function($request) { if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->session)) { WC()->session = new WC_Session_Handler(); WC()->session->init(); } if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->cart)) { wc_load_cart(); } if (!class_exists('WooCommerce') || null === WC()->cart || WC()->cart->is_empty()) return new WP_Error('wc_cart_not_ready', 'O carrinho está vazio ou indisponível.', ['status' => 400]); $params = $request->get_json_params(); $required_fields = ['first_name', 'last_name', 'email']; foreach ($required_fields as $field) { if (empty($params[$field])) return new WP_Error('missing_field', "O campo {$field} é obrigatório.", ['status' => 400]); } if (!is_email($params['email'])) return new WP_Error('invalid_email', 'O endereço de email fornecido é inválido.', ['status' => 400]); $order = wc_create_order(['customer_id' => get_current_user_id()]); try { $order->set_billing_first_name(sanitize_text_field($params['first_name'])); $order->set_billing_last_name(sanitize_text_field($params['last_name'])); $order->set_billing_email(sanitize_email($params['email'])); foreach (WC()->cart->get_cart() as $cart_item) { $order->add_product($cart_item['data'], $cart_item['quantity']); } $order->calculate_totals(); $order->save(); WC()->cart->empty_cart(); return ['success' => true, 'order_id' => $order->get_id()]; } catch (Exception $e) { error_log('DJ Zen Eyer Checkout Error: ' . $e->getMessage()); return new WP_Error('order_creation_failed', 'Ocorreu um erro ao processar seu pedido.', ['status' => 500]); } }, 'permission_callback' => function($request) { $nonce = $request->get_header('X-WP-Nonce'); if (!$nonce || !wp_verify_nonce($nonce, 'wp_rest')) { return new WP_Error('invalid_nonce', 'Token de segurança inválido.', ['status' => 403]); } return true; } ]);
+
+    register_rest_route($namespace, '/menu', [
+        'methods' => 'GET',
+        'callback' => function($request) {
+            $lang = sanitize_text_field($request->get_param('lang') ?: 'en');
+            if (function_exists('pll_set_language')) pll_set_language($lang);
+            $menu_name = ($lang === 'pt') ? 'Menu Principal PT' : 'Menu Principal EN';
+            $menu_items = wp_get_nav_menu_items($menu_name);
+            if (empty($menu_items)) {
+                $locations = get_nav_menu_locations();
+                if (isset($locations['primary_menu'])) {
+                    $menu_items = wp_get_nav_menu_items($locations['primary_menu']);
+                }
+            }
+            $formatted_items = [];
+            foreach ((array)$menu_items as $item) {
+                if ($item->menu_item_parent == 0) {
+                    $formatted_items[] = [
+                        'ID' => $item->ID,
+                        'title' => $item->title,
+                        'url' => $item->url,
+                        'target' => $item->target ?: '_self'
+                    ];
+                }
+            }
+            return $formatted_items;
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    register_rest_route($namespace, '/subscribe', [
+        'methods' => 'POST',
+        'callback' => function($request) {
+            $email = sanitize_email($request->get_param('email'));
+            if (!is_email($email)) return new WP_Error('invalid_email', 'Invalid email address.', ['status' => 400]);
+            if (class_exists(\MailPoet\API\API::class)) {
+                try {
+                    $mailpoet_api = \MailPoet\API\API::MP('v1');
+                    $mailpoet_api->addSubscriber(['email' => $email, 'lists' => [1]]);
+                    return ['success' => true, 'message' => 'Successfully subscribed! Check your inbox.'];
+                } catch (\Exception $e) {
+                    return new WP_Error('subscription_failed', $e->getMessage(), ['status' => 500]);
+                }
+            }
+            return new WP_Error('mailpoet_not_found', 'MailPoet plugin not active.', ['status' => 500]);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // User profile
+    register_rest_route($namespace, '/user/update-profile', [
+        'methods' => 'POST',
+        'callback' => function($request) {
+            $user_id = get_current_user_id(); // <-- LINHA 163 CORRIGIDA
+            if (0 === $user_id) return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+            $params = $request->get_json_params();
+            $user_data = ['ID' => $user_id];
+            if (isset($params['displayName'])) $user_data['display_name'] = sanitize_text_field($params['displayName']);
+            $result = wp_update_user($user_data);
+            if (is_wp_error($result)) return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]);
+            if (isset($params['phone'])) update_user_meta($user_id, 'billing_phone', sanitize_text_field($params['phone']));
+            return ['success' => true, 'message' => 'Perfil atualizado com sucesso!'];
+        },
+        'permission_callback' => 'is_user_logged_in'
+    ]);
+
+    // Change password
+    register_rest_route($namespace, '/user/change-password', [
+        'methods' => 'POST',
+        'callback' => function($request) {
+            $user = wp_get_current_user();
+            if (0 === $user->ID) return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+            $params = $request->get_json_params();
+            if (empty($params['currentPassword']) || empty($params['newPassword']))
+                return new WP_Error('missing_params', 'Senha atual e nova senha são obrigatórias.', ['status' => 400]);
+            if (!wp_check_password($params['currentPassword'], $user->user_pass, $user->ID))
+                return new WP_Error('wrong_password', 'A senha atual está incorreta.', ['status' => 403]);
+            wp_set_password($params['newPassword'], $user->ID);
+            return ['success' => true, 'message' => 'Senha alterada com sucesso!'];
+        },
+        'permission_callback' => 'is_user_logged_in'
+    ]);
+
+    // Checkout
+    register_rest_route($namespace, '/checkout', [
+        'methods' => 'POST',
+        'callback' => function($request) {
+            if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->session)) {
+                WC()->session = new WC_Session_Handler(); WC()->session->init();
+            }
+            if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->cart)) { wc_load_cart(); }
+            if (!class_exists('WooCommerce') || null === WC()->cart || WC()->cart->is_empty())
+                return new WP_Error('wc_cart_not_ready', 'O carrinho está vazio ou indisponível.', ['status' => 400]);
+            $params = $request->get_json_params();
+            $required_fields = ['first_name', 'last_name', 'email'];
+            foreach ($required_fields as $field) {
+                if (empty($params[$field])) return new WP_Error('missing_field', "O campo {$field} é obrigatório.", ['status' => 400]);
+            }
+            if (!is_email($params['email'])) return new WP_Error('invalid_email', 'O endereço de email fornecido é inválido.', ['status' => 400]);
+            $order = wc_create_order(['customer_id' => get_current_user_id()]);
+            try {
+                $order->set_billing_first_name(sanitize_text_field($params['first_name']));
+                $order->set_billing_last_name(sanitize_text_field($params['last_name']));
+                $order->set_billing_email(sanitize_email($params['email']));
+                foreach (WC()->cart->get_cart() as $cart_item) {
+                    $order->add_product($cart_item['data'], $cart_item['quantity']);
+                }
+                $order->calculate_totals();
+                $order->save(); WC()->cart->empty_cart();
+                return ['success' => true, 'order_id' => $order->get_id()];
+            } catch (Exception $e) {
+                error_log('DJ Zen Eyer Checkout Error: ' . $e->getMessage());
+                return new WP_Error('order_creation_failed', 'Ocorreu um erro ao processar seu pedido.', ['status' => 500]);
+            }
+        },
+        'permission_callback' => function($request) {
+            $nonce = $request->get_header('X-WP-Nonce');
+            if (!$nonce || !wp_verify_nonce($nonce, 'wp_rest')) {
+                return new WP_Error('invalid_nonce', 'Token de segurança inválido.', ['status' => 403]);
+            }
+            return true;
+        }
+    ]);
 });
 
 // GamiPress REST Field
@@ -147,7 +264,7 @@ add_action('parse_request', function() {
         // Força o WordPress a entender que ele deve carregar esta página
         // Em vez de procurar pela URL, ele agora vai procurar pelo ID
         global $wp;
-        $wp->query_vars['page_id'] = $react_app_page_id;
+        $wp->query_vars = ['page_id' => $react_app_page_id];
     }
 });
 ?>
