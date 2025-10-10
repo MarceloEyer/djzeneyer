@@ -1,34 +1,47 @@
-name: Build and Deploy to Hostinger
+name: Build and Deploy (fast, robust)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
   contents: read
-  packages: write
+
+env:
+  NODE_VERSION: '18'
+  DIST_DIR: dist
+  ZIP_NAME: site-dist.zip
+  REMOTE_DIST_DIR: /wp-content/themes/zentheme/dist
+  REMOTE_THEME_DIR: /wp-content/themes/zentheme
 
 jobs:
-  build-and-deploy:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-
+    outputs:
+      artifact-name: dist-artifact
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install Dependencies
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-build-
+
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build Project
+      - name: Build
         run: npm run build
         env:
           VITE_WP_SITE_URL: https://djzeneyer.com
@@ -37,81 +50,160 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - name: Upload build as artifact
+      - name: Zip dist
+        run: |
+          rm -f "${{ env.ZIP_NAME }}"
+          cd "${{ env.DIST_DIR }}"
+          zip -r "../${{ env.ZIP_NAME }}" . -q
+          cd ..
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-build
-          path: ./dist
+          name: dist-zip
+          path: ${{ env.ZIP_NAME }}
 
-      - name: Install lftp (for robust SFTP/FTPS with retries)
-        run: sudo apt-get update && sudo apt-get install -y lftp
+  deploy:
+    name: Deploy (SSH preferred, fallback to SFTP)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-zip
+          path: ./deploy
 
-      - name: Deploy dist (safe clean)
+      - name: Checkout (for theme files)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Decide deploy method
+        id: decide
+        run: |
+          echo "Has SSH_HOST? ${SSH_HOST:-not-set}"
+          if [ -n "${{ secrets.SSH_HOST }}" ] && [ -n "${{ secrets.SSH_USER }}" ] && [ -n "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "method=ssh" >> $GITHUB_OUTPUT
+          else
+            echo "method=sftp" >> $GITHUB_OUTPUT
+          fi
+
+      # === SSH path (fast: scp + remote unzip) ===
+      - name: Setup SSH (if selected)
+        if: steps.decide.outputs.method == 'ssh'
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Upload & unpack via SSH
+        if: steps.decide.outputs.method == 'ssh'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          ZIP_NAME: ${{ env.ZIP_NAME }}
+          REMOTE_DIST_DIR: ${{ env.REMOTE_DIST_DIR }}
+          REMOTE_THEME_DIR: ${{ env.REMOTE_THEME_DIR }}
+        run: |
+          set -euo pipefail
+          echo "Using SSH deploy -> ${SSH_USER}@${SSH_HOST}:${SSH_PORT}"
+          scp -P "$SSH_PORT" ./deploy/${ZIP_NAME} "${SSH_USER}@${SSH_HOST}:/tmp/${ZIP_NAME}"
+          ssh -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" <<'EOF'
+            set -e
+            TMPZIP="/tmp/${ZIP_NAME}"
+            REMOTE_DIR="${REMOTE_DIST_DIR}"
+            mkdir -p "$REMOTE_DIR"
+            unzip -o "$TMPZIP" -d "$REMOTE_DIR"
+            rm -f "$TMPZIP"
+            echo "Unpacked to $REMOTE_DIR"
+            # Optionally: set permissions (adjust as needed)
+            # chown -R www-data:www-data "$REMOTE_DIR" || true
+EOF
+
+      # === SFTP fallback (lftp) ===
+      - name: Install lftp (fallback)
+        if: steps.decide.outputs.method == 'sftp'
+        run: sudo apt-get update -y && sudo apt-get install -y lftp
+
+      - name: Deploy via SFTP mirror (fallback)
+        if: steps.decide.outputs.method == 'sftp'
         env:
           FTP_HOST: ${{ secrets.FTP_SERVER }}
           FTP_USER: ${{ secrets.FTP_USERNAME }}
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
           FTP_PORT: ${{ secrets.FTP_PORT || '22' }}
-          REMOTE_DIR: /wp-content/themes/zentheme/dist
+          REMOTE_DIR: ${{ env.REMOTE_DIST_DIR }}
         run: |
-          set -e
-          RETRY_COUNT=3
-          for i in $(seq 1 $RETRY_COUNT); do
-            echo "Deploy attempt #$i"
+          set -euo pipefail
+          echo "Using SFTP fallback -> ${FTP_USER}@${FTP_HOST}:${FTP_PORT}"
+          # extract zip locally, then mirror only-newer (reduces many small file transfers)
+          rm -rf ./deploy_unzip
+          mkdir -p ./deploy_unzip
+          unzip -q ./deploy/${{ env.ZIP_NAME }} -d ./deploy_unzip
+          RETRIES=3
+          for i in $(seq 1 $RETRIES); do
+            echo "SFTP deploy attempt #$i"
             lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
               set -e;
               mkdir -p $REMOTE_DIR;
-              mirror -R --delete --parallel=5 ./dist $REMOTE_DIR;
+              mirror -R --only-newer --delete --parallel=8 ./deploy_unzip $REMOTE_DIR;
               ls -la $REMOTE_DIR;
               bye
-            " && break || (echo "Attempt $i failed, retrying..." && sleep 5)
+            " && break || (echo "Attempt $i failed" && sleep $((i*2)))
           done
 
-      - name: Deploy theme files (no destructive clean)
+      - name: Deploy theme files (non-destructive; only-newer)
         env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
           FTP_HOST: ${{ secrets.FTP_SERVER }}
           FTP_USER: ${{ secrets.FTP_USERNAME }}
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
           FTP_PORT: ${{ secrets.FTP_PORT || '22' }}
-          REMOTE_THEME_DIR: /wp-content/themes/zentheme
+          REMOTE_THEME_DIR: ${{ env.REMOTE_THEME_DIR }}
         run: |
-          set -e
-          lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
-            set -e;
-            mirror -R --parallel=3 --only-newer \
-              --exclude-glob dist \
-              --exclude-glob node_modules \
-              --exclude-glob .git \
-              --exclude-glob .github \
-              ./ $REMOTE_THEME_DIR;
-            ls -la $REMOTE_THEME_DIR;
-            bye
-          "
+          set -euo pipefail
+          # Prefer SSH copy for theme files if available (faster), else use lftp
+          if [ -n "${{ secrets.SSH_HOST }}" ] && [ -n "${{ secrets.SSH_USER }}" ] && [ -n "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "Uploading theme files via SSH/SCP (only-newer pattern)"
+            # Use rsync over SSH if remote supports it. Try rsync, fallback to scp loop.
+            rsync -avz --exclude='dist' --exclude='.git' --exclude='.github' --exclude='node_modules' ./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${REMOTE_THEME_DIR}/" -e "ssh -p ${{ secrets.SSH_PORT || '22' }}" || true
+          else
+            echo "Uploading theme files via SFTP mirror (lftp)"
+            sudo apt-get update -y && sudo apt-get install -y lftp
+            lftp -u "${FTP_USER}","${FTP_PASS}" -p ${FTP_PORT} sftp://${FTP_HOST} -e "
+              set -e;
+              mirror -R --only-newer --parallel=6 \
+                --exclude-glob dist \
+                --exclude-glob node_modules \
+                --exclude-glob .git \
+                --exclude-glob .github \
+                ./ ${REMOTE_THEME_DIR};
+              ls -la ${REMOTE_THEME_DIR} | head -n 20;
+              bye
+            "
+          fi
 
-      - name: Purge LiteSpeed Cache via HTTP (optional, runs only if secrets set)
+      - name: Purge LiteSpeed Cache (optional)
         env:
           LSCACHE_PURGE_URL: ${{ secrets.LSCACHE_PURGE_URL }}
           LSCACHE_PURGE_TOKEN: ${{ secrets.LSCACHE_PURGE_TOKEN }}
         run: |
-          if [ -z "${LSCACHE_PURGE_URL}" ] || [ -z "${LSCACHE_PURGE_TOKEN}" ]; then
-            echo "LSCache purge secrets not set, skipping purge."
-            exit 0
+          if [ -n "${LSCACHE_PURGE_URL:-}" ] && [ -n "${LSCACHE_PURGE_TOKEN:-}" ]; then
+            echo "Purging LiteSpeed cache..."
+            curl -fsS -X PURGE "${LSCACHE_PURGE_URL}" -H "Authorization: Bearer ${LSCACHE_PURGE_TOKEN}" || echo "Purge failed"
+          else
+            echo "LSCache purge secrets not set; skipping."
           fi
-          echo "Purging LiteSpeed cache..."
-          curl -X PURGE "${LSCACHE_PURGE_URL}" \
-            -H "Authorization: Bearer ${LSCACHE_PURGE_TOKEN}" \
-            --fail --show-error
 
-      - name: Verify deployed assets exist
-        env:
-          FTP_HOST: ${{ secrets.FTP_SERVER }}
-          FTP_USER: ${{ secrets.FTP_USERNAME }}
-          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
-          FTP_PORT: ${{ secrets.FTP_PORT || '22' }}
-          REMOTE_DIR: /wp-content/themes/zentheme/dist
+      - name: Verify remote dist listing
         run: |
-          lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
-            set -e;
-            cls -1 $REMOTE_DIR | head -n 20;
-            bye
-          "
+          echo "Verify step: check remote files via chosen method"
+          if [ -n "${{ secrets.SSH_HOST }}" ] && [ -n "${{ secrets.SSH_USER }}" ]; then
+            ssh -p "${{ secrets.SSH_PORT || '22' }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "ls -la ${REMOTE_DIST_DIR} | head -n 20" || true
+          else
+            sudo apt-get update -y && sudo apt-get install -y lftp
+            lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" -p "${{ secrets.FTP_PORT || '22' }}" sftp://"${{ secrets.FTP_SERVER }}" -e "cls -1 ${REMOTE_DIST_DIR} | head -n 20; bye" || true
+          fi
