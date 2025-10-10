@@ -9,15 +9,17 @@ on:
     branches:
       - main
 
+# Permissões: Limita as permissões do workflow para seguir as melhores práticas de segurança.
+permissions:
+  contents: read
+
 # Tarefas (Jobs): Uma sequência de tarefas a serem executadas.
 jobs:
-  build-and-deploy:
-    # Ambiente de Execução: A tarefa será executada em uma máquina virtual Ubuntu mais recente.
+  # --- ETAPA 1: BUILD ---
+  build:
+    name: 📦 Build do Projeto
     runs-on: ubuntu-latest
-
-    # Passos (Steps): A sequência de ações que a tarefa irá realizar.
     steps:
-      # --- ETAPA DE CONFIGURAÇÃO ---
       - name: 📂 Checkout do Repositório
         uses: actions/checkout@v4
 
@@ -27,9 +29,8 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      # --- ETAPA DE BUILD ---
       - name: 📥 Instalar Dependências
-        run: npm install
+        run: npm ci
 
       - name: 🏗️ Compilar o Projeto (Build)
         run: npm run build
@@ -40,7 +41,27 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      # --- ETAPA DE DEPLOY ---
+      - name: 📤 Upload do Artefato (pasta /dist)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-folder
+          path: ./dist
+
+  # --- ETAPA 2: DEPLOY ---
+  deploy:
+    name: 🚚 Deploy para Hostinger
+    runs-on: ubuntu-latest
+    needs: build # Garante que o deploy só rode após o build ser bem-sucedido
+    steps:
+      - name: 📂 Checkout do Repositório (apenas para arquivos do tema)
+        uses: actions/checkout@v4
+
+      - name: 📥 Download do Artefato (pasta /dist)
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-folder
+          path: ./dist
+
       - name: 📡 Deploy do App React (pasta /dist)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -70,3 +91,4 @@ jobs:
             !/footer.php      
             !/woocommerce.php
             !/page-react-app.php
+
