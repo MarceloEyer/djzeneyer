@@ -58,7 +58,6 @@ jobs:
           RETRY_COUNT=3
           for i in $(seq 1 $RETRY_COUNT); do
             echo "Deploy attempt #$i"
-            # Remove remote dist and re-create, then mirror local dist
             lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
               set -e;
               mkdir -p $REMOTE_DIR;
@@ -77,7 +76,6 @@ jobs:
           REMOTE_THEME_DIR: /wp-content/themes/zentheme
         run: |
           set -e
-          # Upload only changed core theme files (non-dist)
           lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
             set -e;
             mirror -R --parallel=3 --only-newer \
@@ -90,11 +88,18 @@ jobs:
             bye
           "
 
-      - name: Purge LiteSpeed Cache via HTTP (optional)
-        if: ${{ secrets.LSCACHE_PURGE_URL && secrets.LSCACHE_PURGE_TOKEN }}
+      - name: Purge LiteSpeed Cache via HTTP (optional, runs only if secrets set)
+        env:
+          LSCACHE_PURGE_URL: ${{ secrets.LSCACHE_PURGE_URL }}
+          LSCACHE_PURGE_TOKEN: ${{ secrets.LSCACHE_PURGE_TOKEN }}
         run: |
-          curl -X PURGE "${{ secrets.LSCACHE_PURGE_URL }}" \
-            -H "Authorization: Bearer ${{ secrets.LSCACHE_PURGE_TOKEN }}" \
+          if [ -z "${LSCACHE_PURGE_URL}" ] || [ -z "${LSCACHE_PURGE_TOKEN}" ]; then
+            echo "LSCache purge secrets not set, skipping purge."
+            exit 0
+          fi
+          echo "Purging LiteSpeed cache..."
+          curl -X PURGE "${LSCACHE_PURGE_URL}" \
+            -H "Authorization: Bearer ${LSCACHE_PURGE_TOKEN}" \
             --fail --show-error
 
       - name: Verify deployed assets exist
@@ -110,4 +115,3 @@ jobs:
             cls -1 $REMOTE_DIR | head -n 20;
             bye
           "
-
