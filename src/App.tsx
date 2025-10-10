@@ -1,7 +1,7 @@
 // src/App.tsx
 
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom'; // <-- MUDANÇA: Importamos o Navigate
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -38,49 +38,49 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
-                {/* <-- MUDANÇA: Redireciona a raiz para o idioma padrão (inglês) --> */}
+                {/* Redireciona a raiz (/) para a página inicial em inglês */}
                 <Route path="/" element={<Navigate to="/en" replace />} />
 
-                {/* <-- MUDANÇA: A rota agora captura 'en' ou 'pt' --> */}
-                <Route path="/:lang(en|pt)" element={<LanguageWrapper />}>
+                {/* Rota para idioma inglês (padrão) - sem prefixo na URL real, mas tratado como 'en' */}
+                <Route path="/en" element={<LanguageWrapper lang="en" />}>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
-                    
-                    {/* Suas rotas duplicadas para tradução funcionarão aqui dentro */}
                     <Route path="events" element={<EventsPage />} />
-                    <Route path="eventos" element={<EventsPage />} />
-                    
                     <Route path="music" element={<MusicPage />} />
-                    <Route path="musica" element={<MusicPage />} />
-                    
                     <Route path="tribe" element={<ZenTribePage />} />
-                    <Route path="tribo" element={<ZenTribePage />} />
-                    
                     <Route path="work-with-me" element={<PressKitPage />} />
-                    <Route path="contrate" element={<PressKitPage />} />
-                    
                     <Route path="shop" element={<ShopPage />} />
-                    <Route path="loja" element={<ShopPage />} />
-
                     <Route path="my-account" element={<MyAccountPage />} />
-                    <Route path="minha-conta" element={<MyAccountPage />} />
-                    
                     <Route path="cart" element={<CartPage />} />
-                    <Route path="carrinho" element={<CartPage />} />
-
                     <Route path="checkout" element={<CheckoutPage />} />
-                    <Route path="finalizar-compra" element={<CheckoutPage />} />
-                    
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="product/:slug" element={<ProductPage />} />
-                    
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Route>
 
-                {/* Rota final de fallback para qualquer URL que não combine com o padrão de idioma */}
-                <Route path="*" element={<NotFoundPage />} />
+                {/* Rota para idioma português - com prefixo /pt */}
+                <Route path="/pt" element={<LanguageWrapper lang="pt" />}>
+                  <Route element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="eventos" element={<EventsPage />} />
+                    <Route path="musica" element={<MusicPage />} />
+                    <Route path="tribo" element={<ZenTribePage />} />
+                    <Route path="contrate" element={<PressKitPage />} />
+                    <Route path="loja" element={<ShopPage />} />
+                    <Route path="minha-conta" element={<MyAccountPage />} />
+                    <Route path="carrinho" element={<CartPage />} />
+                    <Route path="finalizar-compra" element={<CheckoutPage />} />
+                    {/* Mantém /dashboard e /product/:slug para compatibilidade ou traduz? */}
+                    {/* Exemplo de rota traduzida: */}
+                    {/* <Route path="painel" element={<DashboardPage />} /> */}
+                    <Route path="product/:slug" element={<ProductPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Route>
+                </Route>
 
+                {/* Rota de fallback para qualquer coisa que não comece com /en/ ou /pt/ */}
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </AnimatePresence>
           </MusicPlayerProvider>
