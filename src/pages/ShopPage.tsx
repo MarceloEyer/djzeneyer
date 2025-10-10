@@ -6,8 +6,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle } from 'lucide-react';
 
-// ... (a interface global e a interface Product continuam iguais) ...
-
 declare global {
   interface Window {
     wpData?: {
@@ -28,12 +26,14 @@ interface Product {
   sale_price: string;
   images: { src: string; alt: string }[];
   stock_status: string;
+  // Adicionando campos específicos da API v3
+  description?: string;
+  categories?: { id: number; name: string }[];
 }
 
-
 const ShopPage: React.FC = () => {
-  const { t, i18n } = useTranslation(); // <-- MUDANÇA 1: Pegamos o 'i18n' para saber o idioma.
-  const currentLang = i18n.language.split('-')[0]; // <-- MUDANÇA 2: Armazenamos o idioma atual (ex: 'pt' ou 'en').
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language.split('-')[0];
 
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,8 +41,8 @@ const ShopPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
 
+  // Função para normalizar dados da API v3
   const normalizeProduct = useCallback((productData: any): Product => {
-    // ... (sua função normalizeProduct continua a mesma, sem alterações) ...
     let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer';
     let imageAlt = productData.name || 'Imagem do produto';
 
@@ -51,43 +51,60 @@ const ShopPage: React.FC = () => {
       imageUrl = firstImage.src || firstImage.url || firstImage.full_src || imageUrl;
       imageAlt = firstImage.alt || imageAlt;
     }
-    
+
+    // Preços da API v3 estão em formato string (ex: "10.00")
+    const regularPrice = parseFloat(productData.regular_price || '0');
+    const salePrice = parseFloat(productData.sale_price || '0');
+
     return {
       id: productData.id || 0,
       name: productData.name || 'Produto sem nome',
       slug: productData.slug || `product-${productData.id}`,
-      price: String((parseFloat(productData.prices?.price || '0') / 100).toFixed(2)),
-      on_sale: productData.on_sale || false,
-      regular_price: String((parseFloat(productData.prices?.regular_price || '0') / 100).toFixed(2)),
-      sale_price: String((parseFloat(productData.prices?.sale_price || '0') / 100).toFixed(2)),
+      price: salePrice > 0 && salePrice < regularPrice ? productData.sale_price : productData.regular_price,
+      on_sale: salePrice > 0 && salePrice < regularPrice,
+      regular_price: productData.regular_price,
+      sale_price: productData.sale_price,
       images: [{ src: imageUrl, alt: imageAlt }],
-      stock_status: productData.is_in_stock ? 'instock' : 'outofstock',
+      stock_status: productData.stock_status || 'outofstock', // 'instock', 'outofstock', 'onbackorder'
     };
   }, []);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
-    // <-- MUDANÇA 3: Adicionamos o parâmetro `?lang=` na URL da API.
-    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/products?lang=${currentLang}`;
+    // Plano B: Usando a API REST v3 com parâmetro ?lang=
+    // Certifique-se de que as chaves VITE_WC_CONSUMER_KEY e VITE_WC_CONSUMER_SECRET estejam definidas no .env
+    const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
+    const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
+
+    if (!consumerKey || !consumerSecret) {
+        console.error("As credenciais da API WooCommerce (VITE_WC_CONSUMER_KEY, VITE_WC_CONSUMER_SECRET) não estão definidas no .env");
+        setError("Erro de configuração: Credenciais da API ausentes.");
+        setLoading(false);
+        return;
+    }
+
+    // A API v3 usa basic auth ou query params com consumer_key/consumer_secret
+    // Usando query params aqui
+    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/v3/products?lang=${currentLang}&status=publish&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
     try {
       const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error("Falha ao buscar produtos.");
+      if (!response.ok) throw new Error(`Falha ao buscar produtos: ${response.status} ${response.statusText}`);
       const data = await response.json();
       setProducts(data.map(normalizeProduct));
     } catch (err: any) {
-      setError(err.message);
+      console.error("Erro ao buscar produtos:", err);
+      setError(err.message || "Erro desconhecido ao buscar produtos.");
     } finally {
       setLoading(false);
     }
-  }, [normalizeProduct, currentLang]); // <-- MUDANÇA 4: Adicionamos 'currentLang' aqui para a função ser recriada quando o idioma mudar.
+  }, [normalizeProduct, currentLang]);
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]); // Este useEffect agora funcionará corretamente pois o fetchProducts muda quando o idioma muda.
+  }, [fetchProducts]);
 
   const addToCart = async (productId: number) => {
-    // ... (sua função addToCart continua a mesma, sem alterações) ...
     setAddingToCart(productId);
     try {
       const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}djzeneyer/v1/add-to-cart`;
@@ -107,10 +124,9 @@ const ShopPage: React.FC = () => {
       setAddingToCart(null);
     }
   };
-  
+
   const formatPrice = (price: string) => `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
 
-  // ... (o resto do seu componente com o HTML/JSX continua o mesmo, sem alterações) ...
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
