@@ -182,4 +182,69 @@ add_action('rest_api_init', function () {
             $params = $request->get_json_params();
             if (empty($params['currentPassword']) || empty($params['newPassword']))
                 return new WP_Error('missing_params', 'Senha atual e nova senha são obrigatórias.', ['status' => 400]);
-            if (!wp_check_
+            if (!wp_check_password($params['currentPassword'], $user->user_pass, $user->ID))
+                return new WP_Error('wrong_password', 'A senha atual está incorreta.', ['status' => 403]);
+            wp_set_password($params['newPassword'], $user->ID);
+            return ['success' => true, 'message' => 'Senha alterada com sucesso!'];
+        },
+        'permission_callback' => 'is_user_logged_in'
+    ]);
+
+    // Checkout
+    register_rest_route($namespace, '/checkout', [
+        'methods' => 'POST',
+        'callback' => function($request) {
+            if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->session)) {
+                WC()->session = new WC_Session_Handler(); WC()->session->init();
+            }
+            if (class_exists('WooCommerce') && !is_admin() && is_null(WC()->cart)) { wc_load_cart(); }
+            if (!class_exists('WooCommerce') || null === WC()->cart || WC()->cart->is_empty())
+                return new WP_Error('wc_cart_not_ready', 'O carrinho está vazio ou indisponível.', ['status' => 400]);
+            $params = $request->get_json_params();
+            $required_fields = ['first_name', 'last_name', 'email'];
+            foreach ($required_fields as $field) {
+                if (empty($params[$field])) return new WP_Error('missing_field', "O campo {$field} é obrigatório.", ['status' => 400]);
+            }
+            if (!is_email($params['email'])) return new WP_Error('invalid_email', 'O endereço de email fornecido é inválido.', ['status' => 400]);
+            $order = wc_create_order(['customer_id' => get_current_user_id()]);
+            try {
+                $order->set_billing_first_name(sanitize_text_field($params['first_name']));
+                $order->set_billing_last_name(sanitize_text_field($params['last_name']));
+                $order->set_billing_email(sanitize_email($params['email']));
+                foreach (WC()->cart->get_cart() as $cart_item) {
+                    $order->add_product($cart_item['data'], $cart_item['quantity']);
+                }
+                $order->calculate_totals();
+                $order->save(); WC()->cart->empty_cart();
+                return ['success' => true, 'order_id' => $order->get_id()];
+            } catch (Exception $e) {
+                error_log('DJ Zen Eyer Checkout Error: ' . $e->getMessage());
+                return new WP_Error('order_creation_failed', 'Ocorreu um erro ao processar seu pedido.', ['status' => 500]);
+            }
+        },
+        'permission_callback' => function($request) {
+            $nonce = $request->get_header('X-WP-Nonce');
+            if (!$nonce || !wp_verify_nonce($nonce, 'wp_rest')) {
+                return new WP_Error('invalid_nonce', 'Token de segurança inválido.', ['status' => 403]);
+            }
+            return true;
+        }
+    ]);
+});
+
+// GamiPress REST Field
+add_action('rest_api_init', function(){
+    register_rest_field('user', 'gamipress_data', [
+        'get_callback' => function($user) {
+            if (!function_exists('gamipress_get_user_points')) return null;
+            $user_id = $user['id'];
+            return [
+                'points' => gamipress_get_user_points($user_id, 'zen-points'),
+                'rank' => gamipress_get_user_rank($user_id, 'zen-level'),
+                'achievements' => gamipress_get_user_achievements($user_id),
+            ];
+        },
+        'schema' => null,
+    ]);
+});
+?>
