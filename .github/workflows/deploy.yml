@@ -29,6 +29,10 @@ jobs:
         env:
           VITE_WP_SITE_URL: https://djzeneyer.com
           VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
+          # <-- LINHAS ADICIONADAS PARA USAR OS SECRETS -->
+          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
+          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
       - name: FTP Deploy (React App - dist folder)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -39,6 +43,9 @@ jobs:
           local-dir: ./dist/
           server-dir: ./wp-content/themes/zentheme/dist/
           dangerous-clean-slate: true
+          # <-- LINHAS ADICIONADAS PARA USAR SFTP -->
+          protocol: sftp
+          port: 22
 
       - name: FTP Deploy (WordPress Theme Files)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -51,8 +58,11 @@ jobs:
             !/functions.php
             !/index.php
             !/style.css
-            !/header.php     
-            !/footer.php     
+            !/header.php      
+            !/footer.php      
             !/woocommerce.php
             !/page-react-app.php
           server-dir: ./wp-content/themes/zentheme/
+          # <-- LINHAS ADICIONADAS PARA USAR SFTP -->
+          protocol: sftp
+          port: 22
