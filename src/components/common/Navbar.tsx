@@ -1,49 +1,59 @@
 // src/components/common/Navbar.tsx
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'; // <-- MUDANÇA: Importamos useParams
 import { useTranslation } from 'react-i18next';
 import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
-import { useMenu } from '../../hooks/useMenu'; // 1. Importamos nosso novo hook
+import { useMenu } from '../../hooks/useMenu';
 
-// O LanguageSelector pode continuar como um componente interno ou ser movido para um arquivo próprio
+// LanguageSelector com lógica de navegação corrigida
 const LanguageSelector: React.FC = () => {
     const { i18n } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+    const { lang } = useParams<{ lang?: string }>(); // Pega o idioma da URL
 
-    const changeLanguage = (lng: 'pt' | 'en') => {
-        const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
-        if (lng === currentLang) return;
+    const changeLanguage = (newLang: 'pt' | 'en') => {
+        if (newLang === lang) return; // Não faz nada se já está no idioma certo
 
+        // Tira o prefixo de idioma atual (/en ou /pt) do caminho
         const basePath = location.pathname.replace(/^\/(en|pt)/, '');
-        const newPath = lng === 'en' ? (basePath || '/') : `/pt${basePath || '/'}`;
+        
+        // Monta o novo caminho com o novo prefixo de idioma
+        const newPath = `/${newLang}${basePath || '/'}`;
+
+        // Navega para a nova URL
         navigate(newPath);
     };
+    
+    // Determina o idioma ativo pela URL, que é mais confiável
+    const isPtActive = lang === 'pt';
+    const isEnActive = lang === 'en';
 
     return (
         <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
-            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${i18n.language.startsWith('pt') ? 'text-primary' : 'text-white/60 hover:text-white'}`}>PT</button>
+            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${isPtActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}>PT</button>
             <span className="text-white/20">|</span>
-            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${i18n.language === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>EN</button>
+            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${isEnActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}>EN</button>
         </div>
     );
 };
+
 
 interface NavbarProps {
   onLoginClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { lang } = useParams<{ lang?: string }>(); // <-- MUDANÇA: Pegamos o lang aqui também
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
   const location = useLocation();
   
-  // 2. Usamos o hook para buscar os itens do menu. Simples assim!
   const menuItems = useMenu(); 
 
   useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
@@ -58,18 +68,27 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const handleLoginButtonClick = useCallback(() => onLoginClick(), [onLoginClick]);
 
   const renderNavLinks = (isMobile = false) => (
-    menuItems.map((item) => (
-      <NavLink key={item.ID} to={item.url} target={item.target || '_self'} className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}>
-        {item.title}
-      </NavLink>
-    ))
+    menuItems.map((item) => {
+      // Garante que o link do menu aponte para a versão correta do idioma
+      const toPath = item.url.startsWith('/pt') && lang === 'en'
+        ? item.url.replace('/pt', '')
+        : !item.url.startsWith('/pt') && lang === 'pt'
+        ? `/pt${item.url}`
+        : item.url;
+      
+      return (
+        <NavLink key={item.ID} to={toPath} target={item.target || '_self'} className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}>
+          {item.title}
+        </NavLink>
+      );
+    })
   );
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
-          <Link to={i18n.language.startsWith('pt') ? '/pt' : '/'} className="flex items-center">
+          <Link to={`/${lang}`} className="flex items-center">
             <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
