@@ -1,0 +1,18 @@
+{
+  "/": { "pt": "/pt", "en": "/" },
+  "/pt": { "pt": "/pt", "en": "/" },
+  "/shop": { "pt": "/pt/loja", "en": "/shop" },
+  "/pt/loja": { "pt": "/pt/loja", "en": "/shop" },
+  "/events": { "pt": "/pt/eventos", "en": "/events" },
+  "/pt/eventos": { "pt": "/pt/eventos", "en": "/events" },
+  "/music": { "pt": "/pt/musica", "en": "/music" },
+  "/pt/musica": { "pt": "/pt/musica", "en": "/music" },
+  "/tribe": { "pt": "/pt/tribo", "en": "/tribe" },
+  "/pt/tribo": { "pt": "/pt/tribo", "en": "/tribe" },
+  "/work-with-me": { "pt": "/pt/contrate", "en": "/work-with-me" },
+  "/pt/contrate": { "pt": "/pt/contrate", "en": "/work-with-me" },
+  "/account": { "pt": "/pt/conta", "en": "/account" },
+  "/pt/conta": { "pt": "/pt/conta", "en": "/account" },
+  "/cart": { "pt": "/pt/carrinho", "en": "/cart" },
+  "/pt/carrinho": { "pt": "/pt/carrinho", "en": "/cart" }
+}
