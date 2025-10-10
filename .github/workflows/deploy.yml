@@ -11,11 +11,9 @@ permissions:
 env:
   NODE_VERSION: '18'
   REMOTE_DIR: /wp-content/themes/zentheme/dist
-  ZIP_NAME: site-dist.zip
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,14 +24,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            npm-${{ runner.os }}-build-
 
       - name: Install dependencies
         run: npm ci
@@ -53,8 +43,7 @@ jobs:
           name: dist
           path: ./dist
 
-  deploy-dist:
-    name: Deploy dist to Hostinger (FTPS)
+  deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -73,31 +62,3 @@ jobs:
           local-dir: ./dist/
           server-dir: ${{ env.REMOTE_DIR }}
           protocol: ftps
-
-  deploy-theme:
-    name: Deploy theme files (non-destructive)
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout (to get theme files)
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Deploy theme files (FTPS)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: /wp-content/themes/zentheme
-          protocol: ftps
-          exclude: |
-            **/node_modules/**
-            **/.git/**
-            **/.github/**
-            **/dist/**
-            **/package-lock.json
-            **/package.json
-            **/*.log
