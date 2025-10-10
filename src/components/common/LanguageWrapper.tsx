@@ -12,19 +12,26 @@ const LanguageWrapper: React.FC = () => {
   const location = useLocation();
 
   // Determina o idioma real a ser usado
-  // Se não houver parâmetro 'lang' (ou seja, estamos em /), assume 'en'
   const lang = urlLang || 'en';
 
   useEffect(() => {
+    console.log("LanguageWrapper - useEffect: Idioma da URL:", urlLang, "Idioma determinado:", lang, "Idioma atual do i18n:", i18n.language);
     // Sincroniza a biblioteca de tradução com o idioma determinado
     if (i18n.language !== lang) {
-      i18n.changeLanguage(lang);
+      console.log("LanguageWrapper - Tentando mudar idioma para:", lang);
+      i18n.changeLanguage(lang).then(() => {
+          console.log("LanguageWrapper - Idioma mudou com sucesso para:", i18n.language);
+      }).catch(err => {
+          console.error("LanguageWrapper - Erro ao mudar idioma:", err);
+      });
+    } else {
+        console.log("LanguageWrapper - Idioma já está correto:", lang);
     }
   }, [lang, i18n]);
 
   // Se o parâmetro de idioma estiver presente e não for válido, redireciona para 404
   if (urlLang && !availableLangs.includes(urlLang)) {
-    // Mantém o resto do path para que o NotFoundPage possa mostrar a URL errada
+    console.log("LanguageWrapper - Idioma inválido:", urlLang);
     return <Navigate to={`/404${location.pathname.replace(`/${urlLang}`, '')}`} replace />;
   }
 
