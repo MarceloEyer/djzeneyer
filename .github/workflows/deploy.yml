@@ -1,4 +1,4 @@
-name: Build and Deploy to Hostinger
+name: 🚀 Build and Deploy to Hostinger
 
 on:
   push:
@@ -14,21 +14,22 @@ env:
 
 jobs:
   build:
+    name: 🔧 Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: ⚙️ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: 🛠️ Build
         run: npm run build
         env:
           VITE_WP_SITE_URL: https://djzeneyer.com
@@ -37,23 +38,24 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - name: Upload dist artifact
+      - name: 📦 Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: ./dist
 
-  deploy:
+  deploy-dist:
+    name: 🚚 Deploy dist to Hostinger (FTPS)
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download dist artifact
+      - name: 📥 Download dist artifact
         uses: actions/download-artifact@v4
         with:
           name: dist
           path: ./dist
 
-      - name: Deploy dist (FTPS)
+      - name: 📤 Deploy dist (FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -62,3 +64,31 @@ jobs:
           local-dir: ./dist/
           server-dir: ${{ env.REMOTE_DIR }}
           protocol: ftps
+
+  deploy-theme:
+    name: 🧩 Deploy theme files (non-destructive)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 📥 Checkout (theme files)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 📤 Deploy theme files (FTPS)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /wp-content/themes/zentheme
+          protocol: ftps
+          exclude: |
+            **/node_modules/**
+            **/.git/**
+            **/.github/**
+            **/dist/**
+            **/package-lock.json
+            **/package.json
+            **/*.log
