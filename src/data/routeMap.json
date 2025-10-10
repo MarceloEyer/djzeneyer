@@ -1,12 +1,17 @@
 {
   "/": { "pt": "/pt", "en": "/" },
   "/pt": { "pt": "/pt", "en": "/" },
+  "/home": { "pt": "/pt", "en": "/" },
   "/shop": { "pt": "/pt/loja", "en": "/shop" },
   "/pt/loja": { "pt": "/pt/loja", "en": "/shop" },
+  "/shop/product": { "pt": "/pt/loja/produto", "en": "/shop/product" },
+  "/shop/product/:id": { "pt": "/pt/loja/produto/:id", "en": "/shop/product/:id" },
   "/events": { "pt": "/pt/eventos", "en": "/events" },
   "/pt/eventos": { "pt": "/pt/eventos", "en": "/events" },
+  "/events/:id": { "pt": "/pt/eventos/:id", "en": "/events/:id" },
   "/music": { "pt": "/pt/musica", "en": "/music" },
   "/pt/musica": { "pt": "/pt/musica", "en": "/music" },
+  "/music/:slug": { "pt": "/pt/musica/:slug", "en": "/music/:slug" },
   "/tribe": { "pt": "/pt/tribo", "en": "/tribe" },
   "/pt/tribo": { "pt": "/pt/tribo", "en": "/tribe" },
   "/work-with-me": { "pt": "/pt/contrate", "en": "/work-with-me" },
@@ -14,5 +19,11 @@
   "/account": { "pt": "/pt/conta", "en": "/account" },
   "/pt/conta": { "pt": "/pt/conta", "en": "/account" },
   "/cart": { "pt": "/pt/carrinho", "en": "/cart" },
-  "/pt/carrinho": { "pt": "/pt/carrinho", "en": "/cart" }
+  "/pt/carrinho": { "pt": "/pt/carrinho", "en": "/cart" },
+  "/me": { "pt": "/pt/me", "en": "/me" },
+  "/pt/me": { "pt": "/pt/me", "en": "/me" },
+  "/search": { "pt": "/pt/busca", "en": "/search" },
+  "/pt/busca": { "pt": "/pt/busca", "en": "/search" },
+  "/contact": { "pt": "/pt/contato", "en": "/contact" },
+  "/pt/contato": { "pt": "/pt/contato", "en": "/contact" }
 }
