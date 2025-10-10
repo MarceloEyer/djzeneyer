@@ -8,52 +8,41 @@ import { useUser } from '../../contexts/UserContext';
 import UserMenu from './UserMenu';
 import { useMenu } from '../../hooks/useMenu';
 
-// LanguageSelector com lógica de navegação corrigida para / e /pt/
 const LanguageSelector: React.FC = () => {
     const { i18n } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
-    const { lang } = useParams<{ lang?: string }>(); // Pega o idioma da URL (pode ser 'en', 'pt' ou undefined)
+    const { lang } = useParams<{ lang?: string }>();
 
-    // Determina o idioma atual baseado no parâmetro 'lang' ou pela raiz
-    const currentLang = lang || 'en'; // Se 'lang' for undefined, assume 'en'
+    const currentLang = lang || 'en';
 
     const changeLanguage = (newLang: 'pt' | 'en') => {
-        if (newLang === currentLang) return; // Não faz nada se já está no idioma certo
+        if (newLang === currentLang) return;
 
-        // Obtém o pathname atual
         let currentPath = location.pathname;
 
-        // Remove o prefixo de idioma atual (se houver)
         if (currentPath.startsWith('/pt/')) {
             currentPath = currentPath.replace(/^\/pt/, '');
         } else if (currentPath === '/pt') {
             currentPath = '/';
-        }
-        // Remover /en/ ou /en (opcional, mas para consistência)
-        else if (currentPath.startsWith('/en/')) {
+        } else if (currentPath.startsWith('/en/')) {
             currentPath = currentPath.replace(/^\/en/, '');
         } else if (currentPath === '/en') {
             currentPath = '/';
         }
 
-        // Monta o novo caminho com o novo prefixo de idioma
         let newPath: string;
         if (newLang === 'pt') {
-            // Se for para PT, adiciona o prefixo /pt
             newPath = currentPath === '/' ? '/pt' : `/pt${currentPath}`;
-        } else { // newLang === 'en'
-            // Se for para EN (padrão), remove o prefixo (vai para a raiz)
+        } else {
             newPath = currentPath;
         }
 
-        // Navega para a nova URL
         navigate(newPath);
     };
 
-    // Determina se o idioma ativo pela URL
     const isPtActive = currentLang === 'pt';
-    const isEnActive = currentLang === 'en'; // ou !lang
+    const isEnActive = currentLang === 'en';
 
     return (
         <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
@@ -64,20 +53,19 @@ const LanguageSelector: React.FC = () => {
     );
 };
 
-
 interface NavbarProps {
   onLoginClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const { t } = useTranslation();
-  const { lang } = useParams<{ lang?: string }>(); // Pega o idioma da URL (pode ser 'en', 'pt' ou undefined)
+  const { lang } = useParams<{ lang?: string }>();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
   const location = useLocation();
   
-  const menuItems = useMenu(); // Hook já lida com o idioma e retorna URLs corretas
+  const menuItems = useMenu();
 
   useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
   
@@ -90,17 +78,59 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
   const handleLoginButtonClick = useCallback(() => onLoginClick(), [onLoginClick]);
 
-  // renderNavLinks agora usa diretamente os URLs fornecidos pelo useMenu
-  // O hook useMenu garante que os URLs estejam no formato correto para o idioma ativo
   const renderNavLinks = (isMobile = false) => (
     menuItems.map((item) => {
-      // O item.url já está correto para o idioma ativo (ex: '/shop' para EN, '/loja' para PT)
-      // O NavLink recebe esse URL diretamente.
-      // Se estamos em /pt, e o item.url é '/loja', o NavLink irá para '/pt/loja' (ERRADO!)
-      // CORREÇÃO: O item.url retornado pelo hook já deve incluir o prefixo de idioma se for PT.
-      // Vamos verificar: O hook faz fetch('/menu?lang=pt'), o PHP pode retornar URLs com /pt
-      // Mas o código do hook faz `url: item.url.replace(config.siteUrl, '')`
-      // Isso remove o domínio, mas mantém o caminho. Se o PHP retornar /pt/loja, o hook retorna /pt/loja.
-      // Se o PHP retornar /loja, o hook retorna /loja.
-      // Para o modelo /pt/loja, o PHP deve retornar o caminho correto com o prefixo.
-      // Para o modelo atual onde EN é / e PT é /pt, o PHP deve retornar
+      const finalToPath = item.url;
+
+      return (
+        <NavLink
+          key={item.ID}
+          to={finalToPath}
+          target={item.target || '_self'}
+          className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}
+        >
+          {item.title}
+        </NavLink>
+      );
+    })
+  );
+
+  return (
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-between h-16">
+          <Link to={`/${lang || ''}`} className="flex items-center">
+            <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
+          </Link>
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            {renderNavLinks()}
+          </nav>
+          <div className="hidden md:flex items-center">
+            <LanguageSelector />
+            {user?.isLoggedIn ? <UserMenu /> : <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2"><LogIn size={18} /><span>{t('sign_in')}</span></button>}
+          </div>
+          <button className="md:hidden text-white" onClick={toggleMenu} aria-label="Toggle menu">
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+      <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex flex-col space-y-4">
+            {renderNavLinks(true)}
+          </nav>
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+            <div className="flex-grow pr-4">
+              {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2"><LogIn size={18} /><span>{t('join_the_tribe')}</span></button>}
+            </div>
+            <div className="flex-shrink-0">
+                <LanguageSelector />
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+});
+
+export default Navbar;
