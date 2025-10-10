@@ -3,8 +3,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next'; // 1. Importa o hook correto
+import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle } from 'lucide-react';
+
+// ... (a interface global e a interface Product continuam iguais) ...
 
 declare global {
   interface Window {
@@ -28,8 +30,11 @@ interface Product {
   stock_status: string;
 }
 
+
 const ShopPage: React.FC = () => {
-  const { t } = useTranslation(); // 2. Usa o novo hook
+  const { t, i18n } = useTranslation(); // <-- MUDANÇA 1: Pegamos o 'i18n' para saber o idioma.
+  const currentLang = i18n.language.split('-')[0]; // <-- MUDANÇA 2: Armazenamos o idioma atual (ex: 'pt' ou 'en').
+
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +42,7 @@ const ShopPage: React.FC = () => {
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
 
   const normalizeProduct = useCallback((productData: any): Product => {
+    // ... (sua função normalizeProduct continua a mesma, sem alterações) ...
     let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer';
     let imageAlt = productData.name || 'Imagem do produto';
 
@@ -62,7 +68,8 @@ const ShopPage: React.FC = () => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/products`;
+    // <-- MUDANÇA 3: Adicionamos o parâmetro `?lang=` na URL da API.
+    const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/store/v1/products?lang=${currentLang}`;
     try {
       const response = await fetch(apiUrl);
       if (!response.ok) throw new Error("Falha ao buscar produtos.");
@@ -73,13 +80,14 @@ const ShopPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [normalizeProduct]);
+  }, [normalizeProduct, currentLang]); // <-- MUDANÇA 4: Adicionamos 'currentLang' aqui para a função ser recriada quando o idioma mudar.
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, [fetchProducts]); // Este useEffect agora funcionará corretamente pois o fetchProducts muda quando o idioma muda.
 
   const addToCart = async (productId: number) => {
+    // ... (sua função addToCart continua a mesma, sem alterações) ...
     setAddingToCart(productId);
     try {
       const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}djzeneyer/v1/add-to-cart`;
@@ -102,6 +110,7 @@ const ShopPage: React.FC = () => {
   
   const formatPrice = (price: string) => `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
 
+  // ... (o resto do seu componente com o HTML/JSX continua o mesmo, sem alterações) ...
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
