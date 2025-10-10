@@ -1,0 +1,24 @@
+{
+  "name": "DJ Zen Eyer",
+  "phone_whatsapp": "+5521987413091",
+  "phone_whatsapp_url": "https://wa.me/5521987413091",
+  "email": "contato@djzeneyer.com",
+  "instagram": "https://www.instagram.com/djzeneyer",
+  "presskit_url": "https://seusite.com/assets/press/presskit.pdf",
+  "photos": [
+    "https://seusite.com/assets/press/photos/zen-01.jpg",
+    "https://seusite.com/assets/press/photos/zen-02.jpg"
+  ],
+  "logos": {
+    "svg": "https://seusite.com/assets/press/logo.svg",
+    "png": "https://seusite.com/assets/press/logo.png"
+  },
+  "audio_highlight": "https://soundcloud.com/djzeneyer/your-highlight",
+  "short_bio_pt": "Toco Zouk Brasileiro com cremosidade: remixes, edições e sets para festivais e encontros sociais. Uma faixa autoral. Viagens leves, música pensada para o par.",
+  "short_bio_en": "I play Brazilian Zouk with cremosidade: remixes, edits and festival/social sets. One original release. Travel light, dance-first programming.",
+  "taglines": {
+    "pt": ["A pressa é inimiga da cremosidade.", "Uma batida de cada vez."],
+    "en": ["Haste kills cremosidade.", "One beat at a time."]
+  },
+  "countries_flags_from_instagram": ["BR","JP","US","PT","ES"] 
+}
