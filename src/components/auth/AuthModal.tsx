@@ -1,10 +1,10 @@
 // src/components/auth/AuthModal.tsx
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, 'useState', useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Eye, EyeOff, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
-import { googleAuth } from '../../services/googleAuth';
+import googleAuth from '../../services/googleAuth'; // <-- CORREÇÃO AQUI
 
 interface AuthModalProps {
   isOpen: boolean;
