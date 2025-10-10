@@ -1,5 +1,3 @@
-# .github/workflows/deploy.yml
-
 name: Build and Deploy to Hostinger
 
 on:
@@ -7,9 +5,15 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
 
     steps:
       - name: Checkout Repository
@@ -22,7 +26,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Project
         run: npm run build
@@ -33,33 +37,77 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - name: FTP Deploy (React App - dist folder)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Upload build as artifact
+        uses: actions/upload-artifact@v4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ./wp-content/themes/zentheme/dist/
-          dangerous-clean-slate: true
-          # <-- CORREÇÃO APLICADA AQUI -->
-          protocol: ftps
+          name: dist-build
+          path: ./dist
 
-      - name: FTP Deploy (WordPress Theme Files)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          exclude: |
-            **/*
-            !/functions.php
-            !/index.php
-            !/style.css
-            !/header.php      
-            !/footer.php      
-            !/woocommerce.php
-            !/page-react-app.php
-          server-dir: ./wp-content/themes/zentheme/
-          # <-- CORREÇÃO APLICADA AQUI -->
-          protocol: ftps
+      - name: Install lftp (for robust SFTP/FTPS with retries)
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy dist (safe clean)
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT || '22' }}
+          REMOTE_DIR: /wp-content/themes/zentheme/dist
+        run: |
+          set -e
+          RETRY_COUNT=3
+          for i in $(seq 1 $RETRY_COUNT); do
+            echo "Deploy attempt #$i"
+            # Remove remote dist and re-create, then mirror local dist
+            lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
+              set -e;
+              mkdir -p $REMOTE_DIR;
+              mirror -R --delete --parallel=5 ./dist $REMOTE_DIR;
+              ls -la $REMOTE_DIR;
+              bye
+            " && break || (echo "Attempt $i failed, retrying..." && sleep 5)
+          done
+
+      - name: Deploy theme files (no destructive clean)
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT || '22' }}
+          REMOTE_THEME_DIR: /wp-content/themes/zentheme
+        run: |
+          set -e
+          # Upload only changed core theme files (non-dist)
+          lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
+            set -e;
+            mirror -R --parallel=3 --only-newer \
+              --exclude-glob dist \
+              --exclude-glob node_modules \
+              --exclude-glob .git \
+              --exclude-glob .github \
+              ./ $REMOTE_THEME_DIR;
+            ls -la $REMOTE_THEME_DIR;
+            bye
+          "
+
+      - name: Purge LiteSpeed Cache via HTTP (optional)
+        if: ${{ secrets.LSCACHE_PURGE_URL && secrets.LSCACHE_PURGE_TOKEN }}
+        run: |
+          curl -X PURGE "${{ secrets.LSCACHE_PURGE_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.LSCACHE_PURGE_TOKEN }}" \
+            --fail --show-error
+
+      - name: Verify deployed assets exist
+        env:
+          FTP_HOST: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT || '22' }}
+          REMOTE_DIR: /wp-content/themes/zentheme/dist
+        run: |
+          lftp -u "$FTP_USER","$FTP_PASS" -p $FTP_PORT sftp://$FTP_HOST -e "
+            set -e;
+            cls -1 $REMOTE_DIR | head -n 20;
+            bye
+          "
+
