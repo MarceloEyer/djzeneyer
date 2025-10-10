@@ -22,9 +22,8 @@ const getWpConfig = () => {
     return { siteUrl: '', restUrl: '', nonce: '' };
 };
 
-
 export function useMenu() {
-  const { i18n } = useTranslation();
+  const { i18n } = useTranslation(); // Obter o hook de tradução
   const [items, setItems] = useState<MenuItem[]>([]);
   const config = getWpConfig();
 
@@ -32,7 +31,9 @@ export function useMenu() {
     if (!config.restUrl) return;
 
     const controller = new AbortController();
+    // Usar o idioma atual do i18n para buscar o menu
     const langToFetch = i18n.language.startsWith('pt') ? 'pt' : 'en';
+    console.log("useMenu - Buscando menu para idioma:", langToFetch); // Log de depuração
 
     fetch(`${config.restUrl}djzeneyer/v1/menu?lang=${langToFetch}`, { signal: controller.signal })
       .then(response => {
@@ -42,6 +43,7 @@ export function useMenu() {
         return response.json();
       })
       .then(data => {
+        console.log("useMenu - Dados recebidos:", data); // Log de depuração
         if (Array.isArray(data)) {
           const formattedData = data.map((item: any) => ({
             ...item,
@@ -63,7 +65,7 @@ export function useMenu() {
     return () => {
       controller.abort();
     };
-  }, [i18n.language, config.restUrl, config.siteUrl]);
+  }, [i18n.language, config.restUrl, config.siteUrl]); // Adicionamos i18n.language como dependência
 
   return items;
 }
