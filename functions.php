@@ -72,7 +72,7 @@ add_filter('apache_request_headers', function ($headers) {
     return $headers;
 });
 
-// Rate limiting REST API 
+// Rate limiting REST API
 add_filter('rest_pre_dispatch', function($response, $server, $request) {
     if (strpos($request->get_route(), '/djzeneyer/v1/') === 0) {
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -246,5 +246,16 @@ add_action('rest_api_init', function(){
         },
         'schema' => null,
     ]);
+});
+/**
+ * Redireciona todas as rotas de idioma (/en/*, /pt/*) para a página principal do App React,
+ * permitindo que o React Router assuma o controle.
+ */
+add_action('init', function () {
+    // --- SUBSTITUA O NÚMERO '2' ABAIXO PELO ID DA SUA PÁGINA ---
+    $react_app_page_id = 157; 
+
+    add_rewrite_rule('^(en|pt)/?$', 'index.php?page_id=' . $react_app_page_id, 'top');
+    add_rewrite_rule('^(en|pt)/(.*)?$', 'index.php?page_id=' . $react_app_page_id, 'top');
 });
 ?>
