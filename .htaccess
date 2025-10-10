@@ -1,0 +1,39 @@
+# BEGIN LSCACHE
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+<IfModule LiteSpeed>
+RewriteEngine on
+CacheLookup on
+RewriteRule .* - [E=Cache-Control:no-autoflush]
+RewriteRule litespeed/debug/.*\.log$ - [F,L]
+RewriteRule \.litespeed_conf\.dat - [F,L]
+
+# --- REGRAS DE ROTEAMENTO SPA AQUI ---
+# Roteamento SPA: Redireciona todas as requisições que não são arquivos/diretórios
+# e não são rotas específicas do WordPress para index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Exclui rotas do WordPress (admin, wp-content, wp-json, etc.)
+RewriteCond %{REQUEST_URI} !^/(wp-admin|wp-includes|wp-content|wp-json|xmlrpc.php|wp-login.php|wp-register.php|robots.txt|sitemap.xml|favicon.ico|sitemap_index.xml)
+# Verifica se é uma rota de idioma válida (/ ou /pt/*)
+RewriteCond %{REQUEST_URI} ^/$ [OR]
+RewriteCond %{REQUEST_URI} ^/pt/
+RewriteRule .* /index.php [L] # Reescrita interna
+
+</IfModule>
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+# END LSCACHE
+# BEGIN NON_LSCACHE
+# ... (O LiteSpeed Cache irá gerar suas próprias regras aqui) ...
+# END NON_LSCACHE
+
+# --- REGRAS PADRÃO DO WORDPRESS AQUI ---
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+# As regras de SPA acima já tratam isso, mas vamos manter as originais também
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
