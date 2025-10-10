@@ -40,9 +40,8 @@ function App() {
             <AnimatePresence mode="wait">
               <Routes>
                 {/* Rota Raiz: Renderiza o MainLayout e o LanguageWrapper com lang='en' */}
-                {/* O LanguageWrapper então renderiza as páginas filhas com o idioma 'en' */}
                 <Route path="/" element={
-                  <LanguageWrapper /> // O LanguageWrapper vai receber 'en' implicitamente ou via uma adaptação
+                  <LanguageWrapper />
                 }>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
@@ -62,7 +61,6 @@ function App() {
                 </Route>
 
                 {/* Rota com parâmetro de idioma (Português) */}
-                {/* Esta rota continua como antes, agora lidando com /pt/* */}
                 <Route path="/:lang(en|pt)" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
