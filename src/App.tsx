@@ -1,6 +1,7 @@
 // src/App.tsx
+
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom'; // <-- MUDANÇA: Importamos o Navigate
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -37,10 +38,15 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
-                <Route path="/:lang(pt)?" element={<LanguageWrapper />}>
+                {/* <-- MUDANÇA: Redireciona a raiz para o idioma padrão (inglês) --> */}
+                <Route path="/" element={<Navigate to="/en" replace />} />
+
+                {/* <-- MUDANÇA: A rota agora captura 'en' ou 'pt' --> */}
+                <Route path="/:lang(en|pt)" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
                     
+                    {/* Suas rotas duplicadas para tradução funcionarão aqui dentro */}
                     <Route path="events" element={<EventsPage />} />
                     <Route path="eventos" element={<EventsPage />} />
                     
@@ -71,11 +77,15 @@ function App() {
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Route>
+
+                {/* Rota final de fallback para qualquer URL que não combine com o padrão de idioma */}
+                <Route path="*" element={<NotFoundPage />} />
+
               </Routes>
             </AnimatePresence>
           </MusicPlayerProvider>
         </CartProvider>
-      </UserProvider> {/* <-- CORRIGIDO AQUI */}
+      </UserProvider>
     </HelmetProvider>
   );
 }
