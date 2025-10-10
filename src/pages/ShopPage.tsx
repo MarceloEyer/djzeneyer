@@ -26,14 +26,12 @@ interface Product {
   sale_price: string;
   images: { src: string; alt: string }[];
   stock_status: string;
-  // Adicionando campos específicos da API v3
-  description?: string;
-  categories?: { id: number; name: string }[];
 }
 
 const ShopPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const currentLang = i18n.language.split('-')[0];
+  const currentLang = i18n.language.split('-')[0]; // Obtém o idioma atual via i18n
+  console.log("ShopPage - Renderizando. Idioma atual do i18n:", i18n.language, "currentLang:", currentLang);
 
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,7 +39,6 @@ const ShopPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
 
-  // Função para normalizar dados da API v3
   const normalizeProduct = useCallback((productData: any): Product => {
     let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer';
     let imageAlt = productData.name || 'Imagem do produto';
@@ -52,7 +49,6 @@ const ShopPage: React.FC = () => {
       imageAlt = firstImage.alt || imageAlt;
     }
 
-    // Preços da API v3 estão em formato string (ex: "10.00")
     const regularPrice = parseFloat(productData.regular_price || '0');
     const salePrice = parseFloat(productData.sale_price || '0');
 
@@ -65,15 +61,15 @@ const ShopPage: React.FC = () => {
       regular_price: productData.regular_price,
       sale_price: productData.sale_price,
       images: [{ src: imageUrl, alt: imageAlt }],
-      stock_status: productData.stock_status || 'outofstock', // 'instock', 'outofstock', 'onbackorder'
+      stock_status: productData.stock_status || 'outofstock',
     };
   }, []);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
-    // Plano B: Usando a API REST v3 com parâmetro ?lang=
-    // Certifique-se de que as chaves VITE_WC_CONSUMER_KEY e VITE_WC_CONSUMER_SECRET estejam definidas no .env
+    console.log("ShopPage - fetchProducts chamado. Idioma para API:", currentLang);
+
     const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
     const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
@@ -84,13 +80,13 @@ const ShopPage: React.FC = () => {
         return;
     }
 
-    // A API v3 usa basic auth ou query params com consumer_key/consumer_secret
-    // Usando query params aqui
     const apiUrl = `${window.wpData?.restUrl || `${window.location.origin}/wp-json/`}wc/v3/products?lang=${currentLang}&status=publish&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
     try {
       const response = await fetch(apiUrl);
+      console.log("ShopPage - Resposta da API:", response.status); // Log de depuração
       if (!response.ok) throw new Error(`Falha ao buscar produtos: ${response.status} ${response.statusText}`);
       const data = await response.json();
+      console.log("ShopPage - Produtos recebidos da API:", data); // Log de depuração
       setProducts(data.map(normalizeProduct));
     } catch (err: any) {
       console.error("Erro ao buscar produtos:", err);
