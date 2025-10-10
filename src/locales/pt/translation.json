@@ -23,7 +23,7 @@
   "home_features_title": "Junte-se à Experiência Zen Tribe",
   "home_features_subtitle": "Descubra os recursos únicos que tornam a comunidade do DJ Zen Eyer especial",
   "home_cta_title": "Pronto para se Juntar à <1>Zen Tribe</1>?",
-  "home_cta_subtitle": "Torne-se parte de nossa crescente comunidade de entusiastas do Zouk Brasileiro. Desbloqueie conteúdo exclusivo, ganhe recompensas e conecte-se com fãs que pensam como você.",
+  "home_cta_subtitle": "Torne-se parte de nossa comunidade. Desbloqueie conteúdo exclusivo, ganhe recompensas e conecte-se com fãs que pensam como você.",
   "join_now_button": "Junte-se Agora",
   "explore_music_button": "Explorar Músicas",
 
@@ -82,7 +82,7 @@
   "time": "Horário",
 
   "shop_title": "Loja",
-  "shop_subtitle": "Adquira mercadorias exclusivas e ingressos para eventos",
+  "shop_subtitle": "Adquira produtos exclusivos e ingressos para eventos",
   "add_to_cart": "Adicionar ao Carrinho",
   "view_cart": "Ver Carrinho",
   "checkout": "Finalizar Compra",
@@ -111,5 +111,69 @@
   "subscribe": "Inscrever-se",
   "subscribing": "Inscrevendo...",
   "email_placeholder": "Seu endereço de email",
-  "copyright": "© {{year}} DJ Zen Eyer. Todos os direitos reservados. Elevando vibrações, uma batida de cada vez."
+  "copyright": "© {{year}} DJ Zen Eyer. All rights reserved. Uma batida de cada vez.",
+
+  "home_feat_exclusive_title": "Conteúdo Exclusivo",
+  "home_feat_exclusive_desc": "Lançamentos e experiências fechadas para a tribo — ganhe pontos por participar.",
+  "home_feat_achievements_title": "Marcos e Conquistas",
+  "home_feat_achievements_desc": "Registre marcos importantes e colecione selos por participar de shows, desafios e colaborações.",
+  "home_feat_community_title": "Zen Tribe",
+  "home_feat_community_desc": "A comunidade oficial: encontros, trocas e desafios para subir de nível.",
+
+  "menu_tooltip_xp": "Ganhe XP participando",
+  "badge_new": "Novo",
+  "badge_featured": "Em Destaque",
+
+  "shop_empty_cta": "Nada por aqui ainda — volte mais tarde ou explore as músicas",
+  "shop_vibe_tag": "Edição limitada",
+
+  "cart_note_voucher": "Insira cupom para descontos",
+  "checkout_secure": "Pagamento seguro e protegido",
+
+  "profile_edit_tip": "Atualize seu avatar para ganhar reconhecimento",
+  "social_share_cta": "Compartilhe com a tribo e ganhe pontos",
+
+  "error_404_title": "Página não encontrada",
+  "error_404_subtitle": "Este lugar está em silêncio. Volte ao início.",
+  "go_home_button": "Voltar para o início",
+
+  "extras_contact": "Contato",
+  "extras_press": "Imprensa",
+  "extras_terms": "Termos",
+  "extras_privacy": "Política de Privacidade",
+  "extras_careers": "Trabalhe Conosco",
+  "extras_faq": "FAQ",
+  "extras_support": "Suporte",
+
+  "onboarding_welcome": "Bem-vindo à tribo — comece sua jornada",
+  "onboarding_tip_1": "Complete seu perfil para ganhar 50 XP",
+  "onboarding_tip_2": "Participar de um evento desbloqueia um selo",
+
+  "notif_new_event": "Novo evento disponível",
+  "notif_ticket_sale": "Ingressos à venda",
+  "notif_message": "Você tem uma nova mensagem",
+
+  "search_no_results": "Nenhum resultado encontrado",
+  "filter_clear": "Limpar filtros",
+  "sort_newest": "Mais recentes",
+  "sort_popular": "Mais populares",
+
+  "profile_settings": "Configurações do Perfil",
+  "billing_history": "Histórico de Pagamentos",
+  "subscriptions": "Assinaturas",
+  "manage_subscription": "Gerenciar Assinatura",
+
+  "toast_saved": "Alterações salvas",
+  "toast_error": "Erro ao salvar",
+
+  "admin_dashboard": "Painel Admin",
+  "admin_users": "Usuários",
+  "admin_content": "Conteúdo",
+  "admin_settings": "Configurações",
+
+  "empty_state_title": "Nada por aqui",
+  "empty_state_subtitle": "Ainda não há conteúdo para mostrar",
+
+  "feedback_prompt": "Dê seu feedback",
+  "feedback_thanks": "Obrigado pelo feedback"
 }
