@@ -7,6 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 // Layouts e Wrappers
 import MainLayout from './layouts/MainLayout';
+// Importamos o LanguageWrapper diretamente
 import LanguageWrapper from './components/common/LanguageWrapper';
 
 // Pages
@@ -38,13 +39,14 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <Routes>
-                {/* Redireciona a raiz (/) para a página inicial em inglês */}
-                <Route path="/" element={<Navigate to="/en" replace />} />
-
-                {/* Rota para idioma inglês (padrão) - sem prefixo na URL real, mas tratado como 'en' */}
-                <Route path="/en" element={<LanguageWrapper lang="en" />}>
+                {/* Rota Raiz: Renderiza o MainLayout e o LanguageWrapper com lang='en' */}
+                {/* O LanguageWrapper então renderiza as páginas filhas com o idioma 'en' */}
+                <Route path="/" element={
+                  <LanguageWrapper /> // O LanguageWrapper vai receber 'en' implicitamente ou via uma adaptação
+                }>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
+                    {/* Rotas para o idioma inglês */}
                     <Route path="events" element={<EventsPage />} />
                     <Route path="music" element={<MusicPage />} />
                     <Route path="tribe" element={<ZenTribePage />} />
@@ -59,10 +61,12 @@ function App() {
                   </Route>
                 </Route>
 
-                {/* Rota para idioma português - com prefixo /pt */}
-                <Route path="/pt" element={<LanguageWrapper lang="pt" />}>
+                {/* Rota com parâmetro de idioma (Português) */}
+                {/* Esta rota continua como antes, agora lidando com /pt/* */}
+                <Route path="/:lang(en|pt)" element={<LanguageWrapper />}>
                   <Route element={<MainLayout />}>
                     <Route index element={<HomePage />} />
+                    {/* Rotas para o idioma português */}
                     <Route path="eventos" element={<EventsPage />} />
                     <Route path="musica" element={<MusicPage />} />
                     <Route path="tribo" element={<ZenTribePage />} />
@@ -71,15 +75,12 @@ function App() {
                     <Route path="minha-conta" element={<MyAccountPage />} />
                     <Route path="carrinho" element={<CartPage />} />
                     <Route path="finalizar-compra" element={<CheckoutPage />} />
-                    {/* Mantém /dashboard e /product/:slug para compatibilidade ou traduz? */}
-                    {/* Exemplo de rota traduzida: */}
-                    {/* <Route path="painel" element={<DashboardPage />} /> */}
                     <Route path="product/:slug" element={<ProductPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Route>
 
-                {/* Rota de fallback para qualquer coisa que não comece com /en/ ou /pt/ */}
+                {/* Rota de fallback para qualquer coisa que não combine com os padrões acima */}
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </AnimatePresence>
