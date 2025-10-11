@@ -176,4 +176,27 @@
 
   "feedback_prompt": "Dê seu feedback",
   "feedback_thanks": "Obrigado pelo feedback"
+
+  "events_page_title": "DJ Zen Eyer | Eventos e Agenda",
+  "events_page_meta_desc": "Participe dos próximos eventos de Brazilian Zouk com DJ Zen Eyer. Confira a agenda e experimente a magia da música e da dança.",
+  
+  "events_header_title": "Eventos e Agenda",
+  "events_header_subtitle": "Participe dos próximos eventos de Brazilian Zouk com DJ Zen Eyer e experimente a magia da música e da dança.",
+  
+  "events_calendar_iframe_title": "Calendário de Eventos",
+  
+  "events_achievement_section_title": "Evolua na Sua Jornada Musical",
+  "events_achievement_section_subtitle": "A Zen Tribe possui um sistema de conquistas completo que recompensa você por interagir com a música, participar de eventos e ser um membro ativo da comunidade.",
+  
+  "events_achievement_xp_title": "Pontos de Experiência (XP)",
+  "events_achievement_xp_desc": "Ganhe XP por cada ação que você realiza, desde ouvir músicas até participar de eventos.",
+  
+  "events_achievement_badges_title": "Emblemas Digitais",
+  "events_achievement_badges_desc": "Desbloqueie emblemas colecionáveis por conquistas especiais e marcos na sua jornada.",
+  
+  "events_achievement_rewards_title": "Recompensas e Benefícios",
+  "events_achievement_rewards_desc": "Ganhe benefícios reais como descontos em produtos, conteúdo exclusivo e upgrades VIP.",
+  
+  "events_achievement_streaks_title": "Sequências Diárias",
+  "events_achievement_streaks_desc": "Mantenha sua sequência de engajamento para ganhar XP bônus e recompensas exclusivas de sequência."
 }
