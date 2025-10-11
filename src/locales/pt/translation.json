@@ -198,5 +198,17 @@
   "events_achievement_rewards_desc": "Ganhe benefícios reais como descontos em produtos, conteúdo exclusivo e upgrades VIP.",
   
   "events_achievement_streaks_title": "Sequências Diárias",
-  "events_achievement_streaks_desc": "Mantenha sua sequência de engajamento para ganhar XP bônus e recompensas exclusivas de sequência."
+  "events_achievement_streaks_desc": "Mantenha sua sequência de engajamento para ganhar XP bônus e recompensas exclusivas de sequência.",
+
+  "shop_title": "Loja Zen",
+  "shop_subtitle": "Adquira produtos exclusivos e ingressos para eventos",
+  "shop_page_title": "Loja",
+  "shop_page_meta_desc": "Produtos exclusivos e ingressos para eventos de Brazilian Zouk com DJ Zen Eyer.",
+  "shop_error_credentials": "Erro de configuração: Credenciais da API ausentes.",
+  "shop_error_fetch": "Falha ao buscar produtos",
+  "shop_error_unknown": "Erro desconhecido ao buscar produtos.",
+  "shop_error_add_cart": "Não foi possível adicionar ao carrinho.",
+  "shop_out_of_stock": "Fora de Estoque",
+  "shop_adding_text": "Adicionando...",
+  "add_to_cart": "Adicionar ao Carrinho"
 }
