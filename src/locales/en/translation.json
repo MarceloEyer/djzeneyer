@@ -210,5 +210,6 @@
   "shop_error_add_cart": "Could not add to cart.",
   "shop_out_of_stock": "Out of Stock",
   "shop_adding_text": "Adding...",
-  "add_to_cart": "Add to Cart"
+  "add_to_cart": "Add to Cart",
+  "shop_in_stock": "In Stock"
 }
