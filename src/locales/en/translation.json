@@ -176,4 +176,28 @@
 
   "feedback_prompt": "Give feedback",
   "feedback_thanks": "Thanks for the feedback"
+
+  {
+  "events_page_title": "DJ Zen Eyer | Events & Schedule",
+  "events_page_meta_desc": "Join DJ Zen Eyer at upcoming Brazilian Zouk events. Check the schedule and experience the magic of music and dance.",
+  
+  "events_header_title": "Events & Schedule",
+  "events_header_subtitle": "Join DJ Zen Eyer at upcoming Brazilian Zouk events and experience the magic of music and dance.",
+  
+  "events_calendar_iframe_title": "Events Calendar",
+  
+  "events_achievement_section_title": "Level Up Your Music Journey",
+  "events_achievement_section_subtitle": "The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.",
+  
+  "events_achievement_xp_title": "Experience Points (XP)",
+  "events_achievement_xp_desc": "Earn XP for every action you take, from listening to tracks to attending events.",
+  
+  "events_achievement_badges_title": "Digital Badges",
+  "events_achievement_badges_desc": "Unlock collectible badges for special achievements and milestones in your journey.",
+  
+  "events_achievement_rewards_title": "Rewards & Perks",
+  "events_achievement_rewards_desc": "Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.",
+  
+  "events_achievement_streaks_title": "Daily Streaks",
+  "events_achievement_streaks_desc": "Maintain your engagement streak for bonus XP and special streak-only rewards."
 }
