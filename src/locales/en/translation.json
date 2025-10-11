@@ -198,5 +198,17 @@
   "events_achievement_rewards_desc": "Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.",
   
   "events_achievement_streaks_title": "Daily Streaks",
-  "events_achievement_streaks_desc": "Maintain your engagement streak for bonus XP and special streak-only rewards."
+  "events_achievement_streaks_desc": "Maintain your engagement streak for bonus XP and special streak-only rewards.",
+
+  "shop_title": "Zen Shop",
+  "shop_subtitle": "Get exclusive merchandise and event tickets",
+  "shop_page_title": "Shop",
+  "shop_page_meta_desc": "Exclusive products and tickets for Brazilian Zouk events with DJ Zen Eyer.",
+  "shop_error_credentials": "Configuration error: API credentials missing.",
+  "shop_error_fetch": "Failed to fetch products",
+  "shop_error_unknown": "Unknown error fetching products.",
+  "shop_error_add_cart": "Could not add to cart.",
+  "shop_out_of_stock": "Out of Stock",
+  "shop_adding_text": "Adding...",
+  "add_to_cart": "Add to Cart"
 }
