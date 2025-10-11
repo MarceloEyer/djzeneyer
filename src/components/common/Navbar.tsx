@@ -115,6 +115,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         <NavLink
           key={item.ID}
           to={finalToPath}
+          end
           target={item.target || '_self'}
           className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}
         >
