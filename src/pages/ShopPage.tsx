@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle } from 'lucide-react';
 
+// Declaração global para dados do WordPress
 declare global {
   interface Window {
     wpData?: {
@@ -16,6 +17,7 @@ declare global {
   }
 }
 
+// Interface para produtos WooCommerce
 interface Product {
   id: number;
   name: string;
@@ -30,8 +32,11 @@ interface Product {
 
 const ShopPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const currentLang = i18n.language.split('-')[0]; // 'en' ou 'pt'
+  // Extrai idioma base (pt ou en) do i18n
+  const currentLang = i18n.language.split('-')[0];
   const navigate = useNavigate();
+  
+  // Estados do componente
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,16 +46,20 @@ const ShopPage: React.FC = () => {
   console.log('[ShopPage] Idioma i18n completo:', i18n.language);
   console.log('[ShopPage] Idioma extraído:', currentLang);
 
+  // Normaliza dados do produto vindos da API WooCommerce
   const normalizeProduct = useCallback((productData: any): Product => {
+    // Define imagem padrão caso produto não tenha imagem
     let imageUrl = 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer';
     let imageAlt = productData.name || 'Imagem do produto';
 
+    // Extrai imagem do produto se disponível
     if (productData.images && productData.images.length > 0) {
       const firstImage = productData.images[0];
       imageUrl = firstImage.src || firstImage.url || firstImage.full_src || imageUrl;
       imageAlt = firstImage.alt || imageAlt;
     }
 
+    // Calcula preços e verifica se está em promoção
     const regularPrice = parseFloat(productData.regular_price || '0');
     const salePrice = parseFloat(productData.sale_price || '0');
 
@@ -67,6 +76,7 @@ const ShopPage: React.FC = () => {
     };
   }, []);
 
+  // Busca produtos da API WooCommerce filtrando por idioma
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -74,9 +84,11 @@ const ShopPage: React.FC = () => {
     console.log('[ShopPage] 🔄 Iniciando fetchProducts');
     console.log('[ShopPage] Idioma para filtro de produtos:', currentLang);
 
+    // Pega credenciais WooCommerce do .env
     const consumerKey = import.meta.env.VITE_WC_CONSUMER_KEY;
     const consumerSecret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
+    // Valida se credenciais existem
     if (!consumerKey || !consumerSecret) {
       console.error('[ShopPage] ❌ Credenciais WooCommerce ausentes no .env');
       console.error('[ShopPage] VITE_WC_CONSUMER_KEY:', consumerKey ? 'definida' : 'AUSENTE');
@@ -86,8 +98,8 @@ const ShopPage: React.FC = () => {
       return;
     }
 
+    // Monta URL da API com filtro de idioma para Polylang/WPML
     const baseUrl = window.wpData?.restUrl || `${window.location.origin}/wp-json/`;
-    // Adiciona lang para Polylang/WPML + per_page para paginação
     const apiUrl = `${baseUrl}wc/v3/products?lang=${currentLang}&status=publish&per_page=100&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
 
     console.log('[ShopPage] 📡 URL da API:', apiUrl.replace(consumerKey, 'ck_***').replace(consumerSecret, 'cs_***'));
@@ -106,6 +118,7 @@ const ShopPage: React.FC = () => {
       console.log('[ShopPage] ✅ Produtos recebidos:', data.length);
       console.log('[ShopPage] Dados brutos dos produtos:', data);
 
+      // Normaliza todos os produtos recebidos
       const normalizedProducts = data.map(normalizeProduct);
       setProducts(normalizedProducts);
 
@@ -120,10 +133,12 @@ const ShopPage: React.FC = () => {
     }
   }, [normalizeProduct, currentLang]);
 
+  // Busca produtos quando componente monta ou idioma muda
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Adiciona produto ao carrinho via API customizada
   const addToCart = async (productId: number) => {
     setAddingToCart(productId);
     try {
@@ -138,6 +153,7 @@ const ShopPage: React.FC = () => {
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'Não foi possível adicionar ao carrinho.');
       }
+      // Redireciona para checkout após adicionar ao carrinho
       navigate('/checkout');
     } catch (err: any) {
       alert(`Erro: ${err.message}`);
@@ -145,8 +161,10 @@ const ShopPage: React.FC = () => {
     }
   };
 
+  // Formata preço para padrão brasileiro (R$ 00,00)
   const formatPrice = (price: string) => `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
 
+  // Estado de carregamento
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
@@ -154,35 +172,46 @@ const ShopPage: React.FC = () => {
     </div>
   );
 
+  // Estado de erro
   if (error) return (
     <div className="min-h-screen flex justify-center items-center text-red-500">
       <AlertCircle className="mr-2" /> {error}
     </div>
   );
 
+  // Renderização principal da loja
   return (
     <motion.div className="container mx-auto px-4 py-24 text-white" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <h1 className="text-3xl md:text-4xl font-extrabold font-display text-center mb-16">
         {t('shop_page_title')}
       </h1>
+      
+      {/* Grid de produtos */}
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
           <motion.div key={product.id} className="bg-surface/50 border border-white/10 rounded-2xl flex flex-col">
+            {/* Imagem do produto - clicável para página de detalhes */}
             <Link to={`/product/${product.slug}`} className="block">
               <img src={product.images[0].src} alt={product.images[0].alt} className="w-full h-64 object-cover rounded-t-2xl" />
             </Link>
+            
+            {/* Informações do produto */}
             <div className="p-5 flex flex-col flex-grow">
               <h2 className="text-xl font-semibold mb-3 flex-grow">{product.name}</h2>
+              
+              {/* Preço com destaque para promoção */}
               <div className="text-xl font-bold mb-4 h-14 flex items-center">
-                  {product.on_sale ? (
-                    <div>
-                      <span className="text-lg text-gray-400 line-through mr-2">{formatPrice(product.regular_price)}</span>
-                      <span className="text-primary">{formatPrice(product.price)}</span>
-                    </div>
-                  ) : (
-                    <span>{formatPrice(product.price)}</span>
-                  )}
+                {product.on_sale ? (
+                  <div>
+                    <span className="text-lg text-gray-400 line-through mr-2">{formatPrice(product.regular_price)}</span>
+                    <span className="text-primary">{formatPrice(product.price)}</span>
+                  </div>
+                ) : (
+                  <span>{formatPrice(product.price)}</span>
+                )}
               </div>
+              
+              {/* Botão de adicionar ao carrinho ou fora de estoque */}
               {product.stock_status === 'outofstock' ? (
                 <button disabled className="w-full btn bg-gray-600 text-gray-400 cursor-not-allowed">
                   {t('shop_out_of_stock')}
@@ -193,7 +222,11 @@ const ShopPage: React.FC = () => {
                   disabled={!!addingToCart}
                   className="w-full btn bg-primary hover:bg-primary/90 flex items-center justify-center gap-2 disabled:opacity-50 mt-auto"
                 >
-                  {addingToCart === product.id ? ( <Loader2 size={18} className="animate-spin" /> ) : ( <ShoppingCart size={18} /> )}
+                  {addingToCart === product.id ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <ShoppingCart size={18} />
+                  )}
                   <span>{addingToCart === product.id ? t('shop_adding_text') : t('shop_add_to_cart_button')}</span>
                 </button>
               )}
