@@ -210,5 +210,6 @@
   "shop_error_add_cart": "Não foi possível adicionar ao carrinho.",
   "shop_out_of_stock": "Fora de Estoque",
   "shop_adding_text": "Adicionando...",
-  "add_to_cart": "Adicionar ao Carrinho"
+  "add_to_cart": "Adicionar ao Carrinho",
+  "shop_in_stock": "Em Estoque"
 }
