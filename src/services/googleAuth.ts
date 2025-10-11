@@ -1,70 +1,138 @@
 // src/services/googleAuth.ts
-import { UserContextType } from '../contexts/UserContext';
 
-export const loadGoogleIdentityScript = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    if (typeof window === 'undefined') return reject(new Error('Window not available'));
-    if ((window as any).google?.accounts) return resolve();
-    
-    const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
-    if (existingScript) {
-      existingScript.addEventListener('load', () => resolve());
-      existingScript.addEventListener('error', () => reject(new Error('Google script failed to load')));
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: any) => void;
+          renderButton: (element: HTMLElement, options: any) => void;
+          prompt: () => void;
+        };
+      };
+    };
+  }
+}
+
+let isGoogleSDKLoaded = false;
+let googleSDKLoadPromise: Promise<void> | null = null;
+
+/**
+ * Carrega o SDK do Google Sign-In
+ */
+export const loadGoogleSDK = (): Promise<void> => {
+  // Se já está carregado, retorna imediatamente
+  if (isGoogleSDKLoaded) {
+    return Promise.resolve();
+  }
+
+  // Se já está carregando, retorna a promise existente
+  if (googleSDKLoadPromise) {
+    return googleSDKLoadPromise;
+  }
+
+  console.log('[GoogleAuth] 📦 Carregando Google SDK...');
+
+  googleSDKLoadPromise = new Promise((resolve, reject) => {
+    // Verifica se o script já existe
+    if (document.getElementById('google-signin-script')) {
+      console.log('[GoogleAuth] ✅ Script já existe no DOM');
+      isGoogleSDKLoaded = true;
+      resolve();
       return;
     }
 
+    // Cria o script
     const script = document.createElement('script');
+    script.id = 'google-signin-script';
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
     script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Google script failed to load'));
+
+    script.onload = () => {
+      console.log('[GoogleAuth] ✅ Google SDK carregado com sucesso');
+      isGoogleSDKLoaded = true;
+      resolve();
+    };
+
+    script.onerror = (error) => {
+      console.error('[GoogleAuth] ❌ Erro ao carregar Google SDK:', error);
+      googleSDKLoadPromise = null;
+      reject(new Error('Falha ao carregar Google SDK'));
+    };
+
     document.head.appendChild(script);
   });
+
+  return googleSDKLoadPromise;
 };
 
-const handleCredentialResponse = async (response: any, userContext: UserContextType) => {
-  if (!response?.credential) {
-    console.error('Google response missing credential');
-    return;
-  }
+/**
+ * Inicializa o botão do Google Sign-In
+ */
+export const initializeGoogleButton = async (
+  element: HTMLElement,
+  onSuccess: (credential: string) => void | Promise<void>
+): Promise<void> => {
   try {
-    // Chama a função que criaremos no UserContext
-    await userContext.loginWithGoogleToken(response.credential);
-  } catch (err) {
-    console.error('Error exchanging Google token:', err);
-  }
-};
+    console.log('[GoogleAuth] 🔵 Inicializando botão do Google...');
 
-export const initializeGoogleButton = async (element: HTMLElement | null, userContext: UserContextType) => {
-  if (!element) return;
-  const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  if (!CLIENT_ID) {
-    console.error('VITE_GOOGLE_CLIENT_ID is not defined');
-    return;
-  }
+    // Carrega o SDK se necessário
+    await loadGoogleSDK();
 
-  try {
-    await loadGoogleIdentityScript();
-    
-    if (typeof (window as any).google?.accounts?.id === 'undefined') {
-        throw new Error('Google Identity Services not available after script load');
+    // Verifica se o SDK está disponível
+    if (!window.google?.accounts?.id) {
+      throw new Error('Google SDK não está disponível após carregamento');
     }
 
-    (window as any).google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: (resp: any) => handleCredentialResponse(resp, userContext),
+    // Pega o Client ID do ambiente
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      console.error('[GoogleAuth] ❌ VITE_GOOGLE_CLIENT_ID não encontrado no .env');
+      throw new Error('Google Client ID não configurado. Adicione VITE_GOOGLE_CLIENT_ID ao arquivo .env');
+    }
+
+    console.log('[GoogleAuth] 🔑 Client ID encontrado:', clientId.substring(0, 20) + '...');
+
+    // Inicializa o Google Sign-In
+    window.google.accounts.id.initialize({
+      client_id: clientId,
+      callback: async (response: { credential: string }) => {
+        console.log('[GoogleAuth] ✅ Credencial recebida do Google');
+        try {
+          await onSuccess(response.credential);
+        } catch (error) {
+          console.error('[GoogleAuth] ❌ Erro no callback:', error);
+        }
+      },
     });
 
-    element.innerHTML = ''; // Limpa o botão anterior para evitar duplicatas
-    (window as any).google.accounts.id.renderButton(element, {
-      theme: 'outline',
+    // Renderiza o botão
+    window.google.accounts.id.renderButton(element, {
+      theme: 'filled_blue',
       size: 'large',
-      type: 'standard',
-      text: 'signin_with',
-      width: '300' // Largura fixa para consistência
+      text: 'continue_with',
+      shape: 'rectangular',
+      logo_alignment: 'left',
+      width: element.offsetWidth || 300,
     });
-  } catch (err) {
-    console.error('Error initializing Google button', err);
+
+    console.log('[GoogleAuth] ✅ Botão renderizado com sucesso');
+  } catch (error) {
+    console.error('[GoogleAuth] ❌ Erro ao inicializar botão:', error);
+    throw error;
+  }
+};
+
+/**
+ * Limpa o estado do SDK (útil para testes)
+ */
+export const resetGoogleSDK = (): void => {
+  isGoogleSDKLoaded = false;
+  googleSDKLoadPromise = null;
+  const script = document.getElementById('google-signin-script');
+  if (script) {
+    script.remove();
   }
 };
