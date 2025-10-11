@@ -1,7 +1,7 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions - Versão Final Unificada
- * v9.0.0 - Arquitetura Profissional + Funcionalidades Completas
+ * v9.1.0 - Arquitetura Profissional + Funcionalidades Completas + Polylang Products
  */
 
 if (!defined('ABSPATH')) {
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 // Define a versão dos assets usando a data de modificação do arquivo para cache busting automático
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '9.0.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '9.1.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -174,6 +174,9 @@ add_action('rest_api_init', function(){
  * (Funções que executam a lógica para cada endpoint)
  * ======================================================= */
 
+/**
+ * Handler: Retorna menu multilíngue baseado no Polylang
+ */
 function djz_get_multilang_menu_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     if (function_exists('pll_set_language')) {
@@ -187,11 +190,19 @@ function djz_get_multilang_menu_handler($request) {
     $formatted = [];
     foreach ($items as $item) {
         if (empty($item->ID) || (int)$item->menu_item_parent !== 0) continue;
-        $formatted[] = [ 'ID' => (int)$item->ID, 'title' => $item->title ?? '', 'url' => wp_make_link_relative($item->url ?? '#'), 'target' => !empty($item->target) ? $item->target : '_self' ];
+        $formatted[] = [ 
+            'ID' => (int)$item->ID, 
+            'title' => $item->title ?? '', 
+            'url' => wp_make_link_relative($item->url ?? '#'), 
+            'target' => !empty($item->target) ? $item->target : '_self' 
+        ];
     }
     return rest_ensure_response($formatted);
 }
 
+/**
+ * Handler: Inscrição no MailPoet
+ */
 function djz_mailpoet_subscribe_handler($request) {
     $email = sanitize_email($request->get_param('email') ?? '');
     if (!is_email($email)) return new WP_Error('invalid_email', 'Invalid email', ['status' => 400]);
@@ -203,19 +214,28 @@ function djz_mailpoet_subscribe_handler($request) {
         $mailpoet_api->addSubscriber(['email' => $email, 'status' => 'subscribed'], [$list_id]);
         return rest_ensure_response(['success' => true, 'message' => 'Subscribed!']);
     } catch (Exception $e) {
-        if (stripos($e->getMessage(), 'already exists') !== false) return rest_ensure_response(['success' => true, 'message' => 'Already subscribed!']);
+        if (stripos($e->getMessage(), 'already exists') !== false) {
+            return rest_ensure_response(['success' => true, 'message' => 'Already subscribed!']);
+        }
         return new WP_Error('subscription_failed', $e->getMessage(), ['status' => 500]);
     }
 }
 
+/**
+ * Handler: Autenticação via Google OAuth
+ */
 function djz_google_oauth_handler($request) {
     $token = sanitize_text_field($request->get_param('token') ?? '');
     if (empty($token)) return new WP_Error('no_token', 'Token is required', ['status' => 400]);
     $verify_url = add_query_arg('id_token', rawurlencode($token), 'https://oauth2.googleapis.com/tokeninfo');
     $response = wp_remote_get($verify_url, ['timeout' => 10]);
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) return new WP_Error('invalid_token', 'Failed to verify Google token', ['status' => 401]);
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+        return new WP_Error('invalid_token', 'Failed to verify Google token', ['status' => 401]);
+    }
     $body = json_decode(wp_remote_retrieve_body($response), true);
-    if (empty($body) || empty($body['email'])) return new WP_Error('invalid_token', 'Invalid token body from Google', ['status' => 401]);
+    if (empty($body) || empty($body['email'])) {
+        return new WP_Error('invalid_token', 'Invalid token body from Google', ['status' => 401]);
+    }
     $email = sanitize_email($body['email']);
     $name = sanitize_text_field($body['name'] ?? '');
     $user = get_user_by('email', $email);
@@ -228,9 +248,127 @@ function djz_google_oauth_handler($request) {
     if (class_exists('\SimpleJwtLogin\Classes\SimpleJwtLoginJWT')) {
         $jwt_instance = new \SimpleJwtLogin\Classes\SimpleJwtLoginJWT();
         $jwt = $jwt_instance->getJwt($user);
-        return rest_ensure_response(['jwt' => $jwt, 'user' => ['id' => $user->ID, 'email' => $user->user_email, 'name' => $user->display_name]]);
+        return rest_ensure_response([
+            'jwt' => $jwt, 
+            'user' => ['id' => $user->ID, 'email' => $user->user_email, 'name' => $user->display_name]
+        ]);
     }
     return new WP_Error('jwt_plugin_missing', 'Simple JWT Login plugin not available', ['status' => 500]);
+}
+
+/**
+ * Handler: Retorna produtos WooCommerce com idioma do Polylang
+ * Endpoint robusto que filtra produtos por idioma automaticamente
+ */
+function djz_get_products_with_lang_handler($request) {
+    // Pega idioma solicitado ou usa o padrão
+    $lang = sanitize_text_field($request->get_param('lang') ?? '');
+    
+    // Se não passou idioma, tenta pegar o padrão do Polylang
+    if (empty($lang) && function_exists('pll_default_language')) {
+        $lang = pll_default_language();
+    }
+    
+    // Fallback para 'en' se ainda estiver vazio
+    if (empty($lang)) {
+        $lang = 'en';
+    }
+    
+    error_log("[DJZ Products API] Buscando produtos para idioma: {$lang}");
+    
+    // Args para buscar produtos WooCommerce
+    $args = array(
+        'post_type' => 'product',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+    
+    // Se Polylang estiver ativo, adiciona filtro de idioma
+    if (function_exists('pll_get_post_language')) {
+        $args['lang'] = $lang;
+        error_log("[DJZ Products API] Polylang ativo - filtrando por idioma: {$lang}");
+    }
+    
+    $query = new WP_Query($args);
+    $products = array();
+    
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $product_id = get_the_ID();
+            $product = wc_get_product($product_id);
+            
+            // Pula se não for um produto válido
+            if (!$product) continue;
+            
+            // Pega idioma do produto usando Polylang (se disponível)
+            $product_lang = $lang; // Fallback para idioma solicitado
+            if (function_exists('pll_get_post_language')) {
+                $detected_lang = pll_get_post_language($product_id);
+                if ($detected_lang) {
+                    $product_lang = $detected_lang;
+                }
+            }
+            
+            // Pega traduções disponíveis (se Polylang estiver ativo)
+            $translations = array();
+            if (function_exists('pll_get_post_translations')) {
+                $translations = pll_get_post_translations($product_id);
+            }
+            
+            // Monta array de imagens
+            $images = array();
+            $image_ids = $product->get_gallery_image_ids();
+            
+            // Adiciona imagem principal primeiro
+            if ($product->get_image_id()) {
+                array_unshift($image_ids, $product->get_image_id());
+            }
+            
+            // Processa cada imagem
+            foreach ($image_ids as $image_id) {
+                $images[] = array(
+                    'id' => $image_id,
+                    'src' => wp_get_attachment_url($image_id),
+                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
+                );
+            }
+            
+            // Se não tiver imagens, adiciona placeholder
+            if (empty($images)) {
+                $images[] = array(
+                    'id' => 0,
+                    'src' => 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer',
+                    'alt' => $product->get_name(),
+                );
+            }
+            
+            // Monta objeto do produto
+            $products[] = array(
+                'id' => $product_id,
+                'name' => $product->get_name(),
+                'slug' => $product->get_slug(),
+                'price' => $product->get_price(),
+                'regular_price' => $product->get_regular_price(),
+                'sale_price' => $product->get_sale_price(),
+                'on_sale' => $product->is_on_sale(),
+                'stock_status' => $product->get_stock_status(),
+                'images' => $images,
+                'lang' => $product_lang, // IDIOMA DO PRODUTO
+                'translations' => $translations, // IDs das traduções disponíveis
+            );
+            
+            error_log("[DJZ Products API] Produto adicionado: {$product->get_name()} (ID: {$product_id}, Lang: {$product_lang})");
+        }
+    }
+    
+    wp_reset_postdata();
+    
+    error_log("[DJZ Products API] Total de produtos retornados: " . count($products));
+    
+    return new WP_Rest_Response($products, 200);
 }
 
 
@@ -241,34 +379,58 @@ function djz_google_oauth_handler($request) {
 add_action('rest_api_init', function () {
     $namespace = 'djzeneyer/v1';
 
+    // Endpoint: Menu multilíngue
     register_rest_route($namespace, '/menu', [
         'methods' => 'GET',
         'callback' => 'djz_get_multilang_menu_handler',
         'permission_callback' => '__return_true'
     ]);
 
+    // Endpoint: Inscrição MailPoet
     register_rest_route($namespace, '/subscribe', [
         'methods' => 'POST',
         'callback' => 'djz_mailpoet_subscribe_handler',
         'permission_callback' => '__return_true'
     ]);
 
-    // Endpoints que faltavam no template e que estavam no seu arquivo original
+    // Endpoint: Produtos WooCommerce com idioma Polylang (NOVO)
+    register_rest_route($namespace, '/products', [
+        'methods' => 'GET',
+        'callback' => 'djz_get_products_with_lang_handler',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'lang' => [
+                'required' => false,
+                'type' => 'string',
+                'description' => 'Código do idioma (pt, en, etc)',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+        ],
+    ]);
+
+    // Endpoint: Atualizar perfil do usuário
     register_rest_route($namespace, '/user/update-profile', [
         'methods' => 'POST',
         'callback' => function($request) {
             $user_id = get_current_user_id();
-            if (0 === $user_id) return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+            if (0 === $user_id) {
+                return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+            }
             $params = $request->get_json_params();
             $user_data = ['ID' => $user_id];
-            if (isset($params['displayName'])) $user_data['display_name'] = sanitize_text_field($params['displayName']);
+            if (isset($params['displayName'])) {
+                $user_data['display_name'] = sanitize_text_field($params['displayName']);
+            }
             $result = wp_update_user($user_data);
-            if (is_wp_error($result)) return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]);
+            if (is_wp_error($result)) {
+                return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]);
+            }
             return rest_ensure_response(['success' => true, 'message' => 'Perfil atualizado com sucesso!']);
         },
         'permission_callback' => 'is_user_logged_in'
     ]);
 
+    // Endpoint: Google OAuth (namespace diferente para compatibilidade com Simple JWT Login)
     register_rest_route('simple-jwt-login/v1', '/auth/google', [
         'methods' => 'POST',
         'callback' => 'djz_google_oauth_handler',
