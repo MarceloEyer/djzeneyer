@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   CUSTOM PROPERTIES (CSS Variables)
+   ======================================== */
 :root {
   /* PRIMARY - SEU AZUL ELÉTRICO FAVORITO */
   --color-primary: 13, 150, 255;           /* #0D96FF - Electric Blue */
@@ -35,6 +38,9 @@
   --color-text-dark: 20, 20, 30;           /* #14141E */
 }
 
+/* ========================================
+   BASE STYLES
+   ======================================== */
 @layer base {
   html {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -53,6 +59,10 @@
     background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
     background-attachment: fixed;
     min-height: 100vh;
+  }
+
+  a {
+    @apply transition-colors duration-200;
   }
 
   ::-webkit-scrollbar {
@@ -80,7 +90,12 @@
   }
 }
 
+/* ========================================
+   COMPONENT STYLES
+   ======================================== */
 @layer components {
+  
+  /* ========== BUTTONS ========== */
   .btn {
     @apply inline-flex items-center justify-center gap-2 
            px-6 py-3 rounded-lg font-semibold 
@@ -162,6 +177,7 @@
     @apply px-10 py-5 text-xl;
   }
 
+  /* ========== CARDS ========== */
   .card {
     @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl 
            border border-white/10 overflow-hidden
@@ -172,6 +188,7 @@
     @apply border-white/20 shadow-2xl;
   }
 
+  /* ========== NAVIGATION ========== */
   .nav-link {
     @apply relative px-4 py-2 text-white/70 hover:text-white 
            transition-all duration-200 font-medium;
@@ -187,6 +204,7 @@
     background: rgb(var(--color-primary));
   }
 
+  /* ========== BADGES ========== */
   .badge {
     @apply inline-flex items-center justify-center 
            px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
@@ -223,6 +241,7 @@
            border border-error/30;
   }
 
+  /* ========== INPUTS ========== */
   .input {
     @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg 
            text-white placeholder:text-white/40
@@ -245,9 +264,122 @@
     @apply border-error focus:ring-error;
   }
 
+  /* ========== AUDIO PLAYER ========== */
   .audio-progress {
     @apply relative h-1 w-full bg-white/20 rounded-full overflow-hidden cursor-pointer;
   }
   
   .audio-progress-bar {
-    background: linear-gradient(90deg, rgb(var(--color-primary)),
+    background: linear-gradient(90deg, rgb(var(--color-primary)), rgb(var(--color-secondary)));
+    @apply absolute top-0 left-0 h-full rounded-full transition-all duration-100;
+  }
+
+  /* ========== EFFECTS ========== */
+  .glow {
+    @apply relative;
+  }
+  
+  .glow::before {
+    content: '';
+    @apply absolute inset-0 -z-10 rounded-xl blur-2xl opacity-0 transition-opacity duration-300;
+    background: radial-gradient(circle, rgba(var(--color-primary), 0.3), transparent);
+    transform: translateY(10%) scale(0.95);
+  }
+
+  .glow:hover::before {
+    @apply opacity-100;
+  }
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+
+  .text-gradient {
+    color: rgb(var(--color-primary));
+  }
+
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+@layer utilities {
+  .text-neon {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+
+  .text-neon-strong {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+
+  .shadow-neon {
+    box-shadow: 0 0 20px rgba(var(--color-primary), 0.5);
+  }
+
+  .shadow-neon-strong {
+    box-shadow: 0 0 30px rgba(var(--color-primary), 0.7), 
+                0 0 60px rgba(var(--color-primary), 0.4);
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 20px rgba(var(--color-primary), 0.5);
+    }
+    to {
+      box-shadow: 0 0 30px rgba(var(--color-primary), 0.8), 
+                  0 0 60px rgba(var(--color-primary), 0.5);
+    }
+  }
+
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+@media (max-width: 768px) {
+  .btn {
+    @apply px-4 py-2.5 text-sm;
+  }
+
+  .card {
+    @apply rounded-lg;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+*:focus-visible {
+  @apply outline-none;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.5);
+}
