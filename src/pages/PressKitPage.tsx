@@ -1,6 +1,6 @@
 // src/pages/PressKitPage.tsx
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -9,7 +9,7 @@ import {
   Phone, 
   FileText, 
   ImageIcon, 
-  Music, 
+  Music2, 
   Award, 
   Globe, 
   Users,
@@ -17,14 +17,11 @@ import {
   TrendingUp,
   Mail,
   Instagram,
-  Music2,
   Calendar,
   MapPin,
-  Sparkles,
-  Zap
+  Sparkles
 } from 'lucide-react';
 
-// Card de Estatística animado
 const StatCard: React.FC<{ 
   icon: React.ReactNode; 
   number: string; 
@@ -33,7 +30,7 @@ const StatCard: React.FC<{
 }> = ({ icon, number, label, color }) => (
   <motion.div 
     whileHover={{ scale: 1.05, y: -5 }}
-    className={`bg-gradient-to-br ${color} p-6 rounded-2xl text-center backdrop-blur-sm border border-white/20 shadow-xl`}
+    className={`${color} p-6 rounded-2xl text-center backdrop-blur-sm border border-white/20 shadow-xl`}
     transition={{ type: 'spring', stiffness: 300 }}
   >
     <div className="text-white inline-block p-4 bg-white/10 rounded-full mb-4">
@@ -44,7 +41,6 @@ const StatCard: React.FC<{
   </motion.div>
 );
 
-// Card de Download de Media Kit
 const MediaKitCard: React.FC<{
   icon: React.ReactNode;
   title: string;
@@ -74,50 +70,34 @@ const MediaKitCard: React.FC<{
 
 const PressKitPage: React.FC = () => {
   const { t } = useTranslation();
-  const [photos, setPhotos] = useState<string[]>([]);
 
-  // Busca fotos do Google Photos (você precisará configurar a API)
-  // Por enquanto, vou usar URLs estáticas como exemplo
-  useEffect(() => {
-    // TODO: Implementar integração com Google Photos API
-    // Por enquanto, fotos de exemplo
-    const examplePhotos = [
-      'https://lh3.googleusercontent.com/pw/ABLVV85...', // Substituir pelas suas fotos
-      'https://lh3.googleusercontent.com/pw/ABLVV85...',
-      'https://lh3.googleusercontent.com/pw/ABLVV85...',
-    ];
-    setPhotos(examplePhotos);
-  }, []);
-
-  // Estatísticas
   const stats = [
     { 
       icon: <Globe size={32} />, 
       number: "11+", 
-      label: "Países Alcançados",
-      color: "from-blue-500 to-blue-700"
+      label: "Countries Reached",
+      color: "bg-gradient-to-br from-blue-500 to-blue-700"
     },
     { 
       icon: <Users size={32} />, 
       number: "50K+", 
-      label: "Pessoas Impactadas",
-      color: "from-purple-500 to-purple-700"
+      label: "People Impacted",
+      color: "bg-gradient-to-br from-purple-500 to-purple-700"
     },
     { 
       icon: <Music2 size={32} />, 
       number: "500K+", 
-      label: "Streams Totais",
-      color: "from-pink-500 to-pink-700"
+      label: "Total Streams",
+      color: "bg-gradient-to-br from-pink-500 to-pink-700"
     },
     { 
       icon: <Award size={32} />, 
       number: "10+", 
-      label: "Anos de Carreira",
-      color: "from-green-500 to-green-700"
+      label: "Years Experience",
+      color: "bg-gradient-to-br from-green-500 to-green-700"
     }
   ];
 
-  // Media Kit items
   const mediaKitItems = [
     {
       icon: <ImageIcon size={32} />,
@@ -126,7 +106,7 @@ const PressKitPage: React.FC = () => {
       path: "/media/dj-zen-eyer-photos.zip"
     },
     {
-      icon: <Music size={32} />,
+      icon: <Music2 size={32} />,
       title: "EPK & Biography",
       description: "Complete electronic press kit with bio and rider",
       path: "/media/dj-zen-eyer-epk.pdf"
@@ -139,7 +119,6 @@ const PressKitPage: React.FC = () => {
     }
   ];
 
-  // Contact info
   const whatsappNumber = '5531999999999';
   const whatsappMessage = "Hi Zen Eyer! I'm interested in booking you for an event. Let's talk!";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
@@ -154,14 +133,12 @@ const PressKitPage: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-background via-surface/20 to-background text-white">
         {/* Hero Section */}
         <div className="relative pt-24 pb-16 overflow-hidden">
-          {/* Background effects */}
           <div className="absolute inset-0 pointer-events-none opacity-30">
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
-            {/* Header */}
             <motion.div 
               className="text-center mb-16"
               initial={{ opacity: 0, y: -30 }}
@@ -180,9 +157,10 @@ const PressKitPage: React.FC = () => {
                 </div>
               </motion.div>
 
+              {/* SEM DEGRADÊ - Só azul elétrico */}
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
                 Work With{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-success">
+                <span className="text-primary">
                   DJ Zen Eyer
                 </span>
               </h1>
@@ -194,7 +172,6 @@ const PressKitPage: React.FC = () => {
               </p>
             </motion.div>
 
-            {/* Stats Grid */}
             <motion.div 
               className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-20"
               initial={{ opacity: 0, y: 30 }}
@@ -219,7 +196,6 @@ const PressKitPage: React.FC = () => {
               className="max-w-6xl mx-auto"
             >
               <div className="grid md:grid-cols-2 gap-12 items-center">
-                {/* Photo */}
                 <motion.div 
                   className="relative"
                   whileHover={{ scale: 1.02 }}
@@ -227,21 +203,19 @@ const PressKitPage: React.FC = () => {
                 >
                   <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 shadow-2xl">
                     <img 
-                      src="https://placehold.co/600x600/101418/6366F1?text=DJ+Zen+Eyer"
+                      src="https://placehold.co/600x600/101418/0D96FF?text=DJ+Zen+Eyer&font=orbitron"
                       alt="DJ Zen Eyer" 
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  {/* Floating badge */}
-                  <div className="absolute -bottom-6 -right-6 bg-gradient-to-br from-primary to-accent p-6 rounded-2xl shadow-2xl">
+                  <div className="absolute -bottom-6 -right-6 bg-primary p-6 rounded-2xl shadow-2xl">
                     <TrendingUp size={40} className="text-white" />
                   </div>
                 </motion.div>
 
-                {/* Bio Text */}
                 <div>
                   <h2 className="text-4xl font-black font-display mb-6 flex items-center gap-3">
-                    <Music className="text-primary" size={36} />
+                    <Music2 className="text-primary" size={36} />
                     About Zen Eyer
                   </h2>
                   <div className="space-y-4 text-lg text-white/80 leading-relaxed">
@@ -259,44 +233,23 @@ const PressKitPage: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Key Points */}
                   <div className="mt-8 grid grid-cols-2 gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-primary/20 rounded-lg">
-                        <Zap className="text-primary" size={20} />
+                    {[
+                      { icon: <Star className="text-primary" size={20} />, title: "Energy", desc: "High-impact sets" },
+                      { icon: <Music2 className="text-accent" size={20} />, title: "Selection", desc: "Curated perfection" },
+                      { icon: <Users className="text-success" size={20} />, title: "Connection", desc: "Audience-focused" },
+                      { icon: <Globe className="text-purple-400" size={20} />, title: "Global", desc: "International reach" }
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <div className="p-2 bg-primary/20 rounded-lg">
+                          {item.icon}
+                        </div>
+                        <div>
+                          <div className="font-bold text-white">{item.title}</div>
+                          <div className="text-sm text-white/60">{item.desc}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-bold text-white">Energy</div>
-                        <div className="text-sm text-white/60">High-impact sets</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-accent/20 rounded-lg">
-                        <Music2 className="text-accent" size={20} />
-                      </div>
-                      <div>
-                        <div className="font-bold text-white">Selection</div>
-                        <div className="text-sm text-white/60">Curated perfection</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-success/20 rounded-lg">
-                        <Users className="text-success" size={20} />
-                      </div>
-                      <div>
-                        <div className="font-bold text-white">Connection</div>
-                        <div className="text-sm text-white/60">Audience-focused</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-purple-500/20 rounded-lg">
-                        <Globe className="text-purple-400" size={20} />
-                      </div>
-                      <div>
-                        <div className="font-bold text-white">Global</div>
-                        <div className="text-sm text-white/60">International reach</div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -304,7 +257,7 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Media Kit Section */}
+        {/* Media Kit */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div
@@ -332,7 +285,7 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Press Photos Gallery (Google Photos Integration) */}
+        {/* Press Photos Gallery */}
         <section className="py-20 bg-surface/30">
           <div className="container mx-auto px-4">
             <motion.div
@@ -351,7 +304,6 @@ const PressKitPage: React.FC = () => {
                 </p>
               </div>
 
-              {/* TODO: Integrar com Google Photos API */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <motion.div 
@@ -360,7 +312,7 @@ const PressKitPage: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                   >
                     <img 
-                      src={`https://placehold.co/400x400/101418/6366F1?text=Photo+${i}`}
+                      src={`https://placehold.co/400x400/101418/0D96FF?text=Photo+${i}&font=orbitron`}
                       alt={`DJ Zen Eyer Press Photo ${i}`}
                       className="w-full h-full object-cover"
                     />
@@ -401,7 +353,6 @@ const PressKitPage: React.FC = () => {
                   Ready to elevate your event? Get in touch to discuss booking, collaborations, or media inquiries.
                 </p>
 
-                {/* Contact buttons */}
                 <div className="flex flex-wrap justify-center gap-4">
                   <a 
                     href={whatsappUrl}
@@ -430,7 +381,6 @@ const PressKitPage: React.FC = () => {
                   </a>
                 </div>
 
-                {/* Quick info */}
                 <div className="mt-12 pt-8 border-t border-white/10">
                   <div className="grid md:grid-cols-3 gap-6 text-left">
                     <div className="flex items-start gap-3">
