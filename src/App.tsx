@@ -1,4 +1,5 @@
 // src/App.tsx
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -12,6 +13,8 @@ import MusicPage from './pages/MusicPage';
 import ZenTribePage from './pages/ZenTribePage';
 import PressKitPage from './pages/PressKitPage';
 import ShopPage from './pages/ShopPage';
+import DashboardPage from './pages/DashboardPage';
+import MyAccountPage from './pages/MyAccountPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 import { UserProvider } from './contexts/UserContext';
@@ -36,9 +39,13 @@ function App() {
                     <Route path="music" element={<MusicPage />} />
                     <Route path="music/:slug" element={<MusicPage />} />
                     <Route path="tribe" element={<ZenTribePage />} />
+                    <Route path="zen-tribe" element={<ZenTribePage />} />
+                    <Route path="zentribe" element={<ZenTribePage />} />
                     <Route path="work-with-me" element={<PressKitPage />} />
                     <Route path="shop" element={<ShopPage />} />
                     <Route path="shop/*" element={<ShopPage />} />
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="my-account" element={<MyAccountPage />} />
                   </Route>
 
                   {/* Portuguese routes under /pt */}
@@ -49,9 +56,12 @@ function App() {
                     <Route path="musica" element={<MusicPage />} />
                     <Route path="musica/:slug" element={<MusicPage />} />
                     <Route path="tribo" element={<ZenTribePage />} />
+                    <Route path="tribo-zen" element={<ZenTribePage />} />
                     <Route path="contrate" element={<PressKitPage />} />
                     <Route path="loja" element={<ShopPage />} />
                     <Route path="loja/*" element={<ShopPage />} />
+                    <Route path="painel" element={<DashboardPage />} />
+                    <Route path="minha-conta" element={<MyAccountPage />} />
                   </Route>
 
                   {/* Fallback 404 */}
