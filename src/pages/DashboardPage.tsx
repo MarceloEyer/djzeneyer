@@ -1,385 +1,284 @@
 // src/pages/DashboardPage.tsx
 
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
+import { useUser } from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 import { 
-  LogOut, 
   Award, 
-  ShieldCheck, 
-  UserCircle, 
-  BarChart3, 
-  Music2, // <-- FIX: Import correto
-  TrendingUp,
-  Calendar,
+  Star, 
+  TrendingUp, 
+  Music, 
+  Calendar, 
+  Download,
+  Heart,
+  Share2,
+  Clock,
   Zap,
-  Star,
-  Crown,
+  Users,
+  Trophy,
   Target,
   Gift
 } from 'lucide-react';
-import { useUser } from '../contexts/UserContext';
 
 const DashboardPage: React.FC = () => {
-  const { t } = useTranslation();
-  const { user, logout, loadingInitial } = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
 
-  console.log('[DashboardPage] Renderizado - loadingInitial:', loadingInitial, 'user:', user);
-
-  // Redireciona se não estiver logado
-  useEffect(() => {
-    if (!loadingInitial && !user) {
-      console.log('[DashboardPage] ❌ Usuário não logado, redirecionando...');
+  // Redirect if not logged in
+  React.useEffect(() => {
+    if (!user?.isLoggedIn) {
       navigate('/');
     }
-  }, [user, loadingInitial, navigate]);
+  }, [user, navigate]);
 
-  // Logout handler
-  const handleLogout = async () => {
-    console.log('[DashboardPage] 🚪 Iniciando logout...');
-    await logout();
-    console.log('[DashboardPage] ✅ Logout finalizado');
-    navigate('/');
+  if (!user) return null;
+
+  // Mock user data (replace with real data later)
+  const userStats = {
+    level: 3,
+    currentXP: 350,
+    nextLevelXP: 400,
+    totalTracks: 24,
+    eventsAttended: 5,
+    streakDays: 7,
+    tribeFriends: 12
   };
 
-  // Loading state
-  if (loadingInitial) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center pt-24">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full"
-        />
-        <motion.p 
-          className="text-2xl font-bold font-display mt-6"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          Loading your Zen Dashboard...
-        </motion.p>
-      </div>
-    );
-  }
+  const recentActivity = [
+    { icon: <Music className="text-primary" size={20} />, action: 'Downloaded', item: 'Zouk Nights Remix', xp: 10, time: '2 hours ago' },
+    { icon: <Heart className="text-accent" size={20} />, action: 'Liked', item: 'Electric Dreams', xp: 5, time: '5 hours ago' },
+    { icon: <Calendar className="text-success" size={20} />, action: 'RSVP\'d to', item: 'Summer Vibes Festival', xp: 25, time: '1 day ago' },
+    { icon: <Share2 className="text-warning" size={20} />, action: 'Shared', item: 'Sunset Mix Vol. 3', xp: 15, time: '2 days ago' },
+  ];
 
-  // User not found state
-  if (!user || !user.profile) {
-    console.log('[DashboardPage] ❌ Perfil não carregado. User:', user);
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center pt-24 px-4">
-        <div className="card p-8 max-w-md text-center">
-          <div className="text-red-500 mb-4">
-            <ShieldCheck size={64} className="mx-auto" />
-          </div>
-          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
-          <p className="text-white/70 mb-6">
-            Profile not loaded. Please try logging in again.
-          </p>
-          <button onClick={() => navigate('/')} className="btn btn-primary">
-            Go to Homepage
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const achievements = [
+    { emoji: '🎧', title: 'First Beat', description: 'Welcome to the Zen Tribe', unlocked: true },
+    { emoji: '🚀', title: 'Early Adopter', description: 'Joined during launch', unlocked: true },
+    { emoji: '🔥', title: '7-Day Streak', description: 'Maintained activity streak', unlocked: true },
+    { emoji: '🔍', title: 'Music Explorer', description: 'Listened to 10 tracks', unlocked: false },
+    { emoji: '🦋', title: 'Social Butterfly', description: 'Connected with 5 members', unlocked: false },
+    { emoji: '🎪', title: 'Event Regular', description: 'Attended 3 events', unlocked: false },
+  ];
 
-  // Animações
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5 }
-    }
-  };
-
-  // Calcula progresso para próximo nível (exemplo)
-  const currentXP = user.profile.xp || 0;
-  const nextLevelXP = (user.profile.level || 1) * 1000; // Exemplo: 1000 XP por nível
-  const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
+  const progressPercentage = (userStats.currentXP / userStats.nextLevelXP) * 100;
 
   return (
-    <>
-      <Helmet>
-        <title>Dashboard | DJ Zen Eyer</title>
-        <meta name="description" content="Your personal Zen Tribe dashboard" />
-      </Helmet>
-
-      <div className="min-h-screen pt-24 pb-16 bg-gradient-to-b from-background to-surface/20">
-        <div className="container mx-auto px-4">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-12 text-center"
-          >
-            <h1 className="text-4xl md:text-6xl font-black font-display mb-4">
-              Welcome back,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-success">
-                {user.profile.full_name || user.email.split('@')[0]}
-              </span>
-              ! 👋
-            </h1>
-            <p className="text-xl text-white/70">
-              Your personal Zen Tribe command center
-            </p>
-          </motion.div>
-
-          {/* Stats Overview */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
-          >
-            {/* Level */}
-            <motion.div variants={cardVariants} className="card p-6 text-center bg-gradient-to-br from-primary/20 to-primary/5">
-              <Crown className="text-primary mx-auto mb-2" size={32} />
-              <div className="text-3xl font-black text-white mb-1">
-                {user.profile.level || 1}
-              </div>
-              <div className="text-sm text-white/60">Level</div>
-            </motion.div>
-
-            {/* XP */}
-            <motion.div variants={cardVariants} className="card p-6 text-center bg-gradient-to-br from-accent/20 to-accent/5">
-              <Zap className="text-accent mx-auto mb-2" size={32} />
-              <div className="text-3xl font-black text-white mb-1">
-                {user.profile.xp || 0}
-              </div>
-              <div className="text-sm text-white/60">Total XP</div>
-            </motion.div>
-
-            {/* Achievements */}
-            <motion.div variants={cardVariants} className="card p-6 text-center bg-gradient-to-br from-success/20 to-success/5">
-              <Award className="text-success mx-auto mb-2" size={32} />
-              <div className="text-3xl font-black text-white mb-1">
-                {user.achievements?.length || 0}
-              </div>
-              <div className="text-sm text-white/60">Achievements</div>
-            </motion.div>
-
-            {/* Badges */}
-            <motion.div variants={cardVariants} className="card p-6 text-center bg-gradient-to-br from-purple-500/20 to-purple-500/5">
-              <ShieldCheck className="text-purple-400 mx-auto mb-2" size={32} />
-              <div className="text-3xl font-black text-white mb-1">
-                {user.badges?.length || 0}
-              </div>
-              <div className="text-sm text-white/60">Badges</div>
-            </motion.div>
-          </motion.div>
-
-          {/* Progress Bar */}
-          <motion.div
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            className="card p-6 mb-12 bg-surface/50"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold flex items-center gap-2">
-                  <TrendingUp className="text-primary" size={24} />
-                  Progress to Level {(user.profile.level || 1) + 1}
-                </h3>
-                <p className="text-sm text-white/60">
-                  {currentXP} / {nextLevelXP} XP
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-black text-primary">
-                  {progressPercent.toFixed(0)}%
+    <div className="pt-24 pb-16 min-h-screen">
+      <div className="container mx-auto px-4">
+        {/* Welcome Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-12"
+        >
+          <div className="bg-gradient-to-r from-primary/20 via-accent/20 to-success/20 rounded-2xl p-8 border border-primary/30">
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <img 
+                  src={user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name)} 
+                  alt={user.name}
+                  className="w-24 h-24 rounded-full border-4 border-primary"
+                />
+                <div className="absolute -bottom-2 -right-2 bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
+                  {userStats.level}
                 </div>
               </div>
+
+              <div className="flex-1">
+                <h1 className="text-4xl font-black font-display mb-2">
+                  Welcome back, <span className="text-primary">{user.name}</span>!
+                </h1>
+                <p className="text-white/70 text-lg mb-4">Zen Apprentice • Level {userStats.level}</p>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/80">Progress to Level {userStats.level + 1}</span>
+                    <span className="text-primary font-bold">{userStats.currentXP}/{userStats.nextLevelXP} XP</span>
+                  </div>
+                  <div className="h-3 bg-background rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercentage}%` }}
+                      transition={{ duration: 1, ease: 'easeOut' }}
+                      className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button className="btn btn-primary flex items-center gap-2">
+                <Zap size={20} />
+                Boost XP
+              </button>
             </div>
-            <div className="h-4 bg-background rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-primary to-accent"
-                initial={{ width: 0 }}
-                animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 1, delay: 0.5 }}
-              />
+          </div>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12"
+        >
+          <div className="card p-6 hover:scale-105 transition-transform">
+            <Music className="text-primary mb-3" size={32} />
+            <div className="text-3xl font-black mb-1">{userStats.totalTracks}</div>
+            <div className="text-white/70 text-sm">Tracks Downloaded</div>
+          </div>
+
+          <div className="card p-6 hover:scale-105 transition-transform">
+            <Calendar className="text-success mb-3" size={32} />
+            <div className="text-3xl font-black mb-1">{userStats.eventsAttended}</div>
+            <div className="text-white/70 text-sm">Events Attended</div>
+          </div>
+
+          <div className="card p-6 hover:scale-105 transition-transform">
+            <Target className="text-warning mb-3" size={32} />
+            <div className="text-3xl font-black mb-1">{userStats.streakDays}</div>
+            <div className="text-white/70 text-sm">Day Streak 🔥</div>
+          </div>
+
+          <div className="card p-6 hover:scale-105 transition-transform">
+            <Users className="text-accent mb-3" size={32} />
+            <div className="text-3xl font-black mb-1">{userStats.tribeFriends}</div>
+            <div className="text-white/70 text-sm">Tribe Friends</div>
+          </div>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Recent Activity */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-2"
+          >
+            <div className="card p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold font-display flex items-center gap-2">
+                  <Clock className="text-primary" size={24} />
+                  Recent Activity
+                </h2>
+                <button className="text-primary hover:underline text-sm">View All</button>
+              </div>
+
+              <div className="space-y-4">
+                {recentActivity.map((activity, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + i * 0.1 }}
+                    className="flex items-center gap-4 p-4 bg-surface/50 rounded-lg hover:bg-surface/80 transition-all"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-background/50 flex items-center justify-center">
+                      {activity.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold">
+                        {activity.action} <span className="text-primary">{activity.item}</span>
+                      </div>
+                      <div className="text-sm text-white/60">{activity.time}</div>
+                    </div>
+                    <div className="text-success font-bold text-sm">+{activity.xp} XP</div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </motion.div>
 
-          {/* Main Content Grid */}
+          {/* Quick Actions */}
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {/* Profile Card */}
-            <motion.div variants={cardVariants} className="card p-6 bg-surface/80">
-              <div className="flex items-center mb-4">
-                <UserCircle className="text-primary mr-3" size={32} />
-                <h2 className="text-2xl font-bold font-display">Your Profile</h2>
-              </div>
+            <div className="card p-6 mb-6">
+              <h3 className="text-xl font-bold font-display mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <div>
-                  <div className="text-sm text-white/60 mb-1">Email</div>
-                  <div className="text-white font-semibold">{user.email}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-white/60 mb-1">Full Name</div>
-                  <div className="text-white font-semibold">{user.profile.full_name || 'N/A'}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-white/60 mb-1">Member Since</div>
-                  <div className="text-white font-semibold">
-                    {user.profile.joinDate 
-                      ? new Date(user.profile.joinDate).toLocaleDateString() 
-                      : 'N/A'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm text-white/60 mb-1">Rank</div>
-                  <div className="text-primary font-bold text-lg">
-                    {user.profile.rank || 'Zen Newcomer'}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Achievements Card */}
-            <motion.div variants={cardVariants} className="card p-6 bg-surface/80">
-              <div className="flex items-center mb-4">
-                <Award className="text-accent mr-3" size={32} />
-                <h2 className="text-2xl font-bold font-display">Achievements</h2>
-              </div>
-              {user.achievements && user.achievements.length > 0 ? (
-                <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-                  {user.achievements.map(ach => (
-                    <div 
-                      key={ach.id} 
-                      className="flex items-start p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                    >
-                      <span className="text-2xl mr-3">{ach.icon}</span>
-                      <div className="flex-1">
-                        <div className="font-bold text-white">{ach.name}</div>
-                        <div className="text-sm text-white/60">{ach.description}</div>
-                        {ach.unlockedAt && (
-                          <div className="text-xs text-primary mt-1">
-                            Unlocked {new Date(ach.unlockedAt).toLocaleDateString()}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Target className="text-white/30 mx-auto mb-3" size={48} />
-                  <p className="text-white/60">No achievements yet</p>
-                  <p className="text-sm text-white/40 mt-1">Keep exploring to unlock them!</p>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Badges Card */}
-            <motion.div variants={cardVariants} className="card p-6 bg-surface/80">
-              <div className="flex items-center mb-4">
-                <ShieldCheck className="text-success mr-3" size={32} />
-                <h2 className="text-2xl font-bold font-display">Badges</h2>
-              </div>
-              {user.badges && user.badges.length > 0 ? (
-                <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-                  {user.badges.map(badge => (
-                    <div 
-                      key={badge.id} 
-                      className="flex items-start p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                    >
-                      <span className="text-2xl mr-3">{badge.image}</span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-white">{badge.name}</span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full bg-${badge.rarity}/20 text-${badge.rarity} capitalize`}>
-                            {badge.rarity}
-                          </span>
-                        </div>
-                        <div className="text-sm text-white/60">{badge.description}</div>
-                        {badge.acquiredAt && (
-                          <div className="text-xs text-success mt-1">
-                            Acquired {new Date(badge.acquiredAt).toLocaleDateString()}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Star className="text-white/30 mx-auto mb-3" size={48} />
-                  <p className="text-white/60">No badges yet</p>
-                  <p className="text-sm text-white/40 mt-1">Stay active to earn them!</p>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Exclusive Content Card */}
-            <motion.div 
-              variants={cardVariants} 
-              className="card p-6 bg-gradient-to-br from-primary/20 to-accent/20 md:col-span-2 xl:col-span-3"
-            >
-              <div className="flex items-center mb-4">
-                <Music2 className="text-primary mr-3" size={32} />
-                <h2 className="text-2xl font-bold font-display">Exclusive Content</h2>
-              </div>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                  <Gift className="text-accent mb-2" size={24} />
-                  <div className="font-bold text-white mb-1">Weekly Mixes</div>
-                  <p className="text-sm text-white/60">Exclusive weekly sets just for tribe members</p>
-                </div>
-                <div className="p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                  <Calendar className="text-success mb-2" size={24} />
-                  <div className="font-bold text-white mb-1">Early Access</div>
-                  <p className="text-sm text-white/60">Get tickets before anyone else</p>
-                </div>
-                <div className="p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                  <Star className="text-warning mb-2" size={24} />
-                  <div className="font-bold text-white mb-1">VIP Perks</div>
-                  <p className="text-sm text-white/60">Special discounts and upgrades</p>
-                </div>
-              </div>
-              <div className="mt-6 text-center">
-                <button className="btn btn-primary px-8">
-                  Explore Content
+                <button className="w-full btn btn-primary justify-start gap-3">
+                  <Music size={20} />
+                  Browse Music
+                </button>
+                <button className="w-full btn btn-outline justify-start gap-3">
+                  <Calendar size={20} />
+                  View Events
+                </button>
+                <button className="w-full btn btn-outline justify-start gap-3">
+                  <Gift size={20} />
+                  Visit Shop
+                </button>
+                <button className="w-full btn btn-outline justify-start gap-3">
+                  <Users size={20} />
+                  Invite Friends
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
 
-          {/* Logout Button */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="mt-12 text-center"
-          >
-            <button
-              onClick={handleLogout}
-              className="btn btn-outline hover:bg-red-500 hover:border-red-500 px-8 py-3 flex items-center justify-center mx-auto"
-            >
-              <LogOut size={20} className="mr-2" />
-              Logout
-            </button>
+            <div className="card p-6">
+              <h3 className="text-xl font-bold font-display mb-4 flex items-center gap-2">
+                <Trophy className="text-warning" size={24} />
+                Membership
+              </h3>
+              <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg p-4 mb-4">
+                <div className="text-2xl font-black mb-2">Zen Novice</div>
+                <div className="text-sm text-white/70 mb-4">Free Tier</div>
+                <button className="w-full btn btn-secondary btn-sm">
+                  Upgrade Now
+                </button>
+              </div>
+            </div>
           </motion.div>
         </div>
+
+        {/* Achievements */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-12"
+        >
+          <div className="card p-8">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold font-display flex items-center gap-2">
+                <Award className="text-primary" size={28} />
+                Your Achievements
+              </h2>
+              <div className="text-white/70">
+                <span className="text-primary font-bold">3</span> of 6 unlocked
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {achievements.map((achievement, i) => (
+                <motion.div
+                  key={i}
+                  whileHover={{ scale: achievement.unlocked ? 1.05 : 1 }}
+                  className={`bg-surface/50 rounded-lg p-4 text-center transition-all ${
+                    achievement.unlocked ? 'hover:bg-surface/70' : 'opacity-40 grayscale'
+                  }`}
+                >
+                  <div className="text-5xl mb-3">{achievement.emoji}</div>
+                  <div className="font-bold text-sm mb-1">{achievement.title}</div>
+                  <div className="text-xs text-white/60">{achievement.description}</div>
+                  {achievement.unlocked && (
+                    <div className="mt-2 text-xs text-success flex items-center justify-center gap-1">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      Unlocked
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </>
+    </div>
   );
 };
 
