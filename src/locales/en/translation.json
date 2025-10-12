@@ -213,3 +213,34 @@
   "add_to_cart": "Add to Cart",
   "shop_in_stock": "In Stock"
 }
+
+{
+  "music": {
+    "pageTitle": "Music",
+    "pageDesc": "Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer. Brazilian Zouk, Electronic, and House music.",
+    "hero": {
+      "badge": "Original Productions & Remixes",
+      "title": "My Music",
+      "subtitle": "Explore my latest tracks, exclusive remixes, and downloadable content.",
+      "cta": "Free downloads for the Zen Tribe!"
+    },
+    "filters": {
+      "all": "All Tracks",
+      "brazilianZouk": "Brazilian Zouk",
+      "electronic": "Electronic",
+      "chillHouse": "Chill House",
+      "deepHouse": "Deep House",
+      "tropicalHouse": "Tropical House",
+      "techHouse": "Tech House"
+    },
+    "track": {
+      "download": "Download",
+      "share": "Share",
+      "duration": "Duration",
+      "bpm": "BPM",
+      "releaseDate": "Released",
+      "playPreview": "Play Preview",
+      "pausePreview": "Pause Preview"
+    }
+  }
+}
