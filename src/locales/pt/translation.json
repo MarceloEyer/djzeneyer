@@ -1,220 +1,34 @@
 {
-  "home": "Início",
-  "menu_home": "Início",
-  "menu_music": "Música",
-  "menu_events": "Eventos",
-  "menu_shop": "Loja",
-  "menu_tribe": "Zen Tribe",
-  "menu_work": "Contrate-me",
-  "sign_in": "Entrar",
-  "join_the_tribe": "Junte-se à Tribo",
-  "logout": "Sair",
-  "my_account": "Minha Conta",
-  "dashboard": "Painel",
-  "close_menu": "Fechar menu",
-  "open_menu": "Abrir menu",
-  "change_language_pt": "Mudar para Português",
-  "change_language_en": "Switch to English",
-
-  "home_headline": "Vivencie o <1>Zen</1> no Zouk Brasileiro",
-  "home_subheadline": "Junte-se à Zen Tribe e embarque em uma jornada por paisagens sonoras imersivas e meditação rítmica.",
-  "play_featured_mix": "Tocar Mix em Destaque",
-  "upcoming_events": "Próximos Eventos",
-  "home_features_title": "Junte-se à Experiência Zen Tribe",
-  "home_features_subtitle": "Descubra os recursos únicos que tornam a comunidade do DJ Zen Eyer especial",
-  "home_cta_title": "Pronto para se Juntar à <1>Zen Tribe</1>?",
-  "home_cta_subtitle": "Torne-se parte de nossa comunidade. Desbloqueie conteúdo exclusivo, ganhe recompensas e conecte-se com fãs que pensam como você.",
-  "join_now_button": "Junte-se Agora",
-  "explore_music_button": "Explorar Músicas",
-
-  "welcome_back": "Bem-vindo de Volta!",
-  "create_account": "Criar Conta",
-  "full_name": "Nome Completo",
-  "email_address": "Endereço de Email",
-  "password": "Senha",
-  "confirm_password": "Confirmar Senha",
-  "forgot_password": "Esqueceu a senha?",
-  "no_account": "Não tem uma conta?",
-  "already_have_account": "Já tem uma conta?",
-  "login_with_google": "Entrar com Google",
-  "or_continue_with": "Ou continue com",
-
-  "invalid_email": "Por favor, insira um endereço de email válido",
-  "password_min_length": "A senha deve ter pelo menos 6 caracteres",
-  "passwords_do_not_match": "As senhas não coincidem",
-  "name_min_length": "O nome é obrigatório",
-  "login_successful": "Login bem-sucedido! Bem-vindo de volta.",
-  "registration_successful": "Cadastro bem-sucedido! Bem-vindo à Zen Tribe.",
-  "registration_failed": "Falha no cadastro. Por favor, tente novamente.",
-  "invalid_credentials": "Email ou senha inválidos",
-  "invalid_credentials_short": "Credenciais inválidas",
-  "account_exists": "Já existe uma conta com este email",
-
-  "your_level": "Seu Nível",
-  "your_points": "Seu XP",
-  "your_achievements": "Suas Conquistas",
-  "view_all": "Ver Todos",
-  "locked": "Bloqueado",
-  "unlocked": "Desbloqueado",
-  "progress": "Progresso",
-
-  "tribe_welcome": "Bem-vindo à Zen Tribe",
-  "tribe_description": "Junte-se à nossa comunidade exclusiva e desbloqueie vantagens especiais",
-  "benefits": "Benefícios",
-  "membership_tiers": "Níveis de Assinatura",
-  "choose_plan": "Escolha Seu Plano",
-  "current_plan": "Plano Atual",
-  "upgrade": "Fazer Upgrade",
-
-  "music_title": "Minhas Músicas",
-  "music_subtitle": "Explore minha coleção de Zouk Brasileiro",
-  "listen_now": "Ouvir Agora",
-  "download": "Baixar",
-  "add_to_playlist": "Adicionar à Playlist",
-
+  "nav_home": "Início",
+  "nav_events": "Eventos",
+  "nav_music": "Músicas",
+  "nav_tribe": "Zen Tribe",
+  "nav_presskit": "Contrate",
+  "nav_shop": "Loja",
+  "nav_login": "Entrar",
+  "nav_logout": "Sair",
+  "nav_dashboard": "Painel",
+  "nav_my_account": "Minha Conta",
+  
+  "footer_rights": "Todos os direitos reservados.",
+  "footer_about": "Sobre",
+  "footer_contact": "Contato",
+  "footer_privacy": "Política de Privacidade",
+  "footer_terms": "Termos de Serviço",
+  
+  "home_welcome": "Bem-vindo ao DJ Zen Eyer",
+  "home_tagline": "Produtor de Zouk Brasileiro e Música Eletrônica",
+  "home_cta": "Explorar Músicas",
+  
   "events_title": "Próximos Eventos",
-  "events_subtitle": "Encontre-me nesses eventos incríveis",
-  "get_tickets": "Comprar Ingressos",
-  "rsvp": "Confirmar Presença",
-  "event_details": "Detalhes do Evento",
-  "location": "Local",
-  "date": "Data",
-  "time": "Horário",
-
-  "shop_title": "Loja",
-  "shop_subtitle": "Adquira produtos exclusivos e ingressos para eventos",
-  "add_to_cart": "Adicionar ao Carrinho",
-  "view_cart": "Ver Carrinho",
-  "checkout": "Finalizar Compra",
-  "continue_shopping": "Continuar Comprando",
-  "cart_empty": "Seu carrinho está vazio",
-  "subtotal": "Subtotal",
-  "total": "Total",
-
-  "loading": "Carregando...",
-  "error": "Erro",
-  "success": "Sucesso",
-  "try_again": "Tentar Novamente",
-  "cancel": "Cancelar",
-  "confirm": "Confirmar",
-  "save": "Salvar",
-  "edit": "Editar",
-  "delete": "Excluir",
-  "search": "Pesquisar",
-  "filter": "Filtrar",
-  "sort": "Ordenar",
-
-  "footer_about": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
-  "footer_quick_links": "Links Rápidos",
-  "footer_newsletter": "Assine a Newsletter",
-  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
-  "subscribe": "Inscrever-se",
-  "subscribing": "Inscrevendo...",
-  "email_placeholder": "Seu endereço de email",
-  "copyright": "© {{year}} DJ Zen Eyer. All rights reserved. Uma batida de cada vez.",
-
-  "home_feat_exclusive_title": "Conteúdo Exclusivo",
-  "home_feat_exclusive_desc": "Lançamentos e experiências fechadas para a tribo — ganhe pontos por participar.",
-  "home_feat_achievements_title": "Marcos e Conquistas",
-  "home_feat_achievements_desc": "Registre marcos importantes e colecione selos por participar de shows, desafios e colaborações.",
-  "home_feat_community_title": "Zen Tribe",
-  "home_feat_community_desc": "A comunidade oficial: encontros, trocas e desafios para subir de nível.",
-
-  "menu_tooltip_xp": "Ganhe XP participando",
-  "badge_new": "Novo",
-  "badge_featured": "Em Destaque",
-
-  "shop_empty_cta": "Nada por aqui ainda — volte mais tarde ou explore as músicas",
-  "shop_vibe_tag": "Edição limitada",
-
-  "cart_note_voucher": "Insira cupom para descontos",
-  "checkout_secure": "Pagamento seguro e protegido",
-
-  "profile_edit_tip": "Atualize seu avatar para ganhar reconhecimento",
-  "social_share_cta": "Compartilhe com a tribo e ganhe pontos",
-
-  "error_404_title": "Página não encontrada",
-  "error_404_subtitle": "Este lugar está em silêncio. Volte ao início.",
-  "go_home_button": "Voltar para o início",
-
-  "extras_contact": "Contato",
-  "extras_press": "Imprensa",
-  "extras_terms": "Termos",
-  "extras_privacy": "Política de Privacidade",
-  "extras_careers": "Trabalhe Conosco",
-  "extras_faq": "FAQ",
-  "extras_support": "Suporte",
-
-  "onboarding_welcome": "Bem-vindo à tribo — comece sua jornada",
-  "onboarding_tip_1": "Complete seu perfil para ganhar 50 XP",
-  "onboarding_tip_2": "Participar de um evento desbloqueia um selo",
-
-  "notif_new_event": "Novo evento disponível",
-  "notif_ticket_sale": "Ingressos à venda",
-  "notif_message": "Você tem uma nova mensagem",
-
-  "search_no_results": "Nenhum resultado encontrado",
-  "filter_clear": "Limpar filtros",
-  "sort_newest": "Mais recentes",
-  "sort_popular": "Mais populares",
-
-  "profile_settings": "Configurações do Perfil",
-  "billing_history": "Histórico de Pagamentos",
-  "subscriptions": "Assinaturas",
-  "manage_subscription": "Gerenciar Assinatura",
-
-  "toast_saved": "Alterações salvas",
-  "toast_error": "Erro ao salvar",
-
-  "admin_dashboard": "Painel Admin",
-  "admin_users": "Usuários",
-  "admin_content": "Conteúdo",
-  "admin_settings": "Configurações",
-
-  "empty_state_title": "Nada por aqui",
-  "empty_state_subtitle": "Ainda não há conteúdo para mostrar",
-
-  "feedback_prompt": "Dê seu feedback",
-  "feedback_thanks": "Obrigado pelo feedback",
-
-  "events_page_title": "DJ Zen Eyer | Eventos e Agenda",
-  "events_page_meta_desc": "Participe dos próximos eventos de Brazilian Zouk com DJ Zen Eyer. Confira a agenda e experimente a magia da música e da dança.",
+  "events_past": "Eventos Passados",
+  "events_buy_ticket": "Comprar Ingresso",
+  "events_more_info": "Mais Informações",
   
-  "events_header_title": "Eventos e Agenda",
-  "events_header_subtitle": "Participe dos próximos eventos de Brazilian Zouk com DJ Zen Eyer e experimente a magia da música e da dança.",
+  "shop_add_to_cart": "Adicionar ao Carrinho",
+  "shop_buy_now": "Comprar Agora",
+  "shop_in_stock": "Em Estoque",
   
-  "events_calendar_iframe_title": "Calendário de Eventos",
-  
-  "events_achievement_section_title": "Evolua na Sua Jornada Musical",
-  "events_achievement_section_subtitle": "A Zen Tribe possui um sistema de conquistas completo que recompensa você por interagir com a música, participar de eventos e ser um membro ativo da comunidade.",
-  
-  "events_achievement_xp_title": "Pontos de Experiência (XP)",
-  "events_achievement_xp_desc": "Ganhe XP por cada ação que você realiza, desde ouvir músicas até participar de eventos.",
-  
-  "events_achievement_badges_title": "Emblemas Digitais",
-  "events_achievement_badges_desc": "Desbloqueie emblemas colecionáveis por conquistas especiais e marcos na sua jornada.",
-  
-  "events_achievement_rewards_title": "Recompensas e Benefícios",
-  "events_achievement_rewards_desc": "Ganhe benefícios reais como descontos em produtos, conteúdo exclusivo e upgrades VIP.",
-  
-  "events_achievement_streaks_title": "Sequências Diárias",
-  "events_achievement_streaks_desc": "Mantenha sua sequência de engajamento para ganhar XP bônus e recompensas exclusivas de sequência.",
-
-  "shop_title": "Loja Zen",
-  "shop_subtitle": "Adquira produtos exclusivos e ingressos para eventos",
-  "shop_page_title": "Loja",
-  "shop_page_meta_desc": "Produtos exclusivos e ingressos para eventos de Brazilian Zouk com DJ Zen Eyer.",
-  "shop_error_credentials": "Erro de configuração: Credenciais da API ausentes.",
-  "shop_error_fetch": "Falha ao buscar produtos",
-  "shop_error_unknown": "Erro desconhecido ao buscar produtos.",
-  "shop_error_add_cart": "Não foi possível adicionar ao carrinho.",
-  "shop_out_of_stock": "Fora de Estoque",
-  "shop_adding_text": "Adicionando...",
-  "add_to_cart": "Adicionar ao Carrinho",
-  "shop_in_stock": "Em Estoque"
-}
-
-{
   "music": {
     "pageTitle": "Músicas",
     "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer. Zouk Brasileiro, Eletrônica e House music.",
@@ -243,6 +57,7 @@
       "pausePreview": "Pausar Preview"
     }
   },
+  
   "zenTribe": {
     "pageTitle": "Zen Tribe - Comunidade Exclusiva",
     "pageDesc": "Junte-se à Zen Tribe e tenha acesso a conteúdo exclusivo, eventos VIP e muito mais!",
@@ -334,6 +149,48 @@
       "title": "Pronto para Evoluir Sua Experiência?",
       "subtitle": "Junte-se a milhares de membros da Zen Tribe e desbloqueie todos os benefícios exclusivos!",
       "button": "Entrar na Tribe Agora"
+    }
+  },
+  
+  "auth": {
+    "loading": "Carregando...",
+    "login": {
+      "title": "Bem-vindo de Volta",
+      "subtitle": "Entre na sua conta Zen Tribe",
+      "email": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "password": "Senha",
+      "passwordPlaceholder": "••••••••",
+      "button": "Entrar",
+      "noAccount": "Não tem uma conta?",
+      "createAccount": "Criar Conta",
+      "forgotPassword": "Esqueceu a senha?"
+    },
+    "register": {
+      "title": "Junte-se à Tribe",
+      "subtitle": "Crie sua conta e desbloqueie conteúdo exclusivo",
+      "fullName": "Nome Completo",
+      "fullNamePlaceholder": "João Silva",
+      "confirmPassword": "Confirmar Senha",
+      "confirmPasswordPlaceholder": "••••••••",
+      "button": "Criar Conta",
+      "hasAccount": "Já tem uma conta?",
+      "loginHere": "Entre aqui"
+    },
+    "errors": {
+      "fillAllFields": "Por favor, preencha todos os campos",
+      "invalidEmail": "Por favor, insira um email válido",
+      "nameRequired": "Nome é obrigatório",
+      "passwordTooShort": "A senha deve ter pelo menos 8 caracteres",
+      "passwordMismatch": "As senhas não coincidem",
+      "loginFailed": "Login falhou. Verifique suas credenciais.",
+      "registerFailed": "Registro falhou. Tente novamente.",
+      "googleFailed": "Login com Google falhou. Tente novamente."
+    },
+    "success": {
+      "loginSuccess": "Login bem-sucedido! Redirecionando...",
+      "registerSuccess": "Conta criada com sucesso! Redirecionando...",
+      "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
     }
   }
 }
