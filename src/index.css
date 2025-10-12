@@ -2,45 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========================================
-   CUSTOM PROPERTIES (CSS Variables)
-   ======================================== */
 :root {
-  /* Primary Colors - Electric Blue */
-  --color-primary: 99, 102, 241;           /* #6366F1 - Indigo mais vibrante */
-  --color-primary-darker: 79, 70, 229;     /* #4F46E5 - Para hover */
-  --color-primary-light: 165, 180, 252;    /* #A5B4FC - Para textos */
+  /* PRIMARY - SEU AZUL ELÉTRICO FAVORITO */
+  --color-primary: 13, 150, 255;           /* #0D96FF - Electric Blue */
+  --color-primary-darker: 10, 120, 200;    /* #0A78C8 - Para hover */
+  --color-primary-light: 102, 195, 255;    /* #66C3FF - Para textos */
   
-  /* Secondary Colors - Neon Purple */
+  /* SECONDARY - Neon Purple */
   --color-secondary: 157, 78, 221;         /* #9D4EDD */
   --color-secondary-light: 196, 181, 253;  /* #C4B5FD */
   
-  /* Accent Colors - Vibrant Pink */
+  /* ACCENT - Vibrant Pink */
   --color-accent: 236, 72, 153;            /* #EC4899 */
   --color-accent-light: 251, 207, 232;     /* #FBCFE8 */
   
-  /* Success */
+  /* SUCCESS */
   --color-success: 16, 185, 129;           /* #10B981 - Green */
   --color-success-light: 167, 243, 208;    /* #A7F3D0 */
   
-  /* Warning */
+  /* WARNING */
   --color-warning: 245, 158, 11;           /* #F59E0B - Amber */
   --color-warning-light: 253, 230, 138;    /* #FDE68A */
   
-  /* Error/Danger */
+  /* ERROR */
   --color-error: 239, 68, 68;              /* #EF4444 - Red */
   --color-error-light: 254, 202, 202;      /* #FECACA */
   
-  /* Neutral Colors */
-  --color-background: 6, 6, 10;            /* #06060A - Almost Black */
-  --color-surface: 16, 20, 27;             /* #10141B - Dark Surface */
-  --color-text: 255, 255, 255;             /* #FFFFFF - White */
-  --color-text-dark: 20, 20, 30;           /* #14141E - Dark Text */
+  /* NEUTRAL */
+  --color-background: 6, 6, 10;            /* #06060A */
+  --color-surface: 16, 20, 27;             /* #10141B */
+  --color-text: 255, 255, 255;             /* #FFFFFF */
+  --color-text-dark: 20, 20, 30;           /* #14141E */
 }
 
-/* ========================================
-   BASE STYLES
-   ======================================== */
 @layer base {
   html {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -48,7 +42,6 @@
     scroll-behavior: smooth;
   }
   
-  /* Typography */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Orbitron', 'Inter', sans-serif;
     @apply font-bold;
@@ -57,21 +50,11 @@
   body {
     @apply antialiased;
     overflow-x: hidden;
-    background: linear-gradient(
-      135deg, 
-      rgb(var(--color-background)), 
-      rgb(var(--color-surface))
-    );
+    background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
     background-attachment: fixed;
     min-height: 100vh;
   }
 
-  /* Links */
-  a {
-    @apply transition-colors duration-200;
-  }
-
-  /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -82,27 +65,22 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary/80 rounded-full;
+    background: rgb(var(--color-primary));
+    @apply rounded-full;
     transition: background-color 0.2s;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary;
+    background: rgb(var(--color-primary-darker));
   }
 
-  /* Firefox Scrollbar */
   * {
     scrollbar-width: thin;
     scrollbar-color: rgb(var(--color-primary)) rgb(var(--color-surface));
   }
 }
 
-/* ========================================
-   COMPONENT STYLES
-   ======================================== */
 @layer components {
-  
-  /* ========== BUTTONS ========== */
   .btn {
     @apply inline-flex items-center justify-center gap-2 
            px-6 py-3 rounded-lg font-semibold 
@@ -113,40 +91,43 @@
            select-none;
   }
   
-  /* Button Variants */
   .btn-primary {
-    @apply bg-primary text-white shadow-lg shadow-primary/20
-           hover:bg-[rgb(var(--color-primary-darker))] 
-           hover:shadow-xl hover:shadow-primary/30
+    background: rgb(var(--color-primary));
+    @apply text-white shadow-lg
+           hover:brightness-110
            active:scale-95
            focus-visible:ring-primary;
+    box-shadow: 0 4px 20px rgba(var(--color-primary), 0.3);
+  }
+  
+  .btn-primary:hover {
+    background: rgb(var(--color-primary-darker));
+    box-shadow: 0 6px 30px rgba(var(--color-primary), 0.4);
   }
   
   .btn-secondary {
-    @apply bg-secondary text-white shadow-lg shadow-secondary/20
+    @apply bg-secondary text-white shadow-lg
            hover:brightness-110 
-           hover:shadow-xl hover:shadow-secondary/30
            active:scale-95
            focus-visible:ring-secondary;
   }
   
   .btn-accent {
-    @apply bg-accent text-white shadow-lg shadow-accent/20
+    @apply bg-accent text-white shadow-lg
            hover:brightness-110 
-           hover:shadow-xl hover:shadow-accent/30
            active:scale-95
            focus-visible:ring-accent;
   }
 
   .btn-success {
-    @apply bg-success text-white shadow-lg shadow-success/20
+    @apply bg-success text-white shadow-lg
            hover:brightness-110 
            active:scale-95
            focus-visible:ring-success;
   }
 
   .btn-error, .btn-danger {
-    @apply bg-error text-white shadow-lg shadow-error/20
+    @apply bg-error text-white shadow-lg
            hover:brightness-110 
            active:scale-95
            focus-visible:ring-error;
@@ -165,7 +146,6 @@
            active:scale-95;
   }
 
-  /* Button Sizes */
   .btn-sm {
     @apply px-4 py-2 text-sm;
   }
@@ -182,7 +162,6 @@
     @apply px-10 py-5 text-xl;
   }
 
-  /* ========== CARDS ========== */
   .card {
     @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl 
            border border-white/10 overflow-hidden
@@ -193,30 +172,30 @@
     @apply border-white/20 shadow-2xl;
   }
 
-  /* ========== NAVIGATION ========== */
   .nav-link {
     @apply relative px-4 py-2 text-white/70 hover:text-white 
            transition-all duration-200 font-medium;
   }
   
   .nav-link.active {
-    @apply text-primary;
+    color: rgb(var(--color-primary));
   }
 
   .nav-link.active::after {
     content: '';
-    @apply absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full;
+    @apply absolute bottom-0 left-0 w-full h-0.5 rounded-full;
+    background: rgb(var(--color-primary));
   }
 
-  /* ========== BADGES ========== */
   .badge {
     @apply inline-flex items-center justify-center 
            px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
   }
 
   .badge-primary {
-    @apply bg-primary/20 text-[rgb(var(--color-primary-light))] 
-           border border-primary/30;
+    background: rgba(var(--color-primary), 0.2);
+    color: rgb(var(--color-primary-light));
+    border: 1px solid rgba(var(--color-primary), 0.3);
   }
 
   .badge-secondary {
@@ -244,13 +223,18 @@
            border border-error/30;
   }
 
-  /* ========== INPUTS ========== */
   .input {
     @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg 
            text-white placeholder:text-white/40
-           focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+           focus:outline-none focus:border-transparent
            transition-all duration-200
            disabled:opacity-50 disabled:cursor-not-allowed;
+    box-shadow: 0 0 0 0 rgba(var(--color-primary), 0);
+  }
+  
+  .input:focus {
+    border-color: rgb(var(--color-primary));
+    box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
   }
 
   .input:hover:not(:disabled) {
@@ -261,132 +245,9 @@
     @apply border-error focus:ring-error;
   }
 
-  /* ========== AUDIO PLAYER ========== */
   .audio-progress {
     @apply relative h-1 w-full bg-white/20 rounded-full overflow-hidden cursor-pointer;
   }
   
   .audio-progress-bar {
-    @apply absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-secondary 
-           rounded-full transition-all duration-100;
-  }
-
-  /* ========== EFFECTS ========== */
-  .glow {
-    @apply relative;
-  }
-  
-  .glow::before {
-    content: '';
-    @apply absolute inset-0 -z-10 
-           bg-gradient-to-r from-primary/30 to-secondary/30 
-           rounded-xl blur-2xl opacity-0 
-           transition-opacity duration-300;
-    transform: translateY(10%) scale(0.95);
-  }
-
-  .glow:hover::before {
-    @apply opacity-100;
-  }
-
-  /* Glass effect */
-  .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
-  }
-
-  /* Gradient text */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent;
-  }
-
-  /* Container */
-  .container-custom {
-    @apply container mx-auto px-4 sm:px-6 lg:px-8;
-  }
-}
-
-/* ========================================
-   UTILITY CLASSES
-   ======================================== */
-@layer utilities {
-  /* Text shadows for neon effect */
-  .text-neon {
-    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
-  }
-
-  .text-neon-strong {
-    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
-  }
-
-  /* Box shadows for neon effect */
-  .shadow-neon {
-    box-shadow: 0 0 20px rgba(var(--color-primary), 0.5);
-  }
-
-  .shadow-neon-strong {
-    box-shadow: 0 0 30px rgba(var(--color-primary), 0.7), 
-                0 0 60px rgba(var(--color-primary), 0.4);
-  }
-
-  /* Animations */
-  .animate-glow {
-    animation: glow 2s ease-in-out infinite alternate;
-  }
-
-  @keyframes glow {
-    from {
-      box-shadow: 0 0 20px rgba(var(--color-primary), 0.5);
-    }
-    to {
-      box-shadow: 0 0 30px rgba(var(--color-primary), 0.8), 
-                  0 0 60px rgba(var(--color-primary), 0.5);
-    }
-  }
-
-  /* Prevent text selection */
-  .no-select {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-  }
-
-  /* Hide scrollbar but keep functionality */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-/* ========================================
-   RESPONSIVE UTILITIES
-   ======================================== */
-@media (max-width: 768px) {
-  .btn {
-    @apply px-4 py-2.5 text-sm;
-  }
-
-  .card {
-    @apply rounded-lg;
-  }
-}
-
-/* ========================================
-   ACCESSIBILITY
-   ======================================== */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Focus visible for keyboard navigation */
-*:focus-visible {
-  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
-}
+    background: linear-gradient(90deg, rgb(var(--color-primary)),
