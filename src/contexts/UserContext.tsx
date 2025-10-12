@@ -31,7 +31,7 @@ interface AuthenticateInterface {
 interface UserContextType {
   user: WordPressUser | null;
   loading: boolean;
-  loadingInitial: boolean; // <-- ADICIONAR para diferenciar loading inicial
+  loadingInitial: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -56,7 +56,6 @@ declare global {
 
 const safeWindow = typeof window !== 'undefined';
 
-// Pega configuração do WordPress
 const getWpConfig = () => {
   console.log('[UserContext] 🔧 Obtendo configuração...');
   
@@ -85,14 +84,13 @@ const getWpConfig = () => {
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<WordPressUser | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loadingInitial, setLoadingInitial] = useState(true); // <-- ADICIONAR
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sdk, setSdk] = useState<SimpleJwtLogin | null>(null);
   const [config] = useState(getWpConfig());
 
   console.log('[UserContext] 🎯 Config:', config);
 
-  // Inicializa SDK
   useEffect(() => {
     if (config.restUrl) {
       try {
@@ -107,7 +105,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [config.restUrl]);
 
-  // Logout
   const logout = () => {
     console.log('[UserContext] 🚪 Logout executado');
     setUser(null);
@@ -118,20 +115,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Constrói URL de avatar
   const buildAvatarUrl = (displayName?: string) => {
     const name = displayName || 'User';
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=333&color=fff`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366F1&color=fff&bold=true`;
   };
 
-  // Busca detalhes do usuário a partir do token
   const fetchUserDetails = async (token: string) => {
     try {
       console.log('[UserContext] 🔍 Decodificando JWT...');
       const decoded = jwtDecode<DecodedJwt>(token);
       console.log('[UserContext] 📊 JWT decodificado:', decoded);
       
-      // Verifica expiração
       if (decoded?.exp && decoded.exp * 1000 < Date.now()) {
         console.log('[UserContext] ⏰ Token expirado');
         logout();
@@ -168,7 +162,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Inicializa autenticação ao carregar
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -179,17 +172,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return setLoadingInitial(false);
         }
         
-        // Verifica se tem JWT na URL
         const urlParams = new URLSearchParams(window.location.search);
         const jwtFromUrl = urlParams.get('jwt');
         
         if (jwtFromUrl) {
           console.log('[UserContext] 🔗 JWT encontrado na URL');
           await fetchUserDetails(jwtFromUrl);
-          // Remove da URL
           window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
         } else {
-          // Verifica localStorage
           const storedToken = localStorage.getItem('jwt_token');
           if (storedToken) {
             console.log('[UserContext] 💾 Token encontrado no localStorage');
@@ -208,10 +198,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
     
     initializeAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Login com email/senha
   const login = async (email: string, password: string) => {
     console.log('[UserContext] 🔐 Tentando login...', { email });
     
@@ -247,7 +235,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Registro de novo usuário
   const register = async (name: string, email: string, password: string) => {
     console.log('[UserContext] 📝 Tentando registro...', { name, email });
     
@@ -261,27 +248,80 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     
     try {
-      const endpoint = `${config.restUrl}simple-jwt-login/v1/register`;
-      console.log('[UserContext] 📡 POST para:', endpoint);
+      // TENTATIVA 1: Simple JWT Login
+      let endpoint = `${config.restUrl}simple-jwt-login/v1/register`;
+      console.log('[UserContext] 📡 Tentando Simple JWT Login:', endpoint);
       
-      const response = await fetch(endpoint, {
+      let response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, display_name: name })
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          display_name: name 
+        })
       });
       
+      console.log('[UserContext] 📥 Status Simple JWT:', response.status);
+      
+      // TENTATIVA 2: Se 404, usa WP REST API nativo
+      if (response.status === 404) {
+        console.log('[UserContext] ⚠️ Simple JWT não disponível, usando WP Users API...');
+        
+        endpoint = `${config.restUrl}wp/v2/users`;
+        console.log('[UserContext] 📡 POST para:', endpoint);
+        
+        response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            username: email.split('@')[0],
+            email, 
+            password,
+            name,
+            roles: ['subscriber']
+          })
+        });
+        
+        console.log('[UserContext] 📥 Status WP Users:', response.status);
+      }
+      
       const data = await response.json();
-      console.log('[UserContext] 📥 Resposta do registro:', data);
+      console.log('[UserContext] 📊 Resposta:', data);
       
       if (!response.ok) {
-        const errorMsg = data.message || 'Erro no registro.';
+        let errorMsg = data.message || data.error || data.code || 'Erro no registro.';
+        
+        // Traduz erros comuns
+        if (errorMsg.includes('already exists') || errorMsg.includes('username_exists') || errorMsg.includes('email_exists')) {
+          errorMsg = 'Este email já está cadastrado. Tente fazer login.';
+        } else if (errorMsg.includes('invalid_email')) {
+          errorMsg = 'Email inválido.';
+        } else if (errorMsg.includes('weak_password')) {
+          errorMsg = 'Senha muito fraca. Use pelo menos 8 caracteres.';
+        } else if (response.status === 404) {
+          errorMsg = 'Serviço de registro não disponível. Contate o administrador.';
+        } else if (response.status === 403) {
+          errorMsg = 'Registro desabilitado. Contate o administrador.';
+        }
+        
         console.log('[UserContext] ❌ Registro falhou:', errorMsg);
         throw new Error(errorMsg);
       }
       
-      console.log('[UserContext] ✅ Registro bem-sucedido, fazendo auto-login...');
-      // Auto-login após registro
-      await login(email, password);
+      console.log('[UserContext] ✅ Registro bem-sucedido!');
+      
+      // Se retornar JWT direto
+      if (data.jwt) {
+        console.log('[UserContext] 🎫 JWT recebido diretamente');
+        await fetchUserDetails(data.jwt);
+      } else {
+        // Auto-login
+        console.log('[UserContext] 🔐 Fazendo auto-login...');
+        await login(email, password);
+      }
     } catch (err: any) {
       const msg = err?.message || 'Erro no registro';
       console.error('[UserContext] ❌ Erro capturado:', msg);
@@ -292,7 +332,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Login com Google (redirect flow - legado)
   const loginWithGoogle = () => {
     console.log('[UserContext] 🔵 Iniciando login com Google (redirect)...');
     setLoading(true); 
@@ -333,7 +372,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Login com Google Token (Google Identity Services - RECOMENDADO)
   const loginWithGoogleToken = async (googleToken: string) => {
     console.log('[UserContext] 🔵 Login com Google Token...');
     
@@ -392,7 +430,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const value: UserContextType = {
     user,
     loading,
-    loadingInitial, // <-- ADICIONAR
+    loadingInitial,
     error,
     login,
     logout,
