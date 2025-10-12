@@ -213,3 +213,127 @@
   "add_to_cart": "Adicionar ao Carrinho",
   "shop_in_stock": "Em Estoque"
 }
+
+{
+  "music": {
+    "pageTitle": "Músicas",
+    "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer. Zouk Brasileiro, Eletrônica e House music.",
+    "hero": {
+      "badge": "Produções Originais & Remixes",
+      "title": "Minhas Músicas",
+      "subtitle": "Explore minhas últimas tracks, remixes exclusivos e conteúdo para download.",
+      "cta": "Downloads grátis para a Zen Tribe!"
+    },
+    "filters": {
+      "all": "Todas as Tracks",
+      "brazilianZouk": "Zouk Brasileiro",
+      "electronic": "Eletrônica",
+      "chillHouse": "Chill House",
+      "deepHouse": "Deep House",
+      "tropicalHouse": "Tropical House",
+      "techHouse": "Tech House"
+    },
+    "track": {
+      "download": "Baixar",
+      "share": "Compartilhar",
+      "duration": "Duração",
+      "bpm": "BPM",
+      "releaseDate": "Lançamento",
+      "playPreview": "Tocar Preview",
+      "pausePreview": "Pausar Preview"
+    }
+  },
+  "zenTribe": {
+    "pageTitle": "Zen Tribe - Comunidade Exclusiva",
+    "pageDesc": "Junte-se à Zen Tribe e tenha acesso a conteúdo exclusivo, eventos VIP e muito mais!",
+    "badge": "Comunidade Exclusiva",
+    "welcome": "Bem-vindo à",
+    "tribe": "Zen Tribe",
+    "subtitle": "Uma comunidade exclusiva para verdadeiros amantes de música. Ganhe pontos, desbloqueie conquistas e aproveite benefícios incríveis.",
+    "joinNow": "Entrar Agora",
+    "learnMore": "Saiba Mais",
+    "unlockAtLevel": "Desbloquear no nível {{level}}",
+    "stats": {
+      "members": "Membros",
+      "tracks": "Tracks",
+      "events": "Eventos",
+      "achievements": "Conquistas"
+    },
+    "tabs": {
+      "benefits": "Benefícios",
+      "achievements": "Conquistas",
+      "challenges": "Desafios"
+    },
+    "benefits": {
+      "exclusiveMusic": {
+        "title": "Música Exclusiva",
+        "desc": "Acesso antecipado a lançamentos e remixes exclusivos antes de qualquer um."
+      },
+      "earlyAccess": {
+        "title": "Acesso Antecipado",
+        "desc": "Compre ingressos para eventos antes da venda geral."
+      },
+      "merchandise": {
+        "title": "Merchandise Exclusivo",
+        "desc": "Descontos em produtos oficiais e edições limitadas."
+      },
+      "community": {
+        "title": "Comunidade Privada",
+        "desc": "Acesso ao grupo exclusivo para membros da Tribe."
+      },
+      "vipStatus": {
+        "title": "Status VIP",
+        "desc": "Privilégios especiais em eventos ao vivo."
+      },
+      "behindScenes": {
+        "title": "Bastidores",
+        "desc": "Conteúdo exclusivo dos bastidores e processo criativo."
+      }
+    },
+    "achievements": {
+      "firstTrack": {
+        "title": "Primeira Track",
+        "desc": "Baixou sua primeira música"
+      },
+      "firstEvent": {
+        "title": "Primeiro Evento",
+        "desc": "Participou do primeiro evento"
+      },
+      "collector": {
+        "title": "Colecionador",
+        "desc": "Baixou 10 tracks"
+      },
+      "legend": {
+        "title": "Lenda",
+        "desc": "Alcançou o nível máximo"
+      },
+      "streak": {
+        "title": "Streak de Fogo",
+        "desc": "7 dias consecutivos ativos"
+      },
+      "marketer": {
+        "title": "Embaixador",
+        "desc": "Compartilhou 5 vezes"
+      }
+    },
+    "challenges": {
+      "downloadTracks": {
+        "title": "Baixar 5 Tracks",
+        "desc": "Faça download de 5 músicas diferentes"
+      },
+      "attendEvents": {
+        "title": "Participar de 3 Eventos",
+        "desc": "Compareça a 3 eventos do DJ Zen Eyer"
+      },
+      "shareContent": {
+        "title": "Compartilhar 10 Vezes",
+        "desc": "Compartilhe conteúdo 10 vezes nas redes sociais"
+      }
+    },
+    "cta": {
+      "title": "Pronto para Evoluir Sua Experiência?",
+      "subtitle": "Junte-se a milhares de membros da Zen Tribe e desbloqueie todos os benefícios exclusivos!",
+      "button": "Entrar na Tribe Agora"
+    }
+  }
+}
