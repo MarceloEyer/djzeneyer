@@ -268,22 +268,24 @@
   "badge_sale": "Promoção"
 }
 
-"play_featured_mix": "Play Featured Mix",
-  "upcoming_events": "Upcoming Events",
+{
   
-  "home_features_title": "Why Join the Zen Tribe?",
-  "home_features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
+  "play_featured_mix": "Tocar Mix em Destaque",
+  "upcoming_events": "Próximos Eventos",
   
-  "home_feat_exclusive_title": "Exclusive Music",
-  "home_feat_exclusive_desc": "Early access to releases and exclusive remixes",
+  "home_features_title": "Por Que Entrar na Zen Tribe?",
+  "home_features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
   
-  "home_feat_achievements_title": "Achievements & Rewards",
-  "home_feat_achievements_desc": "Earn XP, unlock badges, and level up",
+  "home_feat_exclusive_title": "Música Exclusiva",
+  "home_feat_exclusive_desc": "Acesso antecipado a lançamentos e remixes exclusivos",
   
-  "home_feat_community_title": "Active Community",
-  "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
+  "home_feat_achievements_title": "Conquistas & Recompensas",
+  "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
   
-  "home_cta_subtitle": "Join thousands of members and transform your experience",
-  "join_now_button": "Join Now",
-  "explore_music_button": "Explore Music"
+  "home_feat_community_title": "Comunidade Ativa",
+  "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
+  
+  "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência",
+  "join_now_button": "Entrar Agora",
+  "explore_music_button": "Explorar Músicas"
 }
