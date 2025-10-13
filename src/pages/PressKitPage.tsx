@@ -398,8 +398,8 @@ const PressKitPage: React.FC = () => {
                     <div className="flex items-start gap-3">
                       <Music2 className="text-primary mt-1" size={20} />
                       <div>
-                        <div className="font-bold text-white mb-1">Genres</div>
-                        <div className="text-white/70">Brazilian Zouk, Electronic</div>
+                        <div className="font-bold text-white mb-1">Genre</div>
+                        <div className="text-white/70">Brazilian Zouk</div>
                       </div>
                     </div>
                   </div>
