@@ -5,12 +5,10 @@
   "nav_tribe": "Zen Tribe",
   "nav_presskit": "Work With Me",
   "nav_shop": "Shop",
-  "nav_login": "Sign In",
   "nav_sign_in": "Sign In",
   "nav_logout": "Logout",
   "nav_dashboard": "Dashboard",
   "nav_my_account": "My Account",
-  "nav_work_with_me": "Work With Me",
   
   "footer_rights": "All rights reserved.",
   "footer_about": "About",
@@ -18,23 +16,44 @@
   "footer_privacy": "Privacy Policy",
   "footer_terms": "Terms of Service",
   
+  "badge_featured": "Featured",
+  "badge_new": "New",
+  "badge_sale": "Sale",
+  
+  "sign_in": "Sign In",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  
+  "home_page_title": "DJ Zen Eyer - Brazilian Zouk & House Music",
+  "home_page_meta_desc": "Professional DJ specialized in Brazilian Zouk and House Music. Events, mixes, and unique musical experiences.",
   "home_welcome": "Welcome to DJ Zen Eyer",
   "home_tagline": "Brazilian Zouk & Electronic Music Producer",
   "home_cta": "Explore My Music",
-  "home_page_title": "DJ Zen Eyer - Brazilian Zouk & House Music",
-  "home_page_meta_desc": "Professional DJ specialized in Brazilian Zouk and House Music. Events, mixes, and unique musical experiences.",
+  "home_features_title": "Why Join the Zen Tribe?",
+  "home_features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
+  "home_feat_exclusive_title": "Exclusive Music",
+  "home_feat_exclusive_desc": "Early access to releases and exclusive remixes",
+  "home_feat_achievements_title": "Achievements & Rewards",
+  "home_feat_achievements_desc": "Earn XP, unlock badges, and level up",
+  "home_feat_community_title": "Active Community",
+  "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
+  "home_cta_subtitle": "Join thousands of members and transform your experience",
+  "join_now_button": "Join Now",
+  "explore_music_button": "Explore Music",
   
   "hero_title": "DJ Zen Eyer",
   "hero_subtitle": "Brazilian Zouk & House Music",
   "hero_cta": "Listen Now",
   "hero_cta_secondary": "View Events",
+  "play_featured_mix": "Play Featured Mix",
   
+  "events_page_title": "Events",
+  "events_page_meta_desc": "Upcoming events and performances by DJ Zen Eyer",
   "events_title": "Upcoming Events",
   "events_past": "Past Events",
   "events_buy_ticket": "Buy Ticket",
   "events_more_info": "More Info",
-  "events_page_title": "Events",
-  "events_page_meta_desc": "Upcoming events and performances by DJ Zen Eyer",
   "events_header_title": "Upcoming Events",
   "events_header_subtitle": "Join us at our next parties and experiences",
   "events_header_badge": "Live Events",
@@ -51,10 +70,42 @@
   "events_achievement_rewards_desc": "Gain access to VIP content and events",
   "events_achievement_streaks_title": "Streaks",
   "events_achievement_streaks_desc": "Maintain your consecutive event streak",
+  "events_cta_title": "Ready to Join the Party?",
+  "events_cta_subtitle": "Subscribe to stay updated on upcoming events and exclusive experiences",
+  "events_cta_button": "Get Notified",
+  "upcoming_events": "Upcoming Events",
   
-  "shop_add_to_cart": "Add to Cart",
-  "shop_buy_now": "Buy Now",
-  "shop_in_stock": "In Stock",
+  "music_page_title": "Music",
+  "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
+  "music": {
+    "pageTitle": "Music",
+    "pageDesc": "Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer.",
+    "hero": {
+      "badge": "Original Productions & Remixes",
+      "title": "My",
+      "titleHighlight": "Music",
+      "subtitle": "Explore my latest tracks, exclusive remixes, and downloadable content.",
+      "cta": "Free downloads for the Zen Tribe!"
+    },
+    "filters": {
+      "all": "All Tracks",
+      "sets": "Sets",
+      "nacional": "Nacional",
+      "cremoso": "Cremoso",
+      "black": "Black",
+      "tradicional": "Tradicional"
+    },
+    "track": {
+      "download": "Download",
+      "share": "Share",
+      "duration": "Duration",
+      "bpm": "BPM",
+      "releaseDate": "Release",
+      "playPreview": "Play Preview",
+      "pausePreview": "Pause Preview"
+    }
+  },
+  
   "shop_page_title": "Shop",
   "shop_page_meta_desc": "Event tickets, exclusive merchandise, and more",
   "shop_title": "Zen Tribe Shop",
@@ -62,44 +113,26 @@
   "shop_all_products": "All Products",
   "shop_featured_title": "Featured Products",
   "shop_empty_cta": "No products available at the moment",
+  "shop_add_to_cart": "Add to Cart",
+  "shop_buy_now": "Buy Now",
+  "shop_buy_button": "Buy Now",
+  "shop_in_stock": "In Stock",
   "shop_out_of_stock": "Out of Stock",
   "shop_error_fetch": "Error loading products",
   "shop_error_unknown": "Unknown error",
   "shop_adding_text": "Adding...",
-  "add_to_cart": "Add to Cart",
+  "shop_free_shipping": "Free Shipping",
+  "shop_free_shipping_desc": "Orders over R$150",
+  "shop_secure_payment": "Secure Payment",
+  "shop_secure_payment_desc": "100% Protected",
+  "shop_exclusive_items": "Exclusive Items",
+  "shop_exclusive_items_desc": "Limited Edition",
+  "shop_fast_delivery": "Fast Delivery",
+  "shop_fast_delivery_desc": "2-3 Business Days",
+  "shop_hot_near_you": "Hot Near You",
   
-  "music": {
-    "pageTitle": "Music",
-    "pageDesc": "Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer. Brazilian Zouk, Electronic, and House music.",
-    "hero": {
-      "badge": "Original Productions & Remixes",
-      "title": "My Music",
-      "subtitle": "Explore my latest tracks, exclusive remixes, and downloadable content.",
-      "cta": "Free downloads for the Zen Tribe!"
-    },
-    "filters": {
-      "all": "All Tracks",
-      "brazilianZouk": "Brazilian Zouk",
-      "electronic": "Electronic",
-      "chillHouse": "Chill House",
-      "deepHouse": "Deep House",
-      "tropicalHouse": "Tropical House",
-      "techHouse": "Tech House"
-    },
-    "track": {
-      "download": "Download",
-      "share": "Share",
-      "duration": "Duration",
-      "bpm": "BPM",
-      "releaseDate": "Released",
-      "playPreview": "Play Preview",
-      "pausePreview": "Pause Preview"
-    }
-  },
-  
-  "music_page_title": "Music",
-  "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
-  
+  "tribe_page_title": "Zen Tribe",
+  "tribe_page_meta_desc": "Join the Zen Tribe community and become part of the family",
   "zenTribe": {
     "pageTitle": "Zen Tribe - Exclusive Community",
     "pageDesc": "Join the Zen Tribe and get access to exclusive content, VIP events, and much more!",
@@ -194,9 +227,6 @@
     }
   },
   
-  "tribe_page_title": "Zen Tribe",
-  "tribe_page_meta_desc": "Join the Zen Tribe community and become part of the family",
-  
   "presskit_page_title": "Work With Me",
   "presskit_page_meta_desc": "Book DJ Zen Eyer for your event. Press kit and contact information.",
   
@@ -243,116 +273,5 @@
       "registerSuccess": "Account created successfully! Redirecting...",
       "googleSuccess": "Google login successful! Redirecting..."
     }
-  },
-  
-  "auth_welcome_back": "Welcome Back",
-  "auth_create_account": "Create Account",
-  "auth_enter_account": "Enter your Zen Tribe account",
-  "auth_join_tribe": "Join Zen Tribe",
-  "auth_username": "Username",
-  "auth_username_placeholder": "Enter your username",
-  "auth_password": "Password",
-  "auth_login": "Sign In",
-  "auth_register": "Create Account",
-  "auth_no_account": "Don't have an account?",
-  "auth_have_account": "Already have an account?",
-  "auth_error_login": "Login error. Please try again.",
-  "auth_error_register": "Registration error. Please try again.",
-  
-  "loading": "Loading...",
-  "error": "Error",
-  "success": "Success",
-  
-  "badge_featured": "Featured",
-  "badge_new": "New",
-  "badge_sale": "Sale",
-
-  "play_featured_mix": "Play Featured Mix",
-  "upcoming_events": "Upcoming Events",
-  
-  "home_features_title": "Why Join the Zen Tribe?",
-  "home_features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
-  
-  "home_feat_exclusive_title": "Exclusive Music",
-  "home_feat_exclusive_desc": "Early access to releases and exclusive remixes",
-  
-  "home_feat_achievements_title": "Achievements & Rewards",
-  "home_feat_achievements_desc": "Earn XP, unlock badges, and level up",
-  
-  "home_feat_community_title": "Active Community",
-  "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
-  
-  "home_cta_subtitle": "Join thousands of members and transform your experience",
-  "join_now_button": "Join Now",
-  "explore_music_button": "Explore Music",
-  "events_cta_title": "Ready to Join the Party?",
-  "events_cta_subtitle": "Subscribe to stay updated on upcoming events and exclusive experiences",
-  "events_cta_button": "Get Notified",
-   "shop_free_shipping": "Free Shipping",
-  "shop_free_shipping_desc": "Orders over R$150",
-  "shop_secure_payment": "Secure Payment",
-  "shop_secure_payment_desc": "100% Protected",
-  "shop_exclusive_items": "Exclusive Items",
-  "shop_exclusive_items_desc": "Limited Edition",
-  "shop_fast_delivery": "Fast Delivery",
-  "shop_fast_delivery_desc": "2-3 Business Days",
-  "shop_hot_near_you": "Hot Near You",
-  "shop_buy_button": "Buy Now",
-  "sign_in": "Sign In",
-   "music": {
-    "pageTitle": "Music",
-    "pageDesc": "Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer.",
-    "hero": {
-      "badge": "Original Productions & Remixes",
-      "title": "My",
-      "titleHighlight": "Music",
-      "subtitle": "Explore my latest tracks, exclusive remixes, and downloadable content.",
-      "cta": "Free downloads for the Zen Tribe!"
-    },
-    "filters": {
-      "all": "All Tracks",
-      "sets": "Sets",
-      "nacional": "Nacional",
-      "cremoso": "Cremoso",
-      "black": "Black",
-      "tradicional": "Tradicional"
-    },
-    "track": {
-      "download": "Download",
-      "share": "Share",
-      "duration": "Duration",
-      "bpm": "BPM",
-      "releaseDate": "Release",
-      "playPreview": "Play Preview",
-      "pausePreview": "Pause Preview"
-    }
-"music": {
-    "pageTitle": "Música",
-    "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer.",
-    "hero": {
-      "badge": "Produções Originais & Remixes",
-      "title": "Minhas",
-      "titleHighlight": "Músicas",
-      "subtitle": "Explore minhas últimas tracks, remixes exclusivos e conteúdo para download.",
-      "cta": "Downloads grátis para a Zen Tribe!"
-    },
-    "filters": {
-      "all": "Todas as Tracks",
-      "sets": "Sets",
-      "nacional": "Nacional",
-      "cremoso": "Cremoso",
-      "black": "Black",
-      "tradicional": "Tradicional",
-    },
-    "track": {
-      "download": "Baixar",
-      "share": "Compartilhar",
-      "duration": "Duração",
-      "bpm": "BPM",
-      "releaseDate": "Lançamento",
-      "playPreview": "Tocar Preview",
-      "pausePreview": "Pausar Preview"
-    }
   }
-   }
 }
