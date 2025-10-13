@@ -271,7 +271,10 @@
     "success": {
       "loginSuccess": "Login successful! Redirecting...",
       "registerSuccess": "Account created successfully! Redirecting...",
-      "googleSuccess": "Google login successful! Redirecting..."
+      "googleSuccess": "Google login successful! Redirecting...",
+        "events_calendar_export": "Export Calendar",
+  "events_calendar_add": "Add to Calendar",
+  "events_calendar_note": "Click on events for more details"
     }
   }
 }
