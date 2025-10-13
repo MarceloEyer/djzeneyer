@@ -1,4 +1,4 @@
-// src/pages/MusicPage.tsx - REDESENHADA
+// src/pages/MusicPage.tsx - VERSÃO CORRIGIDA COM NOVOS FILTROS
 
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,78 +36,65 @@ interface Track {
 const tracks: Track[] = [
   {
     id: 1,
-    title: "Zouk Nights",
+    title: "Zouk Nights Set",
     artist: "DJ Zen Eyer",
-    duration: "4:32",
+    duration: "60:00",
     releaseDate: "2024-10-01",
-    coverArt: "https://placehold.co/400x400/0D96FF/FFFFFF?text=Zouk+Nights&font=orbitron",
+    coverArt: "https://placehold.co/400x400/0D96FF/FFFFFF?text=Sets&font=orbitron",
     audioUrl: "/music/zouk-nights-preview.mp3",
     downloadUrl: "/music/zouk-nights-full.mp3",
-    genre: "Brazilian Zouk",
+    genre: "Sets",
     bpm: 128,
     streamUrl: "https://soundcloud.com/djzeneyer/zouk-nights"
   },
   {
     id: 2,
-    title: "Electric Dreams",
+    title: "Nacional Mix",
     artist: "DJ Zen Eyer",
     duration: "5:15",
     releaseDate: "2024-09-15",
-    coverArt: "https://placehold.co/400x400/9D4EDD/FFFFFF?text=Electric+Dreams&font=orbitron",
-    audioUrl: "/music/electric-dreams-preview.mp3",
-    downloadUrl: "/music/electric-dreams-full.mp3",
-    genre: "Electronic",
-    bpm: 132,
-    streamUrl: "https://soundcloud.com/djzeneyer/electric-dreams"
+    coverArt: "https://placehold.co/400x400/10B981/FFFFFF?text=Nacional&font=orbitron",
+    audioUrl: "/music/nacional-preview.mp3",
+    downloadUrl: "/music/nacional-full.mp3",
+    genre: "Nacional",
+    bpm: 128,
+    streamUrl: "https://soundcloud.com/djzeneyer/nacional"
   },
   {
     id: 3,
-    title: "Sunset Vibes",
+    title: "Cremoso Vibes",
     artist: "DJ Zen Eyer",
     duration: "6:20",
     releaseDate: "2024-08-20",
-    coverArt: "https://placehold.co/400x400/EC4899/FFFFFF?text=Sunset+Vibes&font=orbitron",
-    audioUrl: "/music/sunset-vibes-preview.mp3",
-    downloadUrl: "/music/sunset-vibes-full.mp3",
-    genre: "Chill House",
-    bpm: 120,
-    streamUrl: "https://soundcloud.com/djzeneyer/sunset-vibes"
-  },
-  {
-    id: 4,
-    title: "Midnight Groove",
-    artist: "DJ Zen Eyer",
-    duration: "4:45",
-    releaseDate: "2024-07-10",
-    coverArt: "https://placehold.co/400x400/10B981/FFFFFF?text=Midnight+Groove&font=orbitron",
-    audioUrl: "/music/midnight-groove-preview.mp3",
-    downloadUrl: "/music/midnight-groove-full.mp3",
-    genre: "Deep House",
-    bpm: 124
-  },
-  {
-    id: 5,
-    title: "Tropical Paradise",
-    artist: "DJ Zen Eyer",
-    duration: "5:30",
-    releaseDate: "2024-06-05",
-    coverArt: "https://placehold.co/400x400/F59E0B/FFFFFF?text=Tropical+Paradise&font=orbitron",
-    audioUrl: "/music/tropical-paradise-preview.mp3",
-    downloadUrl: "/music/tropical-paradise-full.mp3",
-    genre: "Tropical House",
+    coverArt: "https://placehold.co/400x400/EC4899/FFFFFF?text=Cremoso&font=orbitron",
+    audioUrl: "/music/cremoso-preview.mp3",
+    downloadUrl: "/music/cremoso-full.mp3",
+    genre: "Cremoso",
     bpm: 115
   },
   {
-    id: 6,
-    title: "Urban Pulse",
+    id: 4,
+    title: "Black Groove",
     artist: "DJ Zen Eyer",
-    duration: "4:50",
-    releaseDate: "2024-05-15",
-    coverArt: "https://placehold.co/400x400/EF4444/FFFFFF?text=Urban+Pulse&font=orbitron",
-    audioUrl: "/music/urban-pulse-preview.mp3",
-    downloadUrl: "/music/urban-pulse-full.mp3",
-    genre: "Tech House",
-    bpm: 128
+    duration: "4:45",
+    releaseDate: "2024-07-10",
+    coverArt: "https://placehold.co/400x400/1F1F1F/FFFFFF?text=Black&font=orbitron",
+    audioUrl: "/music/black-preview.mp3",
+    downloadUrl: "/music/black-full.mp3",
+    genre: "Black",
+    bpm: 120
+  },
+  {
+    id: 5,
+    title: "Tradicional Roots",
+    artist: "DJ Zen Eyer",
+    duration: "5:30",
+    releaseDate: "2024-06-05",
+    coverArt: "https://placehold.co/400x400/F59E0B/FFFFFF?text=Tradicional&font=orbitron",
+    audioUrl: "/music/tradicional-preview.mp3",
+    downloadUrl: "/music/tradicional-full.mp3",
+    genre: "Tradicional",
+    bpm: 125
   }
 ];
 
@@ -206,7 +193,7 @@ const TrackCard: React.FC<{
             className="flex-1 btn btn-primary btn-sm flex items-center justify-center gap-2"
           >
             <Download size={16} />
-            <span>Download</span>
+            <span>{t('music.track.download') || 'Download'}</span>
           </a>
           
           {track.streamUrl && (
@@ -237,7 +224,14 @@ const MusicPage: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const genres = ['all', ...Array.from(new Set(tracks.map(t => t.genre)))];
+  const filters = [
+    { id: 'all', label: t('music.filters.all') || 'All Tracks' },
+    { id: 'Sets', label: t('music.filters.sets') || 'Sets' },
+    { id: 'Nacional', label: t('music.filters.nacional') || 'Nacional' },
+    { id: 'Cremoso', label: t('music.filters.cremoso') || 'Cremoso' },
+    { id: 'Black', label: t('music.filters.black') || 'Black' },
+    { id: 'Tradicional', label: t('music.filters.tradicional') || 'Tradicional' }
+  ];
 
   const filteredTracks = filter === 'all' 
     ? tracks 
@@ -271,8 +265,8 @@ const MusicPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Music | DJ Zen Eyer - Brazilian Zouk & Electronic Music</title>
-        <meta name="description" content="Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer. Brazilian Zouk, Electronic, and House music." />
+        <title>{t('music.pageTitle') || 'Music'} | DJ Zen Eyer</title>
+        <meta name="description" content={t('music.pageDesc') || 'Listen and download exclusive tracks by DJ Zen Eyer.'} />
       </Helmet>
 
       <div className="min-h-screen pt-24 pb-16">
@@ -287,18 +281,18 @@ const MusicPage: React.FC = () => {
             <div className="inline-block mb-4">
               <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
                 <Headphones className="inline-block mr-2" size={16} />
-                Original Productions & Remixes
+                {t('music.hero.badge') || 'Original Productions & Remixes'}
               </div>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
-              My <span className="text-primary">Music</span>
+              {t('music.hero.title') || 'My'} <span className="text-primary">{t('music.hero.titleHighlight') || 'Music'}</span>
             </h1>
             
             <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Explore my latest tracks, exclusive remixes, and downloadable content.
+              {t('music.hero.subtitle') || 'Explore my latest tracks, exclusive remixes, and downloadable content.'}
               <br />
-              <span className="text-primary font-semibold">Free downloads for the Zen Tribe!</span>
+              <span className="text-primary font-semibold">{t('music.hero.cta') || 'Free downloads for the Zen Tribe!'}</span>
             </p>
           </motion.div>
 
@@ -309,17 +303,17 @@ const MusicPage: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="flex flex-wrap justify-center gap-3 mb-12"
           >
-            {genres.map((genre) => (
+            {filters.map((genreFilter) => (
               <button
-                key={genre}
-                onClick={() => setFilter(genre)}
+                key={genreFilter.id}
+                onClick={() => setFilter(genreFilter.id)}
                 className={`px-6 py-3 rounded-full font-semibold transition-all ${
-                  filter === genre
+                  filter === genreFilter.id
                     ? 'bg-primary text-white shadow-lg scale-105'
                     : 'bg-surface/50 text-white/70 hover:text-white hover:bg-surface/80'
                 }`}
               >
-                {genre === 'all' ? 'All Tracks' : genre}
+                {genreFilter.label}
               </button>
             ))}
           </motion.div>
