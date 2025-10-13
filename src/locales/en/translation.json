@@ -326,5 +326,33 @@
       "playPreview": "Play Preview",
       "pausePreview": "Pause Preview"
     }
+"music": {
+    "pageTitle": "Música",
+    "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer.",
+    "hero": {
+      "badge": "Produções Originais & Remixes",
+      "title": "Minhas",
+      "titleHighlight": "Músicas",
+      "subtitle": "Explore minhas últimas tracks, remixes exclusivos e conteúdo para download.",
+      "cta": "Downloads grátis para a Zen Tribe!"
+    },
+    "filters": {
+      "all": "Todas as Tracks",
+      "sets": "Sets",
+      "nacional": "Nacional",
+      "cremoso": "Cremoso",
+      "black": "Black",
+      "tradicional": "Tradicional",
+    },
+    "track": {
+      "download": "Baixar",
+      "share": "Compartilhar",
+      "duration": "Duração",
+      "bpm": "BPM",
+      "releaseDate": "Lançamento",
+      "playPreview": "Tocar Preview",
+      "pausePreview": "Pausar Preview"
+    }
   }
+   }
 }
