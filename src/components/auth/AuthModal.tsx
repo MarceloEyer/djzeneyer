@@ -1,7 +1,7 @@
-// src/components/AuthModal.tsx - VERSÃO COMPLETA COM GOOGLE OAUTH
-
+// src/components/AuthModal.tsx - VERSÃO FINAL (LIMPA)
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,21 +13,16 @@ interface AuthModalProps {
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [googleClientId, setGoogleClientId] = useState('');
+  const [googleClientId] = useState('960427404700-2a7p5kcgj3dgiabora5hn7rafdc73n7v.apps.googleusercontent.com');
 
-  // Busca Client ID do Google ao montar componente
-  useEffect(() => {
-    // Por enquanto hardcoded, mas pode buscar via API
-    setGoogleClientId('960427404700-2a7p5kcgj3dgiabora5hn7rafdc73n7v.apps.googleusercontent.com');
-  }, []);
-
-  // Login normal (email/senha)
+  // ✅ Login normal (email/senha)
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -46,23 +41,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         localStorage.setItem('jwt_token', data.data.jwt);
         localStorage.setItem('user_email', email);
         
-        console.log('✅ Login successful!');
+        console.log('✅ Login successful! Redirecting to dashboard...');
         
         if (onSuccess) onSuccess();
         onClose();
-        window.location.reload();
+        
+        // 🎯 Redireciona para dashboard
+        navigate('/dashboard');
+        setTimeout(() => window.location.reload(), 100);
       } else {
         throw new Error(data.data?.message || 'Login failed');
       }
     } catch (err: any) {
       console.error('❌ Login error:', err);
-      setError(err.message || t('auth_error_login'));
+      setError(err.message || t('auth_error_login') || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Registro normal
+  // ✅ Registro normal
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -78,14 +76,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       const data = await response.json();
 
       if (data.success) {
-        console.log('✅ Registration successful!');
+        console.log('✅ Registration successful! Logging in...');
+        // Após registro, faz login automaticamente
         handleLogin(e);
       } else {
         throw new Error(data.data?.message || 'Registration failed');
       }
     } catch (err: any) {
       console.error('❌ Registration error:', err);
-      setError(err.message || t('auth_error_register'));
+      setError(err.message || t('auth_error_register') || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -96,6 +95,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     const redirectUri = `${window.location.origin}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
     const scope = 'openid email profile';
     
+    // Salva página atual para redirecionar depois
+    localStorage.setItem('pre_login_page', window.location.pathname);
+    
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
       `client_id=${encodeURIComponent(googleClientId)}&` +
       `redirect_uri=${encodeURIComponent(redirectUri)}&` +
@@ -104,9 +106,32 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       `access_type=offline&` +
       `prompt=select_account`;
 
-    console.log('🚀 Redirecting to Google OAuth:', googleAuthUrl);
+    console.log('🚀 Redirecting to Google OAuth...');
     window.location.href = googleAuthUrl;
   };
+
+  // ✅ Detecta retorno do Google OAuth
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasGoogleCallback = urlParams.has('rest_route') && urlParams.get('rest_route')?.includes('oauth');
+    
+    if (hasGoogleCallback) {
+      console.log('🔍 Google OAuth callback detected!');
+      
+      // Aguarda 2 segundos para o WordPress processar
+      setTimeout(() => {
+        const preLoginPage = localStorage.getItem('pre_login_page');
+        localStorage.removeItem('pre_login_page');
+        
+        // Limpa URL params
+        window.history.replaceState({}, '', window.location.pathname);
+        
+        // Redireciona para dashboard
+        navigate('/dashboard');
+        window.location.reload();
+      }, 2000);
+    }
+  }, [navigate]);
 
   if (!isOpen) return null;
 
@@ -130,6 +155,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10"
+            aria-label="Close"
           >
             <X size={24} />
           </button>
@@ -137,12 +163,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           <div className="p-8">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-black font-display mb-2">
-                {mode === 'login' ? t('auth_welcome_back') || 'Bem-vindo de Volta' : t('auth_create_account') || 'Criar Conta'}
+                {mode === 'login' ? (t('auth_welcome_back') || 'Bem-vindo de Volta') : (t('auth_create_account') || 'Criar Conta')}
               </h2>
               <p className="text-white/60">
                 {mode === 'login' 
-                  ? t('auth_enter_account') || 'Entre na sua conta Zen Tribe' 
-                  : t('auth_join_tribe') || 'Junte-se à Zen Tribe'}
+                  ? (t('auth_enter_account') || 'Entre na sua conta Zen Tribe')
+                  : (t('auth_join_tribe') || 'Junte-se à Zen Tribe')}
               </p>
             </div>
 
@@ -181,7 +207,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </div>
             </div>
 
-            {/* Form normal */}
+            {/* Form */}
             <form onSubmit={mode === 'login' ? handleLogin : handleRegister} className="space-y-4">
               {mode === 'register' && (
                 <div>
