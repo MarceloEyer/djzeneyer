@@ -50,6 +50,7 @@ const ProductCarousel: React.FC<{
   addingToCart: number | null;
   formatPrice: (price: string) => string;
 }> = ({ title, products, onAddToCart, addingToCart, formatPrice }) => {
+  const { t } = useTranslation();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -140,13 +141,13 @@ const ProductCarousel: React.FC<{
                   
                   {product.on_sale && (
                     <div className="absolute top-3 right-3 bg-error/90 backdrop-blur-sm text-white px-3 py-1 rounded-md text-xs font-bold uppercase">
-                      SALE
+                      {t('badge_sale')}
                     </div>
                   )}
 
                   <div className="absolute top-3 left-3 bg-primary/90 backdrop-blur-sm text-white px-3 py-1 rounded-md text-xs font-bold uppercase flex items-center gap-1">
                     <Star size={12} fill="currentColor" />
-                    NEW
+                    {t('badge_new')}
                   </div>
                 </div>
               </Link>
@@ -212,11 +213,11 @@ const ProductCarousel: React.FC<{
                       ) : (
                         <ShoppingCart size={16} />
                       )}
-                      <span>Comprar</span>
+                      <span>{t('shop_buy_button')}</span>
                     </motion.button>
                   ) : (
                     <button disabled className="btn bg-surface text-white/30 px-4 py-2 text-sm font-bold cursor-not-allowed">
-                      Esgotado
+                      {t('shop_out_of_stock')}
                     </button>
                   )}
                 </div>
@@ -389,11 +390,11 @@ const ShopPage: React.FC = () => {
                   <div className="flex items-center gap-3 mb-4">
                     <div className="bg-error/90 backdrop-blur-sm text-white px-4 py-2 rounded-md text-sm font-bold uppercase shadow-xl">
                       <Star size={16} className="inline-block mr-1 fill-white" />
-                      FEATURED
+                      {t('badge_featured')}
                     </div>
                     {featuredProducts[0].on_sale && (
                       <div className="bg-warning/90 backdrop-blur-sm text-black px-4 py-2 rounded-md text-sm font-bold uppercase shadow-xl">
-                        SALE
+                        {t('badge_sale')}
                       </div>
                     )}
                   </div>
@@ -466,7 +467,7 @@ const ShopPage: React.FC = () => {
                       ) : (
                         <ShoppingCart size={24} />
                       )}
-                      <span>Comprar Ingresso</span>
+                      <span>{t('shop_buy_now')}</span>
                     </motion.button>
                     
                     <Link
@@ -474,7 +475,7 @@ const ShopPage: React.FC = () => {
                       className="btn btn-outline btn-lg px-8 py-4 text-lg font-bold flex items-center gap-3 shadow-xl hover:scale-105 transition-transform"
                     >
                       <Info size={24} />
-                      <span>Mais Info</span>
+                      <span>{t('events_more_info')}</span>
                     </Link>
                   </div>
                 </motion.div>
@@ -488,10 +489,10 @@ const ShopPage: React.FC = () => {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { icon: <Truck className="text-primary" size={32} />, title: 'Frete Grátis', desc: 'Pedidos acima de R$150' },
-                { icon: <Shield className="text-success" size={32} />, title: 'Pagamento Seguro', desc: '100% Protegido' },
-                { icon: <Gift className="text-accent" size={32} />, title: 'Itens Exclusivos', desc: 'Edição Limitada' },
-                { icon: <Zap className="text-warning" size={32} />, title: 'Entrega Rápida', desc: '2-3 Dias Úteis' },
+                { icon: <Truck className="text-primary" size={32} />, title: t('shop_free_shipping'), desc: t('shop_free_shipping_desc') },
+                { icon: <Shield className="text-success" size={32} />, title: t('shop_secure_payment'), desc: t('shop_secure_payment_desc') },
+                { icon: <Gift className="text-accent" size={32} />, title: t('shop_exclusive_items'), desc: t('shop_exclusive_items_desc') },
+                { icon: <Zap className="text-warning" size={32} />, title: t('shop_fast_delivery'), desc: t('shop_fast_delivery_desc') },
               ].map((benefit, i) => (
                 <motion.div
                   key={i}
@@ -512,7 +513,7 @@ const ShopPage: React.FC = () => {
         {/* Carrosséis de produtos */}
         <div className="pb-16">
           <ProductCarousel 
-            title="🔥 Bombando Perto de Você"
+            title={`🔥 ${t('shop_hot_near_you')}`}
             products={upcomingProducts}
             onAddToCart={addToCart}
             addingToCart={addingToCart}
@@ -520,7 +521,7 @@ const ShopPage: React.FC = () => {
           />
 
           <ProductCarousel 
-            title="⭐ Sua Próxima Festa Perfeita"
+            title={`⭐ ${t('shop_featured_title')}`}
             products={popularProducts}
             onAddToCart={addToCart}
             addingToCart={addingToCart}
