@@ -267,3 +267,24 @@
   "badge_new": "New",
   "badge_sale": "Sale"
 }
+
+{
+  "play_featured_mix": "Play Featured Mix",
+  "upcoming_events": "Upcoming Events",
+  
+  "home_features_title": "Why Join the Zen Tribe?",
+  "home_features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
+  
+  "home_feat_exclusive_title": "Exclusive Music",
+  "home_feat_exclusive_desc": "Early access to releases and exclusive remixes",
+  
+  "home_feat_achievements_title": "Achievements & Rewards",
+  "home_feat_achievements_desc": "Earn XP, unlock badges, and level up",
+  
+  "home_feat_community_title": "Active Community",
+  "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
+  
+  "home_cta_subtitle": "Join thousands of members and transform your experience",
+  "join_now_button": "Join Now",
+  "explore_music_button": "Explore Music"
+}
