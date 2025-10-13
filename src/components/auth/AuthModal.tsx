@@ -1,6 +1,6 @@
-// src/components/AuthModal.tsx - VERSÃO COM GOOGLE OAUTH
+// src/components/AuthModal.tsx - VERSÃO COMPLETA COM GOOGLE OAUTH
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [googleClientId, setGoogleClientId] = useState('');
+
+  // Busca Client ID do Google ao montar componente
+  useEffect(() => {
+    // Por enquanto hardcoded, mas pode buscar via API
+    setGoogleClientId('960427404700-2a7p5kcgj3dgiabora5hn7rafdc73n7v.apps.googleusercontent.com');
+  }, []);
 
   // Login normal (email/senha)
   const handleLogin = async (e: React.FormEvent) => {
@@ -39,6 +46,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         localStorage.setItem('jwt_token', data.data.jwt);
         localStorage.setItem('user_email', email);
         
+        console.log('✅ Login successful!');
+        
         if (onSuccess) onSuccess();
         onClose();
         window.location.reload();
@@ -46,6 +55,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         throw new Error(data.data?.message || 'Login failed');
       }
     } catch (err: any) {
+      console.error('❌ Login error:', err);
       setError(err.message || t('auth_error_login'));
     } finally {
       setLoading(false);
@@ -68,32 +78,33 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       const data = await response.json();
 
       if (data.success) {
+        console.log('✅ Registration successful!');
         handleLogin(e);
       } else {
         throw new Error(data.data?.message || 'Registration failed');
       }
     } catch (err: any) {
+      console.error('❌ Registration error:', err);
       setError(err.message || t('auth_error_register'));
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔥 NOVO - Google OAuth Login
+  // 🔥 Google OAuth Login
   const handleGoogleLogin = () => {
-    // Gera URL do OAuth do Google via Simple JWT Login
-    const clientId = 'SEU_GOOGLE_CLIENT_ID_AQUI'; // TODO: Buscar do backend
     const redirectUri = `${window.location.origin}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
     const scope = 'openid email profile';
     
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-      `client_id=${encodeURIComponent(clientId)}&` +
+      `client_id=${encodeURIComponent(googleClientId)}&` +
       `redirect_uri=${encodeURIComponent(redirectUri)}&` +
       `response_type=code&` +
       `scope=${encodeURIComponent(scope)}&` +
-      `access_type=offline`;
+      `access_type=offline&` +
+      `prompt=select_account`;
 
-    // Redireciona para Google
+    console.log('🚀 Redirecting to Google OAuth:', googleAuthUrl);
     window.location.href = googleAuthUrl;
   };
 
@@ -145,11 +156,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </motion.div>
             )}
 
-            {/* 🔥 NOVO - Google Login Button */}
+            {/* 🔥 Google Login Button */}
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full mb-6 py-4 px-6 bg-white hover:bg-gray-100 text-gray-800 font-bold rounded-lg flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl"
+              className="w-full mb-6 py-4 px-6 bg-white hover:bg-gray-100 text-gray-800 font-bold rounded-lg flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
