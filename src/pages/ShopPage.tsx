@@ -246,6 +246,7 @@ const ProductCarousel: React.FC<{
     </div>
   );
 };
+
 // Componente principal da ShopPage
 const ShopPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -324,7 +325,7 @@ const ShopPage: React.FC = () => {
       : `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
   };
 
-  // Categoriza produtos
+  // Categoriza produtos - APENAS 1 FEATURED!
   const featuredProducts = products.filter(p => p.categories?.some(c => c.name === 'Featured')).slice(0, 1);
   const upcomingProducts = products.slice(0, 8);
   const popularProducts = products.slice(0, 8);
