@@ -5,12 +5,10 @@
   "nav_tribe": "Zen Tribe",
   "nav_presskit": "Trabalhe Comigo",
   "nav_shop": "Loja",
-  "nav_login": "Entrar",
   "nav_sign_in": "Entrar",
   "nav_logout": "Sair",
   "nav_dashboard": "Painel",
   "nav_my_account": "Minha Conta",
-  "nav_work_with_me": "Trabalhe Comigo",
   
   "footer_rights": "Todos os direitos reservados.",
   "footer_about": "Sobre",
@@ -18,23 +16,44 @@
   "footer_privacy": "Política de Privacidade",
   "footer_terms": "Termos de Serviço",
   
+  "badge_featured": "Destaque",
+  "badge_new": "Novo",
+  "badge_sale": "Promoção",
+  
+  "sign_in": "Entrar",
+  "loading": "Carregando...",
+  "error": "Erro",
+  "success": "Sucesso",
+  
+  "home_page_title": "DJ Zen Eyer - Zouk Brasileiro & House Music",
+  "home_page_meta_desc": "DJ profissional especializado em Zouk Brasileiro e House Music. Eventos, mixagens e experiências musicais únicas.",
   "home_welcome": "Bem-vindo ao DJ Zen Eyer",
   "home_tagline": "Produtor de Zouk Brasileiro e Música Eletrônica",
   "home_cta": "Explorar Músicas",
-  "home_page_title": "DJ Zen Eyer - Zouk Brasileiro & House Music",
-  "home_page_meta_desc": "DJ profissional especializado em Zouk Brasileiro e House Music. Eventos, mixagens e experiências musicais únicas.",
+  "home_features_title": "Por Que Entrar na Zen Tribe?",
+  "home_features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
+  "home_feat_exclusive_title": "Música Exclusiva",
+  "home_feat_exclusive_desc": "Acesso antecipado a lançamentos e remixes exclusivos",
+  "home_feat_achievements_title": "Conquistas & Recompensas",
+  "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
+  "home_feat_community_title": "Comunidade Ativa",
+  "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
+  "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência",
+  "join_now_button": "Entrar Agora",
+  "explore_music_button": "Explorar Músicas",
   
   "hero_title": "DJ Zen Eyer",
   "hero_subtitle": "Zouk Brasileiro & House Music",
   "hero_cta": "Ouça Agora",
   "hero_cta_secondary": "Ver Eventos",
+  "play_featured_mix": "Tocar Mix em Destaque",
   
+  "events_page_title": "Eventos",
+  "events_page_meta_desc": "Próximos eventos e apresentações do DJ Zen Eyer",
   "events_title": "Próximos Eventos",
   "events_past": "Eventos Passados",
   "events_buy_ticket": "Comprar Ingresso",
   "events_more_info": "Mais Informações",
-  "events_page_title": "Eventos",
-  "events_page_meta_desc": "Próximos eventos e apresentações do DJ Zen Eyer",
   "events_header_title": "Próximos Eventos",
   "events_header_subtitle": "Junte-se a nós nas próximas festas e experiências",
   "events_header_badge": "Eventos ao Vivo",
@@ -51,40 +70,30 @@
   "events_achievement_rewards_desc": "Ganhe acesso a conteúdo e eventos VIP",
   "events_achievement_streaks_title": "Sequências",
   "events_achievement_streaks_desc": "Mantenha sua sequência de eventos consecutivos",
+  "events_cta_title": "Pronto para Entrar na Festa?",
+  "events_cta_subtitle": "Inscreva-se para ficar por dentro dos próximos eventos e experiências exclusivas",
+  "events_cta_button": "Ser Notificado",
+  "upcoming_events": "Próximos Eventos",
   
-  "shop_add_to_cart": "Adicionar ao Carrinho",
-  "shop_buy_now": "Comprar Agora",
-  "shop_in_stock": "Em Estoque",
-  "shop_page_title": "Loja",
-  "shop_page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
-  "shop_title": "Loja Zen Tribe",
-  "shop_subtitle": "Merchandise exclusivo e ingressos para eventos",
-  "shop_all_products": "Todos os Produtos",
-  "shop_featured_title": "Produtos em Destaque",
-  "shop_empty_cta": "Nenhum produto disponível no momento",
-  "shop_out_of_stock": "Esgotado",
-  "shop_error_fetch": "Erro ao carregar produtos",
-  "shop_error_unknown": "Erro desconhecido",
-  "shop_adding_text": "Adicionando...",
-  "add_to_cart": "Adicionar ao Carrinho",
-  
+  "music_page_title": "Música",
+  "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
   "music": {
     "pageTitle": "Música",
-    "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer. Zouk Brasileiro, Eletrônica e House music.",
+    "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer.",
     "hero": {
       "badge": "Produções Originais & Remixes",
-      "title": "Minhas Músicas",
+      "title": "Minhas",
+      "titleHighlight": "Músicas",
       "subtitle": "Explore minhas últimas tracks, remixes exclusivos e conteúdo para download.",
       "cta": "Downloads grátis para a Zen Tribe!"
     },
     "filters": {
       "all": "Todas as Tracks",
-      "brazilianZouk": "Zouk Brasileiro",
-      "electronic": "Eletrônica",
-      "chillHouse": "Chill House",
-      "deepHouse": "Deep House",
-      "tropicalHouse": "Tropical House",
-      "techHouse": "Tech House"
+      "sets": "Sets",
+      "nacional": "Nacional",
+      "cremoso": "Cremoso",
+      "black": "Black",
+      "tradicional": "Tradicional"
     },
     "track": {
       "download": "Baixar",
@@ -97,9 +106,33 @@
     }
   },
   
-  "music_page_title": "Música",
-  "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
+  "shop_page_title": "Loja",
+  "shop_page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
+  "shop_title": "Loja Zen Tribe",
+  "shop_subtitle": "Merchandise exclusivo e ingressos para eventos",
+  "shop_all_products": "Todos os Produtos",
+  "shop_featured_title": "Produtos em Destaque",
+  "shop_empty_cta": "Nenhum produto disponível no momento",
+  "shop_add_to_cart": "Adicionar ao Carrinho",
+  "shop_buy_now": "Comprar Agora",
+  "shop_buy_button": "Comprar",
+  "shop_in_stock": "Em Estoque",
+  "shop_out_of_stock": "Esgotado",
+  "shop_error_fetch": "Erro ao carregar produtos",
+  "shop_error_unknown": "Erro desconhecido",
+  "shop_adding_text": "Adicionando...",
+  "shop_free_shipping": "Frete Grátis",
+  "shop_free_shipping_desc": "Pedidos acima de R$150",
+  "shop_secure_payment": "Pagamento Seguro",
+  "shop_secure_payment_desc": "100% Protegido",
+  "shop_exclusive_items": "Itens Exclusivos",
+  "shop_exclusive_items_desc": "Edição Limitada",
+  "shop_fast_delivery": "Entrega Rápida",
+  "shop_fast_delivery_desc": "2-3 Dias Úteis",
+  "shop_hot_near_you": "Bombando Perto de Você",
   
+  "tribe_page_title": "Zen Tribe",
+  "tribe_page_meta_desc": "Junte-se à comunidade Zen Tribe e faça parte da família",
   "zenTribe": {
     "pageTitle": "Zen Tribe - Comunidade Exclusiva",
     "pageDesc": "Junte-se à Zen Tribe e tenha acesso a conteúdo exclusivo, eventos VIP e muito mais!",
@@ -194,9 +227,6 @@
     }
   },
   
-  "tribe_page_title": "Zen Tribe",
-  "tribe_page_meta_desc": "Junte-se à comunidade Zen Tribe e faça parte da família",
-  
   "presskit_page_title": "Trabalhe Comigo",
   "presskit_page_meta_desc": "Contrate DJ Zen Eyer para seu evento. Press kit e informações de contato.",
   
@@ -242,72 +272,6 @@
       "loginSuccess": "Login bem-sucedido! Redirecionando...",
       "registerSuccess": "Conta criada com sucesso! Redirecionando...",
       "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
-    }
-  },
-  
-  "auth_welcome_back": "Bem-vindo de Volta",
-  "auth_create_account": "Criar Conta",
-  "auth_enter_account": "Entre na sua conta Zen Tribe",
-  "auth_join_tribe": "Junte-se à Zen Tribe",
-  "auth_username": "Nome de Usuário",
-  "auth_username_placeholder": "Digite seu nome de usuário",
-  "auth_password": "Senha",
-  "auth_login": "Entrar",
-  "auth_register": "Criar Conta",
-  "auth_no_account": "Não tem uma conta?",
-  "auth_have_account": "Já tem uma conta?",
-  "auth_error_login": "Erro ao fazer login. Tente novamente.",
-  "auth_error_register": "Erro ao criar conta. Tente novamente.",
-  
-  "loading": "Carregando...",
-  "error": "Erro",
-  "success": "Sucesso",
-  
-  "badge_featured": "Destaque",
-  "badge_new": "Novo",
-  "badge_sale": "Promoção",
-
-  "play_featured_mix": "Tocar Mix em Destaque",
-  "upcoming_events": "Próximos Eventos",
-  
-  "home_features_title": "Por Que Entrar na Zen Tribe?",
-  "home_features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
-  
-  "home_feat_exclusive_title": "Música Exclusiva",
-  "home_feat_exclusive_desc": "Acesso antecipado a lançamentos e remixes exclusivos",
-  
-  "home_feat_achievements_title": "Conquistas & Recompensas",
-  "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
-  
-  "home_feat_community_title": "Comunidade Ativa",
-  "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
-  
-  "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência",
-  "join_now_button": "Entrar Agora",
-  "explore_music_button": "Explorar Músicas",
-  "events_cta_title": "Pronto para Entrar na Festa?",
-  "events_cta_subtitle": "Inscreva-se para ficar por dentro dos próximos eventos e experiências exclusivas",
-  "events_cta_button": "Ser Notificado",
-  "shop_free_shipping": "Frete Grátis",
-  "shop_free_shipping_desc": "Pedidos acima de R$150",
-  "shop_secure_payment": "Pagamento Seguro",
-  "shop_secure_payment_desc": "100% Protegido",
-  "shop_exclusive_items": "Itens Exclusivos",
-  "shop_exclusive_items_desc": "Edição Limitada",
-  "shop_fast_delivery": "Entrega Rápida",
-  "shop_fast_delivery_desc": "2-3 Dias Úteis",
-  "shop_hot_near_you": "Bombando Perto de Você",
-  "shop_buy_button": "Comprar",
-  "sign_in": "Entrar",
-
-  "music": {
-    "filters": {
-      "all": "Todas as Tracks",
-      "sets": "Sets",
-      "nacional": "Nacional",
-      "cremoso": "Cremoso",
-      "black": "Black",
-      "tradicional": "Tradicional"
     }
   }
 }
