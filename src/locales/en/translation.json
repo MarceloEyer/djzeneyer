@@ -287,5 +287,15 @@
   "explore_music_button": "Explore Music",
   "events_cta_title": "Ready to Join the Party?",
   "events_cta_subtitle": "Subscribe to stay updated on upcoming events and exclusive experiences",
-  "events_cta_button": "Get Notified"
+  "events_cta_button": "Get Notified",
+   "shop_free_shipping": "Free Shipping",
+  "shop_free_shipping_desc": "Orders over R$150",
+  "shop_secure_payment": "Secure Payment",
+  "shop_secure_payment_desc": "100% Protected",
+  "shop_exclusive_items": "Exclusive Items",
+  "shop_exclusive_items_desc": "Limited Edition",
+  "shop_fast_delivery": "Fast Delivery",
+  "shop_fast_delivery_desc": "2-3 Business Days",
+  "shop_hot_near_you": "Hot Near You",
+  "shop_buy_button": "Buy Now"
 }
