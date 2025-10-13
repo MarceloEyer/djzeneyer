@@ -298,5 +298,33 @@
   "shop_fast_delivery_desc": "2-3 Business Days",
   "shop_hot_near_you": "Hot Near You",
   "shop_buy_button": "Buy Now",
-  "sign_in": "Sign In"
+  "sign_in": "Sign In",
+   "music": {
+    "pageTitle": "Music",
+    "pageDesc": "Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer.",
+    "hero": {
+      "badge": "Original Productions & Remixes",
+      "title": "My",
+      "titleHighlight": "Music",
+      "subtitle": "Explore my latest tracks, exclusive remixes, and downloadable content.",
+      "cta": "Free downloads for the Zen Tribe!"
+    },
+    "filters": {
+      "all": "All Tracks",
+      "sets": "Sets",
+      "nacional": "Nacional",
+      "cremoso": "Cremoso",
+      "black": "Black",
+      "tradicional": "Tradicional"
+    },
+    "track": {
+      "download": "Download",
+      "share": "Share",
+      "duration": "Duration",
+      "bpm": "BPM",
+      "releaseDate": "Release",
+      "playPreview": "Play Preview",
+      "pausePreview": "Pause Preview"
+    }
+  }
 }
