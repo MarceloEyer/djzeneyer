@@ -385,7 +385,7 @@ const PressKitPage: React.FC = () => {
                       <MapPin className="text-primary mt-1" size={20} />
                       <div>
                         <div className="font-bold text-white mb-1">Based in</div>
-                        <div className="text-white/70">Rio de Janeiro, RJ - Brasil</div>
+                        <div className="text-white/70">Niterói, RJ - Brasil</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
