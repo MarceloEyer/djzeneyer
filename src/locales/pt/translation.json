@@ -287,5 +287,15 @@
   "explore_music_button": "Explorar Músicas",
   "events_cta_title": "Pronto para Entrar na Festa?",
   "events_cta_subtitle": "Inscreva-se para ficar por dentro dos próximos eventos e experiências exclusivas",
-  "events_cta_button": "Ser Notificado"
+  "events_cta_button": "Ser Notificado",
+  "shop_free_shipping": "Frete Grátis",
+  "shop_free_shipping_desc": "Pedidos acima de R$150",
+  "shop_secure_payment": "Pagamento Seguro",
+  "shop_secure_payment_desc": "100% Protegido",
+  "shop_exclusive_items": "Itens Exclusivos",
+  "shop_exclusive_items_desc": "Edição Limitada",
+  "shop_fast_delivery": "Entrega Rápida",
+  "shop_fast_delivery_desc": "2-3 Dias Úteis",
+  "shop_hot_near_you": "Bombando Perto de Você",
+  "shop_buy_button": "Comprar"
 }
