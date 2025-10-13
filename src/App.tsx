@@ -1,4 +1,4 @@
-// src/App.tsx - COM GOOGLE OAUTH CALLBACK
+// src/App.tsx - VERSÃO LIMPA (SEM GoogleOAuthCallback)
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
@@ -16,7 +16,6 @@ import ShopPage from './pages/ShopPage';
 import DashboardPage from './pages/DashboardPage';
 import MyAccountPage from './pages/MyAccountPage';
 import NotFoundPage from './pages/NotFoundPage';
-import GoogleOAuthCallback from './components/GoogleOAuthCallback'; // 🔥 NOVO
 
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
@@ -32,9 +31,6 @@ function App() {
             <AnimatePresence mode="wait">
               <LanguageWrapper>
                 <Routes>
-                  {/* 🔥 NOVO - Google OAuth Callback (FORA do MainLayout) */}
-                  <Route path="/oauth/callback" element={<GoogleOAuthCallback />} />
-
                   {/* English routes (root) */}
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
