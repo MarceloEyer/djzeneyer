@@ -108,7 +108,7 @@ const PressKitPage: React.FC = () => {
     {
       icon: <Music2 size={32} />,
       title: "EPK & Biography",
-      description: "Complete electronic press kit with bio and rider",
+      description: "Complete press kit with bio and rider",
       path: "/media/dj-zen-eyer-epk.pdf"
     },
     {
