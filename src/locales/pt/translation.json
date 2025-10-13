@@ -298,5 +298,16 @@
   "shop_fast_delivery_desc": "2-3 Dias Úteis",
   "shop_hot_near_you": "Bombando Perto de Você",
   "shop_buy_button": "Comprar",
-  "sign_in": "Entrar"
+  "sign_in": "Entrar",
+
+  "music": {
+    "filters": {
+      "all": "Todas as Tracks",
+      "sets": "Sets",
+      "nacional": "Nacional",
+      "cremoso": "Cremoso",
+      "black": "Black",
+      "tradicional": "Tradicional"
+    }
+  }
 }
