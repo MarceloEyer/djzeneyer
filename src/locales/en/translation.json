@@ -5,10 +5,12 @@
   "nav_tribe": "Zen Tribe",
   "nav_presskit": "Work With Me",
   "nav_shop": "Shop",
-  "nav_login": "Login",
+  "nav_login": "Sign In",
+  "nav_sign_in": "Sign In",
   "nav_logout": "Logout",
   "nav_dashboard": "Dashboard",
   "nav_my_account": "My Account",
+  "nav_work_with_me": "Work With Me",
   
   "footer_rights": "All rights reserved.",
   "footer_about": "About",
@@ -19,15 +21,52 @@
   "home_welcome": "Welcome to DJ Zen Eyer",
   "home_tagline": "Brazilian Zouk & Electronic Music Producer",
   "home_cta": "Explore My Music",
+  "home_page_title": "DJ Zen Eyer - Brazilian Zouk & House Music",
+  "home_page_meta_desc": "Professional DJ specialized in Brazilian Zouk and House Music. Events, mixes, and unique musical experiences.",
+  
+  "hero_title": "DJ Zen Eyer",
+  "hero_subtitle": "Brazilian Zouk & House Music",
+  "hero_cta": "Listen Now",
+  "hero_cta_secondary": "View Events",
   
   "events_title": "Upcoming Events",
   "events_past": "Past Events",
   "events_buy_ticket": "Buy Ticket",
   "events_more_info": "More Info",
+  "events_page_title": "Events",
+  "events_page_meta_desc": "Upcoming events and performances by DJ Zen Eyer",
+  "events_header_title": "Upcoming Events",
+  "events_header_subtitle": "Join us at our next parties and experiences",
+  "events_header_badge": "Live Events",
+  "events_featured_title": "Featured",
+  "events_calendar_title": "Full Calendar",
+  "events_calendar_iframe_title": "DJ Zen Eyer Events Calendar",
+  "events_achievement_section_title": "Achievement System",
+  "events_achievement_section_subtitle": "Attend events and earn exclusive rewards",
+  "events_achievement_xp_title": "Earn XP",
+  "events_achievement_xp_desc": "Accumulate experience points at each event",
+  "events_achievement_badges_title": "Exclusive Badges",
+  "events_achievement_badges_desc": "Unlock special badges for participation",
+  "events_achievement_rewards_title": "Rewards",
+  "events_achievement_rewards_desc": "Gain access to VIP content and events",
+  "events_achievement_streaks_title": "Streaks",
+  "events_achievement_streaks_desc": "Maintain your consecutive event streak",
   
   "shop_add_to_cart": "Add to Cart",
   "shop_buy_now": "Buy Now",
   "shop_in_stock": "In Stock",
+  "shop_page_title": "Shop",
+  "shop_page_meta_desc": "Event tickets, exclusive merchandise, and more",
+  "shop_title": "Zen Tribe Shop",
+  "shop_subtitle": "Exclusive merchandise and event tickets",
+  "shop_all_products": "All Products",
+  "shop_featured_title": "Featured Products",
+  "shop_empty_cta": "No products available at the moment",
+  "shop_out_of_stock": "Out of Stock",
+  "shop_error_fetch": "Error loading products",
+  "shop_error_unknown": "Unknown error",
+  "shop_adding_text": "Adding...",
+  "add_to_cart": "Add to Cart",
   
   "music": {
     "pageTitle": "Music",
@@ -57,6 +96,9 @@
       "pausePreview": "Pause Preview"
     }
   },
+  
+  "music_page_title": "Music",
+  "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
   
   "zenTribe": {
     "pageTitle": "Zen Tribe - Exclusive Community",
@@ -152,6 +194,15 @@
     }
   },
   
+  "tribe_page_title": "Zen Tribe",
+  "tribe_page_meta_desc": "Join the Zen Tribe community and become part of the family",
+  
+  "presskit_page_title": "Work With Me",
+  "presskit_page_meta_desc": "Book DJ Zen Eyer for your event. Press kit and contact information.",
+  
+  "dashboard_page_title": "Dashboard",
+  "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
+  
   "auth": {
     "loading": "Loading...",
     "login": {
@@ -192,5 +243,27 @@
       "registerSuccess": "Account created successfully! Redirecting...",
       "googleSuccess": "Google login successful! Redirecting..."
     }
-  }
+  },
+  
+  "auth_welcome_back": "Welcome Back",
+  "auth_create_account": "Create Account",
+  "auth_enter_account": "Enter your Zen Tribe account",
+  "auth_join_tribe": "Join Zen Tribe",
+  "auth_username": "Username",
+  "auth_username_placeholder": "Enter your username",
+  "auth_password": "Password",
+  "auth_login": "Sign In",
+  "auth_register": "Create Account",
+  "auth_no_account": "Don't have an account?",
+  "auth_have_account": "Already have an account?",
+  "auth_error_login": "Login error. Please try again.",
+  "auth_error_register": "Registration error. Please try again.",
+  
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  
+  "badge_featured": "Featured",
+  "badge_new": "New",
+  "badge_sale": "Sale"
 }
