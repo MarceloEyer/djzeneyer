@@ -1,157 +1,96 @@
-// src/components/auth/AuthModal.tsx
-
-import React, { useState, useEffect } from 'react';
+// src/components/AuthModal.tsx
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, User, AlertCircle, CheckCircle, Eye, EyeOff, Loader } from 'lucide-react';
-import { useUser } from '../../contexts/UserContext';
+import { X, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'register';
+  onSuccess?: () => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login' }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useTranslation();
-  const { login, register, error: contextError, loading, clearError, loginWithGoogleToken } = useUser();
-  
-  const [mode, setMode] = useState<'login' | 'register'>(initialMode);
-  const [name, setName] = useState('');
+  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const [localSuccess, setLocalSuccess] = useState<string | null>(null);
+  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  console.log('[AuthModal] Mode:', mode, 'IsOpen:', isOpen);
-
-  useEffect(() => {
-    setMode(initialMode);
-  }, [initialMode]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setName('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-      setLocalError(null);
-      setLocalSuccess(null);
-      clearError();
-    }
-  }, [isOpen, clearError]);
-
-  const validateForm = (): boolean => {
-    setLocalError(null);
-
-    if (!email || !password) {
-      setLocalError(t('auth.errors.fillAllFields'));
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setLocalError(t('auth.errors.invalidEmail'));
-      return false;
-    }
-
-    if (mode === 'register') {
-      if (!name) {
-        setLocalError(t('auth.errors.nameRequired'));
-        return false;
-      }
-
-      if (password.length < 8) {
-        setLocalError(t('auth.errors.passwordTooShort'));
-        return false;
-      }
-
-      if (password !== confirmPassword) {
-        setLocalError(t('auth.errors.passwordMismatch'));
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    console.log('[AuthModal] 📝 Form submitted - Mode:', mode);
-    console.log('[AuthModal] Form data:', {
-      name,
-      email,
-      password: password ? '***' : 'empty',
-      confirmPassword: confirmPassword ? '***' : 'empty'
-    });
-    
-    if (!validateForm()) {
-      console.log('[AuthModal] ❌ Validation failed');
-      return;
-    }
-    
-    setIsSubmitting(true);
-    setLocalError(null);
-    setLocalSuccess(null);
-    
+    setLoading(true);
+    setError('');
+
     try {
-      if (mode === 'login') {
-        console.log('[AuthModal] 🔐 Calling login...');
-        await login(email, password);
-        console.log('[AuthModal] ✅ Login successful');
-        setLocalSuccess(t('auth.success.loginSuccess'));
-        setTimeout(() => {
-          onClose();
-        }, 1500);
+      const response = await fetch(`${window.location.origin}/wp-json/simple-jwt-login/v1/auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.data?.jwt) {
+        // Salva o token JWT
+        localStorage.setItem('jwt_token', data.data.jwt);
+        localStorage.setItem('user_email', email);
+        
+        console.log('✅ Login successful!');
+        
+        if (onSuccess) onSuccess();
+        onClose();
+        
+        // Recarrega a página para atualizar o estado
+        window.location.reload();
       } else {
-        console.log('[AuthModal] 📝 Calling register...');
-        console.log('[AuthModal] Data:', { 
-          name: name.trim(), 
-          email, 
-          passwordLength: password.length 
-        });
-        await register(name.trim(), email, password);
-        console.log('[AuthModal] ✅ Registration successful');
-        setLocalSuccess(t('auth.success.registerSuccess'));
-        setTimeout(() => {
-          onClose();
-        }, 1500);
+        throw new Error(data.data?.message || 'Login failed');
       }
     } catch (err: any) {
-      console.error('[AuthModal] ❌ Error:', err);
-      const errorMsg = err?.message || (mode === 'login' ? t('auth.errors.loginFailed') : t('auth.errors.registerFailed'));
-      setLocalError(errorMsg);
+      console.error('❌ Login error:', err);
+      setError(err.message || t('auth_error_login'));
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async (credential: string) => {
-    console.log('[AuthModal] 🔵 Google login initiated');
-    setIsSubmitting(true);
-    setLocalError(null);
-    
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
     try {
-      await loginWithGoogleToken(credential);
-      console.log('[AuthModal] ✅ Google login successful');
-      setLocalSuccess(t('auth.success.googleSuccess'));
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+      const response = await fetch(`${window.location.origin}/wp-json/simple-jwt-login/v1/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('✅ Registration successful!');
+        // Após registro, faz login automaticamente
+        handleLogin(e);
+      } else {
+        throw new Error(data.data?.message || 'Registration failed');
+      }
     } catch (err: any) {
-      console.error('[AuthModal] ❌ Google login error:', err);
-      setLocalError(err?.message || t('auth.errors.googleFailed'));
+      console.error('❌ Registration error:', err);
+      setError(err.message || t('auth_error_register'));
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
-
-  const displayError = localError || contextError;
 
   if (!isOpen) return null;
 
@@ -169,183 +108,131 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
 
         {/* Modal */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
           className="relative w-full max-w-md bg-surface rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
         >
-          {/* Close Button */}
+          {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors z-10"
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10"
           >
-            <X size={20} />
+            <X size={24} />
           </button>
 
-          {/* Header */}
-          <div className="bg-gradient-to-r from-primary/20 to-accent/20 p-8 text-center border-b border-white/10">
-            <h2 className="text-3xl font-black font-display">
-              {mode === 'login' ? t('auth.login.title') : t('auth.register.title')}
-            </h2>
-            <p className="text-white/70 mt-2">
-              {mode === 'login' ? t('auth.login.subtitle') : t('auth.register.subtitle')}
-            </p>
-          </div>
-
-          {/* Form */}
           <div className="p-8">
-            {/* Error Message */}
-            {displayError && (
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-black font-display mb-2">
+                {mode === 'login' ? t('auth_welcome_back') || 'Bem-vindo de Volta' : t('auth_create_account') || 'Criar Conta'}
+              </h2>
+              <p className="text-white/60">
+                {mode === 'login' 
+                  ? t('auth_enter_account') || 'Entre na sua conta Zen Tribe' 
+                  : t('auth_join_tribe') || 'Junte-se à Zen Tribe'}
+              </p>
+            </div>
+
+            {/* Error message */}
+            {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-error/10 border border-error/50 rounded-lg flex items-start gap-3"
+                className="mb-6 p-4 bg-error/20 border border-error/50 rounded-lg text-error text-sm"
               >
-                <AlertCircle size={20} className="text-error flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-error">{displayError}</p>
+                {error}
               </motion.div>
             )}
 
-            {/* Success Message */}
-            {localSuccess && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-success/10 border border-success/50 rounded-lg flex items-start gap-3"
-              >
-                <CheckCircle size={20} className="text-success flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-success">{localSuccess}</p>
-              </motion.div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name (Register only) */}
+            {/* Form */}
+            <form onSubmit={mode === 'login' ? handleLogin : handleRegister} className="space-y-4">
               {mode === 'register' && (
                 <div>
                   <label className="block text-sm font-semibold mb-2">
-                    {t('auth.register.fullName')}
+                    {t('auth_username') || 'Nome de Usuário'}
                   </label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                     <input
                       type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder={t('auth.register.fullNamePlaceholder')}
-                      className="input pl-12"
-                      disabled={isSubmitting || loading}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="input pl-11"
+                      placeholder={t('auth_username_placeholder') || 'Digite seu nome de usuário'}
+                      required
                     />
                   </div>
                 </div>
               )}
 
-              {/* Email */}
               <div>
-                <label className="block text-sm font-semibold mb-2">
-                  {t('auth.login.email')}
-                </label>
+                <label className="block text-sm font-semibold mb-2">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t('auth.login.emailPlaceholder')}
-                    className="input pl-12"
-                    disabled={isSubmitting || loading}
-                    autoComplete="email"
+                    className="input pl-11"
+                    placeholder="seu@email.com"
+                    required
                   />
                 </div>
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm font-semibold mb-2">
-                  {t('auth.login.password')}
+                  {t('auth_password') || 'Senha'}
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t('auth.login.passwordPlaceholder')}
-                    className="input pl-12 pr-12"
-                    disabled={isSubmitting || loading}
-                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    className="input pl-11"
+                    placeholder="••••••••"
+                    required
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
                 </div>
               </div>
 
-              {/* Confirm Password (Register only) */}
-              {mode === 'register' && (
-                <div>
-                  <label className="block text-sm font-semibold mb-2">
-                    {t('auth.register.confirmPassword')}
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder={t('auth.register.confirmPasswordPlaceholder')}
-                      className="input pl-12 pr-12"
-                      disabled={isSubmitting || loading}
-                      autoComplete="new-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                    >
-                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || loading}
-                className="w-full btn btn-primary btn-lg flex items-center justify-center gap-2"
+                disabled={loading}
+                className="btn btn-primary w-full py-4 text-lg font-bold"
               >
-                {(isSubmitting || loading) ? (
+                {loading ? (
                   <>
-                    <Loader size={20} className="animate-spin" />
-                    <span>{t('auth.loading')}</span>
+                    <Loader2 size={20} className="animate-spin" />
+                    <span>{t('loading') || 'Carregando...'}</span>
                   </>
                 ) : (
-                  <span>{mode === 'login' ? t('auth.login.button') : t('auth.register.button')}</span>
+                  <span>{mode === 'login' ? (t('auth_login') || 'Entrar') : (t('auth_register') || 'Criar Conta')}</span>
                 )}
               </button>
             </form>
 
-            {/* Toggle Mode */}
-            <div className="mt-6 text-center text-sm">
-              <span className="text-white/60">
-                {mode === 'login' ? t('auth.login.noAccount') : t('auth.register.hasAccount')}
-              </span>
-              {' '}
-              <button
-                onClick={() => {
-                  setMode(mode === 'login' ? 'register' : 'login');
-                  setLocalError(null);
-                  setLocalSuccess(null);
-                  clearError();
-                }}
-                className="text-primary font-semibold hover:underline"
-              >
-                {mode === 'login' ? t('auth.login.createAccount') : t('auth.register.loginHere')}
-              </button>
+            {/* Toggle mode */}
+            <div className="mt-6 text-center">
+              <p className="text-white/60">
+                {mode === 'login' 
+                  ? (t('auth_no_account') || 'Não tem uma conta?')
+                  : (t('auth_have_account') || 'Já tem uma conta?')}
+                {' '}
+                <button
+                  onClick={() => {
+                    setMode(mode === 'login' ? 'register' : 'login');
+                    setError('');
+                  }}
+                  className="text-primary font-bold hover:underline"
+                >
+                  {mode === 'login' 
+                    ? (t('auth_create_account') || 'Criar Conta')
+                    : (t('auth_login') || 'Entrar')}
+                </button>
+              </p>
             </div>
           </div>
         </motion.div>
