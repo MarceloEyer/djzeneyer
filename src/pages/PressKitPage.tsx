@@ -1,4 +1,4 @@
-// src/pages/PressKitPage.tsx
+// src/pages/PressKitPage.tsx - VERSÃO CORRIGIDA (RJ + WHATSAPP)
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -119,7 +119,8 @@ const PressKitPage: React.FC = () => {
     }
   ];
 
-  const whatsappNumber = '5531999999999';
+  // ✅ SEU WHATSAPP CORRETO
+  const whatsappNumber = '5521987413091';
   const whatsappMessage = "Hi Zen Eyer! I'm interested in booking you for an event. Let's talk!";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
@@ -157,12 +158,9 @@ const PressKitPage: React.FC = () => {
                 </div>
               </motion.div>
 
-              {/* SEM DEGRADÊ - Só azul elétrico */}
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
                 Work With{' '}
-                <span className="text-primary">
-                  DJ Zen Eyer
-                </span>
+                <span className="text-primary">DJ Zen Eyer</span>
               </h1>
               
               <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
@@ -226,7 +224,7 @@ const PressKitPage: React.FC = () => {
                       With a unique approach that combines technical precision with emotional storytelling, Zen Eyer creates immersive musical journeys that resonate with audiences worldwide.
                     </p>
                     <p>
-                      From intimate dance floors in São Paulo to international festivals across Europe and Asia, his sets are known for their carefully curated selection, seamless mixing, and ability to create unforgettable moments.
+                      From intimate dance floors in Rio de Janeiro to international festivals across Europe and Asia, his sets are known for their carefully curated selection, seamless mixing, and ability to create unforgettable moments.
                     </p>
                     <p className="text-primary font-semibold">
                       As a music producer, Zen Eyer brings an insider's perspective to DJing, crafting exclusive edits and remixes that elevate every performance.
@@ -387,7 +385,7 @@ const PressKitPage: React.FC = () => {
                       <MapPin className="text-primary mt-1" size={20} />
                       <div>
                         <div className="font-bold text-white mb-1">Based in</div>
-                        <div className="text-white/70">São Paulo, Brazil</div>
+                        <div className="text-white/70">Rio de Janeiro, RJ - Brasil</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
