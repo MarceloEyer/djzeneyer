@@ -1,4 +1,5 @@
-// src/components/common/Footer.tsx
+// src/components/common/Footer.tsx - VERSÃO FINAL CORRIGIDA
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +55,7 @@ const Footer: React.FC = () => {
 
     if (!email) {
       console.log('[Footer] handleSubscribe: E-mail vazio.');
-      setSubmitMessage('Please enter a valid email address.');
+      setSubmitMessage(t('auth.errors.invalidEmail'));
       setSubmitSuccess(false);
       setIsSubmitting(false);
       return;
@@ -74,18 +75,18 @@ const Footer: React.FC = () => {
       console.log('[Footer] handleSubscribe: Resposta do WP API:', data, 'status:', response.status);
 
       if (response.ok) {
-        setSubmitMessage(data.message || 'Thanks for subscribing! Keep an eye on your inbox.');
+        setSubmitMessage(data.message || t('footer_subscribe_success'));
         setSubmitSuccess(true);
         setEmail('');
       } else {
-        const errorMessage = data.message || 'Failed to subscribe. Please try again.';
+        const errorMessage = data.message || t('footer_subscribe_error');
         setSubmitMessage(errorMessage);
         setSubmitSuccess(false);
         console.error('[Footer] WP API subscription error:', data);
       }
     } catch (err: any) {
       console.error('[Footer] handleSubscribe: ERRO INESPERADO no bloco try/catch:', err);
-      setSubmitMessage(err.message || 'Failed to subscribe due to an unexpected error. Please try again.');
+      setSubmitMessage(err.message || t('footer_subscribe_error'));
       setSubmitSuccess(false);
     } finally {
       console.log('[Footer] handleSubscribe: Bloco finally executado.');
@@ -97,7 +98,7 @@ const Footer: React.FC = () => {
     <footer className="bg-background border-t border-white/10">
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-          {/* Logo and about */}
+          {/* Logo and about - AGORA TRADUZIDO */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
@@ -107,8 +108,9 @@ const Footer: React.FC = () => {
                 <span className="text-primary">DJ</span> Zen Eyer
               </span>
             </div>
+            {/* BIO TRADUZIDA */}
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
-              Music producer and DJ creating immersive audio experiences for the mind, body, and soul.
+              {t('footer_bio')}
             </p>
             <div className="flex space-x-4">
               <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
@@ -129,7 +131,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links - JÁ TRADUZIDO */}
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
@@ -141,7 +143,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Discover More */}
+          {/* Discover More - JÁ TRADUZIDO */}
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
@@ -151,7 +153,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Newsletter - JÁ TRADUZIDO */}
           <div className="lg:col-span-1">
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
@@ -189,8 +191,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
+        {/* Bottom Bar - AGORA TRADUZIDO */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-xs md:text-sm">
-          <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')} Elevating vibes, one beat at a time.</p>
+          <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')} {t('footer_tagline')}</p>
         </div>
       </div>
     </footer>
