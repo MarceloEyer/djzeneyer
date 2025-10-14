@@ -164,6 +164,9 @@ const FAQPage: React.FC = () => {
         <title>FAQ - Brazilian Zouk & DJ Zen Eyer | Frequently Asked Questions</title>
         <meta name="description" content="Frequently asked questions about Brazilian Zouk music, DJ Zen Eyer, world championships, events, and the Zen Tribe community. Get answers from the world champion DJ." />
         
+        {/* ✅ ROBOTS META TAG - ISSO ESTAVA FALTANDO! */}
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        
         {/* ✅ Schema.org FAQPage */}
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}
