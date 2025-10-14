@@ -276,5 +276,30 @@
   "events_calendar_add": "Adicionar ao Calendário",
   "events_calendar_note": "Clique nos eventos para mais detalhes"
     }
-  }
+  },
+  {
+  "footer_quick_links": "Links Rápidos",
+  "footer_discover_more": "Descubra Mais",
+  "footer_music_philosophy": "Filosofia Musical",
+  "footer_press_kit_booking": "Press Kit / Contratação",
+  "footer_support_artist": "Apoie o Artista",
+  "footer_join_newsletter": "Assine a Newsletter",
+  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
+  "footer_email_placeholder": "Seu endereço de e-mail",
+  "footer_subscribe": "Inscrever-se",
+  "footer_zen_tribe_info": "Informações da Zen Tribe",
+  
+  "event_badge_available": "Disponível",
+  "event_badge_members_only": "Apenas Membros",
+  "event_get_ticket": "Comprar Ingresso",
+  
+  "presskit_badge": "Press Kit Profissional",
+  "presskit_subtitle_line1": "Produtor de Zouk Brasileiro & DJ Internacional",
+  "presskit_subtitle_line2": "Transformando Eventos em Experiências Inesquecíveis",
+  "presskit_stat_countries": "Países Alcançados",
+  "presskit_stat_people": "Pessoas Impactadas",
+  "presskit_stat_streams": "Total de Streams",
+  "presskit_stat_years": "Anos de Experiência"
+}
+
 }
