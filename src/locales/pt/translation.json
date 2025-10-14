@@ -299,7 +299,9 @@
     "success": {
       "loginSuccess": "Login bem-sucedido! Redirecionando...",
       "registerSuccess": "Conta criada com sucesso! Redirecionando...",
-      "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
+      "googleSuccess": "Login com Google bem-sucedido! Redirecionando...",
+       "home_headline": "Experimente o <1>Zen</1> no Zouk Brasileiro",
+  "home_subheadline": "Transformando pistas de dança em experiências audiovisuais imersivas"
     }
   }
 }
