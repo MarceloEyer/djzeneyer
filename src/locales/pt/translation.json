@@ -10,37 +10,24 @@
   "nav_dashboard": "Painel",
   "nav_my_account": "Minha Conta",
   
-  "footer_rights": "Todos os direitos reservados.",
-  "footer_about": "Sobre",
-  "footer_contact": "Contato",
-  "footer_privacy": "Política de Privacidade",
-  "footer_terms": "Termos de Serviço",
-  "footer_quick_links": "Links Rápidos",
-  "footer_discover_more": "Descubra Mais",
-  "footer_music_philosophy": "Filosofia Musical",
-  "footer_press_kit_booking": "Press Kit / Contratação",
-  "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine a Newsletter",
-  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
-  "footer_email_placeholder": "Seu endereço de e-mail",
-  "footer_subscribe": "Inscrever-se",
-  "footer_zen_tribe_info": "Informações da Zen Tribe",
-  "footer_home": "Início",
-  "footer_music": "Música",
-  "footer_events": "Eventos",
-  "footer_contact_text": "Contato",
-  
-  "badge_featured": "Destaque",
-  "badge_new": "Novo",
-  "badge_sale": "Promoção",
-  
   "sign_in": "Entrar",
   "loading": "Carregando...",
   "error": "Erro",
   "success": "Sucesso",
   
-  "home_page_title": "DJ Zen Eyer - Zouk Brasileiro & House Music",
-  "home_page_meta_desc": "DJ profissional especializado em Zouk Brasileiro e House Music. Eventos, mixagens e experiências musicais únicas.",
+  "badge_featured": "Destaque",
+  "badge_new": "Novo",
+  "badge_sale": "Promoção",
+  
+  "join_now_button": "Entrar Agora",
+  "explore_music_button": "Explorar Músicas",
+  "play_featured_mix": "Tocar Mix em Destaque",
+  "upcoming_events": "Próximos Eventos",
+  
+  "home_page_title": "DJ Zen Eyer - Zouk Brasileiro & Música Eletrônica",
+  "home_page_meta_desc": "DJ profissional especializado em Zouk Brasileiro. Eventos, mixagens e experiências musicais únicas.",
+  "home_headline": "Experimente o <1>Zen</1> no Zouk Brasileiro",
+  "home_subheadline": "Transformando pistas de dança em experiências audiovisuais imersivas",
   "home_welcome": "Bem-vindo ao DJ Zen Eyer",
   "home_tagline": "Produtor de Zouk Brasileiro e Música Eletrônica",
   "home_cta": "Explorar Músicas",
@@ -52,16 +39,13 @@
   "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
   "home_feat_community_title": "Comunidade Ativa",
   "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
-  "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência",
   "home_cta_title": "Pronto para Entrar na Zen Tribe?",
-  "join_now_button": "Entrar Agora",
-  "explore_music_button": "Explorar Músicas",
+  "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência",
   
   "hero_title": "DJ Zen Eyer",
-  "hero_subtitle": "Zouk Brasileiro & House Music",
+  "hero_subtitle": "Zouk Brasileiro & Música Eletrônica",
   "hero_cta": "Ouça Agora",
   "hero_cta_secondary": "Ver Eventos",
-  "play_featured_mix": "Tocar Mix em Destaque",
   
   "events_page_title": "Eventos",
   "events_page_meta_desc": "Próximos eventos e apresentações do DJ Zen Eyer",
@@ -91,7 +75,6 @@
   "events_cta_title": "Pronto para Entrar na Festa?",
   "events_cta_subtitle": "Inscreva-se para ficar por dentro dos próximos eventos e experiências exclusivas",
   "events_cta_button": "Ser Notificado",
-  "upcoming_events": "Próximos Eventos",
   "event_badge_available": "Disponível",
   "event_badge_members_only": "Apenas Membros",
   "event_get_ticket": "Comprar Ingresso",
@@ -164,6 +147,27 @@
     "joinNow": "Entrar Agora",
     "learnMore": "Saiba Mais",
     "unlockAtLevel": "Desbloquear no nível {{level}}",
+    "mostPopular": "Mais Popular",
+    "upgradeNow": "Fazer Upgrade",
+    "unlocked": "Desbloqueado",
+    "viewMemberships": "Ver Membros",
+    "whyJoin": "Por Que Entrar na Zen Tribe?",
+    "chooseMembership": "Escolha Sua Assinatura da Tribe",
+    "selectTier": "Selecione o plano de assinatura que se encaixa na sua jornada com a música do DJ Zen Eyer",
+    "levelUpTitle": "Evolua sua Jornada Musical",
+    "levelUpDesc": "A Zen Tribe possui um sistema completo de conquistas que recompensa você por interagir com a música, participar de eventos e ser um membro ativo da comunidade.",
+    "xpTitle": "Pontos de Experiência (XP)",
+    "xpDesc": "Ganhe XP por cada ação que você realiza, desde ouvir tracks até participar de eventos.",
+    "badgesTitle": "Badges Digitais",
+    "badgesDesc": "Desbloqueie badges colecionáveis por conquistas especiais e marcos na sua jornada.",
+    "rewardsTitle": "Recompensas e Benefícios",
+    "rewardsDesc": "Ganhe benefícios reais como descontos em merchandise, conteúdo exclusivo e upgrades VIP.",
+    "streaksTitle": "Sequências Diárias",
+    "streaksDesc": "Mantenha sua sequência de engajamento para ganhar XP bônus e recompensas exclusivas.",
+    "achievementShowcase": "Vitrine de Conquistas",
+    "currentLevel": "Nível Atual",
+    "zenApprentice": "Aprendiz Zen",
+    "progressToLevel": "Progresso para Nível 4",
     "stats": {
       "members": "Membros",
       "tracks": "Tracks",
@@ -245,6 +249,35 @@
       "title": "Pronto para Evoluir Sua Experiência?",
       "subtitle": "Junte-se a milhares de membros da Zen Tribe e desbloqueie todos os benefícios exclusivos!",
       "button": "Entrar na Tribe Agora"
+    },
+    "tiers": {
+      "novice": {
+        "name": "Novato Zen",
+        "price": "Grátis",
+        "feature1": "Acesso a lançamentos públicos de música",
+        "feature2": "Criar e compartilhar playlists",
+        "feature3": "Participar de discussões da comunidade",
+        "feature4": "Perfil básico e badges"
+      },
+      "voyager": {
+        "name": "Viajante Zen",
+        "price": "R$ 49,99/mês",
+        "feature1": "Todos os recursos do Novato Zen",
+        "feature2": "Lançamentos semanais exclusivos",
+        "feature3": "Acesso antecipado a ingressos",
+        "feature4": "Sistema avançado de conquistas",
+        "feature5": "Descontos em merchandise"
+      },
+      "master": {
+        "name": "Mestre Zen",
+        "price": "R$ 99,99/mês",
+        "feature1": "Todos os recursos do Viajante Zen",
+        "feature2": "Acesso VIP a todos os eventos ao vivo",
+        "feature3": "Lives exclusivas mensais",
+        "feature4": "Playlists personalizadas do DJ Zen Eyer",
+        "feature5": "Coleção de badges digitais Mestre Zen",
+        "feature6": "Oportunidades de meet & greet"
+      }
     }
   },
   
@@ -260,6 +293,30 @@
   
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
+  
+  "footer_rights": "Todos os direitos reservados.",
+  "footer_about": "Sobre",
+  "footer_contact": "Contato",
+  "footer_privacy": "Política de Privacidade",
+  "footer_terms": "Termos de Serviço",
+  "footer_quick_links": "Links Rápidos",
+  "footer_discover_more": "Descubra Mais",
+  "footer_music_philosophy": "Filosofia Musical",
+  "footer_press_kit_booking": "Press Kit / Contratação",
+  "footer_support_artist": "Apoie o Artista",
+  "footer_join_newsletter": "Assine a Newsletter",
+  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
+  "footer_email_placeholder": "Seu endereço de e-mail",
+  "footer_subscribe": "Inscrever-se",
+  "footer_zen_tribe_info": "Informações da Zen Tribe",
+  "footer_home": "Início",
+  "footer_music": "Música",
+  "footer_events": "Eventos",
+  "footer_contact_text": "Contato",
+  "footer_bio": "Produtor musical e DJ criando experiências audiovisuais imersivas para a mente, corpo e alma.",
+  "footer_tagline": "Elevando vibes, uma batida de cada vez.",
+  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
+  "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
   
   "auth": {
     "loading": "Carregando...",
@@ -299,13 +356,7 @@
     "success": {
       "loginSuccess": "Login bem-sucedido! Redirecionando...",
       "registerSuccess": "Conta criada com sucesso! Redirecionando...",
-      "googleSuccess": "Login com Google bem-sucedido! Redirecionando...",
-       "home_headline": "Experimente o <1>Zen</1> no Zouk Brasileiro",
-  "home_subheadline": "Transformando pistas de dança em experiências audiovisuais imersivas",
-       "footer_bio": "Produtor musical e DJ criando experiências audiovisuais imersivas para a mente, corpo e alma.",
-  "footer_tagline": "Elevando vibes, uma batida de cada vez.",
-  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
-  "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente."
+      "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
     }
   }
 }
