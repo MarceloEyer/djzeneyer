@@ -305,7 +305,61 @@
       "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
   "footer_tagline": "Elevating vibes, one beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
-  "footer_subscribe_error": "Failed to subscribe. Please try again."
+  "footer_subscribe_error": "Failed to subscribe. Please try again.",
+      {
+  "zenTribe": {
+    "mostPopular": "Most Popular",
+    "upgradeNow": "Upgrade Now",
+    "unlocked": "Unlocked",
+    "viewMemberships": "View Memberships",
+    "whyJoin": "Why Join the Zen Tribe?",
+    "chooseMembership": "Choose Your Tribe Membership",
+    "selectTier": "Select the membership tier that fits your journey with DJ Zen Eyer's music",
+    "levelUpTitle": "Level Up Your Music Journey",
+    "levelUpDesc": "The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.",
+    "xpTitle": "Experience Points (XP)",
+    "xpDesc": "Earn XP for every action you take, from listening to tracks to attending events.",
+    "badgesTitle": "Digital Badges",
+    "badgesDesc": "Unlock collectible badges for special achievements and milestones in your journey.",
+    "rewardsTitle": "Rewards & Perks",
+    "rewardsDesc": "Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.",
+    "streaksTitle": "Daily Streaks",
+    "streaksDesc": "Maintain your engagement streak for bonus XP and special streak-only rewards.",
+    "achievementShowcase": "Achievement Showcase",
+    "currentLevel": "Current Level",
+    "zenApprentice": "Zen Apprentice",
+    "progressToLevel": "Progress to Level 4",
+    "tiers": {
+      "novice": {
+        "name": "Zen Novice",
+        "price": "Free",
+        "feature1": "Access to public music releases",
+        "feature2": "Create and share playlists",
+        "feature3": "Join community discussions",
+        "feature4": "Basic profile and badges"
+      },
+      "voyager": {
+        "name": "Zen Voyager",
+        "price": "$9.99/month",
+        "feature1": "All Zen Novice features",
+        "feature2": "Exclusive weekly music drops",
+        "feature3": "Early access to event tickets",
+        "feature4": "Advanced achievement system",
+        "feature5": "Discounts on merchandise"
+      },
+      "master": {
+        "name": "Zen Master",
+        "price": "$19.99/month",
+        "feature1": "All Zen Voyager features",
+        "feature2": "VIP access to all live events",
+        "feature3": "Monthly exclusive live streams",
+        "feature4": "Personalized playlists from DJ Zen Eyer",
+        "feature5": "Zen Master digital badge collection",
+        "feature6": "Meet & greet opportunities"
+    }
+  }
+}
+
     }
   }
 }
