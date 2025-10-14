@@ -15,6 +15,20 @@
   "footer_contact": "Contact",
   "footer_privacy": "Privacy Policy",
   "footer_terms": "Terms of Service",
+  "footer_quick_links": "Quick Links",
+  "footer_discover_more": "Discover More",
+  "footer_music_philosophy": "Music Philosophy",
+  "footer_press_kit_booking": "Press Kit / Booking",
+  "footer_support_artist": "Support the Artist",
+  "footer_join_newsletter": "Join the Newsletter",
+  "footer_newsletter_desc": "Get exclusive updates, new releases, and VIP event access directly to your inbox.",
+  "footer_email_placeholder": "Your email address",
+  "footer_subscribe": "Subscribe",
+  "footer_zen_tribe_info": "Zen Tribe Info",
+  "footer_home": "Home",
+  "footer_music": "Music",
+  "footer_events": "Events",
+  "footer_contact_text": "Contact",
   
   "badge_featured": "Featured",
   "badge_new": "New",
@@ -28,7 +42,7 @@
   "home_page_title": "DJ Zen Eyer - Brazilian Zouk & House Music",
   "home_page_meta_desc": "Professional DJ specialized in Brazilian Zouk and House Music. Events, mixes, and unique musical experiences.",
   "home_welcome": "Welcome to DJ Zen Eyer",
-  "home_tagline": "Brazilian Zouk DJ & Music Producer",
+  "home_tagline": "Brazilian Zouk & Electronic Music Producer",
   "home_cta": "Explore My Music",
   "home_features_title": "Why Join the Zen Tribe?",
   "home_features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
@@ -39,6 +53,7 @@
   "home_feat_community_title": "Active Community",
   "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
   "home_cta_subtitle": "Join thousands of members and transform your experience",
+  "home_cta_title": "Ready to Join the Zen Tribe?",
   "join_now_button": "Join Now",
   "explore_music_button": "Explore Music",
   
@@ -60,6 +75,9 @@
   "events_featured_title": "Featured",
   "events_calendar_title": "Full Calendar",
   "events_calendar_iframe_title": "DJ Zen Eyer Events Calendar",
+  "events_calendar_export": "Export Calendar",
+  "events_calendar_add": "Add to Calendar",
+  "events_calendar_note": "Click on events for more details",
   "events_achievement_section_title": "Achievement System",
   "events_achievement_section_subtitle": "Attend events and earn exclusive rewards",
   "events_achievement_xp_title": "Earn XP",
@@ -74,6 +92,9 @@
   "events_cta_subtitle": "Subscribe to stay updated on upcoming events and exclusive experiences",
   "events_cta_button": "Get Notified",
   "upcoming_events": "Upcoming Events",
+  "event_badge_available": "Available",
+  "event_badge_members_only": "Members Only",
+  "event_get_ticket": "Get Ticket",
   
   "music_page_title": "Music",
   "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
@@ -229,6 +250,13 @@
   
   "presskit_page_title": "Work With Me",
   "presskit_page_meta_desc": "Book DJ Zen Eyer for your event. Press kit and contact information.",
+  "presskit_badge": "Professional Press Kit",
+  "presskit_subtitle_line1": "Brazilian Zouk Producer & International DJ",
+  "presskit_subtitle_line2": "Transforming Events Into Unforgettable Experiences",
+  "presskit_stat_countries": "Countries Reached",
+  "presskit_stat_people": "People Impacted",
+  "presskit_stat_streams": "Total Streams",
+  "presskit_stat_years": "Years Experience",
   
   "dashboard_page_title": "Dashboard",
   "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
@@ -271,10 +299,7 @@
     "success": {
       "loginSuccess": "Login successful! Redirecting...",
       "registerSuccess": "Account created successfully! Redirecting...",
-      "googleSuccess": "Google login successful! Redirecting...",
-        "events_calendar_export": "Export Calendar",
-  "events_calendar_add": "Add to Calendar",
-  "events_calendar_note": "Click on events for more details"
+      "googleSuccess": "Google login successful! Redirecting..."
     }
   }
 }
