@@ -299,7 +299,9 @@
     "success": {
       "loginSuccess": "Login successful! Redirecting...",
       "registerSuccess": "Account created successfully! Redirecting...",
-      "googleSuccess": "Google login successful! Redirecting..."
+      "googleSuccess": "Google login successful! Redirecting...",
+      "home_headline": "Experience the <1>Zen</1> in Brazilian Zouk",
+  "home_subheadline": "Transforming dance floors into immersive audio experiences"
     }
   }
 }
