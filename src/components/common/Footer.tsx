@@ -145,6 +145,18 @@ const Footer: React.FC = () => {
 
           {/* Discover More - JÁ TRADUZIDO */}
           <div>
+  <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
+  <ul className="space-y-2.5">
+    <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
+    <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
+    
+    {/* ✅ NOVA LINHA - FAQ */}
+    <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+    
+    <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
+  </ul>
+</div>
+          <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
               <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
