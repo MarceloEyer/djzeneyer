@@ -1,4 +1,4 @@
-// src/pages/EventsPage.tsx - VERSÃO FINAL COM CALENDÁRIO REAL + ESTILO ZEN TRIBE
+// src/pages/EventsPage.tsx - VERSÃO FINAL 100% TRADUZIDA
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -42,7 +42,7 @@ const AchievementItem: React.FC<{
   </div>
 );
 
-// Mock upcoming events (eventos em destaque)
+// Mock upcoming events
 const featuredEvents = [
   {
     id: 1,
@@ -130,6 +130,14 @@ const EventsPage: React.FC = () => {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'Available': return t('event_badge_available');
+      case 'Members Only': return t('event_badge_members_only');
+      default: return status;
+    }
+  };
+
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'Festival': return 'bg-primary/20 text-primary border-primary/30';
@@ -164,7 +172,7 @@ const EventsPage: React.FC = () => {
 
         <div className="absolute top-4 right-4">
           <span className={`px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-xs font-bold ${getStatusColor(event.status)}`}>
-            {event.status}
+            {getStatusLabel(event.status)}
           </span>
         </div>
       </div>
@@ -199,7 +207,7 @@ const EventsPage: React.FC = () => {
           <span className="text-2xl font-black text-primary">{event.price}</span>
           <button className="btn btn-primary btn-sm flex items-center gap-2">
             <Ticket size={16} />
-            Get Ticket
+            {t('event_get_ticket')}
           </button>
         </div>
       </div>
@@ -226,7 +234,7 @@ const EventsPage: React.FC = () => {
               <div className="inline-block mb-4">
                 <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
                   <Music2 className="inline-block mr-2" size={16} />
-                  {t('events_header_badge') || 'Live Events & Shows'}
+                  {t('events_header_badge')}
                 </div>
               </div>
 
@@ -251,7 +259,7 @@ const EventsPage: React.FC = () => {
               className="mb-12"
             >
               <h2 className="text-3xl font-black font-display mb-8 text-center">
-                {t('events_featured_title') || 'Featured Events'}
+                {t('events_featured_title')}
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -276,17 +284,17 @@ const EventsPage: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-black font-display flex items-center gap-3">
                   <Calendar className="text-primary" size={32} />
-                  {t('events_calendar_title') || 'Full Calendar'}
+                  {t('events_calendar_title')}
                 </h2>
                 
                 <div className="flex gap-3">
                   <button className="btn btn-outline btn-sm flex items-center gap-2">
                     <Download size={16} />
-                    {t('events_calendar_export') || 'Export'}
+                    {t('events_calendar_export')}
                   </button>
                   <button className="btn btn-primary btn-sm flex items-center gap-2">
                     <Plus size={16} />
-                    {t('events_calendar_add') || 'Add to Calendar'}
+                    {t('events_calendar_add')}
                   </button>
                 </div>
               </div>
@@ -299,13 +307,13 @@ const EventsPage: React.FC = () => {
                     style={{ border: 0 }}
                     frameBorder="0" 
                     scrolling="no"
-                    title={t('events_calendar_iframe_title') || 'DJ Zen Eyer Events Calendar'}
+                    title={t('events_calendar_iframe_title')}
                   />
                 </div>
               </div>
 
               <div className="mt-6 text-center text-sm text-white/60">
-                <p>{t('events_calendar_note') || 'All times shown in your local timezone • Updated in real-time'}</p>
+                <p>{t('events_calendar_note')}</p>
               </div>
             </motion.div>
           </div>
@@ -354,14 +362,14 @@ const EventsPage: React.FC = () => {
                   <div className="text-center">
                     <div className="text-6xl mb-6">🎉</div>
                     <h3 className="text-2xl font-black mb-4">
-                      {t('events_cta_title') || 'Never Miss an Event!'}
+                      {t('events_cta_title')}
                     </h3>
                     <p className="text-white/70 mb-6">
-                      {t('events_cta_subtitle') || 'Subscribe to get notified about upcoming shows and exclusive events'}
+                      {t('events_cta_subtitle')}
                     </p>
                     <button className="btn btn-primary btn-lg flex items-center gap-2 mx-auto">
                       <Bell size={20} />
-                      {t('events_cta_button') || 'Subscribe Now'}
+                      {t('events_cta_button')}
                     </button>
                   </div>
                 </div>
