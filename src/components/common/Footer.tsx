@@ -1,6 +1,7 @@
 // src/components/common/Footer.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
 
 // Certifique-se de que window.wpData está acessível globalmente
@@ -8,7 +9,7 @@ declare global {
   interface Window {
     wpData: {
       siteUrl: string;
-      restUrl: string; // Ex: https://djzeneyer.com/wp-json/
+      restUrl: string;
       nonce: string;
     };
   }
@@ -33,6 +34,7 @@ const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 
 );
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +43,7 @@ const Footer: React.FC = () => {
 
   const whatsappNumber = "+5521987413091";
   const whatsappMessage = "Hello DJ Zen Eyer!";
-  const whatsappLink = `https://wa.me/<span class="math-inline">\{whatsappNumber\.replace\(/\\D/g, ''\)\}?text\=</span>{encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +66,6 @@ const Footer: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Não precisa de nonce aqui, pois o endpoint está definido como permission_callback' => '__return_true'
         },
         body: JSON.stringify({ email: email }),
       });
@@ -72,11 +73,11 @@ const Footer: React.FC = () => {
       const data = await response.json();
       console.log('[Footer] handleSubscribe: Resposta do WP API:', data, 'status:', response.status);
 
-      if (response.ok) { // Status 2xx
+      if (response.ok) {
         setSubmitMessage(data.message || 'Thanks for subscribing! Keep an eye on your inbox.');
         setSubmitSuccess(true);
         setEmail('');
-      } else { // Erros (status 4xx, 5xx)
+      } else {
         const errorMessage = data.message || 'Failed to subscribe. Please try again.';
         setSubmitMessage(errorMessage);
         setSubmitSuccess(false);
@@ -110,52 +111,62 @@ const Footer: React.FC = () => {
               Music producer and DJ creating immersive audio experiences for the mind, body, and soul.
             </p>
             <div className="flex space-x-4">
-              <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram"><Instagram size={22} /></a>
-              <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud"><Music2 size={22} /></a>
-              <a href="YOUR_YOUTUBE_CHANNEL_LINK_HERE" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube"><Youtube size={22} /></a> {/* <<< ATUALIZE ESTE LINK DO YOUTUBE PARA O SEU CANAL */}
-              <a href="https://facebook.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook"><FacebookIcon size={22} /></a>
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp"><MessageCircle size={22} /></a>
+              <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
+                <Instagram size={22} />
+              </a>
+              <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
+                <Music2 size={22} />
+              </a>
+              <a href="https://youtube.com/@djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
+                <Youtube size={22} />
+              </a>
+              <a href="https://facebook.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
+                <FacebookIcon size={22} />
+              </a>
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp">
+                <MessageCircle size={22} />
+              </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">Quick Links</h3>
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">Home</Link></li>
-              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">Music</Link></li>
-              <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">Events</Link></li>
-              <li><Link to="/tribe" className="text-white/70 hover:text-primary transition-colors">Zen Tribe Info</Link></li>
-              <li><a href="mailto:contact@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">Contact</a></li>
+              <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">{t('footer_home')}</Link></li>
+              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
+              <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
+              <li><Link to="/zentribe" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
+              <li><a href="mailto:contact@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">{t('footer_contact_text')}</a></li>
             </ul>
           </div>
 
           {/* Discover More */}
           <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">Discover More</h3>
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">Music Philosophy</Link></li>
-              <li><Link to="/press-kit" className="text-white/70 hover:text-primary transition-colors">Press Kit / Booking</Link></li>
-              <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">Support the Artist</a></li>
+              <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
+              <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
+              <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
             </ul>
           </div>
 
           {/* Newsletter */}
           <div className="lg:col-span-1">
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">Join the Newsletter</h3>
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
-              Get exclusive updates, new releases, and VIP event access directly to your inbox.
+              {t('footer_newsletter_desc')}
             </p>
 
             <form onSubmit={handleSubscribe} className="space-y-3">
               <div>
-                <label htmlFor="footer-email-subscription" className="sr-only">Email address</label>
+                <label htmlFor="footer-email-subscription" className="sr-only">{t('footer_email_placeholder')}</label>
                 <input
                   id="footer-email-subscription"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
+                  placeholder={t('footer_email_placeholder')}
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                   required
                   disabled={isSubmitting}
@@ -167,7 +178,7 @@ const Footer: React.FC = () => {
                 disabled={isSubmitting}
               >
                 <Send size={16} />
-                <span>{isSubmitting ? 'Subscribing...' : 'Subscribe'}</span>
+                <span>{isSubmitting ? t('loading') : t('footer_subscribe')}</span>
               </button>
             </form>
             {submitMessage && (
@@ -179,7 +190,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-xs md:text-sm">
-          <p>© {currentYear} DJ Zen Eyer. All rights reserved. Elevating vibes, one beat at a time.</p>
+          <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')} Elevating vibes, one beat at a time.</p>
         </div>
       </div>
     </footer>
