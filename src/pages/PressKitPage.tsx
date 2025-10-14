@@ -307,6 +307,146 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
+{/* Awards & Achievements Section - NOVO */}
+<section className="py-20 bg-background">
+  <div className="container mx-auto px-4">
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.8 }}
+      className="max-w-6xl mx-auto"
+    >
+      <div className="text-center mb-16">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="inline-block mb-4"
+        >
+          <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
+            <Award className="inline-block mr-2" size={16} />
+            Awards & Recognition
+          </div>
+        </motion.div>
+        
+        <h2 className="text-4xl font-black font-display mb-4">
+          World Champion & International Recognition
+        </h2>
+        <p className="text-xl text-white/70">
+          Recognized as one of the leading Brazilian Zouk DJs worldwide
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8 mb-12">
+        {/* Championship Awards */}
+        <motion.div 
+          className="bg-gradient-to-br from-primary/20 to-primary/5 p-8 rounded-2xl border border-primary/30"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: 'spring', stiffness: 300 }}
+        >
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-primary/20 rounded-full">
+              <Award className="text-primary" size={32} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-primary">Championship Titles</h3>
+              <p className="text-white/70">World Competitions</p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="text-4xl">🏆</div>
+              <div>
+                <div className="font-bold text-white text-lg">World Champion 2024</div>
+                <div className="text-white/70">Brazilian Zouk DJ Championship</div>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="text-4xl">🏆</div>
+              <div>
+                <div className="font-bold text-white text-lg">World Champion 2023</div>
+                <div className="text-white/70">Brazilian Zouk DJ Championship</div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* International Impact */}
+        <motion.div 
+          className="bg-gradient-to-br from-accent/20 to-accent/5 p-8 rounded-2xl border border-accent/30"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: 'spring', stiffness: 300 }}
+        >
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-accent/20 rounded-full">
+              <Globe className="text-accent" size={32} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-accent">International Impact</h3>
+              <p className="text-white/70">Global Presence</p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="text-4xl">🌍</div>
+              <div>
+                <div className="font-bold text-white text-lg">11+ Countries</div>
+                <div className="text-white/70">International performances</div>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="text-4xl">🎪</div>
+              <div>
+                <div className="font-bold text-white text-lg">Major Festivals</div>
+                <div className="text-white/70">Featured headliner worldwide</div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Featured Festivals */}
+      <div className="bg-surface/50 p-8 rounded-2xl border border-white/10">
+        <h3 className="text-2xl font-black font-display mb-6 text-center">
+          Featured at Major Festivals
+        </h3>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <div className="text-3xl mb-2">🎵</div>
+            <div className="font-bold text-white">ZoukFest Europe</div>
+            <div className="text-sm text-white/60">Amsterdam, NL</div>
+          </div>
+          
+          <div>
+            <div className="text-3xl mb-2">🎵</div>
+            <div className="font-bold text-white">Brazilian Zouk Congress</div>
+            <div className="text-sm text-white/60">Barcelona, ES</div>
+          </div>
+          
+          <div>
+            <div className="text-3xl mb-2">🎵</div>
+            <div className="font-bold text-white">Zouk Summer Fest</div>
+            <div className="text-sm text-white/60">Berlin, DE</div>
+          </div>
+          
+          <div>
+            <div className="text-3xl mb-2">🎵</div>
+            <div className="font-bold text-white">International Zouk Week</div>
+            <div className="text-sm text-white/60">Prague, CZ</div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  </div>
+</section>
+        
         {/* Media Kit */}
         <section className="py-20">
           <div className="container mx-auto px-4">
