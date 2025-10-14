@@ -1,6 +1,6 @@
-// src/pages/PressKitPage.tsx - VERSÃO CORRIGIDA (RJ + WHATSAPP)
+// src/pages/PressKitPage.tsx - OTIMIZADO (Performance + SEO + i18n + Niterói)
 
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -22,12 +22,13 @@ import {
   Sparkles
 } from 'lucide-react';
 
-const StatCard: React.FC<{ 
+// ✅ Componentes memoizados para performance
+const StatCard = memo<{ 
   icon: React.ReactNode; 
   number: string; 
   label: string;
   color: string;
-}> = ({ icon, number, label, color }) => (
+}>(({ icon, number, label, color }) => (
   <motion.div 
     whileHover={{ scale: 1.05, y: -5 }}
     className={`${color} p-6 rounded-2xl text-center backdrop-blur-sm border border-white/20 shadow-xl`}
@@ -39,14 +40,16 @@ const StatCard: React.FC<{
     <h3 className="font-black text-4xl text-white mb-2">{number}</h3>
     <p className="text-white/90 font-semibold">{label}</p>
   </motion.div>
-);
+));
 
-const MediaKitCard: React.FC<{
+StatCard.displayName = 'StatCard';
+
+const MediaKitCard = memo<{
   icon: React.ReactNode;
   title: string;
   description: string;
   path: string;
-}> = ({ icon, title, description, path }) => (
+}>(({ icon, title, description, path }) => (
   <motion.a
     href={path}
     download
@@ -66,34 +69,37 @@ const MediaKitCard: React.FC<{
       <span>Download</span>
     </div>
   </motion.a>
-);
+));
+
+MediaKitCard.displayName = 'MediaKitCard';
 
 const PressKitPage: React.FC = () => {
   const { t } = useTranslation();
 
+  // ✅ Stats com traduções
   const stats = [
     { 
       icon: <Globe size={32} />, 
       number: "11+", 
-      label: "Countries Reached",
+      label: t('presskit_stat_countries'),
       color: "bg-gradient-to-br from-blue-500 to-blue-700"
     },
     { 
       icon: <Users size={32} />, 
       number: "50K+", 
-      label: "People Impacted",
+      label: t('presskit_stat_people'),
       color: "bg-gradient-to-br from-purple-500 to-purple-700"
     },
     { 
       icon: <Music2 size={32} />, 
       number: "500K+", 
-      label: "Total Streams",
+      label: t('presskit_stat_streams'),
       color: "bg-gradient-to-br from-pink-500 to-pink-700"
     },
     { 
       icon: <Award size={32} />, 
       number: "10+", 
-      label: "Years Experience",
+      label: t('presskit_stat_years'),
       color: "bg-gradient-to-br from-green-500 to-green-700"
     }
   ];
@@ -119,16 +125,59 @@ const PressKitPage: React.FC = () => {
     }
   ];
 
-  // ✅ SEU WHATSAPP CORRETO
+  // ✅ WhatsApp correto
   const whatsappNumber = '5521987413091';
   const whatsappMessage = "Hi Zen Eyer! I'm interested in booking you for an event. Let's talk!";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
+  // ✅ SEO Schema.org - Structured Data
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "DJ Zen Eyer",
+    "alternateName": "Zen Eyer",
+    "jobTitle": "DJ and Music Producer",
+    "description": "Brazilian Zouk Producer & International DJ",
+    "url": "https://djzeneyer.com",
+    "image": "https://djzeneyer.com/images/zen-eyer-profile.jpg",
+    "sameAs": [
+      "https://instagram.com/djzeneyer",
+      "https://soundcloud.com/djzeneyer",
+      "https://spotify.com/artist/djzeneyer"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Niterói",
+      "addressRegion": "RJ",
+      "addressCountry": "BR"
+    },
+    "knowsAbout": ["Brazilian Zouk", "Electronic Music", "DJ", "Music Production"],
+    "award": "Over 500K streams worldwide"
+  };
+
   return (
     <>
       <Helmet>
-        <title>Work With Me - DJ Zen Eyer | Press Kit & Booking</title>
-        <meta name="description" content="Official press kit, biography, and booking information for DJ Zen Eyer - Brazilian Zouk music producer and global DJ." />
+        <title>{t('presskit_page_title')}</title>
+        <meta name="description" content={t('presskit_page_meta_desc')} />
+        
+        {/* ✅ Open Graph Meta Tags */}
+        <meta property="og:title" content="Work With Me - DJ Zen Eyer | Press Kit & Booking" />
+        <meta property="og:description" content="Official press kit, biography, and booking information for DJ Zen Eyer - Brazilian Zouk music producer and global DJ." />
+        <meta property="og:type" content="profile" />
+        <meta property="og:url" content="https://djzeneyer.com/work-with-me" />
+        <meta property="og:image" content="https://djzeneyer.com/images/zen-eyer-presskit-cover.jpg" />
+        
+        {/* ✅ Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Work With Me - DJ Zen Eyer" />
+        <meta name="twitter:description" content="Brazilian Zouk Producer & International DJ. Book now for your event!" />
+        <meta name="twitter:image" content="https://djzeneyer.com/images/zen-eyer-presskit-cover.jpg" />
+        
+        {/* ✅ Schema.org Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(personSchema)}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-background via-surface/20 to-background text-white">
@@ -154,7 +203,7 @@ const PressKitPage: React.FC = () => {
               >
                 <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
                   <Sparkles className="inline-block mr-2" size={16} />
-                  Professional Press Kit
+                  {t('presskit_badge')}
                 </div>
               </motion.div>
 
@@ -164,9 +213,9 @@ const PressKitPage: React.FC = () => {
               </h1>
               
               <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-                Brazilian Zouk Producer & International DJ
+                {t('presskit_subtitle_line1')}
                 <br />
-                <span className="text-primary font-semibold">Transforming Events Into Unforgettable Experiences</span>
+                <span className="text-primary font-semibold">{t('presskit_subtitle_line2')}</span>
               </p>
             </motion.div>
 
@@ -202,8 +251,11 @@ const PressKitPage: React.FC = () => {
                   <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 shadow-2xl">
                     <img 
                       src="https://placehold.co/600x600/101418/0D96FF?text=DJ+Zen+Eyer&font=orbitron"
-                      alt="DJ Zen Eyer" 
+                      alt="DJ Zen Eyer - Brazilian Zouk Producer" 
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      width="600"
+                      height="600"
                     />
                   </div>
                   <div className="absolute -bottom-6 -right-6 bg-primary p-6 rounded-2xl shadow-2xl">
@@ -224,7 +276,7 @@ const PressKitPage: React.FC = () => {
                       With a unique approach that combines technical precision with emotional storytelling, Zen Eyer creates immersive musical journeys that resonate with audiences worldwide.
                     </p>
                     <p>
-                      From intimate dance floors in Rio de Janeiro to international festivals across Europe and Asia, his sets are known for their carefully curated selection, seamless mixing, and ability to create unforgettable moments.
+                      From intimate dance floors in Niterói to international festivals across Europe and Asia, his sets are known for their carefully curated selection, seamless mixing, and ability to create unforgettable moments.
                     </p>
                     <p className="text-primary font-semibold">
                       As a music producer, Zen Eyer brings an insider's perspective to DJing, crafting exclusive edits and remixes that elevate every performance.
@@ -313,6 +365,9 @@ const PressKitPage: React.FC = () => {
                       src={`https://placehold.co/400x400/101418/0D96FF?text=Photo+${i}&font=orbitron`}
                       alt={`DJ Zen Eyer Press Photo ${i}`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      width="400"
+                      height="400"
                     />
                   </motion.div>
                 ))}
