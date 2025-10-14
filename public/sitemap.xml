@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- ✅ Sitemap do Rank Math (WordPress, WooCommerce, Posts) -->
+  <sitemap>
+    <loc>https://djzeneyer.com/sitemap_index.xml</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- ✅ Sitemap das rotas React -->
+  <sitemap>
+    <loc>https://djzeneyer.com/react-sitemap.xml</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </sitemap>
+
+</sitemapindex>
