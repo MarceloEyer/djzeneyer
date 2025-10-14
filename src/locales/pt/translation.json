@@ -274,9 +274,9 @@
       "googleSuccess": "Login com Google bem-sucedido! Redirecionando...",
        "events_calendar_export": "Exportar Calendário",
   "events_calendar_add": "Adicionar ao Calendário",
-  "events_calendar_note": "Clique nos eventos para mais detalhes"
+  "events_calendar_note": "Clique nos eventos para mais detalhes",
     }
-  },
+  }
   {
   "footer_quick_links": "Links Rápidos",
   "footer_discover_more": "Descubra Mais",
