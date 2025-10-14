@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
         <meta name="description" content={t('home_page_meta_desc')} />
       </Helmet>
 
-      {/* Hero Section */}
+      {/* Hero Section - ORIGINAL RESTAURADO */}
       <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-black">
           <motion.div 
@@ -96,6 +96,7 @@ const HomePage: React.FC = () => {
             animate={{ scale: 1 }}
             transition={{ duration: 10, ease: "linear" }}
           />
+          {/* GRADIENTE SUAVE ORIGINAL */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
 
@@ -106,12 +107,18 @@ const HomePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.8 }}
           >
+            {/* TÍTULO ORIGINAL COM CORES */}
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
-              {t('hero_title')}
+              <Trans i18nKey="home_headline">
+                Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
+              </Trans>
             </h1>
+            
+            {/* SUBTÍTULO ORIGINAL */}
             <p className="text-xl md:text-2xl mt-6 max-w-2xl mx-auto text-white/90 [text-shadow:_1px_1px_5px_rgba(0,0,0,0.8)]">
-              {t('hero_subtitle')}
+              {t('home_subheadline')}
             </p>
+            
             <div className="mt-10 flex flex-wrap gap-4 justify-center">
               <button 
                 onClick={handlePlayFeatured} 
@@ -179,7 +186,7 @@ const HomePage: React.FC = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display">
             <Trans i18nKey="home_cta_title">
-              Pronto para Entrar na <span className="text-primary">Zen Tribe</span>?
+              Ready to Join the <span className="text-primary">Zen Tribe</span>?
             </Trans>
           </h2>
           <p className="text-xl text-white/80 max-w-3xl mx-auto mb-10">
