@@ -47,6 +47,7 @@ function App() {
                     <Route path="shop/*" element={<ShopPage />} />
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="my-account" element={<MyAccountPage />} />
+                    <Route path="/faq" element={<FAQPage />} />
                   </Route>
 
                   {/* Portuguese routes under /pt */}
