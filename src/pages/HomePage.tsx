@@ -81,10 +81,154 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('home_page_title')}</title>
-        <meta name="description" content={t('home_page_meta_desc')} />
-      </Helmet>
+      
+        <Helmet>
+  <title>{t('home_page_title')}</title>
+  <meta name="description" content={t('home_page_meta_desc')} />
+  
+  {/* ✅ ADICIONE AQUI - Schema.org MusicGroup */}
+  <script type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "MusicGroup",
+      "name": "DJ Zen Eyer",
+      "alternateName": ["Zen Eyer", "DJ Zen Eyer Brazilian Zouk"],
+      "description": "World Champion Brazilian Zouk DJ and music producer. Winner of international DJ championships (2023, 2024) and featured artist at major festivals worldwide. Specializing in Brazilian Zouk music with over 500K streams globally.",
+      "genre": ["Brazilian Zouk", "Electronic Music", "Dance Music", "Zouk"],
+      "url": "https://djzeneyer.com",
+      "image": "https://djzeneyer.com/images/zen-eyer-profile.jpg",
+      "logo": "https://djzeneyer.com/images/zen-eyer-logo.png",
+      "sameAs": [
+        "https://instagram.com/djzeneyer",
+        "https://soundcloud.com/djzeneyer",
+        "https://spotify.com/artist/djzeneyer",
+        "https://youtube.com/@djzeneyer",
+        "https://facebook.com/djzeneyer"
+      ],
+      "member": {
+        "@type": "Person",
+        "name": "Zen Eyer",
+        "jobTitle": "DJ and Music Producer",
+        "description": "World Champion Brazilian Zouk DJ (2023, 2024). Professional DJ and music producer specializing in Brazilian Zouk.",
+        "knowsAbout": [
+          "Brazilian Zouk",
+          "DJ Performance",
+          "Music Production",
+          "Electronic Music",
+          "Dance Music",
+          "Zouk Music",
+          "International Festivals"
+        ],
+        "award": [
+          "World Champion Brazilian Zouk DJ 2024",
+          "World Champion Brazilian Zouk DJ 2023"
+        ],
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Niterói",
+          "addressRegion": "RJ",
+          "addressCountry": "BR"
+        }
+      },
+      "foundingDate": "2014",
+      "foundingLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Niterói",
+          "addressRegion": "Rio de Janeiro",
+          "addressCountry": "Brazil"
+        }
+      },
+      "event": [
+        {
+          "@type": "MusicEvent",
+          "name": "ZoukFest Europe",
+          "location": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Amsterdam",
+              "addressCountry": "Netherlands"
+            }
+          }
+        },
+        {
+          "@type": "MusicEvent",
+          "name": "Brazilian Zouk Congress",
+          "location": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Barcelona",
+              "addressCountry": "Spain"
+            }
+          }
+        }
+      ],
+      "award": [
+        {
+          "@type": "Award",
+          "name": "World Champion Brazilian Zouk DJ",
+          "dateAwarded": "2024"
+        },
+        {
+          "@type": "Award",
+          "name": "World Champion Brazilian Zouk DJ",
+          "dateAwarded": "2023"
+        }
+      ],
+      "knowsAbout": [
+        "Brazilian Zouk Music",
+        "DJ Techniques",
+        "Music Production",
+        "Electronic Music Production",
+        "Zouk Dance Culture",
+        "International Music Festivals"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "50",
+        "bestRating": "5"
+      }
+    })}
+  </script>
+
+  {/* ✅ ADICIONE TAMBÉM - BreadcrumbList */}
+  <script type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://djzeneyer.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Music",
+          "item": "https://djzeneyer.com/music"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Events",
+          "item": "https://djzeneyer.com/events"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Work With Me",
+          "item": "https://djzeneyer.com/work-with-me"
+        }
+      ]
+    })}
+  </script>
+        </Helmet>
 
       {/* Hero Section - ORIGINAL RESTAURADO */}
       <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
