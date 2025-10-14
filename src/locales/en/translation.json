@@ -10,37 +10,24 @@
   "nav_dashboard": "Dashboard",
   "nav_my_account": "My Account",
   
-  "footer_rights": "All rights reserved.",
-  "footer_about": "About",
-  "footer_contact": "Contact",
-  "footer_privacy": "Privacy Policy",
-  "footer_terms": "Terms of Service",
-  "footer_quick_links": "Quick Links",
-  "footer_discover_more": "Discover More",
-  "footer_music_philosophy": "Music Philosophy",
-  "footer_press_kit_booking": "Press Kit / Booking",
-  "footer_support_artist": "Support the Artist",
-  "footer_join_newsletter": "Join the Newsletter",
-  "footer_newsletter_desc": "Get exclusive updates, new releases, and VIP event access directly to your inbox.",
-  "footer_email_placeholder": "Your email address",
-  "footer_subscribe": "Subscribe",
-  "footer_zen_tribe_info": "Zen Tribe Info",
-  "footer_home": "Home",
-  "footer_music": "Music",
-  "footer_events": "Events",
-  "footer_contact_text": "Contact",
-  
-  "badge_featured": "Featured",
-  "badge_new": "New",
-  "badge_sale": "Sale",
-  
   "sign_in": "Sign In",
   "loading": "Loading...",
   "error": "Error",
   "success": "Success",
   
-  "home_page_title": "DJ Zen Eyer - Brazilian Zouk & House Music",
-  "home_page_meta_desc": "Professional DJ specialized in Brazilian Zouk and House Music. Events, mixes, and unique musical experiences.",
+  "badge_featured": "Featured",
+  "badge_new": "New",
+  "badge_sale": "Sale",
+  
+  "join_now_button": "Join Now",
+  "explore_music_button": "Explore Music",
+  "play_featured_mix": "Play Featured Mix",
+  "upcoming_events": "Upcoming Events",
+  
+  "home_page_title": "DJ Zen Eyer - Brazilian Zouk & Electronic Music",
+  "home_page_meta_desc": "Professional DJ specialized in Brazilian Zouk. Events, mixes, and unique musical experiences.",
+  "home_headline": "Experience the <1>Zen</1> in Brazilian Zouk",
+  "home_subheadline": "Transforming dance floors into immersive audio experiences",
   "home_welcome": "Welcome to DJ Zen Eyer",
   "home_tagline": "Brazilian Zouk & Electronic Music Producer",
   "home_cta": "Explore My Music",
@@ -52,16 +39,13 @@
   "home_feat_achievements_desc": "Earn XP, unlock badges, and level up",
   "home_feat_community_title": "Active Community",
   "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
-  "home_cta_subtitle": "Join thousands of members and transform your experience",
   "home_cta_title": "Ready to Join the Zen Tribe?",
-  "join_now_button": "Join Now",
-  "explore_music_button": "Explore Music",
+  "home_cta_subtitle": "Join thousands of members and transform your experience",
   
   "hero_title": "DJ Zen Eyer",
-  "hero_subtitle": "Brazilian Zouk & House Music",
+  "hero_subtitle": "Brazilian Zouk & Electronic Music",
   "hero_cta": "Listen Now",
   "hero_cta_secondary": "View Events",
-  "play_featured_mix": "Play Featured Mix",
   
   "events_page_title": "Events",
   "events_page_meta_desc": "Upcoming events and performances by DJ Zen Eyer",
@@ -91,7 +75,6 @@
   "events_cta_title": "Ready to Join the Party?",
   "events_cta_subtitle": "Subscribe to stay updated on upcoming events and exclusive experiences",
   "events_cta_button": "Get Notified",
-  "upcoming_events": "Upcoming Events",
   "event_badge_available": "Available",
   "event_badge_members_only": "Members Only",
   "event_get_ticket": "Get Ticket",
@@ -164,6 +147,27 @@
     "joinNow": "Join Now",
     "learnMore": "Learn More",
     "unlockAtLevel": "Unlock at level {{level}}",
+    "mostPopular": "Most Popular",
+    "upgradeNow": "Upgrade Now",
+    "unlocked": "Unlocked",
+    "viewMemberships": "View Memberships",
+    "whyJoin": "Why Join the Zen Tribe?",
+    "chooseMembership": "Choose Your Tribe Membership",
+    "selectTier": "Select the membership tier that fits your journey with DJ Zen Eyer's music",
+    "levelUpTitle": "Level Up Your Music Journey",
+    "levelUpDesc": "The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.",
+    "xpTitle": "Experience Points (XP)",
+    "xpDesc": "Earn XP for every action you take, from listening to tracks to attending events.",
+    "badgesTitle": "Digital Badges",
+    "badgesDesc": "Unlock collectible badges for special achievements and milestones in your journey.",
+    "rewardsTitle": "Rewards & Perks",
+    "rewardsDesc": "Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.",
+    "streaksTitle": "Daily Streaks",
+    "streaksDesc": "Maintain your engagement streak for bonus XP and special streak-only rewards.",
+    "achievementShowcase": "Achievement Showcase",
+    "currentLevel": "Current Level",
+    "zenApprentice": "Zen Apprentice",
+    "progressToLevel": "Progress to Level 4",
     "stats": {
       "members": "Members",
       "tracks": "Tracks",
@@ -245,6 +249,35 @@
       "title": "Ready to Elevate Your Experience?",
       "subtitle": "Join thousands of Zen Tribe members and unlock all exclusive benefits!",
       "button": "Join the Tribe Now"
+    },
+    "tiers": {
+      "novice": {
+        "name": "Zen Novice",
+        "price": "Free",
+        "feature1": "Access to public music releases",
+        "feature2": "Create and share playlists",
+        "feature3": "Join community discussions",
+        "feature4": "Basic profile and badges"
+      },
+      "voyager": {
+        "name": "Zen Voyager",
+        "price": "$9.99/month",
+        "feature1": "All Zen Novice features",
+        "feature2": "Exclusive weekly music drops",
+        "feature3": "Early access to event tickets",
+        "feature4": "Advanced achievement system",
+        "feature5": "Discounts on merchandise"
+      },
+      "master": {
+        "name": "Zen Master",
+        "price": "$19.99/month",
+        "feature1": "All Zen Voyager features",
+        "feature2": "VIP access to all live events",
+        "feature3": "Monthly exclusive live streams",
+        "feature4": "Personalized playlists from DJ Zen Eyer",
+        "feature5": "Zen Master digital badge collection",
+        "feature6": "Meet & greet opportunities"
+      }
     }
   },
   
@@ -260,6 +293,30 @@
   
   "dashboard_page_title": "Dashboard",
   "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
+  
+  "footer_rights": "All rights reserved.",
+  "footer_about": "About",
+  "footer_contact": "Contact",
+  "footer_privacy": "Privacy Policy",
+  "footer_terms": "Terms of Service",
+  "footer_quick_links": "Quick Links",
+  "footer_discover_more": "Discover More",
+  "footer_music_philosophy": "Music Philosophy",
+  "footer_press_kit_booking": "Press Kit / Booking",
+  "footer_support_artist": "Support the Artist",
+  "footer_join_newsletter": "Join the Newsletter",
+  "footer_newsletter_desc": "Get exclusive updates, new releases, and VIP event access directly to your inbox.",
+  "footer_email_placeholder": "Your email address",
+  "footer_subscribe": "Subscribe",
+  "footer_zen_tribe_info": "Zen Tribe Info",
+  "footer_home": "Home",
+  "footer_music": "Music",
+  "footer_events": "Events",
+  "footer_contact_text": "Contact",
+  "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
+  "footer_tagline": "Elevating vibes, one beat at a time.",
+  "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
+  "footer_subscribe_error": "Failed to subscribe. Please try again.",
   
   "auth": {
     "loading": "Loading...",
@@ -299,67 +356,7 @@
     "success": {
       "loginSuccess": "Login successful! Redirecting...",
       "registerSuccess": "Account created successfully! Redirecting...",
-      "googleSuccess": "Google login successful! Redirecting...",
-      "home_headline": "Experience the <1>Zen</1> in Brazilian Zouk",
-  "home_subheadline": "Transforming dance floors into immersive audio experiences",
-      "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
-  "footer_tagline": "Elevating vibes, one beat at a time.",
-  "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
-  "footer_subscribe_error": "Failed to subscribe. Please try again.",
-      {
-  "zenTribe": {
-    "mostPopular": "Most Popular",
-    "upgradeNow": "Upgrade Now",
-    "unlocked": "Unlocked",
-    "viewMemberships": "View Memberships",
-    "whyJoin": "Why Join the Zen Tribe?",
-    "chooseMembership": "Choose Your Tribe Membership",
-    "selectTier": "Select the membership tier that fits your journey with DJ Zen Eyer's music",
-    "levelUpTitle": "Level Up Your Music Journey",
-    "levelUpDesc": "The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.",
-    "xpTitle": "Experience Points (XP)",
-    "xpDesc": "Earn XP for every action you take, from listening to tracks to attending events.",
-    "badgesTitle": "Digital Badges",
-    "badgesDesc": "Unlock collectible badges for special achievements and milestones in your journey.",
-    "rewardsTitle": "Rewards & Perks",
-    "rewardsDesc": "Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.",
-    "streaksTitle": "Daily Streaks",
-    "streaksDesc": "Maintain your engagement streak for bonus XP and special streak-only rewards.",
-    "achievementShowcase": "Achievement Showcase",
-    "currentLevel": "Current Level",
-    "zenApprentice": "Zen Apprentice",
-    "progressToLevel": "Progress to Level 4",
-    "tiers": {
-      "novice": {
-        "name": "Zen Novice",
-        "price": "Free",
-        "feature1": "Access to public music releases",
-        "feature2": "Create and share playlists",
-        "feature3": "Join community discussions",
-        "feature4": "Basic profile and badges"
-      },
-      "voyager": {
-        "name": "Zen Voyager",
-        "price": "$9.99/month",
-        "feature1": "All Zen Novice features",
-        "feature2": "Exclusive weekly music drops",
-        "feature3": "Early access to event tickets",
-        "feature4": "Advanced achievement system",
-        "feature5": "Discounts on merchandise"
-      },
-      "master": {
-        "name": "Zen Master",
-        "price": "$19.99/month",
-        "feature1": "All Zen Voyager features",
-        "feature2": "VIP access to all live events",
-        "feature3": "Monthly exclusive live streams",
-        "feature4": "Personalized playlists from DJ Zen Eyer",
-        "feature5": "Zen Master digital badge collection",
-        "feature6": "Meet & greet opportunities"
-    }
-  }
-}
-
+      "googleSuccess": "Google login successful! Redirecting..."
     }
   }
 }
