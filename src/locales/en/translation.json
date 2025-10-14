@@ -301,7 +301,11 @@
       "registerSuccess": "Account created successfully! Redirecting...",
       "googleSuccess": "Google login successful! Redirecting...",
       "home_headline": "Experience the <1>Zen</1> in Brazilian Zouk",
-  "home_subheadline": "Transforming dance floors into immersive audio experiences"
+  "home_subheadline": "Transforming dance floors into immersive audio experiences",
+      "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
+  "footer_tagline": "Elevating vibes, one beat at a time.",
+  "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
+  "footer_subscribe_error": "Failed to subscribe. Please try again."
     }
   }
 }
