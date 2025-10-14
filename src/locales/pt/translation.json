@@ -301,7 +301,11 @@
       "registerSuccess": "Conta criada com sucesso! Redirecionando...",
       "googleSuccess": "Login com Google bem-sucedido! Redirecionando...",
        "home_headline": "Experimente o <1>Zen</1> no Zouk Brasileiro",
-  "home_subheadline": "Transformando pistas de dança em experiências audiovisuais imersivas"
+  "home_subheadline": "Transformando pistas de dança em experiências audiovisuais imersivas",
+       "footer_bio": "Produtor musical e DJ criando experiências audiovisuais imersivas para a mente, corpo e alma.",
+  "footer_tagline": "Elevando vibes, uma batida de cada vez.",
+  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
+  "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente."
     }
   }
 }
