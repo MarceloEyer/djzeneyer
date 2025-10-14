@@ -15,6 +15,20 @@
   "footer_contact": "Contato",
   "footer_privacy": "Política de Privacidade",
   "footer_terms": "Termos de Serviço",
+  "footer_quick_links": "Links Rápidos",
+  "footer_discover_more": "Descubra Mais",
+  "footer_music_philosophy": "Filosofia Musical",
+  "footer_press_kit_booking": "Press Kit / Contratação",
+  "footer_support_artist": "Apoie o Artista",
+  "footer_join_newsletter": "Assine a Newsletter",
+  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
+  "footer_email_placeholder": "Seu endereço de e-mail",
+  "footer_subscribe": "Inscrever-se",
+  "footer_zen_tribe_info": "Informações da Zen Tribe",
+  "footer_home": "Início",
+  "footer_music": "Música",
+  "footer_events": "Eventos",
+  "footer_contact_text": "Contato",
   
   "badge_featured": "Destaque",
   "badge_new": "Novo",
@@ -39,6 +53,7 @@
   "home_feat_community_title": "Comunidade Ativa",
   "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
   "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência",
+  "home_cta_title": "Pronto para Entrar na Zen Tribe?",
   "join_now_button": "Entrar Agora",
   "explore_music_button": "Explorar Músicas",
   
@@ -60,6 +75,9 @@
   "events_featured_title": "Em Destaque",
   "events_calendar_title": "Calendário Completo",
   "events_calendar_iframe_title": "Calendário de Eventos do DJ Zen Eyer",
+  "events_calendar_export": "Exportar Calendário",
+  "events_calendar_add": "Adicionar ao Calendário",
+  "events_calendar_note": "Clique nos eventos para mais detalhes",
   "events_achievement_section_title": "Sistema de Conquistas",
   "events_achievement_section_subtitle": "Participe de eventos e ganhe recompensas exclusivas",
   "events_achievement_xp_title": "Ganhe XP",
@@ -74,6 +92,9 @@
   "events_cta_subtitle": "Inscreva-se para ficar por dentro dos próximos eventos e experiências exclusivas",
   "events_cta_button": "Ser Notificado",
   "upcoming_events": "Próximos Eventos",
+  "event_badge_available": "Disponível",
+  "event_badge_members_only": "Apenas Membros",
+  "event_get_ticket": "Comprar Ingresso",
   
   "music_page_title": "Música",
   "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
@@ -229,6 +250,13 @@
   
   "presskit_page_title": "Trabalhe Comigo",
   "presskit_page_meta_desc": "Contrate DJ Zen Eyer para seu evento. Press kit e informações de contato.",
+  "presskit_badge": "Press Kit Profissional",
+  "presskit_subtitle_line1": "Produtor de Zouk Brasileiro & DJ Internacional",
+  "presskit_subtitle_line2": "Transformando Eventos em Experiências Inesquecíveis",
+  "presskit_stat_countries": "Países Alcançados",
+  "presskit_stat_people": "Pessoas Impactadas",
+  "presskit_stat_streams": "Total de Streams",
+  "presskit_stat_years": "Anos de Experiência",
   
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
@@ -271,35 +299,7 @@
     "success": {
       "loginSuccess": "Login bem-sucedido! Redirecionando...",
       "registerSuccess": "Conta criada com sucesso! Redirecionando...",
-      "googleSuccess": "Login com Google bem-sucedido! Redirecionando...",
-       "events_calendar_export": "Exportar Calendário",
-  "events_calendar_add": "Adicionar ao Calendário",
-  "events_calendar_note": "Clique nos eventos para mais detalhes",
+      "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
     }
   }
-  {
-  "footer_quick_links": "Links Rápidos",
-  "footer_discover_more": "Descubra Mais",
-  "footer_music_philosophy": "Filosofia Musical",
-  "footer_press_kit_booking": "Press Kit / Contratação",
-  "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine a Newsletter",
-  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
-  "footer_email_placeholder": "Seu endereço de e-mail",
-  "footer_subscribe": "Inscrever-se",
-  "footer_zen_tribe_info": "Informações da Zen Tribe",
-  
-  "event_badge_available": "Disponível",
-  "event_badge_members_only": "Apenas Membros",
-  "event_get_ticket": "Comprar Ingresso",
-  
-  "presskit_badge": "Press Kit Profissional",
-  "presskit_subtitle_line1": "Produtor de Zouk Brasileiro & DJ Internacional",
-  "presskit_subtitle_line2": "Transformando Eventos em Experiências Inesquecíveis",
-  "presskit_stat_countries": "Países Alcançados",
-  "presskit_stat_people": "Pessoas Impactadas",
-  "presskit_stat_streams": "Total de Streams",
-  "presskit_stat_years": "Anos de Experiência"
-}
-
 }
