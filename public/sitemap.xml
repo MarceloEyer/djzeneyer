@@ -1,16 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
-  <!-- ✅ Sitemap do Rank Math (WordPress, WooCommerce, Posts) -->
-  <sitemap>
-    <loc>https://djzeneyer.com/sitemap_index.xml</loc>
-    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
-  </sitemap>
+  <!-- Página inicial (React SPA) -->
+  <url>
+    <loc>https://djzeneyer.com/</loc>
+    <lastmod>2025-10-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
 
-  <!-- ✅ Sitemap das rotas React -->
-  <sitemap>
-    <loc>https://djzeneyer.com/react-sitemap.xml</loc>
-    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
-  </sitemap>
+  <!-- FAQ (React Route) -->
+  <url>
+    <loc>https://djzeneyer.com/faq</loc>
+    <lastmod>2025-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 
-</sitemapindex>
+  <!-- Shop (React Route) -->
+  <url>
+    <loc>https://djzeneyer.com/shop</loc>
+    <lastmod>2025-10-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Events (React Route) -->
+  <url>
+    <loc>https://djzeneyer.com/events</loc>
+    <lastmod>2025-10-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Contact (React Route) -->
+  <url>
+    <loc>https://djzeneyer.com/contact</loc>
+    <lastmod>2025-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- About (React Route) -->
+  <url>
+    <loc>https://djzeneyer.com/about</loc>
+    <lastmod>2025-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Zen Tribe (React Route) -->
+  <url>
+    <loc>https://djzeneyer.com/zen-tribe</loc>
+    <lastmod>2025-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>
