@@ -438,4 +438,6 @@ add_action('rest_api_init', function () {
     ]);
 });
 
+add_filter('wp_sitemaps_enabled', '__return_false');
+
 ?>
