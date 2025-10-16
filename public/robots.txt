@@ -49,4 +49,4 @@ Allow: /
 Crawl-delay: 1
 
 # ✅ Sitemap (vamos criar no próximo passo)
-Sitemap: https://djzeneyer.com/sitemap.xml
+Sitemap: https://djzeneyer.com/sitemap_index.xml
