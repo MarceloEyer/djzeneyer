@@ -1,213 +1,423 @@
-# =====================================================
-# DJ ZENEYER — .htaccess (v10.2 - CORREÇÕES SEO)
-# LiteSpeed + WordPress + React SPA
-# =====================================================
+<?php
+/**
+ * DJ Zen Eyer Theme Functions - Versão Final Unificada
+ * v10.2.0 - Com Correções SEO Críticas
+ */
 
-# BEGIN LSCACHE
-## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
-<IfModule LiteSpeed>
-RewriteEngine on
-CacheLookup on
-RewriteRule .* - [E=Cache-Control:no-autoflush]
-RewriteRule litespeed/debug/.*\.log$ - [F,L]
-RewriteRule \.litespeed_conf\.dat - [F,L]
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-### marker ASYNC start ###
-RewriteCond %{REQUEST_URI} /wp-admin/admin-ajax\.php
-RewriteCond %{QUERY_STRING} action=async_litespeed
-RewriteRule .* - [E=noabort:1]
-### marker ASYNC end ###
+/* =========================
+ * Configuração Central
+ * ========================= */
 
-### marker MOBILE start ###
-RewriteCond %{REQUEST_URI} Mobile|Android|Silk/|Kindle|BlackBerry|Opera\ Mini|Opera\ Mobi [NC]
-RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+ismobile]
-### marker MOBILE end ###
+if (!defined('DJZ_VERSION')) {
+    $asset_file = get_theme_file_path('/dist/assets/index.js');
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.2.0';
+    define('DJZ_VERSION', $version);
+}
 
-### marker WEBP start ###
-RewriteCond %{HTTP_ACCEPT} image/webp [OR]
-RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
-RewriteCond %{HTTP_USER_AGENT} Firefox/([6-9][0-9]|[1-9][0-9]{2,})
-RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+webp]
-### marker WEBP end ###
+function djz_allowed_origins(): array {
+    return [
+        'https://djzeneyer.com',
+        'https://www.djzeneyer.com',
+        'https://app.djzeneyer.com',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173'
+    ];
+}
 
-### marker DROPQS start ###
-CacheKeyModify -qs:fbclid
-CacheKeyModify -qs:gclid
-CacheKeyModify -qs:utm*
-CacheKeyModify -qs:_ga
-### marker DROPQS end ###
+/* =========================
+ * Roteamento para Single-Page Application (SPA)
+ * ========================= */
 
-</IfModule>
-## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
-# END LSCACHE
+add_filter('template_include', function ($template) {
+    if ( is_admin() || (defined('REST_REQUEST') && REST_REQUEST) || ! is_main_query() || ! is_404() ) {
+        return $template;
+    }
+    status_header(200);
+    return get_theme_file_path('/index.php');
+});
 
-# BEGIN NON_LSCACHE
-## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
-### marker BROWSER CACHE start ###
-<IfModule mod_expires.c>
-ExpiresActive on
-ExpiresByType application/pdf A31557600
-ExpiresByType image/x-icon A31557600
-ExpiresByType image/vnd.microsoft.icon A31557600
-ExpiresByType image/svg+xml A31557600
+/* =========================
+ * Enqueue de Scripts & Estilos
+ * ========================= */
 
-ExpiresByType image/jpg A31557600
-ExpiresByType image/jpeg A31557600
-ExpiresByType image/png A31557600
-ExpiresByType image/gif A31557600
-ExpiresByType image/webp A31557600
-ExpiresByType image/avif A31557600
+add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_style('djzeneyer-style', get_stylesheet_uri(), [], DJZ_VERSION);
+    
+    $js_src = get_template_directory_uri() . '/dist/assets/index.js';
+    $css_src = get_template_directory_uri() . '/dist/assets/index.css';
 
-ExpiresByType video/ogg A31557600
-ExpiresByType audio/ogg A31557600
-ExpiresByType video/mp4 A31557600
-ExpiresByType video/webm A31557600
+    if (file_exists(get_theme_file_path('/dist/assets/index.css'))) {
+        wp_enqueue_style('djzeneyer-react-styles', $css_src, [], DJZ_VERSION);
+    }
 
-ExpiresByType text/css A31557600
-ExpiresByType text/javascript A31557600
-ExpiresByType application/javascript A31557600
-ExpiresByType application/x-javascript A31557600
+    if (file_exists(get_theme_file_path('/dist/assets/index.js'))) {
+        wp_register_script('djzeneyer-react', $js_src, [], DJZ_VERSION, true);
+        wp_enqueue_script('djzeneyer-react');
+        wp_localize_script('djzeneyer-react', 'wpData', [
+            'siteUrl' => esc_url(home_url('/')),
+            'restUrl' => esc_url_raw(rest_url()),
+            'nonce'   => wp_create_nonce('wp_rest'),
+        ]);
+    }
+});
 
-ExpiresByType application/x-font-ttf A31557600
-ExpiresByType application/x-font-woff A31557600
-ExpiresByType application/font-woff A31557600
-ExpiresByType application/font-woff2 A31557600
-ExpiresByType application/vnd.ms-fontobject A31557600
-ExpiresByType font/ttf A31557600
-ExpiresByType font/otf A31557600
-ExpiresByType font/woff A31557600
-ExpiresByType font/woff2 A31557600
+add_filter('script_loader_tag', function ($tag, $handle, $src) {
+    if ('djzeneyer-react' === $handle) {
+        return sprintf('<script type="module" src="%s" id="%s" crossorigin="use-credentials" defer></script>', esc_url($src), esc_attr($handle . '-js'));
+    }
+    return $tag;
+}, 10, 3);
 
-</IfModule>
-### marker BROWSER CACHE end ###
+/* =========================
+ * Suportes do Tema & Roles
+ * ========================= */
 
-## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
-# END NON_LSCACHE
+add_action('after_setup_theme', function () {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('woocommerce');
+    register_nav_menus(['primary_menu' => __('Menu Principal', 'djzeneyer')]);
+});
 
-# -------------------------
-# Reescrita principal
-# -------------------------
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-</IfModule>
+add_action('after_switch_theme', function () {
+    if (!get_role('dj')) {
+        add_role('dj', 'DJ', ['read' => true]);
+    }
+});
 
-# =====================================================
-# CORREÇÃO 1: Forçar HTTPS
-# =====================================================
-<IfModule mod_rewrite.c>
-    RewriteCond %{HTTPS} off
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
+/* =========================
+ * Segurança & CORS
+ * ========================= */
 
-# =====================================================
-# CORREÇÃO 2: Remover index.html e index.php (ANTES de remover WWW)
-# =====================================================
-<IfModule mod_rewrite.c>
-    RewriteCond %{THE_REQUEST} ^.*/index\.(html|php)
-    RewriteRule ^(.*)index\.(html|php)$ https://djzeneyer.com/$1 [R=301,L]
-</IfModule>
+add_action('send_headers', function() {
+    if ( is_admin() || headers_sent() ) return;
+    header_remove('X-Powered-By');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    if (is_ssl()) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
+    }
+});
 
-# =====================================================
-# CORREÇÃO 3: Remover WWW (Redirect 301)
-# =====================================================
-<IfModule mod_rewrite.c>
-    RewriteCond %{HTTP_HOST} ^www\.djzeneyer\.com [NC]
-    RewriteRule ^(.*)$ https://djzeneyer.com/$1 [L,R=301]
-</IfModule>
+add_action('rest_api_init', function() {
+    add_filter('rest_pre_serve_request', function($served) {
+        $allowed_origins = djz_allowed_origins();
+        $origin = isset($_SERVER['HTTP_ORIGIN']) ? trim($_SERVER['HTTP_ORIGIN']) : '';
+        if (in_array($origin, $allowed_origins, true)) {
+            header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
+            header('Access-Control-Allow-Credentials: true');
+            header('Vary: Origin', false);
+        }
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce, X-Client-Info, Apikey, X-Requested-With');
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            status_header(200);
+            exit;
+        }
+        return $served;
+    }, 15);
+});
 
-# =====================================================
-# CORS controlado
-# =====================================================
-SetEnvIfNoCase Origin "^https?://(djzeneyer\.com|www\.djzeneyer\.com|app\.djzeneyer\.com)(:[0-9]+)?$" ORIGIN_ALLOWED=$0
-SetEnvIfNoCase Origin "^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$" ORIGIN_ALLOWED=$0
+/* =========================
+ * Integrações de Plugins
+ * ========================= */
 
-<IfModule mod_headers.c>
-    Header always set Access-Control-Allow-Origin "%{ORIGIN_ALLOWED}e" env=ORIGIN_ALLOWED
-    Header always set Access-Control-Allow-Credentials "true" env=ORIGIN_ALLOWED
-    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH" env=ORIGIN_ALLOWED
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Client-Info, Apikey, X-Requested-With" env=ORIGIN_ALLOWED
-    Header always set Access-Control-Expose-Headers "Content-Length, Content-Range" env=ORIGIN_ALLOWED
-</IfModule>
+add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
+    if (!empty($request['email'])) {
+        $user = get_user_by('email', sanitize_email($request['email']));
+        if ($user) {
+            $payload['display_name'] = $user->display_name;
+            $payload['roles'] = $user->roles;
+            if (function_exists('gamipress_get_user_points')) {
+                $payload['gamipress_points'] = gamipress_get_user_points($user->ID, 'zen-points');
+                $payload['gamipress_rank'] = gamipress_get_user_rank($user->ID, 'zen-level');
+            }
+        }
+    }
+    return $payload;
+}, 10, 2);
 
-# Responder OPTIONS com 200 (pré-flight)
-<IfModule mod_rewrite.c>
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^ - [R=200,L]
-</IfModule>
+add_action('rest_api_init', function(){
+    register_rest_field('user', 'gamipress_data', [
+        'get_callback' => function($user) {
+            if (!function_exists('gamipress_get_user_points')) return null;
+            $user_id = isset($user['id']) ? intval($user['id']) : 0;
+            return [
+                'points' => gamipress_get_user_points($user_id, 'zen-points'),
+                'rank' => gamipress_get_user_rank($user_id, 'zen-level'),
+                'achievements' => function_exists('gamipress_get_user_achievements') ? gamipress_get_user_achievements($user_id) : [],
+            ];
+        },
+        'schema' => null,
+    ]);
+});
 
-# =====================================================
-# Proteções de arquivos sensíveis
-# =====================================================
-<FilesMatch "^(wp-config\.php|\.env|\.git|\.gitignore|composer\.json|composer\.lock|phpunit\.xml)$">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
-    </IfModule>
-</FilesMatch>
+/* =========================
+ * Handlers dos Endpoints
+ * ========================= */
 
-<Files ".htaccess">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
-    </IfModule>
-</Files>
+function djz_get_multilang_menu_handler($request) {
+    $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
+    if (function_exists('pll_set_language')) {
+        pll_set_language($lang);
+    }
+    $locations = get_nav_menu_locations();
+    $menu_id = $locations['primary_menu'] ?? null;
+    if (!$menu_id) return rest_ensure_response([]);
+    $items = wp_get_nav_menu_items($menu_id);
+    if (!is_array($items)) return rest_ensure_response([]);
+    $formatted = [];
+    foreach ($items as $item) {
+        if (empty($item->ID) || (int)$item->menu_item_parent !== 0) continue;
+        $formatted[] = [ 
+            'ID' => (int)$item->ID, 
+            'title' => $item->title ?? '', 
+            'url' => wp_make_link_relative($item->url ?? '#'), 
+            'target' => !empty($item->target) ? $item->target : '_self' 
+        ];
+    }
+    return rest_ensure_response($formatted);
+}
 
-# =====================================================
-# Cache/Expires para ativos estáticos
-# =====================================================
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/ttf "access plus 1 year"
-    ExpiresByType font/eot "access plus 1 year"
-    ExpiresByType application/pdf "access plus 1 month"
-    ExpiresByType application/json "access plus 0 seconds"
-</IfModule>
+function djz_mailpoet_subscribe_handler($request) {
+    $email = sanitize_email($request->get_param('email') ?? '');
+    if (!is_email($email)) return new WP_Error('invalid_email', 'Invalid email', ['status' => 400]);
+    if (!class_exists('\MailPoet\API\API')) return new WP_Error('mailpoet_inactive', 'MailPoet inactive', ['status' => 500]);
+    try {
+        $mailpoet_api = \MailPoet\API\API::MP('v1');
+        $lists = $mailpoet_api->getLists();
+        $list_id = !empty($lists) ? $lists[0]['id'] : 1;
+        $mailpoet_api->addSubscriber(['email' => $email, 'status' => 'subscribed'], [$list_id]);
+        return rest_ensure_response(['success' => true, 'message' => 'Subscribed!']);
+    } catch (Exception $e) {
+        if (stripos($e->getMessage(), 'already exists') !== false) {
+            return rest_ensure_response(['success' => true, 'message' => 'Already subscribed!']);
+        }
+        return new WP_Error('subscription_failed', $e->getMessage(), ['status' => 500]);
+    }
+}
 
-<IfModule mod_headers.c>
-    <FilesMatch "\.(ico|jpe?g|png|gif|webp|svg|css|js|woff2?|ttf|eot)$">
-        Header set Cache-Control "public, max-age=31557600, immutable"
-    </FilesMatch>
-    <FilesMatch "\.(pdf|json)$">
-        Header set Cache-Control "public, max-age=2592000"
-    </FilesMatch>
-</IfModule>
+function djz_google_oauth_handler($request) {
+    $token = sanitize_text_field($request->get_param('token') ?? '');
+    if (empty($token)) return new WP_Error('no_token', 'Token is required', ['status' => 400]);
+    $verify_url = add_query_arg('id_token', rawurlencode($token), 'https://oauth2.googleapis.com/tokeninfo');
+    $response = wp_remote_get($verify_url, ['timeout' => 10]);
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+        return new WP_Error('invalid_token', 'Failed to verify Google token', ['status' => 401]);
+    }
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    if (empty($body) || empty($body['email'])) {
+        return new WP_Error('invalid_token', 'Invalid token body from Google', ['status' => 401]);
+    }
+    $email = sanitize_email($body['email']);
+    $name = sanitize_text_field($body['name'] ?? '');
+    $user = get_user_by('email', $email);
+    if (!$user) {
+        $user_id = wp_create_user($email, wp_generate_password(), $email);
+        if (is_wp_error($user_id)) return $user_id;
+        wp_update_user(['ID' => $user_id, 'display_name' => $name, 'first_name' => current(explode(' ', $name))]);
+        $user = get_user_by('id', $user_id);
+    }
+    if (class_exists('\SimpleJwtLogin\Classes\SimpleJwtLoginJWT')) {
+        $jwt_instance = new \SimpleJwtLogin\Classes\SimpleJwtLoginJWT();
+        $jwt = $jwt_instance->getJwt($user);
+        return rest_ensure_response([
+            'jwt' => $jwt, 
+            'user' => ['id' => $user->ID, 'email' => $user->user_email, 'name' => $user->display_name]
+        ]);
+    }
+    return new WP_Error('jwt_plugin_missing', 'Simple JWT Login plugin not available', ['status' => 500]);
+}
 
-# =====================================================
-# Compressão (gzip/deflate)
-# =====================================================
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
-</IfModule>
+function djz_get_products_with_lang_handler($request) {
+    $lang = sanitize_text_field($request->get_param('lang') ?? '');
+    
+    if (empty($lang) && function_exists('pll_default_language')) {
+        $lang = pll_default_language();
+    }
+    
+    if (empty($lang)) {
+        $lang = 'en';
+    }
+    
+    $args = array(
+        'post_type' => 'product',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+    
+    if (function_exists('pll_get_post_language')) {
+        $args['lang'] = $lang;
+    }
+    
+    $query = new WP_Query($args);
+    $products = array();
+    
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $product_id = get_the_ID();
+            $product = wc_get_product($product_id);
+            
+            if (!$product) continue;
+            
+            $product_lang = $lang;
+            if (function_exists('pll_get_post_language')) {
+                $detected_lang = pll_get_post_language($product_id);
+                if ($detected_lang) {
+                    $product_lang = $detected_lang;
+                }
+            }
+            
+            $translations = array();
+            if (function_exists('pll_get_post_translations')) {
+                $translations = pll_get_post_translations($product_id);
+            }
+            
+            $images = array();
+            $image_ids = $product->get_gallery_image_ids();
+            
+            if ($product->get_image_id()) {
+                array_unshift($image_ids, $product->get_image_id());
+            }
+            
+            foreach ($image_ids as $image_id) {
+                $images[] = array(
+                    'id' => $image_id,
+                    'src' => wp_get_attachment_url($image_id),
+                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
+                );
+            }
+            
+            if (empty($images)) {
+                $images[] = array(
+                    'id' => 0,
+                    'src' => 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer',
+                    'alt' => $product->get_name(),
+                );
+            }
+            
+            $products[] = array(
+                'id' => $product_id,
+                'name' => $product->get_name(),
+                'slug' => $product->get_slug(),
+                'price' => $product->get_price(),
+                'regular_price' => $product->get_regular_price(),
+                'sale_price' => $product->get_sale_price(),
+                'on_sale' => $product->is_on_sale(),
+                'stock_status' => $product->get_stock_status(),
+                'images' => $images,
+                'lang' => $product_lang,
+                'translations' => $translations,
+            );
+        }
+    }
+    
+    wp_reset_postdata();
+    
+    return new WP_Rest_Response($products, 200);
+}
 
-# =====================================================
-# WordPress core (NÃO REMOVER)
-# =====================================================
-# BEGIN WordPress
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-RewriteBase /
-RewriteRule ^index\.php$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.php [L]
-</IfModule>
-# END WordPress
+/* =========================
+ * Registro dos Endpoints
+ * ========================= */
+
+add_action('rest_api_init', function () {
+    $namespace = 'djzeneyer/v1';
+
+    register_rest_route($namespace, '/menu', [
+        'methods' => 'GET',
+        'callback' => 'djz_get_multilang_menu_handler',
+        'permission_callback' => '__return_true'
+    ]);
+
+    register_rest_route($namespace, '/subscribe', [
+        'methods' => 'POST',
+        'callback' => 'djz_mailpoet_subscribe_handler',
+        'permission_callback' => '__return_true'
+    ]);
+
+    register_rest_route($namespace, '/products', [
+        'methods' => 'GET',
+        'callback' => 'djz_get_products_with_lang_handler',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'lang' => [
+                'required' => false,
+                'type' => 'string',
+                'description' => 'Código do idioma (pt, en, etc)',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+        ],
+    ]);
+
+    register_rest_route($namespace, '/user/update-profile', [
+        'methods' => 'POST',
+        'callback' => function($request) {
+            $user_id = get_current_user_id();
+            if (0 === $user_id) {
+                return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+            }
+            $params = $request->get_json_params();
+            $user_data = ['ID' => $user_id];
+            if (isset($params['displayName'])) {
+                $user_data['display_name'] = sanitize_text_field($params['displayName']);
+            }
+            $result = wp_update_user($user_data);
+            if (is_wp_error($result)) {
+                return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]);
+            }
+            return rest_ensure_response(['success' => true, 'message' => 'Perfil atualizado com sucesso!']);
+        },
+        'permission_callback' => 'is_user_logged_in'
+    ]);
+
+    register_rest_route('simple-jwt-login/v1', '/auth/google', [
+        'methods' => 'POST',
+        'callback' => 'djz_google_oauth_handler',
+        'permission_callback' => '__return_true'
+    ]);
+});
+
+/* =========================
+ * CORREÇÕES SEO CRÍTICAS
+ * ========================= */
+
+// 1. Corrigir status code da página 404
+add_action('template_redirect', function() {
+    if (is_404()) {
+        status_header(404);
+        nocache_headers();
+    }
+}, 999);
+
+// 2. Hreflang correto com self-referencing
+add_action('wp_head', function() {
+    remove_action('wp_head', 'rank_math_hreflang', 10);
+    
+    $base_url = trailingslashit(home_url());
+    
+    if (is_front_page() || is_home()) {
+        echo '<link rel="alternate" hreflang="en" href="' . esc_url($base_url) . '" />' . "\n";
+        echo '<link rel="alternate" hreflang="pt-BR" href="' . esc_url($base_url . 'pt/') . '" />' . "\n";
+        echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($base_url) . '" />' . "\n";
+    }
+    
+    if (is_page() && get_query_var('pagename') === 'pt') {
+        echo '<link rel="alternate" hreflang="en" href="' . esc_url($base_url) . '" />' . "\n";
+        echo '<link rel="alternate" hreflang="pt-BR" href="' . esc_url($base_url . 'pt/') . '" />' . "\n";
+        echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($base_url) . '" />' . "\n";
+    }
+}, 1);
+
+// 3. Desabilitar sitemap do WordPress (Rank Math gera melhor)
+add_filter('wp_sitemaps_enabled', '__return_false');
+
+?>
