@@ -1,30 +1,44 @@
 // vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path'; // Importa o módulo 'path' do Node.js, necessário para o alias
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
   server: {
-    // Correto para o desenvolvimento no bolt.new, HTTPS desativado.
-    // https: true,
+    port: 5173,
   },
   build: {
     outDir: 'dist',
     manifest: true,
-    rollupOptions: {
-      output: {
-        // Ensure asset names are WordPress friendly
-        assetFileNames: 'assets/[name].[ext]',
-        chunkFileNames: 'assets/[name].js',
-        entryFileNames: 'assets/[name].js',
+    target: 'es2015',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
     },
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name].[ext]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name].js',
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          i18n: ['i18next', 'react-i18next'],
+          motion: ['framer-motion'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 500,
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+    include: ['react', 'react-dom', 'react-router-dom'],
   },
-  // ADICIONADO: Configuração do atalho '@' para apontar para a pasta 'src'
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
