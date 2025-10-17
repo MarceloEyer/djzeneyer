@@ -113,6 +113,7 @@
            active:scale-95
            focus-visible:ring-primary;
     box-shadow: 0 4px 20px rgba(var(--color-primary), 0.3);
+    text-shadow: 0 1px 6px #000, 0 1px 1px #fff;
   }
   
   .btn-primary:hover {
