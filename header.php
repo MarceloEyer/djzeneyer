@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html <?php language_attributes(); ?>>
+<html <?php language_attributes(); ?> prefix="og: https://ogp.me/ns# article: https://ogp.me/ns/article#">
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
