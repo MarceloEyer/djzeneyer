@@ -1,11 +1,10 @@
-// src/components/common/Footer.tsx - VERSÃO FINAL CORRIGIDA
+// src/components/common/Footer.tsx - VERSÃO CORRIGIDA
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
 
-// Certifique-se de que window.wpData está acessível globalmente
 declare global {
   interface Window {
     wpData: {
@@ -16,7 +15,6 @@ declare global {
   }
 }
 
-// Ícone do Facebook (SVG embutido)
 const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 20, className = "" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +96,8 @@ const Footer: React.FC = () => {
     <footer className="bg-background border-t border-white/10">
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-          {/* Logo and about - AGORA TRADUZIDO */}
+          
+          {/* Logo and About */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
@@ -108,7 +107,6 @@ const Footer: React.FC = () => {
                 <span className="text-primary">DJ</span> Zen Eyer
               </span>
             </div>
-            {/* BIO TRADUZIDA */}
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
               {t('footer_bio')}
             </p>
@@ -131,7 +129,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links - JÁ TRADUZIDO */}
+          {/* Quick Links */}
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
@@ -143,29 +141,18 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Discover More - JÁ TRADUZIDO */}
-          <div>
-  <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
-  <ul className="space-y-2.5">
-    <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
-    <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
-    
-    {/* ✅ NOVA LINHA - FAQ */}
-    <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
-    
-    <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
-  </ul>
-</div>
+          {/* Discover More */}
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
               <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
               <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
+              <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
               <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
             </ul>
           </div>
 
-          {/* Newsletter - JÁ TRADUZIDO */}
+          {/* Newsletter */}
           <div className="lg:col-span-1">
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
@@ -203,7 +190,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar - AGORA TRADUZIDO */}
+        {/* Bottom Bar */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-xs md:text-sm">
           <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')} {t('footer_tagline')}</p>
         </div>
