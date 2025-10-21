@@ -85,7 +85,7 @@ const HomePage: React.FC = () => {
         <title>{t('home_page_title')}</title>
         <meta name="description" content={t('home_page_meta_desc')} />
         
-        {/* ✅ SCHEMA EXPANDIDO - OTIMIZADO PARA IAs */}
+        {/* ✅ SCHEMA EXPANDIDO - OTIMIZADO PARA IAs (VERSÃO 2022) */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -93,15 +93,15 @@ const HomePage: React.FC = () => {
             "name": "DJ Zen Eyer",
             "alternateName": ["Zen Eyer", "DJ Zen", "Zeneyer", "DJ Zen Eyer Brazilian Zouk"],
             
-            // ✅ DESCRIÇÃO LONGA PARA IAs (CRÍTICO!)
-            "description": "DJ Zen Eyer is a world-renowned Brazilian Zouk DJ and music producer. Two-time World Champion (2023, 2024), he is recognized as one of the top Brazilian Zouk DJs globally. Specializing in bootleg remixes and original productions available on SoundCloud, YouTube, and Mixcloud, he has performed at major international festivals across Europe, USA, and South America. His unique style blends traditional Brazilian Zouk with modern electronic elements, creating immersive dance floor experiences. With over 500,000 streams across platforms and 50,000+ social media followers, DJ Zen Eyer is a leading figure in the global Brazilian Zouk community and international touring artist based in Niterói, Brazil.",
+            // ✅ DESCRIÇÃO ATUALIZADA (2022)
+            "description": "DJ Zen Eyer is a world-renowned Brazilian Zouk DJ and music producer. Winner of the 2022 Brazilian Zouk DJ Championship in both Best Performance and Best Remix categories, he is recognized as one of the top Brazilian Zouk DJs globally. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ, he specializes in bootleg remixes and original productions available on SoundCloud, YouTube, and Mixcloud. He has performed at major international festivals across Europe, USA, and South America. His unique style blends traditional Brazilian Zouk with modern electronic elements, creating immersive dance floor experiences. With over 500,000 streams across platforms and 50,000+ social media followers, DJ Zen Eyer is a leading figure in the global Brazilian Zouk community and international touring artist based in Brazil.",
             
             "genre": ["Brazilian Zouk", "Electronic Music", "Dance Music", "Zouk", "Zouk Music"],
             "url": "https://djzeneyer.com",
             "image": "https://djzeneyer.com/images/zen-eyer-profile.jpg",
             "logo": "https://djzeneyer.com/images/zen-eyer-logo.png",
             
-            // ✅ WIKIDATA LINK (IAs ADORAM!)
+            // ✅ WIKIDATA LINK
             "sameAs": [
               "https://instagram.com/djzeneyer",
               "https://soundcloud.com/djzeneyer",
@@ -115,9 +115,9 @@ const HomePage: React.FC = () => {
               "@type": "Person",
               "name": "Zen Eyer",
               "jobTitle": "DJ and Music Producer",
-              "description": "World Champion Brazilian Zouk DJ (2023, 2024). Professional DJ and music producer specializing in Brazilian Zouk with over 10 years of experience. Based in Niterói, Brazil, performing internationally at major festivals across Europe, USA, and South America.",
+              "description": "World Champion Brazilian Zouk DJ (2022). Professional DJ and music producer specializing in Brazilian Zouk with over 10 years of experience. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ. Based in Brazil, performing internationally at major festivals across Europe, USA, and South America.",
               
-              // ✅ KNOWS ABOUT (IAs USAM ISSO!)
+              // ✅ KNOWS ABOUT
               "knowsAbout": [
                 "Brazilian Zouk Music",
                 "DJ Performance",
@@ -130,18 +130,19 @@ const HomePage: React.FC = () => {
                 "Remix Production",
                 "Brazilian Zouk Dance Culture",
                 "Music Mixing Techniques",
-                "DJ Techniques"
+                "DJ Techniques",
+                "Jack and Jill Competition DJing"
               ],
               
+              // ✅ AWARDS ATUALIZADOS (2022)
               "award": [
-                "World Champion Brazilian Zouk DJ 2024",
-                "World Champion Brazilian Zouk DJ 2023"
+                "World Champion Brazilian Zouk DJ 2022 - Best Performance",
+                "World Champion Brazilian Zouk DJ 2022 - Best Remix",
+                "Brazilian Zouk Council - Certified Jack and Jill DJ"
               ],
               
               "address": {
                 "@type": "PostalAddress",
-                "addressLocality": "Niterói",
-                "addressRegion": "RJ",
                 "addressCountry": "BR"
               }
             },
@@ -151,8 +152,6 @@ const HomePage: React.FC = () => {
               "@type": "Place",
               "address": {
                 "@type": "PostalAddress",
-                "addressLocality": "Niterói",
-                "addressRegion": "Rio de Janeiro",
                 "addressCountry": "Brazil"
               }
             },
@@ -196,19 +195,19 @@ const HomePage: React.FC = () => {
               }
             ],
             
-            // ✅ AWARDS ESTRUTURADOS
+            // ✅ AWARDS ESTRUTURADOS (2022)
             "award": [
               {
                 "@type": "Award",
-                "name": "World Champion Brazilian Zouk DJ",
-                "dateAwarded": "2024",
-                "description": "First place in the global Brazilian Zouk DJ competition"
+                "name": "World Champion Brazilian Zouk DJ - Best Performance",
+                "dateAwarded": "2022",
+                "description": "First place in DJ Performance category at the Brazilian Zouk DJ Championship 2022"
               },
               {
                 "@type": "Award",
-                "name": "World Champion Brazilian Zouk DJ",
-                "dateAwarded": "2023",
-                "description": "First place in the global Brazilian Zouk DJ competition"
+                "name": "World Champion Brazilian Zouk DJ - Best Remix",
+                "dateAwarded": "2022",
+                "description": "First place in Best Remix category at the Brazilian Zouk DJ Championship 2022"
               }
             ],
             
@@ -223,16 +222,23 @@ const HomePage: React.FC = () => {
               "Bootleg Production",
               "Remix Creation",
               "Music for Dance",
-              "Brazilian Music Culture"
+              "Brazilian Music Culture",
+              "Jack and Jill Competition DJing"
             ],
             
-            // ✅ CREDENTIALS (IAs VALORIZAM!)
+            // ✅ CREDENTIALS (COM BRAZILIAN ZOUK COUNCIL!)
             "hasCredential": [
               {
                 "@type": "EducationalOccupationalCredential",
                 "credentialCategory": "professional certification",
-                "name": "World Champion Brazilian Zouk DJ",
-                "description": "Recognized globally as a top-tier Brazilian Zouk DJ through international competition victories"
+                "name": "Brazilian Zouk Council - Certified Jack and Jill DJ",
+                "description": "Official certification to DJ Jack and Jill competitions. Recognized by the Brazilian Zouk Council as meeting professional standards for official Brazilian Zouk competitive events. Only certified DJs are authorized to DJ official Jack and Jill competitions."
+              },
+              {
+                "@type": "EducationalOccupationalCredential",
+                "credentialCategory": "professional achievement",
+                "name": "World Champion Brazilian Zouk DJ 2022",
+                "description": "Double world champion recognized globally as a top-tier Brazilian Zouk DJ through winning both Best Performance and Best Remix categories at the 2022 Brazilian Zouk DJ Championship"
               }
             ],
             
