@@ -2,43 +2,108 @@
   "name": "DJ Zen Eyer",
   "short_name": "Zen Eyer",
   "description": "Brazilian Zouk DJ & Producer | Live Events, Shows & Classes worldwide",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0A0E27",
+  "background_color": "#0A0E27",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["music", "entertainment", "lifestyle"],
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-120x120.png",
+      "sizes": "120x120",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "maskable"
     },
     {
       "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "maskable"
     }
   ],
-  "theme_color": "#0A0E27",
-  "background_color": "#0A0E27",
-  "display": "standalone",
-  "start_url": "/",
-  "scope": "/",
-  "orientation": "portrait-primary",
-  "lang": "en",
-  "dir": "ltr",
-  "categories": ["music", "entertainment", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile-1.jpg",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Events",
       "short_name": "Events",
       "description": "Upcoming DJ events",
       "url": "/events",
-      "icons": [{ "src": "/web-app-manifest-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/favicon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Shop",
       "short_name": "Shop",
       "description": "Buy tickets & merch",
       "url": "/shop",
-      "icons": [{ "src": "/web-app-manifest-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/favicon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "description": "Get in touch",
+      "url": "/contact",
+      "icons": [
+        {
+          "src": "/favicon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
