@@ -1,61 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
-  <!-- Página inicial (React SPA) -->
+
+  <!-- ========================================== -->
+  <!-- HOME (EN) -->
+  <!-- ========================================== -->
   <url>
     <loc>https://djzeneyer.com/</loc>
-    <lastmod>2025-10-16</lastmod>
-    <changefreq>daily</changefreq>
+    <lastmod>2025-10-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/" />
   </url>
 
-  <!-- FAQ (React Route) -->
+  <!-- ========================================== -->
+  <!-- HOME (PT) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/pt/</loc>
+    <lastmod>2025-10-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/" />
+  </url>
+
+  <!-- ========================================== -->
+  <!-- FAQ (EN) -->
+  <!-- ========================================== -->
   <url>
     <loc>https://djzeneyer.com/faq</loc>
-    <lastmod>2025-10-16</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2025-10-14</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/faq" />
   </url>
 
-  <!-- Shop (React Route) -->
+  <!-- ========================================== -->
+  <!-- FAQ (PT) -->
+  <!-- ========================================== -->
   <url>
-    <loc>https://djzeneyer.com/shop</loc>
-    <lastmod>2025-10-16</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <loc>https://djzeneyer.com/pt/faq</loc>
+    <lastmod>2025-10-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/faq" />
   </url>
 
-  <!-- Events (React Route) -->
+  <!-- ========================================== -->
+  <!-- WORK WITH ME (EN) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/work-with-me</loc>
+    <lastmod>2025-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/trabalho" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/work-with-me" />
+  </url>
+
+  <!-- ========================================== -->
+  <!-- TRABALHO (PT) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/pt/trabalho</loc>
+    <lastmod>2025-10-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/trabalho" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/work-with-me" />
+  </url>
+
+  <!-- ========================================== -->
+  <!-- EVENTS (EN) -->
+  <!-- ========================================== -->
   <url>
     <loc>https://djzeneyer.com/events</loc>
-    <lastmod>2025-10-16</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Contact (React Route) -->
-  <url>
-    <loc>https://djzeneyer.com/contact</loc>
-    <lastmod>2025-10-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- About (React Route) -->
-  <url>
-    <loc>https://djzeneyer.com/about</loc>
-    <lastmod>2025-10-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Zen Tribe (React Route) -->
-  <url>
-    <loc>https://djzeneyer.com/zen-tribe</loc>
-    <lastmod>2025-10-16</lastmod>
+    <lastmod>2025-10-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/eventos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/events" />
+  </url>
+
+  <!-- ========================================== -->
+  <!-- EVENTOS (PT) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/pt/eventos</loc>
+    <lastmod>2025-10-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/eventos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/events" />
+  </url>
+
+  <!-- ========================================== -->
+  <!-- ZEN TRIBE (EN) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/zentribe</loc>
+    <lastmod>2025-10-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/tribo-zen" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zentribe" />
+  </url>
+
+  <!-- ========================================== -->
+  <!-- TRIBO ZEN (PT) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/pt/tribo-zen</loc>
+    <lastmod>2025-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://djzeneyer.com/pt/tribo-zen" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zentribe" />
+  </url>
+
+  <!-- ========================================== -->
+  <!-- PRIVACY POLICY (EN) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/privacy-policy</loc>
+    <lastmod>2025-10-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- RETURN POLICY (EN) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/return-policy</loc>
+    <lastmod>2025-10-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- ========================================== -->
+  <!-- POLÍTICA DE REEMBOLSO (PT) -->
+  <!-- ========================================== -->
+  <url>
+    <loc>https://djzeneyer.com/pt/reembolso</loc>
+    <lastmod>2025-10-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 
 </urlset>
