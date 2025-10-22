@@ -1,7 +1,7 @@
 // src/hooks/useGamiPress.ts
 import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
-import { gamipress } from '../services/GamiPress.ts'; // <-- Adicione .ts se necessário
+import { gamipress } from '../services/gamipress'; // <-- SEM .ts, minúsculo
 
 export interface GamiPressData {
   points: number;
@@ -56,7 +56,6 @@ export const useGamiPress = (): GamiPressData => {
       console.log('🎮 useGamiPress: Fetching data for user', user.id);
       setData(prev => ({ ...prev, loading: true, error: null }));
 
-      // Buscar todos os dados do GamiPress
       const userData = await gamipress.getUserData(user.id);
 
       console.log('✅ useGamiPress: Data received', userData);
