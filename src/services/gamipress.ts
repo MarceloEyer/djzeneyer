@@ -135,7 +135,7 @@ export class GamiPressService {
         return this.getEmptyUserData();
       }
 
-      const userData = await this.request<any>(`/wp/v2/users/${userId}?context=edit`);
+      const userData = await this.request<any>(`/wp/v2/users/${userId}`);
       console.log('✅ User data fetched');
 
       let userEarnings: UserEarning[] = [];
