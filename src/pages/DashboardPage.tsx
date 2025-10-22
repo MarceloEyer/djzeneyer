@@ -15,7 +15,6 @@ import {
   Target,
   Gift,
   Heart,
-  Share2
 } from 'lucide-react';
 import GamificationWidget from '../components/Gamification/GamificationWidget';
 import { useGamiPress } from '../hooks/useGamiPress';
@@ -56,19 +55,24 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-  // ✅ User stats com dados REAIS
+  // ✅ User stats com dados REAIS do GamiPress
+  const currentPoints = gamipress.points || 0;
+  const currentLevel = Math.floor(currentPoints / 100) + 1;
+  const nextLevelXP = currentLevel * 100;
+  const progressPercentage = ((currentPoints % 100) / 100) * 100;
+
   const userStats = {
-    level: gamipress.level,
-    currentXP: gamipress.points,
-    nextLevelXP: (gamipress.level + 1) * 100,
-    totalTracks: tracks.total,
-    eventsAttended: events.total,
-    streakDays: streak.streak,
+    level: currentLevel,
+    currentXP: currentPoints,
+    nextLevelXP: nextLevelXP,
+    totalTracks: tracks.total || 0,
+    eventsAttended: events.total || 0,
+    streakDays: streak.streak || 0,
     tribeFriends: 12 // TODO: Implementar friends quando necessário
   };
 
   // ✅ Recent Activity com dados REAIS do GamiPress
-  const recentActivity = activity.activities.length > 0 
+  const recentActivity = activity.activities && activity.activities.length > 0 
     ? activity.activities.slice(0, 4).map(act => ({
         icon: act.icon === 'star' ? <Music className="text-primary" size={20} /> :
               act.icon === 'trophy' ? <Trophy className="text-accent" size={20} /> :
@@ -77,7 +81,7 @@ const DashboardPage: React.FC = () => {
         action: act.type.includes('achievement') ? 'Unlocked' : 
                 act.type.includes('points') ? 'Earned' : 'Completed',
         item: act.title,
-        xp: act.points,
+        xp: act.points || 0,
         time: new Date(act.date).toLocaleDateString('en-US', { 
           month: 'short', 
           day: 'numeric',
@@ -91,14 +95,14 @@ const DashboardPage: React.FC = () => {
         { icon: <Calendar className="text-success" size={20} />, action: 'RSVP\'d to', item: 'Summer Vibes Festival', xp: 25, time: '1 day ago' },
       ];
 
-  // ✅ Achievements com dados REAIS
-  const achievements = gamipress.achievements.length > 0 
+  // ✅ Achievements com dados REAIS do GamiPress
+  const achievements = gamipress.achievements && gamipress.achievements.length > 0 
     ? gamipress.achievements.slice(0, 6).map(ach => ({
         emoji: ach.image ? '' : '🏆',
         image: ach.image,
         title: ach.title,
-        description: ach.description,
-        unlocked: ach.earned
+        description: ach.description || 'Achievement unlocked!',
+        unlocked: ach.earned || true
       }))
     : [
         { emoji: '🎧', title: 'First Beat', description: 'Welcome to the Zen Tribe', unlocked: true },
@@ -109,7 +113,6 @@ const DashboardPage: React.FC = () => {
         { emoji: '🎪', title: 'Event Regular', description: 'Attended 3 events', unlocked: false },
       ];
 
-  const progressPercentage = (userStats.currentXP % 100);
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
@@ -141,13 +144,13 @@ const DashboardPage: React.FC = () => {
                   Welcome back, <span className="text-primary">{user.name}</span>!
                 </h1>
                 <p className="text-white/70 text-lg mb-4">
-                  {gamipress.rank} • Level {userStats.level}
+                  {gamipress.rank || 'Zen Novice'} • Level {userStats.level}
                 </p>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-white/80">Progress to Level {userStats.level + 1}</span>
-                    <span className="text-primary font-bold">{userStats.currentXP}/{userStats.nextLevelXP} XP</span>
+                    <span className="text-primary font-bold">{userStats.currentXP % 100}/{100} XP</span>
                   </div>
                   <div className="h-3 bg-background rounded-full overflow-hidden">
                     <motion.div 
@@ -224,12 +227,17 @@ const DashboardPage: React.FC = () => {
                   <Clock className="text-primary" size={24} />
                   Recent Activity
                 </h2>
-                <button className="text-primary hover:underline text-sm">View All</button>
+                <button 
+                  onClick={() => navigate('/my-account')}
+                  className="text-primary hover:underline text-sm"
+                >
+                  View All
+                </button>
               </div>
 
               {activity.loading ? (
                 <div className="text-center py-8 text-white/50">Loading activities...</div>
-              ) : recentActivity.length === 0 ? (
+              ) : recentActivity.length === 0 || !recentActivity ? (
                 <div className="text-center py-8 text-white/50">No recent activity yet. Start exploring!</div>
               ) : (
                 <div className="space-y-4">
@@ -294,7 +302,10 @@ const DashboardPage: React.FC = () => {
                   <Gift size={20} />
                   Visit Shop
                 </button>
-                <button className="w-full btn btn-outline justify-start gap-3">
+                <button 
+                  onClick={() => navigate('/tribe')}
+                  className="w-full btn btn-outline justify-start gap-3"
+                >
                   <Users size={20} />
                   Invite Friends
                 </button>
@@ -308,7 +319,7 @@ const DashboardPage: React.FC = () => {
                 Membership
               </h3>
               <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg p-4 mb-4 border border-primary/20">
-                <div className="text-2xl font-black mb-2">{gamipress.rank}</div>
+                <div className="text-2xl font-black mb-2">{gamipress.rank || 'Zen Novice'}</div>
                 <div className="text-sm text-white/70 mb-4">Free Tier</div>
                 <button 
                   onClick={() => navigate('/shop')}
