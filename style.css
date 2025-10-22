@@ -10,7 +10,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: djzeneyer
 */
 
-/* WordPress required styles */
+/* ========================================
+   WORDPRESS REQUIRED STYLES
+   ======================================== */
 .aligncenter {
     display: block;
     margin-left: auto;
@@ -29,4 +31,30 @@ Text Domain: djzeneyer
 
 .wp-caption {
     max-width: 100%;
+}
+
+/* ========================================
+   CUSTOM FIXES - DJ ZEN EYER
+   ======================================== */
+
+/* Esconder tagline do WordPress */
+.site-description,
+.wp-block-site-tagline,
+.site-branding .site-description {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Esconder "Powered by WordPress" */
+.site-info a[href*="wordpress.org"],
+.wp-block-site-title a[href*="wordpress.org"],
+footer a[href*="wordpress.org"] {
+  display: none !important;
+}
+
+/* Esconder créditos WordPress no footer */
+.site-footer .wp-block-site-title,
+.site-footer .powered-by,
+footer .powered-by {
+  display: none !important;
 }
