@@ -57,7 +57,6 @@ export class GamiPressService {
   }
 
   private getAuthToken(): string | null {
-    // Tentar múltiplas fontes de token
     if (this.token) return this.token;
     
     const possibleKeys = [
@@ -118,7 +117,7 @@ export class GamiPressService {
       }
 
       const data = await response.json();
-      console.log(`✅ Response data received:`, data);
+      console.log(`✅ Response data received`);
       return data;
     } catch (error) {
       console.error('❌ Request Failed:', error);
@@ -130,4 +129,200 @@ export class GamiPressService {
     try {
       console.log('🎮 Fetching GamiPress data for user:', userId);
 
-      // Verificar se temos token antes de fazer requisições
+      const token = this.getAuthToken();
+      if (!token) {
+        console.error('❌ Cannot fetch user data: No authentication token available');
+        return this.getEmptyUserData();
+      }
+
+      const userData = await this.request<any>(`/wp/v2/users/${userId}?context=edit`);
+      console.log('✅ User data fetched');
+
+      let userEarnings: UserEarning[] = [];
+      try {
+        userEarnings = await this.request<any[]>(
+          `/wp/v2/gamipress-user-earnings?user=${userId}&per_page=100`
+        );
+        console.log('✅ User earnings fetched:', userEarnings.length);
+      } catch (error) {
+        console.warn('⚠️ Could not fetch user earnings:', error);
+      }
+
+      const points: GamiPressPoints = {};
+      let totalPoints = 0;
+
+      Object.keys(userData.meta || {}).forEach(key => {
+        if (key.includes('_gamipress_') && key.includes('_points')) {
+          const pointType = key.replace('_gamipress_', '').replace('_points', '');
+          const value = parseInt(userData.meta[key]) || 0;
+          points[pointType] = value;
+          totalPoints += value;
+        }
+      });
+
+      console.log('💰 Total points:', totalPoints);
+
+      const level = Math.floor(totalPoints / 100) + 1;
+
+      let currentRank = 'Newbie';
+      let ranks: GamiPressRank[] = [];
+      
+      try {
+        const rankId = userData.meta._gamipress_rank_rank || userData.meta._gamipress_ranks_rank;
+        
+        if (rankId) {
+          const rankData = await this.request<any>(`/wp/v2/rank/${rankId}`);
+          currentRank = rankData.title.rendered;
+          ranks.push({
+            id: rankData.id,
+            title: rankData.title.rendered,
+            slug: rankData.slug,
+            image: rankData.featured_media || '',
+          });
+        }
+      } catch (error) {
+        console.warn('⚠️ Could not fetch rank data:', error);
+      }
+
+      let achievements: GamiPressAchievement[] = [];
+      
+      try {
+        const achievementTypes = ['badges', 'achievements', 'achievement'];
+        
+        for (const type of achievementTypes) {
+          try {
+            const items = await this.request<any[]>(`/wp/v2/${type}?per_page=100`);
+            
+            if (items && items.length > 0) {
+              console.log(`✅ Found ${items.length} ${type}`);
+              
+              const earnedIds = userEarnings
+                .filter(e => e.post_type === type || e.post_type.includes('achievement'))
+                .map(e => e.post_id);
+
+              achievements = items.map((item: any) => {
+                const earned = earnedIds.includes(item.id);
+                const earning = userEarnings.find(e => e.post_id === item.id);
+                
+                return {
+                  id: item.id,
+                  title: item.title?.rendered || item.post_title || 'Achievement',
+                  description: item.excerpt?.rendered?.replace(/<[^>]*>/g, '') || 
+                               item.content?.rendered?.replace(/<[^>]*>/g, '').substring(0, 100) || '',
+                  image: item.featured_media || '',
+                  earned,
+                  earnedDate: earning?.date || earning?.date_earned,
+                  points: parseInt(item.meta?._gamipress_points) || 0,
+                };
+              });
+              
+              break;
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ Could not fetch achievements:', error);
+      }
+
+      const streakDays = parseInt(userData.meta._gamipress_daily_login_streak) || 
+                         parseInt(userData.meta._gamipress_streak) || 0;
+
+      const totalTracks = userEarnings.filter(e => 
+        e.title?.toLowerCase().includes('download') || 
+        e.title?.toLowerCase().includes('track') ||
+        e.post_type.includes('download')
+      ).length;
+
+      const eventsAttended = userEarnings.filter(e => 
+        e.title?.toLowerCase().includes('event') || 
+        e.title?.toLowerCase().includes('rsvp') ||
+        e.post_type.includes('event')
+      ).length;
+
+      const tribeFriends = parseInt(userData.meta._gamipress_tribe_friends) || 
+                           parseInt(userData.meta._gamipress_friends) || 0;
+
+      const result: GamiPressUserData = {
+        points,
+        achievements,
+        ranks,
+        total_achievements: achievements.length,
+        total_points: totalPoints,
+        level,
+        currentRank,
+        streakDays,
+        totalTracks,
+        eventsAttended,
+        tribeFriends,
+        userEarnings,
+      };
+
+      console.log('🎉 GamiPress data compiled successfully');
+      return result;
+
+    } catch (error) {
+      console.error('❌ Error fetching GamiPress user data:', error);
+      return this.getEmptyUserData();
+    }
+  }
+
+  async getUserPoints(userId: number): Promise<GamiPressPoints> {
+    try {
+      const userData = await this.getUserData(userId);
+      return userData.points;
+    } catch (error) {
+      console.error('❌ Error fetching points:', error);
+      return {};
+    }
+  }
+
+  async getUserAchievements(userId: number): Promise<GamiPressAchievement[]> {
+    try {
+      const userData = await this.getUserData(userId);
+      return userData.achievements;
+    } catch (error) {
+      console.error('❌ Error fetching achievements:', error);
+      return [];
+    }
+  }
+
+  async getUserRanks(userId: number): Promise<GamiPressRank[]> {
+    try {
+      const userData = await this.getUserData(userId);
+      return userData.ranks;
+    } catch (error) {
+      console.error('❌ Error fetching ranks:', error);
+      return [];
+    }
+  }
+
+  async awardPoints(userId: number, points: number, pointType: string = 'points'): Promise<void> {
+    console.warn('⚠️ awardPoints requires admin permissions or custom endpoint');
+  }
+
+  async checkAchievementProgress(userId: number, achievementId: number): Promise<number> {
+    console.warn('⚠️ checkAchievementProgress requires REST API Extended add-on');
+    return 0;
+  }
+
+  private getEmptyUserData(): GamiPressUserData {
+    return {
+      points: {},
+      achievements: [],
+      ranks: [],
+      total_achievements: 0,
+      total_points: 0,
+      level: 1,
+      currentRank: 'Newbie',
+      streakDays: 0,
+      totalTracks: 0,
+      eventsAttended: 0,
+      tribeFriends: 0,
+      userEarnings: [],
+    };
+  }
+}
+
+export const gamipress = new GamiPressService();
