@@ -88,7 +88,7 @@ export class GamiPressService {
     const token = this.getAuthToken();
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
-      console.log('🔐 Using token:', token.substring(0, 20) + '...');
+      console.log('🔐 Using token');
     } else {
       console.warn('⚠️ Making request without authentication token');
     }
@@ -109,8 +109,7 @@ export class GamiPressService {
         console.error(`❌ API Error [${response.status}]:`, errorText);
         
         if (response.status === 401) {
-          console.error('🚨 AUTHENTICATION FAILED - Token may be invalid or expired');
-          console.log('Current token:', token?.substring(0, 30) + '...');
+          console.error('🚨 AUTHENTICATION FAILED');
         }
         
         throw new Error(`API Error: ${response.status}`);
@@ -135,28 +134,32 @@ export class GamiPressService {
         return this.getEmptyUserData();
       }
 
-      const userData = await this.request<any>(`/wp/v2/users/${userId}`);
+      // Usar /wp/v2/users/me para pegar dados do usuário autenticado (sem precisar de permissões especiais)
+      const userData = await this.request<any>(`/wp/v2/users/me?context=edit`);
       console.log('✅ User data fetched');
+      console.log('📋 User meta keys:', Object.keys(userData.meta || {}).filter(k => k.includes('gamipress')));
 
       let userEarnings: UserEarning[] = [];
       try {
         userEarnings = await this.request<any[]>(
-          `/wp/v2/gamipress-user-earnings?user=${userId}&per_page=100`
+          `/wp/v2/gamipress-user-earnings?user=${userData.id}&per_page=100`
         );
         console.log('✅ User earnings fetched:', userEarnings.length);
       } catch (error) {
-        console.warn('⚠️ Could not fetch user earnings:', error);
+        console.warn('⚠️ Could not fetch user earnings (may not exist):', error);
       }
 
       const points: GamiPressPoints = {};
       let totalPoints = 0;
 
+      // Procurar por todos os campos de pontos
       Object.keys(userData.meta || {}).forEach(key => {
         if (key.includes('_gamipress_') && key.includes('_points')) {
           const pointType = key.replace('_gamipress_', '').replace('_points', '');
           const value = parseInt(userData.meta[key]) || 0;
           points[pointType] = value;
           totalPoints += value;
+          console.log(`💰 Found ${pointType}: ${value} points`);
         }
       });
 
@@ -179,6 +182,7 @@ export class GamiPressService {
             slug: rankData.slug,
             image: rankData.featured_media || '',
           });
+          console.log('🏆 Current rank:', currentRank);
         }
       } catch (error) {
         console.warn('⚠️ Could not fetch rank data:', error);
