@@ -1,7 +1,7 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions - Versão Final Unificada
- * v10.2.0 - Com Correções SEO Críticas
+ * v10.3.0 - Com Integração GamiPress Completa
  */
 
 if (!defined('ABSPATH')) {
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.2.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.3.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -133,27 +133,68 @@ add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
         if ($user) {
             $payload['display_name'] = $user->display_name;
             $payload['roles'] = $user->roles;
+            
+            // ✅ DADOS GAMIPRESS NO JWT
             if (function_exists('gamipress_get_user_points')) {
-                $payload['gamipress_points'] = gamipress_get_user_points($user->ID, 'zen-points');
-                $payload['gamipress_rank'] = gamipress_get_user_rank($user->ID, 'zen-level');
+                $payload['gamipress_points'] = (int) gamipress_get_user_points($user->ID, 'zen-points');
+            }
+            
+            if (function_exists('gamipress_get_user_rank')) {
+                $user_rank = gamipress_get_user_rank($user->ID, 'zen-level');
+                $payload['gamipress_rank'] = is_object($user_rank) ? $user_rank->post_title : 'Zen Novice';
             }
         }
     }
     return $payload;
 }, 10, 2);
 
+// ✅ ENDPOINT /wp-json/wp/v2/users/<id> COM GAMIPRESS
 add_action('rest_api_init', function(){
-    register_rest_field('user', 'gamipress_data', [
+    register_rest_field('user', 'gamipress_points', [
         'get_callback' => function($user) {
-            if (!function_exists('gamipress_get_user_points')) return null;
+            if (!function_exists('gamipress_get_user_points')) return 0;
             $user_id = isset($user['id']) ? intval($user['id']) : 0;
-            return [
-                'points' => gamipress_get_user_points($user_id, 'zen-points'),
-                'rank' => gamipress_get_user_rank($user_id, 'zen-level'),
-                'achievements' => function_exists('gamipress_get_user_achievements') ? gamipress_get_user_achievements($user_id) : [],
-            ];
+            return (int) gamipress_get_user_points($user_id, 'zen-points');
         },
-        'schema' => null,
+        'schema' => ['type' => 'integer'],
+    ]);
+    
+    register_rest_field('user', 'gamipress_rank', [
+        'get_callback' => function($user) {
+            if (!function_exists('gamipress_get_user_rank')) return 'Zen Novice';
+            $user_id = isset($user['id']) ? intval($user['id']) : 0;
+            $rank = gamipress_get_user_rank($user_id, 'zen-level');
+            return is_object($rank) && isset($rank->post_title) ? $rank->post_title : 'Zen Novice';
+        },
+        'schema' => ['type' => 'string'],
+    ]);
+    
+    register_rest_field('user', 'gamipress_achievements', [
+        'get_callback' => function($user) {
+            if (!function_exists('gamipress_get_user_earned_achievements')) return [];
+            $user_id = isset($user['id']) ? intval($user['id']) : 0;
+            $achievements = gamipress_get_user_earned_achievements($user_id, [
+                'achievement_type' => ['zen-achievement'],
+                'display' => true,
+            ]);
+            
+            $formatted = [];
+            if (is_array($achievements)) {
+                foreach ($achievements as $ach) {
+                    if (is_object($ach) && isset($ach->ID)) {
+                        $formatted[] = [
+                            'id' => $ach->ID,
+                            'title' => $ach->post_title ?? '',
+                            'description' => $ach->post_excerpt ?? '',
+                            'image' => get_the_post_thumbnail_url($ach->ID, 'thumbnail') ?: '',
+                            'earned' => true,
+                        ];
+                    }
+                }
+            }
+            return $formatted;
+        },
+        'schema' => ['type' => 'array'],
     ]);
 });
 
