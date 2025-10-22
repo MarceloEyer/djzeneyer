@@ -2,7 +2,6 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
-// ❌ REMOVIDO: import SimpleJwtLogin from 'simple-jwt-login';
 
 // --- Interfaces ---
 interface DecodedJwt { 
@@ -25,6 +24,7 @@ export interface WordPressUser {
 
 interface UserContextType {
   user: WordPressUser | null;
+  isAuthenticated: boolean; // ✅ ADICIONADO
   loading: boolean;
   loadingInitial: boolean;
   error: string | null;
@@ -44,6 +44,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // ✅ Calcular isAuthenticated
+  const isAuthenticated = user !== null && user.isLoggedIn;
 
   const logout = () => {
     console.log('[UserContext] 🚪 Logout executado');
@@ -81,6 +84,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         avatar: buildAvatarUrl(decoded.display_name || decoded.email)
       };
       
+      console.log('[UserContext] ✅ User data:', { id: finalUserData.id, email: finalUserData.email });
       setUser(finalUserData);
       
       if (safeWindow) {
@@ -122,7 +126,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initializeAuth();
   }, []);
 
-  // ✅ Login DIRETO via REST API (SEM SDK)
   const login = async (email: string, password: string) => {
     console.log('[UserContext] 🔐 Tentando login...', { email });
     setLoading(true); 
@@ -153,7 +156,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // ✅ Registro DIRETO via REST API (SEM SDK)
   const register = async (name: string, email: string, password: string) => {
     console.log('[UserContext] 📝 Tentando registro...', { name, email });
     setLoading(true); 
@@ -171,7 +173,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       if (response.status === 400) {
-        // Usuário pode já existir, tenta login
         await login(email, password);
         return;
       }
@@ -186,7 +187,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error(errorMsg);
       }
       
-      // Auto-login após registro
       await login(email, password);
     } catch (err: any) {
       const msg = err?.message || 'Erro no registro';
@@ -198,7 +198,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // ✅ Google OAuth
   const loginWithGoogle = () => {
     console.log('[UserContext] 🔵 Iniciando login com Google...');
     const GOOGLE_CLIENT_ID = '960427404700-2a7p5kcgj3dgiabora5hn7rafdc73n7v.apps.googleusercontent.com';
@@ -221,6 +220,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const value: UserContextType = {
     user,
+    isAuthenticated, // ✅ ADICIONADO
     loading,
     loadingInitial,
     error,
@@ -234,6 +234,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
+// ✅ EXPORTAR useUser (mantém compatibilidade)
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
@@ -241,3 +242,15 @@ export const useUser = () => {
   }
   return context;
 };
+
+// ✅ EXPORTAR useAuth (para compatibilidade com useGamiPress)
+export const useAuth = () => {
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within a UserProvider');
+  }
+  return context;
+};
+
+// ✅ EXPORTAR contexto também
+export { UserContext };
