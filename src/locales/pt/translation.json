@@ -317,8 +317,8 @@
   "footer_tagline": "Elevando vibes, uma batida de cada vez.",
   "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
   "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. Elevando vibes, uma batida de cada vez."
-
+  "footer_copyright": "© {{year}} DJ Zen Eyer. Elevando vibes, uma batida de cada vez.",
+  
   "auth": {
     "loading": "Carregando...",
     "login": {
