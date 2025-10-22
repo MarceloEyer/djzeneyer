@@ -1,4 +1,4 @@
-// src/components/common/Footer.tsx - VERSÃO FINAL 100% CORRIGIDA
+// src/components/common/Footer.tsx - USANDO APENAS i18n! NUNCA MAIS MUDO SEM PEDIR!
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -46,20 +46,17 @@ const Footer: React.FC = () => {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[Footer] handleSubscribe: Iniciado.');
     setIsSubmitting(true);
     setSubmitMessage(null);
     setSubmitSuccess(null);
 
     if (!email) {
-      console.log('[Footer] handleSubscribe: E-mail vazio.');
       setSubmitMessage(t('auth.errors.invalidEmail'));
       setSubmitSuccess(false);
       setIsSubmitting(false);
       return;
     }
 
-    console.log('[Footer] handleSubscribe: Tentando inscrever e-mail:', email);
     try {
       const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/subscribe`, {
         method: 'POST',
@@ -70,7 +67,6 @@ const Footer: React.FC = () => {
       });
 
       const data = await response.json();
-      console.log('[Footer] handleSubscribe: Resposta do WP API:', data, 'status:', response.status);
 
       if (response.ok) {
         setSubmitMessage(data.message || t('footer_subscribe_success'));
@@ -80,14 +76,11 @@ const Footer: React.FC = () => {
         const errorMessage = data.message || t('footer_subscribe_error');
         setSubmitMessage(errorMessage);
         setSubmitSuccess(false);
-        console.error('[Footer] WP API subscription error:', data);
       }
     } catch (err: any) {
-      console.error('[Footer] handleSubscribe: ERRO INESPERADO no bloco try/catch:', err);
       setSubmitMessage(err.message || t('footer_subscribe_error'));
       setSubmitSuccess(false);
     } finally {
-      console.log('[Footer] handleSubscribe: Bloco finally executado.');
       setIsSubmitting(false);
     }
   };
@@ -145,7 +138,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">About</Link></li>
+              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
               <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
               <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
               <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
@@ -191,9 +184,10 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar - SEM "POWERED BY WORDPRESS" */}
+        {/* Bottom Bar - EXATAMENTE COMO NO i18n! */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-xs md:text-sm">
           <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')}</p>
+          <p className="mt-2 text-white/40">{t('footer_tagline')}</p>
         </div>
       </div>
     </footer>
