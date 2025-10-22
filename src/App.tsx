@@ -1,4 +1,4 @@
-// src/App.tsx - VERSÃO CORRIGIDA COM ABOUT
+// src/App.tsx - VERSÃO FINAL CORRIGIDA
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
@@ -6,7 +6,7 @@ import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
 import FAQPage from './pages/FAQPage';
-import AboutPage from './pages/AboutPage'; // ← ADICIONAR ESTA LINHA!
+import AboutPage from './pages/AboutPage';
 import MainLayout from './layouts/MainLayout';
 import LanguageWrapper from './components/common/LanguageWrapper';
 import HomePage from './pages/HomePage';
@@ -36,7 +36,7 @@ function App() {
                   {/* English routes (root) */}
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
-                    <Route path="about" element={<AboutPage />} /> {/* ← ADICIONAR! */}
+                    <Route path="about" element={<AboutPage />} />
                     <Route path="events" element={<EventsPage />} />
                     <Route path="events/:id" element={<EventsPage />} />
                     <Route path="music" element={<MusicPage />} />
@@ -55,7 +55,7 @@ function App() {
                   {/* Portuguese routes under /pt */}
                   <Route path="/pt" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
-                    <Route path="sobre" element={<AboutPage />} /> {/* ← ADICIONAR PT! */}
+                    <Route path="sobre" element={<AboutPage />} />
                     <Route path="eventos" element={<EventsPage />} />
                     <Route path="eventos/:id" element={<EventsPage />} />
                     <Route path="musica" element={<MusicPage />} />
@@ -80,6 +80,6 @@ function App() {
       </UserProvider>
     </HelmetProvider>
   );
-}
+};
 
 export default App;
