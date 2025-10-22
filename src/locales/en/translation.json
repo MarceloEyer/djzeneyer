@@ -317,6 +317,7 @@
   "footer_tagline": "Elevating vibes, one beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. Elevating vibes, one beat at a time.",
   
   "auth": {
     "loading": "Loading...",
