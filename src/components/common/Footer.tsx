@@ -1,4 +1,4 @@
-// src/components/common/Footer.tsx - VERSÃO CORRIGIDA COM ABOUT
+// src/components/common/Footer.tsx - VERSÃO FINAL CORRIGIDA
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -134,7 +134,6 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
               <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">{t('footer_home')}</Link></li>
-              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">About</Link></li>
               <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
               <li><Link to="/zentribe" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
@@ -146,6 +145,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
+              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">About</Link></li>
               <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
               <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
               <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
@@ -191,9 +191,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom Bar - SEM "POWERED BY WORDPRESS" */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-xs md:text-sm">
-          <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')} {t('footer_tagline')}</p>
+          <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')}</p>
         </div>
       </div>
     </footer>
