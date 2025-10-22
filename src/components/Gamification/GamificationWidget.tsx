@@ -11,16 +11,23 @@ const GamificationWidget: React.FC = () => {
   if (loading) {
     return (
       <div className="bg-surface rounded-xl p-6 animate-pulse">
-        <div className="h-20 bg-white/10 rounded"></div>
+        <div className="h-20 bg-white/10 rounded mb-4"></div>
+        <div className="h-16 bg-white/10 rounded mb-4"></div>
+        <div className="h-12 bg-white/10 rounded"></div>
       </div>
     );
   }
 
+  // ✅ Cálculo correto de Level e XP
+  const currentLevel = Math.floor(points / 100) + 1;
+  const currentLevelStart = (currentLevel - 1) * 100;
+  const nextLevelStart = currentLevel * 100;
+  const progressInLevel = points - currentLevelStart;
+  const xpNeeded = nextLevelStart - points;
+  const progressPercent = (progressInLevel / 100) * 100;
+
   const earnedAchievements = achievements.filter(a => a.earned).length;
-  const totalAchievements = achievements.length;
-  const progress = level * 100;
-  const nextLevel = (level + 1) * 100;
-  const progressPercent = ((points - progress) / (nextLevel - progress)) * 100;
+  const totalAchievements = achievements.length > 0 ? achievements.length : 6;
 
   return (
     <div className="bg-gradient-to-br from-surface via-surface to-primary/10 rounded-xl p-6 border border-white/10">
@@ -31,7 +38,7 @@ const GamificationWidget: React.FC = () => {
           <p className="text-sm text-white/60">Your Progress</p>
         </div>
         <Link 
-          to="/tribe" 
+          to="/my-account" 
           className="px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-lg text-primary font-bold text-sm transition-all"
         >
           View All
@@ -49,8 +56,8 @@ const GamificationWidget: React.FC = () => {
             <Star size={16} className="text-primary" fill="currentColor" />
             <span className="text-xs text-white/60">Level</span>
           </div>
-          <p className="text-3xl font-black">{level}</p>
-          <p className="text-xs text-white/40">{rank}</p>
+          <p className="text-3xl font-black">{currentLevel}</p>
+          <p className="text-xs text-white/40 truncate">{rank || 'Zen Novice'}</p>
         </motion.div>
 
         {/* Points */}
@@ -70,8 +77,8 @@ const GamificationWidget: React.FC = () => {
       {/* XP Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between text-xs mb-2">
-          <span className="text-white/60">Level {level}</span>
-          <span className="text-white/60">Level {level + 1}</span>
+          <span className="text-white/60">Level {currentLevel}</span>
+          <span className="text-white/60">Level {currentLevel + 1}</span>
         </div>
         <div className="h-2 bg-black/30 rounded-full overflow-hidden">
           <motion.div
@@ -82,7 +89,7 @@ const GamificationWidget: React.FC = () => {
           />
         </div>
         <p className="text-xs text-white/40 mt-1 text-center">
-          {nextLevel - points} XP to next level
+          {xpNeeded > 0 ? `${xpNeeded} XP to next level` : 'Max level reached!'}
         </p>
       </div>
 
@@ -99,30 +106,36 @@ const GamificationWidget: React.FC = () => {
         </div>
         
         {/* Achievement Icons */}
-        <div className="flex gap-2 flex-wrap">
-          {achievements.slice(0, 6).map((achievement) => (
-            <motion.div
-              key={achievement.id}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                achievement.earned 
-                  ? 'bg-gradient-to-br from-primary to-secondary' 
-                  : 'bg-white/5 opacity-40'
-              }`}
-              title={achievement.title}
-            >
-              {achievement.image ? (
-                <img 
-                  src={achievement.image} 
-                  alt={achievement.title}
-                  className="w-6 h-6 object-contain"
-                />
-              ) : (
-                <Award size={16} className={achievement.earned ? 'text-white' : 'text-white/30'} />
-              )}
-            </motion.div>
-          ))}
-        </div>
+        {achievements && achievements.length > 0 ? (
+          <div className="flex gap-2 flex-wrap">
+            {achievements.slice(0, 6).map((achievement) => (
+              <motion.div
+                key={achievement.id}
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                  achievement.earned 
+                    ? 'bg-gradient-to-br from-primary to-secondary' 
+                    : 'bg-white/5 opacity-40'
+                }`}
+                title={achievement.title}
+              >
+                {achievement.image ? (
+                  <img 
+                    src={achievement.image} 
+                    alt={achievement.title}
+                    className="w-6 h-6 object-contain"
+                  />
+                ) : (
+                  <Award size={16} className={achievement.earned ? 'text-white' : 'text-white/30'} />
+                )}
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4 text-white/40 text-sm">
+            Start your journey to unlock achievements! 🎯
+          </div>
+        )}
       </div>
 
       {/* Quick Action */}
