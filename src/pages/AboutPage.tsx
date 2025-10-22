@@ -1,4 +1,4 @@
-// src/pages/AboutPage.tsx - VERSÃO FINAL CORRIGIDA (SEM MÚSICA ELETRÔNICA!)
+// src/pages/AboutPage.tsx - VERSÃO FINAL 100% CORRIGIDA
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -174,7 +174,7 @@ const AboutPage: React.FC = () => {
               </p>
               
               <p>
-                In 2022, DJ Zen Eyer achieved the pinnacle of his career by winning two world championships at the Brazilian Zouk World Championship: <strong>Best Zouk Remix</strong> and <strong>Performance Art</strong>. These accolades highlight his unique ability to blend emotion, sensuality, and musical sophistication — the signature [translate:cremosidade] (creaminess) that has become his trademark.
+                In 2022, DJ Zen Eyer achieved the pinnacle of his career by winning two world championships at the Brazilian Zouk World Championship: <strong>Best Zouk Remix</strong> and <strong>Performance Art</strong>. These accolades highlight his unique ability to blend emotion, sensuality, and musical sophistication — the signature "cremosidade" (creaminess) that has become his trademark.
               </p>
 
               <p>
