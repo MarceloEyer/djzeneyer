@@ -1,7 +1,7 @@
 // src/hooks/useGamiPress.ts
 import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
-import { gamipress } from '../services/GamiPress.ts';
+import { gamipress } from '../services/GamiPress.ts'; // <-- Adicione .ts se necessário
 
 export interface GamiPressData {
   points: number;
