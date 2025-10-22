@@ -45,11 +45,10 @@ export const useGamiPress = (): GamiPressData => {
 
     const fetchGamiPressData = async () => {
       try {
-        console.log('[useGamiPress] Buscando dados para user_id:', user.id);
+        console.log('[useGamiPress] 🎮 Buscando dados para user_id:', user.id);
         
-        // ENDPOINT CORRETO DO PLUGIN
         const endpoint = `/wp-json/djzeneyer/v1/gamipress/${user.id}`;
-        console.log('[useGamiPress] Endpoint:', endpoint);
+        console.log('[useGamiPress] 📡 Endpoint:', endpoint);
         
         const response = await fetch(endpoint, {
           credentials: 'include',
@@ -58,18 +57,17 @@ export const useGamiPress = (): GamiPressData => {
           },
         });
 
-        console.log('[useGamiPress] Response status:', response.status);
+        console.log('[useGamiPress] 📊 Response status:', response.status);
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('[useGamiPress] Erro na resposta:', errorText);
+          console.error('[useGamiPress] ❌ Erro na resposta:', errorText);
           throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
         const result = await response.json();
         console.log('[useGamiPress] ✅ Dados recebidos:', result);
 
-        // Verificar se é mock
         if (result.mock_data) {
           console.warn('[useGamiPress] ⚠️ GamiPress não está ativo, usando dados mock');
         }
@@ -87,7 +85,6 @@ export const useGamiPress = (): GamiPressData => {
       } catch (error) {
         console.error('[useGamiPress] ❌ Erro ao buscar dados:', error);
         
-        // Fallback para dados mock em caso de erro
         setData({
           points: 0,
           level: 1,
