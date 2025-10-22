@@ -1,4 +1,4 @@
-// src/components/common/Footer.tsx - USANDO APENAS i18n! NUNCA MAIS MUDO SEM PEDIR!
+// src/components/common/Footer.tsx - VERSÃO FINAL CORRETA!
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -184,10 +184,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar - EXATAMENTE COMO NO i18n! */}
-        <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-xs md:text-sm">
-          <p>© {currentYear} DJ Zen Eyer. {t('footer_rights')}</p>
-          <p className="mt-2 text-white/40">{t('footer_tagline')}</p>
+        {/* Bottom Bar - UMA ÚNICA LINHA TRADUZIDA! */}
+        <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
+          <p>{t('footer_copyright', { year: currentYear })}</p>
         </div>
       </div>
     </footer>
