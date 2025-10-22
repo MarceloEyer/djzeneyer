@@ -1,4 +1,4 @@
-// src/services/GamiPress.ts
+// src/services/gamipress.ts
 const WORDPRESS_URL = import.meta.env.VITE_WORDPRESS_URL || 'https://djzeneyer.com';
 const REST_BASE = `${WORDPRESS_URL}/wp-json`;
 
@@ -62,7 +62,6 @@ export class GamiPressService {
       ...options.headers,
     };
 
-    // Usar token do localStorage se disponível
     const token = this.token || localStorage.getItem('jwt_token') || localStorage.getItem('authToken');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -91,11 +90,9 @@ export class GamiPressService {
     try {
       console.log('🎮 Fetching GamiPress data for user:', userId);
 
-      // 1. Buscar dados completos do usuário (com metadata do GamiPress)
       const userData = await this.request<any>(`/wp/v2/users/${userId}?context=edit`);
       console.log('✅ User data fetched:', userData);
 
-      // 2. Buscar histórico de conquistas (user earnings)
       let userEarnings: UserEarning[] = [];
       try {
         userEarnings = await this.request<any[]>(
@@ -103,14 +100,12 @@ export class GamiPressService {
         );
         console.log('✅ User earnings fetched:', userEarnings.length);
       } catch (error) {
-        console.warn('⚠️ Could not fetch user earnings (may not exist yet):', error);
+        console.warn('⚠️ Could not fetch user earnings:', error);
       }
 
-      // 3. Extrair pontos do meta
       const points: GamiPressPoints = {};
       let totalPoints = 0;
 
-      // Buscar todos os campos meta que começam com _gamipress_ e terminam com _points
       Object.keys(userData.meta || {}).forEach(key => {
         if (key.includes('_gamipress_') && key.includes('_points')) {
           const pointType = key.replace('_gamipress_', '').replace('_points', '');
@@ -122,15 +117,12 @@ export class GamiPressService {
 
       console.log('💰 Total points:', totalPoints, points);
 
-      // 4. Calcular level baseado nos pontos (ajuste a fórmula conforme sua necessidade)
       const level = Math.floor(totalPoints / 100) + 1;
 
-      // 5. Buscar rank atual
       let currentRank = 'Newbie';
       let ranks: GamiPressRank[] = [];
       
       try {
-        // Tentar buscar o rank atual do usuário
         const rankId = userData.meta._gamipress_rank_rank || userData.meta._gamipress_ranks_rank;
         
         if (rankId) {
@@ -147,11 +139,9 @@ export class GamiPressService {
         console.warn('⚠️ Could not fetch rank data:', error);
       }
 
-      // 6. Buscar achievements disponíveis e marcar os ganhos
       let achievements: GamiPressAchievement[] = [];
       
       try {
-        // Tentar buscar badges/achievements (ajuste o tipo conforme sua configuração)
         const achievementTypes = ['badges', 'achievements', 'achievement'];
         
         for (const type of achievementTypes) {
@@ -161,7 +151,6 @@ export class GamiPressService {
             if (items && items.length > 0) {
               console.log(`✅ Found ${items.length} ${type}`);
               
-              // IDs dos achievements ganhos pelo usuário
               const earnedIds = userEarnings
                 .filter(e => e.post_type === type || e.post_type.includes('achievement'))
                 .map(e => e.post_id);
@@ -182,10 +171,9 @@ export class GamiPressService {
                 };
               });
               
-              break; // Parar no primeiro tipo que funcionar
+              break;
             }
           } catch (e) {
-            // Tentar próximo tipo
             continue;
           }
         }
@@ -193,7 +181,6 @@ export class GamiPressService {
         console.warn('⚠️ Could not fetch achievements:', error);
       }
 
-      // 7. Calcular estatísticas específicas
       const streakDays = parseInt(userData.meta._gamipress_daily_login_streak) || 
                          parseInt(userData.meta._gamipress_streak) || 0;
 
@@ -268,7 +255,6 @@ export class GamiPressService {
 
   async awardPoints(userId: number, points: number, pointType: string = 'points'): Promise<void> {
     console.warn('⚠️ awardPoints requires admin permissions or custom endpoint');
-    // Este método requer endpoints customizados ou permissões de admin
   }
 
   async checkAchievementProgress(userId: number, achievementId: number): Promise<number> {
