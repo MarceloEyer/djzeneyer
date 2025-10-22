@@ -1,4 +1,4 @@
-// src/components/common/Footer.tsx - VERSÃO CORRIGIDA
+// src/components/common/Footer.tsx - VERSÃO CORRIGIDA COM ABOUT
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -134,10 +134,11 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
               <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">{t('footer_home')}</Link></li>
+              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">About</Link></li>
               <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
               <li><Link to="/zentribe" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><a href="mailto:contact@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">{t('footer_contact_text')}</a></li>
+              <li><a href="mailto:booking@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">{t('footer_contact_text')}</a></li>
             </ul>
           </div>
 
