@@ -1,4 +1,4 @@
-// src/App.tsx - VERSÃO FINAL CORRIGIDA
+// src/App.tsx - VERSÃO FINAL 100% CORRIGIDA
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
@@ -80,6 +80,6 @@ function App() {
       </UserProvider>
     </HelmetProvider>
   );
-};
+}
 
 export default App;
