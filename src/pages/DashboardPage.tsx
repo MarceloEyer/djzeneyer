@@ -1,4 +1,4 @@
-// src/pages/DashboardPage.tsx - VERSÃO COMPLETA COM GAMIFICATION
+// src/pages/DashboardPage.tsx
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -6,27 +6,34 @@ import { useUser } from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { 
   Award, 
-  Star, 
-  TrendingUp, 
   Music, 
   Calendar, 
-  Download,
-  Heart,
-  Share2,
   Clock,
   Zap,
   Users,
   Trophy,
   Target,
-  Gift
+  Gift,
+  Heart,
+  Share2
 } from 'lucide-react';
 import GamificationWidget from '../components/Gamification/GamificationWidget';
 import { useGamiPress } from '../hooks/useGamiPress';
+import { useUserTracks } from '../hooks/useUserTracks';
+import { useUserEvents } from '../hooks/useUserEvents';
+import { useUserStreak } from '../hooks/useUserStreak';
+import { useRecentActivity } from '../hooks/useRecentActivity';
 
 const DashboardPage: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  
+  // 🎮 Hooks com dados reais
   const gamipress = useGamiPress();
+  const tracks = useUserTracks();
+  const events = useUserEvents();
+  const streak = useUserStreak();
+  const activity = useRecentActivity();
 
   // Redirect if not logged in
   React.useEffect(() => {
@@ -37,25 +44,54 @@ const DashboardPage: React.FC = () => {
 
   if (!user) return null;
 
-  // Use real GamiPress data or fallback to mock data
+  // Loading state
+  if (gamipress.loading) {
+    return (
+      <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-white/70">Loading your stats...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ User stats com dados REAIS
   const userStats = {
-    level: gamipress.level || 3,
-    currentXP: gamipress.points || 350,
-    nextLevelXP: (gamipress.level + 1) * 100 || 400,
-    totalTracks: 24,
-    eventsAttended: 5,
-    streakDays: 7,
-    tribeFriends: 12
+    level: gamipress.level,
+    currentXP: gamipress.points,
+    nextLevelXP: (gamipress.level + 1) * 100,
+    totalTracks: tracks.total,
+    eventsAttended: events.total,
+    streakDays: streak.streak,
+    tribeFriends: 12 // TODO: Implementar friends quando necessário
   };
 
-  const recentActivity = [
-    { icon: <Music className="text-primary" size={20} />, action: 'Downloaded', item: 'Zouk Nights Remix', xp: 10, time: '2 hours ago' },
-    { icon: <Heart className="text-accent" size={20} />, action: 'Liked', item: 'Electric Dreams', xp: 5, time: '5 hours ago' },
-    { icon: <Calendar className="text-success" size={20} />, action: 'RSVP\'d to', item: 'Summer Vibes Festival', xp: 25, time: '1 day ago' },
-    { icon: <Share2 className="text-warning" size={20} />, action: 'Shared', item: 'Sunset Mix Vol. 3', xp: 15, time: '2 days ago' },
-  ];
+  // ✅ Recent Activity com dados REAIS do GamiPress
+  const recentActivity = activity.activities.length > 0 
+    ? activity.activities.slice(0, 4).map(act => ({
+        icon: act.icon === 'star' ? <Music className="text-primary" size={20} /> :
+              act.icon === 'trophy' ? <Trophy className="text-accent" size={20} /> :
+              act.icon === 'check' ? <Target className="text-success" size={20} /> :
+              <Heart className="text-warning" size={20} />,
+        action: act.type.includes('achievement') ? 'Unlocked' : 
+                act.type.includes('points') ? 'Earned' : 'Completed',
+        item: act.title,
+        xp: act.points,
+        time: new Date(act.date).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }))
+    : [
+        { icon: <Music className="text-primary" size={20} />, action: 'Downloaded', item: 'Zouk Nights Remix', xp: 10, time: '2 hours ago' },
+        { icon: <Heart className="text-accent" size={20} />, action: 'Liked', item: 'Electric Dreams', xp: 5, time: '5 hours ago' },
+        { icon: <Calendar className="text-success" size={20} />, action: 'RSVP\'d to', item: 'Summer Vibes Festival', xp: 25, time: '1 day ago' },
+      ];
 
-  // Use real achievements from GamiPress
+  // ✅ Achievements com dados REAIS
   const achievements = gamipress.achievements.length > 0 
     ? gamipress.achievements.slice(0, 6).map(ach => ({
         emoji: ach.image ? '' : '🏆',
@@ -67,18 +103,19 @@ const DashboardPage: React.FC = () => {
     : [
         { emoji: '🎧', title: 'First Beat', description: 'Welcome to the Zen Tribe', unlocked: true },
         { emoji: '🚀', title: 'Early Adopter', description: 'Joined during launch', unlocked: true },
-        { emoji: '🔥', title: '7-Day Streak', description: 'Maintained activity streak', unlocked: true },
+        { emoji: '🔥', title: '7-Day Streak', description: 'Maintained activity streak', unlocked: false },
         { emoji: '🔍', title: 'Music Explorer', description: 'Listened to 10 tracks', unlocked: false },
         { emoji: '🦋', title: 'Social Butterfly', description: 'Connected with 5 members', unlocked: false },
         { emoji: '🎪', title: 'Event Regular', description: 'Attended 3 events', unlocked: false },
       ];
 
-  const progressPercentage = (userStats.currentXP / userStats.nextLevelXP) * 100;
+  const progressPercentage = (userStats.currentXP % 100);
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="container mx-auto px-4">
+        
         {/* Welcome Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -104,7 +141,7 @@ const DashboardPage: React.FC = () => {
                   Welcome back, <span className="text-primary">{user.name}</span>!
                 </h1>
                 <p className="text-white/70 text-lg mb-4">
-                  {gamipress.rank || 'Zen Apprentice'} • Level {userStats.level}
+                  {gamipress.rank} • Level {userStats.level}
                 </p>
                 
                 <div className="space-y-2">
@@ -123,7 +160,10 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              <button className="btn btn-primary flex items-center gap-2 whitespace-nowrap">
+              <button 
+                onClick={() => navigate('/shop')}
+                className="btn btn-primary flex items-center gap-2 whitespace-nowrap"
+              >
                 <Zap size={20} />
                 Boost XP
               </button>
@@ -140,19 +180,25 @@ const DashboardPage: React.FC = () => {
         >
           <div className="card p-4 md:p-6 hover:scale-105 transition-transform">
             <Music className="text-primary mb-2 md:mb-3" size={28} />
-            <div className="text-2xl md:text-3xl font-black mb-1">{userStats.totalTracks}</div>
+            <div className="text-2xl md:text-3xl font-black mb-1">
+              {tracks.loading ? '...' : userStats.totalTracks}
+            </div>
             <div className="text-white/70 text-xs md:text-sm">Tracks Downloaded</div>
           </div>
 
           <div className="card p-4 md:p-6 hover:scale-105 transition-transform">
             <Calendar className="text-success mb-2 md:mb-3" size={28} />
-            <div className="text-2xl md:text-3xl font-black mb-1">{userStats.eventsAttended}</div>
+            <div className="text-2xl md:text-3xl font-black mb-1">
+              {events.loading ? '...' : userStats.eventsAttended}
+            </div>
             <div className="text-white/70 text-xs md:text-sm">Events Attended</div>
           </div>
 
           <div className="card p-4 md:p-6 hover:scale-105 transition-transform">
             <Target className="text-warning mb-2 md:mb-3" size={28} />
-            <div className="text-2xl md:text-3xl font-black mb-1">{userStats.streakDays}</div>
+            <div className="text-2xl md:text-3xl font-black mb-1">
+              {streak.loading ? '...' : userStats.streakDays}
+            </div>
             <div className="text-white/70 text-xs md:text-sm">Day Streak 🔥</div>
           </div>
 
@@ -164,6 +210,7 @@ const DashboardPage: React.FC = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
+          
           {/* Recent Activity */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -180,38 +227,45 @@ const DashboardPage: React.FC = () => {
                 <button className="text-primary hover:underline text-sm">View All</button>
               </div>
 
-              <div className="space-y-4">
-                {recentActivity.map((activity, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + i * 0.1 }}
-                    className="flex items-center gap-4 p-4 bg-surface/50 rounded-lg hover:bg-surface/80 transition-all"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-background/50 flex items-center justify-center flex-shrink-0">
-                      {activity.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold truncate">
-                        {activity.action} <span className="text-primary">{activity.item}</span>
+              {activity.loading ? (
+                <div className="text-center py-8 text-white/50">Loading activities...</div>
+              ) : recentActivity.length === 0 ? (
+                <div className="text-center py-8 text-white/50">No recent activity yet. Start exploring!</div>
+              ) : (
+                <div className="space-y-4">
+                  {recentActivity.map((act, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      className="flex items-center gap-4 p-4 bg-surface/50 rounded-lg hover:bg-surface/80 transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-background/50 flex items-center justify-center flex-shrink-0">
+                        {act.icon}
                       </div>
-                      <div className="text-sm text-white/60">{activity.time}</div>
-                    </div>
-                    <div className="text-success font-bold text-sm flex-shrink-0">+{activity.xp} XP</div>
-                  </motion.div>
-                ))}
-              </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold truncate">
+                          {act.action} <span className="text-primary">{act.item}</span>
+                        </div>
+                        <div className="text-sm text-white/60">{act.time}</div>
+                      </div>
+                      <div className="text-success font-bold text-sm flex-shrink-0">+{act.xp} XP</div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
 
-          {/* Gamification Widget + Quick Actions */}
+          {/* Sidebar */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="space-y-6"
           >
+            
             {/* GamiPress Widget */}
             <GamificationWidget />
 
@@ -254,13 +308,17 @@ const DashboardPage: React.FC = () => {
                 Membership
               </h3>
               <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg p-4 mb-4 border border-primary/20">
-                <div className="text-2xl font-black mb-2">{gamipress.rank || 'Zen Novice'}</div>
+                <div className="text-2xl font-black mb-2">{gamipress.rank}</div>
                 <div className="text-sm text-white/70 mb-4">Free Tier</div>
-                <button className="w-full btn btn-secondary btn-sm">
+                <button 
+                  onClick={() => navigate('/shop')}
+                  className="w-full btn btn-secondary btn-sm"
+                >
                   Upgrade Now
                 </button>
               </div>
             </div>
+
           </motion.div>
         </div>
 
@@ -315,6 +373,7 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </motion.div>
+
       </div>
     </div>
   );
