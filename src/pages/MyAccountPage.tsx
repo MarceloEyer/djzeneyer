@@ -9,21 +9,14 @@ import {
   User, 
   Settings, 
   ShoppingBag, 
-  Heart, 
   Award, 
   Music, 
   Calendar,
-  Download,
-  CreditCard,
-  MapPin,
-  Phone,
-  Mail,
   Edit3,
   LogOut,
   TrendingUp,
   Star,
   AlertCircle,
-  Music2,
   Headphones,
   Lock,
   Bell,
@@ -61,7 +54,7 @@ const MyAccountPage: React.FC = () => {
 
   console.log('[MyAccountPage] User:', user);
 
-  // Computar estatísticas do usuário
+  // 🎮 Computar estatísticas do usuário COM DADOS REAIS
   const userStats: UserStats = useMemo(() => {
     if (!user) {
       return {
@@ -74,17 +67,30 @@ const MyAccountPage: React.FC = () => {
       };
     }
 
-    const totalPoints = user.gamipress_points?.points || 0;
-    const level = user.gamipress_level || 1;
-    const rank = user.gamipress_rank_name || 'Zen Newcomer';
-    const xpToNext = user.gamipress_xp_to_next_level || 0;
+    // ✅ DADOS REAIS DO GAMIPRESS
+    const totalPoints = user.gamipress_points || 0;
+    const currentRank = user.gamipress_rank || 'Zen Novice';
+    
+    // Calcular level baseado em pontos (cada 100 pontos = 1 level)
+    const level = Math.floor(totalPoints / 100) + 1;
+    
+    // Calcular XP para próximo rank
+    let xpToNext = 0;
+    if (totalPoints < 100) {
+      xpToNext = 100 - totalPoints; // Para Zen Apprentice
+    } else if (totalPoints < 500) {
+      xpToNext = 500 - totalPoints; // Para Zen Voyager
+    } else if (totalPoints < 1500) {
+      xpToNext = 1500 - totalPoints; // Para Zen Master
+    }
+
     const totalAchievements = user.gamipress_achievements?.length || 0;
     const recentAchievements = user.gamipress_achievements?.slice(-2).length || 0;
 
     return {
       level,
       xp: totalPoints,
-      rank,
+      rank: currentRank,
       xpToNext,
       totalAchievements,
       recentAchievements
@@ -228,7 +234,7 @@ const MyAccountPage: React.FC = () => {
                 </div>
                 <p className="text-3xl font-black text-secondary">{userStats.xp.toLocaleString()}</p>
                 <p className="text-sm text-white/60">
-                  {userStats.xpToNext > 0 ? `${userStats.xpToNext} to next level` : 'Max level!'}
+                  {userStats.xpToNext > 0 ? `${userStats.xpToNext} to next rank` : 'Max rank!'}
                 </p>
               </div>
               
@@ -252,11 +258,11 @@ const MyAccountPage: React.FC = () => {
               <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
               <div className="space-y-3">
                 {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
-                  user.gamipress_achievements.slice(-3).map((achievement) => (
+                  user.gamipress_achievements.slice(-3).reverse().map((achievement: any) => (
                     <div key={achievement.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
                       <Award className="text-secondary flex-shrink-0" size={20} />
                       <div className="flex-1">
-                        <p className="font-medium">{achievement.title.rendered}</p>
+                        <p className="font-medium">{achievement.title}</p>
                         <p className="text-sm text-white/60">Recently achieved</p>
                       </div>
                     </div>
@@ -355,7 +361,7 @@ const MyAccountPage: React.FC = () => {
             
             {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {user.gamipress_achievements.map((achievement) => (
+                {user.gamipress_achievements.map((achievement: any) => (
                   <motion.div 
                     key={achievement.id} 
                     className="bg-surface/50 rounded-lg p-5 border border-white/10 hover:border-primary/50 transition-all hover:scale-105"
@@ -363,13 +369,12 @@ const MyAccountPage: React.FC = () => {
                   >
                     <div className="text-5xl mb-3 text-center">🏆</div>
                     <h4 className="font-display text-lg mb-2 text-center font-bold">
-                      {achievement.title.rendered}
+                      {achievement.title}
                     </h4>
-                    {achievement.content && (
-                      <p 
-                        className="text-sm text-white/70 text-center mb-3" 
-                        dangerouslySetInnerHTML={{ __html: achievement.content.rendered }} 
-                      />
+                    {achievement.description && (
+                      <p className="text-sm text-white/70 text-center mb-3">
+                        {achievement.description}
+                      </p>
                     )}
                     <div className="text-center">
                       <span className="inline-flex items-center text-xs bg-success/20 text-success px-3 py-1 rounded-full font-semibold">
@@ -387,34 +392,43 @@ const MyAccountPage: React.FC = () => {
                 <p className="text-white/60 mb-8 max-w-md mx-auto">
                   Start exploring and engaging to unlock your first achievements!
                 </p>
-                <Link to="/tribe" className="btn btn-primary btn-lg">
-                  Join the Tribe
+                <Link to="/dashboard" className="btn btn-primary btn-lg">
+                  Start Your Journey
                 </Link>
               </div>
             )}
 
-            {/* Progress bar */}
+            {/* Progress bar para próximo rank */}
             {userStats.xpToNext > 0 && (
               <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                <h3 className="text-lg font-semibold mb-4">Next Level Progress</h3>
+                <h3 className="text-lg font-semibold mb-4">Next Rank Progress</h3>
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <div className="flex justify-between text-sm mb-2 text-white/80">
-                      <span>Level {userStats.level}</span>
-                      <span>Level {userStats.level + 1}</span>
+                      <span>{userStats.rank}</span>
+                      <span>
+                        {userStats.xp < 100 ? 'Zen Apprentice' :
+                         userStats.xp < 500 ? 'Zen Voyager' : 'Zen Master'}
+                      </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
                       <motion.div 
                         className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full"
                         initial={{ width: 0 }}
                         animate={{ 
-                          width: `${Math.max(5, ((userStats.xp) / (userStats.xp + userStats.xpToNext)) * 100)}%` 
+                          width: `${
+                            userStats.xp < 100 
+                              ? (userStats.xp / 100) * 100
+                              : userStats.xp < 500
+                              ? ((userStats.xp - 100) / 400) * 100
+                              : ((userStats.xp - 500) / 1000) * 100
+                          }%`
                         }}
                         transition={{ duration: 1, ease: "easeOut" }}
                       />
                     </div>
                     <p className="text-xs text-white/60 mt-2">
-                      <strong>{userStats.xpToNext} XP</strong> needed for next level
+                      <strong>{userStats.xpToNext} XP</strong> needed for next rank
                     </p>
                   </div>
                 </div>
