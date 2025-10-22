@@ -1,26 +1,56 @@
-// src/components/Gamification/XPBar.tsx (VERSÃO SIMPLES)
+// src/components/Gamification/XPBar.tsx
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useGamiPress } from '../../hooks/useGamiPress';
+import { Zap } from 'lucide-react';
 
 const XPBar: React.FC = () => {
-  const { data, loading } = useGamiPress();
+  const { points, rank, loading } = useGamiPress();
 
-  if (loading || !data) return <div>Carregando...</div>;
+  if (loading) {
+    return (
+      <div className="bg-surface p-4 rounded-lg animate-pulse">
+        <div className="h-4 bg-white/10 rounded mb-2"></div>
+        <div className="h-2 bg-white/10 rounded-full"></div>
+      </div>
+    );
+  }
 
-  const progress = (data.points % 100);
-  const percentage = progress;
+  // ✅ Cálculo correto de Level e XP
+  const currentLevel = Math.floor(points / 100) + 1;
+  const currentLevelStart = (currentLevel - 1) * 100;
+  const nextLevelStart = currentLevel * 100;
+  const progressInLevel = points - currentLevelStart;
+  const xpNeeded = nextLevelStart - points;
+  const progressPercent = (progressInLevel / 100) * 100;
 
   return (
-    <div className="bg-surface p-4 rounded-lg">
-      <div className="flex justify-between mb-2">
-        <span>Level {data.level}</span>
-        <span>{data.points} XP</span>
+    <div className="bg-surface/50 p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          <Zap className="text-primary" size={18} fill="currentColor" />
+          <span className="font-bold text-sm">Level {currentLevel}</span>
+          <span className="text-xs text-white/60">• {rank || 'Zen Novice'}</span>
+        </div>
+        <span className="text-sm font-semibold text-primary">{points} XP</span>
       </div>
-      <div className="h-2 bg-black/30 rounded-full">
-        <div 
-          className="h-full bg-primary rounded-full"
-          style={{ width: `${percentage}%` }}
-        />
+
+      {/* Progress Bar */}
+      <div className="relative">
+        <div className="h-2 bg-black/30 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${Math.min(progressPercent, 100)}%` }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+          />
+        </div>
+        
+        {/* XP Text */}
+        <p className="text-xs text-white/50 mt-1 text-center">
+          {xpNeeded > 0 ? `${xpNeeded} XP to Level ${currentLevel + 1}` : 'Max level!'}
+        </p>
       </div>
     </div>
   );
