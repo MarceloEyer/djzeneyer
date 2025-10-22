@@ -1,4 +1,4 @@
-// src/App.tsx - VERSÃO LIMPA (SEM GoogleOAuthCallback)
+// src/App.tsx - VERSÃO CORRIGIDA COM ABOUT
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 
 import FAQPage from './pages/FAQPage';
+import AboutPage from './pages/AboutPage'; // ← ADICIONAR ESTA LINHA!
 import MainLayout from './layouts/MainLayout';
 import LanguageWrapper from './components/common/LanguageWrapper';
 import HomePage from './pages/HomePage';
@@ -35,6 +36,7 @@ function App() {
                   {/* English routes (root) */}
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
+                    <Route path="about" element={<AboutPage />} /> {/* ← ADICIONAR! */}
                     <Route path="events" element={<EventsPage />} />
                     <Route path="events/:id" element={<EventsPage />} />
                     <Route path="music" element={<MusicPage />} />
@@ -47,12 +49,13 @@ function App() {
                     <Route path="shop/*" element={<ShopPage />} />
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="my-account" element={<MyAccountPage />} />
-                    <Route path="/faq" element={<FAQPage />} />
+                    <Route path="faq" element={<FAQPage />} />
                   </Route>
 
                   {/* Portuguese routes under /pt */}
                   <Route path="/pt" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
+                    <Route path="sobre" element={<AboutPage />} /> {/* ← ADICIONAR PT! */}
                     <Route path="eventos" element={<EventsPage />} />
                     <Route path="eventos/:id" element={<EventsPage />} />
                     <Route path="musica" element={<MusicPage />} />
@@ -64,6 +67,7 @@ function App() {
                     <Route path="loja/*" element={<ShopPage />} />
                     <Route path="painel" element={<DashboardPage />} />
                     <Route path="minha-conta" element={<MyAccountPage />} />
+                    <Route path="faq" element={<FAQPage />} />
                   </Route>
 
                   {/* Fallback 404 */}
