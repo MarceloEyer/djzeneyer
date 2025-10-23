@@ -5,9 +5,14 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  
+  // ✅ ADICIONE ESTA LINHA (CRÍTICA PARA WORDPRESS)
+  base: '/wp-content/themes/zentheme/dist/',
+  
   server: {
     port: 5173,
   },
+  
   build: {
     outDir: 'dist',
     manifest: true,
@@ -35,10 +40,12 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 500,
   },
+  
   optimizeDeps: {
     exclude: ['lucide-react'],
     include: ['react', 'react-dom', 'react-router-dom'],
   },
+  
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
