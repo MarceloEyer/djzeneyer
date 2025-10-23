@@ -8,53 +8,64 @@ Version: 1.0.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: djzeneyer
+Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
 */
 
 /* ========================================
    WORDPRESS REQUIRED STYLES
    ======================================== */
+.alignnone {
+    margin: 5px 20px 20px 0;
+}
+
 .aligncenter {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 5px auto 20px auto;
 }
 
 .alignleft {
     float: left;
-    margin: 0.5em 1em 0.5em 0;
+    margin: 5px 20px 20px 0;
 }
 
 .alignright {
     float: right;
-    margin: 0.5em 0 0.5em 1em;
+    margin: 5px 0 20px 20px;
 }
 
 .wp-caption {
     max-width: 100%;
+    margin: 0 auto 20px;
+}
+
+.wp-caption-text {
+    text-align: center;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.gallery-caption {
+    font-style: italic;
+    text-align: center;
 }
 
 /* ========================================
-   CUSTOM FIXES - DJ ZEN EYER
+   DJ ZEN EYER — CUSTOM STYLES
    ======================================== */
 
-/* Esconder tagline do WordPress */
+/* Ocultar tagline apenas visualmente (sem violar GPL) */
 .site-description,
-.wp-block-site-tagline,
-.site-branding .site-description {
-  display: none !important;
-  visibility: hidden !important;
+.wp-block-site-tagline {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
-/* Esconder "Powered by WordPress" */
-.site-info a[href*="wordpress.org"],
-.wp-block-site-title a[href*="wordpress.org"],
-footer a[href*="wordpress.org"] {
-  display: none !important;
-}
-
-/* Esconder créditos WordPress no footer */
-.site-footer .wp-block-site-title,
-.site-footer .powered-by,
-footer .powered-by {
-  display: none !important;
-}
+/* ⚠️ IMPORTANTE: Não remova os créditos do WordPress.
+   Em vez disso, substitua com seus próprios créditos no footer do tema. */
