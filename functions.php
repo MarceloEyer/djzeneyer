@@ -1,7 +1,7 @@
 <?php
 /**
- * DJ Zen Eyer Theme Functions - Versão Dinâmica Final + Streak
- * v12.0.0 - Totalmente Dinâmico do GamiPress + Sistema de Streak
+ * DJ Zen Eyer Theme Functions - Versão Final Unificada
+ * v10.0.0 - Fix MIME Types + Arquitetura Profissional
  */
 
 if (!defined('ABSPATH')) {
@@ -9,12 +9,37 @@ if (!defined('ABSPATH')) {
 }
 
 /* =========================
+ * 🔒 FIX CRÍTICO: MIME TYPES
+ * Desabilita interceptação do WordPress para arquivos estáticos
+ * ========================= */
+
+add_action('init', function() {
+    // Remove WordPress hooks para arquivos estáticos (CSS, JS, imagens, fonts)
+    if (preg_match('/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|map)$/i', $_SERVER['REQUEST_URI'])) {
+        remove_all_actions('wp');
+        remove_all_actions('template_redirect');
+    }
+}, 1);
+
+add_filter('wp_check_filetype_and_ext', function($data, $file, $filename, $mimes) {
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    
+    // Força MIME type correto para JavaScript
+    if ($ext === 'js') {
+        $data['ext'] = 'js';
+        $data['type'] = 'application/javascript';
+    }
+    
+    return $data;
+}, 10, 4);
+
+/* =========================
  * Configuração Central
  * ========================= */
 
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '12.0.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.0.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -29,7 +54,7 @@ function djz_allowed_origins(): array {
 }
 
 /* =========================
- * Roteamento SPA
+ * Roteamento para Single-Page Application (SPA)
  * ========================= */
 
 add_filter('template_include', function ($template) {
@@ -41,22 +66,37 @@ add_filter('template_include', function ($template) {
 });
 
 /* =========================
- * Enqueue Scripts
+ * Enqueue de Scripts & Estilos
  * ========================= */
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('djzeneyer-style', get_stylesheet_uri(), [], DJZ_VERSION);
     
-    $js_src = get_template_directory_uri() . '/dist/assets/index.js';
-    $css_src = get_template_directory_uri() . '/dist/assets/index.css';
-
-    if (file_exists(get_theme_file_path('/dist/assets/index.css'))) {
-        wp_enqueue_style('djzeneyer-react-styles', $css_src, [], DJZ_VERSION);
+    $theme_uri = get_template_directory_uri();
+    
+    // CSS compilado pelo Vite
+    $css_path = get_theme_file_path('/dist/assets/index.css');
+    if (file_exists($css_path)) {
+        wp_enqueue_style(
+            'djzeneyer-react-styles', 
+            $theme_uri . '/dist/assets/index.css', 
+            [], 
+            DJZ_VERSION
+        );
     }
 
-    if (file_exists(get_theme_file_path('/dist/assets/index.js'))) {
-        wp_register_script('djzeneyer-react', $js_src, [], DJZ_VERSION, true);
+    // JS compilado pelo Vite
+    $js_path = get_theme_file_path('/dist/assets/index.js');
+    if (file_exists($js_path)) {
+        wp_register_script(
+            'djzeneyer-react', 
+            $theme_uri . '/dist/assets/index.js', 
+            [], 
+            DJZ_VERSION, 
+            true
+        );
         wp_enqueue_script('djzeneyer-react');
+        
         wp_localize_script('djzeneyer-react', 'wpData', [
             'siteUrl' => esc_url(home_url('/')),
             'restUrl' => esc_url_raw(rest_url()),
@@ -67,13 +107,17 @@ add_action('wp_enqueue_scripts', function () {
 
 add_filter('script_loader_tag', function ($tag, $handle, $src) {
     if ('djzeneyer-react' === $handle) {
-        return sprintf('<script type="module" src="%s" id="%s" crossorigin="use-credentials" defer></script>', esc_url($src), esc_attr($handle . '-js'));
+        return sprintf(
+            '<script type="module" src="%s" id="%s" crossorigin="use-credentials" defer></script>', 
+            esc_url($src), 
+            esc_attr($handle . '-js')
+        );
     }
     return $tag;
 }, 10, 3);
 
 /* =========================
- * Theme Support
+ * Suportes do Tema & Roles
  * ========================= */
 
 add_action('after_setup_theme', function () {
@@ -124,7 +168,7 @@ add_action('rest_api_init', function() {
 });
 
 /* =========================
- * Plugin Integrations
+ * Integrações de Plugins (JWT, GamiPress)
  * ========================= */
 
 add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
@@ -133,489 +177,33 @@ add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
         if ($user) {
             $payload['display_name'] = $user->display_name;
             $payload['roles'] = $user->roles;
+            if (function_exists('gamipress_get_user_points')) {
+                $payload['gamipress_points'] = gamipress_get_user_points($user->ID, 'zen-points');
+                $payload['gamipress_rank'] = gamipress_get_user_rank($user->ID, 'zen-level');
+            }
         }
     }
     return $payload;
 }, 10, 2);
 
-/* =========================
- * 🔥 SISTEMA DE STREAK (Estilo Duolingo)
- * ========================= */
-
-/**
- * Atualizar streak do usuário
- * Chamado automaticamente quando usuário faz login ou ganha pontos
- */
-function djz_update_user_streak($user_id) {
-    $today = date('Y-m-d');
-    $last_login = get_user_meta($user_id, '_djz_last_login_date', true);
-    $current_streak = (int) get_user_meta($user_id, '_djz_streak_days', true);
-    $longest_streak = (int) get_user_meta($user_id, '_djz_longest_streak', true);
-    
-    // Primeira visita
-    if (empty($last_login)) {
-        update_user_meta($user_id, '_djz_last_login_date', $today);
-        update_user_meta($user_id, '_djz_streak_days', 1);
-        update_user_meta($user_id, '_djz_longest_streak', 1);
-        update_user_meta($user_id, '_djz_streak_start_date', $today);
-        return 1;
-    }
-    
-    // Já visitou hoje
-    if ($last_login === $today) {
-        return $current_streak;
-    }
-    
-    // Calcular diferença em dias
-    $last_date = strtotime($last_login);
-    $today_date = strtotime($today);
-    $diff_days = floor(($today_date - $last_date) / (60 * 60 * 24));
-    
-    if ($diff_days === 1) {
-        // ✅ Visita consecutiva - incrementar streak
-        $current_streak++;
-        update_user_meta($user_id, '_djz_streak_days', $current_streak);
-        
-        // Atualizar longest streak se necessário
-        if ($current_streak > $longest_streak) {
-            update_user_meta($user_id, '_djz_longest_streak', $current_streak);
-        }
-        
-        // 🎉 BÔNUS A CADA 7 DIAS (Duolingo style!)
-        if ($current_streak % 7 === 0 && function_exists('gamipress_award_points_to_user')) {
-            $bonus_points = 50; // 50 pontos bônus
-            gamipress_award_points_to_user($user_id, $bonus_points, 'points');
-            
-            // Registrar achievement se existir
-            if (function_exists('gamipress_award_achievement_to_user')) {
-                // Você pode criar achievements específicos no GamiPress:
-                // - "7 Day Streak"
-                // - "14 Day Streak"
-                // - "30 Day Streak"
-                // etc.
-            }
-        }
-        
-    } else {
-        // ❌ Streak quebrou - resetar
-        $current_streak = 1;
-        update_user_meta($user_id, '_djz_streak_days', 1);
-        update_user_meta($user_id, '_djz_streak_start_date', $today);
-    }
-    
-    // Atualizar última visita
-    update_user_meta($user_id, '_djz_last_login_date', $today);
-    
-    return $current_streak;
-}
-
-// Hook: Atualizar streak no login
-add_action('wp_login', function($user_login, $user) {
-    djz_update_user_streak($user->ID);
-}, 10, 2);
-
-// Hook: Atualizar streak quando ganhar pontos (engajamento)
-add_action('gamipress_award_points', function($user_id, $points, $points_type) {
-    djz_update_user_streak($user_id);
-}, 10, 3);
-
-/* =========================
- * HELPER: Buscar Requirements
- * ========================= */
-
-function djz_format_requirements($post_id) {
-    if (!function_exists('gamipress_get_post_requirements')) {
-        return [];
-    }
-    
-    $requirements = gamipress_get_post_requirements($post_id);
-    $formatted = [];
-    
-    if (is_array($requirements)) {
-        foreach ($requirements as $req) {
-            $formatted[] = [
-                'id' => $req->ID ?? 0,
-                'title' => $req->post_title ?? '',
-                'type' => get_post_meta($req->ID, '_gamipress_trigger_type', true),
-                'count' => (int) get_post_meta($req->ID, '_gamipress_count', true),
+add_action('rest_api_init', function(){
+    register_rest_field('user', 'gamipress_data', [
+        'get_callback' => function($user) {
+            if (!function_exists('gamipress_get_user_points')) return null;
+            $user_id = isset($user['id']) ? intval($user['id']) : 0;
+            return [
+                'points' => gamipress_get_user_points($user_id, 'zen-points'),
+                'rank' => gamipress_get_user_rank($user_id, 'zen-level'),
+                'achievements' => function_exists('gamipress_get_user_achievements') ? gamipress_get_user_achievements($user_id) : [],
             ];
-        }
-    }
-    
-    return $formatted;
-}
-
-/* =========================
- * ENDPOINT DINÂMICO: GamiPress
- * ========================= */
-
-function djz_get_gamipress_handler($request) {
-    $user_id = intval($request->get_param('user_id'));
-    
-    if ($user_id <= 0) {
-        return new WP_Error('invalid_user_id', 'Invalid user ID', ['status' => 400]);
-    }
-    
-    // ✅ VERIFICAR SE GAMIPRESS ESTÁ ATIVO
-    if (!function_exists('gamipress_get_user_points')) {
-        return rest_ensure_response([
-            'success' => false,
-            'message' => 'GamiPress not active',
-            'data' => [
-                'points' => 0,
-                'rank' => 'Novice',
-                'achievements' => [],
-                'allRanks' => [],
-                'allAchievements' => [],
-                'streak' => 0,
-            ],
-        ]);
-    }
-    
-    // 🔥 ATUALIZAR STREAK AUTOMATICAMENTE
-    djz_update_user_streak($user_id);
-    
-    // ✅ BUSCAR STREAK DATA
-    $streak_days = (int) get_user_meta($user_id, '_djz_streak_days', true);
-    $longest_streak = (int) get_user_meta($user_id, '_djz_longest_streak', true);
-    $streak_start = get_user_meta($user_id, '_djz_streak_start_date', true);
-    $last_login = get_user_meta($user_id, '_djz_last_login_date', true);
-    
-    // ✅ 1. BUSCAR TODOS OS TIPOS DE PONTOS
-    $points_types = gamipress_get_points_types();
-    $user_points = [];
-    $total_points = 0;
-    
-    foreach ($points_types as $slug => $data) {
-        $points = (int) gamipress_get_user_points($user_id, $slug);
-        $user_points[] = [
-            'slug' => $slug,
-            'name' => $data['plural_name'],
-            'singular' => $data['singular_name'],
-            'points' => $points,
-        ];
-        $total_points += $points;
-    }
-    
-    // ✅ 2. BUSCAR RANK ATUAL DO USUÁRIO
-    $rank_types = gamipress_get_rank_types();
-    $current_rank = 'Novice';
-    $rank_id = 0;
-    $rank_type_slug = '';
-    
-    foreach ($rank_types as $slug => $data) {
-        $user_rank = gamipress_get_user_rank($user_id, $slug);
-        
-        if ($user_rank && is_object($user_rank)) {
-            $rank_id = $user_rank->ID;
-            $current_rank = $user_rank->post_title;
-            $rank_type_slug = $slug;
-            break;
-        }
-    }
-    
-    // ✅ 3. BUSCAR TODOS OS RANKS DISPONÍVEIS (progressão)
-    $all_ranks = [];
-    
-    if (!empty($rank_type_slug)) {
-        $ranks_query = new WP_Query([
-            'post_type' => $rank_type_slug,
-            'posts_per_page' => -1,
-            'post_status' => 'publish',
-            'orderby' => 'menu_order',
-            'order' => 'ASC',
-        ]);
-        
-        if ($ranks_query->have_posts()) {
-            while ($ranks_query->have_posts()) {
-                $ranks_query->the_post();
-                $r_id = get_the_ID();
-                
-                $all_ranks[] = [
-                    'id' => $r_id,
-                    'title' => get_the_title(),
-                    'description' => get_the_content(),
-                    'excerpt' => get_the_excerpt(),
-                    'image' => get_the_post_thumbnail_url($r_id, 'medium') ?: '',
-                    'current' => ($r_id === $rank_id),
-                    'requirements' => djz_format_requirements($r_id),
-                ];
-            }
-            wp_reset_postdata();
-        }
-    }
-    
-    // ✅ 4. BUSCAR ACHIEVEMENTS EARNED
-    $achievement_types = gamipress_get_achievement_types();
-    $earned_achievements = [];
-    
-    foreach ($achievement_types as $type_slug => $type_data) {
-        $user_achievements = gamipress_get_user_achievements([
-            'user_id' => $user_id,
-            'achievement_type' => $type_slug,
-        ]);
-        
-        if (is_array($user_achievements)) {
-            foreach ($user_achievements as $ach) {
-                if (isset($ach->ID)) {
-                    $earned_achievements[] = [
-                        'id' => $ach->ID,
-                        'type' => $type_slug,
-                        'title' => $ach->post_title ?? '',
-                        'description' => $ach->post_content ?? '',
-                        'excerpt' => $ach->post_excerpt ?? '',
-                        'image' => get_the_post_thumbnail_url($ach->ID, 'medium') ?: '',
-                        'earned' => true,
-                        'earnedDate' => get_post_time('Y-m-d H:i:s', false, $ach->ID),
-                        'points' => (int) get_post_meta($ach->ID, '_gamipress_points', true),
-                    ];
-                }
-            }
-        }
-    }
-    
-    // ✅ 5. BUSCAR TODOS OS ACHIEVEMENTS DISPONÍVEIS
-    $all_achievements = [];
-    
-    foreach ($achievement_types as $type_slug => $type_data) {
-        $achievements_query = new WP_Query([
-            'post_type' => $type_slug,
-            'posts_per_page' => -1,
-            'post_status' => 'publish',
-            'orderby' => 'menu_order',
-            'order' => 'ASC',
-        ]);
-        
-        if ($achievements_query->have_posts()) {
-            while ($achievements_query->have_posts()) {
-                $achievements_query->the_post();
-                $a_id = get_the_ID();
-                
-                // Verificar se usuário já ganhou
-                $earned = gamipress_has_user_earned_achievement($a_id, $user_id);
-                
-                $all_achievements[] = [
-                    'id' => $a_id,
-                    'type' => $type_slug,
-                    'typeName' => $type_data['singular_name'],
-                    'title' => get_the_title(),
-                    'description' => get_the_content(),
-                    'excerpt' => get_the_excerpt(),
-                    'image' => get_the_post_thumbnail_url($a_id, 'medium') ?: '',
-                    'earned' => $earned,
-                    'earnedDate' => $earned ? get_post_time('Y-m-d H:i:s', false, $a_id) : null,
-                    'points' => (int) get_post_meta($a_id, '_gamipress_points', true),
-                    'requirements' => djz_format_requirements($a_id),
-                ];
-            }
-            wp_reset_postdata();
-        }
-    }
-    
-    // ✅ 6. CALCULAR LEVEL (baseado na posição do rank)
-    $level = 1;
-    foreach ($all_ranks as $index => $rank) {
-        if ($rank['current']) {
-            $level = $index + 1;
-            break;
-        }
-    }
-    
-    return rest_ensure_response([
-        'success' => true,
-        'data' => [
-            'points' => $total_points,
-            'pointsBreakdown' => $user_points,
-            'level' => $level,
-            'rank' => $current_rank,
-            'rankId' => $rank_id,
-            'earnedAchievements' => $earned_achievements,
-            'allRanks' => $all_ranks,
-            'allAchievements' => $all_achievements,
-            'streak' => [
-                'current' => $streak_days,
-                'longest' => $longest_streak,
-                'startDate' => $streak_start ?: null,
-                'lastLogin' => $last_login ?: null,
-                'nextMilestone' => djz_get_next_streak_milestone($streak_days),
-                'daysToMilestone' => djz_get_next_streak_milestone($streak_days) - $streak_days,
-            ],
-            'stats' => [
-                'totalAchievements' => count($all_achievements),
-                'earnedAchievements' => count($earned_achievements),
-                'totalRanks' => count($all_ranks),
-                'currentRankIndex' => $level - 1,
-            ],
-        ],
+        },
+        'schema' => null,
     ]);
-}
+});
 
-/**
- * Calcular próximo marco de streak (7, 14, 30, 60, 90, 180, 365 dias)
- */
-function djz_get_next_streak_milestone($current_streak) {
-    $milestones = [7, 14, 30, 60, 90, 180, 365, 500, 1000];
-    
-    foreach ($milestones as $milestone) {
-        if ($current_streak < $milestone) {
-            return $milestone;
-        }
-    }
-    
-    // Se passou de todos, próximo é incremento de 100
-    return ceil($current_streak / 100) * 100 + 100;
-}
-
-/* =========================
- * 🎨 ENDPOINTS DE PROFILE
- * ========================= */
-
-function djz_update_profile_handler($request) {
-    $user_id = get_current_user_id();
-    
-    if (0 === $user_id) {
-        return new WP_Error('not_logged_in', 'User not authenticated', ['status' => 401]);
-    }
-    
-    $params = $request->get_json_params();
-    
-    // Validação
-    $display_name = isset($params['display_name']) ? sanitize_text_field($params['display_name']) : '';
-    $email = isset($params['email']) ? sanitize_email($params['email']) : '';
-    $description = isset($params['description']) ? sanitize_textarea_field($params['description']) : '';
-    
-    if (empty($display_name)) {
-        return new WP_Error('invalid_name', 'Display name is required', ['status' => 400]);
-    }
-    
-    if (!empty($email) && !is_email($email)) {
-        return new WP_Error('invalid_email', 'Valid email is required', ['status' => 400]);
-    }
-    
-    // Verificar se email já existe
-    if (!empty($email)) {
-        $email_exists = email_exists($email);
-        if ($email_exists && $email_exists != $user_id) {
-            return new WP_Error('email_taken', 'This email is already in use', ['status' => 400]);
-        }
-    }
-    
-    // Atualizar usuário
-    $user_data = ['ID' => $user_id];
-    
-    if (!empty($display_name)) {
-        $user_data['display_name'] = $display_name;
-    }
-    
-    if (!empty($email)) {
-        $user_data['user_email'] = $email;
-    }
-    
-    if (!empty($description)) {
-        $user_data['description'] = $description;
-    }
-    
-    $result = wp_update_user($user_data);
-    
-    if (is_wp_error($result)) {
-        return new WP_Error('profile_update_failed', $result->get_error_message(), ['status' => 400]);
-    }
-    
-    $user = get_userdata($user_id);
-    
-    return rest_ensure_response([
-        'success' => true,
-        'message' => 'Profile updated successfully!',
-        'display_name' => $user->display_name,
-        'email' => $user->user_email,
-        'description' => get_user_meta($user_id, 'description', true),
-    ]);
-}
-
-function djz_upload_avatar_handler($request) {
-    $user_id = get_current_user_id();
-    
-    if (0 === $user_id) {
-        return new WP_Error('not_logged_in', 'User not authenticated', ['status' => 401]);
-    }
-    
-    if (!function_exists('wp_handle_upload')) {
-        require_once(ABSPATH . 'wp-admin/includes/file.php');
-    }
-    
-    $files = $request->get_file_params();
-    
-    if (empty($files['avatar'])) {
-        return new WP_Error('no_file', 'No file uploaded', ['status' => 400]);
-    }
-    
-    $file = $files['avatar'];
-    
-    // Validar tipo
-    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!in_array($file['type'], $allowed_types)) {
-        return new WP_Error('invalid_type', 'Invalid file type. Only images allowed.', ['status' => 400]);
-    }
-    
-    // Validar tamanho (5MB max)
-    if ($file['size'] > 5 * 1024 * 1024) {
-        return new WP_Error('file_too_large', 'File size must be less than 5MB', ['status' => 400]);
-    }
-    
-    // Upload
-    $upload = wp_handle_upload($file, ['test_form' => false]);
-    
-    if (isset($upload['error'])) {
-        return new WP_Error('upload_failed', $upload['error'], ['status' => 500]);
-    }
-    
-    // Salvar avatar URL no user meta
-    update_user_meta($user_id, 'avatar_url', $upload['url']);
-    
-    return rest_ensure_response([
-        'success' => true,
-        'message' => 'Avatar uploaded successfully!',
-        'avatar_url' => $upload['url'],
-    ]);
-}
-
-function djz_get_user_orders_handler() {
-    if (!function_exists('wc_get_orders')) {
-        return rest_ensure_response([]);
-    }
-    
-    $user_id = get_current_user_id();
-    
-    if (0 === $user_id) {
-        return new WP_Error('not_logged_in', 'User not authenticated', ['status' => 401]);
-    }
-    
-    $orders = wc_get_orders([
-        'customer' => $user_id,
-        'limit' => 10,
-        'status' => ['completed', 'processing', 'pending']
-    ]);
-    
-    return rest_ensure_response(array_map(function($order) {
-        return [
-            'id' => $order->get_id(),
-            'status' => $order->get_status(),
-            'date_created' => $order->get_date_created()->date('c'),
-            'total' => $order->get_total(),
-            'line_items' => array_map(function($item) {
-                return [
-                    'name' => $item->get_name(),
-                    'quantity' => $item->get_quantity(),
-                    'total' => $item->get_total()
-                ];
-            }, $order->get_items())
-        ];
-    }, $orders));
-}
-
-/* =========================
- * Endpoint Handlers (Originais)
- * ========================= */
+/* =======================================================
+ * Handlers dos Endpoints Customizados da API REST
+ * ======================================================= */
 
 function djz_get_multilang_menu_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
@@ -701,6 +289,8 @@ function djz_get_products_with_lang_handler($request) {
         $lang = 'en';
     }
     
+    error_log("[DJZ Products API] Buscando produtos para idioma: {$lang}");
+    
     $args = array(
         'post_type' => 'product',
         'posts_per_page' => -1,
@@ -711,6 +301,7 @@ function djz_get_products_with_lang_handler($request) {
     
     if (function_exists('pll_get_post_language')) {
         $args['lang'] = $lang;
+        error_log("[DJZ Products API] Polylang ativo - filtrando por idioma: {$lang}");
     }
     
     $query = new WP_Query($args);
@@ -773,36 +364,37 @@ function djz_get_products_with_lang_handler($request) {
                 'lang' => $product_lang,
                 'translations' => $translations,
             );
+            
+            error_log("[DJZ Products API] Produto adicionado: {$product->get_name()} (ID: {$product_id}, Lang: {$product_lang})");
         }
     }
     
     wp_reset_postdata();
     
+    error_log("[DJZ Products API] Total de produtos retornados: " . count($products));
+    
     return new WP_Rest_Response($products, 200);
 }
 
 /* =========================
- * Registro de Endpoints
+ * Registro dos Endpoints na API
  * ========================= */
 
 add_action('rest_api_init', function () {
     $namespace = 'djzeneyer/v1';
 
-    // Menu
     register_rest_route($namespace, '/menu', [
         'methods' => 'GET',
         'callback' => 'djz_get_multilang_menu_handler',
         'permission_callback' => '__return_true'
     ]);
 
-    // Newsletter
     register_rest_route($namespace, '/subscribe', [
         'methods' => 'POST',
         'callback' => 'djz_mailpoet_subscribe_handler',
         'permission_callback' => '__return_true'
     ]);
 
-    // Products
     register_rest_route($namespace, '/products', [
         'methods' => 'GET',
         'callback' => 'djz_get_products_with_lang_handler',
@@ -811,91 +403,36 @@ add_action('rest_api_init', function () {
             'lang' => [
                 'required' => false,
                 'type' => 'string',
+                'description' => 'Código do idioma (pt, en, etc)',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
         ],
     ]);
-    
-    // ✅ GAMIPRESS DINÂMICO + STREAK
-    register_rest_route($namespace, '/gamipress/(?P<user_id>\d+)', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_gamipress_handler',
-        'permission_callback' => '__return_true',
-        'args' => [
-            'user_id' => [
-                'required' => true,
-                'type' => 'integer',
-                'validate_callback' => function($param) {
-                    return is_numeric($param) && $param > 0;
-                },
-            ],
-        ],
-    ]);
 
-    // ✅ PROFILE ENDPOINTS
-    register_rest_route($namespace, '/update-profile', [
+    register_rest_route($namespace, '/user/update-profile', [
         'methods' => 'POST',
-        'callback' => 'djz_update_profile_handler',
+        'callback' => function($request) {
+            $user_id = get_current_user_id();
+            if (0 === $user_id) {
+                return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+            }
+            $params = $request->get_json_params();
+            $user_data = ['ID' => $user_id];
+            if (isset($params['displayName'])) {
+                $user_data['display_name'] = sanitize_text_field($params['displayName']);
+            }
+            $result = wp_update_user($user_data);
+            if (is_wp_error($result)) {
+                return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]);
+            }
+            return rest_ensure_response(['success' => true, 'message' => 'Perfil atualizado com sucesso!']);
+        },
         'permission_callback' => 'is_user_logged_in'
     ]);
 
-    register_rest_route($namespace, '/upload-avatar', [
-        'methods' => 'POST',
-        'callback' => 'djz_upload_avatar_handler',
-        'permission_callback' => 'is_user_logged_in'
-    ]);
-
-    register_rest_route($namespace, '/my-orders', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_user_orders_handler',
-        'permission_callback' => 'is_user_logged_in'
-    ]);
-
-    // Google OAuth
     register_rest_route('simple-jwt-login/v1', '/auth/google', [
         'methods' => 'POST',
         'callback' => 'djz_google_oauth_handler',
         'permission_callback' => '__return_true'
     ]);
 });
-
-/* =========================
- * SEO Fixes
- * ========================= */
-
-add_action('template_redirect', function() {
-    if (is_404()) {
-        status_header(404);
-        nocache_headers();
-    }
-}, 999);
-
-add_action('wp_head', function() {
-    remove_action('wp_head', 'rank_math_hreflang', 10);
-    
-    $base_url = trailingslashit(home_url());
-    
-    if (is_front_page() || is_home()) {
-        echo '<link rel="alternate" hreflang="en" href="' . esc_url($base_url) . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="pt-BR" href="' . esc_url($base_url . 'pt/') . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($base_url) . '" />' . "\n";
-    }
-    
-    if (is_page() && get_query_var('pagename') === 'pt') {
-        echo '<link rel="alternate" hreflang="en" href="' . esc_url($base_url) . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="pt-BR" href="' . esc_url($base_url . 'pt/') . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($base_url) . '" />' . "\n";
-    }
-}, 1);
-
-add_filter('wp_sitemaps_enabled', '__return_false');
-
-function djz_dequeue_jquery() {
-    if (!is_admin()) {
-        wp_deregister_script('jquery');
-        wp_deregister_script('jquery-migrate');
-    }
-}
-add_action('wp_enqueue_scripts', 'djz_dequeue_jquery', 100);
-
-?>
