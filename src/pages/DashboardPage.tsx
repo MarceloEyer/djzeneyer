@@ -76,7 +76,7 @@ const DashboardPage: React.FC = () => {
       }))
     : [];
 
-  const unlockedCount = achievements.filter(a => a.unlocked).length;
+  const unlockedCount = achievements.length > 0    ? achievements.filter(a => a?.unlocked).length    : 0;
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
