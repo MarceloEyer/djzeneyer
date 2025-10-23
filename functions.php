@@ -1,7 +1,7 @@
 <?php
 /**
- * DJ Zen Eyer Theme Functions - Versão Final Unificada
- * v10.0.0 - Fix MIME Types + Arquitetura Profissional
+ * DJ Zen Eyer Theme - functions.php (clean)
+ * v10.2.0 - Solução definitiva sem hacks perigosos
  */
 
 if (!defined('ABSPATH')) {
@@ -9,37 +9,12 @@ if (!defined('ABSPATH')) {
 }
 
 /* =========================
- * 🔒 FIX CRÍTICO: MIME TYPES
- * Desabilita interceptação do WordPress para arquivos estáticos
- * ========================= */
-
-add_action('init', function() {
-    // Remove WordPress hooks para arquivos estáticos (CSS, JS, imagens, fonts)
-    if (preg_match('/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|map)$/i', $_SERVER['REQUEST_URI'])) {
-        remove_all_actions('wp');
-        remove_all_actions('template_redirect');
-    }
-}, 1);
-
-add_filter('wp_check_filetype_and_ext', function($data, $file, $filename, $mimes) {
-    $ext = pathinfo($filename, PATHINFO_EXTENSION);
-    
-    // Força MIME type correto para JavaScript
-    if ($ext === 'js') {
-        $data['ext'] = 'js';
-        $data['type'] = 'application/javascript';
-    }
-    
-    return $data;
-}, 10, 4);
-
-/* =========================
  * Configuração Central
  * ========================= */
 
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.0.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.2.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -54,7 +29,7 @@ function djz_allowed_origins(): array {
 }
 
 /* =========================
- * Roteamento para Single-Page Application (SPA)
+ * SPA router fallback (only for frontend 404s)
  * ========================= */
 
 add_filter('template_include', function ($template) {
@@ -66,37 +41,37 @@ add_filter('template_include', function ($template) {
 });
 
 /* =========================
- * Enqueue de Scripts & Estilos
+ * Enqueue de Scripts & Estilos (React/Vite bundle)
  * ========================= */
 
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('djzeneyer-style', get_stylesheet_uri(), [], DJZ_VERSION);
-    
+
     $theme_uri = get_template_directory_uri();
-    
-    // CSS compilado pelo Vite
+
+    // CSS gerado pelo build (se existir)
     $css_path = get_theme_file_path('/dist/assets/index.css');
     if (file_exists($css_path)) {
         wp_enqueue_style(
-            'djzeneyer-react-styles', 
-            $theme_uri . '/dist/assets/index.css', 
-            [], 
+            'djzeneyer-react-styles',
+            $theme_uri . '/dist/assets/index.css',
+            [],
             DJZ_VERSION
         );
     }
 
-    // JS compilado pelo Vite
+    // JS compilado (module)
     $js_path = get_theme_file_path('/dist/assets/index.js');
     if (file_exists($js_path)) {
         wp_register_script(
-            'djzeneyer-react', 
-            $theme_uri . '/dist/assets/index.js', 
-            [], 
-            DJZ_VERSION, 
+            'djzeneyer-react',
+            $theme_uri . '/dist/assets/index.js',
+            [],
+            DJZ_VERSION,
             true
         );
         wp_enqueue_script('djzeneyer-react');
-        
+
         wp_localize_script('djzeneyer-react', 'wpData', [
             'siteUrl' => esc_url(home_url('/')),
             'restUrl' => esc_url_raw(rest_url()),
@@ -105,11 +80,12 @@ add_action('wp_enqueue_scripts', function () {
     }
 });
 
+/* Add type="module" to the specific handle so browsers treat it as an ES module */
 add_filter('script_loader_tag', function ($tag, $handle, $src) {
     if ('djzeneyer-react' === $handle) {
         return sprintf(
-            '<script type="module" src="%s" id="%s" crossorigin="use-credentials" defer></script>', 
-            esc_url($src), 
+            '<script type="module" src="%s" id="%s" defer></script>',
+            esc_url($src),
             esc_attr($handle . '-js')
         );
     }
@@ -134,7 +110,7 @@ add_action('after_switch_theme', function () {
 });
 
 /* =========================
- * Segurança & CORS
+ * Segurança & CORS (REST)
  * ========================= */
 
 add_action('send_headers', function() {
@@ -289,8 +265,6 @@ function djz_get_products_with_lang_handler($request) {
         $lang = 'en';
     }
     
-    error_log("[DJZ Products API] Buscando produtos para idioma: {$lang}");
-    
     $args = array(
         'post_type' => 'product',
         'posts_per_page' => -1,
@@ -301,7 +275,6 @@ function djz_get_products_with_lang_handler($request) {
     
     if (function_exists('pll_get_post_language')) {
         $args['lang'] = $lang;
-        error_log("[DJZ Products API] Polylang ativo - filtrando por idioma: {$lang}");
     }
     
     $query = new WP_Query($args);
@@ -364,14 +337,10 @@ function djz_get_products_with_lang_handler($request) {
                 'lang' => $product_lang,
                 'translations' => $translations,
             );
-            
-            error_log("[DJZ Products API] Produto adicionado: {$product->get_name()} (ID: {$product_id}, Lang: {$product_lang})");
         }
     }
     
     wp_reset_postdata();
-    
-    error_log("[DJZ Products API] Total de produtos retornados: " . count($products));
     
     return new WP_Rest_Response($products, 200);
 }
