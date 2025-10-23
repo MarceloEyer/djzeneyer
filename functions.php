@@ -1,7 +1,7 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions - Versão Final Unificada
- * v10.3.0 - Com Integração GamiPress Completa
+ * v10.4.0 - Com Integração GamiPress Completa + Endpoint Customizado
  */
 
 if (!defined('ABSPATH')) {
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.3.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.4.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -366,6 +366,81 @@ function djz_get_products_with_lang_handler($request) {
     return new WP_Rest_Response($products, 200);
 }
 
+// ✅ ENDPOINT CUSTOMIZADO: /wp-json/djzeneyer/v1/gamipress/{user_id}
+function djz_get_gamipress_handler($request) {
+    $user_id = intval($request->get_param('user_id'));
+    
+    if ($user_id <= 0) {
+        return new WP_Error('invalid_user_id', 'Invalid user ID', ['status' => 400]);
+    }
+    
+    // Verificar se GamiPress está ativo
+    if (!function_exists('gamipress_get_user_points')) {
+        return rest_ensure_response([
+            'mock_data' => true,
+            'points' => 0,
+            'level' => 1,
+            'rank' => 'Zen Novice',
+            'rankId' => 0,
+            'achievements' => [],
+        ]);
+    }
+    
+    // Buscar pontos
+    $points = (int) gamipress_get_user_points($user_id, 'zen-points');
+    
+    // Calcular level (100 XP = 1 level)
+    $level = floor($points / 100) + 1;
+    
+    // Buscar rank atual
+    $rank = 'Zen Novice';
+    $rank_id = 0;
+    
+    if (function_exists('gamipress_get_user_rank_id')) {
+        $rank_id = gamipress_get_user_rank_id($user_id, 'zen-level');
+        if ($rank_id) {
+            $rank_post = get_post($rank_id);
+            if ($rank_post) {
+                $rank = $rank_post->post_title;
+            }
+        }
+    }
+    
+    // Buscar achievements
+    $achievements = [];
+    
+    if (function_exists('gamipress_get_user_earned_achievements')) {
+        $earned = gamipress_get_user_earned_achievements($user_id, [
+            'achievement_type' => ['zen-achievement', 'badges'],
+            'display' => true,
+        ]);
+        
+        if (is_array($earned)) {
+            foreach ($earned as $ach) {
+                if (is_object($ach) && isset($ach->ID)) {
+                    $achievements[] = [
+                        'id' => $ach->ID,
+                        'title' => $ach->post_title ?? 'Achievement',
+                        'description' => $ach->post_excerpt ?? '',
+                        'image' => get_the_post_thumbnail_url($ach->ID, 'thumbnail') ?: '',
+                        'earned' => true,
+                        'earnedDate' => get_post_time('Y-m-d', false, $ach->ID),
+                        'points' => (int) get_post_meta($ach->ID, '_gamipress_points', true),
+                    ];
+                }
+            }
+        }
+    }
+    
+    return rest_ensure_response([
+        'points' => $points,
+        'level' => $level,
+        'rank' => $rank,
+        'rankId' => $rank_id,
+        'achievements' => $achievements,
+    ]);
+}
+
 /* =========================
  * Registro dos Endpoints
  * ========================= */
@@ -395,6 +470,22 @@ add_action('rest_api_init', function () {
                 'type' => 'string',
                 'description' => 'Código do idioma (pt, en, etc)',
                 'sanitize_callback' => 'sanitize_text_field',
+            ],
+        ],
+    ]);
+    
+    // ✅ ENDPOINT GAMIPRESS CUSTOMIZADO
+    register_rest_route($namespace, '/gamipress/(?P<user_id>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'djz_get_gamipress_handler',
+        'permission_callback' => '__return_true',
+        'args' => [
+            'user_id' => [
+                'required' => true,
+                'type' => 'integer',
+                'validate_callback' => function($param) {
+                    return is_numeric($param) && $param > 0;
+                },
             ],
         ],
     ]);
