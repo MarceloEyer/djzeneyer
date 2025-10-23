@@ -26,8 +26,10 @@ const GamificationWidget: React.FC = () => {
   const xpNeeded = nextLevelStart - points;
   const progressPercent = (progressInLevel / 100) * 100;
 
-  const earnedAchievements = achievements.filter(a => a.earned).length;
-  const totalAchievements = achievements.length > 0 ? achievements.length : 6;
+  // 🔥 CORREÇÃO CRÍTICA: Verificação SEGURA de achievements
+  const safeAchievements = (achievements && Array.isArray(achievements)) ? achievements : [];
+  const earnedAchievements = safeAchievements.filter(a => a?.earned).length;
+  const totalAchievements = safeAchievements.length > 0 ? safeAchievements.length : 6;
 
   return (
     <div className="bg-gradient-to-br from-surface via-surface to-primary/10 rounded-xl p-6 border border-white/10">
@@ -106,27 +108,27 @@ const GamificationWidget: React.FC = () => {
         </div>
         
         {/* Achievement Icons */}
-        {achievements && achievements.length > 0 ? (
+        {safeAchievements.length > 0 ? (
           <div className="flex gap-2 flex-wrap">
-            {achievements.slice(0, 6).map((achievement) => (
+            {safeAchievements.slice(0, 6).map((achievement, index) => (
               <motion.div
-                key={achievement.id}
+                key={achievement?.id || index}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  achievement.earned 
+                  achievement?.earned 
                     ? 'bg-gradient-to-br from-primary to-secondary' 
                     : 'bg-white/5 opacity-40'
                 }`}
-                title={achievement.title}
+                title={achievement?.title || 'Achievement'}
               >
-                {achievement.image ? (
+                {achievement?.image ? (
                   <img 
                     src={achievement.image} 
-                    alt={achievement.title}
+                    alt={achievement.title || 'Achievement'}
                     className="w-6 h-6 object-contain"
                   />
                 ) : (
-                  <Award size={16} className={achievement.earned ? 'text-white' : 'text-white/30'} />
+                  <Award size={16} className={achievement?.earned ? 'text-white' : 'text-white/30'} />
                 )}
               </motion.div>
             ))}
