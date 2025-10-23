@@ -890,4 +890,12 @@ add_action('wp_head', function() {
 
 add_filter('wp_sitemaps_enabled', '__return_false');
 
+function djz_dequeue_jquery() {
+    if (!is_admin()) {
+        wp_deregister_script('jquery');
+        wp_deregister_script('jquery-migrate');
+    }
+}
+add_action('wp_enqueue_scripts', 'djz_dequeue_jquery', 100);
+
 ?>
