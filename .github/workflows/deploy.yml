@@ -17,6 +17,7 @@ env:
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
+  REMOTE_THEME_PATH: './wp-content/themes/zentheme'
 
 jobs:
   build:
@@ -63,7 +64,7 @@ jobs:
     environment:
       name: production
       url: https://djzeneyer.com
-    
+
     steps:
       - name: ⚡ Checkout
         uses: actions/checkout@v4
@@ -81,12 +82,20 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
 
+      - name: 🧪 Test SSH Connection & Ensure Remote Directories Exist
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ env.SSH_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
+            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist && echo '✅ Remote directories ready'"
+
       - name: ⚛️ Deploy React App (Clean Slate)
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
             ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./wp-content/themes/zentheme/dist/
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/dist/
 
       - name: 🎨 Deploy Theme Files (Smart Sync)
         run: |
@@ -106,9 +115,9 @@ jobs:
             --exclude='tailwind.config.*' \
             --exclude='*.md' \
             ./ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./wp-content/themes/zentheme/
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
 
-      - name: 🌐 Deploy Public Assets
+      - name: 🌐 Deploy Public Assets to Root
         run: |
           rsync -avz \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
@@ -118,13 +127,13 @@ jobs:
             ./dist/ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./
 
-      - name: 🧹 Cleanup
+      - name: 🧹 Cleanup SSH Key
         if: always()
         run: rm -f ~/.ssh/deploy_key
 
-      - name: ✅ Summary
+      - name: ✅ Deployment Summary
         run: |
           echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
-          echo "🚀 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
           echo "📦 **Commit:** \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
-          echo "👤 **By:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "👤 **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
