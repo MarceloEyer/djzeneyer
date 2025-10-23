@@ -22,15 +22,13 @@ import {
 } from 'lucide-react';
 import GamificationWidget from '../components/Gamification/GamificationWidget';
 import { useGamiPress } from '../hooks/useGamiPress';
-import { useRecentActivity } from '../hooks/useRecentActivity';
 
 const DashboardPage: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   
-  // 🎮 Hooks com dados reais
+  // 🎮 Hook com dados reais (SEM useRecentActivity que quebra)
   const gamipress = useGamiPress();
-  const activity = useRecentActivity();
 
   // Redirect if not logged in
   React.useEffect(() => {
@@ -53,41 +51,21 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-  // ✅ User stats com dados REAIS do GamiPress (100% SEGURO)
+  // ✅ User stats com dados REAIS do GamiPress
   const currentPoints = gamipress.points || 0;
   const currentLevel = Math.floor(currentPoints / 100) + 1;
   const nextLevelXP = currentLevel * 100;
   const progressPercentage = ((currentPoints % 100) / 100) * 100;
   const pointsToNextLevel = nextLevelXP - currentPoints;
 
-  // ✅ Next rank info (ULTRA SEGURO - NUNCA QUEBRA)
+  // ✅ Next rank info (ULTRA SEGURO)
   const allRanks = (gamipress.allRanks && Array.isArray(gamipress.allRanks)) ? gamipress.allRanks : [];
   const currentRankIndex = allRanks.length > 0 
     ? (allRanks.findIndex(r => r?.slug === gamipress.currentRank?.slug) || 0) 
     : 0;
   const nextRank = (allRanks.length > currentRankIndex + 1) ? allRanks[currentRankIndex + 1] : null;
 
-  // ✅ Recent Activity (ULTRA SEGURO - NUNCA QUEBRA)
-  const recentActivity = (activity.activities && Array.isArray(activity.activities) && activity.activities.length > 0)
-    ? activity.activities.slice(0, 4).map(act => ({
-        icon: act?.icon === 'star' ? <Star className="text-warning" size={20} /> :
-              act?.icon === 'trophy' ? <Trophy className="text-accent" size={20} /> :
-              act?.icon === 'check' ? <Target className="text-success" size={20} /> :
-              <Heart className="text-primary" size={20} />,
-        action: act?.type?.includes('achievement') ? 'Unlocked' : 
-                act?.type?.includes('points') ? 'Earned' : 'Completed',
-        item: act?.title || 'Unknown activity',
-        xp: act?.points || 0,
-        time: act?.date ? new Date(act.date).toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }) : 'Recently'
-      }))
-    : [];
-
-  // ✅ Achievements (ULTRA SEGURO - NUNCA QUEBRA)
+  // ✅ Achievements (ULTRA SEGURO)
   const achievements = (gamipress.achievements && Array.isArray(gamipress.achievements) && gamipress.achievements.length > 0)
     ? gamipress.achievements.slice(0, 6).map(ach => ({
         emoji: ach?.image ? '' : '🏆',
@@ -143,7 +121,7 @@ const DashboardPage: React.FC = () => {
               {/* Center: Progress & Next Rank */}
               <div className="md:col-span-2 space-y-6">
                 
-                {/* XP Progress */}
+                {/* 🎮 XP Progress - BARRA AZUL ELÉTRICA ESTILO MMORPG */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-white font-semibold">Level {currentLevel} Progress</span>
@@ -156,9 +134,12 @@ const DashboardPage: React.FC = () => {
                       initial={{ width: 0 }}
                       animate={{ width: `${progressPercentage}%` }}
                       transition={{ duration: 1.5, ease: 'easeOut' }}
-                      className="h-full bg-gradient-to-r from-primary via-accent to-success rounded-full relative"
+                      className="h-full bg-primary rounded-full relative"
                     >
-                      <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                      {/* Glow effect estilo MMORPG */}
+                      <div className="absolute inset-0 bg-primary/50 blur-sm animate-pulse"></div>
+                      {/* Shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
                     </motion.div>
                   </div>
                   <p className="text-white/60 text-sm mt-2">
@@ -289,7 +270,7 @@ const DashboardPage: React.FC = () => {
 
         <div className="grid lg:grid-cols-3 gap-8">
           
-          {/* 📌 RECENT ACTIVITY (CONTEXTO) */}
+          {/* 📌 RECENT ACTIVITY (PLACEHOLDER TEMPORÁRIO) */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -310,43 +291,16 @@ const DashboardPage: React.FC = () => {
                 </button>
               </div>
 
-              {activity.loading ? (
-                <div className="text-center py-8 text-white/50">Loading activities...</div>
-              ) : recentActivity.length === 0 ? (
-                <div className="text-center py-12">
-                  <Target className="mx-auto text-white/20 mb-4" size={48} />
-                  <p className="text-white/50 mb-4">No recent activity yet</p>
-                  <button 
-                    onClick={() => navigate('/music')}
-                    className="btn btn-primary btn-sm"
-                  >
-                    Start Exploring
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {recentActivity.map((act, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4 + i * 0.1 }}
-                      className="flex items-center gap-4 p-4 bg-surface/50 rounded-lg hover:bg-surface/80 transition-all"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-background/50 flex items-center justify-center flex-shrink-0">
-                        {act.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold truncate">
-                          {act.action} <span className="text-primary">{act.item}</span>
-                        </div>
-                        <div className="text-sm text-white/60">{act.time}</div>
-                      </div>
-                      <div className="text-success font-bold text-sm flex-shrink-0">+{act.xp} XP</div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
+              <div className="text-center py-12">
+                <Target className="mx-auto text-white/20 mb-4" size={48} />
+                <p className="text-white/50 mb-4">No recent activity yet</p>
+                <button 
+                  onClick={() => navigate('/music')}
+                  className="btn btn-primary btn-sm"
+                >
+                  Start Exploring
+                </button>
+              </div>
             </div>
           </motion.div>
 
