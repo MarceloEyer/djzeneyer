@@ -1,18 +1,19 @@
-// vite.config.js
+// vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  
-  // ✅ ADICIONE ESTA LINHA (CRÍTICA PARA WORDPRESS)
+
+  // ✅ Caminho base para assets no WordPress
   base: '/wp-content/themes/zentheme/dist/',
-  
+
   server: {
     port: 5173,
+    open: false, // evita abrir navegador automaticamente
   },
-  
+
   build: {
     outDir: 'dist',
     manifest: true,
@@ -27,7 +28,12 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        assetFileNames: 'assets/[name].[ext]',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) {
+            return 'assets/[name].[ext]';
+          }
+          return 'assets/[name].[ext]';
+        },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name].js',
         manualChunks: {
@@ -40,12 +46,12 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 500,
   },
-  
+
   optimizeDeps: {
     exclude: ['lucide-react'],
     include: ['react', 'react-dom', 'react-router-dom'],
   },
-  
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
