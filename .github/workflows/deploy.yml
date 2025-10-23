@@ -67,7 +67,7 @@ jobs:
           protocol: ftps
           local-dir: ./dist/
           server-dir: ./
-          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve
+          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve favicons, robots.txt
           exclude: |
             **/.git*
             **/.git*/**
@@ -76,8 +76,8 @@ jobs:
             index.html
             react-sitemap.xml
 
-      # ⚡ STEP 2: Deploy do App React - SÓ SOBRESCREVE!
-      - name: 📡 Deploy do App React
+      # 🗑️ STEP 2: Deploy do App React - DELETA TUDO E REENVIA!
+      - name: 📡 Deploy do App React (LIMPA JS/CSS ANTIGOS!)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -86,7 +86,7 @@ jobs:
           protocol: ftps
           local-dir: ./dist/
           server-dir: ./wp-content/themes/zentheme/dist/
-          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve
+          dangerous-clean-slate: true  # 🗑️ DELETA JS/CSS ANTIGOS!
 
       # ⚡ STEP 3: Deploy dos Arquivos do Tema - SÓ SOBRESCREVE!
       - name: 📡 Deploy dos Arquivos do Tema WordPress
@@ -98,7 +98,7 @@ jobs:
           protocol: ftps
           local-dir: ./theme/
           server-dir: ./wp-content/themes/zentheme/
-          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve
+          dangerous-clean-slate: false  # ⚡ RÁPIDO! functions.php, etc não mudam muito
           exclude: |
             **/.git*
             **/node_modules/**
