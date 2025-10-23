@@ -57,7 +57,7 @@ jobs:
           name: dist-folder
           path: ./dist
 
-      # ✅ STEP 1: Deploy dos Arquivos Públicos para RAIZ (LIMPA TUDO!)
+      # ⚡ STEP 1: Deploy dos Arquivos Públicos (RAIZ) - SÓ SOBRESCREVE!
       - name: 🎨 Deploy dos Arquivos Públicos para Raiz
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -67,21 +67,16 @@ jobs:
           protocol: ftps
           local-dir: ./dist/
           server-dir: ./
-          dangerous-clean-slate: true  # 🔥 DELETA TUDO E REENVIA!
+          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
-            **/wp-content/**
-            **/wp-admin/**
-            **/wp-includes/**
-            **/.htaccess
-            **/wp-config.php
             **/assets/**
             index.html
             react-sitemap.xml
 
-      # ✅ STEP 2: Deploy do App React (LIMPA TUDO!)
+      # ⚡ STEP 2: Deploy do App React - SÓ SOBRESCREVE!
       - name: 📡 Deploy do App React
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -91,9 +86,9 @@ jobs:
           protocol: ftps
           local-dir: ./dist/
           server-dir: ./wp-content/themes/zentheme/dist/
-          dangerous-clean-slate: true  # 🔥 DELETA TUDO E REENVIA!
+          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve
 
-      # ✅ STEP 3: Deploy dos Arquivos do Tema (LIMPA TUDO!)
+      # ⚡ STEP 3: Deploy dos Arquivos do Tema - SÓ SOBRESCREVE!
       - name: 📡 Deploy dos Arquivos do Tema WordPress
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -103,7 +98,7 @@ jobs:
           protocol: ftps
           local-dir: ./theme/
           server-dir: ./wp-content/themes/zentheme/
-          dangerous-clean-slate: true  # 🔥 DELETA TUDO E REENVIA!
+          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve
           exclude: |
             **/.git*
             **/node_modules/**
