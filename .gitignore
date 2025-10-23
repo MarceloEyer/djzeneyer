@@ -7,19 +7,42 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependencies
+node_modules/
+.bolt/                     # Cache de ferramentas como Bolt.new
+
+# Build outputs
+dist/
+dist-ssr/
+.temp/
+.cache/
+
+# Local env files
+.env
+.env.local
+.env.*.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.env
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+
+# WordPress-specific (se por acaso estiver no repo)
+wp-config.php
+xmlrpc.php
+readme.html
+license.txt
+
+# Temporary files
+*.tmp
+*.bak
