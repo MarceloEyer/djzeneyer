@@ -1,7 +1,7 @@
 <?php
 /**
- * DJ Zen Eyer Theme Functions - Versão Final Unificada
- * v10.4.0 - Com Integração GamiPress Completa + Endpoint Customizado
+ * DJ Zen Eyer Theme Functions - Versão Dinâmica Final
+ * v11.0.0 - Totalmente Dinâmico do GamiPress
  */
 
 if (!defined('ABSPATH')) {
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.4.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '11.0.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -29,7 +29,7 @@ function djz_allowed_origins(): array {
 }
 
 /* =========================
- * Roteamento para Single-Page Application (SPA)
+ * Roteamento SPA
  * ========================= */
 
 add_filter('template_include', function ($template) {
@@ -41,7 +41,7 @@ add_filter('template_include', function ($template) {
 });
 
 /* =========================
- * Enqueue de Scripts & Estilos
+ * Enqueue Scripts
  * ========================= */
 
 add_action('wp_enqueue_scripts', function () {
@@ -73,7 +73,7 @@ add_filter('script_loader_tag', function ($tag, $handle, $src) {
 }, 10, 3);
 
 /* =========================
- * Suportes do Tema & Roles
+ * Theme Support
  * ========================= */
 
 add_action('after_setup_theme', function () {
@@ -124,7 +124,7 @@ add_action('rest_api_init', function() {
 });
 
 /* =========================
- * Integrações de Plugins
+ * Plugin Integrations
  * ========================= */
 
 add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
@@ -133,73 +133,226 @@ add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
         if ($user) {
             $payload['display_name'] = $user->display_name;
             $payload['roles'] = $user->roles;
-            
-            // ✅ DADOS GAMIPRESS NO JWT
-            if (function_exists('gamipress_get_user_points')) {
-                $payload['gamipress_points'] = (int) gamipress_get_user_points($user->ID, 'zen-points');
-            }
-            
-            if (function_exists('gamipress_get_user_rank')) {
-                $user_rank = gamipress_get_user_rank($user->ID, 'zen-level');
-                $payload['gamipress_rank'] = is_object($user_rank) ? $user_rank->post_title : 'Zen Novice';
-            }
         }
     }
     return $payload;
 }, 10, 2);
 
-// ✅ ENDPOINT /wp-json/wp/v2/users/<id> COM GAMIPRESS
-add_action('rest_api_init', function(){
-    register_rest_field('user', 'gamipress_points', [
-        'get_callback' => function($user) {
-            if (!function_exists('gamipress_get_user_points')) return 0;
-            $user_id = isset($user['id']) ? intval($user['id']) : 0;
-            return (int) gamipress_get_user_points($user_id, 'zen-points');
-        },
-        'schema' => ['type' => 'integer'],
-    ]);
+/* =========================
+ * HELPER: Buscar Requirements
+ * ========================= */
+
+function djz_format_requirements($post_id) {
+    if (!function_exists('gamipress_get_post_requirements')) {
+        return [];
+    }
     
-    register_rest_field('user', 'gamipress_rank', [
-        'get_callback' => function($user) {
-            if (!function_exists('gamipress_get_user_rank')) return 'Zen Novice';
-            $user_id = isset($user['id']) ? intval($user['id']) : 0;
-            $rank = gamipress_get_user_rank($user_id, 'zen-level');
-            return is_object($rank) && isset($rank->post_title) ? $rank->post_title : 'Zen Novice';
-        },
-        'schema' => ['type' => 'string'],
-    ]);
+    $requirements = gamipress_get_post_requirements($post_id);
+    $formatted = [];
     
-    register_rest_field('user', 'gamipress_achievements', [
-        'get_callback' => function($user) {
-            if (!function_exists('gamipress_get_user_earned_achievements')) return [];
-            $user_id = isset($user['id']) ? intval($user['id']) : 0;
-            $achievements = gamipress_get_user_earned_achievements($user_id, [
-                'achievement_type' => ['zen-achievement'],
-                'display' => true,
-            ]);
-            
-            $formatted = [];
-            if (is_array($achievements)) {
-                foreach ($achievements as $ach) {
-                    if (is_object($ach) && isset($ach->ID)) {
-                        $formatted[] = [
-                            'id' => $ach->ID,
-                            'title' => $ach->post_title ?? '',
-                            'description' => $ach->post_excerpt ?? '',
-                            'image' => get_the_post_thumbnail_url($ach->ID, 'thumbnail') ?: '',
-                            'earned' => true,
-                        ];
-                    }
-                }
-            }
-            return $formatted;
-        },
-        'schema' => ['type' => 'array'],
-    ]);
-});
+    if (is_array($requirements)) {
+        foreach ($requirements as $req) {
+            $formatted[] = [
+                'id' => $req->ID ?? 0,
+                'title' => $req->post_title ?? '',
+                'type' => get_post_meta($req->ID, '_gamipress_trigger_type', true),
+                'count' => (int) get_post_meta($req->ID, '_gamipress_count', true),
+            ];
+        }
+    }
+    
+    return $formatted;
+}
 
 /* =========================
- * Handlers dos Endpoints
+ * ENDPOINT DINÂMICO: GamiPress
+ * ========================= */
+
+function djz_get_gamipress_handler($request) {
+    $user_id = intval($request->get_param('user_id'));
+    
+    if ($user_id <= 0) {
+        return new WP_Error('invalid_user_id', 'Invalid user ID', ['status' => 400]);
+    }
+    
+    // ✅ VERIFICAR SE GAMIPRESS ESTÁ ATIVO
+    if (!function_exists('gamipress_get_user_points')) {
+        return rest_ensure_response([
+            'success' => false,
+            'message' => 'GamiPress not active',
+            'data' => [
+                'points' => 0,
+                'rank' => 'Novice',
+                'achievements' => [],
+                'allRanks' => [],
+                'allAchievements' => [],
+            ],
+        ]);
+    }
+    
+    // ✅ 1. BUSCAR TODOS OS TIPOS DE PONTOS
+    $points_types = gamipress_get_points_types();
+    $user_points = [];
+    $total_points = 0;
+    
+    foreach ($points_types as $slug => $data) {
+        $points = (int) gamipress_get_user_points($user_id, $slug);
+        $user_points[] = [
+            'slug' => $slug,
+            'name' => $data['plural_name'],
+            'singular' => $data['singular_name'],
+            'points' => $points,
+        ];
+        $total_points += $points;
+    }
+    
+    // ✅ 2. BUSCAR RANK ATUAL DO USUÁRIO
+    $rank_types = gamipress_get_rank_types();
+    $current_rank = 'Novice';
+    $rank_id = 0;
+    $rank_type_slug = '';
+    
+    foreach ($rank_types as $slug => $data) {
+        $user_rank = gamipress_get_user_rank($user_id, $slug);
+        
+        if ($user_rank && is_object($user_rank)) {
+            $rank_id = $user_rank->ID;
+            $current_rank = $user_rank->post_title;
+            $rank_type_slug = $slug;
+            break;
+        }
+    }
+    
+    // ✅ 3. BUSCAR TODOS OS RANKS DISPONÍVEIS (progressão)
+    $all_ranks = [];
+    
+    if (!empty($rank_type_slug)) {
+        $ranks_query = new WP_Query([
+            'post_type' => $rank_type_slug,
+            'posts_per_page' => -1,
+            'post_status' => 'publish',
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
+        ]);
+        
+        if ($ranks_query->have_posts()) {
+            while ($ranks_query->have_posts()) {
+                $ranks_query->the_post();
+                $r_id = get_the_ID();
+                
+                $all_ranks[] = [
+                    'id' => $r_id,
+                    'title' => get_the_title(),
+                    'description' => get_the_content(),
+                    'excerpt' => get_the_excerpt(),
+                    'image' => get_the_post_thumbnail_url($r_id, 'medium') ?: '',
+                    'current' => ($r_id === $rank_id),
+                    'requirements' => djz_format_requirements($r_id),
+                ];
+            }
+            wp_reset_postdata();
+        }
+    }
+    
+    // ✅ 4. BUSCAR ACHIEVEMENTS EARNED
+    $achievement_types = gamipress_get_achievement_types();
+    $earned_achievements = [];
+    
+    foreach ($achievement_types as $type_slug => $type_data) {
+        $user_achievements = gamipress_get_user_achievements([
+            'user_id' => $user_id,
+            'achievement_type' => $type_slug,
+        ]);
+        
+        if (is_array($user_achievements)) {
+            foreach ($user_achievements as $ach) {
+                if (isset($ach->ID)) {
+                    $earned_achievements[] = [
+                        'id' => $ach->ID,
+                        'type' => $type_slug,
+                        'title' => $ach->post_title ?? '',
+                        'description' => $ach->post_content ?? '',
+                        'excerpt' => $ach->post_excerpt ?? '',
+                        'image' => get_the_post_thumbnail_url($ach->ID, 'medium') ?: '',
+                        'earned' => true,
+                        'earnedDate' => get_post_time('Y-m-d H:i:s', false, $ach->ID),
+                        'points' => (int) get_post_meta($ach->ID, '_gamipress_points', true),
+                    ];
+                }
+            }
+        }
+    }
+    
+    // ✅ 5. BUSCAR TODOS OS ACHIEVEMENTS DISPONÍVEIS
+    $all_achievements = [];
+    
+    foreach ($achievement_types as $type_slug => $type_data) {
+        $achievements_query = new WP_Query([
+            'post_type' => $type_slug,
+            'posts_per_page' => -1,
+            'post_status' => 'publish',
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
+        ]);
+        
+        if ($achievements_query->have_posts()) {
+            while ($achievements_query->have_posts()) {
+                $achievements_query->the_post();
+                $a_id = get_the_ID();
+                
+                // Verificar se usuário já ganhou
+                $earned = gamipress_has_user_earned_achievement($a_id, $user_id);
+                
+                $all_achievements[] = [
+                    'id' => $a_id,
+                    'type' => $type_slug,
+                    'typeName' => $type_data['singular_name'],
+                    'title' => get_the_title(),
+                    'description' => get_the_content(),
+                    'excerpt' => get_the_excerpt(),
+                    'image' => get_the_post_thumbnail_url($a_id, 'medium') ?: '',
+                    'earned' => $earned,
+                    'earnedDate' => $earned ? get_post_time('Y-m-d H:i:s', false, $a_id) : null,
+                    'points' => (int) get_post_meta($a_id, '_gamipress_points', true),
+                    'requirements' => djz_format_requirements($a_id),
+                ];
+            }
+            wp_reset_postdata();
+        }
+    }
+    
+    // ✅ 6. CALCULAR LEVEL (baseado na posição do rank)
+    $level = 1;
+    foreach ($all_ranks as $index => $rank) {
+        if ($rank['current']) {
+            $level = $index + 1;
+            break;
+        }
+    }
+    
+    return rest_ensure_response([
+        'success' => true,
+        'data' => [
+            'points' => $total_points,
+            'pointsBreakdown' => $user_points,
+            'level' => $level,
+            'rank' => $current_rank,
+            'rankId' => $rank_id,
+            'earnedAchievements' => $earned_achievements,
+            'allRanks' => $all_ranks,
+            'allAchievements' => $all_achievements,
+            'stats' => [
+                'totalAchievements' => count($all_achievements),
+                'earnedAchievements' => count($earned_achievements),
+                'totalRanks' => count($all_ranks),
+                'currentRankIndex' => $level - 1,
+            ],
+        ],
+    ]);
+}
+
+/* =========================
+ * Endpoint Handlers
  * ========================= */
 
 function djz_get_multilang_menu_handler($request) {
@@ -366,83 +519,8 @@ function djz_get_products_with_lang_handler($request) {
     return new WP_Rest_Response($products, 200);
 }
 
-// ✅ ENDPOINT CUSTOMIZADO: /wp-json/djzeneyer/v1/gamipress/{user_id}
-function djz_get_gamipress_handler($request) {
-    $user_id = intval($request->get_param('user_id'));
-    
-    if ($user_id <= 0) {
-        return new WP_Error('invalid_user_id', 'Invalid user ID', ['status' => 400]);
-    }
-    
-    // Verificar se GamiPress está ativo
-    if (!function_exists('gamipress_get_user_points')) {
-        return rest_ensure_response([
-            'mock_data' => true,
-            'points' => 0,
-            'level' => 1,
-            'rank' => 'Zen Novice',
-            'rankId' => 0,
-            'achievements' => [],
-        ]);
-    }
-    
-    // Buscar pontos
-    $points = (int) gamipress_get_user_points($user_id, 'zen-points');
-    
-    // Calcular level (100 XP = 1 level)
-    $level = floor($points / 100) + 1;
-    
-    // Buscar rank atual
-    $rank = 'Zen Novice';
-    $rank_id = 0;
-    
-    if (function_exists('gamipress_get_user_rank_id')) {
-        $rank_id = gamipress_get_user_rank_id($user_id, 'zen-level');
-        if ($rank_id) {
-            $rank_post = get_post($rank_id);
-            if ($rank_post) {
-                $rank = $rank_post->post_title;
-            }
-        }
-    }
-    
-    // Buscar achievements
-    $achievements = [];
-    
-    if (function_exists('gamipress_get_user_earned_achievements')) {
-        $earned = gamipress_get_user_earned_achievements($user_id, [
-            'achievement_type' => ['zen-achievement', 'badges'],
-            'display' => true,
-        ]);
-        
-        if (is_array($earned)) {
-            foreach ($earned as $ach) {
-                if (is_object($ach) && isset($ach->ID)) {
-                    $achievements[] = [
-                        'id' => $ach->ID,
-                        'title' => $ach->post_title ?? 'Achievement',
-                        'description' => $ach->post_excerpt ?? '',
-                        'image' => get_the_post_thumbnail_url($ach->ID, 'thumbnail') ?: '',
-                        'earned' => true,
-                        'earnedDate' => get_post_time('Y-m-d', false, $ach->ID),
-                        'points' => (int) get_post_meta($ach->ID, '_gamipress_points', true),
-                    ];
-                }
-            }
-        }
-    }
-    
-    return rest_ensure_response([
-        'points' => $points,
-        'level' => $level,
-        'rank' => $rank,
-        'rankId' => $rank_id,
-        'achievements' => $achievements,
-    ]);
-}
-
 /* =========================
- * Registro dos Endpoints
+ * Registro de Endpoints
  * ========================= */
 
 add_action('rest_api_init', function () {
@@ -468,13 +546,12 @@ add_action('rest_api_init', function () {
             'lang' => [
                 'required' => false,
                 'type' => 'string',
-                'description' => 'Código do idioma (pt, en, etc)',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
         ],
     ]);
     
-    // ✅ ENDPOINT GAMIPRESS CUSTOMIZADO
+    // ✅ ENDPOINT GAMIPRESS TOTALMENTE DINÂMICO
     register_rest_route($namespace, '/gamipress/(?P<user_id>\d+)', [
         'methods' => 'GET',
         'callback' => 'djz_get_gamipress_handler',
@@ -495,7 +572,7 @@ add_action('rest_api_init', function () {
         'callback' => function($request) {
             $user_id = get_current_user_id();
             if (0 === $user_id) {
-                return new WP_Error('not_logged_in', 'Usuário não autenticado.', ['status' => 401]);
+                return new WP_Error('not_logged_in', 'User not authenticated', ['status' => 401]);
             }
             $params = $request->get_json_params();
             $user_data = ['ID' => $user_id];
@@ -504,9 +581,9 @@ add_action('rest_api_init', function () {
             }
             $result = wp_update_user($user_data);
             if (is_wp_error($result)) {
-                return new WP_Error('profile_update_failed', 'Não foi possível atualizar o perfil.', ['status' => 400]);
+                return new WP_Error('profile_update_failed', 'Could not update profile', ['status' => 400]);
             }
-            return rest_ensure_response(['success' => true, 'message' => 'Perfil atualizado com sucesso!']);
+            return rest_ensure_response(['success' => true, 'message' => 'Profile updated!']);
         },
         'permission_callback' => 'is_user_logged_in'
     ]);
@@ -519,10 +596,9 @@ add_action('rest_api_init', function () {
 });
 
 /* =========================
- * CORREÇÕES SEO CRÍTICAS
+ * SEO Fixes
  * ========================= */
 
-// 1. Corrigir status code da página 404
 add_action('template_redirect', function() {
     if (is_404()) {
         status_header(404);
@@ -530,7 +606,6 @@ add_action('template_redirect', function() {
     }
 }, 999);
 
-// 2. Hreflang correto com self-referencing
 add_action('wp_head', function() {
     remove_action('wp_head', 'rank_math_hreflang', 10);
     
@@ -549,7 +624,6 @@ add_action('wp_head', function() {
     }
 }, 1);
 
-// 3. Desabilitar sitemap do WordPress (Rank Math gera melhor)
 add_filter('wp_sitemaps_enabled', '__return_false');
 
 ?>
