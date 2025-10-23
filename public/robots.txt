@@ -1,21 +1,27 @@
 # robots.txt - DJ Zen Eyer Website
-# Otimizado para Google, Bing, Yandex, e bots de IAs
+# Optimized for Google, Bing, Yandex, AI crawlers & SEO
 
-# ✅ Permitir TODOS os bots
 User-agent: *
 Allow: /
 
-# ❌ Bloquear áreas administrativas (WordPress)
+# Block sensitive WordPress directories
 Disallow: /wp-admin/
 Disallow: /wp-includes/
 Disallow: /wp-content/plugins/
 Disallow: /wp-content/cache/
 Disallow: /cgi-bin/
+Disallow: /readme.html
+Disallow: /license.txt
+Disallow: /xmlrpc.php
+Disallow: /wp-login.php
+Disallow: /wp-signup.php
+Disallow: /trackback/
+Disallow: /comments/feed/
 
-# ✅ Permitir acesso ao /wp-content/uploads/ (imagens, mídia)
+# Allow media (required for SEO & social sharing)
 Allow: /wp-content/uploads/
 
-# ✅ Bots de IAs - Acesso Total
+# Explicitly allow major AI & search bots
 User-agent: GPTBot
 Allow: /
 
@@ -58,9 +64,9 @@ Allow: /
 User-agent: Slurp
 Allow: /
 
-# ⏱️ Crawl delay (para não sobrecarregar servidor)
+# Crawl delay (1 second to reduce server load)
 Crawl-delay: 1
 
-# 🗺️ Sitemaps (AMBOS: Rank Math + React)
+# Sitemaps
 Sitemap: https://djzeneyer.com/sitemap_index.xml
-Sitemap: https://djzeneyer.com/sitemap.xml
+Sitemap: https://djzeneyer.com/react-sitemap.xml
