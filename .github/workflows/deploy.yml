@@ -73,7 +73,7 @@ jobs:
             index.html
             react-sitemap.xml
 
-      - name: 📡 Deploy do App React
+      - name: 📡 Deploy do App React (LIMPA TUDO!)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -84,21 +84,31 @@ jobs:
           server-dir: ./wp-content/themes/zentheme/dist/
           dangerous-clean-slate: true
 
-      - name: 📡 Deploy dos Arquivos do Tema WordPress
+      - name: ⚡ Deploy do Tema WordPress (SYNC INTELIGENTE!)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          local-dir: ./                    # ✅ RAIZ! (onde estão functions.php, index.php, etc.)
+          local-dir: ./
           server-dir: ./wp-content/themes/zentheme/
-          dangerous-clean-slate: false
+          state-name: .ftp-deploy-theme-sync-state.json  # ⚡ SYNC state file
+          dry-run: false
+          dangerous-clean-slate: false                   # ⚡ NÃO APAGA TUDO!
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             **/dist/**
-            **/public/**                   # ✅ EXCLUI /public/ (já foi enviado no STEP 1!)
-            **/src/**                      # ✅ EXCLUI /src/ (código React, não precisa!)
-            **/.github/**                  # ✅ EXCLUI workflows
+            **/public/**
+            **/src/**
+            **/.github/**
+            **/.ftp-deploy-*
+            **/package.json
+            **/package-lock.json
+            **/tsconfig*.json
+            **/vite.config.ts
+            **/eslint.config.js
+            **/postcss.config.js
+            **/tailwind.config.js
