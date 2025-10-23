@@ -2,35 +2,102 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/UserContext';
 
-export interface Achievement {
+/* =========================
+ * INTERFACES
+ * ========================= */
+
+export interface PointsBreakdown {
+  slug: string;
+  name: string;
+  singular: string;
+  points: number;
+}
+
+export interface Requirement {
+  id: number;
+  title: string;
+  type: string;
+  count: number;
+}
+
+export interface Rank {
   id: number;
   title: string;
   description: string;
+  excerpt: string;
+  image: string;
+  current: boolean;
+  requirements: Requirement[];
+}
+
+export interface Achievement {
+  id: number;
+  type: string;
+  typeName?: string;
+  title: string;
+  description: string;
+  excerpt: string;
   image: string;
   earned: boolean;
   earnedDate: string | null;
-  points?: number;
+  points: number;
+  requirements: Requirement[];
+}
+
+export interface GamiPressStats {
+  totalAchievements: number;
+  earnedAchievements: number;
+  totalRanks: number;
+  currentRankIndex: number;
 }
 
 export interface GamiPressData {
+  // Basic info
   points: number;
   level: number;
   rank: string;
   rankId: number;
-  achievements: Achievement[];
+  
+  // Detailed data
+  pointsBreakdown: PointsBreakdown[];
+  earnedAchievements: Achievement[];
+  allRanks: Rank[];
+  allAchievements: Achievement[];
+  stats: GamiPressStats;
+  
+  // Loading states
   loading: boolean;
   error: string | null;
+  success: boolean;
 }
+
+/* =========================
+ * DEFAULT STATE
+ * ========================= */
 
 const defaultState: GamiPressData = {
   points: 0,
   level: 1,
-  rank: 'Zen Novice',
+  rank: 'Novice',
   rankId: 0,
-  achievements: [],
+  pointsBreakdown: [],
+  earnedAchievements: [],
+  allRanks: [],
+  allAchievements: [],
+  stats: {
+    totalAchievements: 0,
+    earnedAchievements: 0,
+    totalRanks: 0,
+    currentRankIndex: 0,
+  },
   loading: false,
   error: null,
+  success: false,
 };
+
+/* =========================
+ * HOOK
+ * ========================= */
 
 export const useGamiPress = (): GamiPressData => {
   const { user, isAuthenticated } = useAuth();
@@ -40,7 +107,7 @@ export const useGamiPress = (): GamiPressData => {
   });
 
   useEffect(() => {
-    // Reset para estado não autenticado
+    // Reset se não estiver autenticado
     if (!isAuthenticated || !user?.id) {
       console.log('[useGamiPress] ⚠️ Usuário não autenticado');
       setData({
@@ -62,7 +129,6 @@ export const useGamiPress = (): GamiPressData => {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            // Adicionar JWT token se disponível
             ...(user.token && { 'Authorization': `Bearer ${user.token}` }),
           },
         });
@@ -78,18 +144,26 @@ export const useGamiPress = (): GamiPressData => {
         const result = await response.json();
         console.log('[useGamiPress] ✅ Dados recebidos:', result);
 
-        if (result.mock_data) {
-          console.warn('[useGamiPress] ⚠️ GamiPress não está ativo, usando dados mock');
+        if (!result.success) {
+          console.warn('[useGamiPress] ⚠️ GamiPress não está ativo:', result.message);
         }
 
+        // Extrair dados da resposta
+        const gamificationData = result.data || {};
+
         setData({
-          points: result.points || 0,
-          level: result.level || 1,
-          rank: result.rank || 'Zen Novice',
-          rankId: result.rankId || 0,
-          achievements: result.achievements || [],
+          points: gamificationData.points || 0,
+          level: gamificationData.level || 1,
+          rank: gamificationData.rank || 'Novice',
+          rankId: gamificationData.rankId || 0,
+          pointsBreakdown: gamificationData.pointsBreakdown || [],
+          earnedAchievements: gamificationData.earnedAchievements || [],
+          allRanks: gamificationData.allRanks || [],
+          allAchievements: gamificationData.allAchievements || [],
+          stats: gamificationData.stats || defaultState.stats,
           loading: false,
           error: null,
+          success: result.success || false,
         });
 
       } catch (error) {
@@ -106,11 +180,57 @@ export const useGamiPress = (): GamiPressData => {
     // Buscar dados imediatamente
     fetchGamiPressData();
 
-    // Atualizar a cada 30 segundos (opcional)
-    const interval = setInterval(fetchGamiPressData, 30000);
+    // Opcional: Atualizar a cada 30 segundos
+    // const interval = setInterval(fetchGamiPressData, 30000);
+    // return () => clearInterval(interval);
 
-    return () => clearInterval(interval);
   }, [user?.id, user?.token, isAuthenticated]);
 
   return data;
+};
+
+/* =========================
+ * HELPER FUNCTIONS
+ * ========================= */
+
+// Calcular progresso até próximo rank
+export const getNextRankProgress = (data: GamiPressData): {
+  current: Rank | null;
+  next: Rank | null;
+  progress: number;
+} => {
+  const currentIndex = data.stats.currentRankIndex;
+  const current = data.allRanks[currentIndex] || null;
+  const next = data.allRanks[currentIndex + 1] || null;
+  
+  if (!next) {
+    return { current, next: null, progress: 100 };
+  }
+  
+  // Calcular progresso baseado em requisitos
+  // Isso pode ser customizado baseado nos seus requisitos
+  const progress = Math.min(100, (data.points / 1000) * 100);
+  
+  return { current, next, progress };
+};
+
+// Filtrar achievements por tipo
+export const filterAchievementsByType = (
+  achievements: Achievement[],
+  type: string
+): Achievement[] => {
+  return achievements.filter(ach => ach.type === type);
+};
+
+// Pegar achievements pendentes
+export const getPendingAchievements = (data: GamiPressData): Achievement[] => {
+  return data.allAchievements.filter(ach => !ach.earned);
+};
+
+// Calcular completion percentage
+export const getCompletionPercentage = (data: GamiPressData): number => {
+  if (data.stats.totalAchievements === 0) return 0;
+  return Math.round(
+    (data.stats.earnedAchievements / data.stats.totalAchievements) * 100
+  );
 };
