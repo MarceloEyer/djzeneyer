@@ -1,7 +1,7 @@
 // src/pages/MyAccountPage.tsx
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
@@ -20,7 +20,13 @@ import {
   Headphones,
   Lock,
   Bell,
-  Shield
+  Shield,
+  Camera,
+  Save,
+  X,
+  Check,
+  Mail,
+  UserCircle
 } from 'lucide-react';
 
 // Interfaces
@@ -45,14 +51,47 @@ interface UserStats {
   recentAchievements: number;
 }
 
+interface ProfileData {
+  display_name: string;
+  email: string;
+  description: string;
+}
+
 const MyAccountPage: React.FC = () => {
-  const { user, loading, logout } = useUser();
+  const { user, loading, logout, updateUser } = useUser();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // 🎨 Profile editing states
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    display_name: user?.name || '',
+    email: user?.email || '',
+    description: user?.description || ''
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState('');
+  const [profileSuccess, setProfileSuccess] = useState('');
+  
+  // 📸 Avatar upload states
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   console.log('[MyAccountPage] User:', user);
+
+  // Sync profile data when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        display_name: user.name || '',
+        email: user.email || '',
+        description: user.description || ''
+      });
+    }
+  }, [user]);
 
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS
   const userStats: UserStats = useMemo(() => {
@@ -67,21 +106,17 @@ const MyAccountPage: React.FC = () => {
       };
     }
 
-    // ✅ DADOS REAIS DO GAMIPRESS
     const totalPoints = user.gamipress_points || 0;
     const currentRank = user.gamipress_rank || 'Zen Novice';
-    
-    // Calcular level baseado em pontos (cada 100 pontos = 1 level)
     const level = Math.floor(totalPoints / 100) + 1;
     
-    // Calcular XP para próximo rank
     let xpToNext = 0;
     if (totalPoints < 100) {
-      xpToNext = 100 - totalPoints; // Para Zen Apprentice
+      xpToNext = 100 - totalPoints;
     } else if (totalPoints < 500) {
-      xpToNext = 500 - totalPoints; // Para Zen Voyager
+      xpToNext = 500 - totalPoints;
     } else if (totalPoints < 1500) {
-      xpToNext = 1500 - totalPoints; // Para Zen Master
+      xpToNext = 1500 - totalPoints;
     }
 
     const totalAchievements = user.gamipress_achievements?.length || 0;
@@ -119,9 +154,9 @@ const MyAccountPage: React.FC = () => {
     }
     
     try {
-      const response = await fetch(`${window.wpData.restUrl}wc/v3/orders?customer=${user.id}`, {
+      // ✅ USAR ENDPOINT CUSTOM (criar no WordPress)
+      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/my-orders`, {
         headers: {
-          'Authorization': `Bearer ${user.token}`,
           'X-WP-Nonce': window.wpData.nonce,
         }
       });
@@ -145,6 +180,152 @@ const MyAccountPage: React.FC = () => {
     } catch (error) {
       console.error('[MyAccountPage] Erro no logout:', error);
       navigate('/');
+    }
+  };
+
+  // 🎨 EDIÇÃO DE PERFIL
+  const handleProfileEdit = () => {
+    setIsEditingProfile(true);
+    setProfileError('');
+    setProfileSuccess('');
+  };
+
+  const handleProfileCancel = () => {
+    setIsEditingProfile(false);
+    setProfileData({
+      display_name: user?.name || '',
+      email: user?.email || '',
+      description: user?.description || ''
+    });
+    setProfileError('');
+    setProfileSuccess('');
+  };
+
+  const handleProfileSave = async () => {
+    if (!profileData.display_name.trim()) {
+      setProfileError('Display name is required');
+      return;
+    }
+
+    if (!profileData.email.trim() || !profileData.email.includes('@')) {
+      setProfileError('Valid email is required');
+      return;
+    }
+
+    setSavingProfile(true);
+    setProfileError('');
+    setProfileSuccess('');
+
+    try {
+      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/update-profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': window.wpData.nonce,
+        },
+        body: JSON.stringify({
+          display_name: profileData.display_name,
+          email: profileData.email,
+          description: profileData.description
+        })
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        
+        // ✅ Atualizar contexto do usuário
+        if (updateUser) {
+          updateUser({
+            ...user,
+            name: updatedUser.display_name || profileData.display_name,
+            email: updatedUser.email || profileData.email,
+            description: updatedUser.description || profileData.description
+          });
+        }
+
+        setProfileSuccess('Profile updated successfully!');
+        setIsEditingProfile(false);
+        
+        // Clear success message after 3s
+        setTimeout(() => setProfileSuccess(''), 3000);
+      } else {
+        const errorData = await response.json();
+        setProfileError(errorData.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error updating profile:', error);
+      setProfileError('An error occurred while updating your profile');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  // 📸 UPLOAD DE AVATAR
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validação
+    if (!file.type.startsWith('image/')) {
+      setProfileError('Please select an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB max
+      setProfileError('Image size must be less than 5MB');
+      return;
+    }
+
+    // Preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload
+    setUploadingAvatar(true);
+    setProfileError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await fetch(`${window.wpData.restUrl}djzeneyer/v1/upload-avatar`, {
+        method: 'POST',
+        headers: {
+          'X-WP-Nonce': window.wpData.nonce,
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // ✅ Atualizar avatar no contexto
+        if (updateUser && data.avatar_url) {
+          updateUser({
+            ...user,
+            avatar: data.avatar_url
+          });
+        }
+
+        setProfileSuccess('Avatar updated successfully!');
+        setAvatarPreview(null);
+        setTimeout(() => setProfileSuccess(''), 3000);
+      } else {
+        const errorData = await response.json();
+        setProfileError(errorData.message || 'Failed to upload avatar');
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error uploading avatar:', error);
+      setProfileError('An error occurred while uploading your avatar');
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -178,7 +359,6 @@ const MyAccountPage: React.FC = () => {
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
-  // Funções auxiliares para orders
   const getOrderStatusClass = (status: string) => {
     switch (status) {
       case 'completed':
@@ -398,7 +578,7 @@ const MyAccountPage: React.FC = () => {
               </div>
             )}
 
-            {/* Progress bar para próximo rank */}
+            {/* Progress bar */}
             {userStats.xpToNext > 0 && (
               <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
                 <h3 className="text-lg font-semibold mb-4">Next Rank Progress</h3>
@@ -465,35 +645,152 @@ const MyAccountPage: React.FC = () => {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold mb-6">Account Settings</h2>
 
-            {/* Profile Settings */}
+            {/* 🎨 PROFILE SETTINGS COM EDIÇÃO */}
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-              <div className="flex items-center gap-3 mb-4">
-                <User className="text-primary" size={24} />
-                <h3 className="text-xl font-semibold">Profile Information</h3>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <User className="text-primary" size={24} />
+                  <h3 className="text-xl font-semibold">Profile Information</h3>
+                </div>
+                {!isEditingProfile && (
+                  <button 
+                    onClick={handleProfileEdit}
+                    className="btn btn-outline btn-sm flex items-center gap-2"
+                  >
+                    <Edit3 size={16} />
+                    Edit Profile
+                  </button>
+                )}
               </div>
+
+              {/* Success/Error Messages */}
+              <AnimatePresence>
+                {profileError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mb-4 p-3 bg-error/20 border border-error/50 rounded-lg flex items-center gap-2 text-error"
+                  >
+                    <AlertCircle size={18} />
+                    <span className="text-sm">{profileError}</span>
+                  </motion.div>
+                )}
+
+                {profileSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mb-4 p-3 bg-success/20 border border-success/50 rounded-lg flex items-center gap-2 text-success"
+                  >
+                    <Check size={18} />
+                    <span className="text-sm">{profileSuccess}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* 📸 AVATAR UPLOAD */}
+              <div className="flex justify-center mb-6">
+                <div className="relative">
+                  <img 
+                    src={avatarPreview || user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=128&background=6366f1&color=fff&bold=true`}
+                    alt={user.name}
+                    className="w-32 h-32 rounded-full object-cover border-4 border-primary/30"
+                  />
+                  <button
+                    onClick={handleAvatarClick}
+                    disabled={uploadingAvatar}
+                    className="absolute bottom-0 right-0 w-10 h-10 bg-primary hover:bg-primary/80 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 disabled:opacity-50"
+                  >
+                    {uploadingAvatar ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                    ) : (
+                      <Camera size={20} className="text-white" />
+                    )}
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
+              {/* PROFILE FORM */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Full Name</label>
+                  <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+                    <UserCircle size={16} />
+                    Display Name
+                  </label>
                   <input 
                     type="text" 
-                    value={user.name} 
-                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
-                    disabled
+                    value={isEditingProfile ? profileData.display_name : user.name}
+                    onChange={(e) => setProfileData({...profileData, display_name: e.target.value})}
+                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
+                    disabled={!isEditingProfile}
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Email</label>
+                  <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+                    <Mail size={16} />
+                    Email
+                  </label>
                   <input 
                     type="email" 
-                    value={user.email} 
-                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
-                    disabled
+                    value={isEditingProfile ? profileData.email : user.email}
+                    onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
+                    disabled={!isEditingProfile}
                   />
                 </div>
-                <button className="btn btn-outline flex items-center gap-2">
-                  <Edit3 size={16} />
-                  Edit Profile
-                </button>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Bio</label>
+                  <textarea 
+                    value={isEditingProfile ? profileData.description : (user.description || 'No bio yet')}
+                    onChange={(e) => setProfileData({...profileData, description: e.target.value})}
+                    rows={4}
+                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors resize-none"
+                    disabled={!isEditingProfile}
+                    placeholder="Tell us about yourself..."
+                  />
+                </div>
+
+                {/* ACTION BUTTONS */}
+                {isEditingProfile && (
+                  <div className="flex gap-3 pt-4">
+                    <button 
+                      onClick={handleProfileSave}
+                      disabled={savingProfile}
+                      className="btn btn-primary flex items-center gap-2 flex-1"
+                    >
+                      {savingProfile ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save size={16} />
+                          Save Changes
+                        </>
+                      )}
+                    </button>
+                    <button 
+                      onClick={handleProfileCancel}
+                      disabled={savingProfile}
+                      className="btn btn-outline flex items-center gap-2"
+                    >
+                      <X size={16} />
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -525,7 +822,10 @@ const MyAccountPage: React.FC = () => {
                 <Shield className="text-accent" size={24} />
                 <h3 className="text-xl font-semibold">Security</h3>
               </div>
-              <button className="btn btn-outline flex items-center gap-2">
+              <button 
+                onClick={() => window.location.href = `${window.wpData.siteUrl}/wp-login.php?action=lostpassword`}
+                className="btn btn-outline flex items-center gap-2"
+              >
                 <Lock size={16} />
                 Change Password
               </button>
@@ -587,17 +887,11 @@ const MyAccountPage: React.FC = () => {
                   {/* User Info */}
                   <div className="text-center mb-6 pb-6 border-b border-white/10">
                     <div className="relative mb-4">
-                      {user.avatar ? (
-                        <img 
-                          src={user.avatar} 
-                          alt={user.name}
-                          className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-primary/30"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto">
-                          <User className="text-white" size={32} />
-                        </div>
-                      )}
+                      <img 
+                        src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&size=80&background=6366f1&color=fff&bold=true`}
+                        alt={user.name}
+                        className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-primary/30"
+                      />
                     </div>
                     <h3 className="font-bold text-lg">{user.name}</h3>
                     <p className="text-sm text-white/60 mb-3">{user.email}</p>
