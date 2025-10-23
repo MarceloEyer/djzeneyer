@@ -1,4 +1,4 @@
-// src/layouts/MainLayout.tsx - VERSÃO FINAL CORRIGIDA
+// src/layouts/MainLayout.tsx - VERSÃO SEM MUSICPLAYER
 
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -6,7 +6,6 @@ import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import AuthModal from '../components/auth/AuthModal';
-import MusicPlayer from '../components/player/MusicPlayer';
 import { siteConfig } from '../config/siteConfig';
 
 const MainLayout: React.FC = () => {
@@ -48,7 +47,6 @@ const MainLayout: React.FC = () => {
           <Outlet />
         </main>
         <Footer />
-        <MusicPlayer />
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={closeModal}
