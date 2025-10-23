@@ -53,46 +53,48 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-  // ✅ User stats com dados REAIS do GamiPress
+  // ✅ User stats com dados REAIS do GamiPress (100% SEGURO)
   const currentPoints = gamipress.points || 0;
   const currentLevel = Math.floor(currentPoints / 100) + 1;
   const nextLevelXP = currentLevel * 100;
   const progressPercentage = ((currentPoints % 100) / 100) * 100;
   const pointsToNextLevel = nextLevelXP - currentPoints;
 
-  // ✅ Next rank info
-  const allRanks = gamipress.allRanks || [];
-  const currentRankIndex = allRanks.findIndex(r => r.slug === gamipress.currentRank?.slug) || 0;
-  const nextRank = allRanks[currentRankIndex + 1] || null;
+  // ✅ Next rank info (ULTRA SEGURO - NUNCA QUEBRA)
+  const allRanks = (gamipress.allRanks && Array.isArray(gamipress.allRanks)) ? gamipress.allRanks : [];
+  const currentRankIndex = allRanks.length > 0 
+    ? (allRanks.findIndex(r => r?.slug === gamipress.currentRank?.slug) || 0) 
+    : 0;
+  const nextRank = (allRanks.length > currentRankIndex + 1) ? allRanks[currentRankIndex + 1] : null;
 
-  // ✅ Recent Activity com dados REAIS do GamiPress (LIMITADO A 4)
-  const recentActivity = activity.activities && activity.activities.length > 0 
+  // ✅ Recent Activity (ULTRA SEGURO - NUNCA QUEBRA)
+  const recentActivity = (activity.activities && Array.isArray(activity.activities) && activity.activities.length > 0)
     ? activity.activities.slice(0, 4).map(act => ({
-        icon: act.icon === 'star' ? <Star className="text-warning" size={20} /> :
-              act.icon === 'trophy' ? <Trophy className="text-accent" size={20} /> :
-              act.icon === 'check' ? <Target className="text-success" size={20} /> :
+        icon: act?.icon === 'star' ? <Star className="text-warning" size={20} /> :
+              act?.icon === 'trophy' ? <Trophy className="text-accent" size={20} /> :
+              act?.icon === 'check' ? <Target className="text-success" size={20} /> :
               <Heart className="text-primary" size={20} />,
-        action: act.type.includes('achievement') ? 'Unlocked' : 
-                act.type.includes('points') ? 'Earned' : 'Completed',
-        item: act.title,
-        xp: act.points || 0,
-        time: new Date(act.date).toLocaleDateString('en-US', { 
+        action: act?.type?.includes('achievement') ? 'Unlocked' : 
+                act?.type?.includes('points') ? 'Earned' : 'Completed',
+        item: act?.title || 'Unknown activity',
+        xp: act?.points || 0,
+        time: act?.date ? new Date(act.date).toLocaleDateString('en-US', { 
           month: 'short', 
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit'
-        })
+        }) : 'Recently'
       }))
     : [];
 
-  // ✅ Achievements com dados REAIS do GamiPress (LIMITADO A 6)
-  const achievements = gamipress.achievements && gamipress.achievements.length > 0 
+  // ✅ Achievements (ULTRA SEGURO - NUNCA QUEBRA)
+  const achievements = (gamipress.achievements && Array.isArray(gamipress.achievements) && gamipress.achievements.length > 0)
     ? gamipress.achievements.slice(0, 6).map(ach => ({
-        emoji: ach.image ? '' : '🏆',
-        image: ach.image,
-        title: ach.title,
-        description: ach.description || 'Achievement unlocked!',
-        unlocked: ach.earned || false
+        emoji: ach?.image ? '' : '🏆',
+        image: ach?.image || '',
+        title: ach?.title || 'Achievement',
+        description: ach?.description || 'Achievement unlocked!',
+        unlocked: ach?.earned || false
       }))
     : [];
 
@@ -170,7 +172,7 @@ const DashboardPage: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <p className="text-white/70 text-sm mb-1">Next Rank</p>
-                        <p className="text-xl font-bold text-primary">{nextRank.title}</p>
+                        <p className="text-xl font-bold text-primary">{nextRank.title || 'Next Rank'}</p>
                         {nextRank.requirements && (
                           <p className="text-white/60 text-xs mt-1">
                             {nextRank.requirements}
