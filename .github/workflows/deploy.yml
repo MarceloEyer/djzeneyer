@@ -9,7 +9,6 @@ permissions:
   contents: read
 
 jobs:
-  # --- ETAPA 1: BUILD ---
   build:
     name: 📦 Build do Projeto
     runs-on: ubuntu-latest
@@ -42,7 +41,6 @@ jobs:
           path: ./dist
           retention-days: 1
 
-  # --- ETAPA 2: DEPLOY ---
   deploy:
     name: 🚚 Deploy para Hostinger
     runs-on: ubuntu-latest
@@ -57,7 +55,6 @@ jobs:
           name: dist-folder
           path: ./dist
 
-      # ⚡ STEP 1: Deploy dos Arquivos Públicos (RAIZ) - SÓ SOBRESCREVE!
       - name: 🎨 Deploy dos Arquivos Públicos para Raiz
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -67,7 +64,7 @@ jobs:
           protocol: ftps
           local-dir: ./dist/
           server-dir: ./
-          dangerous-clean-slate: false  # ⚡ RÁPIDO! Só sobrescreve favicons, robots.txt
+          dangerous-clean-slate: false
           exclude: |
             **/.git*
             **/.git*/**
@@ -76,8 +73,7 @@ jobs:
             index.html
             react-sitemap.xml
 
-      # 🗑️ STEP 2: Deploy do App React - DELETA TUDO E REENVIA!
-      - name: 📡 Deploy do App React (LIMPA JS/CSS ANTIGOS!)
+      - name: 📡 Deploy do App React
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -86,9 +82,8 @@ jobs:
           protocol: ftps
           local-dir: ./dist/
           server-dir: ./wp-content/themes/zentheme/dist/
-          dangerous-clean-slate: true  # 🗑️ DELETA JS/CSS ANTIGOS!
+          dangerous-clean-slate: true
 
-      # ⚡ STEP 3: Deploy dos Arquivos do Tema - SÓ SOBRESCREVE!
       - name: 📡 Deploy dos Arquivos do Tema WordPress
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -96,10 +91,14 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          local-dir: ./theme/
+          local-dir: ./                    # ✅ RAIZ! (onde estão functions.php, index.php, etc.)
           server-dir: ./wp-content/themes/zentheme/
-          dangerous-clean-slate: false  # ⚡ RÁPIDO! functions.php, etc não mudam muito
+          dangerous-clean-slate: false
           exclude: |
             **/.git*
+            **/.git*/**
             **/node_modules/**
             **/dist/**
+            **/public/**                   # ✅ EXCLUI /public/ (já foi enviado no STEP 1!)
+            **/src/**                      # ✅ EXCLUI /src/ (código React, não precisa!)
+            **/.github/**                  # ✅ EXCLUI workflows
