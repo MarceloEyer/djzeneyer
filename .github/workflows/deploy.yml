@@ -1,114 +1,130 @@
-name: 🚀 Build & Deploy to Hostinger
+name: 🚀 Production Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
+env:
+  NODE_VERSION: '20'
+  SSH_HOST: '147.79.84.222'
+  SSH_PORT: '65002'
+  SSH_USER: 'u790739895'
+
 jobs:
   build:
-    name: 📦 Build do Projeto
+    name: 🏗️ Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
     steps:
-      - name: 📂 Checkout do Repositório
+      - name: ⚡ Checkout
         uses: actions/checkout@v4
 
-      - name: 🟢 Configurar Node.js
+      - name: 🔍 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Atualizado para versão mais recente e estável
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📥 Instalar Dependências
-        run: npm ci
+      - name: 📦 Install Dependencies
+        run: npm ci --prefer-offline --no-audit
 
-      - name: 🏗️ Compilar o Projeto (Build)
+      - name: 🏗️ Build Production
         run: npm run build
         env:
+          NODE_ENV: production
           VITE_WP_SITE_URL: https://djzeneyer.com
           VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - name: 📤 Upload do Artefato (pasta /dist)
+      - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist-folder
-          path: ./dist
-          retention-days: 1
+          name: production-build
+          path: dist/
+          retention-days: 7
+          compression-level: 9
 
   deploy:
-    name: 🚚 Deploy para Hostinger
-    runs-on: ubuntu-latest
+    name: 🚀 Deploy
     needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://djzeneyer.com
+    
     steps:
-      - name: 📂 Checkout do Repositório
+      - name: ⚡ Checkout
         uses: actions/checkout@v4
 
-      - name: 📥 Download do Artefato (pasta /dist)
+      - name: 📥 Download Build
         uses: actions/download-artifact@v4
         with:
-          name: dist-folder
-          path: ./dist
+          name: production-build
+          path: dist/
 
-      - name: 🔑 Configurar SSH Agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: 🔑 Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: 📡 Deploy do App React (LIMPA TUDO!)
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ./dist/*
-          target: ./wp-content/themes/zentheme/dist/
-          rm: true  # Remove arquivos existentes no target antes de copiar (equivalente a clean-slate)
-          strip_components: 2  # Ajusta para copiar conteúdo de ./dist/ diretamente
+      - name: ⚛️ Deploy React App (Clean Slate)
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            ./dist/ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./wp-content/themes/zentheme/dist/
 
-      - name: ⚡ Deploy do Tema WordPress (SYNC INTELIGENTE!)
-        uses: burnett01/rsync-deployments@7.0.0
-        with:
-          switches: -avzr --delete  # Sync com delete de arquivos removidos no local
-          path: ./
-          remote_path: ./wp-content/themes/zentheme/
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USERNAME }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          exclude: |
-            .git*
-            .git*/**
-            node_modules/**
-            dist/**
-            public/**
-            src/**
-            .github/**
-            package.json
-            package-lock.json
-            tsconfig*.json
-            vite.config.ts
-            eslint.config.js
-            postcss.config.js
-            tailwind.config.js
+      - name: 🎨 Deploy Theme Files (Smart Sync)
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='public' \
+            --exclude='src' \
+            --exclude='.github' \
+            --exclude='package*.json' \
+            --exclude='tsconfig*.json' \
+            --exclude='vite.config.*' \
+            --exclude='eslint.config.*' \
+            --exclude='postcss.config.*' \
+            --exclude='tailwind.config.*' \
+            --exclude='*.md' \
+            ./ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./wp-content/themes/zentheme/
 
-      - name: 🎨 Deploy dos Arquivos Públicos para Raiz (SYNC SEGURO!)
-        uses: burnett01/rsync-deployments@7.0.0
-        with:
-          switches: -avzr --no-del  # Sync sem delete para evitar remoção acidental
-          path: ./dist/
-          remote_path: ./
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USERNAME }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          exclude: |
-            .git*
-            .git*/**
-            node_modules/**
-            assets/**
-            index.html
-            react-sitemap.xml
+      - name: 🌐 Deploy Public Assets
+        run: |
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            --exclude='assets' \
+            --exclude='index.html' \
+            --exclude='react-sitemap.xml' \
+            ./dist/ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: ✅ Summary
+        run: |
+          echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
+          echo "📦 **Commit:** \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
+          echo "👤 **By:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
