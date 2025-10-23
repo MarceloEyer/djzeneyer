@@ -1,4 +1,4 @@
-// src/pages/HomePage.tsx
+// src/pages/HomePage.tsx - VERSÃO SEM MUSIC PLAYER
 
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
-import { useMusicPlayer } from '../contexts/MusicPlayerContext';
 
 // --- Subcomponente Reutilizável ---
 const FeatureCard: React.FC<{ 
@@ -25,7 +24,6 @@ const FeatureCard: React.FC<{
 );
 
 const HomePage: React.FC = () => {
-  const { playTrack, queue } = useMusicPlayer();
   const { t } = useTranslation();
 
   // --- Array de Dados para os Cards ---
@@ -51,9 +49,8 @@ const HomePage: React.FC = () => {
   ];
 
   const handlePlayFeatured = () => {
-    if (queue && queue.length > 0) {
-      playTrack(queue[0]);
-    }
+    console.log('Music player feature coming soon!');
+    // Placeholder - será implementado depois
   };
 
   const containerVariants = {
@@ -336,8 +333,9 @@ const HomePage: React.FC = () => {
             <div className="mt-10 flex flex-wrap gap-4 justify-center">
               <button 
                 onClick={handlePlayFeatured} 
-                className="btn btn-primary btn-lg flex items-center gap-2" 
-                disabled={!queue || queue.length === 0}
+                className="btn btn-primary btn-lg flex items-center gap-2 opacity-50 cursor-not-allowed"
+                disabled={true}
+                title="Coming soon!"
               >
                 <PlayCircle size={22} />
                 <span>{t('play_featured_mix')}</span>
