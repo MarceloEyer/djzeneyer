@@ -1,11 +1,12 @@
-// src/layouts/MainLayout.tsx - VERSÃO CORRIGIDA
+// src/layouts/MainLayout.tsx - VERSÃO FINAL CORRIGIDA
 
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import AuthModal from '../components/auth/AuthModal'; // <-- GARANTE A IMPORTAÇÃO PADRÃO
+import AuthModal from '../components/auth/AuthModal';
+import MusicPlayer from '../components/player/MusicPlayer';
 import { siteConfig } from '../config/siteConfig';
 
 const MainLayout: React.FC = () => {
@@ -17,22 +18,37 @@ const MainLayout: React.FC = () => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
+  
   const closeModal = () => setIsAuthModalOpen(false);
+  
   const toggleAuthMode = () => setAuthMode(prev => (prev === 'login' ? 'register' : 'login'));
 
-  // ... (o resto do seu código JSX e Helmet continua o mesmo)
   const canonicalUrl = `${siteConfig.siteUrl}${location.pathname}`.replace(/\/$/, '');
   const title = siteConfig.defaultTitle;
   const description = siteConfig.defaultDescription;
+
   return (
     <>
-      <Helmet>{/* ... */}</Helmet>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+      </Helmet>
+      
       <div className="flex flex-col min-h-screen bg-background text-white">
         <Navbar onLoginClick={() => openModal('login')} />
         <main className="flex-grow pt-20">
           <Outlet />
         </main>
         <Footer />
+        <MusicPlayer />
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={closeModal}
