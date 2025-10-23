@@ -40,6 +40,7 @@ jobs:
         with:
           name: dist-folder
           path: ./dist
+          retention-days: 1
 
   # --- ETAPA 2: DEPLOY ---
   deploy:
@@ -47,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: 📂 Checkout do Repositório
+      - name: 📂 Checkout do Repositório (para pegar arquivos do tema)
         uses: actions/checkout@v4
 
       - name: 📥 Download do Artefato (pasta /dist)
@@ -56,7 +57,7 @@ jobs:
           name: dist-folder
           path: ./dist
 
-      # ✅ STEP 1: Deploy dos Arquivos Públicos para RAIZ (favicons, robots.txt, sitemap.xml)
+      # ✅ STEP 1: Deploy dos Arquivos Públicos (favicons, robots.txt) para RAIZ
       - name: 🎨 Deploy dos Arquivos Públicos para Raiz
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -68,9 +69,12 @@ jobs:
           server-dir: ./
           dangerous-clean-slate: false
           exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
             **/assets/**
-            **/index.html
-            **/react-sitemap.xml
+            index.html
+            react-sitemap.xml
 
       # ✅ STEP 2: Deploy do App React (pasta /dist dentro do tema)
       - name: 📡 Deploy do App React
@@ -85,20 +89,27 @@ jobs:
           dangerous-clean-slate: true
 
       # ✅ STEP 3: Deploy dos Arquivos do Tema WordPress
-      - name: 📡 Deploy dos Arquivos do Tema
+      - name: 📡 Deploy do functions.php e arquivos do tema
+        run: |
+          # Cria pasta temporária com arquivos do tema
+          mkdir -p ./theme-files
+          cp functions.php ./theme-files/
+          cp index.php ./theme-files/
+          cp style.css ./theme-files/
+          
+          # Copia outros arquivos se existirem
+          [ -f header.php ] && cp header.php ./theme-files/
+          [ -f footer.php ] && cp footer.php ./theme-files/
+          [ -f woocommerce.php ] && cp woocommerce.php ./theme-files/
+          [ -f page-react-app.php ] && cp page-react-app.php ./theme-files/
+
+      - name: 📡 Upload dos Arquivos do Tema
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
+          local-dir: ./theme-files/
           server-dir: ./wp-content/themes/zentheme/
-          exclude: |
-            **/*
-            !/functions.php
-            !/index.php
-            !/style.css
-            !/header.php
-            !/footer.php
-            !/woocommerce.php
-            !/page-react-app.php
+          dangerous-clean-slate: false
