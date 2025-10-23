@@ -1,7 +1,7 @@
 <?php
 /**
  * DJ Zen Eyer Theme - functions.php (clean)
- * v10.2.0 - Solução definitiva sem hacks perigosos
+ * v10.2.1 - Corrigido: origens CORS sem espaços + segurança reforçada
  */
 
 if (!defined('ABSPATH')) {
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.2.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '10.2.1';
     define('DJZ_VERSION', $version);
 }
 
@@ -126,7 +126,7 @@ add_action('send_headers', function() {
 
 add_action('rest_api_init', function() {
     add_filter('rest_pre_serve_request', function($served) {
-        $allowed_origins = djz_allowed_origins();
+        $allowed_origins = array_map('trim', djz_allowed_origins());
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? trim($_SERVER['HTTP_ORIGIN']) : '';
         if (in_array($origin, $allowed_origins, true)) {
             header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
@@ -197,7 +197,7 @@ function djz_get_multilang_menu_handler($request) {
         $formatted[] = [ 
             'ID' => (int)$item->ID, 
             'title' => $item->title ?? '', 
-            'url' => wp_make_link_relative($item->url ?? '#'), 
+            'url' => esc_url_raw($item->url ?? '#'), 
             'target' => !empty($item->target) ? $item->target : '_self' 
         ];
     }
