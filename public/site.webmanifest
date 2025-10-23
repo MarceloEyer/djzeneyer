@@ -21,32 +21,22 @@
     {
       "src": "/favicon-96x96.png",
       "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/favicon-120x120.png",
-      "sizes": "120x120",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     },
     {
-      "src": "/web-app-manifest-512x512.png",
+      "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     }
   ],
   "screenshots": [
@@ -58,7 +48,7 @@
     },
     {
       "src": "/screenshots/mobile-1.jpg",
-      "sizes": "750x1334",
+      "sizes": "375x667",
       "type": "image/jpeg",
       "form_factor": "narrow"
     }
@@ -69,41 +59,23 @@
       "short_name": "Events",
       "description": "Upcoming DJ events",
       "url": "/events",
-      "icons": [
-        {
-          "src": "/favicon-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }]
     },
     {
       "name": "Shop",
       "short_name": "Shop",
       "description": "Buy tickets & merch",
       "url": "/shop",
-      "icons": [
-        {
-          "src": "/favicon-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }]
     },
     {
       "name": "Contact",
       "short_name": "Contact",
       "description": "Get in touch",
       "url": "/contact",
-      "icons": [
-        {
-          "src": "/favicon-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }]
     }
   ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "related_applications": []
 }
