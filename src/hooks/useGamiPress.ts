@@ -1,3 +1,4 @@
+// src/hooks/useGamiPress.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/UserContext';
 
@@ -8,6 +9,7 @@ export interface Achievement {
   image: string;
   earned: boolean;
   earnedDate: string | null;
+  points?: number;
 }
 
 export interface GamiPressData {
@@ -20,26 +22,32 @@ export interface GamiPressData {
   error: string | null;
 }
 
+const defaultState: GamiPressData = {
+  points: 0,
+  level: 1,
+  rank: 'Zen Novice',
+  rankId: 0,
+  achievements: [],
+  loading: false,
+  error: null,
+};
+
 export const useGamiPress = (): GamiPressData => {
   const { user, isAuthenticated } = useAuth();
   const [data, setData] = useState<GamiPressData>({
-    points: 0,
-    level: 1,
-    rank: 'Newbie',
-    rankId: 0,
-    achievements: [],
+    ...defaultState,
     loading: true,
-    error: null,
   });
 
   useEffect(() => {
+    // Reset para estado não autenticado
     if (!isAuthenticated || !user?.id) {
-      console.log('[useGamiPress] Usuário não autenticado');
-      setData(prev => ({
-        ...prev,
+      console.log('[useGamiPress] ⚠️ Usuário não autenticado');
+      setData({
+        ...defaultState,
         loading: false,
-        error: 'Usuário não autenticado'
-      }));
+        error: 'Usuário não autenticado',
+      });
       return;
     }
 
@@ -54,6 +62,8 @@ export const useGamiPress = (): GamiPressData => {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            // Adicionar JWT token se disponível
+            ...(user.token && { 'Authorization': `Bearer ${user.token}` }),
           },
         });
 
@@ -75,7 +85,7 @@ export const useGamiPress = (): GamiPressData => {
         setData({
           points: result.points || 0,
           level: result.level || 1,
-          rank: result.rank || 'Newbie',
+          rank: result.rank || 'Zen Novice',
           rankId: result.rankId || 0,
           achievements: result.achievements || [],
           loading: false,
@@ -86,24 +96,21 @@ export const useGamiPress = (): GamiPressData => {
         console.error('[useGamiPress] ❌ Erro ao buscar dados:', error);
         
         setData({
-          points: 0,
-          level: 1,
-          rank: 'Newbie',
-          rankId: 0,
-          achievements: [],
+          ...defaultState,
           loading: false,
           error: error instanceof Error ? error.message : 'Erro desconhecido',
         });
       }
     };
 
+    // Buscar dados imediatamente
     fetchGamiPressData();
 
-    // Atualizar a cada 30 segundos
+    // Atualizar a cada 30 segundos (opcional)
     const interval = setInterval(fetchGamiPressData, 30000);
 
     return () => clearInterval(interval);
-  }, [user?.id, isAuthenticated]);
+  }, [user?.id, user?.token, isAuthenticated]);
 
   return data;
 };
