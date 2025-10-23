@@ -19,7 +19,7 @@ jobs:
       - name: 🟢 Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'  # Atualizado para versão mais recente e estável
           cache: 'npm'
 
       - name: 📥 Instalar Dependências
@@ -55,60 +55,60 @@ jobs:
           name: dist-folder
           path: ./dist
 
-      - name: 🎨 Deploy dos Arquivos Públicos para Raiz
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: 🔑 Configurar SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: ./dist/
-          server-dir: ./
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/assets/**
-            index.html
-            react-sitemap.xml
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: 📡 Deploy do App React (LIMPA TUDO!)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: ./dist/
-          server-dir: ./wp-content/themes/zentheme/dist/
-          dangerous-clean-slate: true
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ./dist/*
+          target: ./wp-content/themes/zentheme/dist/
+          rm: true  # Remove arquivos existentes no target antes de copiar (equivalente a clean-slate)
+          strip_components: 2  # Ajusta para copiar conteúdo de ./dist/ diretamente
 
       - name: ⚡ Deploy do Tema WordPress (SYNC INTELIGENTE!)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: burnett01/rsync-deployments@7.0.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: ./
-          server-dir: ./wp-content/themes/zentheme/
-          state-name: .ftp-deploy-theme-sync-state.json  # ⚡ SYNC state file
-          dry-run: false
-          dangerous-clean-slate: false                   # ⚡ NÃO APAGA TUDO!
+          switches: -avzr --delete  # Sync com delete de arquivos removidos no local
+          path: ./
+          remote_path: ./wp-content/themes/zentheme/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
           exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/dist/**
-            **/public/**
-            **/src/**
-            **/.github/**
-            **/.ftp-deploy-*
-            **/package.json
-            **/package-lock.json
-            **/tsconfig*.json
-            **/vite.config.ts
-            **/eslint.config.js
-            **/postcss.config.js
-            **/tailwind.config.js
+            .git*
+            .git*/**
+            node_modules/**
+            dist/**
+            public/**
+            src/**
+            .github/**
+            package.json
+            package-lock.json
+            tsconfig*.json
+            vite.config.ts
+            eslint.config.js
+            postcss.config.js
+            tailwind.config.js
+
+      - name: 🎨 Deploy dos Arquivos Públicos para Raiz (SYNC SEGURO!)
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzr --no-del  # Sync sem delete para evitar remoção acidental
+          path: ./dist/
+          remote_path: ./
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          exclude: |
+            .git*
+            .git*/**
+            node_modules/**
+            assets/**
+            index.html
+            react-sitemap.xml
