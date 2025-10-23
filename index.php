@@ -15,15 +15,14 @@ if (!defined('ABSPATH')) exit;
 
   <?php 
   $theme_uri = get_template_directory_uri();
-  $dist_path = get_template_directory() . '/dist/assets/';
-  $dist_uri = $theme_uri . '/dist/assets/';
+  $dist_path = get_template_directory() . '/dist/';
   
-  // Find hashed files
-  $js_files = glob($dist_path . 'index-*.js');
-  $css_files = glob($dist_path . 'index-*.css');
+  // Lê o index.html gerado pelo Vite
+  $index_html = file_get_contents($dist_path . 'index.html');
   
-  $main_js = !empty($js_files) ? $dist_uri . basename($js_files[0]) : '';
-  $main_css = !empty($css_files) ? $dist_uri . basename($css_files[0]) : '';
+  // Extrai os links de CSS e JS
+  preg_match_all('/<link[^>]*href="([^"]+)"[^>]*>/', $index_html, $css_matches);
+  preg_match_all('/<script[^>]*src="([^"]+)"[^>]*>/', $index_html, $js_matches);
   ?>
 
   <!-- Favicons -->
@@ -72,10 +71,14 @@ if (!defined('ABSPATH')) exit;
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
-  <!-- CSS -->
-  <?php if ($main_css): ?>
-    <link rel="stylesheet" href="<?php echo esc_url($main_css); ?>" />
-  <?php endif; ?>
+  <!-- CSS gerado pelo Vite -->
+  <?php
+  foreach ($css_matches[1] as $css_file) {
+    if (strpos($css_file, '.css') !== false) {
+      echo '<link rel="stylesheet" crossorigin href="' . $theme_uri . '/dist' . $css_file . '" />' . "\n";
+    }
+  }
+  ?>
 
   <?php wp_head(); ?>
 </head>
@@ -84,10 +87,12 @@ if (!defined('ABSPATH')) exit;
   
   <div id="root"></div>
   
-  <!-- React App -->
-  <?php if ($main_js): ?>
-    <script type="module" src="<?php echo esc_url($main_js); ?>"></script>
-  <?php endif; ?>
+  <!-- JS gerado pelo Vite -->
+  <?php
+  foreach ($js_matches[1] as $js_file) {
+    echo '<script type="module" crossorigin src="' . $theme_uri . '/dist' . $js_file . '"></script>' . "\n";
+  }
+  ?>
   
   <?php wp_footer(); ?>
 </body>
