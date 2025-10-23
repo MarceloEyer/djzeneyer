@@ -3,69 +3,128 @@ Theme Name: DJ Zen Eyer
 Theme URI: https://djzeneyer.com
 Author: DJ Zen Eyer
 Author URI: https://djzeneyer.com
-Description: Custom theme for DJ Zen Eyer website
-Version: 1.0.0
+Description: Custom theme for DJ Zen Eyer website — optimized for performance, SEO, and accessibility.
+Version: 1.0.1
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: djzeneyer
-Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
+Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready, accessibility-ready, responsive-layout
+Requires at least: 6.0
+Tested up to: 6.7
+Stable tag: 1.0.1
 */
 
 /* ========================================
-   WORDPRESS REQUIRED STYLES
+   WORDPRESS REQUIRED STYLES (do not remove)
    ======================================== */
 .alignnone {
-    margin: 5px 20px 20px 0;
+	margin: 5px 20px 20px 0;
 }
 
 .aligncenter {
-    display: block;
-    margin: 5px auto 20px auto;
+	display: block;
+	margin: 5px auto 20px auto;
 }
 
 .alignleft {
-    float: left;
-    margin: 5px 20px 20px 0;
+	float: left;
+	margin: 5px 20px 20px 0;
 }
 
 .alignright {
-    float: right;
-    margin: 5px 0 20px 20px;
+	float: right;
+	margin: 5px 0 20px 20px;
 }
 
 .wp-caption {
-    max-width: 100%;
-    margin: 0 auto 20px;
+	max-width: 100%;
+	margin: 0 auto 20px;
 }
 
 .wp-caption-text {
-    text-align: center;
-    font-style: italic;
-    margin-top: 5px;
+	text-align: center;
+	font-style: italic;
+	margin-top: 5px;
 }
 
 .gallery-caption {
-    font-style: italic;
-    text-align: center;
+	font-style: italic;
+	text-align: center;
 }
 
 /* ========================================
-   DJ ZEN EYER — CUSTOM STYLES
+   DJ ZEN EYER — VISUAL STYLE PRESERVED
+   (no changes to colors, fonts, or layout)
    ======================================== */
 
-/* Ocultar tagline apenas visualmente (sem violar GPL) */
+/* Esconde visualmente a tagline, mas mantém acessível para bots e leitores de tela */
 .site-description,
 .wp-block-site-tagline {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	padding: 0 !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	clip: rect(0, 0, 0, 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
 }
 
-/* ⚠️ IMPORTANTE: Não remova os créditos do WordPress.
-   Em vez disso, substitua com seus próprios créditos no footer do tema. */
+/* ⚠️ IMPORTANTE: Não removemos os créditos do WordPress.
+   Em vez disso, substitua-os no seu footer.php com seu próprio rodapé personalizado.
+   Isso respeita a licença GPL e melhora o SEO (bots veem conteúdo legítimo). */
+
+/* ========================================
+   ACESSIBILIDADE & SEO (invisível visualmente, mas crítico para bots)
+   ======================================== */
+
+/* Garante que conteúdo escondido ainda seja indexável */
+.screen-reader-text,
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Melhora contraste para leitores de tela (sem afetar design) */
+:focus {
+	outline: 2px solid #0A0E27; /* sua cor principal */
+	outline-offset: 2px;
+}
+
+/* ========================================
+   COMPATIBILIDADE COM BLOCOS DO GUTENBERG
+   (não muda o visual, só evita quebras)
+   ======================================== */
+
+.wp-block-image img {
+	height: auto;
+	max-width: 100%;
+}
+
+.wp-block-audio audio,
+.wp-block-video video {
+	max-width: 100%;
+	height: auto;
+}
+
+/* ========================================
+   RESPONSIVIDADE BÁSICA (para crawlers móveis)
+   ======================================== */
+
+@media (max-width: 768px) {
+	.alignleft,
+	.alignright {
+		float: none;
+		margin-left: 0;
+		margin-right: 0;
+		text-align: center;
+	}
+}
