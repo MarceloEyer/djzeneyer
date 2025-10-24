@@ -1,5 +1,6 @@
 <?php
 /**
+ * OIe
  * Footer do Tema DJ Zen Eyer
  * Inclui scripts, fechamento de body e compatibilidade com WordPress
  */
