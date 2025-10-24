@@ -1,6 +1,6 @@
 <?php
 /**
- * DJ Zen Eyer Theme - functions.php
+ * DJ Zen Eyer Theme 2 - functions.php
  * v11.0.0 — Professional-grade, AI/SEO optimized, secure
  * Inspired by WordPress VIP, Netflix, and modern DevOps practices.
  */
