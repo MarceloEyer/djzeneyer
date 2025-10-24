@@ -1,13 +1,16 @@
 <?php
 /**
- * O rodapé (footer.php) para o tema headless.
+ * Footer do Tema DJ Zen Eyer
+ * Inclui scripts, fechamento de body e compatibilidade com WordPress
  */
 ?>
-    </div> <?php 
-        // wp_footer() é essencial.
-        // É aqui que o WordPress e o nosso functions.php
-        // irão injetar o <script> principal do React (index.js).
-        wp_footer(); 
-    ?>
+
+<!-- Scripts do WordPress (obrigatório para plugins funcionarem) -->
+<?php wp_footer(); ?>
+
+<!-- Scripts do seu app React (se não estiver enfileirado via functions.php) -->
+<?php if (is_file(get_template_directory() . '/dist/assets/index.js')): ?>
+  <script type="module" src="<?php echo get_template_directory_uri(); ?>/dist/assets/index.js"></script>
+<?php endif; ?>
 </body>
 </html>
