@@ -1,15 +1,15 @@
-// src/App.tsx - VERSÃO OTIMIZADA COM LAZY LOADING
-
+// src/App.tsx
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
-
-// ✅ Componentes que SEMPRE precisam estar carregados
 import MainLayout from './layouts/MainLayout';
 import LanguageWrapper from './components/common/LanguageWrapper';
+import { UserProvider } from './contexts/UserContext';
+import { CartProvider } from './contexts/CartContext';
+import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
+import './i18n';
 
-// ✅ Loading component
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
     <div className="text-center">
@@ -19,7 +19,7 @@ const PageLoader = () => (
   </div>
 );
 
-// ✅ LAZY LOAD - Páginas carregam só quando necessário
+// Lazy imports
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const EventsPage = lazy(() => import('./pages/EventsPage'));
@@ -32,12 +32,6 @@ const MyAccountPage = lazy(() => import('./pages/MyAccountPage'));
 const FAQPage = lazy(() => import('./pages/FAQPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
-// ✅ Contexts que precisam ficar no topo
-import { UserProvider } from './contexts/UserContext';
-import { CartProvider } from './contexts/CartContext';
-import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
-import './i18n';
-
 function App() {
   return (
     <HelmetProvider>
@@ -48,44 +42,34 @@ function App() {
               <LanguageWrapper>
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    {/* English routes (root) */}
+                    {/* English (default) */}
                     <Route path="/" element={<MainLayout />}>
                       <Route index element={<HomePage />} />
                       <Route path="about" element={<AboutPage />} />
                       <Route path="events" element={<EventsPage />} />
-                      <Route path="events/:id" element={<EventsPage />} />
                       <Route path="music" element={<MusicPage />} />
-                      <Route path="music/:slug" element={<MusicPage />} />
                       <Route path="tribe" element={<ZenTribePage />} />
-                      <Route path="zen-tribe" element={<ZenTribePage />} />
-                      <Route path="zentribe" element={<ZenTribePage />} />
                       <Route path="work-with-me" element={<PressKitPage />} />
-                      <Route path="shop" element={<ShopPage />} />
                       <Route path="shop/*" element={<ShopPage />} />
                       <Route path="dashboard" element={<DashboardPage />} />
                       <Route path="my-account" element={<MyAccountPage />} />
                       <Route path="faq" element={<FAQPage />} />
                     </Route>
 
-                    {/* Portuguese routes under /pt */}
+                    {/* Portuguese */}
                     <Route path="/pt" element={<MainLayout />}>
                       <Route index element={<HomePage />} />
                       <Route path="sobre" element={<AboutPage />} />
                       <Route path="eventos" element={<EventsPage />} />
-                      <Route path="eventos/:id" element={<EventsPage />} />
                       <Route path="musica" element={<MusicPage />} />
-                      <Route path="musica/:slug" element={<MusicPage />} />
                       <Route path="tribo" element={<ZenTribePage />} />
-                      <Route path="tribo-zen" element={<ZenTribePage />} />
                       <Route path="contrate" element={<PressKitPage />} />
-                      <Route path="loja" element={<ShopPage />} />
                       <Route path="loja/*" element={<ShopPage />} />
                       <Route path="painel" element={<DashboardPage />} />
                       <Route path="minha-conta" element={<MyAccountPage />} />
                       <Route path="faq" element={<FAQPage />} />
                     </Route>
 
-                    {/* Fallback 404 */}
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </Suspense>
