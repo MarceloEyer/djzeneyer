@@ -49,6 +49,8 @@ if (file_exists($manifest_path)) {
   <link rel="stylesheet" crossorigin href="<?php echo $theme_uri . $main_css; ?>" />
   <?php endif; ?>
 
+  <link rel="manifest" href="/manifest.webmanifest">
+
   <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
