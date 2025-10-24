@@ -1,7 +1,7 @@
-// src/contexts/UserContext.tsx - VERSÃO CORRIGIDA (SEM SDK)
+// src/contexts/UserContext.tsx
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode'; // CORREÇÃO: A importação padrão foi removida
 
 // --- Interfaces ---
 interface DecodedJwt { 
@@ -24,7 +24,7 @@ export interface WordPressUser {
 
 interface UserContextType {
   user: WordPressUser | null;
-  isAuthenticated: boolean; // ✅ ADICIONADO
+  isAuthenticated: boolean;
   loading: boolean;
   loadingInitial: boolean;
   error: string | null;
@@ -33,19 +33,33 @@ interface UserContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   loginWithGoogle: () => void;
   clearError: () => void;
+  // Adicionando a função que estava faltando na interface
+  setUserFromToken: (token: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const safeWindow = typeof window !== 'undefined';
 
+const getWpConfig = () => {
+  if (safeWindow && window.wpData?.restUrl) {
+    return window.wpData;
+  }
+  // Fallback para desenvolvimento
+  return {
+    siteUrl: import.meta.env.VITE_WP_SITE_URL || 'https://djzeneyer.com',
+    restUrl: import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json/',
+    nonce: 'dev-nonce'
+  };
+};
+
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<WordPressUser | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [config] = useState(getWpConfig());
 
-  // ✅ Calcular isAuthenticated
   const isAuthenticated = user !== null && user.isLoggedIn;
 
   const logout = () => {
@@ -62,6 +76,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366F1&color=fff&bold=true`;
   };
 
+  // Renomeada para fetchUserDetails mas faz o papel de setUserFromToken
   const fetchUserDetails = async (token: string) => {
     try {
       console.log('[UserContext] 🔍 Decodificando JWT...');
@@ -132,7 +147,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     
     try {
-      const response = await fetch(`${window.location.origin}/wp-json/simple-jwt-login/v1/auth`, {
+      const response = await fetch(`${config.restUrl}simple-jwt-login/v1/auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -162,7 +177,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     
     try {
-      const response = await fetch(`${window.location.origin}/wp-json/simple-jwt-login/v1/users`, {
+      const response = await fetch(`${config.restUrl}simple-jwt-login/v1/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -173,6 +188,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       if (response.status === 400) {
+        // Assume que o erro 400 é "usuário já existe" e tenta logar
         await login(email, password);
         return;
       }
@@ -200,8 +216,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const loginWithGoogle = () => {
     console.log('[UserContext] 🔵 Iniciando login com Google...');
-    const GOOGLE_CLIENT_ID = '960427404700-2a7p5kcgj3dgiabora5hn7rafdc73n7v.apps.googleusercontent.com';
-    const REDIRECT_URI = `${window.location.origin}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
+    const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!GOOGLE_CLIENT_ID) {
+        const msg = "Client ID do Google não configurado.";
+        console.error(`[UserContext] ❌ ${msg}`);
+        setError(msg);
+        return;
+    }
+    
+    const REDIRECT_URI = `${config.siteUrl}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
+    const finalRedirectUrl = window.location.origin;
+    const state = btoa(`redirect_uri=${finalRedirectUrl}`);
     
     const params = new URLSearchParams({
       client_id: GOOGLE_CLIENT_ID,
@@ -209,7 +234,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       response_type: 'code',
       scope: 'openid profile email',
       access_type: 'offline',
-      prompt: 'select_account'
+      prompt: 'select_account',
+      state: state
     });
     
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
@@ -220,7 +246,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const value: UserContextType = {
     user,
-    isAuthenticated, // ✅ ADICIONADO
+    isAuthenticated,
     loading,
     loadingInitial,
     error,
@@ -228,13 +254,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     logout,
     register,
     loginWithGoogle,
-    clearError
+    clearError,
+    setUserFromToken: fetchUserDetails // Corrigido
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
-// ✅ EXPORTAR useUser (mantém compatibilidade)
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
@@ -243,7 +269,7 @@ export const useUser = () => {
   return context;
 };
 
-// ✅ EXPORTAR useAuth (para compatibilidade com useGamiPress)
+// Exportar useAuth por compatibilidade
 export const useAuth = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
@@ -252,5 +278,4 @@ export const useAuth = () => {
   return context;
 };
 
-// ✅ EXPORTAR contexto também
 export { UserContext };
