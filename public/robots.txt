@@ -2,9 +2,6 @@
 # Optimized for Google, Bing, Yandex, AI crawlers & SEO
 
 User-agent: *
-Allow: /
-
-# Block sensitive WordPress directories
 Disallow: /wp-admin/
 Disallow: /wp-includes/
 Disallow: /wp-content/plugins/
@@ -17,11 +14,9 @@ Disallow: /wp-login.php
 Disallow: /wp-signup.php
 Disallow: /trackback/
 Disallow: /comments/feed/
-
-# Allow media (required for SEO & social sharing)
 Allow: /wp-content/uploads/
 
-# Explicitly allow major AI & search bots
+# Explicitly allow all major AI & search bots
 User-agent: GPTBot
 Allow: /
 
@@ -64,9 +59,8 @@ Allow: /
 User-agent: Slurp
 Allow: /
 
-# Crawl delay (1 second to reduce server load)
+# Crawl delay (1 second)
 Crawl-delay: 1
 
-# Sitemaps
+# Sitemap index (canonical source)
 Sitemap: https://djzeneyer.com/sitemap_index.xml
-Sitemap: https://djzeneyer.com/react-sitemap.xml
