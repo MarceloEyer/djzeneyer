@@ -1,21 +1,27 @@
-# Configurações do Site DJ Zen Eyer
+# Configurações do Quic.cloud para DJ Zen Eyer
 
-## 🌍 Cloudflare
-- **Redirecionamento HTTPS**: Ativo (Page Rule).
-- **Redirecionamento WWW**: Ativo (Page Rule).
-- **Proteção contra Bots**: Ativa.
-- **Cache de Edge**: Desativado (usamos Quic.cloud para cache).
+## 🌍 CDN
+- **Status**: Ativo.
+- **Integração com Cloudflare**: Ativa.
+- **PoPs Ativos**: América do Norte, Europa, Ásia.
+- **PoP de São Paulo**: Desativado (ativar quando o tráfego do Brasil aumentar).
 
-## ⚡ Quic.cloud
-- **Cache de Páginas**: Ativo (TTL: 1 dia).
-- **Otimização de Imagens**: Ativa (lossless).
-- **Compressão Brotli**: Ativa.
+## 🖼️ Image Optimization
+- **Status**: Ativo.
+- **Modo**: Lossless.
+- **WebP Conversion**: Ativo.
 
-## 📄 .htaccess
-- **CORS**: Configurado para frontend React.
-- **Bloqueio de PHP em Uploads**: Ativo.
-- **Headers de Segurança**: Configurados.
+## 📄 Page Optimization
+- **CSS Optimization**: Ativo.
+- **JS Optimization**: Ativo.
+- **Exclusões**: `/wp-admin/*`, `/cart/*`, `/my-account/*`.
 
-## 🔧 LiteSpeed Cache
-- **Cache de Objetos**: Ativo.
-- **Otimização de CSS/JS**: Ativa.
+## ⚙️ Settings
+- **Bypass CDN**: Desativado.
+- **Under Attack Mode**: Desativado.
+- **Map Both www/non-www**: Desativado.
+- **Auto Redirect www/non-www**: Desativado.
+
+## 📊 Preparação para Aumento de Tráfego
+- **Monitorar uso de banda**: Se ultrapassar 100 MB/dia, atualizar para o plano Standard.
+- **Ativar PoP de São Paulo**: Quando o tráfego do Brasil aumentar.
