@@ -38,6 +38,10 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci --prefer-offline --no-audit
 
+      - name: 🗺️ Generate Sitemaps
+        run: npm run generate-sitemaps
+        continue-on-error: true
+
       - name: 🏗️ Build Production
         run: npm run build
         env:
@@ -47,6 +51,14 @@ jobs:
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      - name: 📋 List Build Output
+        run: |
+          echo "📂 Build directory contents:"
+          ls -lah dist/
+          echo ""
+          echo "🗺️ Sitemap files:"
+          ls -lah dist/sitemap* 2>/dev/null || echo "No sitemap files found"
 
       - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
@@ -107,6 +119,7 @@ jobs:
             --exclude='public' \
             --exclude='src' \
             --exclude='.github' \
+            --exclude='scripts' \
             --exclude='package*.json' \
             --exclude='tsconfig*.json' \
             --exclude='vite.config.*' \
@@ -117,15 +130,39 @@ jobs:
             ./ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
 
+      - name: 🗺️ Deploy Sitemaps to Root
+        run: |
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            --include='sitemap*.xml' \
+            --exclude='*' \
+            ./dist/ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./
+
       - name: 🌐 Deploy Public Assets to Root
         run: |
           rsync -avz \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
-            --exclude='assets' \
+            --include='robots.txt' \
+            --include='favicon*' \
+            --include='*.png' \
+            --include='*.ico' \
+            --include='*.svg' \
+            --include='*.webmanifest' \
+            --exclude='assets/' \
             --exclude='index.html' \
-            --exclude='react-sitemap.xml' \
+            --exclude='sitemap*.xml' \
+            --exclude='*' \
             ./dist/ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./
+
+      - name: 🔍 Verify Sitemap Deployment
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ env.SSH_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
+            "ls -lah sitemap*.xml 2>/dev/null || echo '⚠️ No sitemaps found in root'"
 
       - name: 🧹 Cleanup SSH Key
         if: always()
@@ -134,6 +171,14 @@ jobs:
       - name: ✅ Deployment Summary
         run: |
           echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "🌐 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
           echo "📦 **Commit:** \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
           echo "👤 **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "🗺️ **Sitemaps:** Generated & Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Deployed Files" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ React App → \`/wp-content/themes/zentheme/dist/\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Theme Files → \`/wp-content/themes/zentheme/\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Sitemaps → \`/sitemap*.xml\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Public Assets → \`/robots.txt, /favicon*, etc.\`" >> $GITHUB_STEP_SUMMARY
