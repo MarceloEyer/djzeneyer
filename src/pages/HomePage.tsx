@@ -1,4 +1,4 @@
-// src/pages/HomePage.tsx - VERSÃO SEM MUSIC PLAYER
+// src/pages/HomePage.tsx - VERSÃO OTIMIZADA SEO + H1
 
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -24,7 +24,8 @@ const FeatureCard: React.FC<{
 );
 
 const HomePage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language;
 
   // --- Array de Dados para os Cards ---
   const features = [
@@ -50,7 +51,6 @@ const HomePage: React.FC = () => {
 
   const handlePlayFeatured = () => {
     console.log('Music player feature coming soon!');
-    // Placeholder - será implementado depois
   };
 
   const containerVariants = {
@@ -81,8 +81,26 @@ const HomePage: React.FC = () => {
       <Helmet>
         <title>{t('home_page_title')}</title>
         <meta name="description" content={t('home_page_meta_desc')} />
+        <meta name="keywords" content="DJ Zen Eyer, Brazilian Zouk, Zouk DJ, Brazilian Zouk DJ, World Champion DJ, Electronic Music, Dance Music, Zouk Music, DJ Brazil, International DJ" />
+        <link rel="canonical" href={`https://djzeneyer.com${currentLang === 'en' ? '' : '/' + currentLang}`} />
         
-        {/* ✅ SCHEMA EXPANDIDO - OTIMIZADO PARA IAs (VERSÃO 2022) */}
+        {/* Open Graph */}
+        <meta property="og:title" content={t('home_page_title')} />
+        <meta property="og:description" content={t('home_page_meta_desc')} />
+        <meta property="og:image" content="https://djzeneyer.com/images/og-image-home.jpg" />
+        <meta property="og:url" content={`https://djzeneyer.com${currentLang === 'en' ? '' : '/' + currentLang}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content={currentLang === 'pt' ? 'pt_BR' : 'en_US'} />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={t('home_page_title')} />
+        <meta name="twitter:description" content={t('home_page_meta_desc')} />
+        <meta name="twitter:image" content="https://djzeneyer.com/images/og-image-home.jpg" />
+        <meta name="twitter:site" content="@djzeneyer" />
+        <meta name="twitter:creator" content="@djzeneyer" />
+        
+        {/* ✅ SCHEMA EXPANDIDO - OTIMIZADO PARA IAs */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -90,15 +108,13 @@ const HomePage: React.FC = () => {
             "name": "DJ Zen Eyer",
             "alternateName": ["Zen Eyer", "DJ Zen", "Zeneyer", "DJ Zen Eyer Brazilian Zouk"],
             
-            // ✅ DESCRIÇÃO ATUALIZADA (2022)
-            "description": "DJ Zen Eyer is a world-renowned Brazilian Zouk DJ and music producer. Winner of the 2022 Brazilian Zouk DJ Championship in both Best Performance and Best Remix categories, he is recognized as one of the top Brazilian Zouk DJs globally. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ, he specializes in bootleg remixes and original productions available on SoundCloud, YouTube, and Mixcloud. He has performed at major international festivals across Europe, USA, and South America. His unique style blends traditional Brazilian Zouk with modern electronic elements, creating immersive dance floor experiences. With over 500,000 streams across platforms and 50,000+ social media followers, DJ Zen Eyer is a leading figure in the global Brazilian Zouk community and international touring artist based in Brazil.",
+            "description": "DJ Zen Eyer is a world-renowned Brazilian Zouk DJ and music producer. Winner of the 2022 Brazilian Zouk DJ Championship in both Best Performance and Best Remix categories, he is recognized as one of the top Brazilian Zouk DJs globally. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ, he specializes in bootleg remixes and original productions available on SoundCloud, YouTube, and Mixcloud. He has performed at major international festivals across Europe, USA, and South America.",
             
             "genre": ["Brazilian Zouk", "Electronic Music", "Dance Music", "Zouk", "Zouk Music"],
             "url": "https://djzeneyer.com",
             "image": "https://djzeneyer.com/images/zen-eyer-profile.jpg",
             "logo": "https://djzeneyer.com/images/zen-eyer-logo.png",
             
-            // ✅ WIKIDATA LINK
             "sameAs": [
               "https://instagram.com/djzeneyer",
               "https://soundcloud.com/djzeneyer",
@@ -112,9 +128,8 @@ const HomePage: React.FC = () => {
               "@type": "Person",
               "name": "Zen Eyer",
               "jobTitle": "DJ and Music Producer",
-              "description": "World Champion Brazilian Zouk DJ (2022). Professional DJ and music producer specializing in Brazilian Zouk with over 10 years of experience. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ. Based in Brazil, performing internationally at major festivals across Europe, USA, and South America.",
+              "description": "World Champion Brazilian Zouk DJ (2022). Professional DJ and music producer specializing in Brazilian Zouk with over 10 years of experience.",
               
-              // ✅ KNOWS ABOUT
               "knowsAbout": [
                 "Brazilian Zouk Music",
                 "DJ Performance",
@@ -125,13 +140,9 @@ const HomePage: React.FC = () => {
                 "International Festivals",
                 "Bootleg Production",
                 "Remix Production",
-                "Brazilian Zouk Dance Culture",
-                "Music Mixing Techniques",
-                "DJ Techniques",
                 "Jack and Jill Competition DJing"
               ],
               
-              // ✅ AWARDS ATUALIZADOS (2022)
               "award": [
                 "World Champion Brazilian Zouk DJ 2022 - Best Performance",
                 "World Champion Brazilian Zouk DJ 2022 - Best Remix",
@@ -153,7 +164,6 @@ const HomePage: React.FC = () => {
               }
             },
             
-            // ✅ EVENTOS
             "event": [
               {
                 "@type": "MusicEvent",
@@ -178,84 +188,39 @@ const HomePage: React.FC = () => {
                     "addressCountry": "Spain"
                   }
                 }
-              },
-              {
-                "@type": "MusicEvent",
-                "name": "International Zouk Festivals",
-                "location": {
-                  "@type": "Place",
-                  "address": {
-                    "@type": "PostalAddress",
-                    "addressCountry": "Various Countries"
-                  }
-                }
               }
             ],
             
-            // ✅ AWARDS ESTRUTURADOS (2022)
-            "award": [
-              {
-                "@type": "Award",
-                "name": "World Champion Brazilian Zouk DJ - Best Performance",
-                "dateAwarded": "2022",
-                "description": "First place in DJ Performance category at the Brazilian Zouk DJ Championship 2022"
-              },
-              {
-                "@type": "Award",
-                "name": "World Champion Brazilian Zouk DJ - Best Remix",
-                "dateAwarded": "2022",
-                "description": "First place in Best Remix category at the Brazilian Zouk DJ Championship 2022"
-              }
-            ],
-            
-            // ✅ KNOWS ABOUT (NÍVEL GRUPO)
-            "knowsAbout": [
-              "Brazilian Zouk Music",
-              "DJ Techniques",
-              "Music Production",
-              "Electronic Music Production",
-              "Zouk Dance Culture",
-              "International Music Festivals",
-              "Bootleg Production",
-              "Remix Creation",
-              "Music for Dance",
-              "Brazilian Music Culture",
-              "Jack and Jill Competition DJing"
-            ],
-            
-            // ✅ CREDENTIALS (COM BRAZILIAN ZOUK COUNCIL!)
             "hasCredential": [
               {
                 "@type": "EducationalOccupationalCredential",
                 "credentialCategory": "professional certification",
                 "name": "Brazilian Zouk Council - Certified Jack and Jill DJ",
-                "description": "Official certification to DJ Jack and Jill competitions. Recognized by the Brazilian Zouk Council as meeting professional standards for official Brazilian Zouk competitive events. Only certified DJs are authorized to DJ official Jack and Jill competitions."
+                "description": "Official certification to DJ Jack and Jill competitions."
               },
               {
                 "@type": "EducationalOccupationalCredential",
                 "credentialCategory": "professional achievement",
                 "name": "World Champion Brazilian Zouk DJ 2022",
-                "description": "Double world champion recognized globally as a top-tier Brazilian Zouk DJ through winning both Best Performance and Best Remix categories at the 2022 Brazilian Zouk DJ Championship"
+                "description": "Double world champion in both Best Performance and Best Remix categories."
               }
             ],
             
-            // ✅ SOCIAL PROOF
             "interactionStatistic": [
               {
                 "@type": "InteractionCounter",
                 "interactionType": "https://schema.org/ListenAction",
                 "userInteractionCount": 500000,
-                "description": "Total streams across all platforms (SoundCloud, YouTube, Mixcloud)"
+                "description": "Total streams across all platforms"
               },
               {
                 "@type": "InteractionCounter",
                 "interactionType": "https://schema.org/FollowAction",
                 "userInteractionCount": 50000,
-                "description": "Total social media followers across all platforms"
+                "description": "Total social media followers"
               }
             ],
             
-            // ✅ AGGREGATE RATING
             "aggregateRating": {
               "@type": "AggregateRating",
               "ratingValue": "5",
@@ -320,11 +285,17 @@ const HomePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
+            {/* ✅ H1 OCULTO PARA SEO (NÃO VISÍVEL MAS EXISTE!) */}
+            <h1 className="sr-only">
+              DJ Zen Eyer - World Champion Brazilian Zouk DJ | Official Website
+            </h1>
+            
+            {/* TÍTULO VISUAL (H2) */}
+            <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
               <Trans i18nKey="home_headline">
                 Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
               </Trans>
-            </h1>
+            </h2>
             
             <p className="text-xl md:text-2xl mt-6 max-w-2xl mx-auto text-white/90 [text-shadow:_1px_1px_5px_rgba(0,0,0,0.8)]">
               {t('home_subheadline')}
@@ -336,12 +307,13 @@ const HomePage: React.FC = () => {
                 className="btn btn-primary btn-lg flex items-center gap-2 opacity-50 cursor-not-allowed"
                 disabled={true}
                 title="Coming soon!"
+                aria-label="Play featured mix (coming soon)"
               >
-                <PlayCircle size={22} />
+                <PlayCircle size={22} aria-hidden="true" />
                 <span>{t('play_featured_mix')}</span>
               </button>
-              <Link to="/events" className="btn btn-outline btn-lg flex items-center gap-2">
-                <Calendar size={22} />
+              <Link to="/events" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="View upcoming events">
+                <Calendar size={22} aria-hidden="true" />
                 <span>{t('upcoming_events')}</span>
               </Link>
             </div>
@@ -350,7 +322,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-surface">
+      <section className="py-24 bg-surface" aria-labelledby="features-heading">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
@@ -359,7 +331,7 @@ const HomePage: React.FC = () => {
             viewport={{ once: true, amount: 0.5 }} 
             variants={itemVariants}
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display">
+            <h2 id="features-heading" className="text-3xl md:text-4xl font-bold font-display">
               {t('home_features_title')}
             </h2>
             <p className="text-lg text-white/70 max-w-2xl mx-auto mt-4">
@@ -388,7 +360,7 @@ const HomePage: React.FC = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-28 bg-background">
+      <section className="py-28 bg-background" aria-labelledby="cta-heading">
         <motion.div 
           className="container mx-auto px-4 text-center" 
           initial="hidden" 
@@ -396,7 +368,7 @@ const HomePage: React.FC = () => {
           viewport={{ once: true, amount: 0.5 }} 
           variants={itemVariants}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display">
+          <h2 id="cta-heading" className="text-4xl md:text-5xl font-bold mb-6 font-display">
             <Trans i18nKey="home_cta_title">
               Ready to Join the <span className="text-primary">Zen Tribe</span>?
             </Trans>
@@ -405,10 +377,10 @@ const HomePage: React.FC = () => {
             {t('home_cta_subtitle')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/zentribe" className="btn btn-primary btn-lg">
+            <Link to="/zentribe" className="btn btn-primary btn-lg" aria-label="Join Zen Tribe">
               {t('join_now_button')}
             </Link>
-            <Link to="/music" className="btn btn-outline btn-lg">
+            <Link to="/music" className="btn btn-outline btn-lg" aria-label="Explore music catalog">
               {t('explore_music_button')}
             </Link>
           </div>
