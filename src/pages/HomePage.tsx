@@ -1,4 +1,4 @@
-// src/pages/HomePage.tsx - VERSÃO OTIMIZADA SEO + H1
+// src/pages/HomePage.tsx - VERSÃO FINAL COM HREFLANG
 
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
+import SEO from '../components/SEO';
 
 // --- Subcomponente Reutilizável ---
 const FeatureCard: React.FC<{ 
@@ -24,10 +25,8 @@ const FeatureCard: React.FC<{
 );
 
 const HomePage: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const currentLang = i18n.language;
+  const { t } = useTranslation();
 
-  // --- Array de Dados para os Cards ---
   const features = [
     { 
       id: 'music', 
@@ -78,29 +77,16 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      {/* ✅ SEO COMPONENT COM HREFLANG */}
+      <SEO
+        title={t('home_page_title')}
+        description={t('home_page_meta_desc')}
+        image="https://djzeneyer.com/images/og-image-home.jpg"
+        keywords="DJ Zen Eyer, Brazilian Zouk, Zouk DJ, Brazilian Zouk DJ, World Champion DJ, Electronic Music, Dance Music, Zouk Music, DJ Brazil, International DJ"
+      />
+
+      {/* ✅ SCHEMA ESPECÍFICO DA HOME (MusicGroup + Breadcrumb) */}
       <Helmet>
-        <title>{t('home_page_title')}</title>
-        <meta name="description" content={t('home_page_meta_desc')} />
-        <meta name="keywords" content="DJ Zen Eyer, Brazilian Zouk, Zouk DJ, Brazilian Zouk DJ, World Champion DJ, Electronic Music, Dance Music, Zouk Music, DJ Brazil, International DJ" />
-        <link rel="canonical" href={`https://djzeneyer.com${currentLang === 'en' ? '' : '/' + currentLang}`} />
-        
-        {/* Open Graph */}
-        <meta property="og:title" content={t('home_page_title')} />
-        <meta property="og:description" content={t('home_page_meta_desc')} />
-        <meta property="og:image" content="https://djzeneyer.com/images/og-image-home.jpg" />
-        <meta property="og:url" content={`https://djzeneyer.com${currentLang === 'en' ? '' : '/' + currentLang}`} />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content={currentLang === 'pt' ? 'pt_BR' : 'en_US'} />
-        
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={t('home_page_title')} />
-        <meta name="twitter:description" content={t('home_page_meta_desc')} />
-        <meta name="twitter:image" content="https://djzeneyer.com/images/og-image-home.jpg" />
-        <meta name="twitter:site" content="@djzeneyer" />
-        <meta name="twitter:creator" content="@djzeneyer" />
-        
-        {/* ✅ SCHEMA EXPANDIDO - OTIMIZADO PARA IAs */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -230,7 +216,6 @@ const HomePage: React.FC = () => {
           })}
         </script>
 
-        {/* ✅ BREADCRUMB LIST */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -285,12 +270,10 @@ const HomePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.8 }}
           >
-            {/* ✅ H1 OCULTO PARA SEO (NÃO VISÍVEL MAS EXISTE!) */}
             <h1 className="sr-only">
               DJ Zen Eyer - World Champion Brazilian Zouk DJ | Official Website
             </h1>
             
-            {/* TÍTULO VISUAL (H2) */}
             <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
               <Trans i18nKey="home_headline">
                 Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
