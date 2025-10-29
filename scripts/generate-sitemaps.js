@@ -85,7 +85,7 @@ async function generateSitemapForLang(lang) {
     
     const productUrls = products.map(product => `
   <url>
-    <loc>${baseUrl}/shop/${product.slug}</loc>
+    <loc>${product.permalink}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
