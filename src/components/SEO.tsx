@@ -23,18 +23,13 @@ export default function SEO({
   const { i18n } = useTranslation();
   const location = useLocation();
   const currentLang = i18n.language;
-  const isPt = currentLang === 'pt';
   
-  // Remove /pt do início para obter o caminho base
   const basePath = location.pathname.replace(/^\/pt/, '');
-  
-  // URLs corretas para cada idioma
   const enUrl = `https://djzeneyer.com${basePath}`;
   const ptUrl = basePath === '/' 
     ? 'https://djzeneyer.com/pt' 
     : `https://djzeneyer.com/pt${basePath}`;
 
-  // Canonical: usa custom ou URL atual
   const canonical = customCanonical || `https://djzeneyer.com${location.pathname}`;
 
   return (
@@ -44,24 +39,26 @@ export default function SEO({
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
       <meta name="robots" content="index, follow" />
-      <meta name="language" content={isPt ? 'Portuguese' : 'English'} />
+      <meta name="language" content={currentLang === 'pt' ? 'Portuguese' : 'English'} />
 
-      {/* Canonical & Alternate (hreflang) */}
-      <link rel="canonical" href={canonical} />
+      {/* ✅ HREFLANG (NO HELMET!) */}
       <link rel="alternate" hrefLang="en" href={enUrl} />
       <link rel="alternate" hrefLang="pt" href={ptUrl} />
       <link rel="alternate" hrefLang="pt-BR" href={ptUrl} />
       <link rel="alternate" hrefLang="x-default" href={enUrl} />
+      <link rel="canonical" href={canonical} />
 
-      {/* Open Graph / Facebook */}
+      {/* Open Graph */}
       <meta property="og:type" content={type} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
       <meta property="og:url" content={canonical} />
       <meta property="og:site_name" content="DJ Zen Eyer" />
-      <meta property="og:locale" content={isPt ? 'pt_BR' : 'en_US'} />
-      <meta property="og:locale:alternate" content={isPt ? 'en_US' : 'pt_BR'} />
+      
+      {/* ✅ OG:LOCALE (SUA SINTAXE!) */}
+      <meta property="og:locale" content={currentLang === 'pt' ? 'pt_BR' : 'en_US'} />
+      <meta property="og:locale:alternate" content={currentLang === 'pt' ? 'en_US' : 'pt_BR'} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -71,7 +68,7 @@ export default function SEO({
       <meta name="twitter:site" content="@djzeneyer" />
       <meta name="twitter:creator" content="@djzeneyer" />
 
-      {/* Schema.org (JSON-LD) */}
+      {/* Schema.org WebPage */}
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -79,21 +76,11 @@ export default function SEO({
           "name": title,
           "description": description,
           "url": canonical,
-          "inLanguage": isPt ? "pt-BR" : "en-US",
+          "inLanguage": currentLang === 'pt' ? "pt-BR" : "en-US",
           "isPartOf": {
             "@type": "WebSite",
             "name": "DJ Zen Eyer",
             "url": "https://djzeneyer.com"
-          },
-          "publisher": {
-            "@type": "Person",
-            "name": "DJ Zen Eyer",
-            "url": "https://djzeneyer.com",
-            "sameAs": [
-              "https://instagram.com/djzeneyer",
-              "https://soundcloud.com/djzeneyer",
-              "https://youtube.com/@djzeneyer"
-            ]
           }
         })}
       </script>
