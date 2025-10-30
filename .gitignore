@@ -199,3 +199,6 @@ junit.xml
 !.gitkeep
 !.env.example
 !.vscode/extensions.json
+
+# GitHub específico 
+.github/assets/
