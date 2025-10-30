@@ -22,7 +22,7 @@
  *
  * 🧩 FUNCIONALIDADES:
  * - Meta tags básicas (title, description, keywords)
- * - Open Graph (Facebook, WhatsApp, LinkedIn, etc.)
+ * - Open Graph (Facebook, WhatsApp, LinkedIn)
  * - Twitter Cards (com @djzeneyer como criador)
  * - Schema.org WebPage (JSON-LD válido)
  * - Hreflang alternates (en, pt, pt-BR, x-default)
@@ -33,6 +33,7 @@
  * - Todas as URLs são **absolutas e sem espaços extras**
  * - Imagens OG são validadas como URLs completas
  * - Caminhos são normalizados para evitar `/pt/pt/...`
+ * - Canonical URL respeita o idioma atual
  *
  * 📦 DEPENDÊNCIAS:
  * - react-helmet-async → injeção segura de meta tags
@@ -103,8 +104,13 @@ export default function SEO({
   const enUrl = `https://djzeneyer.com${cleanPath}`;
   const ptUrl = `https://djzeneyer.com/pt${cleanPath === '/' ? '' : cleanPath}`;
 
-  // 🔗 Canonical: usa custom ou gera com base na URL atual (SEMPRE sem espaços!)
-  const canonical = customCanonical || `https://djzeneyer.com${location.pathname}`;
+  // 🔗 Canonical: usa custom ou gera com base no idioma atual
+  // ✅ CORRIGIDO: Não remove prefixo /pt da URL canônica!
+  const canonical = customCanonical || (
+    currentLang === 'pt' 
+      ? `https://djzeneyer.com/pt${cleanPath === '/' ? '' : cleanPath}`
+      : `https://djzeneyer.com${cleanPath}`
+  );
 
   // 🖼️ Garante que a imagem OG seja uma URL absoluta válida
   const ogImage = image.startsWith('http') ? image : `https://djzeneyer.com${image}`;
