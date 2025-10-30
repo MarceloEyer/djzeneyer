@@ -1,20 +1,11 @@
 <?php
 /**
- * Header DJ Zen Eyer - v4.3.2 LEAN
+ * Header DJ Zen Eyer - v4.3.2 LEAN (CORRIGIDO)
  * 🎯 Font Preload + AVIF + Client Hints + Dynamic Schema
  * 🤖 AI Tags APENAS onde relevante (sem dupes com SEO.tsx)
  * ♿ Full A11y + Performance
  */
 if (!defined('ABSPATH')) exit;
-
-// ============================================================
-// VITE MANIFEST (se necessário pra JS modules)
-// ============================================================
-$theme_uri = get_template_directory_uri();
-$main_js = '';
-
-// Opcional: se usar Vite modules, carregar daqui
-// if (file_exists(get_template_directory() . '/dist/.vite/manifest.json')) { ... }
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> itemscope itemtype="https://schema.org/WebPage">
@@ -39,9 +30,10 @@ $main_js = '';
   <!-- CSP NONCE -->
   <meta name="csp-nonce" content="<?php echo esc_attr(djzeneyer_get_csp_nonce()); ?>">
 
-  <!-- 🤖 AI METADATA - APENAS TAGS GLOBAIS (sem dupes com SEO.tsx) -->
+  <!-- 🤖 AI METADATA - APENAS TAGS GLOBAIS -->
   <meta name="ai:context" content="<?php echo esc_attr(djz_ai_context()); ?>">
   <meta name="ai:tags" content="<?php echo esc_attr(djz_ai_tags()); ?>">
+  <meta name="ai:summary" content="<?php echo esc_attr(djz_config('site.description')); ?>">
 
   <!-- AI Content Type (CONTEXT-SPECIFIC) -->
   <?php if (is_singular('event')): ?>
@@ -73,28 +65,28 @@ $main_js = '';
     <link rel="alternate" hreflang="pt-BR" href="<?php echo esc_url(home_url('/pt/')); ?>">
   <?php endif; ?>
 
-  <!-- 🎵 DYNAMIC SCHEMA.ORG (base) -->
+  <!-- 🎵 DYNAMIC SCHEMA.ORG -->
   <script type="application/ld+json">
-<?php echo wp_json_encode(djz_schema_org(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+    <?php echo wp_json_encode(djz_schema_org(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
   </script>
 
-  <!-- Schema: EVENT (if applicable) -->
+  <!-- Schema: EVENT -->
   <?php if (is_singular('event') || (is_singular('post') && has_term('events', 'category'))):
     $event_schema = djz_schema_event();
     if (!empty($event_schema)):
   ?>
   <script type="application/ld+json">
-<?php echo wp_json_encode($event_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+    <?php echo wp_json_encode($event_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
   </script>
   <?php endif; endif; ?>
 
-  <!-- Schema: MUSIC (if applicable) -->
+  <!-- Schema: MUSIC -->
   <?php if (is_singular('post') && has_tag('musica')):
     $music_schema = djz_schema_music_recording();
     if (!empty($music_schema)):
   ?>
   <script type="application/ld+json">
-<?php echo wp_json_encode($music_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+    <?php echo wp_json_encode($music_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
   </script>
   <?php endif; endif; ?>
 
@@ -104,29 +96,27 @@ $main_js = '';
     if (!empty($product_schema)):
   ?>
   <script type="application/ld+json">
-<?php echo wp_json_encode($product_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+    <?php echo wp_json_encode($product_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
   </script>
   <?php endif; endif; ?>
 
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="<?php echo esc_url(get_template_directory_uri()); ?>/dist/manifest.webmanifest" crossorigin="anonymous">
+  <!-- PWA -->
+  <link rel="manifest" href="<?php echo esc_url(get_template_directory_uri()); ?>/dist/manifest.webmanifest">
 
-  <!-- FAVICONS -->
+  <!-- FAVICONS (com sizes) -->
   <link rel="icon" type="image/svg+xml" href="<?php echo esc_url(djz_image('favicon')); ?>">
   <link rel="icon" type="image/png" sizes="192x192" href="<?php echo esc_url(djz_image('favicon_png')); ?>">
   <link rel="icon" type="image/png" sizes="32x32" href="<?php echo esc_url(djz_image('favicon_png')); ?>">
   <link rel="apple-touch-icon" sizes="180x180" href="<?php echo esc_url(djz_image('apple_touch')); ?>">
 
-  <!-- ⚡ PERFORMANCE: FONTS PRELOAD -->
+  <!-- ⚡ PERFORMANCE: FONTS PRELOAD (com variáveis) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  
-  <!-- Preload specific fonts (using config or hardcoded) -->
   <link rel="preload"
-        href="https://fonts.gstatic.com/s/orbitron/v25/yMJWMM5lCz7lm-e38ZBpegIL.woff2"
+        href="<?php echo esc_url(djz_config('fonts.orbitron')); ?>"
         as="font" type="font/woff2" crossorigin>
   <link rel="preload"
-        href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLteQiYS9d_uAoSc2CGVECWkXN-qjCmwI.woff2"
+        href="<?php echo esc_url(djz_config('fonts.inter')); ?>"
         as="font" type="font/woff2" crossorigin>
 
   <!-- Critical CSS -->
@@ -148,7 +138,7 @@ $main_js = '';
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <?php endif; ?>
 
-  <!-- 📊 ANALYTICS (async only - defer NOT needed for GTM) -->
+  <!-- 📊 ANALYTICS (com async) -->
   <?php if (djz_config('analytics.google_analytics')): ?>
     <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr(djz_config('analytics.google_analytics')); ?>"></script>
     <script nonce="<?php echo esc_attr(djzeneyer_get_csp_nonce()); ?>">
@@ -167,7 +157,6 @@ $main_js = '';
   <!-- CRITICAL STYLES -->
   <style nonce="<?php echo esc_attr(djzeneyer_get_csp_nonce()); ?>">
     html { visibility: visible; opacity: 1; }
-    
     /* Skip Link A11y */
     .skip-link {
       position: absolute; left: -999999px; top: -999999px; z-index: -1;
@@ -175,39 +164,32 @@ $main_js = '';
       padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 4px;
       font-weight: 600; font-size: 14px;
     }
-    
     .skip-link:focus, .skip-link:focus-visible {
       left: 10px; top: 10px; z-index: 999999;
     }
-    
     .screen-reader-text {
       clip: rect(1px, 1px, 1px, 1px); position: absolute !important;
       height: 1px; width: 1px; overflow: hidden;
     }
   </style>
 </head>
-
 <body <?php body_class('bg-dark text-light'); ?>>
   <?php wp_body_open(); ?>
-
   <!-- Skip Link (A11y) -->
   <a class="skip-link" href="#main-content" tabindex="1" role="navigation">
     <?php esc_html_e('Pular para conteúdo', 'djzeneyer'); ?>
   </a>
-
   <!-- HEADER -->
   <header id="masthead" class="site-header" role="banner">
     <div class="container-fluid">
       <?php if (locate_template('template-parts/header/site-branding.php')): ?>
         <?php get_template_part('template-parts/header/site', 'branding'); ?>
       <?php endif; ?>
-      
       <?php if (locate_template('template-parts/header/site-nav.php')): ?>
         <?php get_template_part('template-parts/header/site', 'nav'); ?>
       <?php endif; ?>
     </div>
   </header>
-
   <!-- MAIN -->
   <div id="page" class="site">
     <main id="main-content" class="site-content" role="main">
