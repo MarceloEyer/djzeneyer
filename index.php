@@ -1,14 +1,14 @@
 <?php
 /**
- * Main template file - DJ Zen Eyer Theme v12.2.0
- * 
+ * Main template file - DJ Zen Eyer Theme v12.3.0
+ *
  * ============================================================
  * WordPress Headless Theme with React 18 + Vite + TypeScript
  * Enterprise-Grade | AI-Friendly | Production Ready
  * ============================================================
- * 
+ *
  * @package DJ Zen Eyer
- * @version 12.2.0
+ * @version 12.3.0
  * @author DJ Zen Eyer <contato@djzeneyer.com>
  * @link https://djzeneyer.com
  */
@@ -21,10 +21,8 @@ if (!defined('ABSPATH')) {
 // ============================================================
 // 1. ASSET PATHS & MANIFEST LOADING
 // ============================================================
-
 $theme_uri = get_template_directory_uri();
 $manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
-
 $main_css = '';
 $main_js = '';
 $preload_scripts = [];
@@ -39,24 +37,24 @@ $preload_scripts = [];
 if (file_exists($manifest_path)) {
     try {
         $manifest = json_decode(file_get_contents($manifest_path), true);
-        
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             trigger_error('Manifest JSON Error: ' . json_last_error_msg(), E_USER_WARNING);
         } elseif (isset($manifest['src/main.tsx'])) {
             $entry = $manifest['src/main.tsx'];
-            
+
             // Main JS entry point
             if (!empty($entry['file'])) {
                 $main_js = $theme_uri . '/dist/' . esc_url($entry['file']);
                 // Preload critical scripts for performance
                 $preload_scripts[] = $main_js;
             }
-            
+
             // Main CSS file
             if (!empty($entry['css']) && is_array($entry['css'])) {
                 $main_css = $theme_uri . '/dist/' . esc_url($entry['css'][0]);
             }
-            
+
             // Preload imported styles (critical rendering path)
             if (!empty($entry['imports']) && is_array($entry['imports'])) {
                 foreach ($entry['imports'] as $import_key) {
@@ -76,13 +74,12 @@ if (file_exists($manifest_path)) {
 // ============================================================
 // 2. SEO & METADATA PRELOAD
 // ============================================================
-
 $site_name = get_bloginfo('name');
 $site_description = get_bloginfo('description');
 $current_url = home_url($_SERVER['REQUEST_URI']);
 $site_icon = get_site_icon_url();
-
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
   <!-- ====================================================
@@ -125,6 +122,13 @@ $site_icon = get_site_icon_url();
   <meta name="ai-training" content="allowed" />
   <meta name="training" content="allowed" />
   <meta name="permit-training" content="all" />
+  <meta name="ai:summary" content="DJ Zen Eyer é um DJ e produtor musical especializado em música eletrônica, com eventos imersivos e experiências únicas." />
+  <meta name="ai:context" content="DJ, produtor musical, eventos, música eletrônica, São Paulo, Brasil" />
+  <meta name="ai:tags" content="DJ, música eletrônica, house, techno, eventos, São Paulo, Brasil, DJ Zen Eyer" />
+  <meta name="GPTBot" content="index, follow" />
+  <meta name="Google-Extended" content="index, follow" />
+  <meta name="ClaudeBot" content="index, follow" />
+  <meta name="PerplexityBot" content="index, follow" />
 
   <!-- ====================================================
        OPEN GRAPH (Social Sharing)
@@ -168,11 +172,16 @@ $site_icon = get_site_icon_url();
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="<?php echo esc_url(home_url()); ?>" />
-  
+
+  <!-- Preload para fonts (NOVO) -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" as="style" crossorigin />
+  <link rel="preload" href="https://fonts.gstatic.com/s/orbitron/v25/..." as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/..." as="font" type="font/woff2" crossorigin />
+
   <?php if ($main_css): ?>
   <link rel="preload" href="<?php echo esc_url($main_css); ?>" as="style" />
   <?php endif; ?>
-  
+
   <?php if ($main_js): ?>
   <link rel="preload" href="<?php echo esc_url($main_js); ?>" as="script" type="module" />
   <?php endif; ?>
@@ -208,7 +217,12 @@ $site_icon = get_site_icon_url();
     "givenName": "DJ",
     "familyName": "Zen Eyer",
     "jobTitle": "DJ & Music Producer",
-    "knowsLanguage": ["pt-BR", "en"]
+    "knowsLanguage": ["pt-BR", "en"],
+    "hasOccupation": {
+      "@type": "Occupation",
+      "name": "DJ",
+      "description": "DJ e produtor musical especializado em música eletrônica e experiências imersivas."
+    }
   }
   </script>
 
@@ -217,7 +231,6 @@ $site_icon = get_site_icon_url();
        ===================================================== -->
   <?php wp_head(); ?>
 </head>
-
 <body <?php body_class('dj-zen-eyer-app'); ?>>
   <!-- ====================================================
        BODY OPEN (WordPress hook)
