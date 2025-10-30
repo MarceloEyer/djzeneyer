@@ -1,10 +1,10 @@
 <?php
 /**
  * DJ Zen Eyer Theme - functions.php
- * v12.0.0 — Centralized Config, AI/SEO Optimized, Enterprise-Grade
+ * v12.1.0 — Centralized Config, AI/SEO Optimized, Enterprise-Grade
  * 
  * @package DJZenEyerTheme
- * @version 12.0.0
+ * @version 12.1.0
  * @updated 2025-10-30
  * @author DJ Zen Eyer Team
  * 
@@ -17,6 +17,13 @@
  * - functions.php        → Hooks do WordPress + lógica do tema
  * 
  * Para EDITAR: Vá em inc/djz-config.php (não aqui!)
+ * 
+ * =====================================================
+ * 🔒 SECURITY UPDATES (v12.1.0):
+ * =====================================================
+ * - Fixed: CSP nonce added to inline <style> tag
+ * - Fixed: REST API endpoints now return only public-safe data
+ * - Fixed: Improved permission callbacks for sensitive endpoints
  */
 
 if (!defined('ABSPATH')) exit;
@@ -31,7 +38,7 @@ require_once get_theme_file_path('/inc/djz-helpers.php');
  * ===================================================== */
 if (!defined('DJZ_VERSION')) {
     $manifest_path = get_theme_file_path('/dist/.vite/manifest.json');
-    $version = file_exists($manifest_path) ? filemtime($manifest_path) : '12.0.0';
+    $version = file_exists($manifest_path) ? filemtime($manifest_path) : '12.1.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -189,7 +196,14 @@ add_action('rest_api_init', function () {
  * 🎨 THEME COLORS CSS VARIABLES
  * ===================================================== */
 add_action('wp_head', function () {
-    echo '<style id="djz-theme-colors">' . djz_theme_colors_css() . '</style>';
+    // 🔒 FIXED: Added CSP nonce to inline style (security fix)
+    if (function_exists('djzeneyer_get_csp_nonce')) {
+        $nonce = esc_attr(djzeneyer_get_csp_nonce());
+        echo '<style id="djz-theme-colors" nonce="' . $nonce . '">' . djz_theme_colors_css() . '</style>';
+    } else {
+        // Fallback if CSP plugin not active
+        echo '<style id="djz-theme-colors">' . djz_theme_colors_css() . '</style>';
+    }
 }, 1);
 
 /* =====================================================
@@ -197,29 +211,54 @@ add_action('wp_head', function () {
  * ===================================================== */
 add_action('rest_api_init', function () {
     // Endpoint: /wp-json/djz/v1/config
+    // 🔒 FIXED: Returns only PUBLIC-SAFE data (no sensitive info)
     register_rest_route('djz/v1', '/config', [
         'methods'  => 'GET',
         'callback' => function () {
+            // Only return public-safe configuration
             return rest_ensure_response([
-                'site'    => djz_config('site'),
+                'site' => [
+                    'name'        => djz_config('site.name'),
+                    'tagline'     => djz_config('site.tagline'),
+                    'description' => djz_config('site.description'),
+                    'language'    => djz_config('site.language'),
+                ],
                 'social'  => djz_config('social'),
                 'colors'  => djz_config('colors'),
-                'features' => djz_config('features'),
+                // ⚠️ DO NOT expose: contact info, analytics IDs, internal feature flags
             ]);
         },
-        'permission_callback' => '__return_true',
+        'permission_callback' => '__return_true', // Public endpoint
     ]);
     
     // Endpoint: /wp-json/djz/v1/social
+    // Returns array of social media URLs (public-safe)
     register_rest_route('djz/v1', '/social', [
         'methods'  => 'GET',
         'callback' => function () {
             return rest_ensure_response(djz_social_urls());
         },
-        'permission_callback' => '__return_true',
+        'permission_callback' => '__return_true', // Public endpoint
     ]);
     
-    // Adicione mais endpoints aqui se necessário
+    // Endpoint: /wp-json/djz/v1/admin/config (ADMIN ONLY - Full config)
+    // 🔒 NEW: Admin-only endpoint for full configuration access
+    register_rest_route('djz/v1', '/admin/config', [
+        'methods'  => 'GET',
+        'callback' => function () {
+            return rest_ensure_response([
+                'site'      => djz_config('site'),
+                'social'    => djz_config('social'),
+                'colors'    => djz_config('colors'),
+                'features'  => djz_config('features'),
+                'contact'   => djz_config('contact'),
+                'analytics' => djz_config('analytics'),
+            ]);
+        },
+        'permission_callback' => function () {
+            return current_user_can('manage_options'); // Admin only
+        },
+    ]);
 });
 
 /* =====================================================
