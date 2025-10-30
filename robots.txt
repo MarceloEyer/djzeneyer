@@ -1,0 +1,121 @@
+# ============================================
+# robots.txt - DJ Zen Eyer Theme v1.0.0
+# Created: 2025-10-30
+# ============================================
+
+# ============================================
+# GLOBAL RULES - All bots
+# ============================================
+User-agent: *
+
+# ALLOW - Páginas públicas (crawl OK)
+Allow: /
+Allow: /eventos/
+Allow: /musicas/
+Allow: /blog/
+Allow: /contato/
+Allow: /wp-json/djz/v1/config
+Allow: /wp-json/djz/v1/social
+
+# DISALLOW - Admin & System
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /wp-content/themes/
+Disallow: /wp-content/uploads/
+Disallow: /wp-json/
+Disallow: /xmlrpc.php
+
+# DISALLOW - Private Areas
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
+Disallow: /my-downloads/
+Disallow: /dashboard/
+Disallow: /user/
+
+# DISALLOW - Temporary & Cache
+Disallow: /search/
+Disallow: /?
+Disallow: /*?
+Disallow: /*?orderby=
+Disallow: /*?sort=
+Disallow: /page/
+Disallow: /feed/
+Disallow: /.*?s=
+
+# DISALLOW - Avoid Duplicate Content
+Disallow: /*?utm_
+Disallow: /*?ref=
+Disallow: /*?fbclid=
+Disallow: /print/
+Disallow: /printable/
+
+# ============================================
+# SPECIFIC BOT RULES
+# ============================================
+
+# GOOGLE - Allow crawling
+User-agent: Googlebot
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Allow: /wp-json/djz/v1/
+
+# GOOGLE IMAGES
+User-agent: Googlebot-Image
+Allow: /wp-content/uploads/
+
+# FACEBOOK - Allow for sharing/preview
+User-agent: facebookexternalhit
+Allow: /
+
+# TWITTER - Allow for cards
+User-agent: Twitterbot
+Allow: /
+
+# LINKEDINBOT
+User-agent: LinkedInBot
+Allow: /
+
+# AI BOTS - Custom rules
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# ============================================
+# CRAWL DELAY & REQUEST RATE
+# ============================================
+Crawl-delay: 1
+Request-rate: 1/5s
+
+# ============================================
+# SITEMAPS
+# ============================================
+Sitemap: https://djzeneyer.com/sitemap_index.xml
+Sitemap: https://djzeneyer.com/sitemap-posts.xml
+Sitemap: https://djzeneyer.com/sitemap-pages.xml
+Sitemap: https://djzeneyer.com/sitemap-taxonomies.xml
+
+# ============================================
+# NOTES FOR DEVELOPERS
+# ============================================
+# - WordPress pages & posts are publicly crawlable
+# - Admin sections (wp-admin, wp-login) are blocked
+# - WP REST API blocked globally (except public djz endpoints)
+# - Private content (cart, checkout) is blocked
+# - Duplicate content parameters are blocked
+# - AI crawlers (GPTBot, Claude, etc) are blocked
+# - Search engines (Google, Bing) have full access
+# - Social media bots have full access (for sharing)
