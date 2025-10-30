@@ -33,14 +33,11 @@
 
 @layer base {
   html {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply font-sans scroll-smooth antialiased;
   }
 
   body {
-    @apply antialiased text-white;
+    @apply text-white;
     background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
     background-attachment: fixed;
     overflow-x: hidden;
@@ -48,13 +45,11 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
-    font-weight: 700;
-    line-height: 1.2;
+    @apply font-display font-bold leading-tight;
   }
 
   a {
-    @apply transition-colors duration-200;
+    @apply transition-colors duration-[var(--duration-base)];
     color: inherit;
   }
 
@@ -78,7 +73,7 @@
   }
 
   .btn:focus-visible {
-    @apply ring-2 ring-offset-2 ring-offset-background;
+    @apply ring-2 ring-offset-2 ring-offset-[var(--color-background)]; /* Corrigido */
     box-shadow: 0 0 0 2px rgba(var(--color-primary), 0.5);
   }
 
@@ -129,7 +124,7 @@
   }
 
   .nav-link {
-    @apply relative px-4 py-2 text-white/70 font-medium transition-all duration-200;
+    @apply relative px-4 py-2 text-white/70 font-medium transition-all duration-[var(--duration-base)];
   }
 
   .nav-link:hover {
@@ -159,7 +154,7 @@
 
   .input {
     @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg text-white placeholder:text-white/40
-      focus:outline-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+      focus:outline-none transition-all duration-[var(--duration-base)] disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .input:focus {
@@ -242,31 +237,11 @@
   }
 
   .shadow-neon-strong {
-    box-shadow: 0 0 30px rgba(var(--color-primary), 0.7), 0 0 60px rgba(var(--color-primary), 0.4);
+    box-shadow: 0 0 30px rgba(var(--color-primary), 0.7), 0 0 60px rgba(var(--color-primary), 0.5);
   }
 
   .animate-glow {
     animation: glow 2s ease-in-out infinite alternate;
-  }
-
-  @keyframes glow {
-    from { box-shadow: 0 0 20px rgba(var(--color-primary), 0.5); }
-    to { box-shadow: 0 0 30px rgba(var(--color-primary), 0.8), 0 0 60px rgba(var(--color-primary), 0.5); }
-  }
-
-  .no-select {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
   }
 
   .transition-smooth {
@@ -294,12 +269,6 @@
   .container-custom { @apply px-4; }
 }
 
-@media (max-width: 640px) {
-  .btn { @apply px-3 py-2 text-xs; }
-  h1 { @apply text-3xl; }
-  h2 { @apply text-2xl; }
-}
-
 /* ============================================================================ */
 /* ACCESSIBILITY & PERFORMANCE                                                  */
 /* ============================================================================ */
@@ -307,7 +276,6 @@
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
