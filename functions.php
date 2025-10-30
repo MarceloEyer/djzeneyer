@@ -5,28 +5,12 @@
  * 
  * 🎯 ARCHITECTURE:
  * - inc/djz-config.php   → Todas as configurações globais (não editar aqui!)
- * - inc/djz-helpers.php  → Funções auxiliares reutilizáveis
+ * - inc/djz-helpers.php  → Funções auxiliares + djz_feature_enabled(), djz_theme_colors_css()
  * - functions.php        → Hooks do WordPress + lógica do tema
  * 
  * @package DJZenEyerTheme
  * @version 12.3.1
- * @updated 2025-10-30 @ 16:25 UTC
- * @author DJ Zen Eyer Team
- * 
- * =====================================================
- * 🔒 SECURITY UPDATES (v12.3.1 - HOTFIX):
- * =====================================================
- * ✅ CSP Level 3 COMPLETO (object-src + script-src + trusted-types)
- * ✅ CSP nonce em <style> inline (CSP compliance)
- * ✅ REST API data validation + sanitization
- * ✅ Permission callbacks for sensitive endpoints
- * ✅ CORS origin validation (strict in_array)
- * ✅ Error handling + try-catch para JSON decode
- * ✅ Headers hardened (HSTS, X-Frame, CSP Level 3)
- * ✅ SQL injection prevention (usar filters WP)
- * ✅ Input sanitization em Rest API
- * ✅ Rate limiting REST API (NEW v12.3.1!)
- * ✅ Nonce reuse optimization
+ * @updated 2025-10-30 @ 19:47 UTC
  */
 
 if (!defined('ABSPATH')) {
@@ -34,12 +18,22 @@ if (!defined('ABSPATH')) {
 }
 
 /* =====================================================
- * 🔧 LOAD CORE FILES (REQUIRED)
+ * 🔧 LOAD CORE FILES (REQUIRED - PRIORITY ORDER!)
  * ===================================================== */
 require_once get_theme_file_path('/inc/djz-helpers.php');
+// djz-helpers.php MUST define:
+// - djz_feature_enabled()
+// - djz_theme_colors_css()
+// - djz_config()
+// - djz_allowed_origins()
+// - djz_social_urls()
+// - djz_ai_context()
+// - djz_ai_tags()
+// - djz_schema_org()
+// - djz_theme_color()
 
 /* =====================================================
- * 📌 DEFINE THEME VERSION (From manifest or fallback)
+ * 📌 DEFINE THEME VERSION
  * ===================================================== */
 if (!defined('DJZ_VERSION')) {
     $manifest_path = get_theme_file_path('/dist/.vite/manifest.json');
@@ -48,10 +42,10 @@ if (!defined('DJZ_VERSION')) {
 }
 
 /* =====================================================
- * 🎨 THEME SETUP & SUPPORT (after_setup_theme hook)
+ * 🎨 THEME SETUP & SUPPORT
  * ===================================================== */
 add_action('after_setup_theme', function () {
-    // Load text domain for translations
+    // Load text domain
     load_theme_textdomain('djzeneyer', get_template_directory() . '/languages');
     
     // Core WordPress features
@@ -71,7 +65,7 @@ add_action('after_setup_theme', function () {
     ]);
     
     // WooCommerce support (if enabled)
-    if (djz_feature_enabled('woocommerce')) {
+    if (function_exists('djz_feature_enabled') && djz_feature_enabled('woocommerce')) {
         add_theme_support('woocommerce');
         add_theme_support('wc-product-gallery-zoom');
         add_theme_support('wc-product-gallery-lightbox');
@@ -98,25 +92,16 @@ add_action('after_setup_theme', function () {
         add_editor_style('dist/css/editor-style.css');
     }
     
-}, 0); // Priority 0 to run first
+}, 0);
 
 /* =====================================================
  * 🔒 CSP NONCE GENERATOR (v12.3.1)
  * ===================================================== */
-/**
- * Generate and return CSP nonce for current request
- * Nonce changes every page load for security
- * 
- * @return string Base64 encoded random nonce
- */
 function djzeneyer_get_csp_nonce() {
     static $nonce = null;
     
     if ($nonce === null) {
-        // Generate cryptographically secure random nonce
         $nonce = base64_encode(random_bytes(16));
-        
-        // Store in global for reuse in same request
         $GLOBALS['djz_csp_nonce'] = $nonce;
     }
     
@@ -124,7 +109,7 @@ function djzeneyer_get_csp_nonce() {
 }
 
 /* =====================================================
- * 🐐 SECURITY HEADERS + CSP LEVEL 3 (v12.3.1)
+ * 🐐 SECURITY HEADERS + CSP LEVEL 3
  * ===================================================== */
 add_action('send_headers', function () {
     if (is_admin() || headers_sent()) {
@@ -134,24 +119,21 @@ add_action('send_headers', function () {
     // Remove WordPress signatures
     header_remove('X-Powered-By');
     
-    // ============ PADRÃO SECURITY HEADERS ============
+    // Standard security headers
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: DENY');
     header('X-XSS-Protection: 1; mode=block');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=()');
     
-    // HSTS for HTTPS sites
     if (is_ssl()) {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
     }
     
-    // ============ CSP LEVEL 3 ============
-    // Generate nonce for this request
+    // CSP Level 3 with strict-dynamic
     $nonce = djzeneyer_get_csp_nonce();
     $rest_url = esc_url_raw(rest_url());
     
-    // CSP Header with ALL fixes
     $csp = array(
         "default-src 'self'",
         "script-src 'nonce-{$nonce}' 'strict-dynamic' https:",
@@ -172,14 +154,13 @@ add_action('send_headers', function () {
     );
     
     header('Content-Security-Policy: ' . implode('; ', $csp));
-}, 1); // Priority 1 = very early
+}, 1);
 
 /* =====================================================
- * 🛡️ RATE LIMITING REST API (v12.3.1 - NEW!)
+ * 🛡️ RATE LIMITING REST API (v12.3.1)
  * ===================================================== */
 add_action('rest_api_init', function () {
     add_filter('rest_pre_serve_request', function ($served) {
-        // Skip rate limiting on admin
         if (is_admin() || wp_doing_ajax()) {
             return $served;
         }
@@ -191,52 +172,50 @@ add_action('rest_api_init', function () {
             return $served;
         }
 
-        // Rate limit: 60 requisições por minuto por IP
+        // Rate limit: 60 requisições por minuto
         $transient_key = 'djz_rl_' . md5($ip);
         $request_count = get_transient($transient_key);
 
         if ($request_count === false) {
-            // First request in this minute window
             set_transient($transient_key, 1, MINUTE_IN_SECONDS);
         } elseif ($request_count >= 60) {
-            // Too many requests - return 429 Too Many Requests
             return rest_ensure_response([
                 'code'    => 'rate_limit_exceeded',
                 'message' => __('Muitas requisições. Tente novamente em 1 minuto.', 'djzeneyer'),
             ])->set_status(429);
         } else {
-            // Increment counter
             set_transient($transient_key, $request_count + 1, MINUTE_IN_SECONDS);
         }
 
         return $served;
-    }, 5); // Priority 5 = antes dos handlers
+    }, 5);
 });
 
 /* =====================================================
- * 🌐 CORS FOR REST API (v12.3.1)
+ * 🌐 CORS FOR REST API (FIXED v12.3.1)
  * ===================================================== */
 add_action('rest_api_init', function () {
-    // Filter to handle CORS preflight requests
     add_filter('rest_pre_serve_request', function ($served) {
         if (is_admin()) {
             return $served;
         }
 
-        // Get and validate origin
+        // Validate origin (STRICT mode)
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? sanitize_url($_SERVER['HTTP_ORIGIN']) : '';
-        $allowed = array_map('esc_url_raw', djz_allowed_origins());
+        $allowed = function_exists('djz_allowed_origins') ? djz_allowed_origins() : array_map('esc_url_raw', [home_url()]);
 
-        // STRICT validation: use in_array with strict type checking
         if (!empty($origin) && in_array($origin, $allowed, true)) {
             header('Access-Control-Allow-Origin: ' . esc_attr($origin));
             header('Access-Control-Allow-Credentials: true');
             header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH');
             header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce, X-Requested-With');
             header('Vary: Origin');
+            
+            // Cache preflight for 1 hour
+            header('Access-Control-Max-Age: 3600');
         }
 
-        // Handle preflight requests
+        // Handle preflight
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             status_header(200);
             exit;
@@ -247,10 +226,9 @@ add_action('rest_api_init', function () {
 });
 
 /* =====================================================
- * 📦 ASSET ENQUEUE (REACT + VITE + CSP v12.3.1)
+ * 📦 ASSET ENQUEUE (REACT + VITE + CSP)
  * ===================================================== */
 add_action('wp_enqueue_scripts', function () {
-    // Main stylesheet
     wp_enqueue_style(
         'djzeneyer-style',
         get_stylesheet_uri(),
@@ -258,7 +236,6 @@ add_action('wp_enqueue_scripts', function () {
         DJZ_VERSION
     );
     
-    // Load Vite manifest with error handling
     $manifest_path = get_theme_file_path('/dist/.vite/manifest.json');
     $theme_uri = get_template_directory_uri();
 
@@ -269,7 +246,6 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    // Parse manifest with try-catch for JSON errors
     try {
         $manifest_json = file_get_contents($manifest_path);
         $manifest = json_decode($manifest_json, true);
@@ -284,11 +260,11 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    // Enqueue React assets from Vite
+    // Enqueue React assets
     if (isset($manifest['src/main.tsx']) && is_array($manifest['src/main.tsx'])) {
         $entry = $manifest['src/main.tsx'];
 
-        // Enqueue CSS files
+        // CSS files
         if (!empty($entry['css']) && is_array($entry['css'])) {
             foreach ($entry['css'] as $css_file) {
                 wp_enqueue_style(
@@ -300,38 +276,34 @@ add_action('wp_enqueue_scripts', function () {
             }
         }
 
-        // Enqueue JS files (React)
+        // JS files (React)
         if (!empty($entry['file'])) {
             wp_register_script(
                 'djzeneyer-react',
                 $theme_uri . '/dist/' . esc_attr($entry['file']),
                 [],
                 DJZ_VERSION,
-                true // In footer
+                true
             );
             wp_enqueue_script('djzeneyer-react');
 
-            // Localize script with public configuration
+            // Localize script
             wp_localize_script('djzeneyer-react', 'djzConfig', [
                 'siteUrl'     => esc_url(home_url('/')),
                 'restUrl'     => esc_url_raw(rest_url()),
                 'nonce'       => wp_create_nonce('wp_rest'),
-                'siteName'    => esc_attr(djz_config('site.name')),
-                'siteTagline' => esc_attr(djz_config('site.tagline')),
-                'social'      => djz_config('social'),
-                'colors'      => djz_config('colors'),
-                'language'    => esc_attr(djz_config('site.language')),
+                'siteName'    => esc_attr(function_exists('djz_config') ? djz_config('site.name') : get_bloginfo('name')),
+                'language'    => esc_attr(function_exists('djz_config') ? djz_config('site.language', 'pt-BR') : 'pt-BR'),
             ]);
         }
     }
 });
 
-// Convert React to module type for ES6 modules
+// Convert React to module type
 add_filter('script_loader_tag', function ($tag, $handle) {
     if ('djzeneyer-react' === $handle) {
         $tag = str_replace('<script ', '<script type="module" ', $tag);
         
-        // Add CSP nonce
         if (strpos($tag, 'nonce=') === false) {
             $nonce = djzeneyer_get_csp_nonce();
             $tag = str_replace('<script type="module" ', '<script type="module" nonce="' . esc_attr($nonce) . '" ', $tag);
@@ -341,76 +313,67 @@ add_filter('script_loader_tag', function ($tag, $handle) {
 }, 10, 2);
 
 /* =====================================================
- * 🎨 THEME COLORS CSS VARIABLES (v12.3.1)
+ * 🎨 THEME COLORS CSS VARIABLES
  * ===================================================== */
 add_action('wp_head', function () {
-    // Get nonce for CSP compliance
+    if (!function_exists('djz_theme_colors_css')) {
+        return;
+    }
+
     $nonce = djzeneyer_get_csp_nonce();
-    
     $css = djz_theme_colors_css();
     printf('<style id="djz-theme-colors" nonce="%s">%s</style>' . "\n", 
         esc_attr($nonce), 
-        $css // Already escaped in djz-helpers.php
+        $css
     );
 }, 1);
 
 /* =====================================================
- * 📊 CUSTOM REST API ENDPOINTS (v12.3.1)
+ * 📊 CUSTOM REST API ENDPOINTS
  * ===================================================== */
 add_action('rest_api_init', function () {
     
-    /* ==========================================
-       PUBLIC ENDPOINT: /djz/v1/config
-       Returns only PUBLIC-SAFE data
-       ========================================== */
+    // PUBLIC: /djz/v1/config
     register_rest_route('djz/v1', '/config', [
         'methods'  => WP_REST_Server::READABLE,
-        'callback' => function (WP_REST_Request $request) {
-            // SANITIZE: Return only public-safe data
-            $config = [
+        'callback' => function () {
+            if (!function_exists('djz_config')) {
+                return rest_ensure_response(['error' => 'Config not available']);
+            }
+
+            return rest_ensure_response([
                 'site' => [
                     'name'        => sanitize_text_field(djz_config('site.name')),
                     'tagline'     => sanitize_text_field(djz_config('site.tagline')),
                     'description' => sanitize_textarea_field(djz_config('site.description')),
                     'language'    => sanitize_text_field(djz_config('site.language')),
                 ],
-                'social'  => djz_social_urls(), // Already validated in helpers
-                'colors'  => djz_config('colors'),
-            ];
-            return rest_ensure_response($config);
+                'social' => function_exists('djz_social_urls') ? djz_social_urls() : [],
+                'colors' => djz_config('colors'),
+            ]);
         },
         'permission_callback' => '__return_true',
     ]);
     
-    /* ==========================================
-       PUBLIC ENDPOINT: /djz/v1/social
-       Returns social media URLs only
-       ========================================== */
+    // PUBLIC: /djz/v1/social
     register_rest_route('djz/v1', '/social', [
         'methods'  => WP_REST_Server::READABLE,
-        'callback' => function (WP_REST_Request $request) {
-            return rest_ensure_response(djz_social_urls());
+        'callback' => function () {
+            return rest_ensure_response(
+                function_exists('djz_social_urls') ? djz_social_urls() : []
+            );
         },
         'permission_callback' => '__return_true',
     ]);
     
-    /* ==========================================
-       ADMIN-ONLY ENDPOINT: /djz/v1/admin/config
-       Full configuration for logged-in admins
-       ========================================== */
+    // ADMIN ONLY: /djz/v1/admin/config
     register_rest_route('djz/v1', '/admin/config', [
         'methods'  => WP_REST_Server::READABLE,
-        'callback' => function (WP_REST_Request $request) {
-            // Security check: ensure user is admin
-            if (!current_user_can('manage_options')) {
-                return new WP_Error(
-                    'rest_forbidden',
-                    esc_html__('Você não tem permissão para acessar este endpoint.', 'djzeneyer'),
-                    ['status' => 403]
-                );
+        'callback' => function () {
+            if (!function_exists('djz_config')) {
+                return new WP_Error('config_error', 'Config unavailable', ['status' => 500]);
             }
 
-            // Return full configuration (sanitized)
             $config = [
                 'site'      => djz_config('site'),
                 'social'    => djz_config('social'),
@@ -420,7 +383,7 @@ add_action('rest_api_init', function () {
                 'schema'    => djz_config('schema'),
             ];
             
-            // Sanitize before returning
+            // Sanitize recursively
             array_walk_recursive($config, function (&$value) {
                 if (is_string($value)) {
                     $value = sanitize_text_field($value);
@@ -429,18 +392,18 @@ add_action('rest_api_init', function () {
 
             return rest_ensure_response($config);
         },
-        'permission_callback' => function (WP_REST_Request $request) {
+        'permission_callback' => function () {
             return current_user_can('manage_options');
         },
     ]);
 });
 
 /* =====================================================
- * 🎵 CUSTOM POST TYPES (Events, Tracks, etc.)
+ * 🎵 CUSTOM POST TYPES
  * ===================================================== */
 add_action('init', function () {
     
-    // Post Type: Events (djz_event)
+    // Events
     register_post_type('djz_event', [
         'labels' => [
             'name'          => _x('Eventos', 'Post Type General Name', 'djzeneyer'),
@@ -457,7 +420,7 @@ add_action('init', function () {
         'taxonomies'   => ['category', 'post_tag'],
     ]);
     
-    // Post Type: Tracks/Music (djz_track)
+    // Tracks/Music
     register_post_type('djz_track', [
         'labels' => [
             'name'          => _x('Músicas', 'Post Type General Name', 'djzeneyer'),
@@ -478,48 +441,57 @@ add_action('init', function () {
 /* =====================================================
  * 🧹 CLEANUP & OPTIMIZATION
  * ===================================================== */
-
-// Remove WordPress version meta tag (security best practice)
 remove_action('wp_head', 'wp_generator');
-
-// Remove emoji scripts (performance: save ~30KB)
 remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_print_styles', 'print_emoji_styles');
-
-// Remove WP REST API from header
 remove_action('wp_head', 'rest_output_link_wp_head', 10);
-
-// Remove RSD link (Really Simple Discovery)
 remove_action('wp_head', 'rsd_link');
-
-// Remove WLW manifest link
 remove_action('wp_head', 'wlwmanifest_link');
-
-// Remove shortlink
 remove_action('wp_head', 'wp_shortlink_wp_head', 10);
 
 /* =====================================================
- * 🎯 CUSTOM HELPER FUNCTIONS
+ * 🎯 HELPER FUNCTIONS (FALLBACKS)
  * ===================================================== */
 
 /**
- * Generate breadcrumbs with Schema.org markup
+ * Fallback if djz_feature_enabled not in helpers
+ */
+if (!function_exists('djz_feature_enabled')) {
+    function djz_feature_enabled($feature) {
+        $features = [
+            'woocommerce' => false,
+            'breadcrumbs' => true,
+            'reading_time' => true,
+        ];
+        return $features[$feature] ?? false;
+    }
+}
+
+/**
+ * Fallback if djz_theme_colors_css not in helpers
+ */
+if (!function_exists('djz_theme_colors_css')) {
+    function djz_theme_colors_css() {
+        return ':root { --primary: #0A0E27; --secondary: #3B82F6; }';
+    }
+}
+
+/**
+ * Breadcrumbs with Schema.org
  */
 function djz_breadcrumbs() {
     if (!djz_feature_enabled('breadcrumbs') || is_front_page()) {
         return;
     }
 
-    $breadcrumbs = [];
-    
-    // Home link (always first)
-    $breadcrumbs[] = [
-        'name' => __('Home', 'djzeneyer'),
-        'url'  => home_url(),
+    $breadcrumbs = [
+        [
+            'name' => __('Home', 'djzeneyer'),
+            'url'  => home_url(),
+        ]
     ];
 
     if (is_single()) {
-        // Single post
         $categories = get_the_category();
         if (!empty($categories)) {
             $breadcrumbs[] = [
@@ -529,10 +501,9 @@ function djz_breadcrumbs() {
         }
         $breadcrumbs[] = [
             'name' => get_the_title(),
-            'url'  => null, // Current page (no link)
+            'url'  => null,
         ];
     } elseif (is_page()) {
-        // Single page
         if ($post_parent = wp_get_post_parent_id(get_the_ID())) {
             $breadcrumbs[] = [
                 'name' => get_the_title($post_parent),
@@ -544,13 +515,11 @@ function djz_breadcrumbs() {
             'url'  => null,
         ];
     } elseif (is_category()) {
-        // Category archive
         $breadcrumbs[] = [
             'name' => single_cat_title('', false),
             'url'  => null,
         ];
     } elseif (is_search()) {
-        // Search results
         $breadcrumbs[] = [
             'name' => sprintf(__('Resultados para: %s', 'djzeneyer'), get_search_query()),
             'url'  => null,
@@ -580,7 +549,6 @@ function djz_breadcrumbs() {
         echo '<meta itemprop="position" content="' . esc_attr($position) . '">' . "\n";
         echo '</span>' . "\n";
         
-        // Add separator between items
         if ($position < count($breadcrumbs)) {
             echo '<span class="separator">/</span>' . "\n";
         }
@@ -590,7 +558,7 @@ function djz_breadcrumbs() {
 }
 
 /**
- * Calculate and display reading time
+ * Reading time
  */
 function djz_reading_time($post_id = null) {
     if (!djz_feature_enabled('reading_time')) {
@@ -608,22 +576,16 @@ function djz_reading_time($post_id = null) {
     }
 
     $word_count = str_word_count(strip_tags($content));
-    $reading_time = max(1, ceil($word_count / 200)); // 200 words per minute
+    $reading_time = max(1, ceil($word_count / 200));
     
-    // i18n: use ngettext for pluralization
     return sprintf(
-        ngettext(
-            '%d minuto de leitura',
-            '%d minutos de leitura',
-            $reading_time,
-            'djzeneyer'
-        ),
+        ngettext('%d minuto de leitura', '%d minutos de leitura', $reading_time, 'djzeneyer'),
         $reading_time
     );
 }
 
 /**
- * Display featured image with lazy loading
+ * Featured image with lazy loading
  */
 function djz_featured_image($post_id = null, $size = 'large') {
     if (!has_post_thumbnail($post_id)) {
@@ -643,7 +605,7 @@ function djz_featured_image($post_id = null, $size = 'large') {
 }
 
 /**
- * Get schema type based on post type
+ * Get schema type
  */
 function djz_get_schema_type($post_type = null) {
     $post_type = $post_type ?: get_post_type();
