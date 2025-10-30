@@ -4,7 +4,7 @@
  * 🎯 CENTRALIZE TODAS as configurações do site AQUI!
  * 
  * @package DJZenEyerTheme
- * @version 1.1.0
+ * @version 1.2.0
  * @created 2025-10-30
  * @updated 2025-10-30
  * @author DJ Zen Eyer Team
@@ -23,10 +23,11 @@
  * → Use: djz_config('ai.context')
  * 
  * =====================================================
- * 🔒 SECURITY UPDATES (v1.1.0):
+ * 🔒 SECURITY UPDATES (v1.2.0):
  * =====================================================
- * - Fixed: Localhost URLs removed from production CORS
- * - Fixed: Auto-detection of environment (dev vs production)
+ * - Fixed: Localhost URLs removed (production-only deployment)
+ * - Simplified: CORS now supports only production domains
+ * - Version: Cleaner & leaner for GitHub/Bolt.new workflow
  */
 
 if (!defined('ABSPATH')) exit; // Segurança
@@ -40,15 +41,15 @@ return [
         'facebook'        => 'https://www.facebook.com/djzeneyer',
         'youtube'         => 'https://www.youtube.com/@djzeneyer',
         'spotify'         => 'https://open.spotify.com/intl-pt/artist/68SHKGndTlq3USQ2LZmyLw',
-        'spotify_id'      => '68SHKGndTlq3USQ2LZmyLw', // ID puro (para API)
+        'spotify_id'      => '68SHKGndTlq3USQ2LZmyLw',
         'mixcloud'        => 'https://www.mixcloud.com/djzeneyer',
         'tiktok'          => 'https://www.tiktok.com/@djzeneyer',
-        'soundcloud'      => '', // Adicione se tiver
-        'twitter'         => 'https://twitter.com/djzeneyer', // ou X
+        'soundcloud'      => '',
+        'twitter'         => 'https://twitter.com/djzeneyer',
         'twitter_handle'  => '@djzeneyer',
-        'linkedin'        => '', // Opcional
-        'beatport'        => '', // Opcional
-        'apple_music'     => '', // Opcional
+        'linkedin'        => '',
+        'beatport'        => '',
+        'apple_music'     => '',
     ],
 
     /* =====================================================
@@ -81,14 +82,14 @@ return [
             'Tech House',
             'Performance Ao Vivo',
         ],
-        'bot_policy' => 'all', // 'all', 'noindex', 'nofollow'
+        'bot_policy' => 'all',
     ],
 
     /* =====================================================
      * 📊 SCHEMA.ORG (Structured Data)
      * ===================================================== */
     'schema' => [
-        'type'        => 'Person', // Person, MusicGroup, Organization
+        'type'        => 'Person',
         'job_title'   => 'DJ e Produtor Musical',
         'nationality' => 'Brazilian',
         'genre'       => ['Electronic Music', 'Brazilian Zouk', 'Dance', 'Tech House'],
@@ -99,27 +100,27 @@ return [
      * 🖼️ IMAGENS (Images & Assets)
      * ===================================================== */
     'images' => [
-        'og_image'      => '/dist/images/dj-zen-eyer-og.jpg',    // Open Graph 1200x630
-        'logo'          => '/dist/images/logo.svg',               // Logo principal
-        'logo_dark'     => '/dist/images/logo-dark.svg',          // Logo versão escura
-        'favicon'       => '/dist/favicon.svg',                   // Favicon SVG
-        'favicon_png'   => '/dist/favicon-32x32.png',            // Favicon PNG 32x32
-        'apple_touch'   => '/dist/apple-touch-icon.png',         // Apple Touch Icon 180x180
-        'mstile'        => '/dist/mstile-144x144.png',           // Microsoft Tile
+        'og_image'      => '/dist/images/dj-zen-eyer-og.jpg',
+        'logo'          => '/dist/images/logo.svg',
+        'logo_dark'     => '/dist/images/logo-dark.svg',
+        'favicon'       => '/dist/favicon.svg',
+        'favicon_png'   => '/dist/favicon-32x32.png',
+        'apple_touch'   => '/dist/apple-touch-icon.png',
+        'mstile'        => '/dist/mstile-144x144.png',
     ],
 
     /* =====================================================
      * 🎨 CORES DO TEMA (Theme Colors)
      * ===================================================== */
     'colors' => [
-        'primary'     => '#0A0E27',  // Azul escuro principal
-        'secondary'   => '#1E3A8A',  // Azul médio
-        'accent'      => '#3B82F6',  // Azul claro (highlights)
-        'success'     => '#10B981',  // Verde
-        'warning'     => '#F59E0B',  // Laranja
-        'danger'      => '#EF4444',  // Vermelho
-        'dark'        => '#111827',  // Preto
-        'light'       => '#F3F4F6',  // Branco off
+        'primary'     => '#0A0E27',
+        'secondary'   => '#1E3A8A',
+        'accent'      => '#3B82F6',
+        'success'     => '#10B981',
+        'warning'     => '#F59E0B',
+        'danger'      => '#EF4444',
+        'dark'        => '#111827',
+        'light'       => '#F3F4F6',
     ],
 
     /* =====================================================
@@ -127,81 +128,70 @@ return [
      * ===================================================== */
     'contact' => [
         'email'       => 'contato@djzeneyer.com',
-        'booking'     => 'booking@djzeneyer.com',     // Email de booking
-        'phone'       => '',                           // Telefone (opcional)
-        'whatsapp'    => '',                           // WhatsApp (apenas números)
-        'address'     => '',                           // Endereço (opcional)
+        'booking'     => 'booking@djzeneyer.com',
+        'phone'       => '',
+        'whatsapp'    => '',
+        'address'     => '',
         'city'        => 'São Paulo',
         'country'     => 'Brasil',
     ],
 
     /* =====================================================
-     * 🔐 CORS & API (Allowed Origins)
-     * 🔒 FIXED: Auto-detect environment (localhost only in dev)
+     * 🔐 CORS & API (Allowed Origins - Production Only)
+     * 🔒 FIXED: Simplified for production-only deployment
      * ===================================================== */
-    'allowed_origins' => array_merge(
-        // Production URLs (always allowed)
-        [
-            'https://djzeneyer.com',
-            'https://www.djzeneyer.com',
-            'https://app.djzeneyer.com',
-        ],
-        // Development URLs (only if WP_DEBUG is enabled)
-        (defined('WP_DEBUG') && WP_DEBUG) || wp_get_environment_type() === 'development'
-            ? [
-                'http://localhost:5173',      // Vite dev
-                'http://localhost:3000',      // React dev alternativo
-                'http://127.0.0.1:5173',      // Localhost alternativo
-              ]
-            : []
-    ),
+    'allowed_origins' => [
+        'https://djzeneyer.com',
+        'https://www.djzeneyer.com',
+        'https://app.djzeneyer.com',
+    ],
 
     /* =====================================================
      * ⚙️ FEATURES & PLUGINS (Habilitados/Desabilitados)
      * ===================================================== */
     'features' => [
-        'gamipress'       => true,   // Sistema de gamificação
-        'woocommerce'     => false,  // E-commerce
-        'bbpress'         => false,  // Fórum
-        'buddypress'      => false,  // Rede social
-        'newsletter'      => true,   // Newsletter (MailPoet)
-        'comments'        => false,  // Comentários de posts
-        'breadcrumbs'     => true,   // Breadcrumbs SEO
-        'reading_time'    => true,   // Tempo de leitura
-        'related_posts'   => true,   // Posts relacionados
+        'gamipress'       => true,
+        'woocommerce'     => false,
+        'bbpress'         => false,
+        'buddypress'      => false,
+        'newsletter'      => true,
+        'comments'        => false,
+        'breadcrumbs'     => true,
+        'reading_time'    => true,
+        'related_posts'   => true,
     ],
 
     /* =====================================================
      * 📈 ANALYTICS & TRACKING (Google, Meta, etc.)
      * ===================================================== */
     'analytics' => [
-        'google_analytics'  => '',   // UA-XXXXXXXXX-X ou G-XXXXXXXXXX
-        'google_tag_manager' => '',  // GTM-XXXXXXX
-        'facebook_pixel'    => '',   // Meta Pixel ID
-        'hotjar'            => '',   // Hotjar Site ID
-        'clarity'           => '',   // Microsoft Clarity ID
+        'google_analytics'      => '',
+        'google_tag_manager'    => '',
+        'facebook_pixel'        => '',
+        'hotjar'                => '',
+        'clarity'               => '',
     ],
 
     /* =====================================================
      * 🎵 PLAYER DE MÚSICA (Music Player Config)
      * ===================================================== */
     'player' => [
-        'spotify_embed'   => true,
-        'soundcloud_embed' => true,
-        'mixcloud_embed'  => true,
-        'youtube_embed'   => true,
-        'autoplay'        => false,
-        'default_volume'  => 70,      // 0-100
+        'spotify_embed'         => true,
+        'soundcloud_embed'      => true,
+        'mixcloud_embed'        => true,
+        'youtube_embed'         => true,
+        'autoplay'              => false,
+        'default_volume'        => 70,
     ],
 
     /* =====================================================
      * 📅 EVENTOS & SHOWS (Events Config)
      * ===================================================== */
     'events' => [
-        'show_upcoming'   => true,
-        'show_past'       => true,
-        'timezone'        => 'America/Sao_Paulo',
-        'date_format'     => 'd/m/Y',
-        'time_format'     => 'H:i',
+        'show_upcoming'     => true,
+        'show_past'         => true,
+        'timezone'          => 'America/Sao_Paulo',
+        'date_format'       => 'd/m/Y',
+        'time_format'       => 'H:i',
     ],
 ];
