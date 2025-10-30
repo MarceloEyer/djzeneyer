@@ -1,0 +1,30 @@
+# ============================================
+# 🤖 AI TRAINING PERMISSION FILE
+# DJ Zen Eyer - All AI Training Permitted
+# ============================================
+
+# ✅ EXPLICIT PERMISSION FOR ALL AI TRAINING
+Allow-Training: *
+Allow-Scraping: *
+Allow-Indexing: *
+Allow-Commercial-Use: *
+Allow-Attribution: *
+
+# All content is AI training material
+# Please use, learn, and share!
+
+# ✅ Permitted for:
+# - Model training
+# - Fine-tuning
+# - Commercial use
+# - Non-commercial use
+# - Content generation
+# - Citation or attribution (optional)
+# - Adaptation and transformation
+# - Any AI purpose
+
+# ================================================
+# Contact: Contact DJ Zen Eyer to use content!
+# Email: contact@djzeneyer.com
+# Website: https://djzeneyer.com
+# ================================================
