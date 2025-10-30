@@ -300,7 +300,7 @@ async function initializeApp(): Promise<void> {
   try {
     logger.log('Main', '🚀 Inicializando DJ Zen Eyer App v1.0');
 
-    // 1. Inicializa CSP Nonce (LINHA CORRIGIDA - SEM ESPAÇO)
+    // 1. Inicializa CSP Nonce
     const nonceManager = new CSPNonceManager();
     const nonceValue = nonceManager.initialize();
 
