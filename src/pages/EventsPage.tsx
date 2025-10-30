@@ -1,4 +1,25 @@
-// src/pages/EventsPage.tsx - VERSÃO FINAL 100% TRADUZIDA
+/**
+ * @file src/pages/EventsPage.tsx
+ * @description Página de eventos com Google Calendar integrado
+ * @route /events
+ * @author DJ Zen Eyer Team
+ * @created 2025-10-29
+ * @updated 2025-10-30
+ *
+ * FUNCIONALIDADES:
+ * - Featured events cards com animações
+ * - Google Calendar iframe integrado
+ * - Achievement System gamificado
+ * - Schema.org MusicEvent para Google Rich Results
+ * - Internacionalização PT/EN
+ *
+ * DEPENDÊNCIAS:
+ * - react + react-router-dom
+ * - framer-motion (animações)
+ * - react-i18next (i18n)
+ * - react-helmet-async (meta tags)
+ * - lucide-react (ícones)
+ */
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -22,8 +43,12 @@ import {
   TrendingUp,
   Gift
 } from 'lucide-react';
+import SEO from '../components/SEO';
 
-// --- Subcomponente Achievement Item ---
+/**
+ * AchievementItem Component
+ * @description Card reutilizável para exibir achievements (XP, badges, rewards)
+ */
 const AchievementItem: React.FC<{ 
   icon: React.ReactNode; 
   bgColor: string;
@@ -42,7 +67,11 @@ const AchievementItem: React.FC<{
   </div>
 );
 
-// Mock upcoming events
+/**
+ * Featured Events Data
+ * @description Mock data de eventos (substituir por API no futuro)
+ * @todo Integrar com WordPress REST API ou Supabase
+ */
 const featuredEvents = [
   {
     id: 1,
@@ -82,6 +111,11 @@ const featuredEvents = [
   }
 ];
 
+/**
+ * EventsPage Component
+ * @description Página principal de eventos
+ * @returns {JSX.Element} Página com eventos, calendar e achievements
+ */
 const EventsPage: React.FC = () => {
   const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -216,9 +250,61 @@ const EventsPage: React.FC = () => {
 
   return (
     <>
+      {/* ✅ SEO COMPONENT (OG + Twitter + Hreflang) */}
+      <SEO
+        title={t('events_page_title')}
+        description="Upcoming Brazilian Zouk events with World Champion DJ Zen Eyer 🇧🇷 | Festivals, workshops & livestreams in Rio, São Paulo & online. Book your spot now!"
+        image="https://djzeneyer.com/images/og-image-events.jpg"
+        type="website"
+        keywords="Brazilian Zouk events, DJ Zen Eyer events, Zouk festivals, Zouk workshops, Brazilian Zouk Rio, São Paulo Zouk, Zouk livestream"
+      />
+
+      {/* ✅ SCHEMA MARKUP (SEPARADO DO HELMET) */}
       <Helmet>
-        <title>{t('events_page_title')}</title>
-        <meta name="description" content={t('events_page_meta_desc')} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "MusicEvent",
+            "name": featuredEvents[0].title,
+            "startDate": `${featuredEvents[0].date}T${featuredEvents[0].time}:00-03:00`,
+            "endDate": `${featuredEvents[0].date}T23:59:00-03:00`,
+            "eventStatus": "https://schema.org/EventScheduled",
+            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+            "location": {
+              "@type": "Place",
+              "name": "Copacabana Beach",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Rio de Janeiro",
+                "addressRegion": "RJ",
+                "postalCode": "22021-001",
+                "addressCountry": "BR"
+              }
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "150",
+              "priceCurrency": "BRL",
+              "url": "https://djzeneyer.com/events",
+              "availability": "https://schema.org/InStock"
+            },
+            "performer": {
+              "@type": "Person",
+              "name": "DJ Zen Eyer",
+              "url": "https://djzeneyer.com"
+            },
+            "organizer": {
+              "@type": "Person",
+              "name": "DJ Zen Eyer",
+              "url": "https://djzeneyer.com"
+            },
+            "description": "Brazilian Zouk festival with World Champion DJ Zen Eyer on Copacabana Beach. Experience the best of Brazilian Zouk music with live performances, workshops, and international DJs.",
+            "image": [
+              featuredEvents[0].image,
+              "https://djzeneyer.com/images/event-1.jpg"
+            ]
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen pt-24 pb-16">
@@ -299,6 +385,7 @@ const EventsPage: React.FC = () => {
                 </div>
               </div>
 
+              {/* ✅ Google Calendar Iframe (URL sem espaços!) */}
               <div className="relative w-full rounded-lg overflow-hidden shadow-lg bg-white/5">
                 <div className="relative pb-[75%] md:pb-[56.25%] h-0">
                   <iframe 
