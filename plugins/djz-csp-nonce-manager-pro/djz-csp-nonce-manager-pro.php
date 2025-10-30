@@ -733,3 +733,484 @@ if (!function_exists('djzeneyer_log_csp_event')) {
         // Exposed através de reflection ou private method
     }
 }
+    // ============================================
+    // 📋 RENDER ADMIN PAGES (v2.5.0 - PARTE 2/2)
+    // ============================================
+    
+    /**
+     * TAB: Setup - Implementation Guide
+     */
+    elseif ($active_tab === 'setup'): ?>
+        <div class="djze-card">
+            <h2>⚙️ <?php echo esc_html__('Quick Setup Guide', 'djzeneyer-csp'); ?></h2>
+            
+            <h3>1️⃣ <?php echo esc_html__('Meta Tag in Header', 'djzeneyer-csp'); ?></h3>
+            <p><?php echo esc_html__('Add this to your theme\'s header.php:', 'djzeneyer-csp'); ?></p>
+            <div class="djze-code">&lt;meta name="csp-nonce" content="&lt;?php echo esc_attr(djzeneyer_get_csp_nonce()); ?&gt;"&gt;</div>
+            
+            <h3>2️⃣ <?php echo esc_html__('Inline Scripts', 'djzeneyer-csp'); ?></h3>
+            <p><?php echo esc_html__('Use nonce attribute on script tags:', 'djzeneyer-csp'); ?></p>
+            <div class="djze-code">&lt;script nonce="&lt;?php echo esc_attr(djzeneyer_get_csp_nonce()); ?&gt;"&gt;
+console.log('Protected by CSP!');
+&lt;/script&gt;</div>
+            
+            <h3>3️⃣ <?php echo esc_html__('React/Vite Setup', 'djzeneyer-csp'); ?></h3>
+            <p><?php echo esc_html__('In your main.tsx or main.jsx:', 'djzeneyer-csp'); ?></p>
+            <div class="djze-code">const nonce = document.querySelector('meta[name="csp-nonce"]')?.getAttribute('content');
+window.__vite_nonce__ = nonce;
+window.__webpack_nonce__ = nonce;
+console.log('🔒 CSP Nonce:', nonce?.substring(0, 16) + '...');</div>
+            
+            <h3>4️⃣ <?php echo esc_html__('PHP Helper Function', 'djzeneyer-csp'); ?></h3>
+            <div class="djze-code">&lt;?php
+// Get nonce in any PHP file
+$nonce = djzeneyer_get_csp_nonce();
+echo '&lt;script nonce="' . esc_attr($nonce) . '"&gt;...&lt;/script&gt;';
+?&gt;</div>
+            
+            <h3>5️⃣ <?php echo esc_html__('Report Violations', 'djzeneyer-csp'); ?></h3>
+            <p><?php echo esc_html__('CSP violations are automatically reported to:', 'djzeneyer-csp'); ?></p>
+            <div class="djze-code">https://djzeneyer.report-uri.com/r/d/csp/enforce</div>
+            <p><small><?php echo esc_html__('Create account at report-uri.com to receive alerts', 'djzeneyer-csp'); ?></small></p>
+        </div>
+    <?php
+    
+    /**
+     * TAB: Documentation
+     */
+    elseif ($active_tab === 'docs'): ?>
+        <div class="djze-card">
+            <h2>📖 <?php echo esc_html__('Documentation', 'djzeneyer-csp'); ?></h2>
+            
+            <h3>🎯 <?php echo esc_html__('What is CSP Nonce?', 'djzeneyer-csp'); ?></h3>
+            <p><?php echo esc_html__('A Nonce (Number Once) is a unique token that authorizes specific inline scripts without using unsafe-inline.', 'djzeneyer-csp'); ?></p>
+            
+            <h3>🔒 <?php echo esc_html__('CSP Directives', 'djzeneyer-csp'); ?></h3>
+            <ul>
+                <li><strong>default-src \'none\'</strong> - <?php echo esc_html__('Everything blocked by default', 'djzeneyer-csp'); ?></li>
+                <li><strong>script-src \'nonce-{nonce}\' \'strict-dynamic\'</strong> - <?php echo esc_html__('Only scripts with nonce', 'djzeneyer-csp'); ?></li>
+                <li><strong>style-src \'self\' https://fonts.googleapis.com</strong> - <?php echo esc_html__('Safe styles', 'djzeneyer-csp'); ?></li>
+                <li><strong>upgrade-insecure-requests</strong> - <?php echo esc_html__('Force HTTPS', 'djzeneyer-csp'); ?></li>
+                <li><strong>block-all-mixed-content</strong> - <?php echo esc_html__('Block HTTP content on HTTPS', 'djzeneyer-csp'); ?></li>
+            </ul>
+            
+            <h3>⚛️ <?php echo esc_html__('React Integration', 'djzeneyer-csp'); ?></h3>
+            <p><?php echo esc_html__('The nonce is automatically applied to Vite/Webpack builders through __vite_nonce__ and __webpack_nonce__ globals.', 'djzeneyer-csp'); ?></p>
+            
+            <h3>📊 <?php echo esc_html__('Monitoring', 'djzeneyer-csp'); ?></h3>
+            <p><?php echo esc_html__('Violations are reported to report-uri.com. Configure your account there to receive alerts.', 'djzeneyer-csp'); ?></p>
+            
+            <h3>🛠️ <?php echo esc_html__('Troubleshooting', 'djzeneyer-csp'); ?></h3>
+            <ul>
+                <li><strong><?php echo esc_html__('Script blocked?', 'djzeneyer-csp'); ?></strong> Check Logs tab for CSP violations</li>
+                <li><strong><?php echo esc_html__('Meta tag empty?', 'djzeneyer-csp'); ?></strong> Plugin may not be activated</li>
+                <li><strong><?php echo esc_html__('Console errors?', 'djzeneyer-csp'); ?></strong> See Diagnostics tab</li>
+            </ul>
+        </div>
+    <?php
+    
+    /**
+     * TAB: Logs - Real-time Log Viewer
+     */
+    elseif ($active_tab === 'logs'): ?>
+        <div class="djze-card">
+            <h2>📋 <?php echo esc_html__('Event Logs', 'djzeneyer-csp'); ?></h2>
+            
+            <div class="djze-button-group">
+                <button class="button button-primary" onclick="location.reload();">
+                    🔄 <?php echo esc_html__('Refresh', 'djzeneyer-csp'); ?>
+                </button>
+                <button class="button button-secondary" onclick="djzeCspExportLogs('csv');">
+                    📥 <?php echo esc_html__('Export CSV', 'djzeneyer-csp'); ?>
+                </button>
+                <button class="button button-secondary" onclick="djzeCspExportLogs('json');">
+                    📥 <?php echo esc_html__('Export JSON', 'djzeneyer-csp'); ?>
+                </button>
+                <button class="button button-danger" onclick="djzeCspClearLogs();">
+                    🗑️ <?php echo esc_html__('Clear Logs', 'djzeneyer-csp'); ?>
+                </button>
+            </div>
+            
+            <h3><?php echo esc_html__('Events Today', 'djzeneyer-csp'); ?> (<?php echo esc_html(date_i18n('Y-m-d')); ?>)</h3>
+            <div id="djze-logs-container" style="max-height: 600px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                <?php echo $this->render_logs(); ?>
+            </div>
+        </div>
+    <?php
+    
+    /**
+     * TAB: Diagnostics
+     */
+    elseif ($active_tab === 'diagnostics'): ?>
+        <div class="djze-card">
+            <h2>🔍 <?php echo esc_html__('Diagnostics & Health Check', 'djzeneyer-csp'); ?></h2>
+            
+            <h3>🖥️ <?php echo esc_html__('WordPress Environment', 'djzeneyer-csp'); ?></h3>
+            <div class="djze-code">
+                <strong><?php echo esc_html__('WP Version:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html(get_bloginfo('version')); ?><br>
+                <strong><?php echo esc_html__('PHP Version:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html(phpversion()); ?><br>
+                <strong><?php echo esc_html__('Site URL:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html(site_url()); ?><br>
+                <strong><?php echo esc_html__('HTTPS:', 'djzeneyer-csp'); ?></strong> <?php echo is_ssl() ? '✅ ' . esc_html__('Yes', 'djzeneyer-csp') : '❌ ' . esc_html__('No', 'djzeneyer-csp'); ?><br>
+            </div>
+            
+            <h3>🔒 <?php echo esc_html__('CSP Configuration', 'djzeneyer-csp'); ?></h3>
+            <div class="djze-code">
+                <strong><?php echo esc_html__('Plugin Version:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html(DJZE_CSP_VERSION); ?><br>
+                <strong><?php echo esc_html__('Nonce Length:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html(strlen($nonce)); ?> chars (256 bits)<br>
+                <strong><?php echo esc_html__('Log Directory:', 'djzeneyer-csp'); ?></strong> <?php echo is_dir(DJZE_CSP_LOG_DIR) ? '✅ ' . esc_html__('Exists', 'djzeneyer-csp') : '❌ ' . esc_html__('Missing', 'djzeneyer-csp'); ?><br>
+                <strong><?php echo esc_html__('Log Writable:', 'djzeneyer-csp'); ?></strong> <?php echo is_writable(DJZE_CSP_LOG_DIR) ? '✅ ' . esc_html__('Yes', 'djzeneyer-csp') : '❌ ' . esc_html__('No', 'djzeneyer-csp'); ?><br>
+            </div>
+            
+            <h3>📊 <?php echo esc_html__('Statistics', 'djzeneyer-csp'); ?></h3>
+            <div class="djze-code">
+                <?php
+                $log_files = glob(DJZE_CSP_LOG_DIR . '*.log');
+                $total_events = 0;
+                foreach ($log_files as $file) {
+                    $total_events += count(file($file, FILE_SKIP_EMPTY_LINES));
+                }
+                ?>
+                <strong><?php echo esc_html__('Total Log Files:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html(count($log_files)); ?><br>
+                <strong><?php echo esc_html__('Total Events:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html($total_events); ?><br>
+                <strong><?php echo esc_html__('Disk Space:', 'djzeneyer-csp'); ?></strong> <?php echo esc_html($this->get_logs_size()); ?><br>
+            </div>
+            
+            <h3>⚡ <?php echo esc_html__('Security Headers Sent', 'djzeneyer-csp'); ?></h3>
+            <div class="djze-code">
+                ✅ Content-Security-Policy<br>
+                ✅ Report-To<br>
+                ✅ X-Frame-Options: SAMEORIGIN<br>
+                ✅ X-Content-Type-Options: nosniff<br>
+                ✅ X-XSS-Protection: 1; mode=block<br>
+                ✅ Referrer-Policy: strict-origin-when-cross-origin<br>
+            </div>
+        </div>
+    <?php
+    
+    /**
+     * TAB: Settings
+     */
+    elseif ($active_tab === 'settings'): ?>
+        <div class="djze-card">
+            <h2>⚙️ <?php echo esc_html__('Settings', 'djzeneyer-csp'); ?></h2>
+            <form method="post" action="options.php">
+                <?php
+                settings_fields('djzeneyer_csp_group');
+                do_settings_sections('djzeneyer_csp_page');
+                submit_button(__('Save Settings', 'djzeneyer-csp'));
+                ?>
+            </form>
+        </div>
+    <?php endif; ?>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Render logs in admin (v2.5.0)
+     */
+    private function render_logs() {
+        if (!$this->logging_enabled) {
+            return '<div style="padding: 20px; color: #999; text-align: center;">' . 
+                   esc_html__('Logging is disabled in settings', 'djzeneyer-csp') . '</div>';
+        }
+        
+        $today_log = DJZE_CSP_LOG_DIR . 'events-' . date('Y-m-d') . '.log';
+        
+        if (!file_exists($today_log)) {
+            return '<div style="padding: 20px; color: #999; text-align: center;">' . 
+                   esc_html__('No events logged today', 'djzeneyer-csp') . '</div>';
+        }
+        
+        $lines = array_reverse(file($today_log, FILE_SKIP_EMPTY_LINES));
+        $html = '';
+        
+        foreach (array_slice($lines, 0, 500) as $line) {
+            $event = json_decode(trim($line), true);
+            if ($event) {
+                $type = $event['type'] ?? 'UNKNOWN';
+                $time = $event['timestamp'] ?? 'Unknown';
+                $class = strpos($type, 'ERROR') !== false ? 'djze-log-error' : 
+                        (strpos($type, 'SUCCESS') !== false ? 'djze-log-success' : 'djze-log-info');
+                
+                $html .= '<div class="djze-log ' . esc_attr($class) . '" style="padding: 10px; margin: 5px 0; border-radius: 3px; font-family: monospace; font-size: 12px; border-left: 4px solid; background: #f9f9f9;">';
+                $html .= '<strong>[' . esc_html($time) . ']</strong> ' . esc_html($type);
+                
+                if (!empty($event['data'])) {
+                    $html .= '<br><small style="color: #666;">' . esc_html(json_encode($event['data'])) . '</small>';
+                }
+                
+                $html .= '</div>';
+            }
+        }
+        
+        return $html ?: '<div style="padding: 20px; color: #999;">' . esc_html__('No logs found', 'djzeneyer-csp') . '</div>';
+    }
+    
+    /**
+     * Get disk space used by logs
+     */
+    private function get_logs_size() {
+        $size = 0;
+        foreach (glob(DJZE_CSP_LOG_DIR . '*.log*') as $file) {
+            $size += filesize($file);
+        }
+        
+        if ($size > 1024 * 1024) {
+            return round($size / 1024 / 1024, 2) . ' MB';
+        }
+        return round($size / 1024, 2) . ' KB';
+    }
+    
+    // ============================================
+    // 🔄 AJAX HANDLERS (v2.5.0)
+    // ============================================
+    
+    /**
+     * AJAX: Get logs (real-time)
+     */
+    public function ajax_get_logs() {
+        check_ajax_referer('djze_csp_admin');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized']);
+        }
+        
+        $html = $this->render_logs();
+        wp_send_json_success(['logs' => $html]);
+    }
+    
+    /**
+     * AJAX: Clear logs
+     */
+    public function ajax_clear_logs() {
+        check_ajax_referer('djze_csp_admin');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized']);
+        }
+        
+        $this->clear_all_logs();
+        wp_send_json_success(['message' => __('Logs cleared successfully!', 'djzeneyer-csp')]);
+    }
+    
+    /**
+     * Clear all logs
+     */
+    private function clear_all_logs() {
+        foreach (glob(DJZE_CSP_LOG_DIR . '*.log*') as $file) {
+            unlink($file);
+        }
+        
+        $this->log_event('LOGS_CLEARED', ['timestamp' => current_time('c')]);
+    }
+    
+    /**
+     * AJAX: Export logs
+     */
+    public function ajax_export_logs() {
+        check_ajax_referer('djze_csp_admin');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized']);
+        }
+        
+        $format = isset($_POST['format']) ? sanitize_key($_POST['format']) : 'json';
+        
+        if ($format === 'csv') {
+            $this->export_logs_csv();
+        } else {
+            $this->export_logs_json();
+        }
+    }
+    
+    /**
+     * Export logs as CSV
+     */
+    private function export_logs_csv() {
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="csp-logs-' . date('Y-m-d') . '.csv"');
+        
+        $output = fopen('php://output', 'w');
+        
+        // CSV header
+        fputcsv($output, ['Timestamp', 'Type', 'User Agent', 'IP', 'Data']);
+        
+        // Get all logs
+        foreach (glob(DJZE_CSP_LOG_DIR . '*.log') as $file) {
+            foreach (file($file, FILE_SKIP_EMPTY_LINES) as $line) {
+                $event = json_decode(trim($line), true);
+                if ($event) {
+                    fputcsv($output, [
+                        $event['timestamp'] ?? '',
+                        $event['type'] ?? '',
+                        $event['user_agent'] ?? '',
+                        $event['ip'] ?? '',
+                        json_encode($event['data'] ?? [])
+                    ]);
+                }
+            }
+        }
+        
+        fclose($output);
+        wp_die();
+    }
+    
+    /**
+     * Export logs as JSON
+     */
+    private function export_logs_json() {
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="csp-logs-' . date('Y-m-d') . '.json"');
+        
+        $logs = [];
+        
+        foreach (glob(DJZE_CSP_LOG_DIR . '*.log') as $file) {
+            foreach (file($file, FILE_SKIP_EMPTY_LINES) as $line) {
+                $event = json_decode(trim($line), true);
+                if ($event) {
+                    $logs[] = $event;
+                }
+            }
+        }
+        
+        echo wp_json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        wp_die();
+    }
+    
+    /**
+     * Handle CSP report (Violation endpoint)
+     */
+    public function handle_csp_report() {
+        $input = file_get_contents('php://input');
+        $report = json_decode($input, true);
+        
+        if ($report && isset($report['csp-report'])) {
+            $csp_report = $report['csp-report'];
+            
+            $this->log_event('CSP_VIOLATION', [
+                'blocked_uri' => sanitize_url($csp_report['blocked-uri'] ?? 'unknown'),
+                'violated_directive' => sanitize_key($csp_report['violated-directive'] ?? 'unknown'),
+                'source_file' => sanitize_text_field($csp_report['source-file'] ?? 'unknown'),
+                'line_number' => (int) ($csp_report['line-number'] ?? 0),
+            ]);
+        }
+        
+        wp_send_json_success();
+    }
+    
+    // ============================================
+    // 🆕 ACTIVATION/DEACTIVATION (v2.5.0)
+    // ============================================
+}
+
+// Plugin activation
+register_activation_hook(__FILE__, function() {
+    // Create log directory
+    wp_mkdir_p(DJZE_CSP_LOG_DIR);
+    
+    // Add option
+    add_option('djze_csp_activated', current_time('mysql'));
+    
+    // Initialize settings
+    add_option('djzeneyer_csp_settings', [
+        'disable_logs' => '0',
+        'disable_rate_limit' => '0',
+    ]);
+});
+
+// Plugin deactivation
+register_deactivation_hook(__FILE__, function() {
+    // Clear transients
+    global $wpdb;
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'transient_djze_csp_%'");
+});
+
+// Initialize plugin
+add_action('plugins_loaded', function() {
+    DJZenEyer_CSP_Manager_Pro::getInstance();
+}, 1);
+
+// ============================================
+// 🛠️ GLOBAL HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Get CSP nonce (global helper) - Use in any template
+ * 
+ * @return string 256-bit nonce
+ */
+if (!function_exists('djzeneyer_get_csp_nonce')) {
+    function djzeneyer_get_csp_nonce() {
+        return DJZenEyer_CSP_Manager_Pro::getInstance()->get_csp_nonce();
+    }
+}
+
+/**
+ * Add style hash for inline CSS
+ */
+if (!function_exists('djzeneyer_add_style_hash')) {
+    function djzeneyer_add_style_hash($css) {
+        return DJZenEyer_CSP_Manager_Pro::getInstance()->add_style_hash($css);
+    }
+}
+
+// ============================================
+// 📝 INLINE JAVASCRIPT FOR ADMIN PAGE
+// ============================================
+?>
+<script>
+(function() {
+    'use strict';
+    
+    // Clear logs
+    window.djzeCspClearLogs = function() {
+        if (!confirm(djzeCspAdmin.i18n.confirm_clear)) return;
+        
+        jQuery.post(ajaxurl, {
+            action: 'djze_clear_logs',
+            nonce: djzeCspAdmin.nonce
+        }, function(response) {
+            if (response.success) {
+                alert(djzeCspAdmin.i18n.logs_cleared);
+                location.reload();
+            }
+        });
+    };
+    
+    // Export logs
+    window.djzeCspExportLogs = function(format) {
+        jQuery.post(ajaxurl, {
+            action: 'djze_export_logs',
+            format: format,
+            nonce: djzeCspAdmin.nonce
+        }, function(response) {
+            if (response.success) {
+                // Trigger download
+                var link = document.createElement('a');
+                link.href = 'data:' + (format === 'csv' ? 'text/csv' : 'application/json') + 
+                           ';charset=utf-8,' + encodeURIComponent(response.data);
+                link.download = 'csp-logs-' + format;
+                link.click();
+            }
+        });
+    };
+    
+    // Auto-refresh logs
+    jQuery(function($) {
+        if (jQuery('#djze-logs-container').length) {
+            setInterval(function() {
+                jQuery.post(ajaxurl, {
+                    action: 'djze_get_logs',
+                    nonce: djzeCspAdmin.nonce
+                }, function(response) {
+                    if (response.success) {
+                        jQuery('#djze-logs-container').html(response.data.logs);
+                    }
+                });
+            }, 30000); // Refresh every 30 seconds
+        }
+    });
+})();
+</script>
+<?php
