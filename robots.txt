@@ -1,5 +1,5 @@
 # ============================================
-# robots.txt - DJ Zen Eyer Theme v1.0.0
+# robots.txt - DJ Zen Eyer Theme v4.2.1
 # Created: 2025-10-30
 # ============================================
 
@@ -8,24 +8,20 @@
 # ============================================
 User-agent: *
 
-# ALLOW - Páginas públicas (crawl OK)
-Allow: /
-Allow: /eventos/
-Allow: /musicas/
-Allow: /blog/
-Allow: /contato/
-Allow: /wp-json/djz/v1/config
-Allow: /wp-json/djz/v1/social
-
-# DISALLOW - Admin & System
+# DISALLOW - Admin & System (FIRST)
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
 Disallow: /wp-content/plugins/
 Disallow: /wp-content/themes/
-Disallow: /wp-content/uploads/
-Disallow: /wp-json/
-Disallow: /xmlrpc.php
+
+# DISALLOW - REST API (except public endpoints)
+Disallow: /wp-json/wp/
+Disallow: /wp-json/jetpack/
+Disallow: /wp-json/yoast/
+
+# ALLOW - Your public REST endpoints
+Allow: /wp-json/djz/v1/
 
 # DISALLOW - Private Areas
 Disallow: /cart/
@@ -37,13 +33,11 @@ Disallow: /user/
 
 # DISALLOW - Temporary & Cache
 Disallow: /search/
-Disallow: /?
-Disallow: /*?
+Disallow: /?*
 Disallow: /*?orderby=
 Disallow: /*?sort=
 Disallow: /page/
 Disallow: /feed/
-Disallow: /.*?s=
 
 # DISALLOW - Avoid Duplicate Content
 Disallow: /*?utm_
@@ -52,33 +46,49 @@ Disallow: /*?fbclid=
 Disallow: /print/
 Disallow: /printable/
 
+# ALLOW - Public pages (for clarity)
+Allow: /
+Allow: /eventos/
+Allow: /musicas/
+Allow: /blog/
+Allow: /contato/
+
 # ============================================
 # SPECIFIC BOT RULES
 # ============================================
 
-# GOOGLE - Allow crawling
+# GOOGLE - Full access
 User-agent: Googlebot
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Allow: /wp-json/djz/v1/
 
-# GOOGLE IMAGES
+# GOOGLE IMAGES - Allow image indexing
 User-agent: Googlebot-Image
+Disallow:
 Allow: /wp-content/uploads/
+
+# BING
+User-agent: Bingbot
+Disallow: /wp-admin/
+Disallow: /wp-login.php
 
 # FACEBOOK - Allow for sharing/preview
 User-agent: facebookexternalhit
 Allow: /
+Disallow:
 
 # TWITTER - Allow for cards
 User-agent: Twitterbot
 Allow: /
+Disallow:
 
-# LINKEDINBOT
+# LINKEDIN
 User-agent: LinkedInBot
 Allow: /
+Disallow:
 
-# AI BOTS - Custom rules
+# AI BOTS - Block (respect authors)
 User-agent: GPTBot
 Disallow: /
 
@@ -91,8 +101,8 @@ Disallow: /
 User-agent: Claude-Web
 Disallow: /
 
-User-agent: Claude-Web
-Disallow: /
+User-agent: AdsBot-Google
+Disallow:
 
 # ============================================
 # CRAWL DELAY & REQUEST RATE
@@ -111,11 +121,23 @@ Sitemap: https://djzeneyer.com/sitemap-taxonomies.xml
 # ============================================
 # NOTES FOR DEVELOPERS
 # ============================================
+# Rules Priority (from top to bottom):
+# 1. Most specific rules FIRST (User-agent specific)
+# 2. General rules LAST (User-agent: *)
+# 
+# Important Notes:
 # - WordPress pages & posts are publicly crawlable
 # - Admin sections (wp-admin, wp-login) are blocked
-# - WP REST API blocked globally (except public djz endpoints)
-# - Private content (cart, checkout) is blocked
-# - Duplicate content parameters are blocked
-# - AI crawlers (GPTBot, Claude, etc) are blocked
-# - Search engines (Google, Bing) have full access
-# - Social media bots have full access (for sharing)
+# - Media files (images) are ALLOWED for indexing
+# - Public REST API endpoints (/wp-json/djz/v1/) permitted
+# - Private content (cart, checkout) blocked
+# - Duplicate content parameters blocked
+# - AI crawlers blocked to respect author rights
+# - Search engines have full access
+# - Social media bots permitted for sharing
+#
+# SEO Best Practices:
+# - Use Disallow sparingly (blocks crawl budget)
+# - Allow images for Google Images indexing
+# - Sitemap provides URL structure to crawlers
+# - Crawl delay set to 1s to reduce server load
