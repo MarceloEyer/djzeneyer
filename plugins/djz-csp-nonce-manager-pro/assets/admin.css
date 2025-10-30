@@ -1,0 +1,523 @@
+/**
+ * DJ Zen Eyer - CSP Nonce Manager PRO
+ * Admin Dashboard Styles (v2.5.0)
+ * @package DJZenEyerCSPManagerPRO
+ */
+
+/* ============================================
+ * 🎨 VARIABLES & BASE STYLES
+ * ============================================ */
+
+:root {
+    --djz-primary: #667eea;
+    --djz-secondary: #764ba2;
+    --djz-success: #28a745;
+    --djz-danger: #dc3545;
+    --djz-warning: #ffc107;
+    --djz-info: #17a2b8;
+    --djz-light: #f8f9fa;
+    --djz-dark: #0a0e27;
+    --djz-border: #e0e0e0;
+    --djz-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+ * 📦 WRAPPER & MAIN CONTAINER
+ * ============================================ */
+
+.djze-csp-wrap {
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.djze-csp-wrap h1 {
+    color: var(--djz-dark);
+    font-weight: 700;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid var(--djz-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ============================================
+ * 🗂️ TABS NAVIGATION
+ * ============================================ */
+
+.nav-tab-wrapper {
+    background: #fff;
+    border-bottom: 2px solid var(--djz-border);
+    margin-bottom: 0 !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 0;
+}
+
+.nav-tab {
+    color: #666;
+    background: #f5f5f5;
+    border: 1px solid var(--djz-border);
+    border-bottom: 0;
+    padding: 12px 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+}
+
+.nav-tab:hover {
+    background: #e9e9e9;
+    color: var(--djz-primary);
+}
+
+.nav-tab-active {
+    background: #fff !important;
+    color: var(--djz-primary) !important;
+    border-top: 3px solid var(--djz-primary) !important;
+    border-bottom: 1px solid #fff !important;
+}
+
+/* ============================================
+ * 💳 CARDS & BOXES
+ * ============================================ */
+
+.djze-card {
+    background: #fff;
+    border: 1px solid var(--djz-border);
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: var(--djz-shadow);
+    transition: all 0.3s ease;
+}
+
+.djze-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.djze-card h2 {
+    margin-top: 0;
+    color: var(--djz-dark);
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--djz-light);
+}
+
+.djze-card h3 {
+    color: var(--djz-dark);
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+.djze-card p {
+    color: #555;
+    line-height: 1.7;
+    margin: 10px 0;
+}
+
+/* ============================================
+ * 📊 STATISTICS GRID
+ * ============================================ */
+
+.djze-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.djze-stat-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.djze-stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.djze-stat-box h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.djze-stat-box .value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Color variations */
+.djze-stat-box:nth-child(2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+}
+
+.djze-stat-box:nth-child(2):hover {
+    box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+}
+
+.djze-stat-box:nth-child(3) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.djze-stat-box:nth-child(3):hover {
+    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+}
+
+.djze-stat-box:nth-child(4) {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
+}
+
+.djze-stat-box:nth-child(4):hover {
+    box-shadow: 0 8px 20px rgba(67, 233, 123, 0.4);
+}
+
+/* ============================================
+ * 🔐 NONCE & CODE DISPLAY
+ * ============================================ */
+
+.djze-nonce {
+    background: #f8f9fa;
+    border-left: 4px solid var(--djz-primary);
+    padding: 15px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    word-break: break-all;
+    line-height: 1.6;
+    margin: 15px 0;
+    color: #0a0e27;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.djze-code {
+    background: #f5f5f5;
+    border-left: 4px solid var(--djz-primary);
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 15px 0;
+    color: #0a0e27;
+    border: 1px solid var(--djz-border);
+}
+
+.djze-code::-webkit-scrollbar {
+    height: 8px;
+}
+
+.djze-code::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+.djze-code::-webkit-scrollbar-thumb {
+    background: var(--djz-primary);
+    border-radius: 4px;
+}
+
+/* ============================================
+ * 📋 LOGS & ENTRIES
+ * ============================================ */
+
+.djze-log {
+    background: #f9f9f9;
+    border: 1px solid var(--djz-border);
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+}
+
+.djze-log:hover {
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.djze-log-error {
+    border-left: 4px solid var(--djz-danger);
+    background: #fff5f5;
+}
+
+.djze-log-success {
+    border-left: 4px solid var(--djz-success);
+    background: #f0f8f1;
+}
+
+.djze-log-info {
+    border-left: 4px solid var(--djz-info);
+    background: #f0f7ff;
+}
+
+.djze-log-warning {
+    border-left: 4px solid var(--djz-warning);
+    background: #fffbf0;
+}
+
+.djze-log strong {
+    color: var(--djz-dark);
+    font-weight: 600;
+}
+
+.djze-log small {
+    color: #666;
+    display: block;
+    margin-top: 6px;
+    opacity: 0.8;
+}
+
+/* ============================================
+ * 🎯 BUTTONS & ACTIONS
+ * ============================================ */
+
+.djze-button-group {
+    margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.djze-button-group button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.button {
+    background: #f3f3f3;
+    color: #333;
+    border: 1px solid #ccc !important;
+}
+
+.button:hover {
+    background: #e3e3e3;
+    color: #000;
+}
+
+.button-primary {
+    background: var(--djz-primary) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.button-primary:hover {
+    background: #5568d3 !important;
+}
+
+.button-secondary {
+    background: #f0f0f0 !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+}
+
+.button-secondary:hover {
+    background: #e5e5e5 !important;
+}
+
+.button-danger {
+    background: var(--djz-danger) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.button-danger:hover {
+    background: #c82333 !important;
+}
+
+/* ============================================
+ * 📝 TEXT UTILITIES
+ * ============================================ */
+
+.djze-success {
+    color: var(--djz-success);
+    font-weight: 600;
+}
+
+.djze-error {
+    color: var(--djz-danger);
+    font-weight: 600;
+}
+
+.djze-warning {
+    color: var(--djz-warning);
+    font-weight: 600;
+}
+
+.djze-info {
+    color: var(--djz-info);
+    font-weight: 600;
+}
+
+/* ============================================
+ * 📋 LISTS & ITEMS
+ * ============================================ */
+
+.djze-card ul {
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+.djze-card li {
+    margin: 8px 0;
+    line-height: 1.8;
+    color: #555;
+}
+
+.djze-card li strong {
+    color: var(--djz-dark);
+}
+
+/* ============================================
+ * 🔢 TABLES
+ * ============================================ */
+
+.djze-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.djze-card table th,
+.djze-card table td {
+    border: 1px solid var(--djz-border);
+    padding: 12px;
+    text-align: left;
+}
+
+.djze-card table th {
+    background: var(--djz-light);
+    font-weight: 600;
+    color: var(--djz-dark);
+}
+
+.djze-card table tr:hover {
+    background: #fafafa;
+}
+
+/* ============================================
+ * 📱 RESPONSIVE DESIGN
+ * ============================================ */
+
+@media (max-width: 768px) {
+    .djze-csp-wrap {
+        margin: 10px;
+    }
+    
+    .djze-card {
+        padding: 15px;
+    }
+    
+    .djze-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .nav-tab-wrapper {
+        flex-direction: column;
+    }
+    
+    .nav-tab {
+        border: 1px solid var(--djz-border);
+        border-radius: 4px;
+        margin-bottom: 5px;
+    }
+    
+    .nav-tab-active {
+        border: 1px solid var(--djz-primary) !important;
+        border-left: 4px solid var(--djz-primary) !important;
+    }
+}
+
+/* ============================================
+ * 🌙 DARK MODE SUPPORT (OPTIONAL)
+ * ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    .djze-card {
+        background: #1a1a1a;
+        border-color: #333;
+        color: #eee;
+    }
+    
+    .djze-card h2,
+    .djze-card h3 {
+        color: #fff;
+    }
+    
+    .djze-code,
+    .djze-nonce {
+        background: #222;
+        color: #e0e0e0;
+        border-color: #333;
+    }
+    
+    .djze-log {
+        background: #1a1a1a;
+        border-color: #333;
+        color: #ddd;
+    }
+    
+    .djze-log strong {
+        color: #fff;
+    }
+}
+
+/* ============================================
+ * ✨ ANIMATIONS
+ * ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.djze-card {
+    animation: fadeIn 0.3s ease;
+}
+
+.djze-stat-box {
+    animation: fadeIn 0.3s ease;
+}
