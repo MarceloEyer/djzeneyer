@@ -17,6 +17,9 @@ async function fetchFromWP(endpoint, retries = 3) {
       
       const res = await fetch(`${BASE_URL}${endpoint}`, {
         signal: controller.signal,
+        headers: {
+          'User-Agent': 'DJ-Zen-Eyer-Sitemap-Generator/1.0'
+        }
       });
       
       clearTimeout(timeout);
@@ -25,10 +28,18 @@ async function fetchFromWP(endpoint, retries = 3) {
         return await res.json();
       }
       
-      console.warn(`⚠️  ${endpoint} returned ${res.status}, retry ${i + 1}/${retries}`);
+      if (res.status === 404) {
+        console.warn(`⚠️  ${endpoint} → 404 (endpoint não existe)`);
+        return [];
+      }
+      
+      console.warn(`⚠️  ${endpoint} → ${res.status}, retry ${i + 1}/${retries}`);
     } catch (error) {
       console.error(`❌ Error fetching ${endpoint}:`, error.message);
-      if (i === retries - 1) return [];
+      if (i === retries - 1) {
+        console.error(`   → Pulando este endpoint`);
+        return [];
+      }
     }
   }
   return [];
@@ -42,10 +53,10 @@ async function generateSitemapForLang(lang) {
   
   try {
     const [posts, pages, products, events] = await Promise.all([
-      fetchFromWP(`/wp-json/wp/v2/posts?per_page=100&_fields=slug,modified`),
-      fetchFromWP(`/wp-json/wp/v2/pages?per_page=100&_fields=slug,modified`),
+      fetchFromWP(`/wp-json/wp/v2/posts?per_page=100&_fields=slug,modified,status`),
+      fetchFromWP(`/wp-json/wp/v2/pages?per_page=100&_fields=slug,modified,status`),
       fetchFromWP(`/wp-json/wc/store/products?per_page=100`),
-      fetchFromWP(`/wp-json/wp/v2/insigna?per_page=100&_fields=slug,modified`),
+      fetchFromWP(`/wp-json/wp/v2/insigna?per_page=100&_fields=id,slug,modified,status`),
     ]);
     
     const staticRoutes = [
@@ -67,7 +78,9 @@ async function generateSitemapForLang(lang) {
     <priority>${route.priority}</priority>
   </url>`).join('');
     
-    const postUrls = posts.map(post => `
+    const postUrls = (posts || [])
+      .filter(post => post.status === 'publish') // ← NOVO: Filtra apenas publicados
+      .map(post => `
   <url>
     <loc>${baseUrl}/${post.slug}</loc>
     <lastmod>${new Date(post.modified).toISOString()}</lastmod>
@@ -75,7 +88,9 @@ async function generateSitemapForLang(lang) {
     <priority>0.7</priority>
   </url>`).join('');
     
-    const pageUrls = pages.map(page => `
+    const pageUrls = (pages || [])
+      .filter(page => page.status === 'publish')
+      .map(page => `
   <url>
     <loc>${baseUrl}/${page.slug}</loc>
     <lastmod>${new Date(page.modified).toISOString()}</lastmod>
@@ -83,15 +98,20 @@ async function generateSitemapForLang(lang) {
     <priority>0.6</priority>
   </url>`).join('');
     
-    const productUrls = products.map(product => `
+    const productUrls = (products || []).map(product => {
+      const permalink = product.permalink || `${baseUrl}/product/${product.slug}`;
+      return `
   <url>
-    <loc>${product.permalink}</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
+    <loc>${permalink}</loc>
+    <lastmod>${new Date(product.date_modified || Date.now()).toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>`).join('');
+  </url>`;
+    }).join('');
     
-    const eventUrls = events.map(event => `
+    const eventUrls = (events || [])
+      .filter(event => event.status === 'publish')
+      .map(event => `
   <url>
     <loc>${baseUrl}/events/${event.slug}</loc>
     <lastmod>${new Date(event.modified).toISOString()}</lastmod>
@@ -101,7 +121,8 @@ async function generateSitemapForLang(lang) {
     
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">${staticUrls}${postUrls}${pageUrls}${productUrls}${eventUrls}
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0">${staticUrls}${postUrls}${pageUrls}${productUrls}${eventUrls}
 </urlset>`;
     
     const filename = lang === 'pt' ? 'sitemap.xml' : `sitemap_${lang}.xml`;
