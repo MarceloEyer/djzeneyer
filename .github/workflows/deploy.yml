@@ -190,24 +190,104 @@ jobs:
         if: always()
         run: rm -f ~/.ssh/deploy_key
 
-      - name: ✅ Deployment Summary
+      - name: 📊 COPY THIS LOG & PASTE HERE ➜
         run: |
-          echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🌐 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Commit:** \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
-          echo "👤 **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "🗺️ **Sitemaps:** Generated & Deployed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📋 Deployed Files" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ React App → \`/wp-content/themes/zentheme/dist/\`" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Theme Files → \`/wp-content/themes/zentheme/\` (OLD BUILD FILES REMOVED)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Custom Plugins → \`/wp-content/plugins/\` (FROM /plugins DIR)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Sitemaps → \`/sitemap*.xml\` (ROOT)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Public Assets → \`/robots.txt, /favicon*, etc.\` (ROOT)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🛡️ Excluded from Deploy" >> $GITHUB_STEP_SUMMARY
-          echo "- wp-content/ (WordPress data safe)" >> $GITHUB_STEP_SUMMARY
-          echo "- .env* (Environment secrets safe)" >> $GITHUB_STEP_SUMMARY
-          echo "- plugins/ (GitHub /plugins → WordPress /wp-content/plugins)" >> $GITHUB_STEP_SUMMARY
-          echo "- node_modules/ (Build artifacts excluded)" >> $GITHUB_STEP_SUMMARY
+          cat << 'EOF'
+          
+          ╔════════════════════════════════════════════════════════════════════════════════╗
+          ║                   ✅ DJ ZEN EYER - DEPLOY SUCCESS                            ║
+          ║                        COPY EVERYTHING BELOW                                   ║
+          ╚════════════════════════════════════════════════════════════════════════════════╝
+          
+          🚀 DEPLOYMENT REPORT
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          
+          🌐 SITE: https://djzeneyer.com
+          📦 COMMIT HASH: ${{ github.sha }}
+          🔗 SHORT HASH: ${{ github.sha }}
+          👤 DEPLOYED BY: @${{ github.actor }}
+          ⏱️ TIMESTAMP: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          📍 BRANCH: ${{ github.ref }}
+          🔄 RUN ID: ${{ github.run_id }}
+          
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          ✅ DEPLOYED COMPONENTS
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          
+          1️⃣  REACT BUILD (Vite)
+              Location: /wp-content/themes/zentheme/dist/
+              Status: ✅ DEPLOYED
+              Mode: Clean (old files removed)
+              
+          2️⃣  THEME FILES
+              Location: /wp-content/themes/zentheme/
+              Status: ✅ DEPLOYED
+              Mode: Smart Sync (old builds deleted)
+              
+          3️⃣  CUSTOM PLUGINS
+              Location: /wp-content/plugins/
+              Status: ✅ DEPLOYED
+              Source: /plugins/ directory in GitHub
+              
+          4️⃣  SITEMAPS
+              Location: / (root)
+              Files: sitemap*.xml
+              Status: ✅ DEPLOYED
+              
+          5️⃣  PUBLIC ASSETS
+              Location: / (root)
+              Files: robots.txt, favicon*, *.png, *.ico, *.svg, *.webmanifest
+              Status: ✅ DEPLOYED
+          
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          🛡️ SECURITY & EXCLUDES
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          
+          ✅ wp-content/ → EXCLUDED (WordPress data safe)
+          ✅ .env* files → EXCLUDED (Secrets safe)
+          ✅ /plugins directory → EXCLUDED (only contents deployed)
+          ✅ node_modules/ → EXCLUDED
+          ✅ .git* files → EXCLUDED
+          ✅ SSH key → AUTO-CLEANED
+          
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          ✨ NEXT STEPS TO VERIFY
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          
+          1. 🌐 Open: https://djzeneyer.com
+          2. ♻️ Hard refresh: Ctrl+Shift+R (or Cmd+Shift+R on Mac)
+          3. ✅ Check: Theme looks good?
+          4. 📋 Check: Sitemaps at https://djzeneyer.com/sitemap_index.xml
+          5. 🔌 Check: Plugins activated in WordPress?
+          6. 📊 Check: Site functionality working?
+          
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          📞 TROUBLESHOOTING
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          
+          ❌ Theme not updating?
+             → Check: /wp-content/themes/zentheme/ exists on server
+             → Check: SSH permissions (755 on directories, 644 on files)
+          
+          ❌ Plugins not working?
+             → Check: /wp-content/plugins/ has plugins deployed
+             → Check: Activate in WordPress admin
+          
+          ❌ Sitemaps missing?
+             → Check: /sitemap*.xml in root (via FTP or SSH)
+             → Check: Regenerate in WordPress SEO plugin
+          
+          ❌ Build failed?
+             → Check: npm run build works locally
+             → Check: All environment variables set in GitHub Secrets
+          
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          
+          ✅ DEPLOY COMPLETED SUCCESSFULLY!
+          
+          For issues, check GitHub Actions logs:
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          
+          ╚════════════════════════════════════════════════════════════════════════════════╝
+          
+          EOF
