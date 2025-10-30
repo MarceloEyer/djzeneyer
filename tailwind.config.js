@@ -2,7 +2,7 @@
 export default {
   content: [
     './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
+    './src/**/*.{js,ts,jsx,tsx,css}',
   ],
   theme: {
     extend: {
@@ -24,7 +24,7 @@ export default {
         surface: 'rgb(var(--color-surface) / <alpha-value>)',
       },
       ringOffsetColor: {
-        background: 'rgb(var(--color-background))',
+        'background': 'rgb(var(--color-background))',
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif'],
