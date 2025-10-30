@@ -1,19 +1,13 @@
-name: 🚀 Production Deploy - SPEED MODE
+name: 🚀 Production Deploy
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'dist/**'
-      - 'plugins/**'
-      - 'package*.json'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 concurrency:
-  group: production-deploy
-  cancel-in-progress: true
+  group: production-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -28,18 +22,13 @@ env:
 
 jobs:
   build:
-    name: 🏗️ Build (Parallelizable)
+    name: 🏗️ Build
     runs-on: ubuntu-latest
-    timeout-minutes: 12
-    outputs:
-      build_hash: ${{ steps.hash.outputs.value }}
-      build_time: ${{ steps.time.outputs.value }}
+    timeout-minutes: 15
 
     steps:
       - name: ⚡ Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: 🔍 Setup Node.js
         uses: actions/setup-node@v4
@@ -47,18 +36,15 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: ⏱️ Get Build Time
-        id: time
-        run: echo "value=$(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
+      - name: 📦 Install Dependencies
+        run: npm ci --prefer-offline --no-audit
 
-      - name: ⏱️ Get Commit Hash
-        id: hash
-        run: echo "value=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+      - name: 🗺️ Generate Sitemaps
+        run: npm run generate-sitemaps
+        continue-on-error: true
 
-      - name: 📦 Install & Build (Cached)
-        run: |
-          npm ci --prefer-offline --no-audit
-          npm run build
+      - name: 🏗️ Build Production
+        run: npm run build
         env:
           NODE_ENV: production
           VITE_WP_SITE_URL: https://djzeneyer.com
@@ -67,213 +53,161 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - name: 🗺️ Generate Sitemaps
-        run: npm run generate-sitemaps 2>/dev/null || true
+      - name: 📋 List Build Output
+        run: |
+          echo "📂 Build directory contents:"
+          ls -lah dist/
+          echo ""
+          echo "🗺️ Sitemap files:"
+          ls -lah dist/sitemap* 2>/dev/null || echo "No sitemap files found"
 
-      - name: 📤 Upload Artifact (7 days)
+      - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist-${{ github.sha }}
+          name: production-build
           path: dist/
           retention-days: 7
           compression-level: 9
 
   deploy:
-    name: 🚀 Deploy (ALL PARALLEL)
+    name: 🚀 Deploy
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     environment:
       name: production
       url: https://djzeneyer.com
 
     steps:
-      - name: ⚡ Checkout + Download
+      - name: ⚡ Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: 📥 Download Build
         uses: actions/download-artifact@v4
         with:
-          name: dist-${{ github.sha }}
+          name: production-build
           path: dist/
 
-      - name: 🔐 SSH Setup (Single Step)
+      - name: 🔑 Setup SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-          ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
-            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist ${{ env.REMOTE_PLUGINS_PATH }}" || true
+          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      # ⚡ PARALELO: Todos esses rodam em paralelo!
-      - name: ⚛️ Deploy React + Theme (PARALLEL 1/4)
+      - name: 🧪 Test SSH Connection & Ensure Remote Directories Exist
         run: |
-          time rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o BatchMode=yes -o ConnectTimeout=5" \
-            ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/dist/ &
-          REACT_PID=$!
-          
-          time rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o BatchMode=yes -o ConnectTimeout=5" \
-            --exclude='.git*' --exclude='node_modules' --exclude='dist' --exclude='public' \
-            --exclude='src' --exclude='.github' --exclude='scripts' --exclude='package*.json' \
-            --exclude='tsconfig*.json' --exclude='vite.config.*' --exclude='eslint.config.*' \
-            --exclude='postcss.config.*' --exclude='tailwind.config.*' --exclude='*.md' \
-            --exclude='wp-content' --exclude='.env*' --exclude='plugins' \
-            ./ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/ &
-          THEME_PID=$!
-          
-          wait $REACT_PID $THEME_PID
-          echo "✅ React + Theme synced"
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ env.SSH_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
+            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist ${{ env.REMOTE_PLUGINS_PATH }} && echo '✅ Remote directories ready'"
 
-      - name: 🧩 Deploy Plugins (PARALLEL 2/4)
+      - name: ⚛️ Deploy React App (Clean Slate)
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            ./dist/ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/dist/
+
+      - name: 🎨 Deploy Theme Files (Smart Sync)
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='public' \
+            --exclude='src' \
+            --exclude='.github' \
+            --exclude='scripts' \
+            --exclude='package*.json' \
+            --exclude='tsconfig*.json' \
+            --exclude='vite.config.*' \
+            --exclude='eslint.config.*' \
+            --exclude='postcss.config.*' \
+            --exclude='tailwind.config.*' \
+            --exclude='*.md' \
+            --exclude='wp-content' \
+            --exclude='plugins' \
+            --exclude='.env*' \
+            ./ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
+
+      - name: 🧩 Deploy Custom Plugins (NEW!)
         run: |
           if [ -d "plugins" ] && [ "$(ls -A plugins/)" ]; then
             cd plugins
             for plugin in */; do
               plugin_name="${plugin%/}"
-              echo "🚀 $plugin_name" &
-              rsync -az --delete \
-                -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o BatchMode=yes -o ConnectTimeout=5" \
+              echo "🚀 Deploying plugin: $plugin_name"
+              rsync -avz \
+                -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
                 "$plugin" \
-                ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_PLUGINS_PATH }}/ &
+                ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_PLUGINS_PATH }}/
             done
-            wait
             cd ..
-            echo "✅ All plugins synced"
+            echo "✅ All plugins deployed"
           else
-            echo "ℹ️ No plugins found"
+            echo "ℹ️ No plugins found in /plugins directory"
           fi
 
-      - name: 🗺️ Deploy Sitemaps (PARALLEL 3/4)
+      - name: 🗺️ Deploy Sitemaps to Root
         run: |
-          rsync -az \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o BatchMode=yes -o ConnectTimeout=5" \
-            --include='sitemap*.xml' --exclude='*' \
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            --include='sitemap*.xml' \
+            --exclude='*' \
             ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./ || true
-          echo "✅ Sitemaps deployed"
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./
 
-      - name: 🌐 Deploy Public Assets (PARALLEL 4/4)
+      - name: 🌐 Deploy Public Assets to Root
         run: |
-          rsync -az \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o BatchMode=yes -o ConnectTimeout=5" \
-            --include='robots.txt' --include='favicon*' --include='*.png' --include='*.ico' \
-            --include='*.svg' --include='*.webmanifest' --exclude='*' \
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            --include='robots.txt' \
+            --include='favicon*' \
+            --include='*.png' \
+            --include='*.ico' \
+            --include='*.svg' \
+            --include='*.webmanifest' \
+            --exclude='assets/' \
+            --exclude='index.html' \
+            --exclude='sitemap*.xml' \
+            --exclude='*' \
             ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./ || true
-          echo "✅ Public assets deployed"
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./
 
-      - name: 🔍 Verify Deployment (Single SSH)
+      - name: 🔍 Verify Sitemap Deployment
         run: |
-          ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'EOF'
-          echo "=== DEPLOY VERIFICATION ==="
-          echo "✅ Theme files:"
-          ls -lh ${{ env.REMOTE_THEME_PATH }}/index.php 2>/dev/null | awk '{print $9, $5}' || echo "❌ Missing"
-          echo "✅ React build:"
-          ls -lhd ${{ env.REMOTE_THEME_PATH }}/dist 2>/dev/null | awk '{print $9, $5}' || echo "❌ Missing"
-          echo "✅ Sitemaps in root:"
-          ls -1 /home/${{ env.SSH_USER }}/public_html/sitemap*.xml 2>/dev/null | wc -l | xargs echo "Found:"
-          echo "✅ Custom plugins:"
-          find ${{ env.REMOTE_PLUGINS_PATH }} -maxdepth 1 -type d ! -name "plugins" | wc -l | xargs echo "Count:"
-          EOF
+          ssh -i ~/.ssh/deploy_key \
+            -p ${{ env.SSH_PORT }} \
+            -o StrictHostKeyChecking=no \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
+            "ls -lah sitemap*.xml 2>/dev/null || echo '⚠️ No sitemaps found in root'"
 
-      - name: 🧹 SSH Cleanup
+      - name: 🧹 Cleanup SSH Key
         if: always()
         run: rm -f ~/.ssh/deploy_key
 
-      - name: 📊 DEPLOY REPORT (COPY & PASTE)
-        env:
-          BUILD_HASH: ${{ needs.build.outputs.build_hash }}
-          BUILD_TIME: ${{ needs.build.outputs.build_time }}
+      - name: ✅ Deployment Summary
         run: |
-          cat > /tmp/deploy_report.txt << 'REPORT'
-          ╔════════════════════════════════════════════════════════════╗
-          ║           🚀 DJ ZEN EYER - DEPLOY SUCCESS                 ║
-          ╚════════════════════════════════════════════════════════════╝
-          
-          📊 DEPLOYMENT DETAILS:
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          
-          🌐 Site: https://djzeneyer.com
-          📦 Commit: ${{ github.sha }}
-          🔗 Short Hash: ${BUILD_HASH}
-          ⏱️ Build Time: ${BUILD_TIME}
-          👤 Triggered by: @${{ github.actor }}
-          🕐 Deploy Started: ${{ job.container.id && 'Check GitHub Actions' || 'N/A' }}
-          
-          ✅ DEPLOYED COMPONENTS:
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          
-          1️⃣  React Build (Vite)
-              └─ /wp-content/themes/zentheme/dist/
-              └─ Status: ✅ DEPLOYED (OLD FILES REMOVED)
-              └─ Method: rsync --delete
-          
-          2️⃣  Theme Files (PHP + Config)
-              └─ /wp-content/themes/zentheme/
-              └─ Status: ✅ DEPLOYED (OLD FILES REMOVED)
-              └─ Excludes: wp-content, .env, node_modules
-              └─ Method: rsync --delete
-          
-          3️⃣  Custom Plugins
-              └─ /wp-content/plugins/
-              └─ Status: ✅ DEPLOYED (ALL SYNCED)
-              └─ Method: rsync with parallel processing
-          
-          4️⃣  Sitemaps + Robots
-              └─ /sitemap*.xml (root)
-              └─ /robots.txt (root)
-              └─ Status: ✅ DEPLOYED
-              └─ Method: rsync include/exclude
-          
-          5️⃣  Public Assets
-              └─ /favicon*, /robots.txt, /*.ico, /*.svg
-              └─ Status: ✅ DEPLOYED
-              └─ Method: rsync include/exclude
-          
-          🛡️ SECURITY VERIFIED:
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          
-          ✅ wp-content protected (no delete)
-          ✅ .env files protected (no delete)
-          ✅ SSH key auto-cleaned
-          ✅ Strict host key verification enabled
-          ✅ Batch mode optimized (faster SSH)
-          
-          ⚡ PERFORMANCE:
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          
-          • Parallelization: 4 rsync jobs running in parallel
-          • Build cached: Dependencies cached for speed
-          • Artifact retention: 7 days
-          • Total estimated time: 2-3 minutes
-          • SSH timeout: 5s (optimized)
-          
-          ✨ NEXT STEPS:
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          
-          1. Verify site is loading: https://djzeneyer.com
-          2. Check theme files: /wp-content/themes/zentheme/index.php
-          3. Check plugins active: /wp-content/plugins/
-          4. Verify sitemaps: https://djzeneyer.com/sitemap_index.xml
-          5. Monitor error logs: Check server logs for any issues
-          
-          REPORT
-          
-          cat /tmp/deploy_report.txt >> $GITHUB_STEP_SUMMARY
-          cat /tmp/deploy_report.txt
-
-      - name: 📋 Copy Report to Output
-        if: always()
-        run: |
-          echo "=== COPY ABAIXO E COLE AQUI ===" >> $GITHUB_STEP_SUMMARY
+          echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          cat /tmp/deploy_report.txt >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
+          echo "📦 **Commit:** \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
+          echo "👤 **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "🗺️ **Sitemaps:** Generated & Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Deployed Files" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ React App → \`/wp-content/themes/zentheme/dist/\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Theme Files → \`/wp-content/themes/zentheme/\` (OLD BUILD FILES REMOVED)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Custom Plugins → \`/wp-content/plugins/\` (FROM /plugins DIR)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Sitemaps → \`/sitemap*.xml\` (ROOT)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Public Assets → \`/robots.txt, /favicon*, etc.\` (ROOT)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🛡️ Excluded from Deploy" >> $GITHUB_STEP_SUMMARY
+          echo "- wp-content/ (WordPress data safe)" >> $GITHUB_STEP_SUMMARY
+          echo "- .env* (Environment secrets safe)" >> $GITHUB_STEP_SUMMARY
+          echo "- plugins/ (GitHub /plugins → WordPress /wp-content/plugins)" >> $GITHUB_STEP_SUMMARY
+          echo "- node_modules/ (Build artifacts excluded)" >> $GITHUB_STEP_SUMMARY
