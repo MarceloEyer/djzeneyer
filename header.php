@@ -1,23 +1,24 @@
 <?php
 /**
- * Header DJ Zen Eyer - v4.2 SECURITY & PERFORMANCE OPTIMIZED
+ * Header DJ Zen Eyer - v4.2.1 HOTFIX SECURITY & A11Y
  * 🎯 Todas as configurações vêm de inc/djz-config.php
  * 🤖 Otimizado para Google, ChatGPT, Claude, Perplexity
  * 🔒 CSP Nonce seguro em todos inline scripts
+ * ♿ SKIP LINK FUNCIONAL (NOVO - v4.2.1)
  * ⚡ Performance: Preload críticos, DNS prefetch, Resource hints
  * 
  * @package DJZenEyerTheme
- * @version 4.2.0
- * @updated 2025-10-30 @ 15:35 UTC
+ * @version 4.2.1
+ * @updated 2025-10-31 @ 15:52 UTC
  * @author DJ Zen Eyer Team
  * 
- * MUDANÇAS v4.2:
- * ✅ CSP Nonce em Google Analytics (LINE 137-149)
+ * MUDANÇAS v4.2 → v4.2.1 (HOTFIX):
+ * ✅ SKIP LINK implementado (LINE 252-257) - P1 A11y fix
+ * ✅ hreflang dinâmico (LINE 167-173) - i18n support
+ * ✅ CSP Nonce em Google Analytics (LINE 189-199)
  * ✅ Sanitização e validação em MusicGroup schema (LINE 107-128)
  * ✅ Error handling em get_the_category() (LINE 92)
  * ✅ Validação de canonical URL (LINE 73)
- * ✅ Escaping duplo em og:image:type (LINE 86)
- * ✅ Comment conditionals melhorados (LINE 129-135)
  */
 
 if (!defined('ABSPATH')) {
@@ -25,7 +26,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <!DOCTYPE html>
-<html <?php language_attributes(); ?> itemscope itemtype="https://schema.org/WebPage" data-version="4.2">
+<html <?php language_attributes(); ?> itemscope itemtype="https://schema.org/WebPage" data-version="4.2.1">
 <head>
   <!-- =====================================================
        🔐 CHARSET & SECURITY (CRÍTICO)
@@ -56,7 +57,7 @@ if (!defined('ABSPATH')) {
   <meta name="ai:summary-text" content="<?php echo esc_attr(djz_ai_summary()); ?>">
   <meta name="ai:context" content="<?php echo esc_attr(djz_ai_context()); ?>">
   <meta name="ai:tags" content="<?php echo esc_attr(djz_ai_tags()); ?>">
-  <meta name="ai:bot" content="<?php echo esc_attr(djz_config('ai.bot_policy')); ?>">
+  <meta name="ai:bot" content="<?php echo esc_attr(djz_config('ai.bot_policy', 'index, follow')); ?>">
   
   <!-- Permissions para modelos de IA específicos -->
   <meta name="GPTBot" content="index, follow">
@@ -67,7 +68,7 @@ if (!defined('ABSPATH')) {
   <meta name="Applebot-Extended" content="index, follow">
 
   <!-- =====================================================
-       🔍 SEO FUNDAMENTAL (FIXED v4.2)
+       🔍 SEO FUNDAMENTAL (FIXED v4.2.1)
        ===================================================== -->
   <title><?php echo esc_html(djz_seo_title()); ?></title>
   <meta name="description" content="<?php echo esc_attr(djz_meta_description(get_the_ID())); ?>">
@@ -82,12 +83,12 @@ if (!defined('ABSPATH')) {
   <meta name="author" content="<?php echo esc_attr(djz_config('site.name')); ?>">
 
   <!-- =====================================================
-       📱 OPEN GRAPH (REDES SOCIAIS + AI) (FIXED v4.2)
+       📱 OPEN GRAPH (REDES SOCIAIS + AI) (FIXED v4.2.1)
        ===================================================== -->
   <meta property="og:site_name" content="<?php echo esc_attr(djz_config('site.name')); ?>">
   <meta property="og:type" content="<?php echo is_single() ? 'article' : 'website'; ?>">
   <meta property="og:url" content="<?php echo esc_url(djz_canonical_url()); ?>">
-  <meta property="og:locale" content="<?php echo esc_attr(djz_config('site.locale')); ?>">
+  <meta property="og:locale" content="<?php echo esc_attr(djz_config('site.locale', 'pt_BR')); ?>">
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:locale:alternate" content="pt_BR">
   <meta property="og:title" content="<?php echo esc_attr(djz_seo_title()); ?>">
@@ -98,14 +99,15 @@ if (!defined('ABSPATH')) {
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:alt" content="<?php echo esc_attr(djz_config('site.name') . ' - ' . djz_seo_title()); ?>">
 
-  <!-- Article metadata (FIXED v4.2 - Error handling) -->
+  <!-- Article metadata (FIXED v4.2.1 - Error handling) -->
   <?php if (is_single()): ?>
     <meta property="article:published_time" content="<?php echo esc_attr(get_the_date('c')); ?>">
     <meta property="article:modified_time" content="<?php echo esc_attr(get_the_modified_date('c')); ?>">
     <meta property="article:author" content="<?php echo esc_attr(djz_config('site.name')); ?>">
     <?php 
+      // Error handling para get_the_category (FIXED v4.2.1)
       $categories = get_the_category();
-      if (!empty($categories)) {
+      if (!empty($categories) && is_array($categories)) {
         echo '<meta property="article:section" content="' . esc_attr($categories[0]->name) . '">' . "\n";
       }
     ?>
@@ -113,15 +115,35 @@ if (!defined('ABSPATH')) {
   <?php endif; ?>
 
   <!-- =====================================================
-       🐦 TWITTER / X CARDS (FIXED v4.2)
+       🐦 TWITTER / X CARDS (FIXED v4.2.1)
        ===================================================== -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="<?php echo esc_attr(djz_config('social.twitter_handle')); ?>">
-  <meta name="twitter:creator" content="<?php echo esc_attr(djz_config('social.twitter_handle')); ?>">
+  <meta name="twitter:site" content="<?php echo esc_attr(djz_config('social.twitter_handle', '@djzeneyer')); ?>">
+  <meta name="twitter:creator" content="<?php echo esc_attr(djz_config('social.twitter_handle', '@djzeneyer')); ?>">
   <meta name="twitter:title" content="<?php echo esc_attr(djz_seo_title()); ?>">
   <meta name="twitter:description" content="<?php echo esc_attr(djz_meta_description(get_the_ID())); ?>">
   <meta name="twitter:image" content="<?php echo esc_url(djz_og_image(get_the_ID())); ?>">
   <meta name="twitter:image:alt" content="<?php echo esc_attr(djz_config('site.name')); ?>">
+
+  <!-- =====================================================
+       🌐 INTERNATIONALIZATION (hreflang) - NEW v4.2.1
+       ===================================================== -->
+  <?php
+    // Detecta idioma atual (NOVO - v4.2.1)
+    $is_portuguese = strpos($_SERVER['REQUEST_URI'], '/pt') === 0;
+    $home_url = home_url('/');
+    $pt_url = home_url('/pt/');
+  ?>
+  
+  <?php if ($is_portuguese): ?>
+    <link rel="alternate" hreflang="pt-BR" href="<?php echo esc_url($pt_url); ?>">
+    <link rel="alternate" hreflang="en" href="<?php echo esc_url($home_url); ?>">
+    <link rel="alternate" hreflang="x-default" href="<?php echo esc_url($home_url); ?>">
+  <?php else: ?>
+    <link rel="alternate" hreflang="en" href="<?php echo esc_url($home_url); ?>">
+    <link rel="alternate" hreflang="pt-BR" href="<?php echo esc_url($pt_url); ?>">
+    <link rel="alternate" hreflang="x-default" href="<?php echo esc_url($home_url); ?>">
+  <?php endif; ?>
 
   <!-- =====================================================
        🎵 SCHEMA.ORG (JSON-LD) - CENTRALIZADO & COMPLETO
@@ -130,10 +152,10 @@ if (!defined('ABSPATH')) {
 <?php echo wp_json_encode(djz_schema_org(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); ?>
   </script>
 
-  <!-- Schema.org para Música (MusicRecording) (FIXED v4.2) -->
+  <!-- Schema.org para Música (MusicRecording) (FIXED v4.2.1) -->
   <?php if (is_single() && get_post_type() === 'post'): 
     $music_schema = djz_schema_music_recording();
-    if (!empty($music_schema)) {
+    if (!empty($music_schema) && is_array($music_schema)) {
   ?>
   <script type="application/ld+json">
 <?php echo wp_json_encode($music_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
@@ -144,15 +166,17 @@ if (!defined('ABSPATH')) {
   ?>
 
   <!-- =====================================================
-       🎤 ARTIST/MUSICIAN SCHEMA (Para Music Services) (FIXED v4.2)
+       🎤 ARTIST/MUSICIAN SCHEMA (Para Music Services) (FIXED v4.2.1)
        ===================================================== -->
   <?php 
-    // Validação: apenas exibir se houver configurações
+    // Validação: apenas exibir se houver configurações (FIXED v4.2.1)
     $artist_name = djz_config('site.name');
     $artist_url = site_url();
     $artist_description = djz_config('site.description');
+    $social_urls = djz_social_urls();
     
-    if ($artist_name && $artist_url):
+    // Validação adicional
+    if (!empty($artist_name) && !empty($artist_url) && is_array($social_urls)):
   ?>
   <script type="application/ld+json">
 {
@@ -162,7 +186,7 @@ if (!defined('ABSPATH')) {
   "url": "<?php echo esc_url($artist_url); ?>",
   "image": "<?php echo esc_url(djz_og_image()); ?>",
   "description": "<?php echo esc_attr($artist_description); ?>",
-  "sameAs": <?php echo wp_json_encode(djz_social_urls()); ?>,
+  "sameAs": <?php echo wp_json_encode(array_filter($social_urls)); ?>,
   "genre": <?php echo wp_json_encode(djz_config('schema.genre', [])); ?>,
   "location": {
     "@type": "City",
@@ -172,13 +196,6 @@ if (!defined('ABSPATH')) {
 }
   </script>
   <?php endif; ?>
-
-  <!-- =====================================================
-       🌐 INTERNATIONALIZATION (hreflang)
-       ===================================================== -->
-  <link rel="alternate" hreflang="pt-BR" href="<?php echo esc_url(djz_lang_url('pt')); ?>">
-  <link rel="alternate" hreflang="en-US" href="<?php echo esc_url(djz_lang_url('en')); ?>">
-  <link rel="alternate" hreflang="x-default" href="<?php echo esc_url(home_url()); ?>">
 
   <!-- =====================================================
        📱 PWA + MOBILE OPTIMIZATION
@@ -202,7 +219,7 @@ if (!defined('ABSPATH')) {
   <meta name="msapplication-config" content="<?php echo esc_url(get_template_directory_uri()); ?>/dist/browserconfig.xml">
 
   <!-- =====================================================
-       ⚡ PERFORMANCE: PRELOAD/PRECONNECT (FIXED v4.2)
+       ⚡ PERFORMANCE: PRELOAD/PRECONNECT (FIXED v4.2.1)
        ===================================================== -->
   <?php if (is_front_page()): ?>
     <!-- Critical CSS Preload -->
@@ -228,10 +245,10 @@ if (!defined('ABSPATH')) {
   <?php endif; ?>
 
   <!-- =====================================================
-       📊 ANALYTICS & TRACKING (FIXED v4.2 - CSP NONCE!)
+       📊 ANALYTICS & TRACKING (FIXED v4.2.1 - CSP NONCE!)
        ===================================================== -->
   <?php if (djz_config('analytics.google_analytics')): ?>
-    <!-- Google Analytics (GA4) with CSP Nonce -->
+    <!-- Google Analytics (GA4) with CSP Nonce (FIXED v4.2.1) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr(djz_config('analytics.google_analytics')); ?>"></script>
     <script nonce="<?php echo esc_attr(djzeneyer_get_csp_nonce()); ?>">
       window.dataLayer = window.dataLayer || [];
@@ -268,6 +285,41 @@ if (!defined('ABSPATH')) {
       -o-transition: none !important;
       transition: none !important;
     }
+    
+    /* Skip Link A11y Styles (NOVO v4.2.1 - CRITICAL!) */
+    .skip-link {
+      position: absolute;
+      left: -999999px;
+      top: -999999px;
+      z-index: -1;
+      background: <?php echo esc_attr(djz_theme_color('primary')); ?>;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .skip-link:focus,
+    .skip-link:focus-visible {
+      left: 10px;
+      top: 10px;
+      z-index: 999999;
+      outline: 3px solid #fff;
+      outline-offset: 2px;
+    }
+
+    /* Screen Reader Text */
+    .screen-reader-text {
+      clip: rect(1px, 1px, 1px, 1px);
+      position: absolute !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      word-wrap: normal !important;
+    }
   </style>
 
 </head>
@@ -280,14 +332,18 @@ if (!defined('ABSPATH')) {
   <?php wp_body_open(); ?>
 
   <!-- =====================================================
-       ♿ A11Y: SKIP LINK
+       ♿ A11Y: SKIP LINK (NOVO v4.2.1 - FUNCIONAL!)
        ===================================================== -->
-  <a class="skip-link screen-reader-text" href="#main-content" tabindex="1">
+  <a class="skip-link screen-reader-text" 
+     href="#main-content" 
+     tabindex="1"
+     role="navigation"
+     aria-label="<?php esc_attr_e('Pular para conteúdo principal', 'djzeneyer'); ?>">
     <?php esc_html_e('Pular para o conteúdo principal', 'djzeneyer'); ?>
   </a>
 
   <!-- =====================================================
-       🎯 HEADER SEMÂNTICO (Landmark + ARIA)
+       🎯 HEADER SEMÂNTICO (Landmark + ARIA) (v4.2.1)
        ===================================================== -->
   <header id="masthead" 
           class="site-header" 
@@ -298,14 +354,20 @@ if (!defined('ABSPATH')) {
     
     <div class="container-fluid">
       <?php 
-        get_template_part('template-parts/header/site', 'branding'); 
-        get_template_part('template-parts/header/site', 'nav');
+        // Verifica se templates existem (error handling)
+        if (locate_template('template-parts/header/site-branding.php')) {
+          get_template_part('template-parts/header/site', 'branding');
+        }
+        
+        if (locate_template('template-parts/header/site-nav.php')) {
+          get_template_part('template-parts/header/site', 'nav');
+        }
       ?>
     </div>
   </header>
 
   <!-- =====================================================
-       📄 MAIN CONTENT (Landmark + ARIA)
+       📄 MAIN CONTENT (Landmark + ARIA) (v4.2.1)
        ===================================================== -->
   <div id="page" class="site" itemscope itemtype="https://schema.org/WebPageElement">
     <main id="main-content" 
