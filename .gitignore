@@ -175,7 +175,6 @@ node_modules/.bin/
 # ============================================
 # 🚀 DEPLOYMENT & CI/CD
 # ============================================
-.github/
 .gitlab-ci.yml
 .circleci/
 .travis.yml
