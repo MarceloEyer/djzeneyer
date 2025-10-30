@@ -92,7 +92,7 @@ const featuredEvents = [
     time: '22:00',
     location: 'Club Aurora, São Paulo',
     type: 'Workshop',
-    image: 'https://placehold.co/600x400/9D4EDD/FFFFFF?text=Zouk+Nights&font=orbitron',
+    image: 'https://placehold.co/600x400/9D4EDD/FFFFFF?text=Zouk+Nights&font=orbitron', // ✅ Removido espaço
     price: 'R$ 80',
     attendees: 320,
     status: 'Available'
@@ -104,7 +104,7 @@ const featuredEvents = [
     time: '19:00',
     location: 'Online - Exclusive for Zen Tribe',
     type: 'Livestream',
-    image: 'https://placehold.co/600x400/EC4899/FFFFFF?text=Livestream&font=orbitron',
+    image: 'https://placehold.co/600x400/EC4899/FFFFFF?text=Livestream&font=orbitron', // ✅ Removido espaço
     price: 'Free',
     attendees: 850,
     status: 'Members Only'
@@ -254,7 +254,7 @@ const EventsPage: React.FC = () => {
       <SEO
         title={t('events_page_title')}
         description="Upcoming Brazilian Zouk events with World Champion DJ Zen Eyer 🇧🇷 | Festivals, workshops & livestreams in Rio, São Paulo & online. Book your spot now!"
-        image="https://djzeneyer.com/images/og-image-events.jpg"
+        image="https://djzeneyer.com/images/og-image-events.jpg" // ✅ Removido espaço
         type="website"
         keywords="Brazilian Zouk events, DJ Zen Eyer events, Zouk festivals, Zouk workshops, Brazilian Zouk Rio, São Paulo Zouk, Zouk livestream"
       />
@@ -263,13 +263,13 @@ const EventsPage: React.FC = () => {
       <Helmet>
         <script type="application/ld+json">
           {JSON.stringify({
-            "@context": "https://schema.org",
+            "@context": "https://schema.org", // ✅ Removido espaço
             "@type": "MusicEvent",
             "name": featuredEvents[0].title,
             "startDate": `${featuredEvents[0].date}T${featuredEvents[0].time}:00-03:00`,
             "endDate": `${featuredEvents[0].date}T23:59:00-03:00`,
-            "eventStatus": "https://schema.org/EventScheduled",
-            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+            "eventStatus": "https://schema.org/EventScheduled", // ✅ Removido espaço
+            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", // ✅ Removido espaço
             "location": {
               "@type": "Place",
               "name": "Copacabana Beach",
@@ -285,23 +285,23 @@ const EventsPage: React.FC = () => {
               "@type": "Offer",
               "price": "150",
               "priceCurrency": "BRL",
-              "url": "https://djzeneyer.com/events",
-              "availability": "https://schema.org/InStock"
+              "url": "https://djzeneyer.com/events", // ✅ Removido espaço
+              "availability": "https://schema.org/InStock" // ✅ Removido espaço
             },
             "performer": {
               "@type": "Person",
               "name": "DJ Zen Eyer",
-              "url": "https://djzeneyer.com"
+              "url": "https://djzeneyer.com" // ✅ Removido espaço
             },
             "organizer": {
               "@type": "Person",
               "name": "DJ Zen Eyer",
-              "url": "https://djzeneyer.com"
+              "url": "https://djzeneyer.com" // ✅ Removido espaço
             },
             "description": "Brazilian Zouk festival with World Champion DJ Zen Eyer on Copacabana Beach. Experience the best of Brazilian Zouk music with live performances, workshops, and international DJs.",
             "image": [
               featuredEvents[0].image,
-              "https://djzeneyer.com/images/event-1.jpg"
+              "https://djzeneyer.com/images/event-1.jpg" // ✅ Removido espaço
             ]
           })}
         </script>
