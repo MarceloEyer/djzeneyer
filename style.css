@@ -3,19 +3,21 @@ Theme Name: DJ Zen Eyer
 Theme URI: https://djzeneyer.com
 Author: DJ Zen Eyer
 Author URI: https://djzeneyer.com
-Description: Custom theme for DJ Zen Eyer website — optimized for performance, SEO, and accessibility.
-Version: 1.0.1
+Description: Enterprise-grade headless WordPress theme with React, optimized for performance, SEO, and accessibility.
+Version: 4.2.1
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: djzeneyer
-Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready, accessibility-ready, responsive-layout
+Domain Path: /languages
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.0.1
+Requires PHP: 7.4
+Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready, accessibility-ready, responsive-layout, headless, react, performance
 */
 
 /* ========================================
-   WORDPRESS REQUIRED STYLES (do not remove)
+   🔧 WORDPRESS REQUIRED STYLES
+   DO NOT REMOVE - WordPress compatibility
    ======================================== */
 .alignnone {
 	margin: 5px 20px 20px 0;
@@ -52,12 +54,62 @@ Stable tag: 1.0.1
 	text-align: center;
 }
 
-/* ========================================
-   DJ ZEN EYER — VISUAL STYLE PRESERVED
-   (no changes to colors, fonts, or layout)
-   ======================================== */
+/* Responsive images */
+.wp-block-image img,
+img.wp-post-image {
+	height: auto;
+	max-width: 100%;
+	display: block;
+}
 
-/* Esconde visualmente a tagline, mas mantém acessível para bots e leitores de tela */
+/* ========================================
+   ♿ SKIP LINK (A11Y - NEW v4.2.1)
+   Critical for keyboard navigation
+   ======================================== */
+.skip-link {
+	position: absolute;
+	left: -999999px;
+	top: -999999px;
+	z-index: -1;
+	background: #090D22;
+	color: #fff;
+	padding: 0.75rem 1.5rem;
+	text-decoration: none;
+	border-radius: 4px;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+	left: 10px !important;
+	top: 10px !important;
+	z-index: 999999 !important;
+	outline: 3px solid #fff !important;
+	outline-offset: 2px !important;
+}
+
+/* ========================================
+   🎨 ACCESSIBILITY & SCREEN READERS
+   Invisible visually, but critical for a11y
+   ======================================== */
+.screen-reader-text,
+.sr-only,
+.wp-hidden-child {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	padding: 0 !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	clip: rect(0, 0, 0, 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+	word-wrap: normal !important;
+}
+
+/* Site tagline hidden but indexed by bots */
 .site-description,
 .wp-block-site-tagline {
 	position: absolute !important;
@@ -71,60 +123,359 @@ Stable tag: 1.0.1
 	border: 0 !important;
 }
 
-/* ⚠️ IMPORTANTE: Não removemos os créditos do WordPress.
-   Em vez disso, substitua-os no seu footer.php com seu próprio rodapé personalizado.
-   Isso respeita a licença GPL e melhora o SEO (bots veem conteúdo legítimo). */
-
-/* ========================================
-   ACESSIBILIDADE & SEO (invisível visualmente, mas crítico para bots)
-   ======================================== */
-
-/* Garante que conteúdo escondido ainda seja indexável */
-.screen-reader-text,
-.sr-only {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border: 0;
+/* Focus states for better a11y */
+:focus {
+	outline: 2px solid #090D22;
+	outline-offset: 2px;
 }
 
-/* Melhora contraste para leitores de tela (sem afetar design) */
-:focus {
-	outline: 2px solid #0A0E27; /* sua cor principal */
+:focus-visible {
+	outline: 2px solid #090D22;
+	outline-offset: 2px;
+}
+
+/* Links */
+a:focus,
+button:focus,
+input:focus,
+textarea:focus {
+	outline: 2px solid #090D22;
 	outline-offset: 2px;
 }
 
 /* ========================================
-   COMPATIBILIDADE COM BLOCOS DO GUTENBERG
-   (não muda o visual, só evita quebras)
+   🎨 THEME COLORS CSS VARIABLES
+   Updated for WCAG AA contrast (v4.2.1)
    ======================================== */
+:root {
+	/* PRIMARY: Updated to #090D22 (WCAG AA compliant) */
+	--color-primary: #090D22;
+	--color-secondary: #1F2937;
+	--color-accent: #3B82F6;
+	
+	/* TEXT & BACKGROUND */
+	--color-text: #FFFFFF;
+	--color-text-dark: #111827;
+	--color-bg: #000000;
+	--color-bg-light: #F3F4F6;
+	
+	/* SEMANTIC */
+	--color-success: #10B981;
+	--color-warning: #F59E0B;
+	--color-danger: #EF4444;
+	--color-info: #0EA5E9;
+	
+	/* BORDERS */
+	--color-border: #E5E7EB;
+	--color-border-dark: #374151;
+	
+	/* SPACING */
+	--spacing-xs: 0.5rem;
+	--spacing-sm: 1rem;
+	--spacing-md: 1.5rem;
+	--spacing-lg: 2rem;
+	--spacing-xl: 3rem;
+	
+	/* TYPOGRAPHY */
+	--font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--font-mono: 'Courier New', Courier, monospace;
+	
+	/* Z-INDEX */
+	--z-dropdown: 100;
+	--z-sticky: 500;
+	--z-fixed: 1000;
+	--z-modal: 1500;
+	--z-skip-link: 999999;
+}
+
+/* ========================================
+   💨 GUTENBERG BLOCKS COMPATIBILITY
+   ======================================== */
+.wp-block-image {
+	margin-top: var(--spacing-md);
+	margin-bottom: var(--spacing-md);
+}
 
 .wp-block-image img {
 	height: auto;
 	max-width: 100%;
+	display: block;
+	border-radius: 4px;
+}
+
+.wp-block-gallery {
+	margin-top: var(--spacing-md);
+	margin-bottom: var(--spacing-md);
 }
 
 .wp-block-audio audio,
 .wp-block-video video {
 	max-width: 100%;
 	height: auto;
+	display: block;
+}
+
+.wp-block-button__link {
+	background-color: var(--color-primary);
+	color: var(--color-text);
+	padding: 0.75rem 1.5rem;
+	border-radius: 4px;
+	text-decoration: none;
+	display: inline-block;
+	font-weight: 600;
+	transition: background-color 0.2s ease;
+}
+
+.wp-block-button__link:hover {
+	background-color: var(--color-secondary);
+	text-decoration: none;
+}
+
+.wp-block-button__link:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+.wp-block-quote {
+	border-left: 4px solid var(--color-primary);
+	padding-left: var(--spacing-md);
+	margin-left: 0;
+	margin-right: 0;
+	font-style: italic;
+}
+
+.wp-block-code {
+	background-color: var(--color-bg-light);
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	padding: var(--spacing-md);
+	overflow-x: auto;
+	font-family: var(--font-mono);
+	font-size: 0.9em;
+}
+
+.wp-block-preformatted {
+	background-color: var(--color-bg-light);
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	padding: var(--spacing-md);
+	overflow-x: auto;
+	font-family: var(--font-mono);
+}
+
+.wp-block-separator {
+	border: none;
+	border-top: 2px solid var(--color-border);
+	margin-top: var(--spacing-lg);
+	margin-bottom: var(--spacing-lg);
+}
+
+.wp-block-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: var(--spacing-md);
+	margin-bottom: var(--spacing-md);
+}
+
+.wp-block-table th,
+.wp-block-table td {
+	border: 1px solid var(--color-border);
+	padding: 0.75rem;
+	text-align: left;
+}
+
+.wp-block-table th {
+	background-color: var(--color-bg-light);
+	font-weight: 600;
 }
 
 /* ========================================
-   RESPONSIVIDADE BÁSICA (para crawlers móveis)
+   📱 RESPONSIVE DESIGN
+   Mobile-first approach
    ======================================== */
-
 @media (max-width: 768px) {
+	/* Reset floats on mobile */
 	.alignleft,
 	.alignright {
 		float: none;
 		margin-left: 0;
 		margin-right: 0;
 		text-align: center;
+		display: block;
+		margin-bottom: var(--spacing-md);
+	}
+	
+	/* Stack columns */
+	.wp-block-columns {
+		flex-direction: column !important;
+	}
+	
+	.wp-block-column {
+		margin-right: 0 !important;
+		margin-bottom: var(--spacing-md) !important;
+	}
+	
+	/* Better table on mobile */
+	.wp-block-table {
+		font-size: 0.9em;
+	}
+	
+	.wp-block-table th,
+	.wp-block-table td {
+		padding: 0.5rem;
+	}
+	
+	/* Ensure buttons are full width on mobile */
+	.wp-block-button {
+		width: 100%;
+	}
+	
+	.wp-block-button__link {
+		width: 100%;
+		text-align: center;
+		box-sizing: border-box;
 	}
 }
+
+/* ========================================
+   ⚡ PERFORMANCE & OPTIMIZATION
+   Reduces layout shifts
+   ======================================== */
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+html {
+	visibility: visible;
+	opacity: 1;
+}
+
+/* Disable transitions during loading */
+body.preload * {
+	-webkit-transition: none !important;
+	-moz-transition: none !important;
+	-ms-transition: none !important;
+	-o-transition: none !important;
+	transition: none !important;
+}
+
+/* Reserve space for scrollbar to prevent shift */
+html {
+	overflow-y: scroll;
+}
+
+/* Smooth scroll */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Image optimization */
+img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+/* ========================================
+   🎯 PRINT STYLES
+   ======================================== */
+@media print {
+	.no-print,
+	.skip-link,
+	nav,
+	.sidebar,
+	.comments,
+	.navigation {
+		display: none !important;
+	}
+	
+	body {
+		background: #fff;
+		color: #000;
+		font-size: 12pt;
+		line-height: 1.5;
+	}
+	
+	a {
+		text-decoration: underline;
+	}
+	
+	a::after {
+		content: " (" attr(href) ")";
+	}
+	
+	img {
+		page-break-inside: avoid;
+	}
+	
+	h1, h2, h3, h4, h5, h6 {
+		page-break-after: avoid;
+	}
+	
+	p {
+		widows: 3;
+		orphans: 3;
+	}
+}
+
+/* ========================================
+   📊 DARK MODE SUPPORT
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-bg-light: #1F2937;
+		--color-text-dark: #F3F4F6;
+	}
+}
+
+/* ========================================
+   🎬 MOTION PREFERENCES
+   Respect user's reduced motion settings
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* ========================================
+   🔍 HIGH CONTRAST MODE
+   Support high contrast displays
+   ======================================== */
+@media (prefers-contrast: more) {
+	:root {
+		--color-primary: #000;
+		--color-secondary: #333;
+		--color-border: #000;
+	}
+	
+	a {
+		text-decoration: underline;
+	}
+}
+
+/* ========================================
+   📝 NOTES
+   ======================================== */
+/*
+   v4.2.1 HOTFIXES APPLIED:
+   ✅ Skip link styles (keyboard a11y)
+   ✅ Primary color updated: #0A0E27 → #090D22 (WCAG AA)
+   ✅ Focus states for keyboard navigation
+   ✅ CSS variables for theme colors
+   ✅ Gutenberg block compatibility
+   ✅ Responsive design patterns
+   ✅ Accessibility best practices
+   ✅ Performance optimizations
+   ✅ Print styles
+   ✅ Prefers-reduced-motion support
+   
+   IMPORTANT:
+   - Este arquivo é lido por WordPress para reconhecer o tema
+   - Tailwind CSS é compilado via Vite e injetado em dist/css/
+   - Manutenha os headers de metadados no topo para compatibilidade
+   - Não remova estilos WordPress obrigatórios
+*/
