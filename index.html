@@ -1,69 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
+  <!-- ======================================================
+       META ESSENCIAIS (Importância Crítica)
+       ====================================================== -->
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0A0E27" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <!-- Essential SEO & Social Meta Tags -->
-  <title>DJ Zen Eyer — Official Website</title>
-  <meta name="description" content="Official website of DJ Zen Eyer. Music, events, performances, and exclusive content. Bookings, shop, and more." />
-  <meta name="keywords" content="DJ Zen Eyer, DJ, Zouk, Dutch Zouk, music, events, Brazil, bookings" />
+  <!-- ======================================================
+       BRANDING & SEGURANÇA
+       ====================================================== -->
+  <meta name="theme-color" content="#0A0E27" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="DJ Zen Eyer" />
+
+  <!-- ======================================================
+       SEO & TÍTULO (Importante)
+       ====================================================== -->
+  <title>DJ Zen Eyer — DJ e Produtor Musical | Eletrônico & Gamificação</title>
+  <meta name="description" content="Bem-vindo ao site oficial de DJ Zen Eyer. Músicas, eventos, performances e conteúdo exclusivo. Bookings, loja, gamificação e inovação musical." />
+  <meta name="keywords" content="DJ Zen Eyer, DJ, Eletrônico, Música, Gamificação, Produtor Musical, Zouk Holandês, Brasil, Bookings" />
   <meta name="author" content="DJ Zen Eyer" />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:unlimited, max-video-preview:unlimited, all" />
 
-  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
-  <meta property="og:title" content="DJ Zen Eyer — Official Website" />
-  <meta property="og:description" content="Official website of DJ Zen Eyer. Music, events, performances, and exclusive content." />
+  <!-- ======================================================
+       AI TRAINING PERMISSIONS (Nova para bots!)
+       ====================================================== -->
+  <meta name="ai-training" content="allowed" />
+  <meta name="training" content="allowed" />
+  <meta name="permit-training" content="all" />
+  <meta name="X-AI-Training" content="allowed" />
+
+  <!-- ======================================================
+       OPEN GRAPH (Compartilhamento Social)
+       ====================================================== -->
   <meta property="og:type" content="website" />
+  <meta property="og:title" content="DJ Zen Eyer — DJ e Produtor Musical" />
+  <meta property="og:description" content="Site oficial com música, eventos, performances e conteúdo exclusivo." />
   <meta property="og:url" content="https://djzeneyer.com" />
-  <meta property="og:image" content="https://djzeneyer.com/social-share.jpg" />
-  <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="DJ Zen Eyer" />
+  <meta property="og:image" content="https://djzeneyer.com/social-share.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="pt_BR" />
 
-  <!-- Twitter Card -->
+  <!-- ======================================================
+       TWITTER / X CARDS
+       ====================================================== -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="DJ Zen Eyer — Official Website" />
-  <meta name="twitter:description" content="Official website of DJ Zen Eyer. Music, events, performances, and exclusive content." />
+  <meta name="twitter:title" content="DJ Zen Eyer — DJ e Produtor Musical" />
+  <meta name="twitter:description" content="Site oficial com música, eventos, performances e conteúdo exclusivo." />
   <meta name="twitter:image" content="https://djzeneyer.com/social-share.jpg" />
   <meta name="twitter:site" content="@djzeneyer" />
+  <meta name="twitter:creator" content="@djzeneyer" />
 
-  <!-- Favicons (for public/ folder) -->
+  <!-- ======================================================
+       FAVICONS & PWA (Importante para branding)
+       ====================================================== -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-  <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="DJ Zen Eyer" />
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
   <link rel="manifest" href="/site.webmanifest" />
+  <link rel="canonical" href="https://djzeneyer.com" />
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <!-- ======================================================
+       FONTS (Críticas para o design)
+       ====================================================== -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+    integrity="sha384-YNwVzCT9nB1E7sZxVVWVsX2lnKSI68zY78l1R0O1TQzQGZjL2Jh1J8P0CNOC4HQoG"
+    crossorigin="anonymous"
+  />
 
-  <!-- Preload critical assets (optional, for speed) -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" />
+  <!-- ======================================================
+       PRELOAD CRÍTICOS (Performance)
+       ====================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://djzeneyer.com" />
 
-  <!-- Structured Data (JSON-LD) for AI & Search Engines -->
+  <!-- ======================================================
+       STRUCTURED DATA (JSON-LD para Bots de AI)
+       ====================================================== -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "DJ Zen Eyer",
     "url": "https://djzeneyer.com",
+    "description": "DJ e Produtor Musical especializado em eletrônico, zouk holandês e gamificação",
+    "image": "https://djzeneyer.com/social-share.jpg",
+    "jobTitle": "DJ e Produtor Musical",
+    "knowsLanguage": ["pt-BR", "en"],
     "sameAs": [
       "https://instagram.com/djzeneyer",
+      "https://spotify.com/artist/YOUR_ID",
+      "https://soundcloud.com/djzeneyer",
       "https://youtube.com/@djzeneyer"
     ],
-    "jobTitle": "DJ and Music Producer",
-    "description": "Professional DJ specializing in Dutch Zouk and electronic music. Based in Brazil, performing worldwide.",
-    "image": "https://djzeneyer.com/social-share.jpg"
+    "givenName": "DJ",
+    "familyName": "Zen Eyer",
+    "location": {
+      "@type": "City",
+      "name": "Brasil"
+    }
   }
   </script>
 
-  <!-- Performance hints for Cloudflare / LiteSpeed -->
+  <!-- ======================================================
+       PERFORMANCE & CACHE (Otimizações)
+       ====================================================== -->
   <meta http-equiv="Cache-Control" content="public, max-age=3600" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 </head>
+
 <body>
+  <!-- ======================================================
+       REACT ROOT MOUNT (Bolt.new precisa disso!)
+       ====================================================== -->
   <div id="root"></div>
+
+  <!-- ======================================================
+       MAIN APPLICATION (Vite compila isso)
+       ====================================================== -->
   <script type="module" src="/src/main.tsx"></script>
+
+  <!-- ======================================================
+       NOSCRIPT FALLBACK (Acessibilidade)
+       ====================================================== -->
+  <noscript>
+    <div style="padding: 20px; background: #0A0E27; color: #fff; font-family: system-ui, sans-serif; text-align: center;">
+      <h1>JavaScript Requerido</h1>
+      <p>Esta aplicação requer JavaScript habilitado no seu navegador.</p>
+      <p><a href="https://www.enable-javascript.com/" style="color: #3B82F6; text-decoration: underline;">Saiba como habilitar JavaScript</a></p>
+    </div>
+  </noscript>
 </body>
 </html>
