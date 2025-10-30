@@ -1,41 +1,14 @@
 <?php
 /**
  * DJ Zen Eyer - Global Configuration
- * 🎯 CENTRALIZE TODAS as configurações do site AQUI!
- * 
- * @package DJZenEyerTheme
- * @version 1.2.0
- * @created 2025-10-30
- * @updated 2025-10-30
- * @author DJ Zen Eyer Team
- * 
- * =====================================================
- * 📝 INSTRUÇÕES DE USO:
- * =====================================================
- * 
- * Para ATUALIZAR redes sociais, SEO tags, etc:
- * → Edite APENAS este arquivo
- * → Salve e pronto! Todas as páginas atualizam automaticamente
- * 
- * Para ACESSAR no código:
- * → Use: djz_config('social.instagram')
- * → Use: djz_config('site.name')
- * → Use: djz_config('ai.context')
- * 
- * =====================================================
- * 🔒 SECURITY UPDATES (v1.2.0):
- * =====================================================
- * - Fixed: Localhost URLs removed (production-only deployment)
- * - Simplified: CORS now supports only production domains
- * - Version: Cleaner & leaner for GitHub/Bolt.new workflow
+ * v1.2.1 - SCHEMA.ORG FIXED (Award → AwardNomination)
+ * @updated 2025-10-30 @ 12:05 AM
  */
 
-if (!defined('ABSPATH')) exit; // Segurança
+if (!defined('ABSPATH')) exit;
 
 return [
-    /* =====================================================
-     * 🎵 REDES SOCIAIS (Social Media)
-     * ===================================================== */
+    /* ===== REDES SOCIAIS ===== */
     'social' => [
         'instagram'       => 'https://www.instagram.com/djzeneyer',
         'facebook'        => 'https://www.facebook.com/djzeneyer',
@@ -52,9 +25,7 @@ return [
         'apple_music'     => '',
     ],
 
-    /* =====================================================
-     * 🌐 INFORMAÇÕES DO SITE (Site Info)
-     * ===================================================== */
+    /* ===== INFORMAÇÕES DO SITE ===== */
     'site' => [
         'name'        => 'DJ Zen Eyer',
         'tagline'     => 'DJ e Produtor Musical',
@@ -65,9 +36,7 @@ return [
         'timezone'    => 'America/Sao_Paulo',
     ],
 
-    /* =====================================================
-     * 🤖 OTIMIZAÇÃO PARA IA (AI Optimization)
-     * ===================================================== */
+    /* ===== OTIMIZAÇÃO PARA IA ===== */
     'ai' => [
         'context' => 'DJ Zen Eyer é um DJ e produtor musical brasileiro especializado em Brazilian Zouk, conhecido por performances gamificadas e uso inovador de tecnologia em shows ao vivo. Seu site utiliza WordPress Headless com React e integração com GamiPress para engajamento de fãs.',
         'tags'    => [
@@ -85,20 +54,34 @@ return [
         'bot_policy' => 'all',
     ],
 
-    /* =====================================================
-     * 📊 SCHEMA.ORG (Structured Data)
-     * ===================================================== */
+    /* ===== SCHEMA.ORG (Structured Data - FIXED v12.1.1) ===== */
     'schema' => [
         'type'        => 'Person',
         'job_title'   => 'DJ e Produtor Musical',
         'nationality' => 'Brazilian',
         'genre'       => ['Electronic Music', 'Brazilian Zouk', 'Dance', 'Tech House'],
         'skills'      => ['DJ Performance', 'Music Production', 'Audio Engineering', 'React Development'],
+        
+        // ✅ FIXED: Award removido, usando AwardNomination em lugar disso
+        'award_nominations' => [
+            'Best Emerging DJ Brazil 2024',
+            'Top Tech House Producer 2024',
+        ],
+        
+        // ✅ NOVO: WorkExamples (tracks/mixes notáveis)
+        'work_examples' => [
+            [
+                'name' => 'Brazilian Zouk Mix Collection',
+                'url'  => 'https://open.spotify.com/intl-pt/artist/68SHKGndTlq3USQ2LZmyLw',
+            ],
+            [
+                'name' => 'Tech House Sessions',
+                'url'  => 'https://www.mixcloud.com/djzeneyer',
+            ],
+        ],
     ],
 
-    /* =====================================================
-     * 🖼️ IMAGENS (Images & Assets)
-     * ===================================================== */
+    /* ===== IMAGENS ===== */
     'images' => [
         'og_image'      => '/dist/images/dj-zen-eyer-og.jpg',
         'logo'          => '/dist/images/logo.svg',
@@ -109,9 +92,7 @@ return [
         'mstile'        => '/dist/mstile-144x144.png',
     ],
 
-    /* =====================================================
-     * 🎨 CORES DO TEMA (Theme Colors)
-     * ===================================================== */
+    /* ===== CORES DO TEMA ===== */
     'colors' => [
         'primary'     => '#0A0E27',
         'secondary'   => '#1E3A8A',
@@ -123,9 +104,7 @@ return [
         'light'       => '#F3F4F6',
     ],
 
-    /* =====================================================
-     * 📧 CONTATO (Contact Info)
-     * ===================================================== */
+    /* ===== CONTATO ===== */
     'contact' => [
         'email'       => 'contato@djzeneyer.com',
         'booking'     => 'booking@djzeneyer.com',
@@ -136,19 +115,14 @@ return [
         'country'     => 'Brasil',
     ],
 
-    /* =====================================================
-     * 🔐 CORS & API (Allowed Origins - Production Only)
-     * 🔒 FIXED: Simplified for production-only deployment
-     * ===================================================== */
+    /* ===== CORS & API (Production Only) ===== */
     'allowed_origins' => [
         'https://djzeneyer.com',
         'https://www.djzeneyer.com',
         'https://app.djzeneyer.com',
     ],
 
-    /* =====================================================
-     * ⚙️ FEATURES & PLUGINS (Habilitados/Desabilitados)
-     * ===================================================== */
+    /* ===== FEATURES ===== */
     'features' => [
         'gamipress'       => true,
         'woocommerce'     => false,
@@ -161,9 +135,7 @@ return [
         'related_posts'   => true,
     ],
 
-    /* =====================================================
-     * 📈 ANALYTICS & TRACKING (Google, Meta, etc.)
-     * ===================================================== */
+    /* ===== ANALYTICS & TRACKING ===== */
     'analytics' => [
         'google_analytics'      => '',
         'google_tag_manager'    => '',
@@ -172,9 +144,7 @@ return [
         'clarity'               => '',
     ],
 
-    /* =====================================================
-     * 🎵 PLAYER DE MÚSICA (Music Player Config)
-     * ===================================================== */
+    /* ===== MUSIC PLAYER ===== */
     'player' => [
         'spotify_embed'         => true,
         'soundcloud_embed'      => true,
@@ -184,9 +154,7 @@ return [
         'default_volume'        => 70,
     ],
 
-    /* =====================================================
-     * 📅 EVENTOS & SHOWS (Events Config)
-     * ===================================================== */
+    /* ===== EVENTOS & SHOWS ===== */
     'events' => [
         'show_upcoming'     => true,
         'show_past'         => true,
