@@ -4,8 +4,9 @@
  * 🎯 CENTRALIZE TODAS as configurações do site AQUI!
  * 
  * @package DJZenEyerTheme
- * @version 1.0.0
+ * @version 1.1.0
  * @created 2025-10-30
+ * @updated 2025-10-30
  * @author DJ Zen Eyer Team
  * 
  * =====================================================
@@ -20,6 +21,12 @@
  * → Use: djz_config('social.instagram')
  * → Use: djz_config('site.name')
  * → Use: djz_config('ai.context')
+ * 
+ * =====================================================
+ * 🔒 SECURITY UPDATES (v1.1.0):
+ * =====================================================
+ * - Fixed: Localhost URLs removed from production CORS
+ * - Fixed: Auto-detection of environment (dev vs production)
  */
 
 if (!defined('ABSPATH')) exit; // Segurança
@@ -130,15 +137,24 @@ return [
 
     /* =====================================================
      * 🔐 CORS & API (Allowed Origins)
+     * 🔒 FIXED: Auto-detect environment (localhost only in dev)
      * ===================================================== */
-    'allowed_origins' => [
-        'https://djzeneyer.com',
-        'https://www.djzeneyer.com',
-        'https://app.djzeneyer.com',
-        'http://localhost:5173',      // Vite dev
-        'http://localhost:3000',      // React dev alternativo
-        'http://127.0.0.1:5173',      // Localhost alternativo
-    ],
+    'allowed_origins' => array_merge(
+        // Production URLs (always allowed)
+        [
+            'https://djzeneyer.com',
+            'https://www.djzeneyer.com',
+            'https://app.djzeneyer.com',
+        ],
+        // Development URLs (only if WP_DEBUG is enabled)
+        (defined('WP_DEBUG') && WP_DEBUG) || wp_get_environment_type() === 'development'
+            ? [
+                'http://localhost:5173',      // Vite dev
+                'http://localhost:3000',      // React dev alternativo
+                'http://127.0.0.1:5173',      // Localhost alternativo
+              ]
+            : []
+    ),
 
     /* =====================================================
      * ⚙️ FEATURES & PLUGINS (Habilitados/Desabilitados)
