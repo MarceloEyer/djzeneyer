@@ -19,7 +19,7 @@ env:
   SSH_USER: 'u790739895'
   REMOTE_THEME_PATH: './wp-content/themes/zentheme'
   REMOTE_PLUGINS_PATH: './wp-content/plugins'
-  PLUGIN_PREFIX: "djz"
+  PLUGIN_PREFIX: 'djz'
 
 jobs:
   build:
@@ -94,7 +94,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: 🧪 Test SSH Connection & Ensure Remote Directories Exist
         run: |
@@ -129,31 +129,30 @@ jobs:
             --exclude='postcss.config.*' \
             --exclude='tailwind.config.*' \
             --exclude='*.md' \
+            --exclude='wp-content' \
             ./ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
 
-      - name: 🧩 Deploy Custom Plugins (prefix: djz, NO DELETE!)
-        env:
-          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PORT: ${{ env.SSH_PORT }}
-          SSH_USER: ${{ env.SSH_USER }}
-          SSH_HOST: ${{ env.SSH_HOST }}
-          REMOTE_PLUGINS_PATH: ${{ env.REMOTE_PLUGINS_PATH }}
-          PLUGIN_PREFIX: ${{ env.PLUGIN_PREFIX }}
+      - name: 🧩 Deploy Custom Plugins (NEW!)
         run: |
           cd wp-content/plugins
+          found=0
           for plugin in ${PLUGIN_PREFIX}*; do
             if [ -d "$plugin" ]; then
-              echo "🚀 Deploying custom plugin: $plugin"
+              echo "🚀 Deploying plugin: $plugin"
               rsync -avz \
-                -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no" \
+                -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
                 "$plugin/" \
-                $SSH_USER@$SSH_HOST:$REMOTE_PLUGINS_PATH/$plugin/
-            else
-              echo "⚠️ Plugin $plugin não encontrado como diretório. Pulando."
+                ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_PLUGINS_PATH }}/$plugin/
+              found=$((found+1))
             fi
           done
           cd ../../..
+          if [ $found -gt 0 ]; then
+            echo "✅ Deployed $found custom plugin(s)"
+          else
+            echo "ℹ️ No custom plugins found (wp-content/plugins/${PLUGIN_PREFIX}*)"
+          fi
 
       - name: 🗺️ Deploy Sitemaps to Root
         run: |
@@ -195,7 +194,6 @@ jobs:
 
       - name: ✅ Deployment Summary
         run: |
-          PLUGINS_FOUND=$(ls wp-content/plugins/ | grep "^${PLUGIN_PREFIX}" | xargs | sed 's/ /, /g')
           echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "🌐 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
@@ -206,6 +204,6 @@ jobs:
           echo "### 📋 Deployed Files" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ React App → \`/wp-content/themes/zentheme/dist/\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Theme Files → \`/wp-content/themes/zentheme/\`" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Custom Plugins → \`/wp-content/plugins/[${PLUGINS_FOUND}]\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Custom Plugins → \`/wp-content/plugins/${PLUGIN_PREFIX}*/\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Sitemaps → \`/sitemap*.xml\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Public Assets → \`/robots.txt, /favicon*, etc.\`" >> $GITHUB_STEP_SUMMARY
