@@ -16,6 +16,7 @@ dist-ssr/
 build/
 .vite/
 *.tsbuildinfo
+.github/assets
 
 # 🔐 SECRETS - NUNCA COMMITAR!
 .env
