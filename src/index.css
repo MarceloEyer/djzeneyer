@@ -123,13 +123,14 @@
   /* BUTTON SYSTEM */
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-lg font-semibold
-      select-none focus:outline-none transition-all;
+      select-none transition-all;
     padding: 0.75rem 1.5rem;
-    duration: var(--duration-base);
     letter-spacing: 0.5px;
+    transition-duration: var(--duration-base);
 
     &:focus-visible {
-      @apply ring-2 ring-offset-2 ring-offset-background;
+      @apply outline-none ring-2 ring-offset-2;
+      ring-offset-color: rgb(var(--color-background));
       box-shadow: 0 0 0 2px rgb(var(--color-primary) / 0.5);
     }
 
@@ -222,8 +223,7 @@
   /* CARD COMPONENT */
   .card {
     @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl
-      border border-white/10 overflow-hidden
-      transition-all duration-300;
+      border border-white/10 overflow-hidden transition-all duration-300;
 
     &:hover {
       @apply border-white/20 shadow-2xl;
@@ -232,8 +232,7 @@
 
   /* NAVIGATION LINK */
   .nav-link {
-    @apply relative px-4 py-2 text-white/70 font-medium
-      transition-all duration-200;
+    @apply relative px-4 py-2 text-white/70 font-medium transition-all duration-200;
 
     &:hover {
       @apply text-white;
@@ -296,10 +295,10 @@
   .input {
     @apply w-full px-4 py-3 bg-surface border border-white/10
       rounded-lg text-white placeholder:text-white/40
-      focus:outline-none transition-all duration-200
-      disabled:opacity-50 disabled:cursor-not-allowed;
+      transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
 
     &:focus {
+      @apply outline-none;
       border-color: rgb(var(--color-primary));
       box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
     }
@@ -333,8 +332,7 @@
       rgb(var(--color-primary)),
       rgb(var(--color-secondary))
     );
-    @apply absolute top-0 left-0 h-full rounded-full
-      transition-all duration-100;
+    @apply absolute top-0 left-0 h-full rounded-full transition-all duration-100;
   }
 
   /* GLOW EFFECT */
@@ -343,8 +341,7 @@
 
     &::before {
       content: '';
-      @apply absolute inset-0 -z-10 rounded-xl blur-2xl opacity-0
-        transition-opacity duration-300;
+      @apply absolute inset-0 -z-10 rounded-xl blur-2xl opacity-0 transition-opacity duration-300;
       background: radial-gradient(
         circle,
         rgba(var(--color-primary), 0.3),
@@ -452,7 +449,8 @@
 
   /* FOCUS WITHIN */
   .focus-within\:ring:focus-within {
-    @apply ring-2 ring-primary/50;
+    @apply ring-2;
+    box-shadow: 0 0 0 2px rgb(var(--color-primary) / 0.5);
   }
 }
 
@@ -506,7 +504,7 @@
   }
 }
 
-/* DARK MODE (Fallback for system preference) */
+/* DARK MODE */
 @media (prefers-color-scheme: dark) {
   body {
     color-scheme: dark;
