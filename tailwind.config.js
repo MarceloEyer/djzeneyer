@@ -4,38 +4,39 @@ export default {
   theme: {
     extend: {
       colors: {
+        // ✅ Cores com CSS Variables (RGB sem vírgulas)
         primary: {
-          DEFAULT: 'rgb(var(--color-primary))',
+          DEFAULT: 'rgb(var(--color-primary) / <alpha-value>)',
           dark: 'rgb(var(--color-primary) / 0.8)',
           light: 'rgb(var(--color-primary) / 1.2)',
         },
         secondary: {
-          DEFAULT: 'rgb(var(--color-secondary))',
+          DEFAULT: 'rgb(var(--color-secondary) / <alpha-value>)',
           dark: 'rgb(var(--color-secondary) / 0.8)',
           light: 'rgb(var(--color-secondary) / 1.2)',
         },
         accent: {
-          DEFAULT: 'rgb(var(--color-accent))',
+          DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',
           dark: 'rgb(var(--color-accent) / 0.8)',
           light: 'rgb(var(--color-accent) / 1.2)',
         },
         success: {
-          DEFAULT: 'rgb(var(--color-success))',
+          DEFAULT: 'rgb(var(--color-success) / <alpha-value>)',
           dark: 'rgb(var(--color-success) / 0.8)',
           light: 'rgb(var(--color-success) / 1.2)',
         },
         warning: {
-          DEFAULT: 'rgb(var(--color-warning))',
+          DEFAULT: 'rgb(var(--color-warning) / <alpha-value>)',
           dark: 'rgb(var(--color-warning) / 0.8)',
           light: 'rgb(var(--color-warning) / 1.2)',
         },
         error: {
-          DEFAULT: 'rgb(var(--color-error))',
+          DEFAULT: 'rgb(var(--color-error) / <alpha-value>)',
           dark: 'rgb(var(--color-error) / 0.8)',
           light: 'rgb(var(--color-error) / 1.2)',
         },
-        background: 'rgb(var(--color-background))',
-        surface: 'rgb(var(--color-surface))',
+        background: 'rgb(var(--color-background) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -52,8 +53,13 @@ export default {
           '50%': { transform: 'translateY(-10px)' },
         },
         glow: {
-          '0%': { boxShadow: '0 0 5px rgb(var(--color-primary) / 0.5)' },
-          '100%': { boxShadow: '0 0 20px rgb(var(--color-primary) / 0.8), 0 0 30px rgb(var(--color-secondary) / 0.6)' },
+          '0%': { 
+            textShadow: '0 0 5px rgb(var(--color-primary) / 0.5)',
+            // ↑ Usar textShadow PURO, sem rgba()
+          },
+          '100%': { 
+            textShadow: '0 0 20px rgb(var(--color-primary) / 0.8), 0 0 30px rgb(var(--color-secondary) / 0.6)',
+          },
         },
       },
       backgroundImage: {
