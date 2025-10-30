@@ -18,6 +18,9 @@ env:
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
   REMOTE_THEME_PATH: './wp-content/themes/zentheme'
+  REMOTE_PLUGINS_PATH: './wp-content/plugins'
+  # Adicione aqui os nomes exatos das pastas dos plugins customizados
+  CUSTOM_PLUGINS: "djzeneyer-teste seu-outro-plugin"
 
 jobs:
   build:
@@ -100,7 +103,7 @@ jobs:
             -p ${{ env.SSH_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
-            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist && echo '✅ Remote directories ready'"
+            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist ${{ env.REMOTE_PLUGINS_PATH }} && echo '✅ Remote directories ready'"
 
       - name: ⚛️ Deploy React App (Clean Slate)
         run: |
@@ -129,6 +132,31 @@ jobs:
             --exclude='*.md' \
             ./ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
+
+      - name: 🧩 Deploy Custom Plugins (ONLY your plugins)
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PORT: ${{ env.SSH_PORT }}
+          SSH_USER: ${{ env.SSH_USER }}
+          SSH_HOST: ${{ env.SSH_HOST }}
+          REMOTE_PLUGINS_PATH: ${{ env.REMOTE_PLUGINS_PATH }}
+          CUSTOM_PLUGINS: ${{ env.CUSTOM_PLUGINS }}
+        run: |
+          IFS=' ' read -r -a plugins <<< "$CUSTOM_PLUGINS"
+          for plugin in "${plugins[@]}"; do
+            if [ -d "wp-content/plugins/$plugin" ]; then
+              echo "🚀 Deploying custom plugin: $plugin"
+              # Remove o plugin do servidor e faz upload do novo
+              ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
+                "rm -rf $REMOTE_PLUGINS_PATH/$plugin"
+              rsync -avz --delete \
+                -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no" \
+                wp-content/plugins/$plugin/ \
+                $SSH_USER@$SSH_HOST:$REMOTE_PLUGINS_PATH/$plugin/
+            else
+              echo "⚠️ Plugin $plugin não encontrado no repositório. Pulando."
+            fi
+          done
 
       - name: 🗺️ Deploy Sitemaps to Root
         run: |
@@ -180,5 +208,6 @@ jobs:
           echo "### 📋 Deployed Files" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ React App → \`/wp-content/themes/zentheme/dist/\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Theme Files → \`/wp-content/themes/zentheme/\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Custom Plugins → \`/wp-content/plugins/[${CUSTOM_PLUGINS// /, }]\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Sitemaps → \`/sitemap*.xml\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Public Assets → \`/robots.txt, /favicon*, etc.\`" >> $GITHUB_STEP_SUMMARY
