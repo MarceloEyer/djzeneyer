@@ -1,7 +1,7 @@
 <?php
 /**
  * DJ Zen Eyer Theme - functions.php
- * v12.2.0 — Enterprise-Grade, Secure, AI/SEO Optimized
+ * v12.3.0 — Enterprise-Grade, Secure, AI/SEO Optimized
  * 
  * 🎯 ARCHITECTURE:
  * - inc/djz-config.php   → Todas as configurações globais (não editar aqui!)
@@ -9,22 +9,24 @@
  * - functions.php        → Hooks do WordPress + lógica do tema
  * 
  * @package DJZenEyerTheme
- * @version 12.2.0
- * @updated 2025-10-30 @ 15:40 UTC
+ * @version 12.3.0
+ * @updated 2025-10-30 @ 16:10 UTC
  * @author DJ Zen Eyer Team
  * 
  * =====================================================
- * 🔒 SECURITY UPDATES (v12.2.0):
+ * 🔒 SECURITY UPDATES (v12.3.0 - HOTFIX):
  * =====================================================
- * ✅ CSP nonce em <style> inline (LINE 138-144)
- * ✅ REST API data validation + sanitization (LINE 167-210)
- * ✅ Permission callbacks for sensitive endpoints (LINE 197-211)
- * ✅ CORS origin validation (strict in_array) (LINE 93-99)
- * ✅ Error handling + try-catch para JSON decode (LINE 117-122)
- * ✅ Headers hardened (HSTS, X-Frame, CSP) (LINE 78-88)
- * ✅ SQL injection prevention (usar filters WP) (LINE 247-272)
- * ✅ Input sanitization em Rest API (LINE 168-185)
- * ✅ Rate limiting ready (filtro customizável) (LINE 186-195)
+ * ✅ CSP Level 3 COMPLETO (object-src + script-src + trusted-types)
+ * ✅ CSP nonce em <style> inline (CSP compliance)
+ * ✅ REST API data validation + sanitization
+ * ✅ Permission callbacks for sensitive endpoints
+ * ✅ CORS origin validation (strict in_array)
+ * ✅ Error handling + try-catch para JSON decode
+ * ✅ Headers hardened (HSTS, X-Frame, CSP Level 3)
+ * ✅ SQL injection prevention (usar filters WP)
+ * ✅ Input sanitization em Rest API
+ * ✅ Rate limiting ready (filtro customizável)
+ * ✅ Nonce reuse optimization
  */
 
 if (!defined('ABSPATH')) {
@@ -41,7 +43,7 @@ require_once get_theme_file_path('/inc/djz-helpers.php');
  * ===================================================== */
 if (!defined('DJZ_VERSION')) {
     $manifest_path = get_theme_file_path('/dist/.vite/manifest.json');
-    $version = file_exists($manifest_path) ? filemtime($manifest_path) : '12.2.0';
+    $version = file_exists($manifest_path) ? filemtime($manifest_path) : '12.3.0';
     define('DJZ_VERSION', $version);
 }
 
@@ -99,7 +101,30 @@ add_action('after_setup_theme', function () {
 }, 0); // Priority 0 to run first
 
 /* =====================================================
- * 🔐 SECURITY HEADERS (FIXED v12.2)
+ * 🔒 CSP NONCE GENERATOR (v12.3.0 - NEW!)
+ * ===================================================== */
+/**
+ * Generate and return CSP nonce for current request
+ * Nonce changes every page load for security
+ * 
+ * @return string Base64 encoded random nonce
+ */
+function djzeneyer_get_csp_nonce() {
+    static $nonce = null;
+    
+    if ($nonce === null) {
+        // Generate cryptographically secure random nonce
+        $nonce = base64_encode(random_bytes(16));
+        
+        // Store in global for reuse in same request
+        $GLOBALS['djz_csp_nonce'] = $nonce;
+    }
+    
+    return $nonce;
+}
+
+/* =====================================================
+ * 🔐 SECURITY HEADERS + CSP LEVEL 3 (v12.3.0 - FIXED!)
  * ===================================================== */
 add_action('send_headers', function () {
     if (is_admin() || headers_sent()) {
@@ -109,7 +134,7 @@ add_action('send_headers', function () {
     // Remove WordPress signatures
     header_remove('X-Powered-By');
     
-    // Security headers (prevent clickjacking, XSS, MIME sniffing)
+    // ============ PADRÃO SECURITY HEADERS ============
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: DENY');
     header('X-XSS-Protection: 1; mode=block');
@@ -120,10 +145,40 @@ add_action('send_headers', function () {
     if (is_ssl()) {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
     }
-});
+    
+    // ============ CSP LEVEL 3 (v12.3.0 - COMPLETE!) ============
+    // Generate nonce for this request
+    $nonce = djzeneyer_get_csp_nonce();
+    $rest_url = esc_url_raw(rest_url());
+    
+    // CSP Header with ALL fixes:
+    // ✅ script-src (FIX #2: was missing)
+    // ✅ object-src 'none' (FIX #1: blocks plugins)
+    // ✅ require-trusted-types-for (FIX #3: CSP Level 3)
+    $csp = array(
+        "default-src 'self'",
+        "script-src 'nonce-{$nonce}' 'strict-dynamic' https:",
+        "style-src 'self' 'nonce-{$nonce}' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: https: blob:",
+        "font-src 'self' https://fonts.gstatic.com data:",
+        "connect-src 'self' https://www.google-analytics.com https://analytics.google.com {$rest_url}",
+        "media-src 'self' https://p.scdn.co https://open.spotify.com https://www.youtube.com https://soundcloud.com https://mixcloud.com blob:",
+        "frame-src 'self' https://open.spotify.com https://www.youtube.com https://soundcloud.com https://mixcloud.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "upgrade-insecure-requests",
+        "block-all-mixed-content",
+        "require-trusted-types-for 'script'",
+        "trusted-types default 'allow-duplicates'",
+    );
+    
+    header('Content-Security-Policy: ' . implode('; ', $csp));
+}, 1); // Priority 1 = very early
 
 /* =====================================================
- * 🌐 CORS FOR REST API (FIXED v12.2 - Secure validation)
+ * 🌐 CORS FOR REST API (v12.3.0 - Secure validation)
  * ===================================================== */
 add_action('rest_api_init', function () {
     // Filter to handle CORS preflight requests
@@ -156,7 +211,7 @@ add_action('rest_api_init', function () {
 });
 
 /* =====================================================
- * 📦 ASSET ENQUEUE (REACT + VITE + CSP)
+ * 📦 ASSET ENQUEUE (REACT + VITE + CSP v12.3.0)
  * ===================================================== */
 add_action('wp_enqueue_scripts', function () {
     // Main stylesheet
@@ -178,7 +233,7 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    // Parse manifest with try-catch for JSON errors
+    // Parse manifest with try-catch for JSON errors (v12.3.0 robust)
     try {
         $manifest_json = file_get_contents($manifest_path);
         $manifest = json_decode($manifest_json, true);
@@ -239,29 +294,32 @@ add_action('wp_enqueue_scripts', function () {
 add_filter('script_loader_tag', function ($tag, $handle) {
     if ('djzeneyer-react' === $handle) {
         $tag = str_replace('<script ', '<script type="module" ', $tag);
+        
+        // Add CSP nonce v12.3.0
+        if (strpos($tag, 'nonce=') === false) {
+            $nonce = djzeneyer_get_csp_nonce();
+            $tag = str_replace('<script type="module" ', '<script type="module" nonce="' . esc_attr($nonce) . '" ', $tag);
+        }
     }
     return $tag;
 }, 10, 2);
 
 /* =====================================================
- * 🎨 THEME COLORS CSS VARIABLES (FIXED v12.2 - CSP nonce)
+ * 🎨 THEME COLORS CSS VARIABLES (v12.3.0 - CSP nonce)
  * ===================================================== */
 add_action('wp_head', function () {
     // Get nonce for CSP compliance
-    $nonce = '';
-    if (function_exists('djzeneyer_get_csp_nonce')) {
-        $nonce = ' nonce="' . esc_attr(djzeneyer_get_csp_nonce()) . '"';
-    }
+    $nonce = djzeneyer_get_csp_nonce();
     
     $css = djz_theme_colors_css();
-    printf('<style id="djz-theme-colors"%s>%s</style>' . "\n", 
-        $nonce, 
+    printf('<style id="djz-theme-colors" nonce="%s">%s</style>' . "\n", 
+        esc_attr($nonce), 
         $css // Already escaped in djz-helpers.php
     );
 }, 1);
 
 /* =====================================================
- * 📊 CUSTOM REST API ENDPOINTS (FIXED v12.2 - Secure)
+ * 📊 CUSTOM REST API ENDPOINTS (v12.3.0 - Secure)
  * ===================================================== */
 add_action('rest_api_init', function () {
     
@@ -303,7 +361,7 @@ add_action('rest_api_init', function () {
     /* ==========================================
        ADMIN-ONLY ENDPOINT: /djz/v1/admin/config
        Full configuration for logged-in admins
-       (FIXED v12.2 - Permission check required)
+       (v12.3.0 - Permission check required)
        ========================================== */
     register_rest_route('djz/v1', '/admin/config', [
         'methods'  => WP_REST_Server::READABLE,
@@ -410,7 +468,7 @@ remove_action('wp_head', 'wp_shortlink_wp_head', 10);
  * ===================================================== */
 
 /**
- * Generate breadcrumbs with Schema.org markup (FIXED v12.2)
+ * Generate breadcrumbs with Schema.org markup
  */
 function djz_breadcrumbs() {
     if (!djz_feature_enabled('breadcrumbs') || is_front_page()) {
@@ -497,7 +555,7 @@ function djz_breadcrumbs() {
 }
 
 /**
- * Calculate and display reading time (FIXED v12.2)
+ * Calculate and display reading time
  */
 function djz_reading_time($post_id = null) {
     if (!djz_feature_enabled('reading_time')) {
