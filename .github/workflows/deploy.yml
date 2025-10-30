@@ -19,15 +19,14 @@ env:
   SSH_USER: 'u790739895'
   REMOTE_THEME_PATH: './wp-content/themes/zentheme'
   REMOTE_PLUGINS_PATH: './wp-content/plugins'
-  # Adicione aqui os nomes exatos das pastas dos plugins customizados
-  CUSTOM_PLUGINS: "djzeneyer-teste seu-outro-plugin"
+  PLUGIN_PREFIX: "djz"
 
 jobs:
   build:
     name: 🏗️ Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     steps:
       - name: ⚡ Checkout
         uses: actions/checkout@v4
@@ -133,30 +132,30 @@ jobs:
             ./ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
 
-      - name: 🧩 Deploy Custom Plugins (ONLY your plugins)
+      - name: 🧩 Deploy Custom Plugins (prefix: djz)
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_PORT: ${{ env.SSH_PORT }}
           SSH_USER: ${{ env.SSH_USER }}
           SSH_HOST: ${{ env.SSH_HOST }}
           REMOTE_PLUGINS_PATH: ${{ env.REMOTE_PLUGINS_PATH }}
-          CUSTOM_PLUGINS: ${{ env.CUSTOM_PLUGINS }}
+          PLUGIN_PREFIX: ${{ env.PLUGIN_PREFIX }}
         run: |
-          IFS=' ' read -r -a plugins <<< "$CUSTOM_PLUGINS"
-          for plugin in "${plugins[@]}"; do
-            if [ -d "wp-content/plugins/$plugin" ]; then
+          cd wp-content/plugins
+          for plugin in ${PLUGIN_PREFIX}*; do
+            if [ -d "$plugin" ]; then
               echo "🚀 Deploying custom plugin: $plugin"
-              # Remove o plugin do servidor e faz upload do novo
               ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
                 "rm -rf $REMOTE_PLUGINS_PATH/$plugin"
               rsync -avz --delete \
                 -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no" \
-                wp-content/plugins/$plugin/ \
+                "$plugin/" \
                 $SSH_USER@$SSH_HOST:$REMOTE_PLUGINS_PATH/$plugin/
             else
-              echo "⚠️ Plugin $plugin não encontrado no repositório. Pulando."
+              echo "⚠️ Plugin $plugin não encontrado como diretório. Pulando."
             fi
           done
+          cd ../../..
 
       - name: 🗺️ Deploy Sitemaps to Root
         run: |
@@ -198,6 +197,7 @@ jobs:
 
       - name: ✅ Deployment Summary
         run: |
+          PLUGINS_FOUND=$(ls wp-content/plugins/ | grep "^${PLUGIN_PREFIX}" | xargs | sed 's/ /, /g')
           echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "🌐 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
@@ -208,6 +208,6 @@ jobs:
           echo "### 📋 Deployed Files" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ React App → \`/wp-content/themes/zentheme/dist/\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Theme Files → \`/wp-content/themes/zentheme/\`" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Custom Plugins → \`/wp-content/plugins/[${CUSTOM_PLUGINS// /, }]\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Custom Plugins → \`/wp-content/plugins/[${PLUGINS_FOUND}]\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Sitemaps → \`/sitemap*.xml\`" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Public Assets → \`/robots.txt, /favicon*, etc.\`" >> $GITHUB_STEP_SUMMARY
