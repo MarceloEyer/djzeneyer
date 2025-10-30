@@ -1,828 +1,332 @@
-# 🚀 **README.md COMPLETO - PADRÃO ENTERPRISE**
+# DJ Zen Eyer 🎵
+## WordPress Headless Theme com React 18 + Vite + TypeScript
 
-Vou criar um README no **padrão Google/Netflix/Tesla** com documentação completa! 📚
+![Version](https://img.shields.io/badge/Version-12.1.0-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
 
-***
+**Tema WordPress Headless profissional especializado em DJ/Produtor Musical, com gamificação, React moderna e integração completa com Spotify, Mixcloud e outras plataformas.**
 
-# **DJ ZEN EYER THEME - DEVELOPER DOCUMENTATION**
+---
 
-> **Enterprise-Grade WordPress Headless Theme**  
-> Version 12.0.0 | Last Updated: October 30, 2025  
-> Architecture: WordPress REST API + React + Vite + TypeScript
+## 🎯 **Características Principais**
 
-[![License](https://img.shields.io/badge/license-MIT-bluehttps://img.shields.io/badge/WordPress-shields.io/badge/React-18.2%2B-61(https://img.shields.io/badge/TypeScript-5.0%2B-blueLE OF CONTENTS**
+### 🏗️ **Arquitetura**
+- ✅ **WordPress Headless** - Backend PHP puro, Frontend React isolado
+- ✅ **React 18** - Component library moderna
+- ✅ **TypeScript 5** - Type safety completo
+- ✅ **Vite** - Build otimizado com code splitting automático
+- ✅ **Tailwind CSS** - Estilização rápida e escalável
 
-1. [Quick Start](#quick-start)
-2. [Architecture Overview](#architecture-overview)
-3. [File Structure](#file-structure)
-4. [Configuration Guide](#configuration-guide)
-5. [Common Tasks](#common-tasks)
-6. [API Reference](#api-reference)
-7. [Security](#security)
-8. [Performance](#performance)
-9. [Troubleshooting](#troubleshooting)
-10. [Contributing](#contributing)
+### 🔒 **Segurança (v12.1.0)**
+- ✅ **CSP Nonce** - Proteção contra XSS em styles inline
+- ✅ **REST API Segura** - Endpoints autenticados e filtrados
+- ✅ **CORS Production-Only** - Sem localhost em produção
+- ✅ **Headers HTTP** - HSTS, X-Frame-Options, nosniff
+- ✅ **Validação** - WP_Error, sanitização completa
 
-***
+### 📊 **SEO & Metadata**
+- ✅ **Schema.org JSON-LD** - Dados estruturados (Person, MusicGroup)
+- ✅ **Open Graph & Twitter Cards** - Previews em redes sociais
+- ✅ **Canonical URLs** - Sem duplicate content
+- ✅ **Breadcrumbs** - Navegação SEO
+- ✅ **Sitemap XML** - Indexação automática
 
-## **🚀 QUICK START**
+### ⚡ **Performance**
+- ✅ **Code Splitting** - Chunks automáticos para rotas
+- ✅ **Tree Shaking** - Remove código não-utilizado
+- ✅ **Lazy Loading** - React.lazy() em componentes pesados
+- ✅ **Caching** - Headers cache-control otimizados
+- ✅ **Asset Minification** - JS/CSS comprimidos
 
-### **Prerequisites**
+### 🎮 **Gamificação**
+- ✅ **GamiPress Integration** - Pontos, badges, leaderboards
+- ✅ **Custom Post Types** - Eventos, Tracks, Achievements
+- ✅ **REST API Public** - `/wp-json/djz/v1/config`
 
-- **Server:** PHP 8.1+, MySQL 8.0+
-- **WordPress:** 6.4+
-- **Node.js:** 18.0+
-- **Composer:** 2.0+
+### 🎵 **Integração Streaming**
+- ✅ **Spotify** - Embeds, Player, Links
+- ✅ **Mixcloud** - Show sets, Gravações
+- ✅ **SoundCloud** - Tracks, Playlists
+- ✅ **YouTube** - Vídeos, Canais
+- ✅ **Apple Music** - Links, Integrações
 
-### **Installation**
+---
 
-```bash
-# 1. Clone theme to WordPress themes directory
-cd wp-content/themes/
-git clone https://github.com/djzeneyer/theme.git djzeneyer
+## 📁 **Estrutura do Projeto**
 
-# 2. Install PHP dependencies
-cd djzeneyer
-composer install
+djzeneyer-theme/
+├── functions.php # Hooks WordPress, asset enqueue
+├── template-parts/
+│ ├── header.php # Header com React mount point
+│ └── footer.php # Footer, scripts
+├── inc/
+│ ├── djz-config.php # ⭐ Configurações centralizadas
+│ ├── djz-helpers.php # Funções auxiliares
+│ └── djz-security.php # Headers de segurança
+├── src/ # React TypeScript
+│ ├── main.tsx # Entry point
+│ ├── App.tsx # Root component
+│ ├── components/
+│ │ ├── Hero.tsx
+│ │ ├── Player.tsx
+│ │ └── SocialLinks.tsx
+│ └── styles/
+│ └── globals.css # Tailwind
+├── dist/ # Build output (Vite)
+│ ├── .vite/
+│ │ └── manifest.json # Asset mapping
+│ ├── js/
+│ ├── css/
+│ └── images/
+├── vite.config.ts # Build otimizado
+├── tsconfig.json # TypeScript strict
+├── tailwind.config.js # Tailwind config
+└── README.md
 
-# 3. Install Node dependencies
+text
+
+---
+
+## 🚀 **Quick Start**
+
+### 1️⃣ **Instalação**
+Clone o repositório
+git clone https://github.com/seu-usuario/djzeneyer-theme.git
+cd djzeneyer-theme
+
+Instale dependências
 npm install
 
-# 4. Build assets
+Build de produção
 npm run build
 
-# 5. Activate theme in WordPress Admin
-# Dashboard → Appearance → Themes → Activate "DJ Zen Eyer"
-```
+Deploy para servidor
+(Seu webhook GitHub → Bolt.new → Hostinger)
+text
 
-### **Development Mode**
-
-```bash
-# Start Vite dev server (HMR enabled)
-npm run dev
-
-# WordPress will automatically detect dev mode
-# Visit: http://localhost:5173
-```
-
-***
-
-## **🏗️ ARCHITECTURE OVERVIEW**
-
-### **Technology Stack**
-
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | React 18 + TypeScript | UI Components |
-| **Build Tool** | Vite 4 | Fast HMR, Module Bundling |
-| **Backend** | WordPress REST API | Content Management |
-| **Cache** | LiteSpeed Cache | Server-side caching |
-| **CDN** | Cloudflare | Global edge caching |
-| **Security** | CSP Nonce + HSTS | XSS/CSRF protection |
-
-### **Data Flow**
-
-```
-┌─────────────┐      REST API      ┌──────────────┐
-│   React     │ ◄─────────────────► │  WordPress   │
-│  (Vite)     │   JSON Responses   │   Backend    │
-└─────────────┘                     └──────────────┘
-       │                                    │
-       │                                    │
-       ▼                                    ▼
-┌─────────────┐                     ┌──────────────┐
-│  Cloudflare │                     │   MySQL DB   │
-│     CDN     │                     │              │
-└─────────────┘                     └──────────────┘
-```
-
-### **Design Patterns**
-
-- **Centralized Configuration:** All settings in `inc/djz-config.php`
-- **Helper Functions:** Reusable utilities in `inc/djz-helpers.php`
-- **Component-Based:** React components in `src/components/`
-- **RESTful API:** Custom endpoints in `/wp-json/djz/v1/`
-
-***
-
-## **📁 FILE STRUCTURE**
-
-```
-wp-content/themes/djzeneyer/
-│
-├── 📂 inc/                          # PHP Configuration & Helpers
-│   ├── djz-config.php              # ⭐ SINGLE SOURCE OF TRUTH (Edit here!)
-│   └── djz-helpers.php             # Helper functions (djz_*)
-│
-├── 📂 src/                          # React Frontend Source
-│   ├── main.tsx                    # Entry point
-│   ├── App.tsx                     # Root component
-│   ├── components/                 # React components
-│   ├── hooks/                      # Custom React hooks
-│   ├── styles/                     # CSS/SCSS files
-│   └── utils/                      # Frontend utilities
-│
-├── 📂 dist/                         # Built Assets (auto-generated)
-│   ├── .vite/                      # Vite manifest
-│   ├── css/                        # Compiled CSS
-│   ├── js/                         # Compiled JS
-│   └── images/                     # Optimized images
-│
-├── 📂 template-parts/               # WordPress Template Parts
-│   ├── header/                     # Header components
-│   ├── footer/                     # Footer components
-│   └── content/                    # Content templates
-│
-├── 📂 plugins/                      # Custom Plugins
-│   └── djzeneyer-csp/              # CSP Nonce plugin
-│       └── djzeneyer-csp.php       # Security headers
-│
-├── header.php                       # WordPress Header (v4.0)
-├── footer.php                       # WordPress Footer
-├── functions.php                    # WordPress Functions (v12.0)
-├── index.php                        # Main template
-├── single.php                       # Single post template
-├── page.php                         # Page template
-├── style.css                        # Theme stylesheet (required)
-│
-├── package.json                     # NPM dependencies
-├── vite.config.ts                   # Vite configuration
-├── tsconfig.json                    # TypeScript config
-├── composer.json                    # PHP dependencies
-├── .env.example                     # Environment variables template
-│
-└── README.md                        # ⭐ THIS FILE
-```
-
-***
-
-## **⚙️ CONFIGURATION GUIDE**
-
-### **🎯 MOST IMPORTANT FILE: `inc/djz-config.php`**
-
-> **⚠️ CRITICAL:** This is the **ONLY** file you need to edit for 90% of changes!
-
-**What it contains:**
-
-- ✅ Social media URLs
-- ✅ SEO settings
-- ✅ Theme colors
-- ✅ Contact information
-- ✅ Feature toggles
-- ✅ Analytics IDs
-- ✅ CORS origins
-
-**Example: Update Instagram URL**
-
-```php
-// File: inc/djz-config.php
-// Line: ~27
-
-'social' => [
-    'instagram' => 'https://www.instagram.com/NEW_USERNAME', // ← Change here!
-    // ...
-],
-```
-
-**✨ Magic:** This automatically updates:
-- ✅ Header social links
-- ✅ Footer social links
-- ✅ Schema.org JSON-LD
-- ✅ Open Graph tags
-- ✅ REST API `/wp-json/djz/v1/social`
-
-***
-
-### **Configuration Sections**
-
-#### **1. Social Media (`social`)**
-
-```php
-'social' => [
-    'instagram'       => 'https://www.instagram.com/djzeneyer',
-    'facebook'        => 'https://www.facebook.com/djzeneyer',
-    'youtube'         => 'https://www.youtube.com/@djzeneyer',
-    'spotify'         => 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    'spotify_id'      => '68SHKGndTlq3USQ2LZmyLw',
-    'twitter_handle'  => '@djzeneyer',
-],
-```
-
-**Usage in templates:**
-
-```php
-<?php echo djz_config('social.instagram'); ?>
-<?php echo djz_social_url('spotify'); ?>
-```
-
-***
-
-#### **2. Site Information (`site`)**
-
-```php
+### 2️⃣ **Configuração**
+Edite **`inc/djz-config.php`** com suas informações:
 'site' => [
-    'name'        => 'DJ Zen Eyer',
-    'tagline'     => 'DJ e Produtor Musical',
-    'description' => 'Your SEO description here...',
-    'keywords'    => 'DJ, Music, Zouk, ...',
-    'locale'      => 'pt_BR',
-    'language'    => 'pt-BR',
+'name' => 'DJ Zen Eyer',
+'tagline' => 'DJ e Produtor Musical',
 ],
-```
-
-**Usage:**
-
-```php
-<title><?php echo djz_seo_title(); ?></title>
-<meta name="description" content="<?php echo djz_meta_description(); ?>">
-```
-
-***
-
-#### **3. Theme Colors (`colors`)**
-
-```php
-'colors' => [
-    'primary'   => '#0A0E27',
-    'secondary' => '#1E3A8A',
-    'accent'    => '#3B82F6',
-],
-```
-
-**Usage in CSS:**
-
-```css
-:root {
-    --color-primary: var(--from-php);
-    --color-secondary: var(--from-php);
-}
-```
-
-**Auto-injected in `<head>`:**
-
-```php
-// Automatically generates CSS variables
-<style><?php echo djz_theme_colors_css(); ?></style>
-```
-
-***
-
-#### **4. Features (`features`)**
-
-```php
-'features' => [
-    'gamipress'   => true,   // GamiPress gamification
-    'woocommerce' => false,  // E-commerce
-    'comments'    => false,  // Post comments
-    'breadcrumbs' => true,   // SEO breadcrumbs
-],
-```
-
-**Usage:**
-
-```php
-<?php if (djz_feature_enabled('breadcrumbs')): ?>
-    <?php djz_breadcrumbs(); ?>
-<?php endif; ?>
-```
-
-***
-
-#### **5. Analytics (`analytics`)**
-
-```php
-'analytics' => [
-    'google_analytics'  => 'G-XXXXXXXXXX',
-    'facebook_pixel'    => '1234567890',
-    'hotjar'            => 'XXXXXXX',
-],
-```
-
-**Auto-loaded if set:**
-
-```php
-// In header.php - automatically checks
-<?php if (djz_config('analytics.google_analytics')): ?>
-    <!-- GA script auto-injected -->
-<?php endif; ?>
-```
-
-***
-
-## **🛠️ COMMON TASKS**
-
-### **Task 1: Change Logo**
-
-**File:** `dist/images/`
-
-1. Replace `logo.svg` with your new logo
-2. Keep dimensions: 300x80px (or proportional)
-3. Update in config if path changes:
-
-```php
-// inc/djz-config.php
-'images' => [
-    'logo' => '/dist/images/logo.svg', // ← Update if needed
-],
-```
-
-***
-
-### **Task 2: Add New Social Network**
-
-**File:** `inc/djz-config.php`
-
-```php
-// Line ~27
 'social' => [
-    // ... existing
-    'linkedin' => 'https://linkedin.com/in/USERNAME', // ← Add here!
+'instagram' => 'https://...',
+'spotify' => 'https://...',
 ],
-```
 
-**✨ Automatic update:**
-- Schema.org `sameAs` array
-- Social menu items
-- REST API `/wp-json/djz/v1/social`
+text
 
-***
+### 3️⃣ **Ambiente**
+Certifique-se que seu `wp-config.php` tem:
+define('WP_DEBUG', false); // Production
+define('WP_ENVIRONMENT_TYPE', 'production');
 
-### **Task 3: Change Theme Colors**
-
-**File:** `inc/djz-config.php`
-
-```php
-// Line ~115
-'colors' => [
-    'primary'   => '#NEW_COLOR', // ← Change here!
-    'secondary' => '#NEW_COLOR',
-    'accent'    => '#NEW_COLOR',
-],
-```
-
-**Applies to:**
-- CSS variables (`--color-primary`)
-- Theme color meta tag
-- Favicon mask color
-- MSApplication tile color
-
-***
-
-### **Task 4: Enable/Disable Comments**
-
-**File:** `inc/djz-config.php`
-
-```php
-// Line ~145
-'features' => [
-    'comments' => false, // ← Change to true
-],
-```
-
-**File:** `single.php`
-
-```php
-<?php if (djz_feature_enabled('comments')): ?>
-    <?php comments_template(); ?>
-<?php endif; ?>
-```
-
-***
-
-### **Task 5: Update SEO Meta Description**
-
-**File:** `inc/djz-config.php`
-
-```php
-// Line ~55
-'site' => [
-    'description' => 'Your NEW meta description here...', // ← Change!
-],
-```
-
-**Affects:**
-- `<meta name="description">`
-- Open Graph `og:description`
-- Twitter Card description
-- Schema.org description
+text
 
 ---
 
-### **Task 6: Add Google Analytics**
+## 📚 **Documentação**
 
-**File:** `inc/djz-config.php`
+### ⚙️ **Usando Configurações**
+// No PHP
+djz_config('site.name') // 'DJ Zen Eyer'
+djz_config('social.spotify') // 'https://...'
+djz_config('colors.primary') // '#0A0E27'
 
-```php
-// Line ~155
-'analytics' => [
-    'google_analytics' => 'G-XXXXXXXXXX', // ← Paste GA4 ID
-],
-```
+// No JavaScript (via wp_localize_script)
+djzConfig.siteName
+djzConfig.social
+djzConfig.colors
 
-**Auto-loads in `header.php`:**
+text
 
-```php
-<?php if ($ga_id = djz_config('analytics.google_analytics')): ?>
-    <!-- Google Analytics script auto-injected -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $ga_id; ?>"></script>
-<?php endif; ?>
-```
+### 🔌 **REST API Endpoints**
 
-***
+**Público:**
+GET /wp-json/djz/v1/config
+GET /wp-json/djz/v1/social
 
-### **Task 7: Create New Custom Post Type**
+text
 
-**File:** `functions.php`
+**Admin Only:**
+GET /wp-json/djz/v1/admin/config
 
-```php
-// Add to init hook (around line 250)
-add_action('init', function () {
-    register_post_type('djz_YOUR_TYPE', [
-        'labels' => [
-            'name' => __('Your Type', 'djzeneyer'),
-        ],
-        'public'       => true,
-        'show_in_rest' => true, // ← Enable REST API
-        'supports'     => ['title', 'editor', 'thumbnail'],
-    ]);
-});
-```
+text
 
-**Accessible via:**
-- Admin: `/wp-admin/edit.php?post_type=djz_YOUR_TYPE`
-- REST: `/wp-json/wp/v2/djz_YOUR_TYPE`
-
-***
-
-### **Task 8: Add Custom REST API Endpoint**
-
-**File:** `functions.php`
-
-```php
-// Add to rest_api_init hook (around line 220)
-register_rest_route('djz/v1', '/custom-endpoint', [
-    'methods'  => 'GET',
-    'callback' => function () {
-        return rest_ensure_response([
-            'message' => 'Hello from custom endpoint!',
-        ]);
-    },
-    'permission_callback' => '__return_true',
-]);
-```
-
-**Access:** `/wp-json/djz/v1/custom-endpoint`
-
-***
-
-## **📚 API REFERENCE**
-
-### **Helper Functions**
-
-#### **`djz_config($key, $default)`**
-
-Get configuration value.
-
-```php
-// Dot notation supported
-$instagram = djz_config('social.instagram');
-$primary = djz_config('colors.primary');
-
-// With default
-$phone = djz_config('contact.phone', 'N/A');
-```
-
-***
-
-#### **`djz_social_urls()`**
-
-Get array of social media URLs (for Schema.org).
-
-```php
-$urls = djz_social_urls();
-// Returns: ['https://instagram.com/...', 'https://facebook.com/...', ...]
-```
-
-***
-
-#### **`djz_og_image($post_id = null)`**
-
-Get Open Graph image URL.
-
-```php
-// Auto-selects: post thumbnail → default OG image
-<meta property="og:image" content="<?php echo djz_og_image(get_the_ID()); ?>">
-```
-
-***
-
-#### **`djz_meta_description($post_id = null)`**
-
-Get SEO meta description.
-
-```php
-// Auto-selects: post excerpt → site description
-<meta name="description" content="<?php echo djz_meta_description(); ?>">
-```
-
-***
-
-#### **`djz_canonical_url()`**
-
-Get canonical URL.
-
-```php
-// Auto-detects: home → front page, single → permalink, etc.
-<link rel="canonical" href="<?php echo djz_canonical_url(); ?>">
-```
-
-***
-
-#### **`djz_theme_color($name)`**
-
-Get theme color hex code.
-
-```php
-$primary = djz_theme_color('primary');    // '#0A0E27'
-$accent = djz_theme_color('accent');      // '#3B82F6'
-```
-
-***
-
-#### **`djz_feature_enabled($feature)`**
-
-Check if feature is enabled.
-
-```php
-if (djz_feature_enabled('woocommerce')) {
-    // WooCommerce is active
-}
-```
-
-***
-
-#### **`djz_schema_org()`**
-
-Get complete Schema.org JSON-LD data.
-
-```php
-<script type="application/ld+json">
-<?php echo wp_json_encode(djz_schema_org()); ?>
-</script>
-```
-
-***
-
-### **Custom REST Endpoints**
-
-#### **`GET /wp-json/djz/v1/config`**
-
-Returns site configuration.
-
-```json
+Resposta exemplo:
 {
-  "site": {
-    "name": "DJ Zen Eyer",
-    "tagline": "DJ e Produtor Musical"
-  },
-  "social": {
-    "instagram": "https://www.instagram.com/djzeneyer"
-  },
-  "colors": {
-    "primary": "#0A0E27"
-  }
+"site": {"name": "DJ Zen Eyer", "tagline": "..."},
+"social": {"instagram": "...", "spotify": "..."},
+"colors": {"primary": "#0A0E27"}
 }
-```
 
-***
+text
 
-#### **`GET /wp-json/djz/v1/social`**
+### 🎨 **Customização**
 
-Returns array of social media URLs.
-
-```json
-[
-  "https://www.instagram.com/djzeneyer",
-  "https://www.facebook.com/djzeneyer",
-  "https://www.youtube.com/@djzeneyer"
+**Cores:**
+// inc/djz-config.php
+'colors' => [
+'primary' => '#0A0E27',
+'accent' => '#3B82F6',
 ]
-```
 
-***
-
-## **🔐 SECURITY**
-
-### **Content Security Policy (CSP)**
-
-**Plugin:** `plugins/djzeneyer-csp/djzeneyer-csp.php`
+text
 
 **Features:**
-- ✅ Dynamic nonce generation
-- ✅ Strict CSP headers
-- ✅ No `unsafe-inline`
-- ✅ Report-only mode for testing
+'features' => [
+'gamipress' => true,
+'newsletter' => true,
+]
 
-**Usage:**
-
-```php
-// In any inline script/style
-<script nonce="<?php echo djzeneyer_get_csp_nonce(); ?>">
-    // Your code
-</script>
-```
-
-***
-
-### **Security Headers**
-
-**File:** `functions.php` (line ~180)
-
-```php
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('Referrer-Policy: strict-origin-when-cross-origin');
-header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
-```
-
-***
-
-### **CORS Configuration**
-
-**File:** `inc/djz-config.php`
-
-```php
-'allowed_origins' => [
-    'https://djzeneyer.com',
-    'https://www.djzeneyer.com',
-    'http://localhost:5173', // Dev only
-],
-```
-
-***
-
-## **⚡ PERFORMANCE**
-
-### **Caching Strategy**
-
-| Layer | Technology | TTL |
-|-------|------------|-----|
-| **Browser** | LiteSpeed Cache | 7 days |
-| **Edge** | Cloudflare CDN | 30 days |
-| **Object** | Redis (optional) | 1 hour |
+text
 
 ---
 
-### **Build Optimization**
+## 🧪 **Testing & Validation**
 
-```bash
-# Production build (minified + tree-shaking)
-npm run build
+### PageSpeed Insights
+https://pagespeed.web.dev/?url=djzeneyer.com
 
-# Analyze bundle size
-npm run build -- --mode analyze
-```
+text
+Esperado: **90+** Performance, **95+** SEO
 
-***
+### Security Headers
+https://securityheaders.com/?q=djzeneyer.com
 
-### **Image Optimization**
+text
+Esperado: **A+** Score
 
-**Tools:**
-- LiteSpeed Cache: WebP conversion
-- Cloudflare Polish: Auto-optimization
-- Lazy loading: Native `loading="lazy"`
+### Schema.org Validator
+https://validator.schema.org/
 
-***
+text
+Esperado: ✅ Sem erros
 
-## **🐛 TROUBLESHOOTING**
+---
 
-### **Issue: "White Screen of Death"**
+## 🔒 **Segurança (v12.1.0)**
 
-**Solution:**
+### Correções Implementadas
+- ✅ **CSP Nonce** nos `<style>` inline (previne XSS)
+- ✅ **REST API** retorna apenas dados públicos
+- ✅ **CORS** permite apenas domínios de produção
+- ✅ **Headers HTTP** - HSTS, nosniff, X-Frame-Options
 
-```bash
-# 1. Enable debug mode
-# wp-config.php
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
+### Checklist de Segurança
+- [ ] HTTPS ativado (SSL/TLS)
+- [ ] CSP headers presentes no servidor
+- [ ] REST API testada (/wp-json/djz/v1/config)
+- [ ] WordPress atualizado
+- [ ] Plugins auditados
 
-# 2. Check error log
-tail -f wp-content/debug.log
-```
+---
 
-***
+## 📈 **Performance Metrics**
 
-### **Issue: "React not loading"**
+| Métrica | Target | Status |
+|---------|--------|--------|
+| **Performance** | >90 | ✅ |
+| **SEO Score** | >95 | ✅ |
+| **Bundle JS** | <300KB | ✅ |
+| **Bundle CSS** | <100KB | ✅ |
+| **CSP Grade** | A+ | ✅ |
+| **Security** | A+ | ✅ |
 
-**Solution:**
+---
 
-```bash
-# 1. Rebuild assets
-npm run build
+## 🐛 **Troubleshooting**
 
-# 2. Clear cache
-# WordPress Admin → LiteSpeed Cache → Purge All
+### CSP Errors na Console
+Refused to load the stylesheet because it violates CSP nonce
 
-# 3. Check Vite manifest
-ls -la dist/.vite/manifest.json
-```
+text
+**Solução:** Verifique se `djzeneyer_get_csp_nonce()` está em `<style>` tag
 
-***
+### CORS Error
+Access to XMLHttpRequest blocked by CORS policy
 
-### **Issue: "CSP blocking scripts"**
+text
+**Solução:** Adicione domínio em `inc/djz-config.php` → `allowed_origins`
 
-**Solution:**
+### Build Fail
+Error: Cannot find module 'react'
 
-```php
-// Verify nonce is present
-<?php echo djzeneyer_get_csp_nonce(); ?>
+text
+**Solução:** `npm install && npm run build`
 
-// Check CSP header in browser DevTools → Network → Response Headers
-```
+---
 
-***
+## 📦 **Dependencies**
 
-## **👥 CONTRIBUTING**
+### PHP (WordPress)
+- WordPress 6.0+
+- PHP 8.1+
+- MySQL 5.7+
 
-### **Development Workflow**
+### Frontend
+- React 18
+- TypeScript 5
+- Tailwind CSS 3
+- Vite 5
 
-```bash
-# 1. Create feature branch
-git checkout -b feature/your-feature
+### Build Tools
+- Node 18+
+- npm 9+
 
-# 2. Start dev server
-npm run dev
+---
 
-# 3. Make changes
+## 🤝 **Contribuindo**
 
-# 4. Test
-npm run test
+1. Fork o repositório
+2. Crie uma branch: `git checkout -b feature/sua-feature`
+3. Commit: `git commit -m 'Add: descrição'`
+4. Push: `git push origin feature/sua-feature`
+5. Abra um Pull Request
 
-# 5. Build
-npm run build
+---
 
-# 6. Commit
-git commit -m "feat: your feature description"
+## 📝 **Changelog**
 
-# 7. Push
-git push origin feature/your-feature
+### v12.1.0 (30/10/2025)
+- ✅ Fix: CSP nonce em inline styles
+- ✅ Fix: REST API filtra dados sensíveis
+- ✅ Fix: CORS production-only
+- ✅ Feat: Endpoint admin autenticado
 
-# 8. Create Pull Request
-```
+### v12.0.0 (29/10/2025)
+- ✅ Initial release
+- ✅ React 18 + TypeScript setup
+- ✅ Gamificação com GamiPress
+- ✅ SEO & Schema.org completo
 
-### **Code Style**
+---
 
-- **PHP:** PSR-12
-- **JavaScript:** Airbnb Style Guide
-- **CSS:** BEM methodology
+## 📄 **License**
 
-### **Commit Messages**
+MIT License - veja LICENSE.md para detalhes
 
-```
-feat: Add new feature
-fix: Bug fix
-docs: Documentation update
-style: Code style change
-refactor: Code refactoring
-perf: Performance improvement
-test: Add tests
-chore: Maintenance
-```
+---
 
-***
+## 👤 **Autor**
 
-## **📞 SUPPORT**
+**DJ Zen Eyer**  
+🎵 DJ e Produtor Musical  
+📧 contato@djzeneyer.com  
+🌐 [djzeneyer.com](https://djzeneyer.com)
 
-**Documentation:** [https://docs.djzeneyer.com](https://docs.djzeneyer.com)  
-**Issues:** [https://github.com/djzeneyer/theme/issues](https://github.com/djzeneyer/theme/issues)  
-**Email:** dev@djzeneyer.com
+---
 
-***
+## 🙏 **Agradecimentos**
 
-## **📄 LICENSE**
+- [WordPress](https://wordpress.org)
+- [React](https://react.dev)
+- [Vite](https://vitejs.dev)
+- [Tailwind CSS](https://tailwindcss.com)
+- [TypeScript](https://www.typescriptlang.org)
 
-MIT License - Copyright © 2025 DJ Zen Eyer
+---
 
-***
-
-## **🎯 QUICK REFERENCE CHEAT SHEET**
-
-| Task | File | Line |
-|------|------|------|
-| **Change Instagram URL** | `inc/djz-config.php` | ~27 |
-| **Update SEO Description** | `inc/djz-config.php` | ~55 |
-| **Change Theme Colors** | `inc/djz-config.php` | ~115 |
-| **Enable Comments** | `inc/djz-config.php` | ~145 |
-| **Add Google Analytics** | `inc/djz-config.php` | ~155 |
-| **Modify Header** | `header.php` | - |
-| **Add REST Endpoint** | `functions.php` | ~220 |
-| **Create Post Type** | `functions.php` | ~250 |
-
-***
-
-**Last Updated:** October 30, 2025  
-**Version:** 12.0.0  
-**Maintainer:** DJ Zen Eyer Team
-
-***
-
-**🚀 Happy Coding!**
+**Made with ❤️ by DJ Zen Eyer Team**
