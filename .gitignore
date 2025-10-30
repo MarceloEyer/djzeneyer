@@ -1,11 +1,8 @@
 # ============================================
-# DJ Zen Eyer Theme .gitignore v1.2.0
-# Clean, lean, and deploy-friendly
+# DJ Zen Eyer Theme .gitignore v1.2.0 FINAL
 # ============================================
 
-# ============================================
-# 📦 DEPENDENCIES & NODE (NÃO COMMITAM!)
-# ============================================
+# 📦 Node dependencies
 node_modules/
 .pnpm-store/
 pnpm-lock.yaml
@@ -13,27 +10,22 @@ yarn.lock
 .yarn/
 .npm
 
-# ============================================
-# 🔨 BUILD OUTPUT (gerado automaticamente)
-# ============================================
+# 🔨 Build output (regenerado com npm run build)
 dist/
 dist-ssr/
 build/
 .vite/
 *.tsbuildinfo
 
-# ============================================
-# 🔐 SECRETS & ENVIRONMENT (CRÍTICO!)
-# ============================================
-# Usar .env.example para template!
+# 🔐 SECRETS - NUNCA COMMITAR!
 .env
 .env.local
 .env.production.local
+.env.development.local
 
-# ============================================
-# 💻 IDE & SYSTEM FILES (ignore automático)
-# ============================================
-.vscode/
+# 💻 IDE & Sistema
+.vscode/settings.json
+.vscode/launch.json
 .idea/
 .DS_Store
 Thumbs.db
@@ -42,28 +34,18 @@ Thumbs.db
 *.swo
 *~
 
-# ============================================
-# 📝 LOGS & CACHE (NÃO VERSIONAM!)
-# ============================================
+# 📝 Logs & cache
 logs/
 *.log
 npm-debug.log*
 .eslintcache
 .cache/
-
-# ============================================
-# 🔗 GENERATED/TEMPORARY (ignore)
-# ============================================
 .turbo/
 coverage/
-.next/
 
 # ============================================
-# 🎯 IMPORTANT: ALLOW THESE FILES!
-# (Descomente o ! para forçar versionamento)
+# WHITELIST - Forçar versionamento
 # ============================================
 !.gitkeep
 !.env.example
 !.vscode/extensions.json
-!.github/
-!README.md
