@@ -132,7 +132,7 @@ jobs:
             ./ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
 
-      - name: 🧩 Deploy Custom Plugins (prefix: djz)
+      - name: 🧩 Deploy Custom Plugins (prefix: djz, NO DELETE!)
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_PORT: ${{ env.SSH_PORT }}
@@ -145,9 +145,7 @@ jobs:
           for plugin in ${PLUGIN_PREFIX}*; do
             if [ -d "$plugin" ]; then
               echo "🚀 Deploying custom plugin: $plugin"
-              ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \
-                "rm -rf $REMOTE_PLUGINS_PATH/$plugin"
-              rsync -avz --delete \
+              rsync -avz \
                 -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no" \
                 "$plugin/" \
                 $SSH_USER@$SSH_HOST:$REMOTE_PLUGINS_PATH/$plugin/
