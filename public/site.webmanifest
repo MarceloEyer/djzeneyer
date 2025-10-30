@@ -1,9 +1,9 @@
 {
   "id": "/?source=pwa",
-  "name": "DJ Zen Eyer",
+  "name": "DJ Zen Eyer - Brazilian Zouk DJ & Producer",
   "short_name": "Zen Eyer",
   "description": "Brazilian Zouk DJ & Producer | Live Events, Shows & Classes worldwide",
-  "start_url": "/?utm_source=pwa",
+  "start_url": "/?utm_source=pwa&utm_medium=web_app&utm_campaign=install",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -11,7 +11,43 @@
   "background_color": "#0A0E27",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["music", "entertainment", "lifestyle"],
+  "categories": [
+    "music",
+    "entertainment",
+    "lifestyle",
+    "business",
+    "shopping"
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "purpose": "any"
+    },
+    {
+      "src": "/screenshots/desktop-2.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "purpose": "any"
+    },
+    {
+      "src": "/screenshots/mobile-1.jpg",
+      "sizes": "375x667",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "purpose": "any"
+    },
+    {
+      "src": "/screenshots/mobile-2.jpg",
+      "sizes": "540x720",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "purpose": "any"
+    }
+  ],
   "icons": [
     {
       "src": "/favicon.svg",
@@ -22,79 +58,175 @@
     {
       "src": "/favicon-96x96.png",
       "sizes": "96x96",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-1.jpg",
-      "sizes": "1280x720",
-      "type": "image/jpeg",
-      "form_factor": "wide"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/screenshots/mobile-1.jpg",
-      "sizes": "375x667",
-      "type": "image/jpeg",
-      "form_factor": "narrow"
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-1024x1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
-      "name": "Events",
+      "name": "Upcoming Events",
       "short_name": "Events",
-      "description": "Upcoming DJ events",
-      "url": "/events",
+      "description": "Check all upcoming DJ events and shows",
+      "url": "/events?utm_source=pwa&utm_medium=shortcut",
       "icons": [
         {
-          "src": "/apple-touch-icon.png",
-          "sizes": "180x180",
+          "src": "/icons/events-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "/icons/events-192x192.png",
+          "sizes": "192x192",
           "type": "image/png"
         }
       ]
     },
     {
-      "name": "Shop",
+      "name": "Shop & Merchandise",
       "short_name": "Shop",
-      "description": "Buy tickets & merch",
-      "url": "/shop",
+      "description": "Buy tickets, merch & digital products",
+      "url": "/shop?utm_source=pwa&utm_medium=shortcut",
       "icons": [
         {
-          "src": "/apple-touch-icon.png",
-          "sizes": "180x180",
+          "src": "/icons/shop-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "/icons/shop-192x192.png",
+          "sizes": "192x192",
           "type": "image/png"
         }
       ]
     },
     {
-      "name": "Contact",
-      "short_name": "Contact",
-      "description": "Get in touch",
-      "url": "/contact",
+      "name": "Book for Events",
+      "short_name": "Book",
+      "description": "Hire DJ Zen Eyer for your event",
+      "url": "/booking?utm_source=pwa&utm_medium=shortcut",
       "icons": [
         {
-          "src": "/apple-touch-icon.png",
-          "sizes": "180x180",
+          "src": "/icons/booking-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "/icons/booking-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Get in Touch",
+      "short_name": "Contact",
+      "description": "Send message or get contact info",
+      "url": "/contact?utm_source=pwa&utm_medium=shortcut",
+      "icons": [
+        {
+          "src": "/icons/contact-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "/icons/contact-192x192.png",
+          "sizes": "192x192",
           "type": "image/png"
         }
       ]
     }
   ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+djzen",
+      "url": "/?event=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/upload",
+      "accept": {
+        "audio/*": [
+          ".mp3",
+          ".wav",
+          ".flac",
+          ".m4a"
+        ]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": [
+      "navigate-new",
+      "navigate-existing",
+      "auto"
+    ]
+  },
+  "note_taking": {
+    "new_note_url": "/notes/new"
+  },
+  "handle_links": "preferred",
   "prefer_related_applications": false,
-  "related_applications": []
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ]
 }
