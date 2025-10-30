@@ -2,7 +2,7 @@
   "name": "dj-zen-eyer-app",
   "private": true,
   "version": "12.2.0",
-  "description": "Enterprise-grade WordPress Headless Theme with React 18 + Vite + TypeScript. AI-Friendly & 100% Performance Optimized",
+  "description": "Enterprise-grade WordPress Headless Theme with React 18 + Vite + TypeScript. AI-Friendly & 100% Performance Optimized. English (US) + Portuguese (BR) Support",
   "author": {
     "name": "DJ Zen Eyer",
     "email": "contato@djzeneyer.com",
@@ -32,7 +32,9 @@
     "dj",
     "music",
     "gamification",
-    "ai-friendly"
+    "ai-friendly",
+    "english",
+    "portuguese"
   ],
   "scripts": {
     "dev": "vite",
@@ -74,7 +76,6 @@
     "@types/react-dom": "^18.3.0",
     "@types/react-input-mask": "^3.0.6",
     "@vitejs/plugin-react": "^4.3.1",
-    "@vitejs/plugin-compression": "^0.0.6",
     "autoprefixer": "^10.4.18",
     "cssnano": "^7.0.4",
     "eslint": "^9.9.1",
