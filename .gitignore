@@ -1,8 +1,8 @@
 # ============================================
-# DJ Zen Eyer Theme .gitignore v1.2.0 FINAL
+# DJ Zen Eyer Theme .gitignore v1.3.0 FINAL
 # ============================================
 
-# 📦 Node dependencies
+# 📦 Node dependencies (NUNCA versionar)
 node_modules/
 .pnpm-store/
 pnpm-lock.yaml
@@ -22,8 +22,9 @@ build/
 .env.local
 .env.production.local
 .env.development.local
+!*.env.example  # EXCEÇÃO: Permite versionar .env.example
 
-# 💻 IDE & Sistema
+# 💻 IDE & Sistema (ignora configurações locais)
 .vscode/settings.json
 .vscode/launch.json
 .idea/
@@ -34,7 +35,7 @@ Thumbs.db
 *.swo
 *~
 
-# 📝 Logs & cache
+# 📝 Logs & cache (ignora arquivos gerados)
 logs/
 *.log
 npm-debug.log*
@@ -43,9 +44,24 @@ npm-debug.log*
 .turbo/
 coverage/
 
+# 📁 Diretórios temporários
+tmp/
+temp/
+
+# 📄 Arquivos de sistema
+*.bak
+*.backup
+*.orig
+
 # ============================================
 # WHITELIST - Forçar versionamento
 # ============================================
 !.gitkeep
 !.env.example
-!.vscode/extensions.json
+!.vscode/extensions.json  # Extensões recomendadas para a equipe
+
+# ⚠️ NÃO IGNORAR:
+# - .github/workflows/ (workflows de CI/CD devem ser versionados!)
+# - config/ (configurações do projeto)
+# - src/ (código-fonte)
+# - inc/ (configurações do WordPress)
