@@ -1,4 +1,33 @@
-// src/pages/HomePage.tsx - VERSÃO 100% CORRIGIDA
+/**
+ * @file src/pages/HomePage.tsx
+ * @description Landing page principal do DJ Zen Eyer
+ * @route /
+ * @author DJ Zen Eyer Team
+ * @created 2025-10-29
+ * @updated 2025-10-29
+ *
+ * FUNCIONALIDADES:
+ * - Hero Section com animação parallax
+ * - Cards de features (Music, Achievements, Community)
+ * - CTA para Zen Tribe e Music
+ * - SEO otimizado (Schema.org MusicGroup + BreadcrumbList)
+ * - Preload de hero-background.webp para melhor LCP
+ * - Internacionalização (i18n) PT/EN
+ *
+ * DEPENDÊNCIAS:
+ * - react-router-dom (navegação)
+ * - framer-motion (animações)
+ * - react-i18next (i18n)
+ * - react-helmet-async (meta tags)
+ * - lucide-react (ícones)
+ *
+ * SEO:
+ * - H1 visível (não sr-only)
+ * - Schema.org MusicGroup com potentialAction (Join Zen Tribe + Search)
+ * - BreadcrumbList para navegação
+ * - OG/Twitter Cards via SEO component
+ * - Keywords: DJ Zen Eyer, Brazilian Zouk, World Champion DJ
+ */
 
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -8,11 +37,19 @@ import { Helmet } from 'react-helmet-async';
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
 import SEO from '../components/SEO';
 
-const FeatureCard: React.FC<{ 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
-  variants: any; 
+/**
+ * FeatureCard Component
+ * @description Card reutilizável para exibir features (Music, Achievements, Community)
+ * @param {React.ReactNode} icon - Ícone Lucide React
+ * @param {string} title - Título do card (traduzido)
+ * @param {string} description - Descrição do card (traduzida)
+ * @param {any} variants - Variants do Framer Motion para animação
+ */
+const FeatureCard: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  variants: any;
 }> = ({ icon, title, description, variants }) => (
   <motion.div className="card p-8 text-center" variants={variants}>
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">
@@ -23,60 +60,87 @@ const FeatureCard: React.FC<{
   </motion.div>
 );
 
+/**
+ * HomePage Component
+ * @description Página principal do site (/)
+ * @returns {JSX.Element} Landing page com Hero, Features e CTA
+ */
 const HomePage: React.FC = () => {
   const { t } = useTranslation();
 
+  /**
+   * Features Cards Data
+   * @description Array de objetos com dados dos cards de features
+   * @property {string} id - ID único do card
+   * @property {React.ReactNode} icon - Ícone Lucide React
+   * @property {string} titleKey - Chave de tradução do título
+   * @property {string} descKey - Chave de tradução da descrição
+   */
   const features = [
-    { 
-      id: 'music', 
-      icon: <Music size={32} />, 
-      titleKey: 'home_feat_exclusive_title', 
-      descKey: 'home_feat_exclusive_desc' 
+    {
+      id: 'music',
+      icon: <Music size={32} />,
+      titleKey: 'home_feat_exclusive_title',
+      descKey: 'home_feat_exclusive_desc'
     },
-    { 
-      id: 'achievements', 
-      icon: <Award size={32} />, 
-      titleKey: 'home_feat_achievements_title', 
-      descKey: 'home_feat_achievements_desc' 
+    {
+      id: 'achievements',
+      icon: <Award size={32} />,
+      titleKey: 'home_feat_achievements_title',
+      descKey: 'home_feat_achievements_desc'
     },
-    { 
-      id: 'community', 
-      icon: <Users size={32} />, 
-      titleKey: 'home_feat_community_title', 
-      descKey: 'home_feat_community_desc' 
+    {
+      id: 'community',
+      icon: <Users size={32} />,
+      titleKey: 'home_feat_community_title',
+      descKey: 'home_feat_community_desc'
     },
   ];
 
+  /**
+   * handlePlayFeatured
+   * @description Handler para botão "Play Featured Mix" (ainda não implementado)
+   * @todo Implementar player de música (SoundCloud/Mixcloud embed)
+   */
   const handlePlayFeatured = () => {
     console.log('Music player feature coming soon!');
   };
 
+  /**
+   * Framer Motion Variants
+   * @description Animações de entrada para stagger children
+   */
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { 
-        staggerChildren: 0.15, 
-        delayChildren: 0.2 
-      } 
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15, // Delay entre animações dos filhos
+        delayChildren: 0.2     // Delay inicial antes de animar filhos
+      }
     },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1, 
-      transition: { 
-        duration: 0.6, 
-        ease: 'easeOut' 
-      } 
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: 'easeOut'
+      }
     },
   };
 
   return (
     <>
-      {/* ✅ SEO COMPONENT COM HREFLANG */}
+      {/* ============================================
+          SEO + META TAGS
+          - OG/Twitter Cards (via SEO component)
+          - Hreflang PT/EN (via SEO component)
+          - Keywords para Google
+          ============================================ */}
       <SEO
         title={t('home_page_title')}
         description={t('home_page_meta_desc')}
@@ -84,22 +148,33 @@ const HomePage: React.FC = () => {
         keywords="DJ Zen Eyer, Brazilian Zouk, Zouk DJ, Brazilian Zouk DJ, World Champion DJ, Electronic Music, Dance Music, Zouk Music, DJ Brazil, International DJ"
       />
 
-      {/* ✅ SCHEMA ESPECÍFICO DA HOME (MusicGroup + Breadcrumb) */}
+      {/* ============================================
+          HELMET: PRELOAD + SCHEMA MARKUP
+          - Preload de hero-background.webp (melhora LCP)
+          - Schema.org MusicGroup (Google Rich Results)
+          - Schema.org BreadcrumbList (navegação)
+          ============================================ */}
       <Helmet>
+        {/* PRELOAD: Carrega imagem de fundo antes do CSS (Core Web Vitals) */}
+        <link
+          rel="preload"
+          href="/images/hero-background.webp"
+          as="image"
+          type="image/webp"
+        />
+
+        {/* SCHEMA.ORG: MusicGroup + potentialAction */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "MusicGroup",
             "name": "DJ Zen Eyer",
             "alternateName": ["Zen Eyer", "DJ Zen", "Zeneyer", "DJ Zen Eyer Brazilian Zouk"],
-            
             "description": "DJ Zen Eyer is a world-renowned Brazilian Zouk DJ and music producer. Winner of the 2022 Brazilian Zouk DJ Championship in both Best Performance and Best Remix categories, he is recognized as one of the top Brazilian Zouk DJs globally. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ, he specializes in bootleg remixes and original productions available on SoundCloud, YouTube, and Mixcloud. He has performed at major international festivals across Europe, USA, and South America.",
-            
             "genre": ["Brazilian Zouk", "Electronic Music", "Dance Music", "Zouk", "Zouk Music"],
             "url": "https://djzeneyer.com",
             "image": "https://djzeneyer.com/images/zen-eyer-profile.jpg",
             "logo": "https://djzeneyer.com/images/zen-eyer-logo.png",
-            
             "sameAs": [
               "https://instagram.com/djzeneyer",
               "https://soundcloud.com/djzeneyer",
@@ -108,13 +183,11 @@ const HomePage: React.FC = () => {
               "https://tiktok.com/@djzeneyer",
               "https://www.wikidata.org/wiki/Q136551855"
             ],
-            
             "member": {
               "@type": "Person",
               "name": "Zen Eyer",
               "jobTitle": "DJ and Music Producer",
               "description": "World Champion Brazilian Zouk DJ (2022). Professional DJ and music producer specializing in Brazilian Zouk with over 10 years of experience.",
-              
               "knowsAbout": [
                 "Brazilian Zouk Music",
                 "DJ Performance",
@@ -127,19 +200,16 @@ const HomePage: React.FC = () => {
                 "Remix Production",
                 "Jack and Jill Competition DJing"
               ],
-              
               "award": [
                 "World Champion Brazilian Zouk DJ 2022 - Best Performance",
                 "World Champion Brazilian Zouk DJ 2022 - Best Remix",
                 "Brazilian Zouk Council - Certified Jack and Jill DJ"
               ],
-              
               "address": {
                 "@type": "PostalAddress",
                 "addressCountry": "BR"
               }
             },
-            
             "foundingDate": "2014",
             "foundingLocation": {
               "@type": "Place",
@@ -148,7 +218,6 @@ const HomePage: React.FC = () => {
                 "addressCountry": "Brazil"
               }
             },
-            
             "event": [
               {
                 "@type": "MusicEvent",
@@ -175,7 +244,6 @@ const HomePage: React.FC = () => {
                 }
               }
             ],
-            
             "hasCredential": [
               {
                 "@type": "EducationalOccupationalCredential",
@@ -190,7 +258,6 @@ const HomePage: React.FC = () => {
                 "description": "Double world champion in both Best Performance and Best Remix categories."
               }
             ],
-            
             "interactionStatistic": [
               {
                 "@type": "InteractionCounter",
@@ -205,16 +272,35 @@ const HomePage: React.FC = () => {
                 "description": "Total social media followers"
               }
             ],
-            
             "aggregateRating": {
               "@type": "AggregateRating",
               "ratingValue": "5",
               "reviewCount": "50",
               "bestRating": "5"
-            }
+            },
+            "potentialAction": [
+              {
+                "@type": "Action",
+                "name": "Join Zen Tribe",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://djzeneyer.com/zentribe",
+                  "inLanguage": "en-US"
+                }
+              },
+              {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://djzeneyer.com/music?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            ]
           })}
         </script>
 
+        {/* SCHEMA.ORG: BreadcrumbList (navegação estruturada) */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -249,10 +335,16 @@ const HomePage: React.FC = () => {
         </script>
       </Helmet>
 
-      {/* Hero Section */}
+      {/* ============================================
+          HERO SECTION
+          - H1 visível (SEO 100%)
+          - Background animado com Framer Motion
+          - CTAs: Play Featured Mix + Upcoming Events
+          ============================================ */}
       <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
+        {/* Background Layer */}
         <div className="absolute inset-0 z-0 bg-black">
-          <motion.div 
+          <motion.div
             className="w-full h-full bg-cover bg-center bg-no-repeat opacity-50"
             style={{ backgroundImage: "url('/images/hero-background.webp')" }}
             initial={{ scale: 1.1 }}
@@ -262,27 +354,31 @@ const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
 
+        {/* Content Layer */}
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div 
-            className="max-w-4xl mx-auto" 
-            initial={{ opacity: 0, y: 30 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.div
+            className="max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            {/* ✅ H1 VISÍVEL (NÃO SR-ONLY!) - SEO 100% */}
+            {/* H1: Título principal (SEO crítico - não usar sr-only!) */}
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
               <Trans i18nKey="home_headline">
                 Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
               </Trans>
             </h1>
-            
+
+            {/* Subtítulo */}
             <p className="text-xl md:text-2xl mt-6 max-w-2xl mx-auto text-white/90 [text-shadow:_1px_1px_5px_rgba(0,0,0,0.8)]">
               {t('home_subheadline')}
             </p>
-            
+
+            {/* CTAs */}
             <div className="mt-10 flex flex-wrap gap-4 justify-center">
-              <button 
-                onClick={handlePlayFeatured} 
+              {/* TODO: Implementar player de música */}
+              <button
+                onClick={handlePlayFeatured}
                 className="btn btn-primary btn-lg flex items-center gap-2 opacity-50 cursor-not-allowed"
                 disabled={true}
                 title="Coming soon!"
@@ -291,6 +387,7 @@ const HomePage: React.FC = () => {
                 <PlayCircle size={22} aria-hidden="true" />
                 <span>{t('play_featured_mix')}</span>
               </button>
+
               <Link to="/events" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="View upcoming events">
                 <Calendar size={22} aria-hidden="true" />
                 <span>{t('upcoming_events')}</span>
@@ -300,14 +397,19 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* ============================================
+          FEATURES SECTION
+          - Cards de features (Music, Achievements, Community)
+          - Animação com stagger children
+          ============================================ */}
       <section className="py-24 bg-surface" aria-labelledby="features-heading">
         <div className="container mx-auto px-4">
-          <motion.div 
+          {/* Título da seção */}
+          <motion.div
             className="text-center mb-16"
-            initial="hidden" 
-            whileInView="visible" 
-            viewport={{ once: true, amount: 0.5 }} 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
             variants={itemVariants}
           >
             <h2 id="features-heading" className="text-3xl md:text-4xl font-bold font-display">
@@ -318,11 +420,12 @@ const HomePage: React.FC = () => {
             </p>
           </motion.div>
 
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" 
-            variants={containerVariants} 
-            initial="hidden" 
-            whileInView="visible" 
+          {/* Grid de cards */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
             {features.map(feature => (
@@ -337,14 +440,17 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
       </section>
-      
-      {/* CTA Section */}
+
+      {/* ============================================
+          CTA SECTION
+          - Call-to-action para Join Zen Tribe + Explore Music
+          ============================================ */}
       <section className="py-28 bg-background" aria-labelledby="cta-heading">
-        <motion.div 
-          className="container mx-auto px-4 text-center" 
-          initial="hidden" 
-          whileInView="visible" 
-          viewport={{ once: true, amount: 0.5 }} 
+        <motion.div
+          className="container mx-auto px-4 text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
           variants={itemVariants}
         >
           <h2 id="cta-heading" className="text-4xl md:text-5xl font-bold mb-6 font-display">
