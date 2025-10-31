@@ -1,3 +1,4 @@
+// vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from 'tailwindcss';
@@ -22,15 +23,21 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
       },
       external: [
-        // Ignora pastas específicas (backend)
         /^\/public\//,
         /^\/scripts\//,
         /^\/plugins\//,
         /^\/inc\//, // Ignora a pasta inc (PHP)
-        // Ignora dependências do WordPress/Bolt.new
         /^\/wp-/,
         /^\/bolt\.new/,
       ],
+      output: {
+        // Otimiza code splitting para bibliotecas grandes
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          spotify: ['@spotify/web-api-js-sdk'],
+          // Adicione outras bibliotecas grandes aqui
+        },
+      },
     },
   },
 });
