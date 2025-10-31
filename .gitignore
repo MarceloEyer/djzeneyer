@@ -11,6 +11,8 @@ yarn.lock
 .npm
 
 # 🔨 Build output (regenerado com npm run build)
+# dist/ é IGNORADO aqui porque é gerado pelo build
+# Mas será enviado ao servidor via GitHub Actions artifact
 dist/
 dist-ssr/
 build/
@@ -61,8 +63,10 @@ temp/
 !.env.example
 !.vscode/extensions.json  # Extensões recomendadas para a equipe
 
-# ⚠️ NÃO IGNORAR:
-# - .github/workflows/ (workflows de CI/CD devem ser versionados!)
+# ⚠️ NÃO IGNORAR (SEMPRE VERSIONAR):
+# - .github/workflows/ (workflows de CI/CD)
 # - config/ (configurações do projeto)
-# - src/ (código-fonte)
+# - src/ (código-fonte React/TypeScript)
 # - inc/ (configurações do WordPress)
+# - plugins/ (plugins customizados)
+# - functions.php, index.php, style.css (arquivo do tema)
