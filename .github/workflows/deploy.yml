@@ -1,5 +1,4 @@
 name: 🚀 Production Deploy
-
 on:
   push:
     branches: [main]
@@ -9,49 +8,38 @@ on:
       - '.gitignore'
       - 'LICENSE'
   workflow_dispatch:
-
 concurrency:
   group: production-deploy
   cancel-in-progress: false
-
 permissions:
   contents: read
   deployments: write
-
 env:
   NODE_VERSION: '20'
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
-
 jobs:
   build:
     name: 🏗️ Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    
     outputs:
       status: ${{ job.status }}
       hash: ${{ steps.hash.outputs.value }}
-
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - id: hash
         run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - run: npm ci --prefer-offline --no-audit
-
       - run: npm run generate-sitemaps 2>&1 || true
         continue-on-error: true
-
       - run: npm run build
         env:
           NODE_ENV: production
@@ -60,16 +48,13 @@ jobs:
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-
       - run: |
           [ -d dist ] && [ -f dist/index.html ] && [ -s dist/index.html ] || exit 1
-
       - uses: actions/upload-artifact@v4
         with:
           name: build-${{ steps.hash.outputs.value }}
           path: dist/
           retention-days: 7
-
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
@@ -79,23 +64,25 @@ jobs:
     environment:
       name: production
       url: https://djzeneyer.com
-
     steps:
       - uses: actions/checkout@v4
-
+      - name: Validate environment variables
+        run: |
+          [ -z "${{ env.SSH_HOST }}" ] && echo "❌ SSH_HOST não definido" && exit 1
+          [ -z "${{ env.SSH_PORT }}" ] && echo "❌ SSH_PORT não definido" && exit 1
+          [ -z "${{ env.SSH_USER }}" ] && echo "❌ SSH_USER não definido" && exit 1
+          echo "✅ Variáveis de ambiente validadas"
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.build.outputs.hash }}
           path: dist/
-
       - name: Verify artifact downloaded
         run: |
-          echo "Verifying dist/ was downloaded:"
+          echo "Verificando se dist/ foi baixado:"
           ls -la dist/ || exit 1
           [ -f dist/index.html ] || exit 1
-          echo "✅ Build artifact ready: $(du -sh dist | cut -f1)"
-
+          echo "✅ Build artifact pronto: $(du -sh dist | cut -f1)"
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -103,36 +90,28 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          cat > ~/.ssh/config << EOF
-          Host prod
-            HostName ${{ env.SSH_HOST }}
-            Port ${{ env.SSH_PORT }}
-            User ${{ env.SSH_USER }}
-            IdentityFile ~/.ssh/id_rsa
-            StrictHostKeyChecking accept-new
-            ConnectTimeout 10
-          EOF
-          chmod 600 ~/.ssh/config
-
-      - name: Test SSH
-        run: ssh prod "pwd && whoami"
-
+          # Teste de conexão SSH
+          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo 'Conexão SSH estabelecida com sucesso!' || exit 1"
       - name: Backup theme
         run: |
-          ssh prod << 'BACKUP'
-          if [ -d ./wp-content/themes/zentheme ]; then
+          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'BACKUP'
+          THEME_DIR="/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme"
+          if [ -d "$THEME_DIR" ]; then
             BACKUP_TS=$(date +%Y%m%d_%H%M%S)
-            mkdir -p ./backups
-            tar -czf "./backups/theme_${BACKUP_TS}.tar.gz" ./wp-content/themes/zentheme/
-            cd ./backups
+            mkdir -p /home/u790739895/backups
+            tar -czf "/home/u790739895/backups/theme_${BACKUP_TS}.tar.gz" "$THEME_DIR/"
+            ls -lh "/home/u790739895/backups/theme_${BACKUP_TS}.tar.gz" || exit 1
+            cd /home/u790739895/backups
             ls -t theme_*.tar.gz | tail -n +6 | xargs -r rm
+          else
+            echo "❌ Diretório do tema não encontrado. Backup não realizado."
+            exit 1
           fi
           BACKUP
-
       - name: Deploy theme
         run: |
           rsync -avz --delete --checksum \
-            -e "ssh -o ConnectTimeout=10" \
+            -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             --exclude='.git*' \
             --exclude='node_modules' \
             --exclude='dist' \
@@ -148,76 +127,73 @@ jobs:
             --exclude='.DS_Store' \
             --exclude='*.log' \
             ./ \
-            prod:./wp-content/themes/zentheme/
-
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/
       - name: Deploy build to dist/
         run: |
           echo "Deploying build ($(du -sh dist | cut -f1))..."
           rsync -avz --delete --checksum \
-            -e "ssh -o ConnectTimeout=10" \
+            -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             dist/ \
-            prod:./wp-content/themes/zentheme/dist/ || exit 1
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/dist/ || exit 1
           echo "✅ Build deployed"
-
       - name: Deploy plugins
         if: hashFiles('plugins/**') != ''
         run: |
           REPO_PLUGINS=$(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
-          
           if [ -z "$REPO_PLUGINS" ]; then
-            echo "ℹ️ No plugins in repository"
+            echo "ℹ️ Nenhum plugin no repositório"
             exit 0
           fi
-          
           echo "📤 Deploying plugins..."
           for plugin in $REPO_PLUGINS; do
-            rsync -avz -e "ssh -o ConnectTimeout=10" \
+            rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
               "plugins/$plugin/" \
-              "prod:./wp-content/plugins/$plugin/"
+              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/wp-content/plugins/$plugin/"
           done
           echo "✅ Plugins deployed"
-
       - name: Deploy sitemaps
         if: hashFiles('dist/sitemap*.xml') != ''
         run: |
-          rsync -avz -e "ssh -o ConnectTimeout=10" \
+          rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             --include='sitemap*.xml' --exclude='*' \
-            dist/ prod:./
+            dist/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/
           echo "✅ Sitemaps deployed"
-
       - name: Verify deployment
         run: |
-          ssh prod << 'VERIFY'
+          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY'
           set -e
-          echo "🔍 Verifying deployment..."
-          [ -d ./wp-content/themes/zentheme ] || { echo "❌ Theme directory missing"; exit 1; }
-          [ -f ./wp-content/themes/zentheme/functions.php ] || { echo "❌ functions.php missing"; exit 1; }
-          [ -f ./wp-content/themes/zentheme/index.php ] || { echo "❌ index.php missing"; exit 1; }
-          [ -d ./wp-content/themes/zentheme/dist ] || { echo "❌ dist/ missing"; exit 1; }
-          [ -f ./wp-content/themes/zentheme/dist/index.html ] || { echo "❌ dist/index.html missing"; exit 1; }
-          echo "✅ All files verified"
+          echo "🔍 Verificando deploy..."
+          THEME_DIR="/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme"
+          [ -d "$THEME_DIR" ] || { echo "❌ Diretório do tema não encontrado"; exit 1; }
+          [ -f "$THEME_DIR/functions.php" ] || { echo "❌ functions.php não encontrado"; exit 1; }
+          [ -f "$THEME_DIR/index.php" ] || { echo "❌ index.php não encontrado"; exit 1; }
+          [ -d "$THEME_DIR/dist" ] || { echo "❌ dist/ não encontrado"; exit 1; }
+          [ -f "$THEME_DIR/dist/index.html" ] || { echo "❌ dist/index.html não encontrado"; exit 1; }
+          echo "✅ Todos os arquivos verificados com sucesso!"
           VERIFY
-
+      - name: Debug on failure
+        if: failure()
+        run: |
+          echo "🔍 Debugging deployment failure..."
+          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "ls -la /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/"
+          echo "🔍 Verificando logs do servidor..."
+          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "tail -n 50 /home/u790739895/domains/djzeneyer.com/public_html/wp-content/debug.log"
       - name: Cleanup
         if: always()
-        run: rm -f ~/.ssh/id_rsa ~/.ssh/config
-
+        run: rm -f ~/.ssh/id_rsa
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
     needs: deploy
     if: needs.deploy.result == 'success'
-
     steps:
       - name: Check site accessibility
         run: |
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L https://djzeneyer.com)
           [ "$HTTP_CODE" = "200" ] && echo "✅ Site is accessible" || { echo "⚠️ HTTP $HTTP_CODE"; exit 1; }
-
       - name: Check WordPress REST API
         run: |
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://djzeneyer.com/wp-json/)
           [ "$HTTP_CODE" = "200" ] && echo "✅ REST API is accessible" || echo "⚠️ HTTP $HTTP_CODE"
-
       - name: Final status
         run: echo "🎉 Deployment completed successfully!"
