@@ -100,31 +100,29 @@ jobs:
           [ -f dist/index.html ] || exit 1
           echo "✅ Build pronto: $(du -sh dist | cut -f1)"
 
-      - name: 🔑 Setup SSH
+      - name: 🔑 Setup SSH e teste de conexão
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo '🔑 Conexão SSH estabelecida com sucesso!' || exit 1"
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo '🔑 Conexão SSH estabelecida com sucesso!'"
 
       - name: 💾 Backup theme
         run: |
-          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'BACKUP'
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'BACKUP'
           mkdir -p "${{ env.BACKUP_DIR }}"
           BACKUP_TS=$(date +%Y%m%d_%H%M%S)
           tar -czf "${{ env.BACKUP_DIR }}/theme_${BACKUP_TS}.tar.gz" -C "${{ env.THEME_DIR }}" .
-          ls -lh "${{ env.BACKUP_DIR }}/theme_${BACKUP_TS}.tar.gz" || exit 1
-          cd "${{ env.BACKUP_DIR }}"
-          ls -t theme_*.tar.gz | tail -n +6 | xargs -r rm
+          ls -lh "${{ env.BACKUP_DIR }}/theme_${BACKUP_TS}.tar.gz"
           BACKUP
 
       - name: 📤 Deploy theme
         run: |
           echo "🚀 Enviando tema para o servidor..."
           rsync -avz --delete --checksum \
-            -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
+            -e "ssh -p ${{ env.SSH_PORT }}" \
             --exclude='.git/' \
             --exclude='.gitignore' \
             --exclude='.gitattributes' \
@@ -185,7 +183,7 @@ jobs:
         run: |
           echo "🚀 Enviando build para ${{ env.THEME_DIR }}/dist..."
           rsync -avz --delete --checksum \
-            -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
+            -e "ssh -p ${{ env.SSH_PORT }}" \
             dist/ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_DIR }}/dist/ || exit 1
           echo "✅ Build enviado com sucesso!"
@@ -200,7 +198,7 @@ jobs:
           fi
           echo "📤 Enviando plugins..."
           for plugin in $REPO_PLUGINS; do
-            rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
+            rsync -avz -e "ssh -p ${{ env.SSH_PORT }}" \
               --exclude='.git/' \
               --exclude='node_modules/' \
               --exclude='*.log' \
@@ -213,14 +211,14 @@ jobs:
         if: hashFiles('dist/sitemap*.xml') != ''
         run: |
           echo "🚀 Enviando sitemaps..."
-          rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
+          rsync -avz -e "ssh -p ${{ env.SSH_PORT }}" \
             --include='sitemap*.xml' --exclude='*' \
             dist/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/
           echo "✅ Sitemaps enviados com sucesso!"
 
       - name: ✅ Verify deployment
         run: |
-          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY'
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY'
           set -e
           echo "🔍 Verificando deploy..."
           [ -d "${{ env.THEME_DIR }}" ] || { echo "❌ Diretório do tema não encontrado"; exit 1; }
