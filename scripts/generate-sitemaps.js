@@ -163,8 +163,33 @@ function escapeXml(unsafe) {
   });
 }
 
-function getISOTimestamp(date = new Date()) {
-  return date.toISOString().split('T')[0];
+function getISOTimestamp(date = null) {
+  try {
+    // ✅ FIX: Handle invalid dates
+    let validDate;
+    
+    if (!date) {
+      validDate = new Date();
+    } else if (typeof date === 'string') {
+      validDate = new Date(date);
+    } else if (date instanceof Date) {
+      validDate = date;
+    } else {
+      console.warn(`⚠️  Invalid date format, using current time instead:`, date);
+      validDate = new Date();
+    }
+
+    // ✅ FIX: Validate the date is actually valid
+    if (isNaN(validDate.getTime())) {
+      console.warn(`⚠️  Invalid date value (NaN), using current time instead`);
+      return new Date().toISOString().split('T')[0];
+    }
+
+    return validDate.toISOString().split('T')[0];
+  } catch (error) {
+    console.error(`❌ Error formatting date:`, error.message);
+    return new Date().toISOString().split('T')[0];
+  }
 }
 
 function isValidUrl(url) {
@@ -253,92 +278,140 @@ async function generateSitemapForLang(lang) {
     // Posts (published only)
     const postUrls = (posts || [])
       .filter(post => post.status === 'publish')
-      .map(post => formatUrlEntry(
-        `${baseUrl}/${post.slug}`,
-        getISOTimestamp(new Date(post.modified)),
-        PRIORITY_MAP.posts.changefreq,
-        getDynamicPriority(`${baseUrl}/${post.slug}`),
-        LANGUAGES.map(l => ({
-          code: l,
-          url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}${post.slug}`
-        }))
-      ));
+      .map(post => {
+        try {
+          return formatUrlEntry(
+            `${baseUrl}/${post.slug}`,
+            getISOTimestamp(post.modified || new Date()),
+            PRIORITY_MAP.posts.changefreq,
+            getDynamicPriority(`${baseUrl}/${post.slug}`),
+            LANGUAGES.map(l => ({
+              code: l,
+              url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}${post.slug}`
+            }))
+          );
+        } catch (error) {
+          console.warn(`⚠️  Error processing post ${post.slug}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
     urlEntries.push(...postUrls);
 
     // Pages (published only)
     const pageUrls = (pages || [])
       .filter(page => page.status === 'publish')
-      .map(page => formatUrlEntry(
-        `${baseUrl}/${page.slug}`,
-        getISOTimestamp(new Date(page.modified)),
-        PRIORITY_MAP.pages.changefreq,
-        getDynamicPriority(`${baseUrl}/${page.slug}`),
-        LANGUAGES.map(l => ({
-          code: l,
-          url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}${page.slug}`
-        }))
-      ));
+      .map(page => {
+        try {
+          return formatUrlEntry(
+            `${baseUrl}/${page.slug}`,
+            getISOTimestamp(page.modified || new Date()),
+            PRIORITY_MAP.pages.changefreq,
+            getDynamicPriority(`${baseUrl}/${page.slug}`),
+            LANGUAGES.map(l => ({
+              code: l,
+              url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}${page.slug}`
+            }))
+          );
+        } catch (error) {
+          console.warn(`⚠️  Error processing page ${page.slug}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
     urlEntries.push(...pageUrls);
 
     // Products
     const productUrls = (products || [])
       .map(product => {
-        const permalink = product.permalink || `${baseUrl}/product/${product.slug}`;
-        return formatUrlEntry(
-          permalink,
-          getISOTimestamp(new Date(product.date_modified || Date.now())),
-          PRIORITY_MAP.products.changefreq,
-          getDynamicPriority(permalink),
-          LANGUAGES.map(l => ({
-            code: l,
-            url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}product/${product.slug}`
-          }))
-        );
-      });
+        try {
+          const permalink = product.permalink || `${baseUrl}/product/${product.slug}`;
+          return formatUrlEntry(
+            permalink,
+            getISOTimestamp(product.date_modified || new Date()),
+            PRIORITY_MAP.products.changefreq,
+            getDynamicPriority(permalink),
+            LANGUAGES.map(l => ({
+              code: l,
+              url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}product/${product.slug}`
+            }))
+          );
+        } catch (error) {
+          console.warn(`⚠️  Error processing product ${product.slug}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
     urlEntries.push(...productUrls);
 
     // Events (published only)
     const eventUrls = (events || [])
       .filter(event => event.status === 'publish')
-      .map(event => formatUrlEntry(
-        `${baseUrl}/events/${event.slug}`,
-        getISOTimestamp(new Date(event.modified)),
-        PRIORITY_MAP.events.changefreq,
-        getDynamicPriority(`${baseUrl}/events/${event.slug}`),
-        LANGUAGES.map(l => ({
-          code: l,
-          url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}events/${event.slug}`
-        }))
-      ));
+      .map(event => {
+        try {
+          return formatUrlEntry(
+            `${baseUrl}/events/${event.slug}`,
+            getISOTimestamp(event.modified || new Date()),
+            PRIORITY_MAP.events.changefreq,
+            getDynamicPriority(`${baseUrl}/events/${event.slug}`),
+            LANGUAGES.map(l => ({
+              code: l,
+              url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}events/${event.slug}`
+            }))
+          );
+        } catch (error) {
+          console.warn(`⚠️  Error processing event ${event.slug}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
     urlEntries.push(...eventUrls);
 
     // Categories
     const categoryUrls = (categories || [])
-      .map(cat => formatUrlEntry(
-        `${baseUrl}/category/${cat.slug}`,
-        getISOTimestamp(new Date(cat.modified)),
-        PRIORITY_MAP.categories.changefreq,
-        getDynamicPriority(`${baseUrl}/category/${cat.slug}`),
-        LANGUAGES.map(l => ({
-          code: l,
-          url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}category/${cat.slug}`
-        }))
-      ));
+      .map(cat => {
+        try {
+          return formatUrlEntry(
+            `${baseUrl}/category/${cat.slug}`,
+            getISOTimestamp(cat.modified || new Date()),
+            PRIORITY_MAP.categories.changefreq,
+            getDynamicPriority(`${baseUrl}/category/${cat.slug}`),
+            LANGUAGES.map(l => ({
+              code: l,
+              url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}category/${cat.slug}`
+            }))
+          );
+        } catch (error) {
+          console.warn(`⚠️  Error processing category ${cat.slug}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
     urlEntries.push(...categoryUrls);
 
     // Tags (lower priority for SEO)
     const tagUrls = (tags || [])
-      .map(tag => formatUrlEntry(
-        `${baseUrl}/tag/${tag.slug}`,
-        getISOTimestamp(new Date(tag.modified)),
-        PRIORITY_MAP.tags.changefreq,
-        getDynamicPriority(`${baseUrl}/tag/${tag.slug}`),
-        LANGUAGES.map(l => ({
-          code: l,
-          url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}tag/${tag.slug}`
-        }))
-      ));
+      .map(tag => {
+        try {
+          return formatUrlEntry(
+            `${baseUrl}/tag/${tag.slug}`,
+            getISOTimestamp(tag.modified || new Date()),
+            PRIORITY_MAP.tags.changefreq,
+            getDynamicPriority(`${baseUrl}/tag/${tag.slug}`),
+            LANGUAGES.map(l => ({
+              code: l,
+              url: `${BASE_URL}/${l === 'pt' ? '' : `${l}/`}tag/${tag.slug}`
+            }))
+          );
+        } catch (error) {
+          console.warn(`⚠️  Error processing tag ${tag.slug}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
     urlEntries.push(...tagUrls);
+
+    console.log(`✅ Generated ${urlEntries.length} URLs for ${lang.toUpperCase()}`);
 
     // Check URL limit
     if (urlEntries.length > MAX_URLS_PER_SITEMAP) {
@@ -356,7 +429,7 @@ ${chunk.join('\n')}
           : `sitemap-${lang}${index > 0 ? `-part-${index + 1}` : ''}.xml`;
 
         fs.writeFileSync(path.join(publicDir, filename), xml);
-        console.log(`✅ ${filename} generated`);
+        console.log(`✅ ${filename} generated (${chunk.length} URLs)`);
       });
     } else {
       const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -367,8 +440,7 @@ ${urlEntries.join('\n')}
 
       const filename = lang === 'pt' ? 'sitemap.xml' : `sitemap-${lang}.xml`;
       fs.writeFileSync(path.join(publicDir, filename), xml);
-      console.log(`✅ ${filename} generated`);
-      console.log(`   → ${urlEntries.length} URLs included`);
+      console.log(`✅ ${filename} generated (${urlEntries.length} URLs)`);
     }
 
     return {
@@ -378,7 +450,7 @@ ${urlEntries.join('\n')}
     };
 
   } catch (error) {
-    console.error(`❌ Error generating sitemap for ${lang}:`, error);
+    console.error(`❌ Error generating sitemap for ${lang}:`, error.message);
     throw error;
   }
 }
@@ -399,7 +471,6 @@ ${sitemapEntries}
   const publicDir = path.join(__dirname, '../public');
   fs.writeFileSync(path.join(publicDir, 'sitemap_index.xml'), xml);
   console.log('✅ sitemap_index.xml generated');
-  console.log(`   → ${sitemaps.length} sitemaps included`);
 }
 
 async function generateRobotsTxt() {
@@ -412,11 +483,6 @@ Allow: /
 
 # Sitemaps
 Sitemap: ${BASE_URL}/sitemap_index.xml
-Sitemap: ${BASE_URL}/sitemap.xml
-Sitemap: ${BASE_URL}/sitemap-en.xml
-Sitemap: ${BASE_URL}/sitemap-images.xml
-Sitemap: ${BASE_URL}/sitemap-media.xml
-Sitemap: ${BASE_URL}/sitemap-news.xml
 
 # Crawl delay
 Crawl-delay: 1
@@ -437,100 +503,13 @@ Allow: /wp-content/uploads/`;
   console.log('✅ robots.txt generated');
 }
 
-async function generateImageSitemap() {
-  const imageUrls = [
-    { loc: `${BASE_URL}/wp-content/uploads/2023/10/dj-zen-eyer.jpg`, title: 'DJ Zen Eyer Live' },
-    { loc: `${BASE_URL}/wp-content/uploads/2023/11/event-cover.jpg`, title: 'Evento Tech House' },
-  ];
-
-  const imageEntries = imageUrls.map(img => `
-    <url>
-      <loc>${escapeXml(img.loc)}</loc>
-      <image:image>
-        <image:loc>${escapeXml(img.loc)}</image:loc>
-        <image:title>${escapeXml(img.title)}</image:title>
-      </image:image>
-    </url>`);
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${imageEntries.join('\n')}
-</urlset>`;
-
-  const publicDir = path.join(__dirname, '../public');
-  fs.writeFileSync(path.join(publicDir, 'sitemap-images.xml'), xml);
-  console.log('✅ sitemap-images.xml generated');
-}
-
-async function generateMediaSitemap() {
-  const mediaUrls = [
-    {
-      loc: `${BASE_URL}/musicas/cremosa`,
-      title: 'Cremosa - DJ Zen Eyer',
-      type: 'audio/mpeg',
-      duration: '245',
-      playerLoc: 'https://open.spotify.com/track/123456789'
-    },
-  ];
-
-  const mediaEntries = mediaUrls.map(media => `
-    <url>
-      <loc>${escapeXml(media.loc)}</loc>
-      <video:video>
-        <video:title>${escapeXml(media.title)}</video:title>
-        <video:content_loc>${escapeXml(media.playerLoc)}</video:content_loc>
-        <video:duration>${media.duration}</video:duration>
-      </video:video>
-    </url>`);
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-${mediaEntries.join('\n')}
-</urlset>`;
-
-  const publicDir = path.join(__dirname, '../public');
-  fs.writeFileSync(path.join(publicDir, 'sitemap-media.xml'), xml);
-  console.log('✅ sitemap-media.xml generated');
-}
-
-async function generateNewsSitemap() {
-  const newsUrls = [
-    { loc: `${BASE_URL}/noticias/lancamento-novo-album`, title: 'Lançamento do Novo Álbum', date: '2023-10-15' },
-  ];
-
-  const newsEntries = newsUrls.map(news => `
-    <url>
-      <loc>${escapeXml(news.loc)}</loc>
-      <news:news>
-        <news:publication>
-          <news:name>DJ Zen Eyer</news:name>
-          <news:language>pt</news:language>
-        </news:publication>
-        <news:publication_date>${news.date}</news:publication_date>
-        <news:title>${escapeXml(news.title)}</news:title>
-      </news:news>
-    </url>`);
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
-${newsEntries.join('\n')}
-</urlset>`;
-
-  const publicDir = path.join(__dirname, '../public');
-  fs.writeFileSync(path.join(publicDir, 'sitemap-news.xml'), xml);
-  console.log('✅ sitemap-news.xml generated');
-}
-
 // ============================================
 // 🚀 MAIN EXECUTION
 // ============================================
 
 async function main() {
   console.log('========================================');
-  console.log('🚀 DJ Zen Eyer - Sitemap Generator MASTER v3.0.0');
+  console.log('🚀 DJ Zen Eyer - Sitemap Generator MASTER v3.0.1');
   console.log('========================================\n');
 
   const startTime = Date.now();
@@ -548,11 +527,6 @@ async function main() {
     );
     sitemaps.push(...sitemapResults);
 
-    // Generate additional sitemaps
-    await generateImageSitemap();
-    await generateMediaSitemap();
-    await generateNewsSitemap();
-
     // Generate index and robots.txt
     await generateSitemapIndex(sitemaps);
     await generateRobotsTxt();
@@ -564,19 +538,9 @@ async function main() {
     console.log('\n========================================');
     console.log(`✅ All sitemaps generated successfully in ${duration}s!`);
     console.log('========================================\n');
-    console.log('📍 Files created:');
-    console.log('   • sitemap.xml');
-    console.log('   • sitemap-en.xml');
-    console.log('   • sitemap-images.xml');
-    console.log('   • sitemap-media.xml');
-    console.log('   • sitemap-news.xml');
-    console.log('   • sitemap_index.xml');
-    console.log('   • robots.txt');
-    console.log('\n🔗 Submit to Google Search Console:');
-    console.log(`   → ${BASE_URL}/sitemap_index.xml\n`);
 
   } catch (error) {
-    console.error('\n❌ Fatal error:', error);
+    console.error('\n❌ Fatal error:', error.message);
     process.exit(1);
   }
 }
