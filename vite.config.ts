@@ -33,7 +33,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           react: ['react', 'react-dom'],
-          spotify: ['@spotify/web-api-js-sdk'],
+          // spotify: ['@spotify/web-api-js-sdk'],
         },
       },
     },
