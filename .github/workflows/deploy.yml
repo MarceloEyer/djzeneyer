@@ -8,7 +8,7 @@ on:
       - '*.md'
       - '.gitignore'
       - 'LICENSE'
-  
+
   workflow_dispatch:
     inputs:
       skip_build:
@@ -39,13 +39,13 @@ jobs:
     name: 🏗️ Build
     runs-on: ubuntu-latest
     if: ${{ !inputs.skip_build }}
-    
+
     outputs:
       hash: ${{ steps.hash.outputs.value }}
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -57,7 +57,7 @@ jobs:
       - run: npm ci --prefer-offline --no-audit
       - run: npm run generate-sitemaps 2>&1 || true
         continue-on-error: true
-      
+
       - run: npm run build
         env:
           NODE_ENV: production
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: always() && (needs.build.result == 'success' || inputs.skip_build)
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -119,14 +119,15 @@ jobs:
           ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
             "mkdir -p ${{ env.THEME_PATH }} ${{ env.PLUGINS_PATH }} ${{ env.BACKUP_PATH }}"
 
-      # ════════════════════════════════════════════════════════════
-      # ZONE 1: TEMA (com --delete para limpar antigos)
-      # ════════════════════════════════════════════════════════════
-      
-      - name: 📝 Deploy theme (COM --delete)
+      # Deletar arquivos antigos do tema
+      - name: 🗑️ Delete old theme files
         run: |
-          rsync -avz --checksum --delete \
-            -e "ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa" \
+          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "rm -rf ${{ env.THEME_PATH }}/*"
+
+      # Copiar novos arquivos do tema (excluindo pastas desnecessárias)
+      - name: 📝 Copy new theme files
+        run: |
+          scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
             --exclude='.git/' \
             --exclude='node_modules/' \
             --exclude='dist/' \
@@ -143,13 +144,9 @@ jobs:
             --exclude='.vscode/' \
             --exclude='.github/' \
             --exclude='.*' \
-            ./ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/
+            . ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/
 
-      # ════════════════════════════════════════════════════════════
-      # ZONE 1B: functions.php da raiz SUBSTITUI o do tema
-      # ════════════════════════════════════════════════════════════
-      
+      # Substituir functions.php da raiz
       - name: 🔄 Deploy functions.php (raiz → tema)
         if: hashFiles('functions.php') != ''
         run: |
@@ -157,38 +154,26 @@ jobs:
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/functions.php
           echo "✅ functions.php substituted"
 
-      # ════════════════════════════════════════════════════════════
-      # ZONE 1C: DIST (com --delete)
-      # ════════════════════════════════════════════════════════════
-      
-      - name: 🎨 Deploy dist (COM --delete)
+      # Copiar arquivos do dist
+      - name: 🎨 Deploy dist
         if: ${{ !inputs.skip_build }}
         run: |
-          rsync -avz --checksum --delete \
-            -e "ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa" \
+          scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
             dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/dist/
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/
 
-      # ════════════════════════════════════════════════════════════
-      # ZONE 2: PLUGINS (SEM --delete, apenas add/update)
-      # ════════════════════════════════════════════════════════════
-      
+      # Atualizar plugins (sem deletar)
       - name: 🔌 Deploy plugins (SEM --delete)
         if: hashFiles('plugins/**') != ''
         run: |
           for plugin in $(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \;); do
-            rsync -avz --checksum \
-              -e "ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa" \
-              --exclude='.git/' \
-              "plugins/$plugin/" \
-              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_PATH }}/$plugin/"
+            scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
+              plugins/$plugin/ \
+              ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_PATH }}/$plugin/
           done
           echo "✅ Plugins updated (not deleted)"
 
-      # ════════════════════════════════════════════════════════════
-      # ZONE 3: PUBLIC ASSETS (whitelist apenas)
-      # ════════════════════════════════════════════════════════════
-      
+      # Copiar assets públicos
       - name: 📄 Deploy public assets (whitelist)
         run: |
           for file in robots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest browserconfig.xml manifest.json; do
@@ -199,25 +184,16 @@ jobs:
           done
           echo "✅ Public assets deployed (whitelist)"
 
-      # ════════════════════════════════════════════════════════════
-      # ZONE 4: SITEMAPS
-      # ════════════════════════════════════════════════════════════
-      
+      # Copiar sitemaps
       - name: 🗺️ Deploy sitemaps
         if: hashFiles('dist/sitemap*.xml') != '' && ${{ !inputs.skip_build }}
         run: |
-          rsync -avz \
-            -e "ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa" \
-            --include='sitemap*.xml' \
-            --exclude='*' \
-            dist/ \
+          scp -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
+            dist/sitemap*.xml \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/
           echo "✅ Sitemaps deployed"
 
-      # ════════════════════════════════════════════════════════════
-      # FIX PERMISSIONS
-      # ════════════════════════════════════════════════════════════
-      
+      # Corrigir permissões
       - name: 🔧 Fix permissions
         run: |
           ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'EOF'
@@ -226,10 +202,7 @@ jobs:
           echo "✅ Permissions fixed"
           EOF
 
-      # ════════════════════════════════════════════════════════════
-      # VERIFY
-      # ════════════════════════════════════════════════════════════
-      
+      # Verificar deploy
       - name: ✅ Verify deployment
         run: |
           ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'EOF'
@@ -241,10 +214,7 @@ jobs:
           [ -f "${{ env.THEME_PATH }}/dist/index.html" ] && echo "✅ dist/index.html OK"
           EOF
 
-      # ════════════════════════════════════════════════════════════
-      # CLEANUP
-      # ════════════════════════════════════════════════════════════
-      
+      # Limpar SSH
       - name: 🧹 Cleanup SSH
         if: always()
         run: rm -f ~/.ssh/id_rsa
@@ -256,9 +226,9 @@ jobs:
             echo "✅ DEPLOY SUCCESSFUL"
             echo ""
             echo "📋 Deployed:"
-            echo "  ✓ Theme (--delete old files)"
+            echo "  ✓ Theme (deleted old files)"
             echo "  ✓ functions.php (replaced)"
-            echo "  ✓ dist/ (--delete old files)"
+            echo "  ✓ dist/"
             echo "  ✓ Plugins (no delete)"
             echo "  ✓ Public assets (whitelist)"
             echo "  ✓ Sitemaps"
@@ -273,7 +243,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy
     if: needs.deploy.result == 'success'
-    
+
     steps:
       - name: 🌐 Check site
         run: |
