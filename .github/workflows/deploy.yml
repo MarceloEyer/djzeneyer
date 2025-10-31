@@ -97,6 +97,20 @@ jobs:
             functions.php \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/functions.php
 
+      # 📄 Copia style.css, index.php, etc.
+      - name: Copia arquivos do tema
+        run: |
+          for file in style.css index.php screenshot.png; do
+            if [ -f "$file" ]; then
+              scp -P ${{ secrets.SSH_PORT }} \
+                -i ~/.ssh/id_rsa \
+                -o StrictHostKeyChecking=no \
+                "$file" \
+                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/
+              echo "✅ $file copiado"
+            fi
+          done
+
       # 🔌 Sincroniza plugins/ → wp-content/plugins/ (sem --delete)
       - name: Sincroniza plugins/
         if: hashFiles('plugins/**') != ''
