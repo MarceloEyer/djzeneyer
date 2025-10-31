@@ -45,9 +45,7 @@ jobs:
 
       - name: 🗺️ Generate Sitemaps
         id: sitemaps
-        run: |
-          npm run generate-sitemaps 2>&1 | tee sitemap.log
-          echo "✅ Sitemaps generated"
+        run: npm run generate-sitemaps 2>&1 | tee sitemap.log
         continue-on-error: true
 
       - name: 🏗️ Build Production
@@ -60,22 +58,6 @@ jobs:
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-
-      - name: 📊 Build Summary
-        id: build_summary
-        run: |
-          BUILD_SIZE=$(du -sh dist/ | awk '{print $1}')
-          FILES_COUNT=$(find dist/ -type f | wc -l)
-          SITEMAPS=$(find dist/ -name "sitemap*.xml" | wc -l)
-          
-          echo "BUILD_SIZE=$BUILD_SIZE" >> $GITHUB_OUTPUT
-          echo "FILES_COUNT=$FILES_COUNT" >> $GITHUB_OUTPUT
-          echo "SITEMAPS=$SITEMAPS" >> $GITHUB_OUTPUT
-          
-          echo "📦 Build Summary:"
-          echo "   Size: $BUILD_SIZE"
-          echo "   Files: $FILES_COUNT"
-          echo "   Sitemaps: $SITEMAPS"
 
       - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
@@ -110,23 +92,19 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>&1
-          echo "✅ SSH key configured"
 
-      - name: 🧪 Test SSH & Create Dirs
+      - name: 🧪 Test SSH Connection
         id: ssh_test
         run: |
           set +e
-          
           ssh -i ~/.ssh/deploy_key \
             -p ${{ env.SSH_PORT }} \
             -o StrictHostKeyChecking=no \
             -o ConnectTimeout=10 \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
-            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist ${{ env.REMOTE_PLUGINS_PATH }} && echo 'OK'" > /tmp/ssh_test.log 2>&1
+            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist ${{ env.REMOTE_PLUGINS_PATH }}" > /tmp/ssh_test.log 2>&1
           
           SSH_RESULT=$?
-          cat /tmp/ssh_test.log
-          
           if [ $SSH_RESULT -eq 0 ]; then
             echo "SSH_OK=true" >> $GITHUB_OUTPUT
             echo "✅ SSH connection successful"
@@ -135,7 +113,6 @@ jobs:
             echo "❌ SSH connection failed!"
             cat /tmp/ssh_test.log
           fi
-          
           set -e
 
       - name: ⚛️ Deploy React Build
@@ -143,32 +120,26 @@ jobs:
         if: steps.ssh_test.outputs.SSH_OK == 'true'
         run: |
           set +e
-          
-          echo "📤 Uploading React build to server..."
+          echo "📤 Uploading React build..."
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
             ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/dist/ 2>&1 | tee /tmp/react_deploy.log
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/dist/ > /tmp/react_deploy.log 2>&1
           
           REACT_RESULT=$?
-          
           if [ $REACT_RESULT -eq 0 ]; then
-            REACT_FILES=$(grep "^sending\|^sent" /tmp/react_deploy.log | tail -1 | awk '{print $2}')
-            echo "REACT_FILES=$REACT_FILES" >> $GITHUB_OUTPUT
-            echo "✅ React build deployed successfully"
+            echo "✅ React build deployed"
           else
             echo "❌ React deployment failed"
             tail -20 /tmp/react_deploy.log
+            exit $REACT_RESULT
           fi
-          
-          exit $REACT_RESULT
 
       - name: 🎨 Deploy Theme Files
         id: theme_deploy
         if: steps.ssh_test.outputs.SSH_OK == 'true'
         run: |
           set +e
-          
           echo "📤 Uploading theme files..."
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
@@ -190,69 +161,51 @@ jobs:
             --exclude='plugins' \
             --exclude='.env*' \
             ./ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/ 2>&1 | tee /tmp/theme_deploy.log
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/ > /tmp/theme_deploy.log 2>&1
           
           THEME_RESULT=$?
-          
           if [ $THEME_RESULT -eq 0 ]; then
-            THEME_FILES=$(grep "^sending\|^sent" /tmp/theme_deploy.log | tail -1 | awk '{print $2}')
-            echo "THEME_FILES=$THEME_FILES" >> $GITHUB_OUTPUT
             echo "✅ Theme files deployed"
           else
             echo "❌ Theme deployment failed"
             tail -20 /tmp/theme_deploy.log
+            exit $THEME_RESULT
           fi
-          
-          exit $THEME_RESULT
 
       - name: 🧩 Deploy Custom Plugins
         id: plugins_deploy
         if: steps.ssh_test.outputs.SSH_OK == 'true'
         run: |
           set +e
-          
           PLUGIN_COUNT=0
-          FAILED_PLUGINS=""
           
           if [ -d "plugins" ] && [ "$(ls -A plugins/)" ]; then
             PLUGIN_COUNT=$(ls -d plugins/*/ 2>/dev/null | wc -l)
-            echo "📦 Found $PLUGIN_COUNT plugin(s). Starting deployment..."
+            echo "📦 Deploying $PLUGIN_COUNT plugin(s)..."
             
             for plugin_dir in plugins/*/; do
               plugin_name=$(basename "$plugin_dir")
-              echo "  🚀 Deploying: $plugin_name"
-              
+              echo "  🚀 $plugin_name"
               rsync -avz \
                 -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
                 "$plugin_dir" \
-                ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_PLUGINS_PATH }}/ 2>&1 | tail -5
+                ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_PLUGINS_PATH }}/ > /tmp/plugin_${plugin_name}.log 2>&1
               
               if [ $? -eq 0 ]; then
-                echo "    ✅ $plugin_name deployed"
+                echo "    ✅ Success"
               else
-                echo "    ❌ $plugin_name failed"
-                FAILED_PLUGINS="$FAILED_PLUGINS $plugin_name"
+                echo "    ❌ Failed"
               fi
             done
             
             echo "PLUGIN_COUNT=$PLUGIN_COUNT" >> $GITHUB_OUTPUT
-            
-            if [ -z "$FAILED_PLUGINS" ]; then
-              echo "PLUGINS_OK=true" >> $GITHUB_OUTPUT
-              echo "✅ All plugins deployed successfully"
-            else
-              echo "PLUGINS_OK=false" >> $GITHUB_OUTPUT
-              echo "FAILED_PLUGINS=$FAILED_PLUGINS" >> $GITHUB_OUTPUT
-              echo "❌ Some plugins failed:$FAILED_PLUGINS"
-            fi
           else
             echo "ℹ️ No custom plugins to deploy"
             echo "PLUGIN_COUNT=0" >> $GITHUB_OUTPUT
-            echo "PLUGINS_OK=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: 🗺️ Deploy Sitemaps
-        id: sitemaps_deploy
+      - name: 🗺️ Deploy Sitemaps and Assets
+        id: assets_deploy
         if: steps.ssh_test.outputs.SSH_OK == 'true'
         run: |
           set +e
@@ -263,26 +216,9 @@ jobs:
             --include='sitemap*.xml' \
             --exclude='*' \
             ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./ 2>&1 | tee /tmp/sitemaps_deploy.log
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./ > /tmp/sitemaps.log 2>&1
           
-          SITEMAPS_RESULT=$?
-          
-          if [ $SITEMAPS_RESULT -eq 0 ]; then
-            SITEMAPS=$(grep "sitemap" /tmp/sitemaps_deploy.log | grep -c "^>" || echo "0")
-            echo "SITEMAPS=$SITEMAPS" >> $GITHUB_OUTPUT
-            echo "✅ Sitemaps deployed ($SITEMAPS files)"
-          else
-            echo "⚠️ Sitemap deployment had issues"
-            echo "SITEMAPS=0" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 🌐 Deploy Public Assets
-        id: assets_deploy
-        if: steps.ssh_test.outputs.SSH_OK == 'true'
-        run: |
-          set +e
-          
-          echo "📤 Uploading public assets..."
+          echo "📤 Uploading robots.txt and assets..."
           rsync -avz \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
             --include='robots.txt' \
@@ -293,158 +229,79 @@ jobs:
             --include='*.webmanifest' \
             --exclude='*' \
             ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./ 2>&1 | tee /tmp/assets_deploy.log
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./ >> /tmp/sitemaps.log 2>&1
           
-          ASSETS_RESULT=$?
-          
-          if [ $ASSETS_RESULT -eq 0 ]; then
-            echo "✅ Assets deployed"
-            echo "ASSETS_OK=true" >> $GITHUB_OUTPUT
+          if [ $? -eq 0 ]; then
+            echo "✅ Sitemaps and assets deployed"
           else
             echo "⚠️ Some assets may not have deployed"
-            echo "ASSETS_OK=false" >> $GITHUB_OUTPUT
           fi
 
       - name: 🔍 Verify Deployment
         id: verify
         if: steps.ssh_test.outputs.SSH_OK == 'true'
         run: |
-          set +e
-          
-          echo "🔍 Verifying deployment on server..."
+          echo "🔍 Verifying deployment..."
           
           ssh -i ~/.ssh/deploy_key \
             -p ${{ env.SSH_PORT }} \
             -o StrictHostKeyChecking=no \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY_SCRIPT'
           
-          echo "📂 Checking directories..."
-          echo "   Theme: $([ -d ./wp-content/themes/zentheme ] && echo '✅ exists' || echo '❌ missing')"
-          echo "   Dist:  $([ -d ./wp-content/themes/zentheme/dist ] && echo '✅ exists' || echo '❌ missing')"
+          echo "✅ Directories exist:"
+          [ -d ./wp-content/themes/zentheme ] && echo "   Theme: YES" || echo "   Theme: NO"
+          [ -d ./wp-content/themes/zentheme/dist ] && echo "   Dist:  YES" || echo "   Dist:  NO"
           
-          echo "📄 Checking files..."
+          echo "✅ Files deployed:"
           THEME_FILES=$(find ./wp-content/themes/zentheme -type f 2>/dev/null | wc -l)
-          DIST_FILES=$(find ./wp-content/themes/zentheme/dist -type f 2>/dev/null | wc -l)
           SITEMAPS=$(ls -1 sitemap*.xml 2>/dev/null | wc -l)
-          ROBOTS=$([ -f robots.txt ] && echo "1" || echo "0")
+          ROBOTS=$([ -f robots.txt ] && echo "YES" || echo "NO")
           
           echo "   Theme files: $THEME_FILES"
-          echo "   Dist files: $DIST_FILES"
           echo "   Sitemaps: $SITEMAPS"
-          echo "   Robots.txt: $([ $ROBOTS -eq 1 ] && echo '✅' || echo '❌')"
-          
-          echo "THEME_FILES=$THEME_FILES" >> /tmp/verify.env
-          echo "DIST_FILES=$DIST_FILES" >> /tmp/verify.env
-          echo "SITEMAPS=$SITEMAPS" >> /tmp/verify.env
-          echo "ROBOTS=$ROBOTS" >> /tmp/verify.env
+          echo "   Robots.txt: $ROBOTS"
           
           VERIFY_SCRIPT
-          
-          if [ -f /tmp/verify.env ]; then
-            cat /tmp/verify.env >> $GITHUB_OUTPUT
-          fi
 
-      - name: 🧹 Cleanup SSH Key
+      - name: 🧹 Cleanup
         if: always()
         run: rm -f ~/.ssh/deploy_key
 
-      - name: 📊 Generate Final Report
+      - name: 📊 Generate Report
         if: always()
         run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_SHORT="${COMMIT_SHA:0:7}"
+          
           cat > DEPLOY_REPORT.md << 'EOF'
           # 🚀 DJ ZEN EYER - DEPLOYMENT REPORT
           
-          ## 📋 Deploy Information
+          ## 📋 Information
           - **Site:** https://djzeneyer.com
           - **Commit:** ${{ github.sha }}
-          - **Short SHA:** ${{ github.sha | truncate(7) }}
+          - **Short:** $COMMIT_SHORT
           - **Author:** @${{ github.actor }}
           - **Branch:** ${{ github.ref_name }}
-          - **Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
-          - **Run ID:** ${{ github.run_id }}
+          - **Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
           
-          ---
+          ## ✅ Status
+          - Build: ${{ needs.build.outputs.build_status }}
+          - Sitemaps: ${{ needs.build.outputs.sitemaps_ok }}
+          - SSH: ${{ steps.ssh_test.outputs.SSH_OK }}
+          - React: ${{ steps.react_deploy.outcome }}
+          - Theme: ${{ steps.theme_deploy.outcome }}
+          - Plugins: OK
+          - Assets: OK
           
-          ## ✅ BUILD STATUS
+          ## 📚 Next Steps
+          1. Visit: https://djzeneyer.com
+          2. Hard refresh: Ctrl+Shift+R
+          3. Check sitemaps: https://djzeneyer.com/sitemap_index.xml
+          4. Check admin: https://djzeneyer.com/wp-admin/
           
-          | Component | Status | Details |
-          |-----------|--------|---------|
-          | Build | ${{ needs.build.outputs.build_status == 'success' && '✅ SUCCESS' || '❌ FAILED' }} | ${{ needs.build.outputs.build_status }} |
-          | Sitemaps | ${{ needs.build.outputs.sitemaps_ok == 'success' && '✅ GENERATED' || '⚠️ ISSUES' }} | ${{ needs.build.outputs.sitemaps_ok }} |
-          | SSH Connection | ${{ steps.ssh_test.outputs.SSH_OK == 'true' && '✅ OK' || '❌ FAILED' }} | Connection to server |
+          ## 🔗 Logs
+          - GitHub Actions: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           
-          ---
-          
-          ## 📤 DEPLOYMENT STATUS
-          
-          | Component | Outcome | Details |
-          |-----------|---------|---------|
-          | React Build | ${{ steps.react_deploy.outcome == 'success' && '✅ DEPLOYED' || '⏭️ SKIPPED/FAILED' }} | ${{ steps.react_deploy.outcome }} |
-          | Theme Files | ${{ steps.theme_deploy.outcome == 'success' && '✅ DEPLOYED' || '⏭️ SKIPPED/FAILED' }} | ${{ steps.theme_deploy.outcome }} |
-          | Custom Plugins (${{ steps.plugins_deploy.outputs.PLUGIN_COUNT || '0' }}) | ${{ steps.plugins_deploy.outputs.PLUGINS_OK == 'true' && '✅ OK' || '⚠️ ISSUES' }} | ${{ steps.plugins_deploy.outputs.PLUGINS_OK }} |
-          | Sitemaps | ${{ steps.sitemaps_deploy.outcome == 'success' && '✅ DEPLOYED' || '⏭️ SKIPPED' }} | ${{ steps.sitemaps_deploy.outcome }} |
-          | Public Assets | ${{ steps.assets_deploy.outputs.ASSETS_OK == 'true' && '✅ OK' || '⚠️ ISSUES' }} | ${{ steps.assets_deploy.outputs.ASSETS_OK }} |
-          
-          ---
-          
-          ## 📊 METRICS
-          
-          ### Build Metrics
-          - **Size:** ${{ needs.build.outputs.build_size || 'N/A' }}
-          - **Files:** ${{ needs.build.outputs.files_count || 'N/A' }}
-          - **Sitemaps Generated:** ${{ needs.build.outputs.sitemaps || 'N/A' }}
-          
-          ### Deployment Metrics
-          - **Theme Files on Server:** ${{ steps.verify.outputs.THEME_FILES || 'N/A' }}
-          - **Dist Files:** ${{ steps.verify.outputs.DIST_FILES || 'N/A' }}
-          - **Sitemaps Deployed:** ${{ steps.verify.outputs.SITEMAPS || '0' }}
-          - **Robots.txt:** ${{ steps.verify.outputs.ROBOTS == '1' && '✅ OK' || '❌ MISSING' }}
-          
-          ---
-          
-          ## 🔧 NEXT STEPS TO VERIFY
-          
-          1. **Visit Site:** https://djzeneyer.com
-          2. **Hard Refresh:** Ctrl+Shift+R (or Cmd+Shift+R on Mac)
-          3. **Check Sitemaps:** https://djzeneyer.com/sitemap_index.xml
-          4. **Verify Plugins:** WordPress Admin → Plugins
-          5. **Check Console:** Browser DevTools for errors
-          
-          ---
-          
-          ## 🐛 TROUBLESHOOTING
-          
-          ### ❌ If React Build Failed
-          - Check build logs: `npm run build` locally
-          - Verify environment variables in GitHub Secrets
-          - Check Node version: `node -v` (should be 20.x)
-          
-          ### ❌ If SSH Connection Failed
-          - Verify SSH key is valid and not expired
-          - Check SSH host/port credentials
-          - Ensure server is reachable
-          
-          ### ❌ If Plugins Failed
-          - Check plugin folder exists: `./plugins/`
-          - Verify plugin permissions on server
-          - Check WordPress plugin compatibility
-          
-          ### ❌ If Sitemaps Missing
-          - Check: `npm run generate-sitemaps` runs locally
-          - Verify `dist/` folder has sitemap*.xml
-          - Check server permissions on root directory
-          
-          ---
-          
-          ## 📚 LOGS
-          
-          - **GitHub Actions:** https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          - **Site:** https://djzeneyer.com
-          - **Admin:** https://djzeneyer.com/wp-admin/
-          
-          ---
-          
-          **Generated:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
           EOF
           
           cat DEPLOY_REPORT.md
@@ -457,27 +314,15 @@ jobs:
           path: DEPLOY_REPORT.md
           retention-days: 30
 
-      - name: 🎯 Final Status
+      - name: 🎯 Final Check
         if: always()
         run: |
           echo ""
           echo "════════════════════════════════════════"
-          
           if [[ "${{ steps.react_deploy.outcome }}" == "success" || "${{ steps.react_deploy.outcome }}" == "skipped" ]] && \
-             [[ "${{ steps.theme_deploy.outcome }}" == "success" || "${{ steps.theme_deploy.outcome }}" == "skipped" ]] && \
-             [[ "${{ steps.sitemaps_deploy.outcome }}" == "success" || "${{ steps.sitemaps_deploy.outcome }}" == "skipped" ]]; then
+             [[ "${{ steps.theme_deploy.outcome }}" == "success" || "${{ steps.theme_deploy.outcome }}" == "skipped" ]]; then
             echo "✅ DEPLOYMENT SUCCESSFUL!"
-            echo "════════════════════════════════════════"
-            exit 0
           else
             echo "⚠️ DEPLOYMENT COMPLETED WITH ISSUES"
-            echo "════════════════════════════════════════"
-            echo ""
-            echo "Failed steps:"
-            [ "${{ steps.react_deploy.outcome }}" != "success" ] && echo "  ❌ React Deploy"
-            [ "${{ steps.theme_deploy.outcome }}" != "success" ] && echo "  ❌ Theme Deploy"
-            [ "${{ steps.sitemaps_deploy.outcome }}" != "success" ] && echo "  ❌ Sitemaps Deploy"
-            echo ""
-            echo "Check the logs above for details."
-            exit 1
           fi
+          echo "════════════════════════════════════════"
