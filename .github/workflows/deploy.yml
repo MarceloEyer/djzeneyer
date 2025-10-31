@@ -134,22 +134,24 @@ jobs:
             ./ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
 
-      - name: 🧩 Deploy Custom Plugins (NEW!)
+      - name: 🧩 Deploy Only My Custom Plugins (SAFE!)
         run: |
           if [ -d "plugins" ] && [ "$(ls -A plugins/)" ]; then
-            cd plugins
-            for plugin in */; do
-              plugin_name="${plugin%/}"
-              echo "🚀 Deploying plugin: $plugin_name"
+            echo "📦 Deploying ONLY GitHub plugins (no --delete = WordPress plugins stay safe)"
+            
+            for plugin_dir in plugins/*/; do
+              plugin_name=$(basename "$plugin_dir")
+              echo "🚀 Syncing plugin: $plugin_name"
+              
               rsync -avz \
                 -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
-                "$plugin" \
+                "$plugin_dir" \
                 ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_PLUGINS_PATH }}/
             done
-            cd ..
-            echo "✅ All plugins deployed"
+            
+            echo "✅ Custom plugins synced (WordPress plugins untouched!)"
           else
-            echo "ℹ️ No plugins found in /plugins directory"
+            echo "ℹ️ No custom plugins in ./plugins directory"
           fi
 
       - name: 🗺️ Deploy Sitemaps to Root
@@ -225,6 +227,7 @@ jobs:
               Location: /wp-content/plugins/
               Status: ✅ DEPLOYED
               Source: /plugins/ directory in GitHub
+              Mode: SAFE (WordPress plugins protected)
               
           4️⃣  SITEMAPS
               Location: / (root)
@@ -242,10 +245,12 @@ jobs:
           
           ✅ wp-content/ → EXCLUDED (WordPress data safe)
           ✅ .env* files → EXCLUDED (Secrets safe)
-          ✅ /plugins directory → EXCLUDED (only contents deployed)
+          ✅ /plugins directory → EXCLUDED (only custom plugins deployed)
           ✅ node_modules/ → EXCLUDED
           ✅ .git* files → EXCLUDED
           ✅ SSH key → AUTO-CLEANED
+          ✅ LiteSpeed Cache → PROTECTED (not deleted)
+          ✅ All WordPress plugins → PROTECTED (only yours are synced)
           
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           ✨ NEXT STEPS TO VERIFY
@@ -266,9 +271,13 @@ jobs:
              → Check: /wp-content/themes/zentheme/ exists on server
              → Check: SSH permissions (755 on directories, 644 on files)
           
-          ❌ Plugins not working?
+          ❌ Custom plugins not working?
              → Check: /wp-content/plugins/ has plugins deployed
              → Check: Activate in WordPress admin
+          
+          ❌ WordPress plugins were deleted?
+             → This should NOT happen with the new safe deployment!
+             → Check GitHub Actions logs
           
           ❌ Sitemaps missing?
              → Check: /sitemap*.xml in root (via FTP or SSH)
