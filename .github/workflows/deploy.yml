@@ -1,299 +1,742 @@
-name: 🚀 DJ Zen Eyer - Deploy Simples (CORRIGIDO v4 - FINAL)
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (ENTERPRISE-GRADE)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🚀 Production Deploy
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+      - 'LICENSE'
+  
   workflow_dispatch:
     inputs:
       skip_build:
-        description: 'Pular o build do Vite'
+        description: 'Skip build step'
+        required: false
+        type: boolean
+        default: false
+      force_deploy:
+        description: 'Force deploy (skip validations)'
         required: false
         type: boolean
         default: false
 
 concurrency:
-  group: djzeneyer-deploy
+  group: production-deploy
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  deployments: write
+  actions: read
+
+env:
+  NODE_VERSION: '20'
+  SSH_HOST: '147.79.84.222'
+  SSH_PORT: '65002'
+  SSH_USER: 'u790739895'
+  REMOTE_ROOT: '/home/u790739895/domains/djzeneyer.com/public_html'
+  THEME_NAME: 'zentheme'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOBS
+# ═══════════════════════════════════════════════════════════════════════════════
+
 jobs:
-  build:
-    name: 🏗️ Build Vite
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 1: VALIDATE (PRE-BUILD CHECKS)
+  # ═══════════════════════════════════════════════════════════════════════════
+  validate:
+    name: ✅ Pre-build Validation
     runs-on: ubuntu-latest
-    if: ${{ !inputs.skip_build }}
+    timeout-minutes: 5
+    
+    outputs:
+      should_build: ${{ steps.changes.outputs.should_build }}
+      commit_hash: ${{ steps.hash.outputs.value }}
     
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: 20
+          fetch-depth: 2
+
+      - name: 🔖 Generate commit hash
+        id: hash
+        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: 🔍 Check changed files
+        id: changes
+        run: |
+          # Detectar se houve mudanças que necessitam rebuild
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html)$' || true)
+          
+          if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.skip_build }}" = "false" ]; then
+            echo "should_build=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes detected - build required"
+          else
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No build changes detected"
+          fi
+
+      - name: 📋 Validate required files
+        run: |
+          REQUIRED_FILES=(
+            "package.json"
+            "vite.config.ts"
+            "tsconfig.json"
+            "tailwind.config.js"
+            "src/main.tsx"
+            "functions.php"
+          )
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Required file missing: $file"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All required files present"
+
+      - name: 🔐 Validate secrets
+        run: |
+          # Verificar se secrets estão configuradas (não vazias)
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "❌ SSH_PRIVATE_KEY secret not set!"
+            exit 1
+          fi
+          
+          if [ -z "${{ secrets.VITE_WC_CONSUMER_KEY }}" ]; then
+            echo "⚠️ Warning: VITE_WC_CONSUMER_KEY not set"
+          fi
+          
+          echo "✅ Critical secrets validated"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 2: BUILD
+  # ═══════════════════════════════════════════════════════════════════════════
+  build:
+    name: 🏗️ Build Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: validate
+    if: |
+      needs.validate.outputs.should_build == 'true' && 
+      !inputs.skip_build
+    
+    outputs:
+      build_status: ${{ job.status }}
+      build_size: ${{ steps.size.outputs.value }}
+      timestamp: ${{ steps.timestamp.outputs.value }}
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      
-      - run: npm ci --prefer-offline --no-audit
-      
-      - name: 🎨 Build Vite (COM VERIFICAÇÃO)
+
+      - name: ⏰ Generate timestamp
+        id: timestamp
+        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: 📦 Install dependencies
+        run: |
+          echo "Installing dependencies..."
+          npm ci --prefer-offline --no-audit --no-fund
+          echo "✅ Dependencies installed"
+
+      - name: 🔍 Audit security
+        run: |
+          echo "Running security audit..."
+          npm audit --audit-level=high || echo "⚠️ Security vulnerabilities found (not blocking)"
+        continue-on-error: true
+
+      - name: 🗺️ Generate sitemaps
+        run: |
+          echo "Generating sitemaps..."
+          npm run generate-sitemaps 2>&1 || echo "⚠️ Sitemap generation failed (not blocking)"
+        continue-on-error: true
+
+      - name: 🔨 Build production bundle
+        run: |
+          echo "Building production bundle..."
+          npm run build
         env:
           NODE_ENV: production
-          VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
-          VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
+          VITE_WP_SITE_URL: https://djzeneyer.com
+          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      - name: ✅ Validate build output
+        id: validate_build
         run: |
-          echo "📋 Versões:"
-          node --version
-          npm --version
+          echo "Validating build output..."
           
-          echo ""
-          echo "🏗️ Buildando..."
-          npm run build
+          # Verificar estrutura básica
+          if [ ! -d "dist" ]; then
+            echo "❌ dist/ directory not found"
+            exit 1
+          fi
           
-          echo ""
-          echo "✅ Verificando dist/..."
-          if [ -d "dist" ] && [ "$(find dist -type f | wc -l)" -gt 0 ]; then
-            echo "✅ dist/ existe e tem arquivos"
-            echo "📊 Total: $(find dist -type f | wc -l) arquivos"
-            echo "📦 Tamanho: $(du -sh dist)"
-            ls -lah dist/ | head -10
-          else
-            echo "❌ ERRO: dist/ vazio ou não existe!"
-            ls -lah
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ dist/index.html not found"
+            exit 1
+          fi
+          
+          # Verificar assets
+          JS_COUNT=$(find dist -name '*.js' 2>/dev/null | wc -l)
+          CSS_COUNT=$(find dist -name '*.css' 2>/dev/null | wc -l)
+          
+          echo "📊 Build contents:"
+          echo "  - JS files: $JS_COUNT"
+          echo "  - CSS files: $CSS_COUNT"
+          
+          if [ "$JS_COUNT" -eq 0 ]; then
+            echo "❌ No JavaScript files found!"
+            exit 1
+          fi
+          
+          if [ "$CSS_COUNT" -eq 0 ]; then
+            echo "⚠️ Warning: No CSS files found"
+          fi
+          
+          # Verificar tamanho
+          DIST_SIZE=$(du -sh dist/ | cut -f1)
+          echo "  - Total size: $DIST_SIZE"
+          
+          # Verificar se não está muito grande (>10MB = problema)
+          DIST_SIZE_KB=$(du -sk dist/ | cut -f1)
+          if [ "$DIST_SIZE_KB" -gt 10240 ]; then
+            echo "⚠️ Warning: Build size is very large (${DIST_SIZE})"
+          fi
+          
+          echo "✅ Build validation passed"
+
+      - name: 📊 Calculate build size
+        id: size
+        run: |
+          SIZE=$(du -sh dist/ | cut -f1)
+          echo "value=$SIZE" >> $GITHUB_OUTPUT
+
+      - name: 📤 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ needs.validate.outputs.commit_hash }}
+          path: |
+            dist/
+            plugins/
+            inc/
+            *.php
+            style.css
+            screenshot.png
+          retention-days: 7
+          compression-level: 6
+          if-no-files-found: error
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 3: DEPLOY
+  # ═══════════════════════════════════════════════════════════════════════════
+  deploy:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [validate, build]
+    if: |
+      always() && 
+      (needs.build.result == 'success' || inputs.skip_build) &&
+      needs.validate.result == 'success'
+    
+    environment:
+      name: production
+      url: https://djzeneyer.com
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+          sparse-checkout-cone-mode: false
+
+      - name: 📥 Download build artifact
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-${{ needs.validate.outputs.commit_hash }}
+          path: ./
+
+      - name: 🔐 Setup SSH (HARDENED)
+        run: |
+          echo "Setting up SSH..."
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          
+          # Salvar chave privada
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # SSH keyscan com validação
+          echo "Adding host to known_hosts..."
+          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>&1
+          chmod 644 ~/.ssh/known_hosts
+          
+          # SSH config otimizado
+          cat > ~/.ssh/config << 'SSHEOF'
+          Host prod
+            HostName ${{ env.SSH_HOST }}
+            Port ${{ env.SSH_PORT }}
+            User ${{ env.SSH_USER }}
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking accept-new
+            ConnectTimeout 10
+            ServerAliveInterval 30
+            ServerAliveCountMax 3
+            Compression yes
+            TCPKeepAlive yes
+            ControlMaster auto
+            ControlPath ~/.ssh/control-%r@%h:%p
+            ControlPersist 10m
+          SSHEOF
+          
+          # Substituir variáveis
+          sed -i "s/\${{ env.SSH_HOST }}/${{ env.SSH_HOST }}/g" ~/.ssh/config
+          sed -i "s/\${{ env.SSH_PORT }}/${{ env.SSH_PORT }}/g" ~/.ssh/config
+          sed -i "s/\${{ env.SSH_USER }}/${{ env.SSH_USER }}/g" ~/.ssh/config
+          
+          chmod 600 ~/.ssh/config
+          
+          echo "✅ SSH configured"
+
+      - name: 🧪 Test SSH connection
+        run: |
+          echo "Testing SSH connection..."
+          
+          ssh prod "echo '✅ SSH connection successful' && echo 'Working directory:' && pwd && echo 'User:' && whoami"
+          
+          if [ $? -ne 0 ]; then
+            echo "❌ SSH connection failed!"
             exit 1
           fi
 
-  deploy:
-    name: 🚀 Deploy para Hostinger
-    runs-on: ubuntu-latest
-    needs: build
-    if: always() && (needs.build.result == 'success' || inputs.skip_build == true)
-    
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: 🔐 Configura SSH
+      - name: 📁 Prepare remote environment
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-          chmod 644 ~/.ssh/known_hosts
-          echo "✅ SSH configurado"
-
-      - name: 🧪 Testa SSH
-        run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "whoami && echo '✅ SSH OK'"
-
-      - name: 💾 Faz backup
-        run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'BASH_EOF'
-          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
-          BACKUP_PATH="${{ secrets.SSH_BACKUP_PATH }}"
-          BACKUP_TS=$(date +%Y%m%d_%H%M%S)
+          echo "Preparing remote environment..."
           
-          echo "Tema path: $THEME_PATH"
-          echo "Backup path: $BACKUP_PATH"
+          ssh prod << 'REMOTEEOF'
+          set -e
           
-          if [ -d "$THEME_PATH" ]; then
-            mkdir -p "$BACKUP_PATH"
-            tar -czf "$BACKUP_PATH/zentheme_${BACKUP_TS}.tar.gz" -C "$THEME_PATH" . 2>/dev/null || true
-            ls -t "$BACKUP_PATH"/zentheme_*.tar.gz 2>/dev/null | tail -n +11 | xargs -r rm
-            echo "✅ Backup criado: zentheme_${BACKUP_TS}.tar.gz"
-          else
-            echo "⚠️  Pasta do tema não existe ainda: $THEME_PATH"
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
+          THEME_PATH="${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}"
+          
+          echo "📦 Creating backup: ${BACKUP_DIR}"
+          mkdir -p "${BACKUP_DIR}"
+          
+          # Backup do tema atual (se existir)
+          if [ -d "${THEME_PATH}" ]; then
+            echo "📦 Backing up current theme..."
+            tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
           fi
-          BASH_EOF
-
-      - name: 📦 Sincroniza dist/
-        if: hashFiles('dist/**') != ''
-        run: |
-          echo "🚀 Sincronizando dist/..."
-          echo "   Origem: ./dist/"
-          echo "   Destino: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/dist/"
           
-          rsync -avz --delete \
-            -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
-            dist/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/dist/
+          # Criar estrutura de diretórios
+          echo "📁 Creating directory structure..."
+          mkdir -p "${THEME_PATH}"/{dist,inc,assets}
+          mkdir -p "${REMOTE_ROOT}/wp-content/plugins"
           
-          echo "✅ dist/ sincronizado com sucesso"
+          # Limpar backups antigos (manter últimos 5)
+          echo "🧹 Cleaning old backups..."
+          cd "$HOME/backups"
+          ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
+          
+          # Salvar path do backup para rollback
+          echo "${BACKUP_DIR}" > /tmp/last_backup_path.txt
+          
+          echo "✅ Remote environment ready"
+          REMOTEEOF
+          
+          # Substituir variáveis no heredoc
+          ssh prod "export REMOTE_ROOT='${{ env.REMOTE_ROOT }}' THEME_NAME='${{ env.THEME_NAME }}' && bash" << 'REMOTEEOF'
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
+          THEME_PATH="${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}"
+          
+          mkdir -p "${BACKUP_DIR}"
+          
+          if [ -d "${THEME_PATH}" ]; then
+            tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
+          fi
+          
+          mkdir -p "${THEME_PATH}"/{dist,inc,assets}
+          mkdir -p "${REMOTE_ROOT}/wp-content/plugins"
+          
+          cd "$HOME/backups"
+          ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
+          
+          echo "${BACKUP_DIR}" > /tmp/last_backup_path.txt
+          echo "✅ Remote environment ready"
+          REMOTEEOF
 
-      - name: 📦 Sincroniza inc/
-        if: hashFiles('inc/**') != ''
+      - name: 🚀 Deploy React build
         run: |
-          echo "🔧 Sincronizando inc/..."
-          echo "   Origem: ./inc/"
-          echo "   Destino: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/inc/"
+          echo "📤 Deploying React build to remote..."
+          
+          THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
           
           rsync -avz \
-            -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
-            inc/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/inc/
+            --delete \
+            --delete-excluded \
+            --checksum \
+            --stats \
+            --human-readable \
+            -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
+            dist/ \
+            "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${THEME_PATH}/dist/"
           
-          echo "✅ inc/ sincronizado com sucesso"
+          if [ $? -eq 0 ]; then
+            echo "✅ React build deployed successfully"
+          else
+            echo "❌ React build deployment failed!"
+            exit 1
+          fi
 
-      - name: 📄 Copia functions.php
-        if: hashFiles('functions.php') != ''
+      - name: 📝 Deploy theme files
         run: |
-          echo "⚙️  Copiando functions.php..."
-          echo "   Origem: ./functions.php"
-          echo "   Destino: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/functions.php"
+          echo "📤 Deploying theme PHP files..."
           
-          scp -P ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            functions.php \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/functions.php
+          THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
           
-          echo "✅ functions.php copiado com sucesso"
+          # Deploy arquivos do root
+          rsync -avz \
+            --checksum \
+            -e "ssh -p ${{ env.SSH_PORT }}" \
+            --include='*.php' \
+            --include='style.css' \
+            --include='screenshot.png' \
+            --include='readme.txt' \
+            --exclude='*' \
+            ./ \
+            "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${THEME_PATH}/"
+          
+          # Deploy pasta inc/
+          if [ -d "inc" ]; then
+            rsync -avz \
+              --checksum \
+              -e "ssh -p ${{ env.SSH_PORT }}" \
+              inc/ \
+              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${THEME_PATH}/inc/"
+          fi
+          
+          echo "✅ Theme files deployed"
 
-      - name: 📄 Copia arquivos do tema
-        run: |
-          for file in style.css index.php screenshot.png; do
-            if [ -f "$file" ]; then
-              echo "Copiando $file..."
-              scp -P ${{ secrets.SSH_PORT }} \
-                -i ~/.ssh/id_rsa \
-                -o StrictHostKeyChecking=no \
-                "$file" \
-                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/
-              echo "✅ $file copiado"
-            fi
-          done
-
-      - name: 🔌 Sincroniza plugins/
+      - name: 🔌 Deploy plugins (SAFE)
         if: hashFiles('plugins/**') != ''
         run: |
-          echo "🔌 Sincronizando plugins/..."
-          echo "   Origem: ./plugins/"
-          echo "   Destino: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PLUGINS_PATH }}/"
+          echo "📤 Deploying custom plugins..."
           
-          rsync -avz \
-            -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
-            plugins/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PLUGINS_PATH }}/
+          PLUGINS_PATH="${{ env.REMOTE_ROOT }}/wp-content/plugins"
           
-          echo "✅ plugins/ sincronizado com sucesso"
+          # Lista de plugins no repositório
+          if [ -d "plugins" ]; then
+            for plugin_dir in plugins/*/; do
+              if [ -d "$plugin_dir" ]; then
+                plugin_name=$(basename "$plugin_dir")
+                echo "  → Deploying plugin: $plugin_name"
+                
+                rsync -avz \
+                  --checksum \
+                  -e "ssh -p ${{ env.SSH_PORT }}" \
+                  "$plugin_dir" \
+                  "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${PLUGINS_PATH}/${plugin_name}/"
+              fi
+            done
+            
+            echo "✅ Plugins deployed"
+          else
+            echo "ℹ️ No plugins directory found"
+          fi
 
-      - name: 📄 Copia arquivos públicos
+      - name: 📄 Deploy public assets (SAFE)
         run: |
-          echo "📄 Copiando arquivos públicos..."
-          for file in robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest; do
+          echo "📤 Deploying safe public assets..."
+          
+          ROOT_PATH="${{ env.REMOTE_ROOT }}"
+          
+          # Lista de arquivos seguros (NÃO sobrescreve WordPress core)
+          SAFE_FILES=(
+            "robots.txt"
+            "favicon.ico"
+            "favicon.svg"
+            "apple-touch-icon.png"
+            "site.webmanifest"
+            "browserconfig.xml"
+          )
+          
+          for file in "${SAFE_FILES[@]}"; do
             if [ -f "public/$file" ]; then
-              echo "   Copiando $file..."
-              scp -P ${{ secrets.SSH_PORT }} \
-                -i ~/.ssh/id_rsa \
-                -o StrictHostKeyChecking=no \
+              echo "  → Deploying $file"
+              rsync -avz \
+                -e "ssh -p ${{ env.SSH_PORT }}" \
                 "public/$file" \
-                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
-              echo "   ✅ $file"
+                "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${ROOT_PATH}/"
             fi
           done
-          echo "✅ Arquivos públicos copiados"
-
-      - name: 🔧 Ajusta permissões
-        run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'BASH_EOF'
-          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
           
-          if [ -d "$THEME_PATH" ]; then
-            echo "Ajustando permissões de $THEME_PATH..."
-            find "$THEME_PATH" -type d -exec chmod 755 {} \; 2>/dev/null || true
-            find "$THEME_PATH" -type f -exec chmod 644 {} \; 2>/dev/null || true
-            echo "✅ Permissões ajustadas (dirs=755, files=644)"
-          else
-            echo "❌ Caminho não encontrado: $THEME_PATH"
-          fi
-          BASH_EOF
+          echo "✅ Public assets deployed"
 
-      - name: ✅ Verifica deploy
+      - name: 🗺️ Deploy sitemaps
+        if: hashFiles('dist/sitemap*.xml') != ''
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
-            -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'BASH_EOF'
+          echo "📤 Deploying sitemaps..."
+          
+          ROOT_PATH="${{ env.REMOTE_ROOT }}"
+          
+          rsync -avz \
+            -e "ssh -p ${{ env.SSH_PORT }}" \
+            --include='sitemap*.xml' \
+            --exclude='*' \
+            dist/ \
+            "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${ROOT_PATH}/"
+          
+          echo "✅ Sitemaps deployed"
+
+      - name: ✅ Verify deployment
+        id: verify
+        run: |
+          echo "🔍 Verifying deployment..."
+          
+          ssh prod "export REMOTE_ROOT='${{ env.REMOTE_ROOT }}' THEME_NAME='${{ env.THEME_NAME }}' && bash" << 'VERIFYEOF'
+          set -e
+          
+          THEME_PATH="${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}"
+          
           echo ""
-          echo "📍 Verificação final do deploy:"
-          echo "===================================="
-          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
+          echo "════════════════════════════════════════"
+          echo "📊 DEPLOYMENT VERIFICATION"
+          echo "════════════════════════════════════════"
+          echo ""
           
-          echo "Caminho do tema: $THEME_PATH"
-          
-          if [ -d "$THEME_PATH" ]; then
-            TAMANHO=$(du -sh "$THEME_PATH" 2>/dev/null | cut -f1)
-            ARQUIVOS=$(find "$THEME_PATH" -type f 2>/dev/null | wc -l)
-            
-            echo "Tamanho: $TAMANHO"
-            echo "Total de arquivos: $ARQUIVOS"
-            echo ""
-            echo "✅ Arquivos críticos:"
-            [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ❌ functions.php NÃO ENCONTRADO"
-            [ -d "$THEME_PATH/inc" ] && echo "  ✅ inc/" || echo "  ❌ inc/ NÃO ENCONTRADO"
-            [ -d "$THEME_PATH/dist" ] && echo "  ✅ dist/" || echo "  ❌ dist/ NÃO ENCONTRADO"
-            echo ""
-            echo "📂 Primeiras linhas de $THEME_PATH:"
-            ls -lah "$THEME_PATH" | head -10
+          # Verificar tema
+          echo "🎨 Theme verification:"
+          if [ -d "${THEME_PATH}" ]; then
+            echo "  ✅ Theme directory exists"
           else
-            echo "❌ ERRO: Caminho do tema não existe!"
-            echo ""
-            echo "Tentando encontrar zentheme..."
-            find /home -type d -name "zentheme" 2>/dev/null | head -5
+            echo "  ❌ Theme directory MISSING"
+            exit 1
           fi
-          BASH_EOF
+          
+          if [ -d "${THEME_PATH}/dist" ]; then
+            echo "  ✅ Dist directory exists"
+            DIST_SIZE=$(du -sh "${THEME_PATH}/dist" | cut -f1)
+            FILE_COUNT=$(find "${THEME_PATH}/dist" -type f | wc -l)
+            echo "     Size: ${DIST_SIZE}"
+            echo "     Files: ${FILE_COUNT}"
+          else
+            echo "  ❌ Dist directory MISSING"
+            exit 1
+          fi
+          
+          if [ -f "${THEME_PATH}/functions.php" ]; then
+            echo "  ✅ functions.php exists"
+          else
+            echo "  ⚠️ functions.php missing"
+          fi
+          
+          if [ -f "${THEME_PATH}/style.css" ]; then
+            echo "  ✅ style.css exists"
+          else
+            echo "  ⚠️ style.css missing"
+          fi
+          
+          # Verificar permissions
+          echo ""
+          echo "🔐 Permissions:"
+          THEME_PERMS=$(stat -c %a "${THEME_PATH}" 2>/dev/null || stat -f %A "${THEME_PATH}")
+          echo "  - Theme dir: ${THEME_PERMS}"
+          
+          # Verificar plugins
+          echo ""
+          echo "🔌 Plugins:"
+          PLUGINS_PATH="${REMOTE_ROOT}/wp-content/plugins"
+          if [ -d "${PLUGINS_PATH}" ]; then
+            PLUGIN_COUNT=$(find "${PLUGINS_PATH}" -mindepth 1 -maxdepth 1 -type d | wc -l)
+            echo "  ✅ Plugins directory exists"
+            echo "     Total plugins: ${PLUGIN_COUNT}"
+          fi
+          
+          # Verificar arquivos públicos
+          echo ""
+          echo "📄 Public files:"
+          [ -f "${REMOTE_ROOT}/robots.txt" ] && echo "  ✅ robots.txt" || echo "  ℹ️ robots.txt not found"
+          [ -f "${REMOTE_ROOT}/favicon.ico" ] && echo "  ✅ favicon.ico" || echo "  ℹ️ favicon.ico not found"
+          
+          # Verificar sitemaps
+          SITEMAP_COUNT=$(find "${REMOTE_ROOT}" -maxdepth 1 -name 'sitemap*.xml' 2>/dev/null | wc -l)
+          if [ $SITEMAP_COUNT -gt 0 ]; then
+            echo "  ✅ Sitemaps: ${SITEMAP_COUNT} files"
+          fi
+          
+          # Verificar WordPress core (NÃO deve ser tocado)
+          echo ""
+          echo "⚙️ WordPress core:"
+          if [ -f "${REMOTE_ROOT}/.htaccess" ]; then
+            echo "  ✅ .htaccess preserved"
+          fi
+          
+          if [ -f "${REMOTE_ROOT}/wp-config.php" ]; then
+            echo "  ✅ wp-config.php preserved"
+          fi
+          
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "✅ VERIFICATION COMPLETE"
+          echo "════════════════════════════════════════"
+          VERIFYEOF
+          
+          if [ $? -eq 0 ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
 
-      - name: 🧹 Limpa SSH
-        if: always()
-        run: rm -f ~/.ssh/id_rsa
+      - name: 🔄 Rollback on failure
+        if: failure() && steps.verify.outputs.status == 'failed'
+        run: |
+          echo "❌ Deployment verification failed - initiating rollback..."
+          
+          ssh prod "export REMOTE_ROOT='${{ env.REMOTE_ROOT }}' THEME_NAME='${{ env.THEME_NAME }}' && bash" << 'ROLLBACKEOF'
+          set -e
+          
+          BACKUP_PATH=$(cat /tmp/last_backup_path.txt 2>/dev/null || echo "")
+          
+          if [ -z "$BACKUP_PATH" ] || [ ! -d "$BACKUP_PATH" ]; then
+            echo "⚠️ No backup found - cannot rollback"
+            exit 0
+          fi
+          
+          THEME_PATH="${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}"
+          
+          if [ -f "${BACKUP_PATH}/theme_backup.tar.gz" ]; then
+            echo "🔄 Restoring from backup..."
+            
+            # Limpar atual
+            rm -rf "${THEME_PATH}"/*
+            
+            # Restaurar backup
+            tar -xzf "${BACKUP_PATH}/theme_backup.tar.gz" -C "${THEME_PATH}"
+            
+            echo "✅ Rollback completed"
+          else
+            echo "⚠️ Backup file not found"
+          fi
+          ROLLBACKEOF
 
-      - name: 📊 Resumo do Deploy
+      - name: 🧹 Cleanup SSH
         if: always()
         run: |
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "✅ DEPLOY CONCLUÍDO COM SUCESSO!"
-            echo ""
-            echo "🎵 DJ Zen Eyer Theme v12.2.0"
-            echo "🌐 https://djzeneyer.com"
-            echo "📦 Components Deployados:"
-            echo "  ✓ dist/ (Vite compiled React)"
-            echo "  ✓ inc/ (PHP helpers)"
-            echo "  ✓ functions.php (Theme setup)"
-            echo "  ✓ plugins/ (Custom plugins)"
-            echo "  ✓ public/ (Static assets)"
-          else
-            echo "❌ DEPLOY FALHOU"
-            echo "Verifique os logs acima para detalhes"
-          fi
+          rm -f ~/.ssh/id_rsa ~/.ssh/config ~/.ssh/control-*
+          echo "🧹 SSH credentials cleaned"
 
+      - name: 📊 Deployment summary
+        if: always()
+        run: |
+          echo ""
+          echo "════════════════════════════════════════════════════════"
+          if [ "${{ steps.verify.outputs.status }}" = "success" ]; then
+            echo "✅ DEPLOY SUCCESSFUL"
+            echo ""
+            echo "🌐 Site: https://djzeneyer.com"
+            echo "📦 Build: ${{ needs.validate.outputs.commit_hash }}"
+            echo "⏰ Time: ${{ needs.build.outputs.timestamp }}"
+            echo "📊 Size: ${{ needs.build.outputs.build_size }}"
+          else
+            echo "❌ DEPLOY FAILED"
+            echo ""
+            echo "Check logs above for details"
+            echo "Rollback may have been attempted"
+          fi
+          echo "════════════════════════════════════════════════════════"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 4: HEALTH CHECK
+  # ═══════════════════════════════════════════════════════════════════════════
   health-check:
-    name: 🏥 Verifica Site
+    name: 🏥 Health Check
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: deploy
     if: needs.deploy.result == 'success'
     
     steps:
-      - name: 🌐 Testa site
+      - name: 🔍 Check site accessibility
         run: |
-          SITE_URL="${{ secrets.SITE_URL }}"
-          echo "🔍 Verificando: $SITE_URL"
-          echo ""
+          echo "Checking https://djzeneyer.com..."
           
-          for i in 1 2 3; do
-            HTTP=$(curl -s -o /dev/null -w "%{http_code}" -L "$SITE_URL" || echo "000")
-            if [ "$HTTP" = "200" ]; then
-              echo "✅ Site online (HTTP $HTTP)"
-              exit 0
+          for i in {1..3}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 https://djzeneyer.com)
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Site is accessible (HTTP $HTTP_CODE)"
+              break
+            else
+              echo "⚠️ Attempt $i: Site returned HTTP $HTTP_CODE"
+              if [ $i -eq 3 ]; then
+                echo "❌ Site check failed after 3 attempts"
+                exit 1
+              fi
+              sleep 5
             fi
-            echo "⏳ Tentativa $i/3 (HTTP $HTTP)..."
-            sleep 5
           done
+
+      - name: 🔍 Check WordPress REST API
+        run: |
+          echo "Checking WordPress REST API..."
           
-          echo "⚠️  Site pode estar em cache ou aguardando reboot"
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://djzeneyer.com/wp-json/)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ WordPress REST API is accessible"
+          else
+            echo "⚠️ WordPress REST API returned HTTP $HTTP_CODE (may be normal if protected)"
+          fi
+        continue-on-error: true
+
+      - name: 🔍 Check custom REST endpoint
+        run: |
+          echo "Checking custom REST endpoint..."
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://djzeneyer.com/wp-json/djz/v1/config)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Custom REST API is accessible"
+          else
+            echo "⚠️ Custom REST API returned HTTP $HTTP_CODE"
+          fi
+        continue-on-error: true
+
+      - name: 📊 Final status
+        run: |
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "🎉 DEPLOYMENT COMPLETED SUCCESSFULLY!"
+          echo "════════════════════════════════════════"
+          echo ""
+          echo "🌐 Live site: https://djzeneyer.com"
+          echo "📚 Documentation: README.md"
+          echo "🔧 Support: Check GitHub issues"
+          echo ""
+          echo "════════════════════════════════════════"
