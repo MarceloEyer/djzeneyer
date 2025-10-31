@@ -1,58 +1,90 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (FULLY COMMENTED)
+# ═══════════════════════════════════════════════════════════════════════════════
+# 
+# DESCRIÇÃO: Deploy automático para produção via rsync+SSH
+# TRIGGER: Push na branch 'main' ou manual (workflow_dispatch)
+# SEGURANÇA: SSH hardened, sem deletes acidentais em plugins, logs limpos
+# ═══════════════════════════════════════════════════════════════════════════════
+
 name: 🚀 Production Deploy
 
+# QUANDO ESTE WORKFLOW RODA
 on:
+  # Dispara automaticamente quando há push na branch main
   push:
     branches: [main]
+    # Ignora mudanças nestes arquivos (não trigga deploy)
     paths-ignore:
       - 'docs/**'
       - '*.md'
       - '.gitignore'
+  
+  # Permite disparo manual pelo botão "Run workflow" no GitHub
   workflow_dispatch:
 
+# Evita rodar múltiplos deploys em paralelo (apenas 1 por vez)
 concurrency:
   group: production-${{ github.ref }}
   cancel-in-progress: false
 
+# Permissões necessárias para o workflow
 permissions:
-  contents: read
-  deployments: write
+  contents: read          # Ler o repositório
+  deployments: write      # Criar deployment records
 
+# Variáveis globais para todos os jobs
 env:
   NODE_VERSION: '20'
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
-  SSH_KEY_PATH: ${{ secrets.SSH_PRIVATE_KEY }}
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 1: BUILD - Construir a aplicação React/Vite
+# ═══════════════════════════════════════════════════════════════════════════════
 jobs:
   build:
     name: 🏗️ Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     
+    # Outputs passados para o job "deploy"
     outputs:
-      status: ${{ job.status }}
-      hash: ${{ steps.hash.outputs.value }}
+      status: ${{ job.status }}              # Status final (success/failure)
+      hash: ${{ steps.hash.outputs.value }}  # Hash curto do commit
 
     steps:
-      - uses: actions/checkout@v4
+      # 1. Clonar o repositório
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Full history para logs/stats
 
-      - uses: actions/setup-node@v4
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'npm'  # Cache node_modules para mais velocidade
 
-      - id: hash
+      # 3. Gerar hash do commit para usar como ID único
+      - name: Generate commit hash
+        id: hash
         run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - run: npm ci --prefer-offline --no-audit
+      # 4. Instalar dependências
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
 
-      - run: npm run generate-sitemaps 2>&1 || true
+      # 5. Gerar sitemaps (não-crítico, continue mesmo se falhar)
+      - name: Generate sitemaps
+        run: npm run generate-sitemaps 2>&1 || true
         continue-on-error: true
 
-      - run: npm run build
+      # 6. Build do Vite para produção
+      - name: Build production
+        run: npm run build
         env:
           NODE_ENV: production
           VITE_WP_SITE_URL: https://djzeneyer.com
@@ -61,41 +93,63 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - run: [ -d dist ] && [ -f dist/index.html ] || exit 1
+      # 7. Validar que a build foi criada corretamente
+      - name: Validate build
+        run: |
+          [ -d dist ] && [ -f dist/index.html ] || exit 1
 
-      - uses: actions/upload-artifact@v4
+      # 8. Upload do build como artifact (para usar no job deploy)
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: build-${{ steps.hash.outputs.value }}
-          path: dist/
-          retention-days: 7
-          compression-level: 9
+          name: build-${{ steps.hash.outputs.value }}  # Nome único por hash
+          path: dist/                                    # Pasta a fazer upload
+          retention-days: 7                              # Manter por 7 dias
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 2: DEPLOY - Fazer deploy do build para o servidor via SSH+rsync
+# ═══════════════════════════════════════════════════════════════════════════════
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    
+    # Este job depende do "build" estar sucesso
     needs: build
     if: needs.build.outputs.status == 'success'
     
+    # Define o ambiente e URL para GitHub
     environment:
       name: production
       url: https://djzeneyer.com
 
     steps:
-      - uses: actions/checkout@v4
+      # 1. Clonar repositório (para ter access a arquivos necessários)
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      # 2. Baixar o artifact (build) criado no job anterior
+      - name: Download build
+        uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.build.outputs.hash }}
           path: dist/
 
+      # 3. Configurar SSH com segurança
       - name: Setup SSH
         run: |
+          # Criar pasta .ssh com permissões seguras (700 = rwx------)
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
+          
+          # Escrever chave privada (vem de GitHub Secrets)
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa  # Permissões seguras (rw-------)
+          
+          # Adicionar host à known_hosts (evita MITM attacks)
           ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          
+          # Criar config SSH otimizado
           cat > ~/.ssh/config << 'SSHCFG'
           Host prod
             HostName ${{ env.SSH_HOST }}
@@ -109,18 +163,30 @@ jobs:
           SSHCFG
           chmod 600 ~/.ssh/config
 
-      - name: Test SSH & Create Dirs
+      # 4. Testar SSH connection e criar diretórios necessários
+      - name: Test SSH and create directories
         run: |
+          # Teste de conexão SSH com verificação de ambiente
           ssh prod "pwd && whoami && mkdir -p ./wp-content/themes/zentheme/dist ./wp-content/plugins && echo OK"
 
-      - name: Deploy React Build
+      # 5. Deploy do React build (pasta /dist)
+      # Use: dist/ → prod:./wp-content/themes/zentheme/dist/
+      - name: Deploy React build
         run: |
           rsync -avz --delete \
             -e "ssh -o ConnectTimeout=10" \
             dist/ \
             prod:./wp-content/themes/zentheme/dist/ || exit 1
+        # Flags: 
+        # -a: archive (preserva permissões, timestamps)
+        # -v: verbose (mostra arquivos)
+        # -z: compress (comprime durante transfer)
+        # --delete: remove arquivos que não existem mais localmente
+        # || exit 1: falha se rsync falhar
 
-      - name: Deploy Theme Root
+      # 6. Deploy dos arquivos tema (root do theme)
+      # Exclui: node_modules, .git, build files, config files, etc.
+      - name: Deploy theme root
         run: |
           rsync -avz --delete \
             -e "ssh -o ConnectTimeout=10" \
@@ -146,16 +212,24 @@ jobs:
             --exclude='.prettierrc*' \
             ./ \
             prod:./wp-content/themes/zentheme/ || exit 1
+        # --delete aqui é OK pois temos --exclude para dados sensíveis
+        # Apenas deleta arquivos PHP, CSS, JS que não existem mais
 
-      - name: Deploy Plugins
+      # 7. Deploy de plugins (SEM --delete para preservar dados do servidor)
+      # Apenas roda se houver arquivos em plugins/
+      - name: Deploy plugins
         if: hashFiles('plugins/**') != ''
         run: |
           rsync -avz \
             -e "ssh -o ConnectTimeout=10" \
             plugins/ \
             prod:./wp-content/plugins/ || exit 1
+        # SEM --delete: plugins podem existir no servidor
+        # hashFiles: só roda se houver plugins no repo
 
-      - name: Deploy Sitemaps
+      # 8. Deploy de sitemaps para root
+      # Apenas roda se houver sitemaps gerados
+      - name: Deploy sitemaps
         if: hashFiles('dist/sitemap*.xml') != ''
         run: |
           rsync -avz \
@@ -164,8 +238,12 @@ jobs:
             -e "ssh -o ConnectTimeout=10" \
             dist/ \
             prod:./ || exit 1
+        # --include='sitemap*.xml': apenas estes arquivos
+        # --exclude='*': exclui tudo mais
+        # prod:./: vai para root do public_html
 
-      - name: Deploy Public Assets
+      # 9. Deploy de assets públicos (robots.txt, favicon, etc)
+      - name: Deploy public assets
         run: |
           rsync -avz \
             --include='robots.txt' \
@@ -178,23 +256,24 @@ jobs:
             dist/ \
             prod:./ || exit 1
 
-      - name: Verify Deployment
+      # 10. Verificar se tudo foi deployado corretamente
+      - name: Verify deployment
         run: |
-          echo "Verifying deployed files..."
+          # Conectar ao servidor e verificar arquivos
           ssh prod << 'VERIFY'
           set -e
           echo "PWD: $(pwd)"
           echo "User: $(whoami)"
           echo ""
-          echo "Theme dir:"
-          [ -d ./wp-content/themes/zentheme ] && echo "  ✓ theme exists" || echo "  ✗ theme missing"
-          [ -d ./wp-content/themes/zentheme/dist ] && echo "  ✓ dist exists" || echo "  ✗ dist missing"
-          [ -f ./wp-content/themes/zentheme/index.php ] && echo "  ✓ index.php exists" || echo "  ✗ index.php missing"
+          echo "Theme directory:"
+          [ -d ./wp-content/themes/zentheme ] && echo "  ✓ theme exists" || echo "  ✗ theme MISSING"
+          [ -d ./wp-content/themes/zentheme/dist ] && echo "  ✓ dist exists" || echo "  ✗ dist MISSING"
+          [ -f ./wp-content/themes/zentheme/index.php ] && echo "  ✓ index.php exists" || echo "  ✗ index.php MISSING"
           echo ""
           echo "Plugins:"
-          [ -d ./wp-content/plugins ] && echo "  ✓ plugins folder exists" || echo "  ✗ plugins missing"
+          [ -d ./wp-content/plugins ] && echo "  ✓ plugins folder exists" || echo "  ✗ plugins MISSING"
           PLUGIN_COUNT=$(find ./wp-content/plugins -maxdepth 1 -type d ! -name plugins | wc -l)
-          echo "  Plugins: $PLUGIN_COUNT"
+          echo "  Count: $PLUGIN_COUNT"
           echo ""
           echo "Root files:"
           [ -f ./robots.txt ] && echo "  ✓ robots.txt" || echo "  ✗ robots.txt"
@@ -206,11 +285,13 @@ jobs:
           du -sh ./wp-content/themes/zentheme 2>/dev/null | awk '{print "  Theme: " $1}'
           VERIFY
 
-      - name: Cleanup SSH
-        if: always()
+      # 11. Limpeza de credenciais SSH
+      - name: Cleanup SSH credentials
+        if: always()  # Sempre executa, mesmo se falhar
         run: rm -f ~/.ssh/id_rsa ~/.ssh/config
 
-      - name: Deploy Status
+      # 12. Relatório final
+      - name: Deploy status
         if: always()
         run: |
           if [ "${{ job.status }}" = "success" ]; then
