@@ -119,16 +119,11 @@ jobs:
           ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
             "mkdir -p ${{ env.THEME_PATH }} ${{ env.PLUGINS_PATH }} ${{ env.BACKUP_PATH }}"
 
-      # Deletar arquivos antigos do tema
-      - name: 🗑️ Delete old theme files
+      # Filtrar arquivos localmente (usando rsync)
+      - name: 📁 Prepare clean theme files
         run: |
-          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "rm -rf ${{ env.THEME_PATH }}/*"
-
-      # Copiar novos arquivos do tema (excluindo pastas desnecessárias)
-      - name: 📝 Copy new theme files
-        run: |
-          scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
-            --exclude='.git/' \
+          mkdir -p clean_theme
+          rsync -avz --exclude='.git/' \
             --exclude='node_modules/' \
             --exclude='dist/' \
             --exclude='src/' \
@@ -144,7 +139,19 @@ jobs:
             --exclude='.vscode/' \
             --exclude='.github/' \
             --exclude='.*' \
-            . ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/
+            ./ clean_theme/
+
+      # Excluir arquivos antigos do tema no servidor
+      - name: 🗑️ Delete old theme files
+        run: |
+          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "rm -rf ${{ env.THEME_PATH }}/*"
+
+      # Copiar novos arquivos do tema (usando scp)
+      - name: 📝 Copy new theme files
+        run: |
+          scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
+            clean_theme/ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/
 
       # Substituir functions.php da raiz
       - name: 🔄 Deploy functions.php (raiz → tema)
