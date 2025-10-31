@@ -19,6 +19,9 @@ env:
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
+  THEME_DIR: '/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme'
+  PLUGINS_DIR: '/home/u790739895/domains/djzeneyer.com/public_html/wp-content/plugins'
+  WEB_ROOT: '/home/u790739895/domains/djzeneyer.com/public_html'
 jobs:
   build:
     name: 🏗️ Build
@@ -38,8 +41,6 @@ jobs:
       - id: hash
         run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - run: npm ci --prefer-offline --no-audit
-      - run: npm run generate-sitemaps 2>&1 || true
-        continue-on-error: true
       - run: npm run build
         env:
           NODE_ENV: production
@@ -66,12 +67,6 @@ jobs:
       url: https://djzeneyer.com
     steps:
       - uses: actions/checkout@v4
-      - name: Validate environment variables
-        run: |
-          [ -z "${{ env.SSH_HOST }}" ] && echo "❌ SSH_HOST não definido" && exit 1
-          [ -z "${{ env.SSH_PORT }}" ] && echo "❌ SSH_PORT não definido" && exit 1
-          [ -z "${{ env.SSH_USER }}" ] && echo "❌ SSH_USER não definido" && exit 1
-          echo "✅ Variáveis de ambiente validadas"
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -90,18 +85,16 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          # Teste de conexão SSH
           ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo 'Conexão SSH estabelecida com sucesso!' || exit 1"
       - name: Backup theme
         run: |
           ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'BACKUP'
-          THEME_DIR="/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme"
-          if [ -d "$THEME_DIR" ]; then
+          if [ -d "${{ env.THEME_DIR }}" ]; then
             BACKUP_TS=$(date +%Y%m%d_%H%M%S)
-            mkdir -p /home/u790739895/backups
-            tar -czf "/home/u790739895/backups/theme_${BACKUP_TS}.tar.gz" "$THEME_DIR/"
-            ls -lh "/home/u790739895/backups/theme_${BACKUP_TS}.tar.gz" || exit 1
-            cd /home/u790739895/backups
+            mkdir -p ~/backups
+            tar -czf "~/backups/theme_${BACKUP_TS}.tar.gz" "${{ env.THEME_DIR }}/"
+            ls -lh "~/backups/theme_${BACKUP_TS}.tar.gz" || exit 1
+            cd ~/backups
             ls -t theme_*.tar.gz | tail -n +6 | xargs -r rm
           else
             echo "❌ Diretório do tema não encontrado. Backup não realizado."
@@ -112,29 +105,68 @@ jobs:
         run: |
           rsync -avz --delete --checksum \
             -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
-            --exclude='.git*' \
-            --exclude='node_modules' \
-            --exclude='dist' \
-            --exclude='src' \
-            --exclude='.github' \
-            --exclude='scripts' \
-            --exclude='package*.json' \
-            --exclude='tsconfig*.json' \
+            --exclude='.git/' \
+            --exclude='.gitignore' \
+            --exclude='.gitattributes' \
+            --exclude='node_modules/' \
+            --exclude='npm-debug.log*' \
+            --exclude='yarn-debug.log*' \
+            --exclude='yarn-error.log*' \
+            --exclude='package-lock.json' \
+            --exclude='dist/' \
+            --exclude='build/' \
+            --exclude='.cache/' \
+            --exclude='src/' \
+            --exclude='public/' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='.editorconfig' \
+            --exclude='.prettierrc' \
+            --exclude='.prettierignore' \
+            --exclude='.eslintrc*' \
+            --exclude='eslint.config.*' \
+            --exclude='tsconfig.json' \
+            --exclude='tsconfig.node.json' \
             --exclude='vite.config.*' \
-            --exclude='public' \
+            --exclude='tailwind.config.*' \
+            --exclude='postcss.config.*' \
+            --exclude='docs/' \
             --exclude='*.md' \
-            --exclude='.env*' \
+            --exclude='README*' \
+            --exclude='LICENSE' \
+            --exclude='CHANGELOG*' \
+            --exclude='.vscode/' \
+            --exclude='.idea/' \
+            --exclude='*.swp' \
+            --exclude='*.swo' \
+            --exclude='*~' \
             --exclude='.DS_Store' \
+            --exclude='.github/' \
+            --exclude='scripts/' \
+            --exclude='test/' \
+            --exclude='tests/' \
+            --exclude='__tests__/' \
+            --exclude='*.test.*' \
+            --exclude='*.spec.*' \
+            --exclude='.htaccess' \
+            --exclude='wp-config.php' \
+            --exclude='wp-content/uploads/' \
+            --exclude='wp-content/cache/' \
+            --exclude='wp-content/upgrade/' \
             --exclude='*.log' \
+            --exclude='logs/' \
+            --exclude='tmp/' \
+            --exclude='temp/' \
+            --exclude='*.tmp' \
             ./ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_DIR }}/
       - name: Deploy build to dist/
         run: |
           echo "Deploying build ($(du -sh dist | cut -f1))..."
           rsync -avz --delete --checksum \
             -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/dist/ || exit 1
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_DIR }}/dist/ || exit 1
           echo "✅ Build deployed"
       - name: Deploy plugins
         if: hashFiles('plugins/**') != ''
@@ -147,8 +179,11 @@ jobs:
           echo "📤 Deploying plugins..."
           for plugin in $REPO_PLUGINS; do
             rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
+              --exclude='.git/' \
+              --exclude='node_modules/' \
+              --exclude='*.log' \
               "plugins/$plugin/" \
-              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/wp-content/plugins/$plugin/"
+              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_DIR }}/$plugin/"
           done
           echo "✅ Plugins deployed"
       - name: Deploy sitemaps
@@ -156,28 +191,20 @@ jobs:
         run: |
           rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             --include='sitemap*.xml' --exclude='*' \
-            dist/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/domains/djzeneyer.com/public_html/
+            dist/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/
           echo "✅ Sitemaps deployed"
       - name: Verify deployment
         run: |
           ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY'
           set -e
           echo "🔍 Verificando deploy..."
-          THEME_DIR="/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme"
-          [ -d "$THEME_DIR" ] || { echo "❌ Diretório do tema não encontrado"; exit 1; }
-          [ -f "$THEME_DIR/functions.php" ] || { echo "❌ functions.php não encontrado"; exit 1; }
-          [ -f "$THEME_DIR/index.php" ] || { echo "❌ index.php não encontrado"; exit 1; }
-          [ -d "$THEME_DIR/dist" ] || { echo "❌ dist/ não encontrado"; exit 1; }
-          [ -f "$THEME_DIR/dist/index.html" ] || { echo "❌ dist/index.html não encontrado"; exit 1; }
+          [ -d "${{ env.THEME_DIR }}" ] || { echo "❌ Diretório do tema não encontrado"; exit 1; }
+          [ -f "${{ env.THEME_DIR }}/functions.php" ] || { echo "❌ functions.php não encontrado"; exit 1; }
+          [ -f "${{ env.THEME_DIR }}/index.php" ] || { echo "❌ index.php não encontrado"; exit 1; }
+          [ -d "${{ env.THEME_DIR }}/dist" ] || { echo "❌ dist/ não encontrado"; exit 1; }
+          [ -f "${{ env.THEME_DIR }}/dist/index.html" ] || { echo "❌ dist/index.html não encontrado"; exit 1; }
           echo "✅ Todos os arquivos verificados com sucesso!"
           VERIFY
-      - name: Debug on failure
-        if: failure()
-        run: |
-          echo "🔍 Debugging deployment failure..."
-          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "ls -la /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/"
-          echo "🔍 Verificando logs do servidor..."
-          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "tail -n 50 /home/u790739895/domains/djzeneyer.com/public_html/wp-content/debug.log"
       - name: Cleanup
         if: always()
         run: rm -f ~/.ssh/id_rsa
