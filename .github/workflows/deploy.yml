@@ -1,4 +1,4 @@
-name: 🚀 DJ Zen Eyer - Deploy Simples (CORRIGIDO)
+name: 🚀 DJ Zen Eyer - Deploy Simples (CORRIGIDO v2)
 
 on:
   push:
@@ -31,7 +31,6 @@ jobs:
       
       - run: npm ci --prefer-offline --no-audit
       
-      # 🎨 BUILD COM DEBUG COMPLETO
       - name: 🎨 Build Vite (COM VERIFICAÇÃO)
         env:
           NODE_ENV: production
@@ -66,13 +65,11 @@ jobs:
     name: 🚀 Deploy para Hostinger
     runs-on: ubuntu-latest
     needs: build
-    # ✅ CORRIGIDO: Espera build terminar com sucesso OU skip_build = true
     if: always() && (needs.build.result == 'success' || inputs.skip_build == true)
     
     steps:
       - uses: actions/checkout@v4
 
-      # 🔐 Configura SSH
       - name: 🔐 Configura SSH
         run: |
           mkdir -p ~/.ssh
@@ -82,7 +79,6 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           echo "✅ SSH configurado"
 
-      # 🧪 Testa SSH antes de tudo
       - name: 🧪 Testa SSH
         run: |
           ssh -p ${{ secrets.SSH_PORT }} \
@@ -91,16 +87,21 @@ jobs:
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "whoami && echo '✅ SSH OK'"
 
-      # 💾 Faz backup
       - name: 💾 Faz backup
+        env:
+          THEME_PATH: ${{ secrets.SSH_THEME_PATH }}
+          BACKUP_PATH: ${{ secrets.SSH_BACKUP_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
+          ssh -p $SSH_PORT \
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'EOF'
+            $SSH_USER@$SSH_HOST bash << 'EOF'
           BACKUP_TS=$(date +%Y%m%d_%H%M%S)
-          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
-          BACKUP_PATH="${{ secrets.SSH_BACKUP_PATH }}"
+          THEME_PATH="${THEME_PATH}"
+          BACKUP_PATH="${BACKUP_PATH}"
           if [ -d "$THEME_PATH" ]; then
             mkdir -p "$BACKUP_PATH"
             tar -czf "$BACKUP_PATH/zentheme_${BACKUP_TS}.tar.gz" -C "$THEME_PATH" . 2>/dev/null || true
@@ -109,119 +110,154 @@ jobs:
           fi
           EOF
 
-      # 📦 Sincroniza dist/
       - name: 📦 Sincroniza dist/
         if: hashFiles('dist/**') != ''
+        env:
+          THEME_PATH: ${{ secrets.SSH_THEME_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          echo "🚀 Sincronizando dist/..."
+          echo "🚀 Sincronizando dist/ para $THEME_PATH/dist/..."
           rsync -avz --delete \
-            -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+            -e "ssh -p $SSH_PORT -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             dist/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/dist/
+            $SSH_USER@$SSH_HOST:$THEME_PATH/dist/
           echo "✅ dist/ sincronizado"
 
-      # 📦 Sincroniza inc/
       - name: 📦 Sincroniza inc/
         if: hashFiles('inc/**') != ''
+        env:
+          THEME_PATH: ${{ secrets.SSH_THEME_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          echo "🔧 Sincronizando inc/..."
+          echo "🔧 Sincronizando inc/ para $THEME_PATH/inc/..."
           rsync -avz \
-            -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+            -e "ssh -p $SSH_PORT -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             inc/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/inc/
+            $SSH_USER@$SSH_HOST:$THEME_PATH/inc/
           echo "✅ inc/ sincronizado"
 
-      # 📄 Copia functions.php
       - name: 📄 Copia functions.php
         if: hashFiles('functions.php') != ''
+        env:
+          THEME_PATH: ${{ secrets.SSH_THEME_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          echo "⚙️ Copiando functions.php..."
-          scp -P ${{ secrets.SSH_PORT }} \
+          echo "⚙️ Copiando functions.php para $THEME_PATH/..."
+          scp -P $SSH_PORT \
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             functions.php \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/functions.php
+            $SSH_USER@$SSH_HOST:$THEME_PATH/functions.php
           echo "✅ functions.php copiado"
 
-      # 📄 Copia arquivos do tema
       - name: 📄 Copia arquivos do tema
+        env:
+          THEME_PATH: ${{ secrets.SSH_THEME_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
           for file in style.css index.php screenshot.png; do
             if [ -f "$file" ]; then
-              echo "Copiando $file..."
-              scp -P ${{ secrets.SSH_PORT }} \
+              echo "Copiando $file para $THEME_PATH/..."
+              scp -P $SSH_PORT \
                 -i ~/.ssh/id_rsa \
                 -o StrictHostKeyChecking=no \
                 "$file" \
-                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/
+                $SSH_USER@$SSH_HOST:$THEME_PATH/
               echo "✅ $file copiado"
             fi
           done
 
-      # 🔌 Sincroniza plugins/
       - name: 🔌 Sincroniza plugins/
         if: hashFiles('plugins/**') != ''
+        env:
+          PLUGINS_PATH: ${{ secrets.SSH_PLUGINS_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          echo "🔌 Sincronizando plugins/..."
+          echo "🔌 Sincronizando plugins/ para $PLUGINS_PATH/..."
           rsync -avz \
-            -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+            -e "ssh -p $SSH_PORT -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             plugins/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PLUGINS_PATH }}/
+            $SSH_USER@$SSH_HOST:$PLUGINS_PATH/
           echo "✅ plugins/ sincronizado"
 
-      # 📄 Copia arquivos públicos
       - name: 📄 Copia arquivos públicos
+        env:
+          PUBLIC_PATH: ${{ secrets.SSH_PUBLIC_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          echo "📄 Copiando arquivos públicos..."
+          echo "📄 Copiando arquivos públicos para $PUBLIC_PATH/..."
           for file in robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest; do
             if [ -f "public/$file" ]; then
-              scp -P ${{ secrets.SSH_PORT }} \
+              scp -P $SSH_PORT \
                 -i ~/.ssh/id_rsa \
                 -o StrictHostKeyChecking=no \
                 "public/$file" \
-                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
+                $SSH_USER@$SSH_HOST:$PUBLIC_PATH/
               echo "✅ $file copiado"
             fi
           done
 
-      # 🔧 Ajusta permissões
       - name: 🔧 Ajusta permissões
+        env:
+          THEME_PATH: ${{ secrets.SSH_THEME_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
+          ssh -p $SSH_PORT \
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'EOF'
-          find "${{ secrets.SSH_THEME_PATH }}" -type d -exec chmod 755 {} \; 2>/dev/null || true
-          find "${{ secrets.SSH_THEME_PATH }}" -type f -exec chmod 644 {} \; 2>/dev/null || true
-          echo "✅ Permissões ajustadas"
+            $SSH_USER@$SSH_HOST bash << 'EOF'
+          THEME_PATH="${THEME_PATH}"
+          find "$THEME_PATH" -type d -exec chmod 755 {} \; 2>/dev/null || true
+          find "$THEME_PATH" -type f -exec chmod 644 {} \; 2>/dev/null || true
+          echo "✅ Permissões ajustadas (dirs=755, files=644)"
           EOF
 
-      # ✅ Verifica deploy
       - name: ✅ Verifica deploy
+        env:
+          THEME_PATH: ${{ secrets.SSH_THEME_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
+          ssh -p $SSH_PORT \
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'EOF'
-          echo "📍 Verificação final:"
-          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
-          echo "================================"
-          echo "Tema: $THEME_PATH"
+            $SSH_USER@$SSH_HOST bash << 'EOF'
+          echo ""
+          echo "📍 Verificação final do deploy:"
+          echo "=================================="
+          THEME_PATH="${THEME_PATH}"
+          echo "Caminho do tema: $THEME_PATH"
           echo "Tamanho: $(du -sh "$THEME_PATH" 2>/dev/null | cut -f1)"
-          echo "Arquivos: $(find "$THEME_PATH" -type f 2>/dev/null | wc -l)"
+          echo "Total de arquivos: $(find "$THEME_PATH" -type f 2>/dev/null | wc -l)"
           echo ""
           echo "✅ Arquivos críticos:"
-          [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ❌ functions.php"
-          [ -d "$THEME_PATH/inc" ] && echo "  ✅ inc/" || echo "  ❌ inc/"
-          [ -d "$THEME_PATH/dist" ] && echo "  ✅ dist/" || echo "  ❌ dist/"
+          [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ❌ functions.php NÃO ENCONTRADO"
+          [ -d "$THEME_PATH/inc" ] && echo "  ✅ inc/" || echo "  ❌ inc/ NÃO ENCONTRADO"
+          [ -d "$THEME_PATH/dist" ] && echo "  ✅ dist/" || echo "  ❌ dist/ NÃO ENCONTRADO"
+          echo ""
+          echo "📂 Conteúdo de $THEME_PATH:"
+          ls -lah "$THEME_PATH" | head -15
           EOF
 
-      # 🧹 Limpa SSH
       - name: 🧹 Limpa SSH
         if: always()
         run: rm -f ~/.ssh/id_rsa
 
-      # 📊 Resumo
       - name: 📊 Resumo do Deploy
         if: always()
         run: |
@@ -230,13 +266,17 @@ jobs:
             echo ""
             echo "🎵 DJ Zen Eyer Theme v12.2.0"
             echo "🌐 https://djzeneyer.com"
-            echo "📦 Components: dist/ + inc/ + functions.php + plugins/ + public/"
+            echo "📦 Components Deployados:"
+            echo "  ✓ dist/ (Vite compiled React)"
+            echo "  ✓ inc/ (PHP helpers)"
+            echo "  ✓ functions.php (Theme setup)"
+            echo "  ✓ plugins/ (Custom plugins)"
+            echo "  ✓ public/ (Static assets)"
           else
             echo "❌ DEPLOY FALHOU"
             echo "Verifique os logs acima para detalhes"
           fi
 
-  # 🏥 Health Check
   health-check:
     name: 🏥 Verifica Site
     runs-on: ubuntu-latest
@@ -246,8 +286,12 @@ jobs:
     steps:
       - name: 🌐 Testa site
         run: |
+          SITE_URL="${{ secrets.SITE_URL }}"
+          echo "🔍 Verificando: $SITE_URL"
+          echo ""
+          
           for i in 1 2 3; do
-            HTTP=$(curl -s -o /dev/null -w "%{http_code}" -L "${{ secrets.SITE_URL }}" || echo "000")
+            HTTP=$(curl -s -o /dev/null -w "%{http_code}" -L "$SITE_URL" || echo "000")
             if [ "$HTTP" = "200" ]; then
               echo "✅ Site online (HTTP $HTTP)"
               exit 0
@@ -255,4 +299,5 @@ jobs:
             echo "⏳ Tentativa $i/3 (HTTP $HTTP)..."
             sleep 5
           done
-          echo "⚠️ Site pode estar em cache ou aguardando"
+          
+          echo "⚠️ Site pode estar em cache ou aguardando reboot"
