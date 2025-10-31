@@ -1,5 +1,4 @@
 name: 🚀 DJ Zen Eyer - Deploy (Bolt.new + WordPress Headless)
-
 on:
   push:
     branches: [main]
@@ -10,39 +9,29 @@ on:
         required: false
         type: boolean
         default: false
-
 concurrency:
   group: djzeneyer-production-deploy
   cancel-in-progress: false
-
 permissions:
   contents: read
-
 env:
   NODE_VERSION: '20'
-
 jobs:
   build:
     name: 🏗️ Build Vite
     runs-on: ubuntu-latest
     if: ${{ !inputs.skip_build }}
-    
     outputs:
       hash: ${{ steps.hash.outputs.value }}
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - id: hash
         run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - run: npm ci --prefer-offline --no-audit
-
       - name: 🎨 Build Vite (React 18 + TypeScript)
         env:
           NODE_ENV: production
@@ -52,7 +41,6 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
-
       - uses: actions/upload-artifact@v4
         with:
           name: djz-dist-${{ steps.hash.outputs.value }}
@@ -64,163 +52,89 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: always() && (needs.build.result == 'success' || inputs.skip_build)
-
     steps:
       - uses: actions/checkout@v4
-
       - if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: djz-dist-${{ needs.build.outputs.hash }}
           path: dist/
 
-      # ✅ SSH SETUP - USANDO TODOS OS SECRETS QUE VOCÊ CRIOU
+      # ✅ SSH SETUP
       - name: 🔐 Setup SSH
         run: |
-          echo "🔧 SSH Setup iniciado..."
-          
-          # Step 1: Criar diretório
-          mkdir -p ~/.ssh && echo "✅ SSH directory criado"
-          
-          # Step 2: Escrever chave privada
+          mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          if [ ! -f ~/.ssh/id_rsa ]; then
-            echo "❌ Falha ao criar SSH key"
-            exit 1
-          fi
-          echo "✅ SSH key criada"
-          
-          # Step 3: Permissões
           chmod 600 ~/.ssh/id_rsa
-          echo "✅ Permissões: 600"
-          
-          # Step 4: Known hosts (usa SSH_PORT do secret)
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
           chmod 644 ~/.ssh/known_hosts
-          echo "✅ Known hosts configurado (porta: ${{ secrets.SSH_PORT }})"
-          
-          echo "✅ SSH setup complete"
 
-      # ✅ TEST SSH (usando todos os secrets)
+      # ✅ TEST SSH
       - name: 🧪 Test SSH Connection
         run: |
-          echo "🔍 Testando SSH..."
-          ssh -v -p ${{ secrets.SSH_PORT }} \
+          ssh -p ${{ secrets.SSH_PORT }} \
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=~/.ssh/known_hosts \
-            -o ConnectTimeout=15 \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "whoami && echo '✅ SSH Connection OK!'" || {
-            echo "❌ SSH connection failed"
-            exit 1
-          }
+            "whoami && echo '✅ SSH Connection OK!'"
 
-      # ✅ BACKUP (usando SSH_BACKUP_PATH do secret)
+      # ✅ BACKUP DO TEMA
       - name: 💾 Backup Theme
         run: |
           ssh -p ${{ secrets.SSH_PORT }} \
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'EOF'
-          
           BACKUP_TS=$(date +%Y%m%d_%H%M%S)
           THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
           BACKUP_PATH="${{ secrets.SSH_BACKUP_PATH }}"
-          
           if [ -d "$THEME_PATH" ]; then
             mkdir -p "$BACKUP_PATH"
-            tar -czf "$BACKUP_PATH/zentheme_${BACKUP_TS}.tar.gz" \
-              -C "$THEME_PATH" . 2>/dev/null || true
+            tar -czf "$BACKUP_PATH/zentheme_${BACKUP_TS}.tar.gz" -C "$THEME_PATH" . 2>/dev/null || true
             ls -t "$BACKUP_PATH"/zentheme_*.tar.gz 2>/dev/null | tail -n +11 | xargs -r rm
             echo "✅ Backup: zentheme_${BACKUP_TS}.tar.gz"
           else
-            echo "⚠️  Tema não existe ainda (primeiro deploy)"
+            echo "⚠️ Tema não existe ainda (primeiro deploy)"
           fi
           EOF
 
-      # ✅ DEPLOY THEME (usando SSH_THEME_PATH do secret)
-      - name: 📦 Deploy Theme (Vite + inc/ + functions.php)
+      # ✅ PREPARA ARQUIVOS DO TEMA
+      - name: 📦 Prepara Arquivos do Tema
         run: |
-          echo "🎨 Preparando theme files..."
-          
           mkdir -p clean_theme
-          
-          # Copiar dist/ (Vite compiled)
-          if [ -d "dist/" ]; then
-            cp -r dist/* clean_theme/
-            echo "✅ dist/ copied"
-          fi
-          
-          # Copiar inc/ (djz-config, djz-helpers)
-          if [ -d "inc/" ]; then
-            mkdir -p clean_theme/inc
-            cp -r inc/* clean_theme/inc/
-            echo "✅ inc/ copied"
-          fi
-          
-          # Copiar functions.php
-          if [ -f "functions.php" ]; then
-            cp functions.php clean_theme/
-            echo "✅ functions.php copied"
-          fi
-          
-          # Copiar outros arquivos tema
-          for file in style.css index.php screenshot.png; do
+          # Copia dist/ (Vite)
+          cp -r dist/* clean_theme/
+          # Copia inc/ (PHP)
+          cp -r inc/ clean_theme/
+          # Copia functions.php, style.css, index.php, etc.
+          for file in functions.php style.css index.php screenshot.png; do
             if [ -f "$file" ]; then
               cp "$file" clean_theme/
-              echo "✅ $file copied"
+              echo "✅ $file copiado"
             fi
           done
-          
-          echo ""
-          echo "🚀 Enviando para servidor..."
-          
-          # Deploy com rsync --delete
+
+      # ✅ DEPLOY DO TEMA
+      - name: 🚀 Deploy Theme (zentheme/)
+        run: |
           rsync -avz --delete \
-            --exclude='.git/' \
-            --exclude='node_modules/' \
-            --exclude='src/' \
-            --exclude='public/' \
-            --exclude='plugins/' \
-            --exclude='vite.config.*' \
-            --exclude='tsconfig*.json' \
-            --exclude='package*.json' \
-            --exclude='*.env*' \
-            --exclude='.github/' \
-            --exclude='.*' \
-            --exclude='index.html' \
             -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             clean_theme/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/
-          
-          echo "✅ Theme deployed successfully"
 
-      # ✅ DEPLOY PLUGINS (usando SSH_PLUGINS_PATH do secret)
-      - name: 🔌 Deploy Custom Plugins (add/update only)
+      # ✅ DEPLOY DE PLUGINS
+      - name: 🔌 Deploy Custom Plugins
         if: hashFiles('plugins/**') != ''
         run: |
-          echo "🔌 Deploying custom plugins..."
-          
           rsync -avz \
-            --exclude='*.env' \
-            --exclude='.git/' \
-            --exclude='node_modules/' \
             -e "ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
             ./plugins/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PLUGINS_PATH }}/
-          
-          echo "✅ Plugins deployed (add/update only, no deletions)"
 
-      # ✅ DEPLOY PUBLIC (usando SSH_PUBLIC_PATH do secret)
-      - name: 📄 Deploy Public Assets (AI Bot Friendly!)
+      # ✅ DEPLOY DE ASSETS PÚBLICOS
+      - name: 📄 Deploy Public Assets
         run: |
-          echo "📄 Deploying public assets..."
-          
-          for file in robots.txt ai-bots.txt favicon.ico favicon.svg \
-                      apple-touch-icon.png site.webmanifest browserconfig.xml \
-                      manifest.json; do
-            
+          for file in robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest browserconfig.xml; do
             if [ -f "public/$file" ]; then
               scp -P ${{ secrets.SSH_PORT }} \
                 -i ~/.ssh/id_rsa \
@@ -230,8 +144,6 @@ jobs:
               echo "✅ $file deployed"
             fi
           done
-          
-          echo "✅ Public assets deployed"
 
       # ✅ FIX PERMISSIONS
       - name: 🔧 Fix File Permissions
@@ -240,27 +152,20 @@ jobs:
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'EOF'
-          
           THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
-          
-          echo "🔧 Fixing permissions..."
-          find "$THEME_PATH" -type d -exec chmod 755 {} \; 2>/dev/null || true
-          find "$THEME_PATH" -type f -exec chmod 644 {} \; 2>/dev/null || true
-          
+          find "$THEME_PATH" -type d -exec chmod 755 {} \;
+          find "$THEME_PATH" -type f -exec chmod 644 {} \;
           echo "✅ Permissions fixed (dirs=755, files=644)"
           EOF
 
-      # ✅ VERIFY DEPLOYMENT
+      # ✅ VERIFICA DEPLOY
       - name: ✅ Verify Deployment
         run: |
           ssh -p ${{ secrets.SSH_PORT }} \
             -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} bash << 'EOF'
-          
           THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
-          
-          echo ""
           echo "📍 Deployment Verification:"
           echo "================================"
           echo "Theme Path: $THEME_PATH"
@@ -272,22 +177,20 @@ jobs:
           [ -f "$THEME_PATH/style.css" ] && echo "  ✅ style.css" || echo "  ❌ style.css MISSING"
           [ -d "$THEME_PATH/inc" ] && echo "  ✅ inc/" || echo "  ❌ inc/ MISSING"
           [ -f "$THEME_PATH/.vite/manifest.json" ] && echo "  ✅ .vite/manifest.json" || echo "  ⚠️  .vite/manifest.json"
-          echo ""
           EOF
 
-      # ✅ CLEANUP SSH
-      - name: 🧹 Cleanup SSH Key
+      # ✅ CLEANUP
+      - name: 🧹 Cleanup
         if: always()
         run: |
           rm -f ~/.ssh/id_rsa
           rm -rf clean_theme
           echo "✅ Cleanup complete"
 
-      # ✅ DEPLOYMENT SUMMARY
+      # ✅ SUMMARY
       - name: 📊 Deployment Summary
         if: always()
         run: |
-          echo ""
           echo "╔════════════════════════════════════════╗"
           if [ "${{ job.status }}" = "success" ]; then
             echo "║  ✅ DEPLOYMENT SUCCESSFUL              ║"
@@ -295,7 +198,6 @@ jobs:
             echo "║  ❌ DEPLOYMENT FAILED                  ║"
           fi
           echo "╚════════════════════════════════════════╝"
-          echo ""
           echo "📋 DJ Zen Eyer v12.2.0"
           echo "🎵 Components Deployed:"
           echo "  ✓ Theme (Vite React 18 compiled)"
@@ -303,66 +205,42 @@ jobs:
           echo "  ✓ functions.php (REST API + Security)"
           echo "  ✓ Custom Plugins (add/update only)"
           echo "  ✓ Public assets (robots.txt, ai-bots.txt)"
-          echo "  ✓ Backup created"
-          echo ""
-          echo "🌐 Site: ${{ secrets.SITE_URL }}"
-          echo "🔌 SSH Port: ${{ secrets.SSH_PORT }}"
-          echo "👤 User: ${{ secrets.SSH_USER }}"
-          echo ""
 
-  # ✅ HEALTH CHECK
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
     needs: deploy
     if: needs.deploy.result == 'success'
-
     steps:
       - name: 🌐 Verify Site Online
         run: |
           SITE_URL="${{ secrets.SITE_URL }}"
-          
-          echo "🔍 Health checking: $SITE_URL"
-          
           for i in 1 2 3; do
             HTTP=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 "$SITE_URL" || echo "000")
-            
             if [ "$HTTP" = "200" ]; then
               echo "✅ Site online (HTTP $HTTP)"
               exit 0
             fi
-            
             echo "⏳ Attempt $i/3 - HTTP $HTTP (retrying in 5s)"
             [ $i -lt 3 ] && sleep 5
           done
-          
-          echo "⚠️  Site health check pending (cache warming up)"
-
+          echo "⚠️ Site health check pending (cache warming up)"
       - name: ✅ Verify REST API
         run: |
           SITE_URL="${{ secrets.SITE_URL }}"
-          
-          echo "🔍 Checking REST API: $SITE_URL/wp-json/djz/v1/config"
-          
           HTTP=$(curl -s -o /dev/null -w "%{http_code}" -L "$SITE_URL/wp-json/djz/v1/config" || echo "000")
-          
           if [ "$HTTP" = "200" ]; then
             echo "✅ REST API online (HTTP $HTTP)"
           else
-            echo "⚠️  REST API: HTTP $HTTP (may need cache flush)"
+            echo "⚠️ REST API: HTTP $HTTP (may need cache flush)"
           fi
-
       - name: 🤖 Verify AI Bot Configuration
         run: |
           SITE_URL="${{ secrets.SITE_URL }}"
-          
-          echo "🤖 Checking AI bot configuration..."
-          
           ROBOTS=$(curl -s "$SITE_URL/robots.txt" | head -5)
           if echo "$ROBOTS" | grep -q "User-agent"; then
             echo "✅ robots.txt OK"
           fi
-          
           AI_BOTS=$(curl -s "$SITE_URL/ai-bots.txt" | head -3)
           if [ -n "$AI_BOTS" ]; then
             echo "✅ ai-bots.txt OK"
