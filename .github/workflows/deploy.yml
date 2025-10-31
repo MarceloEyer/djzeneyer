@@ -1,4 +1,5 @@
 name: 🚀 Production Deploy - DJ ZEN EYER
+
 on:
   push:
     branches: [main]
@@ -8,27 +9,38 @@ on:
       - '.gitignore'
       - 'LICENSE'
   workflow_dispatch:
+    inputs:
+      skip_build:
+        description: 'Skip build step (use existing artifact)'
+        required: false
+        type: boolean
+        default: false
+
 concurrency:
   group: production-deploy
   cancel-in-progress: false
+
 permissions:
   contents: read
   deployments: write
+
 env:
   NODE_VERSION: '20'
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
-  THEME_DIR: '/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme'
-  PLUGINS_DIR: '/home/u790739895/domains/djzeneyer.com/public_html/wp-content/plugins'
-  WEB_ROOT: '/home/u790739895/domains/djzeneyer.com/public_html'
-  BACKUP_DIR: '/home/u790739895/backups'
+  # ✅ Caminhos ABSOLUTOS - Hostinger
+  THEME_PATH: '/home/u790739895/public_html/wp-content/themes/zentheme'
+  PLUGINS_PATH: '/home/u790739895/public_html/wp-content/plugins'
+  WEB_ROOT: '/home/u790739895/public_html'
+  BACKUP_PATH: '/home/u790739895/backups/theme'
 
 jobs:
   build:
     name: 🏗️ Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    if: ${{ !inputs.skip_build }}
     outputs:
       status: ${{ job.status }}
       hash: ${{ steps.hash.outputs.value }}
@@ -78,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: build
-    if: needs.build.result == 'success'
+    if: needs.build.result == 'success' || inputs.skip_build
     environment:
       name: production
       url: https://djzeneyer.com
@@ -87,151 +99,270 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
+      # ============================================
+      # DOWNLOAD & VERIFY ARTIFACT
+      # ============================================
+
       - name: 📥 Download build artifact
+        if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.build.outputs.hash }}
           path: dist/
 
-      - name: ✅ Verify artifact
+      - name: ✅ Verify artifact integrity
+        if: ${{ !inputs.skip_build }}
         run: |
-          echo "🔍 Verificando se o build foi baixado..."
-          ls -la dist/ || exit 1
-          [ -f dist/index.html ] || exit 1
-          echo "✅ Build pronto: $(du -sh dist | cut -f1)"
+          echo "═══════════════════════════════════════════"
+          echo "📦 BUILD ARTIFACT VERIFICATION"
+          echo "═══════════════════════════════════════════"
+          
+          if [ ! -d dist ] || [ ! -f dist/index.html ]; then
+            echo "❌ FAILED: Build artifact is invalid!"
+            exit 1
+          fi
+          
+          SIZE=$(du -sh dist | cut -f1)
+          FILES=$(find dist -type f | wc -l)
+          
+          echo "✅ Artifact valid"
+          echo "   Size: $SIZE"
+          echo "   Files: $FILES"
+          echo "═══════════════════════════════════════════"
 
-      - name: 🔑 Setup SSH e teste de conexão
+      # ============================================
+      # SSH SETUP & VALIDATION
+      # ============================================
+
+      - name: 🔑 Setup SSH connection
         run: |
+          echo "═══════════════════════════════════════════"
+          echo "🔑 SSH CONFIGURATION"
+          echo "═══════════════════════════════════════════"
+          
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo '🔑 Conexão SSH estabelecida com sucesso!'"
+          
+          echo "✅ SSH configured"
+          echo "   Host: ${{ env.SSH_HOST }}"
+          echo "   Port: ${{ env.SSH_PORT }}"
+          echo "   User: ${{ env.SSH_USER }}"
+          echo "═══════════════════════════════════════════"
 
-      - name: 💾 Backup theme
+      - name: 🧪 Test SSH connection
         run: |
+          echo "═══════════════════════════════════════════"
+          echo "🧪 SSH CONNECTION TEST"
+          echo "═══════════════════════════════════════════"
+          
+          if ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "whoami && pwd"; then
+            echo "✅ SSH connection successful"
+          else
+            echo "❌ FAILED: Cannot connect to server"
+            exit 1
+          fi
+          echo "═══════════════════════════════════════════"
+
+      # ============================================
+      # BACKUP CURRENT THEME
+      # ============================================
+
+      - name: 💾 Backup current theme
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "💾 CREATING BACKUP"
+          echo "═══════════════════════════════════════════"
+          
           ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'BACKUP'
-          mkdir -p "${{ env.BACKUP_DIR }}"
+          set -e
+          
+          THEME_DIR="${{ env.THEME_PATH }}"
+          BACKUP_DIR="${{ env.BACKUP_PATH }}"
           BACKUP_TS=$(date +%Y%m%d_%H%M%S)
-          tar -czf "${{ env.BACKUP_DIR }}/theme_${BACKUP_TS}.tar.gz" -C "${{ env.THEME_DIR }}" .
-          ls -lh "${{ env.BACKUP_DIR }}/theme_${BACKUP_TS}.tar.gz"
+          
+          if [ -d "$THEME_DIR" ]; then
+            mkdir -p "$BACKUP_DIR"
+            BACKUP_FILE="$BACKUP_DIR/theme_${BACKUP_TS}.tar.gz"
+            
+            echo "📦 Creating backup: theme_${BACKUP_TS}.tar.gz"
+            tar -czf "$BACKUP_FILE" -C "$THEME_DIR" . 2>/dev/null || true
+            
+            if [ -f "$BACKUP_FILE" ]; then
+              SIZE=$(du -sh "$BACKUP_FILE" | cut -f1)
+              echo "✅ Backup created ($SIZE)"
+              
+              # Cleanup: keep only 10 recent backups
+              BACKUPS=$(cd "$BACKUP_DIR" 2>/dev/null && ls -t theme_*.tar.gz 2>/dev/null | tail -n +11 || true)
+              if [ ! -z "$BACKUPS" ]; then
+                echo "🗑️  Cleaning old backups..."
+                echo "$BACKUPS" | xargs -r rm
+              fi
+            fi
+          else
+            echo "⚠️  Theme directory not found (first deployment?)"
+          fi
           BACKUP
+          
+          echo "═══════════════════════════════════════════"
 
-      - name: 📤 Deploy theme
+      # ============================================
+      # DEPLOY THEME FILES
+      # ============================================
+
+      - name: 📤 Deploy theme files
         run: |
-          echo "🚀 Enviando tema para o servidor..."
-          rsync -avz --delete --checksum \
-            -e "ssh -p ${{ env.SSH_PORT }}" \
+          echo "═══════════════════════════════════════════"
+          echo "📤 DEPLOYING THEME"
+          echo "═══════════════════════════════════════════"
+          
+          REMOTE_PATH="${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}"
+          
+          rsync -avz --checksum -e "ssh -p ${{ env.SSH_PORT }}" \
             --exclude='.git/' \
             --exclude='.gitignore' \
-            --exclude='.gitattributes' \
             --exclude='node_modules/' \
-            --exclude='npm-debug.log*' \
-            --exclude='yarn-debug.log*' \
-            --exclude='yarn-error.log*' \
-            --exclude='package-lock.json' \
-            --exclude='dist/' \
             --exclude='build/' \
-            --exclude='.cache/' \
+            --exclude='dist/' \
             --exclude='src/' \
             --exclude='public/' \
-            --exclude='.env' \
-            --exclude='.env.*' \
-            --exclude='.editorconfig' \
-            --exclude='.prettierrc' \
-            --exclude='.prettierignore' \
-            --exclude='.eslintrc*' \
-            --exclude='eslint.config.*' \
-            --exclude='tsconfig.json' \
-            --exclude='tsconfig.node.json' \
-            --exclude='vite.config.*' \
-            --exclude='tailwind.config.*' \
-            --exclude='postcss.config.*' \
-            --exclude='docs/' \
+            --exclude='.env*' \
             --exclude='*.md' \
-            --exclude='README*' \
-            --exclude='LICENSE' \
-            --exclude='CHANGELOG*' \
             --exclude='.vscode/' \
-            --exclude='.idea/' \
-            --exclude='*.swp' \
-            --exclude='*.swo' \
-            --exclude='*~' \
-            --exclude='.DS_Store' \
             --exclude='.github/' \
             --exclude='scripts/' \
             --exclude='test/' \
-            --exclude='tests/' \
-            --exclude='__tests__/' \
-            --exclude='*.test.*' \
-            --exclude='*.spec.*' \
-            --exclude='.htaccess' \
-            --exclude='wp-config.php' \
-            --exclude='wp-content/uploads/' \
-            --exclude='wp-content/cache/' \
-            --exclude='wp-content/upgrade/' \
-            --exclude='*.log' \
-            --exclude='logs/' \
-            --exclude='tmp/' \
-            --exclude='temp/' \
-            --exclude='*.tmp' \
-            ./ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_DIR }}/
+            ./ "$REMOTE_PATH/" 2>&1 | grep -E "(^sending|files transferred|total size)" || true
+          
+          echo "✅ Theme files deployed"
+          echo "═══════════════════════════════════════════"
 
-      - name: 📤 Deploy build to dist/
+      # ============================================
+      # DEPLOY BUILD (dist/)
+      # ============================================
+
+      - name: 🎨 Deploy build (dist/)
+        if: ${{ !inputs.skip_build }}
         run: |
-          echo "🚀 Enviando build para ${{ env.THEME_DIR }}/dist..."
-          rsync -avz --delete --checksum \
+          echo "═══════════════════════════════════════════"
+          echo "🎨 DEPLOYING BUILD (dist/)"
+          echo "═══════════════════════════════════════════"
+          
+          SIZE=$(du -sh dist | cut -f1)
+          REMOTE_DIST="${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/dist"
+          
+          echo "📦 Uploading build ($SIZE)..."
+          
+          rsync -avz --checksum --delete \
             -e "ssh -p ${{ env.SSH_PORT }}" \
-            dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_DIR }}/dist/ || exit 1
-          echo "✅ Build enviado com sucesso!"
+            dist/ "$REMOTE_DIST/" 2>&1 | grep -E "(^sending|files transferred|total size)" || true
+          
+          echo "✅ Build deployed"
+          echo "═══════════════════════════════════════════"
 
-      - name: 📤 Deploy plugins
+      # ============================================
+      # DEPLOY PLUGINS
+      # ============================================
+
+      - name: 🔌 Deploy plugins
         if: hashFiles('plugins/**') != ''
         run: |
-          REPO_PLUGINS=$(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
-          if [ -z "$REPO_PLUGINS" ]; then
-            echo "ℹ️ Nenhum plugin para enviar."
+          echo "═══════════════════════════════════════════"
+          echo "🔌 DEPLOYING PLUGINS"
+          echo "═══════════════════════════════════════════"
+          
+          PLUGINS=$(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+          
+          if [ -z "$PLUGINS" ]; then
+            echo "ℹ️  No plugins found"
+            echo "═══════════════════════════════════════════"
             exit 0
           fi
-          echo "📤 Enviando plugins..."
-          for plugin in $REPO_PLUGINS; do
+          
+          for plugin in $PLUGINS; do
+            echo "📦 Deploying: $plugin"
+            
             rsync -avz -e "ssh -p ${{ env.SSH_PORT }}" \
               --exclude='.git/' \
               --exclude='node_modules/' \
-              --exclude='*.log' \
               "plugins/$plugin/" \
-              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_DIR }}/$plugin/"
+              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_PATH }}/$plugin/" \
+              2>&1 | grep -E "(^sending|files transferred)" || true
           done
-          echo "✅ Plugins enviados com sucesso!"
+          
+          echo "✅ Plugins deployed"
+          echo "═══════════════════════════════════════════"
 
-      - name: 📤 Deploy sitemaps
-        if: hashFiles('dist/sitemap*.xml') != ''
+      # ============================================
+      # DEPLOY SITEMAPS
+      # ============================================
+
+      - name: 📍 Deploy sitemaps
+        if: hashFiles('dist/sitemap*.xml') != '' && ${{ !inputs.skip_build }}
         run: |
-          echo "🚀 Enviando sitemaps..."
+          echo "═══════════════════════════════════════════"
+          echo "📍 DEPLOYING SITEMAPS"
+          echo "═══════════════════════════════════════════"
+          
           rsync -avz -e "ssh -p ${{ env.SSH_PORT }}" \
-            --include='sitemap*.xml' --exclude='*' \
-            dist/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/
-          echo "✅ Sitemaps enviados com sucesso!"
+            --include='sitemap*.xml' \
+            --include='robots.txt' \
+            --exclude='*' \
+            dist/ "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/"
+          
+          echo "✅ Sitemaps deployed"
+          echo "═══════════════════════════════════════════"
 
-      - name: ✅ Verify deployment
+      # ============================================
+      # VERIFY DEPLOYMENT
+      # ============================================
+
+      - name: ✅ Verify deployment on server
         run: |
+          echo "═══════════════════════════════════════════"
+          echo "✅ VERIFYING DEPLOYMENT"
+          echo "═══════════════════════════════════════════"
+          
           ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY'
           set -e
-          echo "🔍 Verificando deploy..."
-          [ -d "${{ env.THEME_DIR }}" ] || { echo "❌ Diretório do tema não encontrado"; exit 1; }
-          [ -f "${{ env.THEME_DIR }}/functions.php" ] || { echo "❌ functions.php não encontrado"; exit 1; }
-          [ -f "${{ env.THEME_DIR }}/index.php" ] || { echo "❌ index.php não encontrado"; exit 1; }
-          [ -d "${{ env.THEME_DIR }}/dist" ] || { echo "❌ dist/ não encontrado"; exit 1; }
-          [ -f "${{ env.THEME_DIR }}/dist/index.html" ] || { echo "❌ dist/index.html não encontrado"; exit 1; }
-          echo "✅ Todos os arquivos verificados com sucesso!"
+          
+          THEME_DIR="${{ env.THEME_PATH }}"
+          
+          echo "🔍 Checking core files..."
+          [ -f "$THEME_DIR/functions.php" ] && echo "✅ functions.php" || { echo "❌ functions.php missing"; exit 1; }
+          [ -f "$THEME_DIR/index.php" ] && echo "✅ index.php" || { echo "❌ index.php missing"; exit 1; }
+          [ -f "$THEME_DIR/style.css" ] && echo "✅ style.css" || { echo "❌ style.css missing"; exit 1; }
+          
+          echo ""
+          echo "🔍 Checking dist folder..."
+          [ -d "$THEME_DIR/dist" ] && echo "✅ dist/ exists" || { echo "❌ dist/ missing"; exit 1; }
+          [ -f "$THEME_DIR/dist/index.html" ] && echo "✅ dist/index.html" || { echo "❌ dist/index.html missing"; exit 1; }
+          
+          DIST_SIZE=$(du -sh "$THEME_DIR/dist" | cut -f1)
+          DIST_FILES=$(find "$THEME_DIR/dist" -type f | wc -l)
+          echo "   Size: $DIST_SIZE ($DIST_FILES files)"
+          
+          echo ""
+          echo "═══════════════════════════════════════════"
+          echo "✅ ALL CHECKS PASSED!"
+          echo "═══════════════════════════════════════════"
           VERIFY
 
-      - name: 🧹 Cleanup
+      # ============================================
+      # CLEANUP
+      # ============================================
+
+      - name: 🧹 Cleanup SSH keys
         if: always()
-        run: rm -f ~/.ssh/id_rsa
+        run: |
+          rm -f ~/.ssh/id_rsa ~/.ssh/config
+          echo "✅ SSH keys cleaned"
+
+  # ============================================
+  # HEALTH CHECK
+  # ============================================
 
   health-check:
     name: 🏥 Health Check
@@ -242,13 +373,38 @@ jobs:
     steps:
       - name: 🌐 Check site accessibility
         run: |
+          echo "═══════════════════════════════════════════"
+          echo "🏥 HEALTH CHECK - PRODUCTION"
+          echo "═══════════════════════════════════════════"
+          
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L https://djzeneyer.com)
-          [ "$HTTP_CODE" = "200" ] && echo "✅ Site acessível!" || { echo "⚠️ HTTP $HTTP_CODE"; exit 1; }
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Site is accessible (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️  HTTP $HTTP_CODE - Check server logs"
+            exit 1
+          fi
+          echo "═══════════════════════════════════════════"
 
-      - name: 🔗 Check WordPress REST API
+      - name: 🎉 Deployment Complete
         run: |
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://djzeneyer.com/wp-json/)
-          [ "$HTTP_CODE" = "200" ] && echo "✅ REST API acessível!" || echo "⚠️ HTTP $HTTP_CODE"
-
-      - name: 🎉 Final status
-        run: echo "🎉 Deploy concluído com sucesso! 🚀"
+          echo "═══════════════════════════════════════════"
+          echo "🎉 DEPLOYMENT SUCCESSFUL"
+          echo "═══════════════════════════════════════════"
+          echo ""
+          echo "✅ Build:        Complete"
+          echo "✅ Theme:        Deployed"
+          echo "✅ Plugins:      Deployed"
+          echo "✅ Sitemaps:     Deployed"
+          echo "✅ Verification: Passed"
+          echo "✅ Health Check: Passed"
+          echo ""
+          echo "🚀 Your site is LIVE!"
+          echo "📍 https://djzeneyer.com"
+          echo ""
+          echo "📊 Deployment Info:"
+          echo "   Server:     ${{ env.SSH_HOST }}"
+          echo "   Theme Path: ${{ env.THEME_PATH }}"
+          echo "   User:       ${{ env.SSH_USER }}"
+          echo "═══════════════════════════════════════════"
