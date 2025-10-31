@@ -188,7 +188,7 @@ function getDynamicPriority(url) {
 
 function splitSitemap(urlEntries, maxUrls = MAX_URLS_PER_SITEMAP) {
   const chunks = [];
-  for (let i = = 0; i < urlEntries.length; i += maxUrls) {
+  for (let i = 0; i < urlEntries.length; i += maxUrls) {
     chunks.push(urlEntries.slice(i, i + maxUrls));
   }
   return chunks;
@@ -234,6 +234,7 @@ async function generateSitemapForLang(lang) {
     ]);
 
     const urlEntries = [];
+    const publicDir = path.join(__dirname, '../public');
 
     // Static routes
     const staticUrls = STATIC_ROUTES[lang]
