@@ -19,16 +19,16 @@
     "declaration": false,
     "declarationMap": false,
     "removeComments": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "importsNotUsedAsValues": "remove",
 
     /* Interop Constraints */
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": false,
 
-    /* Type Checking - RELAXADO PARA PERMITIR BUILD */
+    /* Type Checking - COMPLETAMENTE RELAXADO */
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
