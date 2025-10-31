@@ -1,4 +1,4 @@
-name: 🚀 Production Deploy
+name: 🚀 Production Deploy - DJ ZEN EYER
 on:
   push:
     branches: [main]
@@ -22,6 +22,8 @@ env:
   THEME_DIR: '/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme'
   PLUGINS_DIR: '/home/u790739895/domains/djzeneyer.com/public_html/wp-content/plugins'
   WEB_ROOT: '/home/u790739895/domains/djzeneyer.com/public_html'
+  BACKUP_DIR: '/home/u790739895/backups'
+
 jobs:
   build:
     name: 🏗️ Build
@@ -30,18 +32,28 @@ jobs:
     outputs:
       status: ${{ job.status }}
       hash: ${{ steps.hash.outputs.value }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - id: hash
+
+      - name: 🔖 Get commit hash
+        id: hash
         run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - run: npm ci --prefer-offline --no-audit
-      - run: npm run build
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🛠️ Build project
+        run: npm run build
         env:
           NODE_ENV: production
           VITE_WP_SITE_URL: https://djzeneyer.com
@@ -49,13 +61,18 @@ jobs:
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-      - run: |
+
+      - name: 📂 Verify build output
+        run: |
           [ -d dist ] && [ -f dist/index.html ] && [ -s dist/index.html ] || exit 1
-      - uses: actions/upload-artifact@v4
+
+      - name: 📤 Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
           name: build-${{ steps.hash.outputs.value }}
           path: dist/
           retention-days: 7
+
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
@@ -65,44 +82,47 @@ jobs:
     environment:
       name: production
       url: https://djzeneyer.com
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Download build artifact
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.build.outputs.hash }}
           path: dist/
-      - name: Verify artifact downloaded
+
+      - name: ✅ Verify artifact
         run: |
-          echo "Verificando se dist/ foi baixado:"
+          echo "🔍 Verificando se o build foi baixado..."
           ls -la dist/ || exit 1
           [ -f dist/index.html ] || exit 1
-          echo "✅ Build artifact pronto: $(du -sh dist | cut -f1)"
-      - name: Setup SSH
+          echo "✅ Build pronto: $(du -sh dist | cut -f1)"
+
+      - name: 🔑 Setup SSH
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo 'Conexão SSH estabelecida com sucesso!' || exit 1"
-      - name: Backup theme
+          ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo '🔑 Conexão SSH estabelecida com sucesso!' || exit 1"
+
+      - name: 💾 Backup theme
         run: |
           ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'BACKUP'
-          if [ -d "${{ env.THEME_DIR }}" ]; then
-            BACKUP_TS=$(date +%Y%m%d_%H%M%S)
-            mkdir -p ~/backups
-            tar -czf "~/backups/theme_${BACKUP_TS}.tar.gz" "${{ env.THEME_DIR }}/"
-            ls -lh "~/backups/theme_${BACKUP_TS}.tar.gz" || exit 1
-            cd ~/backups
-            ls -t theme_*.tar.gz | tail -n +6 | xargs -r rm
-          else
-            echo "❌ Diretório do tema não encontrado. Backup não realizado."
-            exit 1
-          fi
+          mkdir -p "${{ env.BACKUP_DIR }}"
+          BACKUP_TS=$(date +%Y%m%d_%H%M%S)
+          tar -czf "${{ env.BACKUP_DIR }}/theme_${BACKUP_TS}.tar.gz" -C "${{ env.THEME_DIR }}" .
+          ls -lh "${{ env.BACKUP_DIR }}/theme_${BACKUP_TS}.tar.gz" || exit 1
+          cd "${{ env.BACKUP_DIR }}"
+          ls -t theme_*.tar.gz | tail -n +6 | xargs -r rm
           BACKUP
-      - name: Deploy theme
+
+      - name: 📤 Deploy theme
         run: |
+          echo "🚀 Enviando tema para o servidor..."
           rsync -avz --delete --checksum \
             -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             --exclude='.git/' \
@@ -160,23 +180,25 @@ jobs:
             --exclude='*.tmp' \
             ./ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_DIR }}/
-      - name: Deploy build to dist/
+
+      - name: 📤 Deploy build to dist/
         run: |
-          echo "Deploying build ($(du -sh dist | cut -f1))..."
+          echo "🚀 Enviando build para ${{ env.THEME_DIR }}/dist..."
           rsync -avz --delete --checksum \
             -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             dist/ \
             ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_DIR }}/dist/ || exit 1
-          echo "✅ Build deployed"
-      - name: Deploy plugins
+          echo "✅ Build enviado com sucesso!"
+
+      - name: 📤 Deploy plugins
         if: hashFiles('plugins/**') != ''
         run: |
           REPO_PLUGINS=$(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
           if [ -z "$REPO_PLUGINS" ]; then
-            echo "ℹ️ Nenhum plugin no repositório"
+            echo "ℹ️ Nenhum plugin para enviar."
             exit 0
           fi
-          echo "📤 Deploying plugins..."
+          echo "📤 Enviando plugins..."
           for plugin in $REPO_PLUGINS; do
             rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
               --exclude='.git/' \
@@ -185,15 +207,18 @@ jobs:
               "plugins/$plugin/" \
               "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_DIR }}/$plugin/"
           done
-          echo "✅ Plugins deployed"
-      - name: Deploy sitemaps
+          echo "✅ Plugins enviados com sucesso!"
+
+      - name: 📤 Deploy sitemaps
         if: hashFiles('dist/sitemap*.xml') != ''
         run: |
+          echo "🚀 Enviando sitemaps..."
           rsync -avz -e "ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10" \
             --include='sitemap*.xml' --exclude='*' \
             dist/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/
-          echo "✅ Sitemaps deployed"
-      - name: Verify deployment
+          echo "✅ Sitemaps enviados com sucesso!"
+
+      - name: ✅ Verify deployment
         run: |
           ssh -p ${{ env.SSH_PORT }} -o ConnectTimeout=10 ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY'
           set -e
@@ -205,22 +230,27 @@ jobs:
           [ -f "${{ env.THEME_DIR }}/dist/index.html" ] || { echo "❌ dist/index.html não encontrado"; exit 1; }
           echo "✅ Todos os arquivos verificados com sucesso!"
           VERIFY
-      - name: Cleanup
+
+      - name: 🧹 Cleanup
         if: always()
         run: rm -f ~/.ssh/id_rsa
+
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
     needs: deploy
     if: needs.deploy.result == 'success'
+
     steps:
-      - name: Check site accessibility
+      - name: 🌐 Check site accessibility
         run: |
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L https://djzeneyer.com)
-          [ "$HTTP_CODE" = "200" ] && echo "✅ Site is accessible" || { echo "⚠️ HTTP $HTTP_CODE"; exit 1; }
-      - name: Check WordPress REST API
+          [ "$HTTP_CODE" = "200" ] && echo "✅ Site acessível!" || { echo "⚠️ HTTP $HTTP_CODE"; exit 1; }
+
+      - name: 🔗 Check WordPress REST API
         run: |
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://djzeneyer.com/wp-json/)
-          [ "$HTTP_CODE" = "200" ] && echo "✅ REST API is accessible" || echo "⚠️ HTTP $HTTP_CODE"
-      - name: Final status
-        run: echo "🎉 Deployment completed successfully!"
+          [ "$HTTP_CODE" = "200" ] && echo "✅ REST API acessível!" || echo "⚠️ HTTP $HTTP_CODE"
+
+      - name: 🎉 Final status
+        run: echo "🎉 Deploy concluído com sucesso! 🚀"
