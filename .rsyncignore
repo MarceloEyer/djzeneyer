@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════════════════════════
+# RSYNC IGNORE - Arquivos que NUNCA devem ser enviados ao servidor
+# ═══════════════════════════════════════════════════════════════════
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build tools
+dist/
+build/
+.cache/
+
+# Source code (apenas build compilado vai)
+src/
+public/
+
+# Config files
+.env
+.env.*
+.editorconfig
+.prettierrc
+.prettierignore
+.eslintrc*
+eslint.config.*
+
+# TypeScript
+tsconfig.json
+tsconfig.node.json
+
+# Vite
+vite.config.*
+
+# Tailwind
+tailwind.config.*
+postcss.config.*
+
+# Documentation
+docs/
+*.md
+README*
+LICENSE
+CHANGELOG*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# GitHub
+.github/
+
+# Scripts
+scripts/
+
+# Testing
+test/
+tests/
+__tests__/
+*.test.*
+*.spec.*
+
+# WordPress que não deve ser tocado
+.htaccess
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
