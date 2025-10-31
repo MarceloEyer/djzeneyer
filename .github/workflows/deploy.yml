@@ -1,4 +1,4 @@
-name: 🚀 Production Deploy - DJ ZEN EYER
+name: 🚀 Production Deploy - DJ ZEN EYER v2.0
 
 on:
   push:
@@ -88,7 +88,7 @@ jobs:
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     needs: build
     if: needs.build.result == 'success' || inputs.skip_build
     environment:
@@ -167,43 +167,95 @@ jobs:
           echo "═══════════════════════════════════════════"
 
       # ============================================
-      # BACKUP CURRENT THEME
+      # PRÉ-DEPLOY CHECKS
       # ============================================
 
-      - name: 💾 Backup current theme
+      - name: 🔍 Pre-deployment checks
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "🔍 PRE-DEPLOYMENT CHECKS"
+          echo "═══════════════════════════════════════════"
+          
+          THEME_PATH="${{ env.THEME_PATH }}"
+          WEB_ROOT="${{ env.WEB_ROOT }}"
+          
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'PRECHECK'
+          set -e
+          
+          THEME_PATH="/home/u790739895/public_html/wp-content/themes/zentheme"
+          WEB_ROOT="/home/u790739895/public_html"
+          
+          echo "✅ Checking web root..."
+          [ -d "$WEB_ROOT" ] || { echo "❌ Web root not found"; exit 1; }
+          
+          echo "✅ Checking .htaccess..."
+          if [ -f "$WEB_ROOT/.htaccess" ]; then
+            echo "   ✓ .htaccess found (will be preserved)"
+            HTACCESS_SIZE=$(wc -c < "$WEB_ROOT/.htaccess")
+            echo "   Size: $HTACCESS_SIZE bytes"
+          else
+            echo "   ⚠️  .htaccess not found (will not be modified)"
+          fi
+          
+          echo "✅ Checking themes directory..."
+          [ -d "$WEB_ROOT/wp-content/themes" ] || { echo "❌ Themes directory missing"; exit 1; }
+          
+          PRECHECK
+          
+          echo "═══════════════════════════════════════════"
+
+      # ============================================
+      # BACKUP CURRENT THEME & FILES
+      # ============================================
+
+      - name: 💾 Backup current theme & critical files
         run: |
           echo "═══════════════════════════════════════════"
           echo "💾 CREATING BACKUP"
           echo "═══════════════════════════════════════════"
           
-          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'BACKUP'
+          THEME_PATH="${{ env.THEME_PATH }}"
+          BACKUP_PATH="${{ env.BACKUP_PATH }}"
+          WEB_ROOT="${{ env.WEB_ROOT }}"
+          
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'BACKUP'
           set -e
           
-          THEME_DIR="${{ env.THEME_PATH }}"
-          BACKUP_DIR="${{ env.BACKUP_PATH }}"
+          THEME_PATH="/home/u790739895/public_html/wp-content/themes/zentheme"
+          BACKUP_PATH="/home/u790739895/backups/theme"
+          WEB_ROOT="/home/u790739895/public_html"
           BACKUP_TS=$(date +%Y%m%d_%H%M%S)
           
-          if [ -d "$THEME_DIR" ]; then
-            mkdir -p "$BACKUP_DIR"
-            BACKUP_FILE="$BACKUP_DIR/theme_${BACKUP_TS}.tar.gz"
-            
-            echo "📦 Creating backup: theme_${BACKUP_TS}.tar.gz"
-            tar -czf "$BACKUP_FILE" -C "$THEME_DIR" . 2>/dev/null || true
+          mkdir -p "$BACKUP_PATH"
+          
+          # Backup tema
+          if [ -d "$THEME_PATH" ]; then
+            BACKUP_FILE="$BACKUP_PATH/theme_${BACKUP_TS}.tar.gz"
+            echo "📦 Creating theme backup: theme_${BACKUP_TS}.tar.gz"
+            tar -czf "$BACKUP_FILE" -C "$THEME_PATH" . 2>/dev/null || true
             
             if [ -f "$BACKUP_FILE" ]; then
               SIZE=$(du -sh "$BACKUP_FILE" | cut -f1)
-              echo "✅ Backup created ($SIZE)"
-              
-              # Cleanup: keep only 10 recent backups
-              BACKUPS=$(cd "$BACKUP_DIR" 2>/dev/null && ls -t theme_*.tar.gz 2>/dev/null | tail -n +11 || true)
-              if [ ! -z "$BACKUPS" ]; then
-                echo "🗑️  Cleaning old backups..."
-                echo "$BACKUPS" | xargs -r rm
-              fi
+              echo "✅ Theme backup created ($SIZE)"
             fi
           else
             echo "⚠️  Theme directory not found (first deployment?)"
           fi
+          
+          # Backup .htaccess
+          if [ -f "$WEB_ROOT/.htaccess" ]; then
+            HTACCESS_BACKUP="$BACKUP_PATH/.htaccess_${BACKUP_TS}"
+            cp "$WEB_ROOT/.htaccess" "$HTACCESS_BACKUP"
+            echo "✅ .htaccess backed up"
+          fi
+          
+          # Cleanup: keep only 10 recent backups
+          BACKUPS=$(cd "$BACKUP_PATH" 2>/dev/null && ls -t theme_*.tar.gz 2>/dev/null | tail -n +11 || true)
+          if [ ! -z "$BACKUPS" ]; then
+            echo "🗑️  Cleaning old theme backups..."
+            echo "$BACKUPS" | xargs -r rm
+          fi
+          
           BACKUP
           
           echo "═══════════════════════════════════════════"
@@ -218,7 +270,14 @@ jobs:
           echo "📤 DEPLOYING THEME"
           echo "═══════════════════════════════════════════"
           
-          REMOTE_PATH="${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}"
+          THEME_PATH="${{ env.THEME_PATH }}"
+          
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'CREATE'
+          THEME_PATH="/home/u790739895/public_html/wp-content/themes/zentheme"
+          mkdir -p "$THEME_PATH"
+          CREATE
+          
+          REMOTE_PATH="${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/public_html/wp-content/themes/zentheme"
           
           rsync -avz --checksum -e "ssh -p ${{ env.SSH_PORT }}" \
             --exclude='.git/' \
@@ -251,7 +310,7 @@ jobs:
           echo "═══════════════════════════════════════════"
           
           SIZE=$(du -sh dist | cut -f1)
-          REMOTE_DIST="${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/dist"
+          REMOTE_DIST="${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/public_html/wp-content/themes/zentheme/dist"
           
           echo "📦 Uploading build ($SIZE)..."
           
@@ -260,6 +319,43 @@ jobs:
             dist/ "$REMOTE_DIST/" 2>&1 | grep -E "(^sending|files transferred|total size)" || true
           
           echo "✅ Build deployed"
+          echo "═══════════════════════════════════════════"
+
+      # ============================================
+      # DEPLOY ASSETS (favicon, robots.txt, etc)
+      # ============================================
+
+      - name: 📦 Deploy public assets
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "📦 DEPLOYING PUBLIC ASSETS"
+          echo "═══════════════════════════════════════════"
+          
+          WEB_ROOT="${{ env.WEB_ROOT }}"
+          
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'ASSETS'
+          WEB_ROOT="/home/u790739895/public_html"
+          DEPLOYED_ANY=0
+          
+          # Deploy robots.txt (se existir no dist/)
+          if [ -f "dist/robots.txt" ]; then
+            cp dist/robots.txt "$WEB_ROOT/robots.txt"
+            echo "✅ robots.txt deployed"
+            DEPLOYED_ANY=1
+          fi
+          
+          # Deploy favicon (se existir)
+          if [ -f "dist/favicon.ico" ]; then
+            cp dist/favicon.ico "$WEB_ROOT/favicon.ico"
+            echo "✅ favicon.ico deployed"
+            DEPLOYED_ANY=1
+          fi
+          
+          if [ $DEPLOYED_ANY -eq 0 ]; then
+            echo "ℹ️  No public assets to deploy"
+          fi
+          ASSETS
+          
           echo "═══════════════════════════════════════════"
 
       # ============================================
@@ -288,7 +384,7 @@ jobs:
               --exclude='.git/' \
               --exclude='node_modules/' \
               "plugins/$plugin/" \
-              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_PATH }}/$plugin/" \
+              "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/public_html/wp-content/plugins/$plugin/" \
               2>&1 | grep -E "(^sending|files transferred)" || true
           done
           
@@ -310,9 +406,35 @@ jobs:
             --include='sitemap*.xml' \
             --include='robots.txt' \
             --exclude='*' \
-            dist/ "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/"
+            dist/ "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/home/u790739895/public_html/"
           
           echo "✅ Sitemaps deployed"
+          echo "═══════════════════════════════════════════"
+
+      # ============================================
+      # FIX PERMISSIONS
+      # ============================================
+
+      - name: 🔐 Fix file permissions
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "🔐 FIXING FILE PERMISSIONS"
+          echo "═══════════════════════════════════════════"
+          
+          THEME_PATH="${{ env.THEME_PATH }}"
+          
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'PERMS'
+          THEME_PATH="/home/u790739895/public_html/wp-content/themes/zentheme"
+          
+          echo "📁 Setting directory permissions (755)..."
+          find "$THEME_PATH" -type d -exec chmod 755 {} \;
+          
+          echo "📄 Setting file permissions (644)..."
+          find "$THEME_PATH" -type f -exec chmod 644 {} \;
+          
+          echo "✅ Permissions fixed"
+          PERMS
+          
           echo "═══════════════════════════════════════════"
 
       # ============================================
@@ -325,30 +447,135 @@ jobs:
           echo "✅ VERIFYING DEPLOYMENT"
           echo "═══════════════════════════════════════════"
           
-          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} << 'VERIFY'
-          set -e
+          THEME_PATH="${{ env.THEME_PATH }}"
+          WEB_ROOT="${{ env.WEB_ROOT }}"
           
-          THEME_DIR="${{ env.THEME_PATH }}"
-          
-          echo "🔍 Checking core files..."
-          [ -f "$THEME_DIR/functions.php" ] && echo "✅ functions.php" || { echo "❌ functions.php missing"; exit 1; }
-          [ -f "$THEME_DIR/index.php" ] && echo "✅ index.php" || { echo "❌ index.php missing"; exit 1; }
-          [ -f "$THEME_DIR/style.css" ] && echo "✅ style.css" || { echo "❌ style.css missing"; exit 1; }
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'VERIFY'
+          THEME_PATH="/home/u790739895/public_html/wp-content/themes/zentheme"
+          WEB_ROOT="/home/u790739895/public_html"
           
           echo ""
-          echo "🔍 Checking dist folder..."
-          [ -d "$THEME_DIR/dist" ] && echo "✅ dist/ exists" || { echo "❌ dist/ missing"; exit 1; }
-          [ -f "$THEME_DIR/dist/index.html" ] && echo "✅ dist/index.html" || { echo "❌ dist/index.html missing"; exit 1; }
+          echo "📍 Theme path: $THEME_PATH"
+          echo ""
           
-          DIST_SIZE=$(du -sh "$THEME_DIR/dist" | cut -f1)
-          DIST_FILES=$(find "$THEME_DIR/dist" -type f | wc -l)
-          echo "   Size: $DIST_SIZE ($DIST_FILES files)"
+          # Step 1: Verify directory exists
+          echo "Step 1: Checking theme directory..."
+          if [ -d "$THEME_PATH" ]; then
+            echo "✅ Theme directory exists"
+          else
+            echo "❌ Theme directory NOT FOUND"
+            exit 1
+          fi
+          
+          # Step 2: Check core files
+          echo ""
+          echo "Step 2: Checking core theme files..."
+          
+          if [ -f "$THEME_PATH/functions.php" ]; then
+            LINES=$(wc -l < "$THEME_PATH/functions.php")
+            echo "✅ functions.php found ($LINES lines)"
+          else
+            echo "❌ functions.php NOT FOUND - ROLLBACK NEEDED"
+            exit 1
+          fi
+          
+          if [ -f "$THEME_PATH/index.php" ]; then
+            echo "✅ index.php found"
+          else
+            echo "❌ index.php NOT FOUND"
+            exit 1
+          fi
+          
+          if [ -f "$THEME_PATH/style.css" ]; then
+            echo "✅ style.css found"
+          else
+            echo "❌ style.css NOT FOUND"
+            exit 1
+          fi
+          
+          # Step 3: Check .htaccess integrity
+          echo ""
+          echo "Step 3: Checking .htaccess integrity..."
+          if [ -f "$WEB_ROOT/.htaccess" ]; then
+            SIZE=$(wc -c < "$WEB_ROOT/.htaccess")
+            echo "✅ .htaccess intact ($SIZE bytes)"
+          else
+            echo "⚠️  .htaccess not found"
+          fi
+          
+          # Step 4: Check dist folder
+          echo ""
+          echo "Step 4: Checking dist folder..."
+          
+          if [ -d "$THEME_PATH/dist" ]; then
+            DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
+            DIST_FILES=$(find "$THEME_PATH/dist" -type f | wc -l)
+            echo "✅ dist/ found"
+            echo "   Size: $DIST_SIZE"
+            echo "   Files: $DIST_FILES"
+            
+            if [ -f "$THEME_PATH/dist/index.html" ]; then
+              SIZE=$(wc -c < "$THEME_PATH/dist/index.html")
+              echo "✅ dist/index.html exists ($SIZE bytes)"
+            else
+              echo "❌ dist/index.html NOT FOUND"
+              exit 1
+            fi
+          else
+            echo "❌ dist/ NOT FOUND"
+            exit 1
+          fi
+          
+          # Step 5: Check permissions
+          echo ""
+          echo "Step 5: Checking file permissions..."
+          PERM=$(stat -c %a "$THEME_PATH" | head -c 3)
+          if [ "$PERM" = "755" ]; then
+            echo "✅ Directory permissions correct (755)"
+          else
+            echo "⚠️  Directory permissions: $PERM"
+          fi
           
           echo ""
           echo "═══════════════════════════════════════════"
           echo "✅ ALL CHECKS PASSED!"
           echo "═══════════════════════════════════════════"
           VERIFY
+
+      # ============================================
+      # ROLLBACK ON FAILURE
+      # ============================================
+
+      - name: 🔄 Rollback on failure
+        if: failure()
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "🔄 ROLLBACK INITIATED"
+          echo "═══════════════════════════════════════════"
+          
+          THEME_PATH="${{ env.THEME_PATH }}"
+          BACKUP_PATH="${{ env.BACKUP_PATH }}"
+          
+          ssh -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'ROLLBACK'
+          THEME_PATH="/home/u790739895/public_html/wp-content/themes/zentheme"
+          BACKUP_PATH="/home/u790739895/backups/theme"
+          
+          LATEST_BACKUP=$(ls -t "$BACKUP_PATH"/theme_*.tar.gz 2>/dev/null | head -1)
+          
+          if [ -z "$LATEST_BACKUP" ]; then
+            echo "❌ No backup found for rollback"
+            exit 1
+          fi
+          
+          echo "📦 Restoring from: $(basename $LATEST_BACKUP)"
+          rm -rf "$THEME_PATH"
+          mkdir -p "$THEME_PATH"
+          tar -xzf "$LATEST_BACKUP" -C "$THEME_PATH"
+          
+          echo "✅ Rollback completed"
+          ROLLBACK
+          
+          echo "═══════════════════════════════════════════"
 
       # ============================================
       # CLEANUP
@@ -390,21 +617,20 @@ jobs:
       - name: 🎉 Deployment Complete
         run: |
           echo "═══════════════════════════════════════════"
-          echo "🎉 DEPLOYMENT SUCCESSFUL"
+          echo "🎉 DEPLOYMENT SUCCESSFUL - v2.0"
           echo "═══════════════════════════════════════════"
           echo ""
           echo "✅ Build:        Complete"
           echo "✅ Theme:        Deployed"
           echo "✅ Plugins:      Deployed"
+          echo "✅ Assets:       Deployed"
           echo "✅ Sitemaps:     Deployed"
+          echo "✅ Permissions:  Fixed"
           echo "✅ Verification: Passed"
           echo "✅ Health Check: Passed"
           echo ""
           echo "🚀 Your site is LIVE!"
           echo "📍 https://djzeneyer.com"
-          echo ""
-          echo "📊 Deployment Info:"
-          echo "   Server:     ${{ env.SSH_HOST }}"
-          echo "   Theme Path: ${{ env.THEME_PATH }}"
-          echo "   User:       ${{ env.SSH_USER }}"
+          echo "📚 Backup: Automatic"
+          echo "🔄 Rollback: Available"
           echo "═══════════════════════════════════════════"
