@@ -7,7 +7,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  
+
   css: {
     postcss: {
       plugins: [
@@ -20,16 +20,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    
-    // ✅ REMOVA "external" - causa problemas!
-    // external: [ ... ] ← DELETE ISTO
-    
+
+    // ✅ REMOVIDO: "external" (evita bloquear arquivos locais)
+    // external: [ ... ] ← REMOVIDO
+
     rollupOptions: {
-      // ✅ Input simples (Vite encontra sozinho)
+      // ✅ Input simples (Vite encontra o index.html automaticamente)
       input: resolve(__dirname, 'index.html'),
-      
+
       output: {
-        // ✅ Code splitting (mantém, é bom)
+        // ✅ Code splitting (otimiza o carregamento)
         manualChunks: {
           react: ['react', 'react-dom'],
         },
@@ -37,7 +37,7 @@ export default defineConfig({
     },
   },
 
-  // ✅ ADICIONE isto para desenvolvimento local
+  // ✅ ADICIONADO: Configuração para desenvolvimento local
   server: {
     open: true,
     port: 3000,
