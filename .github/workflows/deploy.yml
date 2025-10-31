@@ -1,265 +1,72 @@
-name: 🚀 Production Deploy
+name: Deploy para Produção
 
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '.gitignore'
-      - 'LICENSE'
-
-  workflow_dispatch:
-    inputs:
-      skip_build:
-        description: 'Skip build'
-        required: false
-        type: boolean
-        default: false
-
-concurrency:
-  group: production-deploy
-  cancel-in-progress: false
-
-permissions:
-  contents: read
-
-env:
-  NODE_VERSION: '20'
-  SSH_HOST: '147.79.84.222'
-  SSH_PORT: '65002'
-  SSH_USER: 'u790739895'
-  THEME_PATH: '/home/u790739895/public_html/wp-content/themes/zentheme'
-  PLUGINS_PATH: '/home/u790739895/public_html/wp-content/plugins'
-  WEB_ROOT: '/home/u790739895/public_html'
-  BACKUP_PATH: '/home/u790739895/backups/theme'
+    branches: [ main ]
 
 jobs:
-  build:
-    name: 🏗️ Build
-    runs-on: ubuntu-latest
-    if: ${{ !inputs.skip_build }}
-
-    outputs:
-      hash: ${{ steps.hash.outputs.value }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - id: hash
-        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - run: npm ci --prefer-offline --no-audit
-      - run: npm run generate-sitemaps 2>&1 || true
-        continue-on-error: true
-
-      - run: npm run build
-        env:
-          NODE_ENV: production
-          VITE_WP_SITE_URL: https://djzeneyer.com
-          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
-          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
-          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build-${{ steps.hash.outputs.value }}
-          path: dist/
-          retention-days: 1
-
   deploy:
-    name: 🚀 Deploy
     runs-on: ubuntu-latest
-    needs: build
-    if: always() && (needs.build.result == 'success' || inputs.skip_build)
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
-        with:
-          name: build-${{ needs.build.outputs.hash }}
-          path: dist/
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
 
-      # SSH Setup
-      - name: 🔐 Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+    - name: Instalar dependências
+      run: npm ci
 
-      - name: 🧪 Test SSH
-        run: ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "echo '✅ SSH OK'"
+    - name: Build Vite
+      env:
+        VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
+        VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+      run: npm run build
 
-      # Backup tema antes de qualquer coisa
-      - name: 💾 Backup
-        run: |
-          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'EOF'
-          BACKUP_TS=$(date +%Y%m%d_%H%M%S)
-          if [ -d "${{ env.THEME_PATH }}" ]; then
-            mkdir -p "${{ env.BACKUP_PATH }}"
-            tar -czf "${{ env.BACKUP_PATH }}/theme_${BACKUP_TS}.tar.gz" -C "${{ env.THEME_PATH }}" . 2>/dev/null || true
-            cd "${{ env.BACKUP_PATH }}"
-            ls -t theme_*.tar.gz 2>/dev/null | tail -n +11 | xargs -r rm
-            echo "✅ Backup created"
-          fi
-          EOF
+    - name: Configurar SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.FTP_SERVER }} >> ~/.ssh/known_hosts
 
-      # Preparar diretórios
-      - name: 📁 Prepare directories
-        run: |
-          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
-            "mkdir -p ${{ env.THEME_PATH }} ${{ env.PLUGINS_PATH }} ${{ env.BACKUP_PATH }}"
+    - name: Deploy Theme (zentheme/ - espelhado)
+      run: |
+        rsync -avz --delete \
+          --exclude='.git/' \
+          --exclude='node_modules/' \
+          --exclude='src/' \
+          --exclude='public/' \
+          --exclude='plugins/' \
+          --exclude='dist/' \
+          --exclude='*.log' \
+          --exclude='vite.config.*' \
+          --exclude='package*.json' \
+          --exclude='*.env' \
+          --exclude='.gitignore' \
+          --exclude='README.*' \
+          -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+          ./ ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:public_html/wp-content/themes/zentheme/
 
-      # Filtrar arquivos localmente (usando rsync)
-      - name: 📁 Prepare clean theme files
-        run: |
-          mkdir -p clean_theme
-          rsync -avz --exclude='.git/' \
-            --exclude='node_modules/' \
-            --exclude='dist/' \
-            --exclude='src/' \
-            --exclude='public/' \
-            --exclude='plugins/' \
-            --exclude='.env*' \
-            --exclude='*.md' \
-            --exclude='package*.json' \
-            --exclude='tsconfig*.json' \
-            --exclude='vite.config.*' \
-            --exclude='tailwind.config.*' \
-            --exclude='postcss.config.*' \
-            --exclude='.vscode/' \
-            --exclude='.github/' \
-            --exclude='.*' \
-            ./ clean_theme/
+    - name: Deploy Plugins (só add/update)
+      run: |
+        rsync -avz \
+          -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+          ./plugins/ ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:public_html/wp-content/plugins/
 
-      # Excluir arquivos antigos do tema no servidor
-      - name: 🗑️ Delete old theme files
-        run: |
-          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "rm -rf ${{ env.THEME_PATH }}/*"
-
-      # Copiar novos arquivos do tema (usando scp)
-      - name: 📝 Copy new theme files
-        run: |
-          scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
-            clean_theme/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/
-
-      # Substituir functions.php da raiz
-      - name: 🔄 Deploy functions.php (raiz → tema)
-        if: hashFiles('functions.php') != ''
-        run: |
-          scp -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa functions.php \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/functions.php
-          echo "✅ functions.php substituted"
-
-      # Copiar arquivos do dist
-      - name: 🎨 Deploy dist
-        if: ${{ !inputs.skip_build }}
-        run: |
-          scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
-            dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.THEME_PATH }}/
-
-      # Atualizar plugins (sem deletar)
-      - name: 🔌 Deploy plugins (SEM --delete)
-        if: hashFiles('plugins/**') != ''
-        run: |
-          for plugin in $(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \;); do
-            scp -r -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
-              plugins/$plugin/ \
-              ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.PLUGINS_PATH }}/$plugin/
-          done
-          echo "✅ Plugins updated (not deleted)"
-
-      # Copiar assets públicos
-      - name: 📄 Deploy public assets (whitelist)
-        run: |
-          for file in robots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest browserconfig.xml manifest.json; do
-            if [ -f "public/$file" ]; then
-              scp -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa "public/$file" \
-                ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/
-            fi
-          done
-          echo "✅ Public assets deployed (whitelist)"
-
-      # Copiar sitemaps
-      - name: 🗺️ Deploy sitemaps
-        if: hashFiles('dist/sitemap*.xml') != '' && ${{ !inputs.skip_build }}
-        run: |
-          scp -P ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa \
-            dist/sitemap*.xml \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.WEB_ROOT }}/
-          echo "✅ Sitemaps deployed"
-
-      # Corrigir permissões
-      - name: 🔧 Fix permissions
-        run: |
-          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'EOF'
-          find ${{ env.THEME_PATH }} -type d -exec chmod 755 {} \; 2>/dev/null || true
-          find ${{ env.THEME_PATH }} -type f -exec chmod 644 {} \; 2>/dev/null || true
-          echo "✅ Permissions fixed"
-          EOF
-
-      # Verificar deploy
-      - name: ✅ Verify deployment
-        run: |
-          ssh -p ${{ env.SSH_PORT }} -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} bash << 'EOF'
-          echo "📍 Theme path: ${{ env.THEME_PATH }}"
-          echo "Size: $(du -sh ${{ env.THEME_PATH }} 2>/dev/null | cut -f1)"
-          echo "Files: $(find ${{ env.THEME_PATH }} -type f | wc -l)"
-          [ -f "${{ env.THEME_PATH }}/functions.php" ] && echo "✅ functions.php OK"
-          [ -f "${{ env.THEME_PATH }}/index.php" ] && echo "✅ index.php OK"
-          [ -f "${{ env.THEME_PATH }}/dist/index.html" ] && echo "✅ dist/index.html OK"
-          EOF
-
-      # Limpar SSH
-      - name: 🧹 Cleanup SSH
-        if: always()
-        run: rm -f ~/.ssh/id_rsa
-
-      - name: 📊 Deploy Summary
-        if: always()
-        run: |
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "✅ DEPLOY SUCCESSFUL"
-            echo ""
-            echo "📋 Deployed:"
-            echo "  ✓ Theme (deleted old files)"
-            echo "  ✓ functions.php (replaced)"
-            echo "  ✓ dist/"
-            echo "  ✓ Plugins (no delete)"
-            echo "  ✓ Public assets (whitelist)"
-            echo "  ✓ Sitemaps"
-            echo ""
-            echo "🌐 https://djzeneyer.com"
-          else
-            echo "❌ DEPLOY FAILED - Check logs"
-          fi
-
-  health-check:
-    name: 🏥 Health Check
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: needs.deploy.result == 'success'
-
-    steps:
-      - name: 🌐 Check site
-        run: |
-          for i in 1 2 3; do
-            HTTP=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 10 https://djzeneyer.com || echo "000")
-            if [ "$HTTP" = "200" ]; then
-              echo "✅ Site online (HTTP $HTTP)"
-              exit 0
-            fi
-            [ $i -lt 3 ] && sleep 5
-          done
-          echo "⚠️  Site check: pending"
+    - name: Deploy Public/ (só add/update + proteções WP)
+      run: |
+        rsync -avz \
+          --exclude='.htaccess' \
+          --exclude='wp-config.php' \
+          --exclude='wp-content/' \
+          --exclude='wp-admin/' \
+          --exclude='wp-includes/' \
+          --exclude='index.php' \
+          -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+          ./public/ ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:public_html/
