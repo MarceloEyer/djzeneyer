@@ -1,5 +1,6 @@
 <?php
 /**
+ * Testando
  * Header DJ Zen Eyer - v4.3.2 LEAN (CORRIGIDO)
  * 🎯 Font Preload + AVIF + Client Hints + Dynamic Schema
  * 🤖 AI Tags APENAS onde relevante (sem dupes com SEO.tsx)
