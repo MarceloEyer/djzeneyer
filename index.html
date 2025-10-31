@@ -84,6 +84,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="https://djzeneyer.com" />
+  <link rel="modulepreload" href="/src/main.tsx" as="script" crossorigin />
 
   <!-- ======================================================
        STRUCTURED DATA (JSON-LD para Bots de AI)
@@ -104,12 +105,22 @@
       "https://soundcloud.com/djzeneyer",
       "https://youtube.com/@djzeneyer"
     ],
-    "givenName": "DJ",
-    "familyName": "Zen Eyer",
-    "location": {
-      "@type": "City",
-      "name": "Brasil"
-    }
+    "hasOccupation": {
+      "@type": "Occupation",
+      "name": "DJ e Produtor Musical"
+    },
+    "performerIn": {
+      "@type": "Event",
+      "name": "Evento Exemplo",
+      "url": "https://djzeneyer.com/eventos/evento-exemplo"
+    },
+    "workExample": [
+      {
+        "@type": "MusicRecording",
+        "name": "Música Exemplo",
+        "url": "https://spotify.com/track/123"
+      }
+    ]
   }
   </script>
 
@@ -119,7 +130,6 @@
   <meta http-equiv="Cache-Control" content="public, max-age=3600" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 </head>
-
 <body>
   <!-- ======================================================
        REACT ROOT MOUNT (Bolt.new precisa disso!)
