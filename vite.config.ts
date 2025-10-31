@@ -31,11 +31,9 @@ export default defineConfig({
         /^\/bolt\.new/,
       ],
       output: {
-        // Otimiza code splitting para bibliotecas grandes
         manualChunks: {
           react: ['react', 'react-dom'],
           spotify: ['@spotify/web-api-js-sdk'],
-          // Adicione outras bibliotecas grandes aqui
         },
       },
     },
