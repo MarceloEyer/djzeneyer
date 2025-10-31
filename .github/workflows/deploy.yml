@@ -22,6 +22,7 @@ env:
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
+  SSH_KEY_PATH: ${{ secrets.SSH_PRIVATE_KEY }}
 
 jobs:
   build:
@@ -60,14 +61,14 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - run: |
-          [ -d dist ] && [ -f dist/index.html ] || exit 1
+      - run: [ -d dist ] && [ -f dist/index.html ] || exit 1
 
       - uses: actions/upload-artifact@v4
         with:
           name: build-${{ steps.hash.outputs.value }}
           path: dist/
           retention-days: 7
+          compression-level: 9
 
   deploy:
     name: 🚀 Deploy
@@ -88,31 +89,41 @@ jobs:
           name: build-${{ needs.build.outputs.hash }}
           path: dist/
 
-      - name: Configure SSH
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-          cat > ~/.ssh/config << 'EOF'
+          ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          cat > ~/.ssh/config << 'SSHCFG'
           Host prod
             HostName ${{ env.SSH_HOST }}
             Port ${{ env.SSH_PORT }}
             User ${{ env.SSH_USER }}
             IdentityFile ~/.ssh/id_rsa
             StrictHostKeyChecking accept-new
-          EOF
+            ConnectTimeout 10
+            ServerAliveInterval 60
+            ServerAliveCountMax 3
+          SSHCFG
+          chmod 600 ~/.ssh/config
 
-      - name: SSH Test
-        run: ssh prod "mkdir -p ./wp-content/themes/zentheme/dist ./wp-content/plugins"
-
-      - name: Deploy dist
-        run: rsync -avz --delete -e "ssh -o ConnectTimeout=10" dist/ prod:./wp-content/themes/zentheme/dist/
-
-      - name: Deploy theme
+      - name: Test SSH & Create Dirs
         run: |
-          rsync -avz --delete -e "ssh -o ConnectTimeout=10" \
+          ssh prod "pwd && whoami && mkdir -p ./wp-content/themes/zentheme/dist ./wp-content/plugins && echo OK"
+
+      - name: Deploy React Build
+        run: |
+          rsync -avz --delete \
+            -e "ssh -o ConnectTimeout=10" \
+            dist/ \
+            prod:./wp-content/themes/zentheme/dist/ || exit 1
+
+      - name: Deploy Theme Root
+        run: |
+          rsync -avz --delete \
+            -e "ssh -o ConnectTimeout=10" \
             --exclude='.git*' \
             --exclude='node_modules' \
             --exclude='dist' \
@@ -131,20 +142,80 @@ jobs:
             --exclude='.env*' \
             --exclude='.DS_Store' \
             --exclude='*.log' \
+            --exclude='.editorconfig' \
+            --exclude='.prettierrc*' \
             ./ \
-            prod:./wp-content/themes/zentheme/
+            prod:./wp-content/themes/zentheme/ || exit 1
 
-      - name: Deploy plugins
+      - name: Deploy Plugins
         if: hashFiles('plugins/**') != ''
-        run: rsync -avz -e "ssh -o ConnectTimeout=10" plugins/ prod:./wp-content/plugins/
+        run: |
+          rsync -avz \
+            -e "ssh -o ConnectTimeout=10" \
+            plugins/ \
+            prod:./wp-content/plugins/ || exit 1
 
-      - name: Deploy sitemaps
+      - name: Deploy Sitemaps
         if: hashFiles('dist/sitemap*.xml') != ''
-        run: rsync -avz --include='sitemap*.xml' --exclude='*' -e "ssh -o ConnectTimeout=10" dist/ prod:./
+        run: |
+          rsync -avz \
+            --include='sitemap*.xml' \
+            --exclude='*' \
+            -e "ssh -o ConnectTimeout=10" \
+            dist/ \
+            prod:./ || exit 1
 
-      - name: Deploy public
-        run: rsync -avz --include='robots.txt' --include='favicon*' --include='*.ico' --include='*.svg' --include='*.webmanifest' --exclude='*' -e "ssh -o ConnectTimeout=10" dist/ prod:./
+      - name: Deploy Public Assets
+        run: |
+          rsync -avz \
+            --include='robots.txt' \
+            --include='favicon*' \
+            --include='*.ico' \
+            --include='*.svg' \
+            --include='*.webmanifest' \
+            --exclude='*' \
+            -e "ssh -o ConnectTimeout=10" \
+            dist/ \
+            prod:./ || exit 1
 
-      - run: rm -f ~/.ssh/id_rsa ~/.ssh/config
+      - name: Verify Deployment
+        run: |
+          echo "Verifying deployed files..."
+          ssh prod << 'VERIFY'
+          set -e
+          echo "PWD: $(pwd)"
+          echo "User: $(whoami)"
+          echo ""
+          echo "Theme dir:"
+          [ -d ./wp-content/themes/zentheme ] && echo "  ✓ theme exists" || echo "  ✗ theme missing"
+          [ -d ./wp-content/themes/zentheme/dist ] && echo "  ✓ dist exists" || echo "  ✗ dist missing"
+          [ -f ./wp-content/themes/zentheme/index.php ] && echo "  ✓ index.php exists" || echo "  ✗ index.php missing"
+          echo ""
+          echo "Plugins:"
+          [ -d ./wp-content/plugins ] && echo "  ✓ plugins folder exists" || echo "  ✗ plugins missing"
+          PLUGIN_COUNT=$(find ./wp-content/plugins -maxdepth 1 -type d ! -name plugins | wc -l)
+          echo "  Plugins: $PLUGIN_COUNT"
+          echo ""
+          echo "Root files:"
+          [ -f ./robots.txt ] && echo "  ✓ robots.txt" || echo "  ✗ robots.txt"
+          SITEMAPS=$(find . -maxdepth 1 -name 'sitemap*.xml' 2>/dev/null | wc -l)
+          echo "  Sitemaps: $SITEMAPS"
+          [ -f ./favicon.ico ] && echo "  ✓ favicon.ico" || echo "  ✗ favicon.ico"
+          echo ""
+          echo "Disk usage:"
+          du -sh ./wp-content/themes/zentheme 2>/dev/null | awk '{print "  Theme: " $1}'
+          VERIFY
 
-      - run: ssh prod "echo OK: theme && [ -d ./wp-content/themes/zentheme/dist ] && echo OK: dist || echo FAIL: dist"
+      - name: Cleanup SSH
+        if: always()
+        run: rm -f ~/.ssh/id_rsa ~/.ssh/config
+
+      - name: Deploy Status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Deploy successful - https://djzeneyer.com"
+          else
+            echo "❌ Deploy failed"
+            exit 1
+          fi
