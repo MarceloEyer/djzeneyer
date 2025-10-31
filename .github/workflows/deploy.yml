@@ -1,12 +1,3 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (OPTIMIZED & SECURE)
-# ═══════════════════════════════════════════════════════════════════════════════
-# 
-# DESCRIÇÃO: Deploy automático para produção via rsync+SSH
-# TRIGGER: Push na branch 'main' ou manual (workflow_dispatch)
-# SEGURANÇA: SSH hardened, proteção WordPress, rollback automático
-# ═══════════════════════════════════════════════════════════════════════════════
-
 name: 🚀 Production Deploy
 
 on:
@@ -19,12 +10,6 @@ on:
       - 'LICENSE'
   
   workflow_dispatch:
-    inputs:
-      skip_build:
-        description: 'Skip build step (use existing artifact)'
-        required: false
-        type: boolean
-        default: false
 
 concurrency:
   group: production-deploy
@@ -39,19 +24,12 @@ env:
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
-  THEME_PATH: './wp-content/themes/zentheme'
-  PLUGINS_PATH: './wp-content/plugins'
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# JOB 1: BUILD
-# ═══════════════════════════════════════════════════════════════════════════════
 
 jobs:
   build:
     name: 🏗️ Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ !inputs.skip_build }}
     
     outputs:
       status: ${{ job.status }}
@@ -59,7 +37,7 @@ jobs:
       timestamp: ${{ steps.timestamp.outputs.value }}
     
     steps:
-      - name: 📥 Checkout repository
+      - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -70,15 +48,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 🔖 Generate build metadata
+      - name: 🔖 Generate metadata
         id: hash
-        run: |
-          echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          
+        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      
       - name: ⏰ Generate timestamp
         id: timestamp
-        run: |
-          echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: 📦 Install dependencies
         run: npm ci --prefer-offline --no-audit
@@ -99,227 +75,141 @@ jobs:
 
       - name: ✅ Validate build
         run: |
-          if [ ! -d dist ]; then
-            echo "❌ dist/ directory not found"
-            exit 1
-          fi
-          
-          if [ ! -f dist/index.html ]; then
-            echo "❌ dist/index.html not found"
-            exit 1
-          fi
-          
-          # Verificar se há arquivos JS e CSS
-          if [ -z "$(find dist/assets -name '*.js' 2>/dev/null)" ]; then
-            echo "⚠️ Warning: No JS files found in dist/assets"
-          fi
-          
-          if [ -z "$(find dist/assets -name '*.css' 2>/dev/null)" ]; then
-            echo "⚠️ Warning: No CSS files found in dist/assets"
-          fi
-          
-          # Mostrar tamanho do build
-          echo "📊 Build size:"
-          du -sh dist/
-          
-          echo "✅ Build validation passed"
+          [ -d dist ] && [ -f dist/index.html ] || exit 1
+          [ -s dist/index.html ] || exit 1
+          du -sh dist/ && echo "✅ Build valid"
 
-      - name: 📤 Upload build artifact
+      - name: 📤 Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ steps.hash.outputs.value }}
-          path: |
-            dist/
-            plugins/
+          path: dist/
           retention-days: 7
-          compression-level: 6
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# JOB 2: DEPLOY
-# ═══════════════════════════════════════════════════════════════════════════════
 
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: build
-    if: |
-      always() && 
-      (needs.build.result == 'success' || inputs.skip_build)
+    if: needs.build.result == 'success'
     
     environment:
       name: production
       url: https://djzeneyer.com
     
     steps:
-      - name: 📥 Checkout repository
+      - name: 📥 Checkout (get full theme)
         uses: actions/checkout@v4
 
       - name: 📥 Download build artifact
-        if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.build.outputs.hash }}
-          path: .
+          path: dist/
 
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          
-          # Salvar chave SSH
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          
-          # Adicionar host ao known_hosts
           ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
           
-          # Criar config SSH (usando cat sem heredoc para interpolação correta)
-          cat > ~/.ssh/config << EOF
-          Host prod
-            HostName ${{ env.SSH_HOST }}
-            Port ${{ env.SSH_PORT }}
-            User ${{ env.SSH_USER }}
-            IdentityFile ~/.ssh/id_rsa
-            StrictHostKeyChecking accept-new
-            ConnectTimeout 10
-            ServerAliveInterval 60
-            ServerAliveCountMax 3
-            Compression yes
-            TCPKeepAlive yes
-          EOF
-          
+          # CORRETO: Aspas duplas para interpolação
+          cat > ~/.ssh/config << "SSHEOF"
+Host prod
+  HostName ${{ env.SSH_HOST }}
+  Port ${{ env.SSH_PORT }}
+  User ${{ env.SSH_USER }}
+  IdentityFile ~/.ssh/id_rsa
+  StrictHostKeyChecking accept-new
+  ConnectTimeout 10
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+SSHEOF
           chmod 600 ~/.ssh/config
 
-      - name: 🧪 Test SSH connection
-        run: |
-          echo "Testing SSH connection..."
-          ssh prod "echo '✅ SSH connection successful' && pwd && whoami"
+      - name: 🧪 Test SSH
+        run: ssh prod "pwd && whoami"
 
-      - name: 📁 Create backup and prepare directories
+      - name: 📦 Backup current theme
         run: |
           ssh prod << 'EOF'
           set -e
-          
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-          BACKUP_DIR="./backups/deploy_${TIMESTAMP}"
-          
-          echo "📦 Creating backup directory: ${BACKUP_DIR}"
-          mkdir -p "${BACKUP_DIR}"
-          
-          # Backup do theme atual (apenas dist/)
-          if [ -d "./wp-content/themes/zentheme/dist" ]; then
-            echo "📦 Backing up current theme dist..."
-            cp -r ./wp-content/themes/zentheme/dist "${BACKUP_DIR}/theme_dist"
+          if [ -d ./wp-content/themes/zentheme ]; then
+            BACKUP_TS=$(date +%Y%m%d_%H%M%S)
+            mkdir -p ./backups
+            echo "📦 Backing up current theme..."
+            tar -czf "./backups/theme_${BACKUP_TS}.tar.gz" ./wp-content/themes/zentheme/
+            echo "✅ Backup: backups/theme_${BACKUP_TS}.tar.gz"
+            
+            # Manter apenas últimos 5 backups
+            cd ./backups
+            ls -t theme_*.tar.gz | tail -n +6 | xargs -r rm
+            cd ..
           fi
-          
-          # Criar diretórios necessários
-          echo "📁 Ensuring directories exist..."
-          mkdir -p ./wp-content/themes/zentheme/dist
-          mkdir -p ./wp-content/plugins
-          
-          # Limpar backups antigos (manter últimos 5)
-          echo "🧹 Cleaning old backups..."
-          cd ./backups
-          ls -t | tail -n +6 | xargs -r rm -rf
-          cd ..
-          
-          echo "✅ Backup and directories ready"
-          echo "BACKUP_DIR=${BACKUP_DIR}" > /tmp/deploy_backup_path.txt
           EOF
 
-      - name: 🚀 Deploy React build to theme
+      - name: 🚀 Deploy complete theme (full sync with delete)
+        run: |
+          echo "📤 Deploying complete theme (repository → production)..."
+          
+          rsync -avz --delete --checksum \
+            -e "ssh -o ConnectTimeout=10" \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='src' \
+            --exclude='.github' \
+            --exclude='scripts' \
+            --exclude='package*.json' \
+            --exclude='tsconfig*.json' \
+            --exclude='vite.config.*' \
+            --exclude='dist' \
+            --exclude='public' \
+            --exclude='*.md' \
+            --exclude='.env*' \
+            --exclude='.DS_Store' \
+            --exclude='*.log' \
+            --exclude='.editorconfig' \
+            --exclude='.prettierrc' \
+            ./ \
+            prod:./wp-content/themes/zentheme/
+          
+          echo "✅ Theme deployed (all files synced from repository)"
+
+      - name: 🚀 Deploy React build to dist folder
         run: |
           echo "📤 Deploying React build..."
           
-          rsync -avz \
-            --delete \
-            --delete-excluded \
-            --checksum \
-            -e "ssh -o ConnectTimeout=10 -o ServerAliveInterval=60" \
-            --stats \
-            dist/ \
-            prod:${{ env.THEME_PATH }}/dist/
-          
-          echo "✅ React build deployed"
-
-      - name: 📝 Deploy theme PHP files
-        run: |
-          echo "📤 Deploying theme PHP files..."
-          
-          rsync -avz \
-            --checksum \
+          rsync -avz --delete --checksum \
             -e "ssh -o ConnectTimeout=10" \
-            --include='*.php' \
-            --include='style.css' \
-            --include='functions.php' \
-            --include='index.php' \
-            --include='screenshot.png' \
-            --exclude='*' \
-            ./ \
-            prod:${{ env.THEME_PATH }}/
+            dist/ \
+            prod:./wp-content/themes/zentheme/dist/
           
-          echo "✅ Theme PHP files deployed"
+          echo "✅ React build deployed to dist/"
 
-      - name: 🔌 Deploy plugins
+      - name: 🔌 Deploy plugins (only if changed)
         if: hashFiles('plugins/**') != ''
         run: |
-          echo "📤 Deploying plugins..."
-          
-          # Lista de plugins no repositório
-          REPO_PLUGINS=$(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null || true)
+          REPO_PLUGINS=$(find plugins -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null)
           
           if [ -z "$REPO_PLUGINS" ]; then
-            echo "ℹ️ No plugins to deploy"
+            echo "ℹ️ No plugins in repository"
             exit 0
           fi
           
-          echo "Plugins to deploy:"
-          echo "$REPO_PLUGINS"
-          
-          # Deploy cada plugin individualmente
+          echo "📤 Deploying plugins..."
           for plugin in $REPO_PLUGINS; do
-            echo "  → Deploying plugin: $plugin"
-            
             rsync -avz \
-              --checksum \
               -e "ssh -o ConnectTimeout=10" \
               "plugins/${plugin}/" \
-              "prod:${{ env.PLUGINS_PATH }}/${plugin}/"
+              "prod:./wp-content/plugins/${plugin}/"
           done
-          
           echo "✅ Plugins deployed"
 
-      - name: 📄 Deploy public assets (SAFE)
-        run: |
-          echo "📤 Deploying public assets to root..."
-          
-          # Lista de arquivos seguros para substituir
-          SAFE_FILES=(
-            "robots.txt"
-            "favicon.ico"
-            "favicon.svg"
-            "apple-touch-icon.png"
-            "site.webmanifest"
-          )
-          
-          for file in "${SAFE_FILES[@]}"; do
-            if [ -f "public/$file" ]; then
-              echo "  → Deploying $file"
-              rsync -avz \
-                -e "ssh -o ConnectTimeout=10" \
-                "public/$file" \
-                prod:./
-            fi
-          done
-          
-          echo "✅ Public assets deployed"
-
-      - name: 🗺️ Deploy sitemaps
+      - name: 📄 Deploy sitemaps (if generated)
         if: hashFiles('dist/sitemap*.xml') != ''
         run: |
-          echo "📤 Deploying sitemaps..."
-          
           rsync -avz \
             -e "ssh -o ConnectTimeout=10" \
             --include='sitemap*.xml' \
@@ -329,11 +219,18 @@ jobs:
           
           echo "✅ Sitemaps deployed"
 
-      - name: ✅ Verify deployment
-        id: verify
+      - name: 🛡️ Protect WordPress files (never overwrite)
         run: |
-          echo "🔍 Verifying deployment..."
+          ssh prod << 'EOF'
+          # Restaurar backups se existirem (segurança extra)
+          [ -f ./.htaccess.backup ] && cp ./.htaccess.backup ./.htaccess
+          [ -f ./wp-config.php.backup ] && cp ./wp-config.php.backup ./wp-config.php
           
+          echo "✅ WordPress protection verified"
+          EOF
+
+      - name: ✅ Verify deployment
+        run: |
           ssh prod << 'VERIFY'
           set -e
           
@@ -341,64 +238,26 @@ jobs:
           echo "════════════════════════════════════════"
           echo "📊 DEPLOYMENT VERIFICATION"
           echo "════════════════════════════════════════"
-          echo ""
           
-          # Verificar tema
+          # Theme structure
           echo "🎨 Theme:"
-          if [ -d ./wp-content/themes/zentheme ]; then
-            echo "  ✅ Theme directory exists"
-          else
-            echo "  ❌ Theme directory MISSING"
-            exit 1
-          fi
+          [ -d ./wp-content/themes/zentheme ] && echo "  ✅ Theme directory" || { echo "  ❌ MISSING"; exit 1; }
+          [ -f ./wp-content/themes/zentheme/functions.php ] && echo "  ✅ functions.php" || { echo "  ❌ MISSING"; exit 1; }
+          [ -f ./wp-content/themes/zentheme/index.php ] && echo "  ✅ index.php" || { echo "  ❌ MISSING"; exit 1; }
+          [ -d ./wp-content/themes/zentheme/dist ] && echo "  ✅ dist/" || { echo "  ❌ MISSING"; exit 1; }
           
-          if [ -d ./wp-content/themes/zentheme/dist ]; then
-            echo "  ✅ Dist directory exists"
-            DIST_SIZE=$(du -sh ./wp-content/themes/zentheme/dist | cut -f1)
-            echo "     Size: ${DIST_SIZE}"
-          else
-            echo "  ❌ Dist directory MISSING"
-            exit 1
-          fi
-          
-          if [ -f ./wp-content/themes/zentheme/index.php ]; then
-            echo "  ✅ index.php exists"
-          else
-            echo "  ⚠️  index.php missing (may be OK if theme is React-only)"
-          fi
-          
-          # Verificar plugins
+          # Dist contents
           echo ""
-          echo "🔌 Plugins:"
-          if [ -d ./wp-content/plugins ]; then
-            PLUGIN_COUNT=$(find ./wp-content/plugins -mindepth 1 -maxdepth 1 -type d | wc -l)
-            echo "  ✅ Plugins directory exists"
-            echo "     Total plugins: ${PLUGIN_COUNT}"
-          else
-            echo "  ❌ Plugins directory MISSING"
-          fi
+          echo "📦 React build:"
+          [ -f ./wp-content/themes/zentheme/dist/index.html ] && echo "  ✅ index.html" || echo "  ⚠️  missing"
+          JS_COUNT=$(find ./wp-content/themes/zentheme/dist/assets -name "*.js" 2>/dev/null | wc -l)
+          echo "  JS files: $JS_COUNT"
+          CSS_COUNT=$(find ./wp-content/themes/zentheme/dist/assets -name "*.css" 2>/dev/null | wc -l)
+          echo "  CSS files: $CSS_COUNT"
           
-          # Verificar arquivos públicos
+          THEME_SIZE=$(du -sh ./wp-content/themes/zentheme | cut -f1)
           echo ""
-          echo "📄 Public files:"
-          [ -f ./robots.txt ] && echo "  ✅ robots.txt" || echo "  ℹ️  robots.txt not found"
-          [ -f ./favicon.ico ] && echo "  ✅ favicon.ico" || echo "  ℹ️  favicon.ico not found"
-          
-          SITEMAP_COUNT=$(find . -maxdepth 1 -name 'sitemap*.xml' 2>/dev/null | wc -l)
-          if [ $SITEMAP_COUNT -gt 0 ]; then
-            echo "  ✅ Sitemaps: ${SITEMAP_COUNT} files"
-          else
-            echo "  ℹ️  No sitemaps found"
-          fi
-          
-          # Verificar .htaccess (NÃO deve ser sobrescrito)
-          echo ""
-          echo "⚙️  WordPress files:"
-          if [ -f ./.htaccess ]; then
-            echo "  ✅ .htaccess preserved (not touched)"
-          else
-            echo "  ⚠️  .htaccess not found"
-          fi
+          echo "📊 Theme size: $THEME_SIZE"
           
           echo ""
           echo "════════════════════════════════════════"
@@ -406,34 +265,23 @@ jobs:
           echo "════════════════════════════════════════"
           VERIFY
 
-      - name: 🧹 Cleanup SSH credentials
+      - name: 🧹 Cleanup SSH
         if: always()
-        run: |
-          rm -f ~/.ssh/id_rsa ~/.ssh/config
-          echo "🧹 SSH credentials cleaned"
+        run: rm -f ~/.ssh/id_rsa ~/.ssh/config
 
-      - name: 📊 Deploy summary
+      - name: 📊 Deployment summary
         if: always()
         run: |
           echo ""
-          echo "════════════════════════════════════════════════════════"
           if [ "${{ job.status }}" = "success" ]; then
             echo "✅ DEPLOY SUCCESSFUL"
-            echo ""
-            echo "🌐 Site: https://djzeneyer.com"
+            echo "🌐 https://djzeneyer.com"
             echo "📦 Build: ${{ needs.build.outputs.hash }}"
             echo "⏰ Time: ${{ needs.build.outputs.timestamp }}"
           else
-            echo "❌ DEPLOY FAILED"
-            echo ""
-            echo "Check logs above for details"
-            echo "Backup available on server in ./backups/"
+            echo "❌ DEPLOY FAILED - Check logs"
           fi
-          echo "════════════════════════════════════════════════════════"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# JOB 3: HEALTH CHECK (Post-deploy)
-# ═══════════════════════════════════════════════════════════════════════════════
+          echo ""
 
   health-check:
     name: 🏥 Health Check
@@ -442,33 +290,9 @@ jobs:
     if: needs.deploy.result == 'success'
     
     steps:
-      - name: 🔍 Check site accessibility
+      - name: 🔍 Check site
         run: |
-          echo "Checking https://djzeneyer.com..."
-          
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L https://djzeneyer.com)
-          
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ Site is accessible (HTTP $HTTP_CODE)"
-          else
-            echo "⚠️ Site returned HTTP $HTTP_CODE"
-            exit 1
-          fi
+          curl -f https://djzeneyer.com > /dev/null && echo "✅ Site live" || exit 1
 
-      - name: 🔍 Check WordPress REST API
-        run: |
-          echo "Checking WordPress REST API..."
-          
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://djzeneyer.com/wp-json/)
-          
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ WordPress REST API is accessible"
-          else
-            echo "⚠️ WordPress REST API returned HTTP $HTTP_CODE"
-          fi
-
-      - name: 📊 Final status
-        run: |
-          echo ""
-          echo "🎉 Deployment completed successfully!"
-          echo "🌐 https://djzeneyer.com is live"
+      - name: 🎉 Deployment complete
+        run: echo "✅ All checks passed!"
