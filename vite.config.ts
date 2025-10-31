@@ -7,6 +7,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  
   css: {
     postcss: {
       plugins: [
@@ -15,27 +16,30 @@ export default defineConfig({
       ],
     },
   },
+
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    
+    // ✅ REMOVA "external" - causa problemas!
+    // external: [ ... ] ← DELETE ISTO
+    
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-      },
-      external: [
-        /^\/public\//,
-        /^\/scripts\//,
-        /^\/plugins\//,
-        /^\/inc\//, // Ignora a pasta inc (PHP)
-        /^\/wp-/,
-        /^\/bolt\.new/,
-      ],
+      // ✅ Input simples (Vite encontra sozinho)
+      input: resolve(__dirname, 'index.html'),
+      
       output: {
+        // ✅ Code splitting (mantém, é bom)
         manualChunks: {
           react: ['react', 'react-dom'],
-          // spotify: ['@spotify/web-api-js-sdk'],
         },
       },
     },
+  },
+
+  // ✅ ADICIONE isto para desenvolvimento local
+  server: {
+    open: true,
+    port: 3000,
   },
 });
