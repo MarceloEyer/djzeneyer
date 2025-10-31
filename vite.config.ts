@@ -1,4 +1,3 @@
-// vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from 'tailwindcss';
@@ -9,7 +8,10 @@ export default defineConfig({
   plugins: [react()],
   css: {
     postcss: {
-      plugins: [tailwindcss('./tailwind.config.js'), autoprefixer()],
+      plugins: [
+        tailwindcss('./tailwind.config.js'),
+        autoprefixer(),
+      ],
     },
   },
   build: {
@@ -20,11 +22,12 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
       },
       external: [
-        // Ignora pastas específicas
+        // Ignora pastas específicas (backend)
         /^\/public\//,
         /^\/scripts\//,
         /^\/plugins\//,
-        // Ignora dependências que não devem ser bundladas (ex: WordPress, Bolt.new)
+        /^\/inc\//, // Ignora a pasta inc (PHP)
+        // Ignora dependências do WordPress/Bolt.new
         /^\/wp-/,
         /^\/bolt\.new/,
       ],
