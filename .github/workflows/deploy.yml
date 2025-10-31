@@ -54,7 +54,41 @@ jobs:
           ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      # 💾 Backup do tema (antes de qualquer alteração)
+      # 🗺️ Gera sitemaps após o build
+      - name: Gera sitemaps
+        run: |
+          npm install
+          node scripts/generate-sitemap.js
+          ls -la public/
+
+      # 📄 Copia sitemaps para o servidor
+      - name: Copia sitemaps para o servidor
+        run: |
+          scp -P ${{ secrets.SSH_PORT }} \
+            -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            public/sitemap.xml \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
+
+          scp -P ${{ secrets.SSH_PORT }} \
+            -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            public/sitemap-en.xml \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
+
+          scp -P ${{ secrets.SSH_PORT }} \
+            -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            public/sitemap_index.xml \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
+
+          scp -P ${{ secrets.SSH_PORT }} \
+            -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            public/robots.txt \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
+
+      # 💾 Faz backup antes de deploy
       - name: Faz backup
         run: |
           ssh -p ${{ secrets.SSH_PORT }} \
@@ -123,7 +157,7 @@ jobs:
       # 📄 Copia arquivos públicos (whitelist)
       - name: Copia arquivos públicos
         run: |
-          for file in robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest; do
+          for file in ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest; do
             if [ -f "public/$file" ]; then
               scp -P ${{ secrets.SSH_PORT }} \
                 -i ~/.ssh/id_rsa \
