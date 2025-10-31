@@ -22,9 +22,6 @@ env:
   SSH_HOST: '147.79.84.222'
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
-  REMOTE_THEME_PATH: './wp-content/themes/zentheme'
-  REMOTE_PLUGINS_PATH: './wp-content/plugins'
-  BASE_URL: 'https://djzeneyer.com'
 
 jobs:
   build:
@@ -107,17 +104,15 @@ jobs:
             StrictHostKeyChecking accept-new
           EOF
 
-      - run: ssh prod "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist ${{ env.REMOTE_PLUGINS_PATH }}"
+      - name: SSH Test
+        run: ssh prod "mkdir -p ./wp-content/themes/zentheme/dist ./wp-content/plugins"
 
-      - run: |
-          rsync -avz --delete \
-            -e "ssh -o ConnectTimeout=10" \
-            dist/ \
-            prod:${{ env.REMOTE_THEME_PATH }}/dist/
+      - name: Deploy dist
+        run: rsync -avz --delete -e "ssh -o ConnectTimeout=10" dist/ prod:./wp-content/themes/zentheme/dist/
 
-      - run: |
-          rsync -avz --delete \
-            -e "ssh -o ConnectTimeout=10" \
+      - name: Deploy theme
+        run: |
+          rsync -avz --delete -e "ssh -o ConnectTimeout=10" \
             --exclude='.git*' \
             --exclude='node_modules' \
             --exclude='dist' \
@@ -137,50 +132,19 @@ jobs:
             --exclude='.DS_Store' \
             --exclude='*.log' \
             ./ \
-            prod:${{ env.REMOTE_THEME_PATH }}/
+            prod:./wp-content/themes/zentheme/
 
-      - run: |
-          [ ! -d plugins ] && exit 0
-          [ -z "$(ls -A plugins 2>/dev/null)" ] && exit 0
-          rsync -avz \
-            -e "ssh -o ConnectTimeout=10" \
-            plugins/ \
-            prod:${{ env.REMOTE_PLUGINS_PATH }}/
+      - name: Deploy plugins
+        if: hashFiles('plugins/**') != ''
+        run: rsync -avz -e "ssh -o ConnectTimeout=10" plugins/ prod:./wp-content/plugins/
 
-      - run: |
-          [ ! -f dist/sitemap_index.xml ] && exit 0
-          rsync -avz \
-            --include='sitemap*.xml' \
-            --exclude='*' \
-            -e "ssh -o ConnectTimeout=10" \
-            dist/ \
-            prod:./
+      - name: Deploy sitemaps
+        if: hashFiles('dist/sitemap*.xml') != ''
+        run: rsync -avz --include='sitemap*.xml' --exclude='*' -e "ssh -o ConnectTimeout=10" dist/ prod:./
 
-      - run: |
-          rsync -avz \
-            --include='robots.txt' \
-            --include='favicon*' \
-            --include='*.ico' \
-            --include='*.svg' \
-            --include='*.webmanifest' \
-            --exclude='*' \
-            -e "ssh -o ConnectTimeout=10" \
-            dist/ \
-            prod:./
-
-      - run: |
-          ssh prod << 'EOF'
-          [ -d ./wp-content/themes/zentheme ] && echo "OK: theme" || echo "FAIL: theme"
-          [ -d ./wp-content/themes/zentheme/dist ] && echo "OK: dist" || echo "FAIL: dist"
-          [ -f ./robots.txt ] && echo "OK: robots.txt" || echo "WARN: robots.txt"
-          EOF
+      - name: Deploy public
+        run: rsync -avz --include='robots.txt' --include='favicon*' --include='*.ico' --include='*.svg' --include='*.webmanifest' --exclude='*' -e "ssh -o ConnectTimeout=10" dist/ prod:./
 
       - run: rm -f ~/.ssh/id_rsa ~/.ssh/config
 
-      - run: |
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "✅ Deploy successful"
-          else
-            echo "❌ Deploy failed"
-            exit 1
-          fi
+      - run: ssh prod "echo OK: theme && [ -d ./wp-content/themes/zentheme/dist ] && echo OK: dist || echo FAIL: dist"
