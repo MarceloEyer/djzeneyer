@@ -188,10 +188,10 @@ jobs:
         with:
           name: build-${{ needs.validate.outputs.commit_hash }}
           path: ./
-          
+
       # NEW: FTP Deploy with clean-slate for zentheme - FIXED SYNTAX
       - name: 🌐 FTP Deploy - clean-slate ONLY zentheme
-        if: secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != ''
+        if: ${{ secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != '' }}
         uses: SamKirkland/FTP-Deploy-Action@v4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -216,12 +216,12 @@ jobs:
             **/vite.config.*
             **/public/**
             **/src/**
-            
+
       - name: ✅ Verify FTP deployment
         run: |
           echo "🔍 FTP deployment completed"
           echo "✅ Theme deployed to zentheme directory with clean-slate"
-          
+
       - name: 📊 Deployment summary
         if: always()
         run: |
