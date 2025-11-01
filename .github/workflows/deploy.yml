@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (FULL SITE RSYNC)
+# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (FULL SITE RSYNC + FTP THEME CLEAN-SLATE)
 # ═══════════════════════════════════════════════════════════════════════════════
 name: 🚀 Production Deploy
 on:
@@ -84,7 +84,11 @@ jobs:
             echo "❌ SSH_PRIVATE_KEY secret not set!"
             exit 1
           fi
-          echo "✅ Critical secrets validated"
+          if [ -z "${{ secrets.FTP_SERVER }}" ] || [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
+            echo "ℹ️ FTP secrets not set - FTP deploy will be skipped"
+          else
+            echo "✅ FTP secrets present"
+          fi
   build:
     name: 🏗️ Build Production
     runs-on: ubuntu-latest
@@ -294,6 +298,35 @@ jobs:
               ${SSH_USER}@${SSH_HOST}:${REMOTE_ROOT}/
           fi
           echo "✅ Public assets synced"
+      - name: 🌐 FTP Deploy - clean-slate ONLY zentheme
+        if: |
+          secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./
+          server-dir: /public_html/wp-content/themes/zentheme/
+          dangerous-clean-slate: true
+          exclude: |
+            **/.git*
+            **/.git/**
+            **/node_modules/**
+            **/.DS_Store
+            **/*.map
+            **/README*
+            **/README.*
+          include: |
+            wp-content/themes/zentheme/**
+            wp-content/themes/zentheme/dist/**
+            wp-content/themes/zentheme/inc/**
+            wp-content/themes/zentheme/assets/**
+            wp-content/themes/zentheme/**/*.php
+            wp-content/themes/zentheme/style.css
+            wp-content/themes/zentheme/screenshot.png
       - name: ✅ Verify deployment
         run: |
           set -x
@@ -342,38 +375,4 @@ jobs:
               exit 1
             fi
           fi
-          ls -l "$FILE_PATH" || true
-          echo "File content:" && head -n 5 "$FILE_PATH" || true
-          BASH_EOF
-      - name: 🧹 Cleanup SSH
-        if: always()
-        run: |
-          rm -f ~/.ssh/id_rsa ~/.ssh/config
-          echo "🧹 SSH credentials cleaned"
-      - name: 📊 Deployment summary
-        if: always()
-        run: |
-          echo ""
-          echo "════════════════════════════════════════════════════════"
-          echo "✅ DEPLOY SUCCESSFUL"
-          echo ""
-          echo "🌐 Site: https://djzeneyer.com"
-          echo "📦 Build: ${{ needs.validate.outputs.commit_hash }}"
-          echo "📊 Size: ${{ needs.build.outputs.build_size }}"
-          echo "════════════════════════════════════════════════════════"
-  health-check:
-    name: 🏥 Health Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: deploy
-    if: needs.deploy.result == 'success'
-    steps:
-      - name: 🔍 Check site accessibility
-        run: |
-          echo "Checking https://djzeneyer.com..."
-          for i in {1..3}; do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 https://djzeneyer.com)
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ Site is accessible (HTTP $HTTP_CODE)"
-              exit 0
-            else
+          ls
