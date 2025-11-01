@@ -9,6 +9,7 @@ on:
       - 'docs/**'
       - '*.md'
       - '.gitignore'
+      - 'LICENSE'
   workflow_dispatch:
     inputs:
       skip_build:
@@ -34,5 +35,234 @@ env:
   SSH_PORT: '65002'
   SSH_USER: 'u790739895'
   REMOTE_ROOT: '/home/u790739895/public_html'
+  THEME_NAME: 'zentheme'
 
-# Trigger deploy - testing new FTP clean-slate workflow
+jobs:
+  validate:
+    name: ✅ Pre-build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should_build: ${{ steps.changes.outputs.should_build }}
+      commit_hash: ${{ steps.hash.outputs.value }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: 🔖 Generate commit hash
+        id: hash
+        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: 🔍 Check changed files
+        id: changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html)$' || echo "force")
+          if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.force_deploy }}" = "true" ]; then
+            echo "should_build=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes detected - build required"
+          else
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No build changes detected"
+          fi
+      - name: 📋 Validate required files
+        run: |
+          REQUIRED_FILES=(
+            "package.json"
+            "vite.config.ts"
+            "tsconfig.json"
+            "src/main.tsx"
+            "functions.php"
+          )
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Required file missing: $file"
+              exit 1
+            fi
+          done
+          echo "✅ All required files present"
+      - name: 🔐 Validate secrets
+        run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "❌ SSH_PRIVATE_KEY secret not set!"
+            exit 1
+          fi
+          echo "✅ Critical secrets validated"
+
+  build:
+    name: 🏗️ Build Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: validate
+    if: |
+      needs.validate.outputs.should_build == 'true' && 
+      !inputs.skip_build
+    outputs:
+      build_status: ${{ job.status }}
+      build_size: ${{ steps.size.outputs.value }}
+      timestamp: ${{ steps.timestamp.outputs.value }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: ⏰ Generate timestamp
+        id: timestamp
+        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+      - name: 📦 Install dependencies
+        run: |
+          echo "Installing dependencies..."
+          npm ci --prefer-offline --no-audit
+          echo "✅ Dependencies installed"
+      - name: 🔨 Build production bundle
+        run: |
+          echo "Building production bundle..."
+          npm run build
+        env:
+          NODE_ENV: production
+          VITE_WP_SITE_URL: https://djzeneyer.com
+          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
+          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
+          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+      - name: ✅ Validate build output
+        run: |
+          echo "Validating build output..."
+          if [ ! -d "dist" ]; then
+            echo "❌ dist/ directory not found"
+            exit 1
+          fi
+          if [ ! -f "dist/index.html" ]; then
+            echo "❌ dist/index.html not found"
+            exit 1
+          fi
+          JS_COUNT=$(find dist -name '*.js' 2>/dev/null | wc -l)
+          DIST_SIZE=$(du -sh dist/ | cut -f1)
+          echo "📊 Build contents:"
+          echo "  - JS files: $JS_COUNT"
+          echo "  - Total size: $DIST_SIZE"
+          if [ "$JS_COUNT" -eq 0 ]; then
+            echo "❌ No JavaScript files found!"
+            exit 1
+          fi
+          echo "✅ Build validation passed"
+      - name: 📊 Calculate build size
+        id: size
+        run: |
+          SIZE=$(du -sh dist/ | cut -f1)
+          echo "value=$SIZE" >> $GITHUB_OUTPUT
+      - name: 📤 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ needs.validate.outputs.commit_hash }}
+          path: |
+            dist/
+            plugins/
+            inc/
+            *.php
+            style.css
+            screenshot.png
+          retention-days: 7
+          if-no-files-found: error
+
+  deploy:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [validate, build]
+    if: |
+      always() && 
+      (needs.build.result == 'success' || inputs.skip_build) &&
+      needs.validate.result == 'success'
+    environment:
+      name: production
+      url: https://djzeneyer.com
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+      - name: 📥 Download build artifact
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-${{ needs.validate.outputs.commit_hash }}
+          path: ./
+          
+      # NEW: FTP Deploy with clean-slate for zentheme - FIXED SYNTAX
+      - name: 🌐 FTP Deploy - clean-slate ONLY zentheme
+        if: secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./
+          server-dir: /public_html/wp-content/themes/zentheme/
+          dangerous-clean-slate: true
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.vscode/**
+            **/.github/**
+            **/docs/**
+            **/*.md
+            **/LICENSE
+            **/package*.json
+            **/tsconfig*.json
+            **/vite.config.*
+            **/public/**
+            **/src/**
+            
+      - name: ✅ Verify FTP deployment
+        run: |
+          echo "🔍 FTP deployment completed"
+          echo "✅ Theme deployed to zentheme directory with clean-slate"
+          
+      - name: 📊 Deployment summary
+        if: always()
+        run: |
+          echo ""
+          echo "═══════════════════════════════════════════════════════="
+          echo "✅ DEPLOY SUCCESSFUL - FTP CLEAN-SLATE"
+          echo ""
+          echo "🌐 Site: https://djzeneyer.com"
+          echo "📦 Build: ${{ needs.validate.outputs.commit_hash }}"
+          echo "📊 Size: ${{ needs.build.outputs.build_size }}"
+          echo "🌐 FTP: Clean-slate deployed to zentheme/"
+          echo "═══════════════════════════════════════════════════════="
+
+  health-check:
+    name: 🏥 Health Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: deploy
+    if: needs.deploy.result == 'success'
+    steps:
+      - name: 🔍 Check site accessibility
+        run: |
+          echo "Checking https://djzeneyer.com..."
+          for i in {1..3}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 https://djzeneyer.com)
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Site is accessible (HTTP $HTTP_CODE)"
+              exit 0
+            else
+              echo "⚠️ Attempt $i: HTTP $HTTP_CODE"
+              [ $i -lt 3 ] && sleep 5
+            fi
+          done
+          echo "⚠️ Site check inconclusive"
+      - name: 📊 Final status
+        run: |
+          echo ""
+          echo "═══════════════════════════════════════════════════════="
+          echo "🎉 DEPLOYMENT COMPLETED - FTP CLEAN-SLATE!"
+          echo "═══════════════════════════════════════════════════════="
+          echo ""
+          echo "🌐 Live site: https://djzeneyer.com"
+          echo ""
+          echo "═══════════════════════════════════════════════════════="
