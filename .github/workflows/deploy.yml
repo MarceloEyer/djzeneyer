@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (ENTERPRISE-GRADE - FIXED)
+# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (FULL SITE RSYNC)
 # ═══════════════════════════════════════════════════════════════════════════════
 name: 🚀 Production Deploy
 on:
@@ -22,13 +22,16 @@ on:
         required: false
         type: boolean
         default: false
+
 concurrency:
   group: production-deploy
   cancel-in-progress: false
+
 permissions:
   contents: read
   deployments: write
   actions: read
+
 env:
   NODE_VERSION: '20'
   SSH_HOST: '147.79.84.222'
@@ -36,6 +39,7 @@ env:
   SSH_USER: 'u790739895'
   REMOTE_ROOT: '/home/u790739895/public_html'
   THEME_NAME: 'zentheme'
+
 jobs:
   validate:
     name: ✅ Pre-build Validation
@@ -55,7 +59,7 @@ jobs:
       - name: 🔍 Check changed files
         id: changes
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html)$' || echo "force")
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html|php)$' || echo "force")
           if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.force_deploy }}" = "true" ]; then
             echo "should_build=true" >> $GITHUB_OUTPUT
             echo "✅ Changes detected - build required"
@@ -86,6 +90,7 @@ jobs:
             exit 1
           fi
           echo "✅ Critical secrets validated"
+
   build:
     name: 🏗️ Build Production
     runs-on: ubuntu-latest
@@ -159,11 +164,14 @@ jobs:
             dist/
             plugins/
             inc/
+            wp-content/themes/zentheme/**
             *.php
             style.css
             screenshot.png
+            public/
           retention-days: 7
-          if-no-files-found: error
+          if-no-files-found: warn
+
   deploy:
     name: 🚀 Deploy to Production
     runs-on: ubuntu-latest
@@ -192,7 +200,7 @@ jobs:
           chmod 700 ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 65002 147.79.84.222 >> ~/.ssh/known_hosts 2>&1
+          ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts 2>&1
           chmod 644 ~/.ssh/known_hosts
           cat > ~/.ssh/config << 'EOF'
           Host prod
@@ -228,7 +236,7 @@ jobs:
             tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
           fi
           echo "📁 Creating directory structure..."
-          mkdir -p "${THEME_PATH}"/{dist,inc}
+          mkdir -p "${THEME_PATH}"/{dist,inc,assets}
           mkdir -p "/home/u790739895/public_html/wp-content/plugins"
           echo "🧹 Cleaning old backups..."
           cd "/home/u790739895/backups"
@@ -236,72 +244,66 @@ jobs:
           echo "${BACKUP_DIR}" > /tmp/last_backup_path.txt
           echo "✅ Remote environment ready"
           BASH_EOF
-      - name: 🚀 Deploy React build (force sync dist)
+      - name: 🚀 Sync full theme directory (incl. dist, inc, assets, php, css)
         run: |
           set -x
-          echo "📤 Deploying React build with forced sync..."
-          rsync -avz --delete --progress \
-            -e "ssh -p 65002 -vvv" \
-            dist/ \
-            u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/themes/zentheme/dist/
-          echo "✅ React build deployed"
-      - name: 📝 Deploy theme files (force sync PHP/CSS/inc)
-        run: |
-          set -x
-          echo "📤 Deploying theme files with forced sync..."
-          # Sync root theme files (PHP, CSS, screenshot) and delete removed ones
-          rsync -avz --delete --progress \
-            -e "ssh -p 65002 -vvv" \
-            --include='*.php' \
+          RSYNC_SSH="ssh -p ${SSH_PORT} -vvv"
+          RSYNC_BASE_OPTS="-avz --delete --progress --chmod=Du=rwx,Dg=rwx,Do=rx,Fu=rw,Fg=rw,Fo=r --no-perms --no-owner --no-group"
+          # Sync entire theme directory while enforcing rules
+          rsync $RSYNC_BASE_OPTS \
+            -e "$RSYNC_SSH" \
+            --include='dist/***' \
+            --include='inc/***' \
+            --include='assets/***' \
+            --include='**/*.php' \
             --include='style.css' \
             --include='screenshot.png' \
-            --exclude='*' \
+            --exclude='.git/***' \
+            --exclude='node_modules/***' \
+            --exclude='**/.DS_Store' \
+            --exclude='**/*.map' \
+            --exclude='**/README*' \
+            --exclude='**/README.*' \
             ./ \
-            u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/themes/zentheme/
-          # Sync inc/ directory fully (create/delete/update)
-          if [ -d "inc" ]; then
-            rsync -avz --delete --progress \
-              -e "ssh -p 65002 -vvv" \
-              inc/ \
-              u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/themes/zentheme/inc/
-          fi
-          echo "✅ Theme files deployed"
-      - name: 🔌 Deploy plugins (force sync)
+            ${SSH_USER}@${SSH_HOST}:${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}/
+          echo "✅ Theme directory synced"
+      - name: 🔌 Sync plugins directory (full, keep structure)
         if: hashFiles('plugins/**') != ''
         run: |
           set -x
-          echo "📤 Deploying plugins with forced sync..."
-          if [ -d "plugins" ]; then
-            rsync -avz --delete --progress \
-              -e "ssh -p 65002 -vvv" \
-              plugins/ \
-              u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/plugins/
-            echo "✅ Plugins deployed"
-          fi
-      - name: 📄 Deploy public assets (safe list, force sync each)
+          RSYNC_SSH="ssh -p ${SSH_PORT} -vvv"
+          RSYNC_BASE_OPTS="-avz --delete --progress --chmod=Du=rwx,Dg=rwx,Do=rx,Fu=rw,Fg=rw,Fo=r --no-perms --no-owner --no-group"
+          rsync $RSYNC_BASE_OPTS \
+            -e "$RSYNC_SSH" \
+            --exclude='.git/***' \
+            --exclude='**/.DS_Store' \
+            plugins/ \
+            ${SSH_USER}@${SSH_HOST}:${REMOTE_ROOT}/wp-content/plugins/
+          echo "✅ Plugins synced"
+      - name: 📄 Sync public assets (safe list + common assets)
         run: |
           set -x
-          echo "📤 Deploying public assets..."
-          SAFE_FILES=(
-            "robots.txt"
-            "favicon.ico"
-            "favicon.svg"
-            "apple-touch-icon.png"
-            "site.webmanifest"
-          )
-          for file in "${SAFE_FILES[@]}"; do
-            if [ -f "public/$file" ]; then
-              rsync -avz --progress \
-                -e "ssh -p 65002 -vvv" \
-                "public/$file" \
-                u790739895@147.79.84.222:/home/u790739895/public_html/
+          RSYNC_SSH="ssh -p ${SSH_PORT} -vvv"
+          RSYNC_BASE_OPTS="-avz --progress --chmod=Du=rwx,Dg=rwx,Do=rx,Fu=rw,Fg=rw,Fo=r --no-perms --no-owner --no-group"
+          # Safe top-level files
+          for f in robots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest; do
+            if [ -f "public/$f" ]; then
+              rsync $RSYNC_BASE_OPTS -e "$RSYNC_SSH" "public/$f" ${SSH_USER}@${SSH_HOST}:${REMOTE_ROOT}/
             fi
           done
-          echo "✅ Public assets deployed"
+          # Entire public directory (images, fonts, etc.)
+          if [ -d public ]; then
+            rsync $RSYNC_BASE_OPTS \
+              -e "$RSYNC_SSH" \
+              --exclude='.git/***' \
+              --exclude='**/.DS_Store' \
+              public/ \
+              ${SSH_USER}@${SSH_HOST}:${REMOTE_ROOT}/
+          fi
+          echo "✅ Public assets synced"
       - name: ✅ Verify deployment
         run: |
           set -x
-          echo "🔍 Verifying deployment..."
           ssh -vvv prod bash << 'BASH_EOF'
           set -ex
           THEME_PATH="/home/u790739895/public_html/wp-content/themes/zentheme"
@@ -334,7 +336,6 @@ jobs:
           FILE_PATH="${THEME_PATH}/test.txt"
           echo "Ensuring permissions and directory exist..."
           mkdir -p "$THEME_PATH"
-          # Try to write the file; if permission denied, try with sudo if available
           if echo 'Deploy test' > "$FILE_PATH" 2>/tmp/write_err.log; then
             echo "✅ Wrote test file: $FILE_PATH"
           else
@@ -367,6 +368,7 @@ jobs:
           echo "📦 Build: ${{ needs.validate.outputs.commit_hash }}"
           echo "📊 Size: ${{ needs.build.outputs.build_size }}"
           echo "════════════════════════════════════════════════════════"
+
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
@@ -380,12 +382,4 @@ jobs:
           for i in {1..3}; do
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 https://djzeneyer.com)
             if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ Site is accessible (HTTP $HTTP_CODE)"
-              exit 0
-            else
-              echo "⚠️ Attempt $i: HTTP $HTTP_CODE"
-              sleep 3
-            fi
-          done
-          echo "❌ Site might be down or slow to respond"
-          exit 1</textarea></section></main></body></html> }】}```} Turmoil and Freedom. How to
+              echo "✅ Site is accessible (HTTP
