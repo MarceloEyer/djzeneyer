@@ -213,20 +213,6 @@ jobs:
         run: |
           set -x
           ssh -vvv prod "echo '✅ SSH connection successful' && pwd && whoami"
-      - name: 🔎 Remote environment info (pre-deploy)
-        run: |
-          set -x
-          ssh -vvv prod bash << 'BASH_EOF'
-          set -ex
-          echo "=== Shell and env files ==="
-          cat ~/.bashrc ~/.profile || echo "Sem arquivos ocultos"
-          echo "=== Environment ==="
-          env | sort
-          echo "=== PATH and which ==="
-          echo "$PATH"
-          which bash || true
-          which sh || true
-          BASH_EOF
       - name: 📁 Prepare remote environment
         run: |
           set -x
@@ -250,21 +236,21 @@ jobs:
           echo "${BACKUP_DIR}" > /tmp/last_backup_path.txt
           echo "✅ Remote environment ready"
           BASH_EOF
-      - name: 🚀 Deploy React build
+      - name: 🚀 Deploy React build (force sync dist)
         run: |
           set -x
-          echo "📤 Deploying React build..."
-          rsync -avz \
-            --delete \
+          echo "📤 Deploying React build with forced sync..."
+          rsync -avz --delete --progress \
             -e "ssh -p 65002 -vvv" \
             dist/ \
             u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/themes/zentheme/dist/
           echo "✅ React build deployed"
-      - name: 📝 Deploy theme files
+      - name: 📝 Deploy theme files (force sync PHP/CSS/inc)
         run: |
           set -x
-          echo "📤 Deploying theme PHP files..."
-          rsync -avz \
+          echo "📤 Deploying theme files with forced sync..."
+          # Sync root theme files (PHP, CSS, screenshot) and delete removed ones
+          rsync -avz --delete --progress \
             -e "ssh -p 65002 -vvv" \
             --include='*.php' \
             --include='style.css' \
@@ -272,26 +258,27 @@ jobs:
             --exclude='*' \
             ./ \
             u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/themes/zentheme/
+          # Sync inc/ directory fully (create/delete/update)
           if [ -d "inc" ]; then
-            rsync -avz \
+            rsync -avz --delete --progress \
               -e "ssh -p 65002 -vvv" \
               inc/ \
               u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/themes/zentheme/inc/
           fi
           echo "✅ Theme files deployed"
-      - name: 🔌 Deploy plugins
+      - name: 🔌 Deploy plugins (force sync)
         if: hashFiles('plugins/**') != ''
         run: |
           set -x
-          echo "📤 Deploying plugins..."
+          echo "📤 Deploying plugins with forced sync..."
           if [ -d "plugins" ]; then
-            rsync -avz \
+            rsync -avz --delete --progress \
               -e "ssh -p 65002 -vvv" \
               plugins/ \
               u790739895@147.79.84.222:/home/u790739895/public_html/wp-content/plugins/
             echo "✅ Plugins deployed"
           fi
-      - name: 📄 Deploy public assets
+      - name: 📄 Deploy public assets (safe list, force sync each)
         run: |
           set -x
           echo "📤 Deploying public assets..."
@@ -304,7 +291,7 @@ jobs:
           )
           for file in "${SAFE_FILES[@]}"; do
             if [ -f "public/$file" ]; then
-              rsync -avz \
+              rsync -avz --progress \
                 -e "ssh -p 65002 -vvv" \
                 "public/$file" \
                 u790739895@147.79.84.222:/home/u790739895/public_html/
@@ -396,4 +383,9 @@ jobs:
               echo "✅ Site is accessible (HTTP $HTTP_CODE)"
               exit 0
             else
-              echo "⚠️ Attempt $i: HTTP $
+              echo "⚠️ Attempt $i: HTTP $HTTP_CODE"
+              sleep 3
+            fi
+          done
+          echo "❌ Site might be down or slow to respond"
+          exit 1</textarea></section></main></body></html> }】}```} Turmoil and Freedom. How to
