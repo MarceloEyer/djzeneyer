@@ -56,6 +56,9 @@ jobs:
     needs: build
     timeout-minutes: 20
     steps:
+      - name: ⚡ Checkout
+        uses: actions/checkout@v4
+
       - name: 📥 Download dist
         uses: actions/download-artifact@v4
         with:
@@ -73,18 +76,15 @@ jobs:
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" bash -lc "
           mkdir -p \"${SSH_THEME_PATH}/.backups\"
-          mkdir -p \"${SSH_PUBLIC_PATH}/.backups\"
           tar -czf \"${SSH_THEME_PATH}/.backups/theme-${TIMESTAMP}.tar.gz\" --exclude='.backups' -C '${SSH_THEME_PATH}' .
-          tar -czf \"${SSH_PUBLIC_PATH}/.backups/dist-${TIMESTAMP}.tar.gz\" --exclude='.backups' -C '${SSH_PUBLIC_PATH}' dist
           find \"${SSH_THEME_PATH}/.backups\" -type f -mtime +30 -name 'theme-*.tar.gz' -delete
-          find \"${SSH_PUBLIC_PATH}/.backups\" -type f -mtime +30 -name 'dist-*.tar.gz' -delete
           "
 
       - name: 📤 Deploy via rsync (React dist)
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=no" \
-            ./dist/ "${SSH_USER}@${SSH_HOST}:${SSH_PUBLIC_PATH}/dist/"
+            ./dist/ "${SSH_USER}@${SSH_HOST}:${SSH_THEME_PATH}/dist/"
 
       - name: 🔄 Deploy via rsync (Theme PHP)
         run: |
@@ -93,6 +93,17 @@ jobs:
             --exclude '.git/' \
             --exclude 'node_modules/' \
             --exclude '.backups/' \
+            --exclude 'src/' \
+            --exclude 'public/' \
+            --exclude '.bolt/' \
+            --exclude 'package*.json' \
+            --exclude 'tsconfig*.json' \
+            --exclude 'vite.config.ts' \
+            --exclude 'tailwind.config.js' \
+            --exclude 'postcss.config.js' \
+            --exclude 'eslint.config.js' \
+            --exclude 'vercel.json' \
+            --exclude 'index.html' \
             -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=no" \
             ./ "${SSH_USER}@${SSH_HOST}:${SSH_THEME_PATH}/"
 
