@@ -1,5 +1,4 @@
 name: 🚀 Production Deploy
-
 on:
   push:
     branches: [main]
@@ -14,17 +13,19 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  SSH_HOST: '147.79.84.222'
-  SSH_PORT: '65002'
-  SSH_USER: 'u790739895'
-  REMOTE_THEME_PATH: './wp-content/themes/zentheme'
+  SSH_HOST: ${{ secrets.SSH_HOST }}
+  SSH_PORT: ${{ secrets.SSH_PORT }}
+  SSH_USER: ${{ secrets.SSH_USER }}
+  SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+  REMOTE_THEME_PATH: ${{ secrets.REMOTE_THEME_PATH }} # e.g., /home/user/public_html/wp-content/themes/zentheme
+  DEPLOY_ROOT: ${{ secrets.DEPLOY_ROOT }} # e.g., /home/user/public_html
+  HEALTHCHECK_URL: ${{ secrets.HEALTHCHECK_URL }} # e.g., https://djzeneyer.com/wp-json/
 
 jobs:
   build:
-    name: 🏗️ Build
+    name: 🏗️ Build (React/Vite)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    
+    timeout-minutes: 20
     steps:
       - name: ⚡ Checkout
         uses: actions/checkout@v4
@@ -38,32 +39,37 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci --prefer-offline --no-audit
 
+      - name: 🧪 Type Check (optional)
+        if: hashFiles('tsconfig*.json') != ''
+        run: |
+          if [ -f "node_modules/.bin/tsc" ]; then npm run typecheck --if-present || npm run tsc --if-present; else echo "No TS"; fi
+
       - name: 🏗️ Build Production
-        run: npm run build
         env:
           NODE_ENV: production
-          VITE_WP_SITE_URL: https://djzeneyer.com
-          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
+          VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
+          VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        run: npm run build
 
-      - name: 📤 Upload Artifact
+      - name: 📤 Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: production-build
           path: dist/
-          retention-days: 7
+          retention-days: 10
           compression-level: 9
 
   deploy:
-    name: 🚀 Deploy
+    name: 🚀 Deploy (WordPress Headless + Theme)
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     environment:
       name: production
-      url: https://djzeneyer.com
+      url: ${{ secrets.SITE_URL }}
 
     steps:
       - name: ⚡ Checkout
@@ -75,32 +81,49 @@ jobs:
           name: production-build
           path: dist/
 
-      - name: 🔑 Setup SSH Key
+      - name: 🔑 Setup SSH
+        shell: bash
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+          if [ -n "${SSH_KNOWN_HOSTS}" ]; then
+            echo "${SSH_KNOWN_HOSTS}" >> ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "${SSH_PORT}" -H "${SSH_HOST}" >> ~/.ssh/known_hosts
+          fi
 
-      - name: 🧪 Test SSH Connection & Ensure Remote Directories Exist
+      - name: 🧪 SSH Sanity + Prepare Remote Paths
         run: |
-          ssh -i ~/.ssh/deploy_key \
-            -p ${{ env.SSH_PORT }} \
-            -o StrictHostKeyChecking=no \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
-            "mkdir -p ${{ env.REMOTE_THEME_PATH }}/dist && echo '✅ Remote directories ready'"
+          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" -o StrictHostKeyChecking=yes "${SSH_USER}@${SSH_HOST}" \
+            "mkdir -p '${REMOTE_THEME_PATH}/dist' '${REMOTE_THEME_PATH}/.backups' '${DEPLOY_ROOT}/.backups' && echo '✅ Remote ready'"
 
-      - name: ⚛️ Deploy React App (Clean Slate)
+      - name: 🗃️ Backup Current Deploy
+        run: |
+          TS=$(date +%Y%m%d-%H%M%S)
+          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" -o StrictHostKeyChecking=yes "${SSH_USER}@${SSH_HOST}" bash -lc "
+            set -e
+            THEME_BACK='${REMOTE_THEME_PATH}/.backups/theme-$TS.tar.gz'
+            ROOT_BACK='${DEPLOY_ROOT}/.backups/root-$TS.tar.gz'
+            # Theme backup (only relevant files)
+            tar -C '${REMOTE_THEME_PATH}' -czf "$THEME_BACK" \
+              --exclude='.backups' --exclude='node_modules' --exclude='src' --exclude='.git*' \
+              --exclude='public' --exclude='*.map' --exclude='package*.json' --exclude='*.md' . || true
+            # Root backup of public assets currently deployed from dist (optional best effort)
+            tar -C '${DEPLOY_ROOT}' -czf "$ROOT_BACK" dist || true
+            echo "Theme backup: $THEME_BACK"; echo "Root backup: $ROOT_BACK"
+          "
+
+      - name: ⚛️ Deploy React/Vite Build to Theme dist
         run: |
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
-            ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/dist/
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=yes" \
+            ./dist/ "${SSH_USER}@${SSH_HOST}:${REMOTE_THEME_PATH}/dist/"
 
-      - name: 🎨 Deploy Theme Files (Smart Sync)
+      - name: 🎨 Sync Theme Files (PHP, templates, assets)
         run: |
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=yes" \
             --exclude='.git*' \
             --exclude='node_modules' \
             --exclude='dist' \
@@ -114,26 +137,63 @@ jobs:
             --exclude='postcss.config.*' \
             --exclude='tailwind.config.*' \
             --exclude='*.md' \
-            ./ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_THEME_PATH }}/
+            ./ "${SSH_USER}@${SSH_HOST}:${REMOTE_THEME_PATH}/"
 
-      - name: 🌐 Deploy Public Assets to Root
+      - name: 🌐 Publish Public Assets to Web Root (from dist)
         run: |
           rsync -avz \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=yes" \
             --exclude='assets' \
             --exclude='index.html' \
             --exclude='react-sitemap.xml' \
-            ./dist/ \
-            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:./
+            ./dist/ "${SSH_USER}@${SSH_HOST}:${DEPLOY_ROOT}/"
+
+      - name: 🩺 Health Check
+        run: |
+          set -e
+          URL="${HEALTHCHECK_URL}"
+          echo "Checking: $URL"
+          for i in {1..10}; do
+            HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$URL") || true
+            echo "Attempt $i -> HTTP $HTTP"
+            if [ "$HTTP" = "200" ]; then echo "OK"; exit 0; fi
+            sleep 5
+          done
+          echo "Healthcheck failed" >&2
+          exit 1
+
+      - name: 🔁 Rollback on Failure
+        if: failure()
+        run: |
+          echo "Starting rollback..."
+          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" -o StrictHostKeyChecking=yes "${SSH_USER}@${SSH_HOST}" bash -lc "
+            set -e
+            LAST_THEME=$(ls -1t '${REMOTE_THEME_PATH}/.backups/' | grep '^theme-' | head -n1 || true)
+            LAST_ROOT=$(ls -1t '${DEPLOY_ROOT}/.backups/' | grep '^root-' | head -n1 || true)
+            if [ -n "$LAST_THEME" ]; then
+              echo 'Restoring theme backup:' "$LAST_THEME"
+              tar -xzf "${REMOTE_THEME_PATH}/.backups/$LAST_THEME" -C '${REMOTE_THEME_PATH}'
+            fi
+            if [ -n "$LAST_ROOT" ]; then
+              echo 'Restoring root backup:' "$LAST_ROOT"
+              rm -rf '${DEPLOY_ROOT}/dist' || true
+              mkdir -p '${DEPLOY_ROOT}/dist'
+              tar -xzf "${DEPLOY_ROOT}/.backups/$LAST_ROOT" -C '${DEPLOY_ROOT}'
+            fi
+          "
 
       - name: 🧹 Cleanup SSH Key
         if: always()
         run: rm -f ~/.ssh/deploy_key
 
-      - name: ✅ Deployment Summary
+      - name: 📊 Deployment Report
+        if: always()
         run: |
-          echo "### ✨ Deployment Complete!" >> $GITHUB_STEP_SUMMARY
-          echo "🌐 **Site:** https://djzeneyer.com" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Commit:** \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
-          echo "👤 **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          STATUS=${{ job.status }}
+          echo "### Deployment Report" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: $STATUS" >> $GITHUB_STEP_SUMMARY
+          echo "- Site: ${{ secrets.SITE_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Actor: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Theme Path: ${REMOTE_THEME_PATH}" >> $GITHUB_STEP_SUMMARY
+          echo "- Deploy Root: ${DEPLOY_ROOT}" >> $GITHUB_STEP_SUMMARY
