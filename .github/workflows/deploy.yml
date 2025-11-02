@@ -3,11 +3,14 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+
 concurrency:
   group: production-${{ github.ref }}
   cancel-in-progress: false
+
 permissions:
   contents: read
+
 env:
   NODE_VERSION: '20'
   SSH_HOST: ${{ secrets.SSH_HOST }}
@@ -15,6 +18,7 @@ env:
   SSH_USER: ${{ secrets.SSH_USER }}
   SSH_THEME_PATH: ${{ secrets.SSH_THEME_PATH }} # e.g., /home/user/public_html/wp-content/themes/zentheme
   SSH_PUBLIC_PATH: ${{ secrets.SSH_PUBLIC_PATH }} # e.g., /home/user/public_html
+
 jobs:
   build:
     name: 🏗️ Build (React/Vite)
@@ -23,108 +27,106 @@ jobs:
     steps:
       - name: ⚡ Checkout
         uses: actions/checkout@v4
+
       - name: 🔍 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+
       - name: 📦 Install dependencies
         run: npm ci
+
       - name: 🏗️ Build Production
         env:
           VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
           VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
-          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
-          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
-      - name: 📤 Upload Build Artifact
+
+      - name: 📤 Upload dist
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: react-dist
           path: dist/
           retention-days: 1
+
   deploy:
     name: 🚀 Deploy to Production
-    needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    needs: build
+    timeout-minutes: 20
     steps:
-      - name: 📥 Download Build Artifact
+      - name: 📥 Download dist
         uses: actions/download-artifact@v4
         with:
-          name: dist
+          name: react-dist
           path: ./dist
+
       - name: 🔐 Setup SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+
       - name: 🌐 Create Backups
         run: |
+          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" bash -lc "
-            set -e
-            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-            mkdir -p '${SSH_THEME_PATH}/.backups'
-            mkdir -p '${SSH_PUBLIC_PATH}/.backups'
-            if [ -d '${SSH_THEME_PATH}' ]; then
-              tar -czf \"${SSH_THEME_PATH}/.backups/theme-\${TIMESTAMP}.tar.gz\" -C '${SSH_THEME_PATH}' . --exclude='.backups'
-              ls -1t '${SSH_THEME_PATH}/.backups/' | tail -n +6 | xargs -I {} rm -f '${SSH_THEME_PATH}/.backups/{}' || true
-            fi
-            if [ -d '${SSH_PUBLIC_PATH}/dist' ]; then
-              tar -czf \"${SSH_PUBLIC_PATH}/.backups/root-\${TIMESTAMP}.tar.gz\" -C '${SSH_PUBLIC_PATH}' dist
-              ls -1t '${SSH_PUBLIC_PATH}/.backups/' | tail -n +6 | xargs -I {} rm -f '${SSH_PUBLIC_PATH}/.backups/{}' || true
-            fi
+          mkdir -p \"${SSH_THEME_PATH}/.backups\"
+          mkdir -p \"${SSH_PUBLIC_PATH}/.backups\"
+          tar -czf \"${SSH_THEME_PATH}/.backups/theme-${TIMESTAMP}.tar.gz\" --exclude='.backups' -C '${SSH_THEME_PATH}' .
+          tar -czf \"${SSH_PUBLIC_PATH}/.backups/dist-${TIMESTAMP}.tar.gz\" --exclude='.backups' -C '${SSH_PUBLIC_PATH}' dist
+          find \"${SSH_THEME_PATH}/.backups\" -type f -mtime +30 -name 'theme-*.tar.gz' -delete
+          find \"${SSH_PUBLIC_PATH}/.backups\" -type f -mtime +30 -name 'dist-*.tar.gz' -delete
           "
+
       - name: 📤 Deploy via rsync (React dist)
         run: |
-          rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=no" \
-            --exclude='.htaccess' \
-            --exclude='react-sitemap.xml' \
-            ./dist/ "${SSH_USER}@${SSH_HOST}:${SSH_PUBLIC_PATH}/"
-      - name: 🩺 Health Check
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=no" \
+            ./dist/ "${SSH_USER}@${SSH_HOST}:${SSH_PUBLIC_PATH}/dist/"
+
+      - name: 🔄 Deploy via rsync (Theme PHP)
         run: |
-          set -e
-          URL="${{ secrets.SITE_URL }}/wp-json/"
-          echo "Checking: $URL"
-          for i in {1..10}; do
-            HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$URL") || true
-            echo "Attempt $i -> HTTP $HTTP"
-            if [ "$HTTP" = "200" ]; then echo "OK"; exit 0; fi
-            sleep 5
-          done
-          echo "Healthcheck failed" >&2
-          exit 1
-      - name: 🔁 Rollback on Failure
-        if: failure()
+          rsync -avz --delete \
+            --exclude 'dist/' \
+            --exclude '.git/' \
+            --exclude 'node_modules/' \
+            --exclude '.backups/' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${SSH_PORT} -o StrictHostKeyChecking=no" \
+            ./ "${SSH_USER}@${SSH_HOST}:${SSH_THEME_PATH}/"
+
+      - name: ✅ Health Check (1st attempt)
+        id: health_check_1
+        continue-on-error: true
         run: |
-          echo "Starting rollback..."
-          ssh -i ~/.ssh/deploy_key -p "${SSH_PORT}" -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" bash -lc "
-            set -e
-            LAST_THEME=$(ls -1t '${SSH_THEME_PATH}/.backups/' | grep '^theme-' | head -n1 || true)
-            LAST_ROOT=$(ls -1t '${SSH_PUBLIC_PATH}/.backups/' | grep '^root-' | head -n1 || true)
-            if [ -n \"$LAST_THEME\" ]; then
-              echo 'Restoring theme backup:' \"$LAST_THEME\"
-              tar -xzf \"${SSH_THEME_PATH}/.backups/$LAST_THEME\" -C '${SSH_THEME_PATH}'
-            fi
-            if [ -n \"$LAST_ROOT\" ]; then
-              echo 'Restoring root backup:' \"$LAST_ROOT\"
-              rm -rf '${SSH_PUBLIC_PATH}/dist' || true
-              mkdir -p '${SSH_PUBLIC_PATH}/dist'
-              tar -xzf \"${SSH_PUBLIC_PATH}/.backups/$LAST_ROOT\" -C '${SSH_PUBLIC_PATH}'
-            fi
-          "
-      - name: 🧹 Cleanup SSH Key
-        if: always()
-        run: rm -f ~/.ssh/deploy_key
-      - name: 📊 Deployment Report
-        if: always()
+          SITE_URL=$(echo "${{ secrets.VITE_WP_SITE_URL }}" | sed 's#/$##')
+          echo "🔍 Checking: $SITE_URL"
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$SITE_URL" || echo "000")
+          echo "📡 HTTP Status: $STATUS"
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 500 ]; then
+            echo "✅ Site is reachable (HTTP $STATUS)"
+            exit 0
+          else
+            echo "⚠️ Site returned $STATUS, will retry..."
+            exit 1
+          fi
+
+      - name: ⏳ Wait before retry
+        if: steps.health_check_1.outcome == 'failure'
+        run: sleep 10
+
+      - name: ✅ Health Check (2nd attempt)
+        if: steps.health_check_1.outcome == 'failure'
         run: |
-          STATUS=${{ job.status }}
-          echo "### Deployment Report" >> $GITHUB_STEP_SUMMARY
-          echo "- Status: $STATUS" >> $GITHUB_STEP_SUMMARY
-          echo "- Site: ${{ secrets.SITE_URL }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Commit: \`${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Actor: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Theme Path: ${SSH_THEME_PATH}" >> $GITHUB_STEP_SUMMARY
-          echo "- Deploy Root: ${SSH_PUBLIC_PATH}" >> $GITHUB_STEP_SUMMARY
+          SITE_URL=$(echo "${{ secrets.VITE_WP_SITE_URL }}" | sed 's#/$##')
+          echo "🔍 Retrying: $SITE_URL"
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$SITE_URL" || echo "000")
+          echo "📡 HTTP Status: $STATUS"
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 500 ]; then
+            echo "✅ Site is reachable (HTTP $STATUS)"
+            exit 0
+          else
+            echo "❌ Site still unreachable after retry (HTTP $STATUS)"
+            exit 1
+          fi
