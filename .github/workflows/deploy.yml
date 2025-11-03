@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (FULL SITE RSYNC + FTP THEME CLEAN-SLATE)
+# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (FULL FTP)
 # ═══════════════════════════════════════════════════════════════════════════════
 name: 🚀 Production Deploy
 on:
@@ -31,12 +31,7 @@ permissions:
   actions: read
 env:
   NODE_VERSION: '20'
-  SSH_HOST: '147.79.84.222'
-  SSH_PORT: '65002'
-  SSH_USER: 'u790739895'
-  REMOTE_ROOT: '/home/u790739895/public_html'
   THEME_NAME: 'zentheme'
-
 jobs:
   validate:
     name: ✅ Pre-build Validation
@@ -82,12 +77,11 @@ jobs:
           echo "✅ All required files present"
       - name: 🔐 Validate secrets
         run: |
-          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
-            echo "❌ SSH_PRIVATE_KEY secret not set!"
+          if [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ] || [ -z "${{ secrets.FTP_SERVER }}" ]; then
+            echo "❌ FTP secrets not set (FTP_USERNAME, FTP_PASSWORD, FTP_SERVER required)!"
             exit 1
           fi
           echo "✅ Critical secrets validated"
-
   build:
     name: 🏗️ Build Production
     runs-on: ubuntu-latest
@@ -166,9 +160,8 @@ jobs:
             screenshot.png
           retention-days: 7
           if-no-files-found: error
-
   deploy:
-    name: 🚀 Deploy to Production
+    name: 🚀 Deploy to Production via FTP
     runs-on: ubuntu-latest
     timeout-minutes: 25
     needs: [validate, build]
@@ -188,10 +181,7 @@ jobs:
         with:
           name: build-${{ needs.validate.outputs.commit_hash }}
           path: ./
-
-      # NEW: FTP Deploy with clean-slate for zentheme - FIXED SYNTAX
-      - name: 🌐 FTP Deploy - clean-slate ONLY zentheme
-        if: ${{ secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != '' }}
+      - name: 🌐 FTP Deploy - Full Theme Upload
         uses: SamKirkland/FTP-Deploy-Action@v4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -216,12 +206,17 @@ jobs:
             **/vite.config.*
             **/public/**
             **/src/**
-
       - name: ✅ Verify FTP deployment
         run: |
           echo "🔍 FTP deployment completed"
           echo "✅ Theme deployed to zentheme directory with clean-slate"
-
+          echo "📁 Deployed files:"
+          echo "  - dist/ (built assets)"
+          echo "  - inc/ (PHP includes)"
+          echo "  - plugins/ (custom plugins)"
+          echo "  - *.php (theme files)"
+          echo "  - style.css"
+          echo "  - screenshot.png"
       - name: 📊 Deployment summary
         if: always()
         run: |
@@ -232,9 +227,8 @@ jobs:
           echo "🌐 Site: https://djzeneyer.com"
           echo "📦 Build: ${{ needs.validate.outputs.commit_hash }}"
           echo "📊 Size: ${{ needs.build.outputs.build_size }}"
-          echo "🌐 FTP: Clean-slate deployed to zentheme/"
+          echo "🌐 FTP: Clean-slate deployed to /wp-content/themes/zentheme/"
           echo "═══════════════════════════════════════════════════════="
-
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
