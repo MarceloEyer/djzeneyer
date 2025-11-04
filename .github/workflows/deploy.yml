@@ -71,14 +71,21 @@ jobs:
     steps:
       - name: 🔑 Setup SSH for backup
         run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "⚠️ SSH_PRIVATE_KEY not configured, skipping SSH setup"
+            exit 0
+          fi
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.SSH_PORT || 22 }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-        if: secrets.SSH_PRIVATE_KEY != ''
       
       - name: 💾 Create remote backup
         run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ] || [ -z "${{ secrets.SSH_HOST }}" ]; then
+            echo "⚠️ SSH credentials not configured, skipping backup"
+            exit 0
+          fi
           BACKUP_DIR="zentheme_backup_$(date +%Y%m%d_%H%M%S)"
           ssh -p ${{ secrets.SSH_PORT || 22 }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "cd ${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes && \
@@ -89,7 +96,6 @@ jobs:
              else \
                echo '⚠️ No existing theme to backup'; \
              fi"
-        if: secrets.SSH_PRIVATE_KEY != '' && secrets.SSH_HOST != ''
         continue-on-error: true
   
   deploy:
@@ -139,8 +145,12 @@ jobs:
             **/src/**
       
       - name: 🔑 Setup SSH (fallback)
-        if: steps.ftp-deploy.outcome == 'failure'
+        if: always()
         run: |
+          if [ "${{ steps.ftp-deploy.outcome }}" != "failure" ]; then
+            echo "✅ FTP deployment succeeded, skipping SSH setup"
+            exit 0
+          fi
           echo "⚠️ FTP deployment failed, switching to SSH/rsync..."
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
@@ -149,8 +159,12 @@ jobs:
           echo "✅ SSH key configured"
       
       - name: 🚀 Deploy via SSH/rsync (fallback)
-        if: steps.ftp-deploy.outcome == 'failure'
+        if: always()
         run: |
+          if [ "${{ steps.ftp-deploy.outcome }}" != "failure" ]; then
+            echo "✅ FTP deployment succeeded, skipping SSH deployment"
+            exit 0
+          fi
           echo "🚀 Deploying via rsync over SSH..."
           
           # Validate required secrets
@@ -189,8 +203,12 @@ jobs:
           echo "✅ Rsync deployment completed"
       
       - name: 🔐 Set remote permissions
-        if: steps.ftp-deploy.outcome == 'failure'
+        if: always()
         run: |
+          if [ "${{ steps.ftp-deploy.outcome }}" != "failure" ]; then
+            echo "✅ FTP deployment succeeded, skipping permission setting"
+            exit 0
+          fi
           echo "Setting correct file permissions..."
           ssh -p ${{ secrets.SSH_PORT || 22 }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "cd ${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/zentheme && \
