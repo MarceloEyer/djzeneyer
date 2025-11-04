@@ -21,8 +21,8 @@ build/
 .github/assets
 
 # 🔐 SECRETS - NUNCA COMMITAR!
-.env
-.env.local
+#.env
+#.env.local
 .env.production.local
 .env.development.local
 !*.env.example  # EXCEÇÃO: Permite versionar .env.example
