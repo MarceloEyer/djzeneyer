@@ -1,97 +1,305 @@
-name: Deploy to Hostinger
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🚀 DEPLOY SIMPLES E FUNCIONAL - DJ ZEN EYER
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Deploy automático para Hostinger via rsync/SSH
+# React (Vite) → WordPress Headless Theme
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🚀 Deploy
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
+
 jobs:
   deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
-      - name: Checkout
+      # ─────────────────────────────────────────────────────────────────────────
+      # 1. PREPARAR
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 📥 Checkout
         uses: actions/checkout@v4
-      
-      - name: Setup Node.js
+
+      - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 2. BUILD
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 📦 Instalar dependências
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔨 Build produção
         run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
+          VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
+          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
+          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
+      - name: ✅ Verificar build
+        run: |
+          echo "📊 Verificando build..."
+          if [ ! -d "dist" ]; then
+            echo "❌ ERRO: dist/ não foi criado!"
+            exit 1
+          fi
+          echo "✅ Build OK - Tamanho: $(du -sh dist/ | cut -f1)"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 3. SETUP SSH
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 🔐 Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>&1
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: 🧪 Testar SSH
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} \
+              -o StrictHostKeyChecking=accept-new \
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+              "echo '✅ SSH OK' && pwd"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 4. BACKUP NO SERVIDOR
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 📦 Criar backup
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} \
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          
+          BACKUP_DIR="${{ secrets.SSH_BACKUP_PATH }}/backup_$(date +%Y%m%d_%H%M%S)"
+          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
+          
+          echo "📦 Criando backup em: $BACKUP_DIR"
+          mkdir -p "$BACKUP_DIR"
+          
+          if [ -d "$THEME_PATH/dist" ]; then
+            tar -czf "$BACKUP_DIR/dist_backup.tar.gz" -C "$THEME_PATH" dist 2>/dev/null || true
+            echo "✅ Backup criado"
+          else
+            echo "ℹ️  Primeiro deploy - sem backup"
+          fi
+          
+          # Limpar backups antigos (manter 5)
+          cd "${{ secrets.SSH_BACKUP_PATH }}"
+          ls -t | tail -n +6 | xargs -r rm -rf
+          EOF
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 5. DEPLOY DOS ARQUIVOS
+      # ─────────────────────────────────────────────────────────────────────────
       
-      - name: Deploy dist/
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/wp-content/themes/zentheme/dist/
-          local-dir: ./dist/
-      
-      - name: Deploy inc/
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/wp-content/themes/zentheme/inc/
-          local-dir: ./inc/
-      
-      - name: Deploy plugins/
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/wp-content/plugins/
-          local-dir: ./plugins/
-      
-      - name: Deploy theme root files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/wp-content/themes/zentheme/
-          local-dir: ./
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/src/**
-            **/.vscode/**
-            **/.github/**
-            **/package*.json
-            **/vite.config.js
-            **/README.md
-            **/dist/**
-            **/inc/**
-            **/plugins/**
-            **/public/**
-      
-      - name: Deploy robots.txt
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/
-          local-dir: ./public/
-          exclude: |
-            **/favicon.ico
-      
-      - name: Deploy favicon.ico
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/
-          local-dir: ./public/
-          exclude: |
-            **/robots.txt
+      # 5.1: React build (dist/)
+      - name: 🚀 Deploy dist/
+        run: |
+          echo "📤 Enviando build React..."
+          rsync -avz \
+            --delete \
+            --stats \
+            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/dist/
+          echo "✅ dist/ enviado"
+
+      # 5.2: Pasta inc/ (PHP helpers)
+      - name: 📚 Deploy inc/
+        if: hashFiles('inc/**') != ''
+        run: |
+          echo "📤 Enviando inc/..."
+          rsync -avz \
+            --delete \
+            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            inc/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/inc/
+          echo "✅ inc/ enviado"
+
+      # 5.3: Arquivos PHP do tema (root)
+      - name: 📝 Deploy PHP files
+        run: |
+          echo "📤 Enviando arquivos PHP..."
+          rsync -avz \
+            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            --include='*.php' \
+            --include='style.css' \
+            --include='screenshot.png' \
+            --exclude='*' \
+            ./ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/
+          echo "✅ PHP files enviados"
+
+      # 5.4: Plugins customizados
+      - name: 🔌 Deploy plugins/
+        if: hashFiles('plugins/**') != ''
+        run: |
+          echo "📤 Enviando plugins..."
+          
+          if [ -d "plugins" ]; then
+            for plugin_dir in plugins/*/; do
+              if [ -d "$plugin_dir" ]; then
+                plugin_name=$(basename "$plugin_dir")
+                echo "  → $plugin_name"
+                
+                rsync -avz \
+                  --delete \
+                  -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                  "$plugin_dir" \
+                  ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PLUGINS_PATH }}/$plugin_name/
+              fi
+            done
+            echo "✅ Plugins enviados"
+          fi
+
+      # 5.5: Assets públicos (robots.txt, favicon, etc)
+      - name: 📄 Deploy public assets
+        if: hashFiles('public/**') != ''
+        run: |
+          echo "📤 Enviando assets públicos..."
+          
+          # Arquivos seguros para o root do site
+          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
+          
+          for file in "${SAFE_FILES[@]}"; do
+            if [ -f "public/$file" ]; then
+              echo "  → $file"
+              rsync -avz \
+                -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                "public/$file" \
+                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
+            fi
+          done
+          
+          echo "✅ Assets públicos enviados"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 6. VERIFICAR DEPLOY
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: ✅ Verificar deploy
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} \
+              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "🔍 VERIFICANDO DEPLOY"
+          echo "════════════════════════════════════════"
+          
+          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
+          
+          # Verificar dist/
+          if [ -d "$THEME_PATH/dist" ]; then
+            DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
+            FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
+            echo "✅ dist/     : $DIST_SIZE ($FILE_COUNT arquivos)"
+          else
+            echo "❌ dist/ NÃO ENCONTRADO!"
+            exit 1
+          fi
+          
+          # Verificar inc/
+          if [ -d "$THEME_PATH/inc" ]; then
+            echo "✅ inc/      : OK"
+          else
+            echo "ℹ️  inc/     : Não existe (opcional)"
+          fi
+          
+          # Verificar PHP files
+          if [ -f "$THEME_PATH/functions.php" ]; then
+            echo "✅ functions.php : OK"
+          else
+            echo "⚠️  functions.php : NÃO ENCONTRADO"
+          fi
+          
+          if [ -f "$THEME_PATH/style.css" ]; then
+            echo "✅ style.css     : OK"
+          else
+            echo "⚠️  style.css     : NÃO ENCONTRADO"
+          fi
+          
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "✅ VERIFICAÇÃO CONCLUÍDA"
+          echo "════════════════════════════════════════"
+          EOF
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 7. CLEANUP
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          rm -f ~/.ssh/id_rsa
+          echo "🧹 Credenciais limpas"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 8. RELATÓRIO
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 📊 Relatório final
+        if: success()
+        run: |
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "✅ DEPLOY CONCLUÍDO COM SUCESSO!"
+          echo "════════════════════════════════════════"
+          echo ""
+          echo "🌐 Site: ${{ secrets.SITE_URL }}"
+          echo "📦 Commit: $(git rev-parse --short HEAD)"
+          echo "⏰ Horário: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo ""
+          echo "🎉 Seu site está no ar!"
+          echo "════════════════════════════════════════"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # HEALTH CHECK (Opcional mas recomendado)
+  # ═══════════════════════════════════════════════════════════════════════════
+  health-check:
+    name: 🏥 Health Check
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success()
+    
+    steps:
+      - name: 🔍 Testar site
+        run: |
+          echo "🔍 Testando ${{ secrets.SITE_URL }}..."
+          
+          for i in {1..3}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 20 ${{ secrets.SITE_URL }})
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Site OK (HTTP $HTTP_CODE)"
+              exit 0
+            else
+              echo "⚠️  Tentativa $i/3: HTTP $HTTP_CODE"
+              sleep 5
+            fi
+          done
+          
+          echo "❌ Site não está acessível"
+          exit 1
+
+      - name: 📊 Resultado
+        if: success()
+        run: |
+          echo ""
+          echo "🎉 TUDO FUNCIONANDO!"
+          echo "🌐 ${{ secrets.SITE_URL }}"
