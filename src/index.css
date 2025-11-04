@@ -55,7 +55,5 @@
 /* CUSTOM UTILITIES                                                             */
 /* ============================================================================ */
 @layer utilities {
-  .font-display {
-    font-display: swap;
-  }
+  /* font-display utility removed - using font-sans throughout */
 }
