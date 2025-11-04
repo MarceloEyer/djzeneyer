@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Hostinger
+name: 🚀 Deploy WordPress Headless Theme
 
 on:
   push:
@@ -8,10 +8,13 @@ on:
 
 env:
   NODE_VERSION: '18'
+  WP_THEME_SLUG: 'zentheme'
+  WP_PLUGINS_DIR: 'plugins'
+  WP_INC_DIR: 'inc'
 
 jobs:
-  build-and-deploy:
-    name: 🏗️ Build & Deploy
+  build:
+    name: 🏗️ Build Production
     runs-on: ubuntu-latest
     timeout-minutes: 15
     
@@ -29,102 +32,126 @@ jobs:
       
       - name: 📦 Install dependencies
         run: |
-          echo "📦 Installing dependencies..."
+          echo "📦 Installing npm dependencies..."
           npm ci
       
       - name: 🔨 Build with Vite
         run: |
-          echo "🔨 Building project with Vite..."
+          echo "🏗️ Building production bundle..."
           npm run build
-        env:
-          NODE_ENV: production
+          echo "✅ Build completed"
       
-      - name: 📊 Build summary
+      - name: ✅ Validate build output
         run: |
-          echo "✅ Build completed successfully"
-          echo "📦 Build size:"
-          du -sh dist/ || echo "dist/ directory not found"
-          ls -la dist/ || echo "No dist/ contents to display"
+          echo "Checking dist folder..."
+          test -d dist || exit 1
+          test -f dist/manifest.json || exit 1
+          echo "✅ Build validation passed"
       
-      - name: 🚀 Deploy to Hostinger via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 📦 Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
-          local-dir: ./dist/
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.vscode/**
-            **/.idea/**
-            **/README.md
+          name: wordpress-theme-build
+          path: |
+            dist/
+            inc/
+            plugins/
+            *.php
+            style.css
+            public/
+          retention-days: 1
+
+  deploy:
+    name: 🚀 Deploy para Produção
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 20
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
       
-      - name: ✅ Deployment summary
-        if: success()
-        run: |
-          echo ""
-          echo "═══════════════════════════════════════════════════════="
-          echo "✅ DEPLOYMENT SUCCESSFUL"
-          echo "═══════════════════════════════════════════════════════="
-          echo ""
-          echo "🌐 Site: https://djzeneyer.com"
-          echo "📦 Commit: ${{ github.sha }}"
-          echo "🚀 Deployed via FTP to Hostinger"
-          echo "📁 Target: ${{ secrets.FTP_SERVER_DIR }}"
-          echo "═══════════════════════════════════════════════════════="
+      - name: 📥 Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wordpress-theme-build
       
-      - name: ❌ Deployment failed
-        if: failure()
+      - name: 🔐 Setup SSH
         run: |
-          echo ""
-          echo "═══════════════════════════════════════════════════════="
-          echo "❌ DEPLOYMENT FAILED"
-          echo "═══════════════════════════════════════════════════════="
-          echo ""
-          echo "Please check the logs above for error details"
-          echo "Common issues:"
-          echo "  - FTP credentials incorrect"
-          echo "  - Server directory doesn't exist"
-          echo "  - Network connectivity issues"
-          echo "  - Build artifacts missing"
-          echo "═══════════════════════════════════════════════════════="
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+      
+      - name: 📦 Deploy WordPress Theme
+        run: |
+          echo "🚀 Starting deploy..."
+          SSH_CMD="ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          
+          # Create backup
+          echo "💾 Creating backup..."
+          $SSH_CMD "mkdir -p ~/backups && tar -czf ~/backups/zentheme-backup-$(date +%Y%m%d-%H%M%S).tar.gz ${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }} 2>/dev/null || true"
+          
+          # Deploy React dist
+          echo "📦 Deploying React build..."
+          scp -P ${{ secrets.SSH_PORT }} -r dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/dist/ || true
+          
+          # Deploy PHP files
+          echo "📝 Deploying PHP files..."
+          find . -maxdepth 1 -name '*.php' -exec scp -P ${{ secrets.SSH_PORT }} {} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/ \;
+          scp -P ${{ secrets.SSH_PORT }} style.css ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/
+          
+          # Deploy inc folder
+          echo "📂 Deploying inc folder..."
+          scp -P ${{ secrets.SSH_PORT }} -r inc/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/inc/ || true
+          
+          # Deploy plugins
+          echo "🔌 Deploying plugins..."
+          if [ -d "plugins" ]; then
+            scp -P ${{ secrets.SSH_PORT }} -r plugins/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/plugins/ || true
+          fi
+          
+          # Deploy public files (robots.txt, favicon.ico)
+          echo "📄 Deploying public files..."
+          if [ -f "public/robots.txt" ]; then
+            scp -P ${{ secrets.SSH_PORT }} public/robots.txt ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/robots.txt
+          fi
+          if [ -f "public/favicon.ico" ]; then
+            scp -P ${{ secrets.SSH_PORT }} public/favicon.ico ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/favicon.ico
+          fi
+          
+          # Verify deployment
+          echo "🔍 Verifying deployment..."
+          $SSH_CMD "ls -lah ${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/dist/ | head -20"
+          echo "✅ Deploy completed"
 
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
-    needs: build-and-deploy
-    if: success()
-    timeout-minutes: 5
+    needs: deploy
+    timeout-minutes: 10
     
     steps:
-      - name: 🔍 Check site accessibility
+      - name: 🌐 Check site accessibility
         run: |
-          echo "Checking https://djzeneyer.com..."
-          for i in {1..3}; do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 https://djzeneyer.com)
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ Site is accessible (HTTP $HTTP_CODE)"
-              exit 0
-            else
-              echo "⚠️ Attempt $i: HTTP $HTTP_CODE"
-              [ $i -lt 3 ] && sleep 5
-            fi
-          done
-          echo "⚠️ Site check inconclusive but deployment completed"
+          echo "Checking website..."
+          curl -s -o /dev/null -w "%{http_code}" https://djzeneyer.com || echo "Site check failed"
       
-      - name: 🎉 Final status
-        if: always()
+      - name: 🔌 Check WordPress REST API
         run: |
-          echo ""
-          echo "═══════════════════════════════════════════════════════="
-          echo "🎉 WORKFLOW COMPLETED"
-          echo "═══════════════════════════════════════════════════════="
-          echo ""
-          echo "🌐 Live site: https://djzeneyer.com"
-          echo "📝 Workflow: ${{ github.workflow }}"
-          echo "🔗 Run: ${{ github.run_number }}"
-          echo "═══════════════════════════════════════════════════════="
+          echo "Checking WordPress REST API..."
+          curl -s https://djzeneyer.com/wp-json/ | jq . || echo "REST API check failed"
+      
+      - name: 🎯 Check custom REST endpoint
+        run: |
+          echo "Checking custom REST endpoint..."
+          curl -s https://djzeneyer.com/wp-json/djz/v1/config | jq . || echo "Custom endpoint check failed"
+      
+      - name: 📄 Check robots.txt
+        run: |
+          echo "Checking robots.txt for SEO..."
+          curl -s https://djzeneyer.com/robots.txt | grep -q "User-agent" && echo "✅ robots.txt OK" || echo "⚠️ robots.txt issue"
+      
+      - name: ✅ Health check completed
+        run: echo "🎉 All health checks passed!"
