@@ -1,11 +1,9 @@
 name: Deploy to Hostinger
-
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,7 +24,34 @@ jobs:
       - name: Build
         run: npm run build
       
-      - name: Deploy to Hostinger
+      - name: Deploy dist/
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/wp-content/themes/zentheme/dist/
+          local-dir: ./dist/
+      
+      - name: Deploy inc/
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/wp-content/themes/zentheme/inc/
+          local-dir: ./inc/
+      
+      - name: Deploy plugins/
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/wp-content/plugins/
+          local-dir: ./plugins/
+      
+      - name: Deploy theme root files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -44,3 +69,29 @@ jobs:
             **/package*.json
             **/vite.config.js
             **/README.md
+            **/dist/**
+            **/inc/**
+            **/plugins/**
+            **/public/**
+      
+      - name: Deploy robots.txt
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/
+          local-dir: ./public/
+          exclude: |
+            **/favicon.ico
+      
+      - name: Deploy favicon.ico
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/
+          local-dir: ./public/
+          exclude: |
+            **/robots.txt
