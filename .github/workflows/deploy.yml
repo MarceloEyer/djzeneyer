@@ -51,204 +51,160 @@ jobs:
 
       - name: ✅ Verificar build
         run: |
-          echo "📊 Verificando build..."
-          if [ ! -d "dist" ]; then
-            echo "❌ ERRO: dist/ não foi criado!"
-            exit 1
-          fi
-          echo "✅ Build OK - Tamanho: $(du -sh dist/ | cut -f1)"
+          echo "📦 Verificando arquivos de build..."
+          ls -lh dist/ || { echo "❌ Pasta dist/ não encontrada!"; exit 1; }
+          
+          echo ""
+          echo "📂 Estrutura do build:"
+          find dist/ -type f | head -20
+          
+          echo ""
+          echo "✅ Build verificado com sucesso!"
 
       # ─────────────────────────────────────────────────────────────────────────
-      # 3. SETUP SSH
+      # 3. PREPARAR SSH
       # ─────────────────────────────────────────────────────────────────────────
-      - name: 🔐 Configurar SSH
+      - name: 🔑 Configurar SSH
         run: |
           mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>&1
-          chmod 644 ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: 🧪 Testar SSH
+      - name: 🧪 Testar conexão SSH
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
-              -o StrictHostKeyChecking=accept-new \
-              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-              "echo '✅ SSH OK' && pwd"
+          echo "🔌 Testando conexão com ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}..."
+          ssh -o ConnectTimeout=10 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "echo '✅ Conexão SSH OK!'"
 
       # ─────────────────────────────────────────────────────────────────────────
-      # 4. BACKUP NO SERVIDOR
+      # 4. PREPARAR CAMINHOS REMOTOS
       # ─────────────────────────────────────────────────────────────────────────
-      - name: 📦 Criar backup
+      - name: 📁 Criar estrutura de diretórios
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
-              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          
-          BACKUP_DIR="${{ secrets.SSH_BACKUP_PATH }}/backup_$(date +%Y%m%d_%H%M%S)"
-          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
-          
-          echo "📦 Criando backup em: $BACKUP_DIR"
-          mkdir -p "$BACKUP_DIR"
-          
-          if [ -d "$THEME_PATH/dist" ]; then
-            tar -czf "$BACKUP_DIR/dist_backup.tar.gz" -C "$THEME_PATH" dist 2>/dev/null || true
-            echo "✅ Backup criado"
-          else
-            echo "ℹ️  Primeiro deploy - sem backup"
-          fi
-          
-          # Limpar backups antigos (manter 5)
-          cd "${{ secrets.SSH_BACKUP_PATH }}"
-          ls -t | tail -n +6 | xargs -r rm -rf
-          EOF
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s <<'ENDSSH'
+            # Garantir que os diretórios existam
+            mkdir -p "${{ secrets.SSH_THEME_PATH }}/dist"
+            mkdir -p "${{ secrets.SSH_THEME_PATH }}/inc"
+            mkdir -p "${{ secrets.SSH_PLUGINS_PATH }}"
+            mkdir -p "${{ secrets.SSH_PUBLIC_PATH }}"
+            
+            echo "✅ Estrutura de diretórios criada"
+          ENDSSH
 
       # ─────────────────────────────────────────────────────────────────────────
-      # 5. DEPLOY DOS ARQUIVOS
+      # 5. DEPLOY (3 PASSOS PRINCIPAIS)
       # ─────────────────────────────────────────────────────────────────────────
       
-      # 5.1: React build (dist/)
+      # 5.1 → Deploy DIST (Frontend React/Vite)
       - name: 🚀 Deploy dist/
         run: |
-          echo "📤 Enviando build React..."
-          rsync -avz \
-            --delete \
-            --stats \
-            -e "ssh -p ${{ secrets.SSH_PORT }}" \
-            dist/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/dist/
-          echo "✅ dist/ enviado"
+          echo "📤 Enviando dist/ para ${{ secrets.SSH_THEME_PATH }}/dist/..."
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./dist/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/dist/"
+          echo "✅ dist/ enviado com sucesso!"
 
-      # 5.2: Pasta inc/ (PHP helpers)
-      - name: 📚 Deploy inc/
-        if: hashFiles('inc/**') != ''
+      # 5.2 → Deploy INC (Functions PHP do theme)
+      - name: 🚀 Deploy inc/
         run: |
-          echo "📤 Enviando inc/..."
-          rsync -avz \
-            --delete \
-            -e "ssh -p ${{ secrets.SSH_PORT }}" \
-            inc/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/inc/
-          echo "✅ inc/ enviado"
+          echo "📤 Enviando inc/ para ${{ secrets.SSH_THEME_PATH }}/inc/..."
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./inc/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/inc/"
+          echo "✅ inc/ enviado com sucesso!"
 
-      # 5.3: Arquivos PHP do tema (root)
-      - name: 📝 Deploy PHP files
+      # 5.3 → Deploy arquivos PHP raiz do theme
+      - name: 🚀 Deploy *.php (raiz do theme)
         run: |
-          echo "📤 Enviando arquivos PHP..."
+          echo "📤 Enviando arquivos PHP para ${{ secrets.SSH_THEME_PATH }}/..."
           rsync -avz \
-            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            -e "ssh -o StrictHostKeyChecking=no" \
             --include='*.php' \
             --include='style.css' \
             --include='screenshot.png' \
             --exclude='*' \
             ./ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/
-          echo "✅ PHP files enviados"
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_THEME_PATH }}/"
+          echo "✅ Arquivos PHP enviados com sucesso!"
 
-      # 5.4: Plugins customizados
+      # 5.4 → Deploy plugins customizados
       - name: 🔌 Deploy plugins/
-        if: hashFiles('plugins/**') != ''
         run: |
-          echo "📤 Enviando plugins..."
-          
           if [ -d "plugins" ]; then
+            echo "📤 Enviando plugins para ${{ secrets.SSH_PLUGINS_PATH }}/..."
+            
             for plugin_dir in plugins/*/; do
               if [ -d "$plugin_dir" ]; then
                 plugin_name=$(basename "$plugin_dir")
-                echo "  → $plugin_name"
+                echo "  → Enviando plugin: $plugin_name"
                 
-                rsync -avz \
-                  --delete \
-                  -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                # Sync cada plugin para seu diretório correspondente
+                rsync -avz --delete \
+                  -e "ssh -o StrictHostKeyChecking=no" \
                   "$plugin_dir" \
-                  ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PLUGINS_PATH }}/$plugin_name/
+                  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PLUGINS_PATH }}/"
               fi
             done
-            echo "✅ Plugins enviados"
+            
+            echo "✅ Plugins enviados com sucesso!"
+          else
+            echo "ℹ️  Pasta plugins/ não encontrada. Pulando..."
           fi
 
-      # 5.5: Assets públicos (robots.txt, favicon, etc)
-      - name: 📄 Deploy public assets
-        if: hashFiles('public/**') != ''
+      # 5.5 → Deploy arquivos públicos (opcional)
+      - name: 📄 Deploy public/
         run: |
-          echo "📤 Enviando assets públicos..."
-          
-          # Arquivos seguros para o root do site
-          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
-          
-          for file in "${SAFE_FILES[@]}"; do
-            if [ -f "public/$file" ]; then
-              echo "  → $file"
-              rsync -avz \
-                -e "ssh -p ${{ secrets.SSH_PORT }}" \
-                "public/$file" \
-                ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/
+          if [ -d "public" ]; then
+            echo "📤 Enviando public/ para ${{ secrets.SSH_PUBLIC_PATH }}/..."
+            rsync -avz \
+              -e "ssh -o StrictHostKeyChecking=no" \
+              ./public/ \
+              "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PUBLIC_PATH }}/"
+            echo "✅ public/ enviado com sucesso!"
+          else
+            echo "ℹ️  Pasta public/ não encontrada. Pulando..."
+          fi
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # 6. LIMPAR CACHE WORDPRESS
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 🧹 Limpar cache WordPress
+        run: |
+          echo "🧹 Limpando caches..."
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s <<'ENDSSH'
+            # Limpar cache de objetos WordPress
+            if command -v wp &> /dev/null; then
+              cd "${{ secrets.SSH_WP_PATH }}" || exit 1
+              wp cache flush --allow-root 2>/dev/null || echo "ℹ️  WP-CLI não disponível"
             fi
-          done
-          
-          echo "✅ Assets públicos enviados"
+            
+            # Limpar cache de opcache PHP
+            find "${{ secrets.SSH_THEME_PATH }}" -name "*.php" -exec touch {} + 2>/dev/null
+            
+            echo "✅ Cache limpo!"
+          ENDSSH
 
       # ─────────────────────────────────────────────────────────────────────────
-      # 6. VERIFICAR DEPLOY
+      # 7. VERIFICAR PERMISSÕES
       # ─────────────────────────────────────────────────────────────────────────
-      - name: ✅ Verificar deploy
+      - name: 🔒 Verificar permissões
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} \
-              ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          
-          echo ""
-          echo "════════════════════════════════════════"
-          echo "🔍 VERIFICANDO DEPLOY"
-          echo "════════════════════════════════════════"
-          
-          THEME_PATH="${{ secrets.SSH_THEME_PATH }}"
-          
-          # Verificar dist/
-          if [ -d "$THEME_PATH/dist" ]; then
-            DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
-            FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
-            echo "✅ dist/     : $DIST_SIZE ($FILE_COUNT arquivos)"
-          else
-            echo "❌ dist/ NÃO ENCONTRADO!"
-            exit 1
-          fi
-          
-          # Verificar inc/
-          if [ -d "$THEME_PATH/inc" ]; then
-            echo "✅ inc/      : OK"
-          else
-            echo "ℹ️  inc/     : Não existe (opcional)"
-          fi
-          
-          # Verificar PHP files
-          if [ -f "$THEME_PATH/functions.php" ]; then
-            echo "✅ functions.php : OK"
-          else
-            echo "⚠️  functions.php : NÃO ENCONTRADO"
-          fi
-          
-          if [ -f "$THEME_PATH/style.css" ]; then
-            echo "✅ style.css     : OK"
-          else
-            echo "⚠️  style.css     : NÃO ENCONTRADO"
-          fi
-          
-          echo ""
-          echo "════════════════════════════════════════"
-          echo "✅ VERIFICAÇÃO CONCLUÍDA"
-          echo "════════════════════════════════════════"
-          EOF
-
-      # ─────────────────────────────────────────────────────────────────────────
-      # 7. CLEANUP
-      # ─────────────────────────────────────────────────────────────────────────
-      - name: 🧹 Cleanup
-        if: always()
-        run: |
-          rm -f ~/.ssh/id_rsa
-          echo "🧹 Credenciais limpas"
+          echo "🔒 Ajustando permissões..."
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s <<'ENDSSH'
+            # Ajustar permissões do theme
+            find "${{ secrets.SSH_THEME_PATH }}" -type d -exec chmod 755 {} \;
+            find "${{ secrets.SSH_THEME_PATH }}" -type f -exec chmod 644 {} \;
+            
+            # Ajustar permissões dos plugins
+            if [ -d "${{ secrets.SSH_PLUGINS_PATH }}" ]; then
+              find "${{ secrets.SSH_PLUGINS_PATH }}" -type d -exec chmod 755 {} \;
+              find "${{ secrets.SSH_PLUGINS_PATH }}" -type f -exec chmod 644 {} \;
+            fi
+            
+            echo "✅ Permissões ajustadas!"
+          ENDSSH
 
       # ─────────────────────────────────────────────────────────────────────────
       # 8. RELATÓRIO
@@ -257,16 +213,16 @@ jobs:
         if: success()
         run: |
           echo ""
-          echo "════════════════════════════════════════"
+          echo "═══════════════════════════════════════="
           echo "✅ DEPLOY CONCLUÍDO COM SUCESSO!"
-          echo "════════════════════════════════════════"
+          echo "═══════════════════════════════════════="
           echo ""
           echo "🌐 Site: ${{ secrets.SITE_URL }}"
           echo "📦 Commit: $(git rev-parse --short HEAD)"
           echo "⏰ Horário: $(date '+%Y-%m-%d %H:%M:%S')"
           echo ""
           echo "🎉 Seu site está no ar!"
-          echo "════════════════════════════════════════"
+          echo "═══════════════════════════════════════="
 
   # ═══════════════════════════════════════════════════════════════════════════
   # HEALTH CHECK (Opcional mas recomendado)
