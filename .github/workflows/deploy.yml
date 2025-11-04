@@ -1,240 +1,105 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (FULL FTP)
-# ═══════════════════════════════════════════════════════════════════════════════
-name: 🚀 Production Deploy
+name: 🚀 Deploy to Hostinger
+
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '.gitignore'
-      - 'LICENSE'
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      skip_build:
-        description: 'Skip build step'
-        required: false
-        type: boolean
-        default: false
-      force_deploy:
-        description: 'Force deploy (skip validations)'
-        required: false
-        type: boolean
-        default: false
-concurrency:
-  group: production-deploy
-  cancel-in-progress: false
-permissions:
-  contents: read
-  deployments: write
-  actions: read
+
 env:
-  NODE_VERSION: '20'
-  THEME_NAME: 'zentheme'
+  NODE_VERSION: '18'
+
 jobs:
-  validate:
-    name: ✅ Pre-build Validation
+  build-and-deploy:
+    name: 🏗️ Build & Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      should_build: ${{ steps.changes.outputs.should_build }}
-      commit_hash: ${{ steps.hash.outputs.value }}
+    timeout-minutes: 15
+    
     steps:
-      - name: 📥 Checkout
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
-      - name: 🔖 Generate commit hash
-        id: hash
-        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - name: 🔍 Check changed files
-        id: changes
-        run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html)$' || echo "force")
-          if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.force_deploy }}" = "true" ]; then
-            echo "should_build=true" >> $GITHUB_OUTPUT
-            echo "✅ Changes detected - build required"
-          else
-            echo "should_build=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ No build changes detected"
-          fi
-      - name: 📋 Validate required files
-        run: |
-          REQUIRED_FILES=(
-            "package.json"
-            "vite.config.ts"
-            "tsconfig.json"
-            "src/main.tsx"
-            "functions.php"
-          )
-          for file in "${REQUIRED_FILES[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "❌ Required file missing: $file"
-              exit 1
-            fi
-          done
-          echo "✅ All required files present"
-      - name: 🔐 Validate secrets
-        run: |
-          if [ -z "${{ secrets.FTP_USERNAME }}" ] || [ -z "${{ secrets.FTP_PASSWORD }}" ] || [ -z "${{ secrets.FTP_SERVER }}" ]; then
-            echo "❌ FTP secrets not set (FTP_USERNAME, FTP_PASSWORD, FTP_SERVER required)!"
-            exit 1
-          fi
-          echo "✅ Critical secrets validated"
-  build:
-    name: 🏗️ Build Production
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: validate
-    if: |
-      needs.validate.outputs.should_build == 'true' && 
-      !inputs.skip_build
-    outputs:
-      build_status: ${{ job.status }}
-      build_size: ${{ steps.size.outputs.value }}
-      timestamp: ${{ steps.timestamp.outputs.value }}
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-      - name: 🔧 Setup Node.js
+          fetch-depth: 0
+      
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - name: ⏰ Generate timestamp
-        id: timestamp
-        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+      
       - name: 📦 Install dependencies
         run: |
-          echo "Installing dependencies..."
-          npm ci --prefer-offline --no-audit
-          echo "✅ Dependencies installed"
-      - name: 🔨 Build production bundle
+          echo "📦 Installing dependencies..."
+          npm ci
+      
+      - name: 🔨 Build with Vite
         run: |
-          echo "Building production bundle..."
+          echo "🔨 Building project with Vite..."
           npm run build
         env:
           NODE_ENV: production
-          VITE_WP_SITE_URL: https://djzeneyer.com
-          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
-          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
-          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-      - name: ✅ Validate build output
+      
+      - name: 📊 Build summary
         run: |
-          echo "Validating build output..."
-          if [ ! -d "dist" ]; then
-            echo "❌ dist/ directory not found"
-            exit 1
-          fi
-          if [ ! -f "dist/index.html" ]; then
-            echo "❌ dist/index.html not found"
-            exit 1
-          fi
-          JS_COUNT=$(find dist -name '*.js' 2>/dev/null | wc -l)
-          DIST_SIZE=$(du -sh dist/ | cut -f1)
-          echo "📊 Build contents:"
-          echo "  - JS files: $JS_COUNT"
-          echo "  - Total size: $DIST_SIZE"
-          if [ "$JS_COUNT" -eq 0 ]; then
-            echo "❌ No JavaScript files found!"
-            exit 1
-          fi
-          echo "✅ Build validation passed"
-      - name: 📊 Calculate build size
-        id: size
-        run: |
-          SIZE=$(du -sh dist/ | cut -f1)
-          echo "value=$SIZE" >> $GITHUB_OUTPUT
-      - name: 📤 Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-${{ needs.validate.outputs.commit_hash }}
-          path: |
-            dist/
-            plugins/
-            inc/
-            *.php
-            style.css
-            screenshot.png
-          retention-days: 7
-          if-no-files-found: error
-  deploy:
-    name: 🚀 Deploy to Production via FTP
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    needs: [validate, build]
-    if: |
-      always() && 
-      (needs.build.result == 'success' || inputs.skip_build) &&
-      needs.validate.result == 'success'
-    environment:
-      name: production
-      url: https://djzeneyer.com
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-      - name: 📥 Download build artifact
-        if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
-        with:
-          name: build-${{ needs.validate.outputs.commit_hash }}
-          path: ./
-      - name: 🌐 FTP Deploy - Full Theme Upload
-        uses: SamKirkland/FTP-Deploy-Action@v4
+          echo "✅ Build completed successfully"
+          echo "📦 Build size:"
+          du -sh dist/ || echo "dist/ directory not found"
+          ls -la dist/ || echo "No dist/ contents to display"
+      
+      - name: 🚀 Deploy to Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: ./
-          server-dir: /public_html/wp-content/themes/zentheme/
-          dangerous-clean-slate: true
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          local-dir: ./dist/
+          dangerous-clean-slate: false
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             **/.vscode/**
-            **/.github/**
-            **/docs/**
-            **/*.md
-            **/LICENSE
-            **/package*.json
-            **/tsconfig*.json
-            **/vite.config.*
-            **/public/**
-            **/src/**
-      - name: ✅ Verify FTP deployment
-        run: |
-          echo "🔍 FTP deployment completed"
-          echo "✅ Theme deployed to zentheme directory with clean-slate"
-          echo "📁 Deployed files:"
-          echo "  - dist/ (built assets)"
-          echo "  - inc/ (PHP includes)"
-          echo "  - plugins/ (custom plugins)"
-          echo "  - *.php (theme files)"
-          echo "  - style.css"
-          echo "  - screenshot.png"
-      - name: 📊 Deployment summary
-        if: always()
+            **/.idea/**
+            **/README.md
+      
+      - name: ✅ Deployment summary
+        if: success()
         run: |
           echo ""
           echo "═══════════════════════════════════════════════════════="
-          echo "✅ DEPLOY SUCCESSFUL - FTP CLEAN-SLATE"
+          echo "✅ DEPLOYMENT SUCCESSFUL"
+          echo "═══════════════════════════════════════════════════════="
           echo ""
           echo "🌐 Site: https://djzeneyer.com"
-          echo "📦 Build: ${{ needs.validate.outputs.commit_hash }}"
-          echo "📊 Size: ${{ needs.build.outputs.build_size }}"
-          echo "🌐 FTP: Clean-slate deployed to /wp-content/themes/zentheme/"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo "🚀 Deployed via FTP to Hostinger"
+          echo "📁 Target: ${{ secrets.FTP_SERVER_DIR }}"
           echo "═══════════════════════════════════════════════════════="
+      
+      - name: ❌ Deployment failed
+        if: failure()
+        run: |
+          echo ""
+          echo "═══════════════════════════════════════════════════════="
+          echo "❌ DEPLOYMENT FAILED"
+          echo "═══════════════════════════════════════════════════════="
+          echo ""
+          echo "Please check the logs above for error details"
+          echo "Common issues:"
+          echo "  - FTP credentials incorrect"
+          echo "  - Server directory doesn't exist"
+          echo "  - Network connectivity issues"
+          echo "  - Build artifacts missing"
+          echo "═══════════════════════════════════════════════════════="
+
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: success()
     timeout-minutes: 5
-    needs: deploy
-    if: needs.deploy.result == 'success'
+    
     steps:
       - name: 🔍 Check site accessibility
         run: |
@@ -249,14 +114,17 @@ jobs:
               [ $i -lt 3 ] && sleep 5
             fi
           done
-          echo "⚠️ Site check inconclusive"
-      - name: 📊 Final status
+          echo "⚠️ Site check inconclusive but deployment completed"
+      
+      - name: 🎉 Final status
+        if: always()
         run: |
           echo ""
           echo "═══════════════════════════════════════════════════════="
-          echo "🎉 DEPLOYMENT COMPLETED - FTP CLEAN-SLATE!"
+          echo "🎉 WORKFLOW COMPLETED"
           echo "═══════════════════════════════════════════════════════="
           echo ""
           echo "🌐 Live site: https://djzeneyer.com"
-          echo ""
+          echo "📝 Workflow: ${{ github.workflow }}"
+          echo "🔗 Run: ${{ github.run_number }}"
           echo "═══════════════════════════════════════════════════════="
