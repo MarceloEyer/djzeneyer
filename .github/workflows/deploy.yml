@@ -1,17 +1,14 @@
 name: 🚀 Deploy WordPress Headless Theme
-
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
 env:
   NODE_VERSION: '18'
   WP_THEME_SLUG: 'zentheme'
   WP_PLUGINS_DIR: 'plugins'
   WP_INC_DIR: 'inc'
-
 jobs:
   build:
     name: 🏗️ Build Production
@@ -60,7 +57,6 @@ jobs:
             style.css
             public/
           retention-days: 1
-
   deploy:
     name: 🚀 Deploy para Produção
     runs-on: ubuntu-latest
@@ -77,55 +73,31 @@ jobs:
         with:
           name: wordpress-theme-build
       
-      - name: 🔐 Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-      
-      - name: 📦 Deploy WordPress Theme
-        run: |
-          echo "🚀 Starting deploy..."
-          SSH_CMD="ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
-          
-          # Create backup
-          echo "💾 Creating backup..."
-          $SSH_CMD "mkdir -p ~/backups && tar -czf ~/backups/zentheme-backup-$(date +%Y%m%d-%H%M%S).tar.gz ${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }} 2>/dev/null || true"
-          
-          # Deploy React dist
-          echo "📦 Deploying React build..."
-          scp -P ${{ secrets.SSH_PORT }} -r dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/dist/ || true
-          
-          # Deploy PHP files
-          echo "📝 Deploying PHP files..."
-          find . -maxdepth 1 -name '*.php' -exec scp -P ${{ secrets.SSH_PORT }} {} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/ \;
-          scp -P ${{ secrets.SSH_PORT }} style.css ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/
-          
-          # Deploy inc folder
-          echo "📂 Deploying inc folder..."
-          scp -P ${{ secrets.SSH_PORT }} -r inc/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/inc/ || true
-          
-          # Deploy plugins
-          echo "🔌 Deploying plugins..."
-          if [ -d "plugins" ]; then
-            scp -P ${{ secrets.SSH_PORT }} -r plugins/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/wp-content/plugins/ || true
-          fi
-          
-          # Deploy public files (robots.txt, favicon.ico)
-          echo "📄 Deploying public files..."
-          if [ -f "public/robots.txt" ]; then
-            scp -P ${{ secrets.SSH_PORT }} public/robots.txt ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/robots.txt
-          fi
-          if [ -f "public/favicon.ico" ]; then
-            scp -P ${{ secrets.SSH_PORT }} public/favicon.ico ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_WP_ROOT }}/favicon.ico
-          fi
-          
-          # Verify deployment
-          echo "🔍 Verifying deployment..."
-          $SSH_CMD "ls -lah ${{ secrets.REMOTE_WP_ROOT }}/wp-content/themes/${{ env.WP_THEME_SLUG }}/dist/ | head -20"
-          echo "✅ Deploy completed"
-
+      - name: 🌐 FTP Deploy - Full Theme Upload
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./
+          server-dir: /public_html/wp-content/themes/zentheme/
+          dangerous-clean-slate: true
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.vscode/**
+            **/.github/**
+            **/docs/**
+            **/*.md
+            **/LICENSE
+            **/package*.json
+            **/tsconfig*.json
+            **/vite.config.*
+            **/public/**
+            **/src/**
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
