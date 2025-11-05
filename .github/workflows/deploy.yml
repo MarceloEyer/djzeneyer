@@ -14,7 +14,7 @@ jobs:
     name: 📦 Build do Projeto
     runs-on: ubuntu-latest
     steps:
-      - name: 📂 Checkout do Repositório
+      - name: 📂 Checkout do Repositório 
         uses: actions/checkout@v4
 
       - name: 🟢 Configurar Node.js
