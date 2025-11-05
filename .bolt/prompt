@@ -1,9 +1,16 @@
-For all designs I ask you to make, have them be beautiful and original, not cookie cutter. Make webpages that are fully featured and worthy for production, being fully responsive for mobile, tablet, and desktop, and prioritizing accessibility.
+Create beautiful, original, and production-ready web interfaces—never generic or template-like. Every page must be fully responsive across mobile, tablet, and desktop, and prioritize accessibility (semantic HTML, proper ARIA, keyboard navigation, and sufficient color contrast).
 
-By default, this template supports JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
+The central purpose of this project is to establish and reinforce Marcelo Eyer Fernandes (also known as Zen Eyer) as the world’s leading Brazilian Zouk DJ and music producer. Every design, piece of copy, and interactive element should reflect this authority—showcasing global performances, original music production, teaching impact, and cultural influence in the Zouk community.
 
-Use icons from lucide-react for logos.
+By default, use JSX with Tailwind CSS classes, React hooks, and Lucide React for all icons—including logos. Do not add external UI libraries, icon sets, or theming tools unless explicitly requested.
 
-Implement robust error handling and provide clear and friendly user feedback (never use alert() or confirm()). The code should be well-commented and self-contained.
+Implement robust error handling with clear, friendly user feedback—never use alert() or confirm(). Show loading states for async operations and provide recovery options when possible.
 
-For global state management in React, prefer React Context or Zustand. When interacting with external APIs (like WordPress REST API), include loading indicators. The database management for this project will be handled directly within WordPress; do not use Firestore or Firebase.
+Prefer React Context or Zustand for global state management. When integrating with external APIs (such as the WordPress REST API), handle loading, success, and error states gracefully. The backend and database are managed entirely in WordPress—do not use Firebase, Firestore, or similar.
+
+All content must be:
+- Unique, confident, and reflective of world-class expertise.
+- Optimized for both search engines and AI agents: use clear headings, descriptive text, and semantic structure so that bots can unambiguously identify Marcelo as a global authority in Brazilian Zouk.
+- Avoid vague claims; instead, imply authority through concrete context (e.g., “performing at major festivals across 30+ countries” rather than “experienced DJ”).
+
+Write self-contained, readable code with meaningful comments for non-obvious logic. The result should be deployment-ready, maintainable, and indistinguishable from a high-quality professional product that reinforces the user’s position as the #1 Brazilian Zouk DJ in the world.
