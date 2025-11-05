@@ -1,20 +1,17 @@
 <?php
 /**
- * DJ Zen Eyer Theme Functions - Versão Dinâmica Final
- * v11.0.0 - Totalmente Dinâmico do GamiPress
+ * DJ Zen Eyer Theme Functions - SEO ULTIMATE VERSION (CORRIGIDA)
+ * v12.0.1 - Otimizado para IA Bots + Google + Performance + Correções de URL
  */
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) exit;
 
 /* =========================
- * Configuração Central
+ * VERSÃO & CACHE
  * ========================= */
-
 if (!defined('DJZ_VERSION')) {
     $asset_file = get_theme_file_path('/dist/assets/index.js');
-    $version = file_exists($asset_file) ? filemtime($asset_file) : '11.0.0';
+    $version = file_exists($asset_file) ? filemtime($asset_file) : '12.0.1';
     define('DJZ_VERSION', $version);
 }
 
@@ -29,11 +26,10 @@ function djz_allowed_origins(): array {
 }
 
 /* =========================
- * Roteamento SPA
+ * ROTEAMENTO SPA
  * ========================= */
-
 add_filter('template_include', function ($template) {
-    if ( is_admin() || (defined('REST_REQUEST') && REST_REQUEST) || ! is_main_query() || ! is_404() ) {
+    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST) || !is_main_query() || !is_404()) {
         return $template;
     }
     status_header(200);
@@ -41,9 +37,8 @@ add_filter('template_include', function ($template) {
 });
 
 /* =========================
- * Enqueue Scripts
+ * ENQUEUE SCRIPTS - OTIMIZADO
  * ========================= */
-
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('djzeneyer-style', get_stylesheet_uri(), [], DJZ_VERSION);
     
@@ -67,34 +62,254 @@ add_action('wp_enqueue_scripts', function () {
 
 add_filter('script_loader_tag', function ($tag, $handle, $src) {
     if ('djzeneyer-react' === $handle) {
-        return sprintf('<script type="module" src="%s" id="%s" crossorigin="use-credentials" defer></script>', esc_url($src), esc_attr($handle . '-js'));
+        return sprintf(
+            '<script type="module" src="%s" id="%s" crossorigin="use-credentials" defer></script>',
+            esc_url($src),
+            esc_attr($handle . '-js')
+        );
     }
     return $tag;
 }, 10, 3);
 
 /* =========================
- * Theme Support
+ * THEME SUPPORT
  * ========================= */
-
 add_action('after_setup_theme', function () {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
     add_theme_support('woocommerce');
+    add_theme_support('html5', ['search-form', 'comment-form', 'comment-list', 'gallery', 'caption']);
     register_nav_menus(['primary_menu' => __('Menu Principal', 'djzeneyer')]);
 });
 
-add_action('after_switch_theme', function () {
-    if (!get_role('dj')) {
-        add_role('dj', 'DJ', ['read' => true]);
+/* =========================
+ * 🎯 SEO ULTIMATE - SCHEMAS
+ * ========================= */
+
+// ✅ 1. LocalBusiness + MusicGroup Schema (Niterói, RJ)
+add_action('wp_head', function() {
+    if (!is_front_page()) return;
+
+    $site_url = esc_url(home_url('/'));
+    $logo_url = esc_url($site_url . 'images/zen-eyer-logo.png');
+    $image_url = esc_url($site_url . 'images/zen-eyer-profile.jpg');
+
+    $schema = [
+        "@context" => "https://schema.org",
+        "@type" => ["MusicGroup", "LocalBusiness"],
+        "name" => "DJ Zen Eyer",
+        "alternateName" => ["Zen Eyer", "DJ Zen", "Marcelo Fernandes"],
+        "description" => "Two-time world champion Brazilian Zouk DJ and music producer based in Niterói, Brazil. Specializing in Brazilian Zouk music with 100+ international performances across 11 countries.",
+        "url" => $site_url,
+        "logo" => $logo_url,
+        "image" => $image_url,
+        
+        "address" => [
+            "@type" => "PostalAddress",
+            "addressLocality" => "Niterói",
+            "addressRegion" => "RJ",
+            "addressCountry" => "BR"
+        ],
+        "geo" => [
+            "@type" => "GeoCoordinates",
+            "latitude" => "-22.8833",
+            "longitude" => "-43.1036"
+        ],
+        "areaServed" => [
+            ["@type" => "Country", "name" => "Brazil"],
+            ["@type" => "Country", "name" => "Netherlands"],
+            ["@type" => "Country", "name" => "United States"],
+            ["@type" => "Country", "name" => "Australia"],
+            ["@type" => "Country", "name" => "Czech Republic"],
+            ["@type" => "Country", "name" => "Germany"],
+            ["@type" => "Country", "name" => "Spain"]
+        ],
+        
+        "award" => [
+            "World Champion Brazilian Zouk DJ 2022 - Best Performance",
+            "World Champion Brazilian Zouk DJ 2022 - Best Remix"
+        ],
+        
+        "contactPoint" => [
+            "@type" => "ContactPoint",
+            "telephone" => "+55-21-98741-3091",
+            "contactType" => "Booking",
+            "email" => "booking@djzeneyer.com",
+            "availableLanguage" => ["Portuguese", "English"]
+        ],
+        
+        "genre" => ["Brazilian Zouk", "Electronic Music", "Dance Music"],
+        
+        "sameAs" => [
+            "https://instagram.com/djzeneyer",
+            "https://soundcloud.com/djzeneyer",
+            "https://youtube.com/@djzeneyer",
+            "https://www.wikidata.org/wiki/Q136551855",
+            "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
+            "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw"
+        ],
+        
+        "interactionStatistic" => [
+            [
+                "@type" => "InteractionCounter",
+                "interactionType" => "https://schema.org/ListenAction",
+                "userInteractionCount" => 500000
+            ]
+        ]
+    ];
+    
+    echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
+}, 1);
+
+// ✅ 2. Organization Schema
+add_action('wp_head', function() {
+    if (!is_front_page()) return;
+
+    $site_url = esc_url(home_url('/'));
+    $logo_url = esc_url($site_url . 'images/zen-eyer-logo.png');
+
+    $schema = [
+        "@context" => "https://schema.org",
+        "@type" => "Organization",
+        "name" => "DJ Zen Eyer",
+        "url" => $site_url,
+        "logo" => $logo_url,
+        "foundingDate" => "2014",
+        "founder" => [
+            "@type" => "Person",
+            "name" => "Marcelo Fernandes",
+            "alternateName" => "DJ Zen Eyer"
+        ],
+        "contactPoint" => [
+            "@type" => "ContactPoint",
+            "telephone" => "+55-21-98741-3091",
+            "contactType" => "Booking",
+            "email" => "booking@djzeneyer.com"
+        ]
+    ];
+    
+    echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
+}, 2);
+
+/* =========================
+ * 🎯 WOOCOMMERCE PRODUCT SCHEMA
+ * ========================= */
+add_action('woocommerce_single_product_summary', function() {
+    global $product;
+    if (!$product) return;
+    
+    $schema = [
+        "@context" => "https://schema.org",
+        "@type" => "Product",
+        "name" => $product->get_name(),
+        "description" => wp_strip_all_tags($product->get_description()),
+        "sku" => $product->get_sku(),
+        "image" => wp_get_attachment_url($product->get_image_id()) ?: 'https://placehold.co/600x600/101418/6366F1?text=Zen+Eyer',
+        "offers" => [
+            "@type" => "Offer",
+            "url" => get_permalink($product->get_id()),
+            "priceCurrency" => "BRL",
+            "price" => (float) $product->get_price(),
+            "availability" => $product->is_in_stock() ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            "priceValidUntil" => date('Y-12-31'),
+            "seller" => [
+                "@type" => "Organization",
+                "name" => "DJ Zen Eyer"
+            ]
+        ]
+    ];
+    
+    echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_SLASHES) . '</script>';
+}, 5);
+
+/* =========================
+ * 🎯 SITEMAP.XML AUTOMÁTICO
+ * ========================= */
+add_action('init', function() {
+    add_rewrite_rule('^sitemap\.xml$', 'index.php?djz_sitemap=1', 'top');
+});
+
+add_filter('query_vars', function($vars) {
+    $vars[] = 'djz_sitemap';
+    return $vars;
+});
+
+add_action('template_redirect', function() {
+    if (get_query_var('djz_sitemap') != 1) return;
+    
+    header('Content-Type: application/xml; charset=utf-8');
+    
+    $urls = [
+        ['loc' => home_url('/'), 'priority' => '1.0', 'changefreq' => 'daily'],
+        ['loc' => home_url('/about'), 'priority' => '0.9', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/music'), 'priority' => '0.9', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/events'), 'priority' => '0.9', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/shop'), 'priority' => '0.8', 'changefreq' => 'daily'],
+        ['loc' => home_url('/work-with-me'), 'priority' => '0.9', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/zentribe'), 'priority' => '0.8', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/faq'), 'priority' => '0.7', 'changefreq' => 'monthly'],
+    ];
+    
+    $products = wc_get_products(['limit' => -1, 'status' => 'publish']);
+    foreach ($products as $product) {
+        $urls[] = [
+            'loc' => get_permalink($product->get_id()),
+            'priority' => '0.7',
+            'changefreq' => 'weekly'
+        ];
     }
+    
+    echo '<?xml version="1.0" encoding="UTF-8"?>';
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    
+    foreach ($urls as $url) {
+        echo '<url>';
+        echo '<loc>' . esc_url($url['loc']) . '</loc>';
+        echo '<priority>' . $url['priority'] . '</priority>';
+        echo '<changefreq>' . $url['changefreq'] . '</changefreq>';
+        echo '<lastmod>' . date('Y-m-d') . '</lastmod>';
+        echo '</url>';
+    }
+    
+    echo '</urlset>';
+    exit;
 });
 
 /* =========================
- * Segurança & CORS
+ * 🎯 ROBOTS.TXT OTIMIZADO
  * ========================= */
+add_filter('robots_txt', function($output) {
+    $output .= "\n# DJ Zen Eyer - Optimized for AI Bots\n";
+    $output .= "User-agent: *\n";
+    $output .= "Allow: /\n";
+    $output .= "Allow: /wp-content/uploads/\n";
+    $output .= "Allow: /wp-content/themes/zentheme/dist/\n";
+    $output .= "\n";
+    $output .= "Disallow: /wp-admin/\n";
+    $output .= "Disallow: /wp-includes/\n";
+    $output .= "Disallow: /wp-json/\n";
+    $output .= "Disallow: /cart/\n";
+    $output .= "Disallow: /checkout/\n";
+    $output .= "Disallow: /my-account/\n";
+    $output .= "\n";
+    $output .= "# AI Bots - Full Access\n";
+    $output .= "User-agent: GPTBot\n";
+    $output .= "User-agent: ChatGPT-User\n";
+    $output .= "User-agent: Claude-Web\n";
+    $output .= "User-agent: anthropic-ai\n";
+    $output .= "User-agent: PerplexityBot\n";
+    $output .= "Allow: /\n";
+    $output .= "\n";
+    $output .= "Sitemap: " . home_url('/sitemap.xml') . "\n";
+    
+    return $output;
+});
 
+/* =========================
+ * SEGURANÇA & CORS
+ * ========================= */
 add_action('send_headers', function() {
-    if ( is_admin() || headers_sent() ) return;
+    if (is_admin() || headers_sent()) return;
     header_remove('X-Powered-By');
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: DENY');
@@ -124,24 +339,8 @@ add_action('rest_api_init', function() {
 });
 
 /* =========================
- * Plugin Integrations
- * ========================= */
-
-add_filter('simple_jwt_login_jwt_payload_auth', function($payload, $request) {
-    if (!empty($request['email'])) {
-        $user = get_user_by('email', sanitize_email($request['email']));
-        if ($user) {
-            $payload['display_name'] = $user->display_name;
-            $payload['roles'] = $user->roles;
-        }
-    }
-    return $payload;
-}, 10, 2);
-
-/* =========================
  * HELPER: Buscar Requirements
  * ========================= */
-
 function djz_format_requirements($post_id) {
     if (!function_exists('gamipress_get_post_requirements')) {
         return [];
@@ -165,9 +364,8 @@ function djz_format_requirements($post_id) {
 }
 
 /* =========================
- * ENDPOINT DINÂMICO: GamiPress
+ * ENDPOINT: GamiPress
  * ========================= */
-
 function djz_get_gamipress_handler($request) {
     $user_id = intval($request->get_param('user_id'));
     
@@ -175,7 +373,6 @@ function djz_get_gamipress_handler($request) {
         return new WP_Error('invalid_user_id', 'Invalid user ID', ['status' => 400]);
     }
     
-    // ✅ VERIFICAR SE GAMIPRESS ESTÁ ATIVO
     if (!function_exists('gamipress_get_user_points')) {
         return rest_ensure_response([
             'success' => false,
@@ -190,7 +387,6 @@ function djz_get_gamipress_handler($request) {
         ]);
     }
     
-    // ✅ 1. BUSCAR TODOS OS TIPOS DE PONTOS
     $points_types = gamipress_get_points_types();
     $user_points = [];
     $total_points = 0;
@@ -206,7 +402,6 @@ function djz_get_gamipress_handler($request) {
         $total_points += $points;
     }
     
-    // ✅ 2. BUSCAR RANK ATUAL DO USUÁRIO
     $rank_types = gamipress_get_rank_types();
     $current_rank = 'Novice';
     $rank_id = 0;
@@ -214,7 +409,6 @@ function djz_get_gamipress_handler($request) {
     
     foreach ($rank_types as $slug => $data) {
         $user_rank = gamipress_get_user_rank($user_id, $slug);
-        
         if ($user_rank && is_object($user_rank)) {
             $rank_id = $user_rank->ID;
             $current_rank = $user_rank->post_title;
@@ -223,9 +417,7 @@ function djz_get_gamipress_handler($request) {
         }
     }
     
-    // ✅ 3. BUSCAR TODOS OS RANKS DISPONÍVEIS (progressão)
     $all_ranks = [];
-    
     if (!empty($rank_type_slug)) {
         $ranks_query = new WP_Query([
             'post_type' => $rank_type_slug,
@@ -239,7 +431,6 @@ function djz_get_gamipress_handler($request) {
             while ($ranks_query->have_posts()) {
                 $ranks_query->the_post();
                 $r_id = get_the_ID();
-                
                 $all_ranks[] = [
                     'id' => $r_id,
                     'title' => get_the_title(),
@@ -254,7 +445,6 @@ function djz_get_gamipress_handler($request) {
         }
     }
     
-    // ✅ 4. BUSCAR ACHIEVEMENTS EARNED
     $achievement_types = gamipress_get_achievement_types();
     $earned_achievements = [];
     
@@ -283,9 +473,7 @@ function djz_get_gamipress_handler($request) {
         }
     }
     
-    // ✅ 5. BUSCAR TODOS OS ACHIEVEMENTS DISPONÍVEIS
     $all_achievements = [];
-    
     foreach ($achievement_types as $type_slug => $type_data) {
         $achievements_query = new WP_Query([
             'post_type' => $type_slug,
@@ -299,10 +487,7 @@ function djz_get_gamipress_handler($request) {
             while ($achievements_query->have_posts()) {
                 $achievements_query->the_post();
                 $a_id = get_the_ID();
-                
-                // Verificar se usuário já ganhou
                 $earned = gamipress_has_user_earned_achievement($a_id, $user_id);
-                
                 $all_achievements[] = [
                     'id' => $a_id,
                     'type' => $type_slug,
@@ -321,7 +506,6 @@ function djz_get_gamipress_handler($request) {
         }
     }
     
-    // ✅ 6. CALCULAR LEVEL (baseado na posição do rank)
     $level = 1;
     foreach ($all_ranks as $index => $rank) {
         if ($rank['current']) {
@@ -352,9 +536,8 @@ function djz_get_gamipress_handler($request) {
 }
 
 /* =========================
- * Endpoint Handlers
+ * Outros Endpoints
  * ========================= */
-
 function djz_get_multilang_menu_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     if (function_exists('pll_set_language')) {
@@ -522,7 +705,6 @@ function djz_get_products_with_lang_handler($request) {
 /* =========================
  * Registro de Endpoints
  * ========================= */
-
 add_action('rest_api_init', function () {
     $namespace = 'djzeneyer/v1';
 
@@ -551,7 +733,6 @@ add_action('rest_api_init', function () {
         ],
     ]);
     
-    // ✅ ENDPOINT GAMIPRESS TOTALMENTE DINÂMICO
     register_rest_route($namespace, '/gamipress/(?P<user_id>\d+)', [
         'methods' => 'GET',
         'callback' => 'djz_get_gamipress_handler',
@@ -598,7 +779,6 @@ add_action('rest_api_init', function () {
 /* =========================
  * SEO Fixes
  * ========================= */
-
 add_action('template_redirect', function() {
     if (is_404()) {
         status_header(404);
@@ -606,24 +786,4 @@ add_action('template_redirect', function() {
     }
 }, 999);
 
-add_action('wp_head', function() {
-    remove_action('wp_head', 'rank_math_hreflang', 10);
-    
-    $base_url = trailingslashit(home_url());
-    
-    if (is_front_page() || is_home()) {
-        echo '<link rel="alternate" hreflang="en" href="' . esc_url($base_url) . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="pt-BR" href="' . esc_url($base_url . 'pt/') . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($base_url) . '" />' . "\n";
-    }
-    
-    if (is_page() && get_query_var('pagename') === 'pt') {
-        echo '<link rel="alternate" hreflang="en" href="' . esc_url($base_url) . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="pt-BR" href="' . esc_url($base_url . 'pt/') . '" />' . "\n";
-        echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($base_url) . '" />' . "\n";
-    }
-}, 1);
-
 add_filter('wp_sitemaps_enabled', '__return_false');
-
-?>
