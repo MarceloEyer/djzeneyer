@@ -3,7 +3,7 @@ name: 🚀 Build & Deploy to Hostinger
 on:
   push:
     branches:
-      - main
+      - principal
 
 permissions:
   contents: read
@@ -56,7 +56,7 @@ jobs:
           name: dist-folder
           path: ./dist
 
-      # ✅ STEP 1: Deploy dos Arquivos Públicos para RAIZ (favicons, robots.txt, sitemap.xml)
+      # ✅ STEP 1: Deploy dos Arquivos Públicos para RAIZ
       - name: 🎨 Deploy dos Arquivos Públicos para Raiz
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -92,13 +92,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
+          local-dir: ./wp-content/themes/zentheme/
           server-dir: ./wp-content/themes/zentheme/
-          exclude: |
-            **/*
-            !/functions.php
-            !/index.php
-            !/style.css
-            !/header.php
-            !/footer.php
-            !/woocommerce.php
-            !/page-react-app.php
+          dangerous-clean-slate: false
