@@ -1,9 +1,10 @@
-name: 🚀 Deploy Corrigido para Hostinger (Tema zentheme)
+name: 🚀 Deploy to Hostinger via SSH
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,7 +12,7 @@ permissions:
 
 jobs:
   build-and-deploy:
-    name: 📦 Build & Deploy (Hostinger)
+    name: 🧱 Build & Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -27,10 +28,8 @@ jobs:
       - name: 📥 Instalar Dependências
         run: npm ci
 
-      - name: 🏗️ Compilar o Projeto
-        run: |
-          echo "🔧 Iniciando build..."
-          npm run build
+      - name: 🏗️ Build do Projeto
+        run: npm run build
         env:
           VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
           VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
@@ -43,32 +42,16 @@ jobs:
           echo "📁 Conteúdo da pasta dist/"
           ls -la dist
 
-      - name: 💣 Limpar e preparar pasta remota
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: 147.79.84.222
-          username: u790739895
-          password: ${{ secrets.HOSTINGER_PASSWORD }}
-          port: 65002
-          script_stop: true
-          script: |
-            echo "🚨 Limpando diretório remoto do tema..."
-            rm -rf /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/*
-            echo "✅ Pasta limpa. Recriando estrutura..."
-            mkdir -p /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/
-            echo "📂 Verificando pasta:"
-            ls -la /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/
-
-      - name: 📤 Enviar arquivos (SCP com debug)
+      - name: 📤 Deploy via SCP para Hostinger
         uses: appleboy/scp-action@v0.1.7
         with:
           host: 147.79.84.222
           username: u790739895
-          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          password: ${{ secrets.SSH_PASSWORD }}
           port: 65002
           source: "dist/*"
-          target: "/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/"
-          strip_components: 0
+          target: "/home/u790739895/domains/djzeneyer.com/public_html/"
+          strip_components: 1
           overwrite: true
           rm: false
           timeout: 180s
@@ -79,13 +62,10 @@ jobs:
         with:
           host: 147.79.84.222
           username: u790739895
-          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          password: ${{ secrets.SSH_PASSWORD }}
           port: 65002
-          script_stop: true
           script: |
-            echo "🧭 Verificando conteúdo do tema:"
-            ls -la /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/
+            echo "🧭 Verificando arquivos em /home/u790739895/domains/djzeneyer.com/public_html/"
+            ls -la /home/u790739895/domains/djzeneyer.com/public_html/
             echo "📦 Total de arquivos:"
-            find /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/ -type f | wc -l
-            echo "📂 Estrutura do tema:"
-            find /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/ -maxdepth 3
+            find /home/u790739895/domains/djzeneyer.com/public_html/ -type f | wc -l
