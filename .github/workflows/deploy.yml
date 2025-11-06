@@ -16,7 +16,7 @@ env:
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════
-  # JOB 1: BUILD
+  # BUILD
   # ═══════════════════════════════════════════════════════════════════════════
   build:
     name: 🏗️ Build
@@ -62,8 +62,6 @@ jobs:
           name: build-${{ steps.commit.outputs.hash }}
           path: |
             dist/
-            inc/
-            plugins/
             functions.php
             style.css
             screenshot.png
@@ -73,7 +71,7 @@ jobs:
           retention-days: 7
 
   # ═══════════════════════════════════════════════════════════════════════════
-  # JOB 2: DEPLOY (ESTRUTURA CORRETA)
+  # DEPLOY
   # ═══════════════════════════════════════════════════════════════════════════
   deploy:
     name: 🚀 Deploy
@@ -84,7 +82,16 @@ jobs:
       url: ${{ env.SITE_URL }}
 
     steps:
-      - name: 📥 Download artifact
+      - name: 📥 Checkout (para verificar estrutura)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            inc
+            plugins
+            public
+          sparse-checkout-cone-mode: false
+
+      - name: 📥 Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.build.outputs.commit_hash }}
@@ -108,7 +115,7 @@ jobs:
             echo "✅ SSH OK"
             pwd && whoami
 
-      - name: 📦 Backup no servidor
+      - name: 📦 Backup
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -129,19 +136,15 @@ jobs:
               echo "✅ Backup criado"
             fi
             
-            # Criar estrutura
-            mkdir -p "${THEME_PATH}"/{dist,inc,assets}
+            mkdir -p "${THEME_PATH}"/dist
             mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
             
-            # Limpar backups antigos
             cd "$HOME/backups" && ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
 
       # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY ORGANIZADO POR DESTINO
+      # DEPLOY: dist/ (SEMPRE EXISTE)
       # ═══════════════════════════════════════════════════════════════════════
-      
-      # 1. TEMA: dist/ (React build)
-      - name: 🚀 Deploy dist/ → tema/dist/
+      - name: 🚀 Deploy dist/
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete
@@ -152,8 +155,11 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 2. TEMA: inc/ (PHP helpers)
-      - name: 📚 Deploy inc/ → tema/inc/
+      # ═══════════════════════════════════════════════════════════════════════
+      # DEPLOY: inc/ (SE EXISTIR)
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: 📚 Deploy inc/ (se existir)
+        if: hashFiles('inc/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete
@@ -164,8 +170,10 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 3. TEMA: Arquivos PHP root (functions.php, style.css, etc)
-      - name: 📝 Deploy PHP files → tema/
+      # ═══════════════════════════════════════════════════════════════════════
+      # DEPLOY: PHP files (functions.php, style.css, etc)
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: 📝 Deploy PHP files
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.SSH_HOST }}
@@ -176,21 +184,10 @@ jobs:
           target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           strip_components: 0
 
-      # 4. PLUGINS: plugins/ → wp-content/plugins/
-      - name: 🔌 Deploy plugins/ → wp-content/plugins/
-        if: hashFiles('plugins/**') != ''
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Receber arquivos via rsync (precisa estar no runner)
-            echo "Preparando diretório de plugins..."
-            mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
-
-      - name: 🔌 Sync plugins/
+      # ═══════════════════════════════════════════════════════════════════════
+      # DEPLOY: plugins/ (SE EXISTIR)
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: 🔌 Deploy plugins/ (se existir)
         if: hashFiles('plugins/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
@@ -202,56 +199,38 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # 5. PUBLIC: public/ → root (robots.txt, favicon, etc)
-      - name: 📄 Deploy public/ → root
-        if: hashFiles('public/**') != ''
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd "${{ env.REMOTE_ROOT }}"
-            
-            # Apenas arquivos seguros (não sobrescreve WordPress)
-            SAFE_FILES=(
-              "robots.txt"
-              "ai-bots.txt"
-              "favicon.ico"
-              "favicon.svg"
-              "apple-touch-icon.png"
-              "site.webmanifest"
-              "browserconfig.xml"
-            )
-            
-            echo "Preparando para receber assets públicos..."
-
-      - name: 📄 Sync public assets
+      # ═══════════════════════════════════════════════════════════════════════
+      # DEPLOY: public/ (SE EXISTIR - apenas arquivos seguros)
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: 📄 Deploy public/ (se existir)
         if: hashFiles('public/**') != ''
         run: |
-          # Criar arquivo temporário com lista de arquivos seguros
-          mkdir -p temp_public
-          cd public
+          # Verificar quais arquivos existem
+          SAFE_FILES=(robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest)
           
-          for file in robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest browserconfig.xml; do
-            if [ -f "$file" ]; then
-              cp "$file" ../temp_public/
+          mkdir -p temp_public
+          
+          for file in "${SAFE_FILES[@]}"; do
+            if [ -f "public/$file" ]; then
+              cp "public/$file" temp_public/
+              echo "✓ $file"
             fi
           done
           
-          cd ..
-          
+          # Só fazer rsync se houver arquivos
           if [ "$(ls -A temp_public)" ]; then
-            echo "Enviando assets públicos..."
+            echo "Enviando arquivos públicos..."
+          else
+            echo "Nenhum arquivo público para enviar"
+            exit 0
           fi
 
-      - name: 📄 Upload public assets
+      - name: 📄 Rsync public assets
         if: hashFiles('public/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avz
-          path: public/
+          path: temp_public/
           remote_path: ${{ env.REMOTE_ROOT }}/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
@@ -261,7 +240,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════════════
       # VERIFICAÇÃO
       # ═══════════════════════════════════════════════════════════════════════
-      - name: ✅ Verificar estrutura
+      - name: ✅ Verificar
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -271,20 +250,17 @@ jobs:
           script: |
             echo ""
             echo "════════════════════════════════════════"
-            echo "🔍 VERIFICANDO ESTRUTURA"
+            echo "🔍 VERIFICANDO DEPLOY"
             echo "════════════════════════════════════════"
             echo ""
             
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
-            ROOT_PATH="${{ env.REMOTE_ROOT }}"
             
-            # Verificar tema
-            echo "📁 TEMA (${{ env.THEME_NAME }}):"
+            echo "📁 Tema: $THEME_PATH"
             if [ -d "$THEME_PATH" ]; then
-              echo "  ✅ $THEME_PATH"
-              ls -lh "$THEME_PATH" | grep -E '^d|\.php$|\.css$'
+              echo "✅ Tema existe"
             else
-              echo "  ❌ Tema não encontrado!"
+              echo "❌ Tema não encontrado!"
               exit 1
             fi
             
@@ -293,44 +269,20 @@ jobs:
             if [ -d "$THEME_PATH/dist" ]; then
               DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
               FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
-              echo "  ✅ $DIST_SIZE ($FILE_COUNT arquivos)"
-              find "$THEME_PATH/dist" -type f -name "*.js" | head -3
+              echo "✅ $DIST_SIZE ($FILE_COUNT arquivos)"
             else
-              echo "  ❌ dist/ não encontrado!"
+              echo "❌ dist/ não encontrado!"
               exit 1
             fi
             
             echo ""
-            echo "📁 inc/:"
-            if [ -d "$THEME_PATH/inc" ]; then
-              INC_COUNT=$(find "$THEME_PATH/inc" -name "*.php" | wc -l)
-              echo "  ✅ $INC_COUNT arquivos PHP"
-            else
-              echo "  ⚠️  inc/ não encontrado (pode ser opcional)"
-            fi
-            
-            echo ""
-            echo "📄 Arquivos do tema:"
-            [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ❌ functions.php"
-            [ -f "$THEME_PATH/style.css" ] && echo "  ✅ style.css" || echo "  ❌ style.css"
-            [ -f "$THEME_PATH/screenshot.png" ] && echo "  ✅ screenshot.png" || echo "  ℹ️  screenshot.png"
-            
-            echo ""
-            echo "🔌 PLUGINS:"
-            if [ -d "$ROOT_PATH/wp-content/plugins" ]; then
-              PLUGIN_COUNT=$(find "$ROOT_PATH/wp-content/plugins" -mindepth 1 -maxdepth 1 -type d | wc -l)
-              echo "  ✅ $PLUGIN_COUNT plugins instalados"
-            fi
-            
-            echo ""
-            echo "📄 ROOT (public_html/):"
-            [ -f "$ROOT_PATH/robots.txt" ] && echo "  ✅ robots.txt" || echo "  ℹ️  robots.txt"
-            [ -f "$ROOT_PATH/favicon.ico" ] && echo "  ✅ favicon.ico" || echo "  ℹ️  favicon.ico"
-            [ -f "$ROOT_PATH/wp-config.php" ] && echo "  ✅ wp-config.php (preservado)" || echo "  ❌ wp-config.php"
+            echo "📄 Arquivos PHP:"
+            [ -f "$THEME_PATH/functions.php" ] && echo "✅ functions.php" || echo "⚠️ functions.php"
+            [ -f "$THEME_PATH/style.css" ] && echo "✅ style.css" || echo "⚠️ style.css"
             
             echo ""
             echo "════════════════════════════════════════"
-            echo "✅ ESTRUTURA CORRETA!"
+            echo "✅ VERIFICAÇÃO OK"
             echo "════════════════════════════════════════"
 
       # ═══════════════════════════════════════════════════════════════════════
@@ -348,7 +300,7 @@ jobs:
               echo "✅ Site OK (HTTP $HTTP_CODE)"
               exit 0
             else
-              echo "⚠️  Tentativa $i/3: HTTP $HTTP_CODE"
+              echo "⚠️ Tentativa $i/3: HTTP $HTTP_CODE"
               sleep 5
             fi
           done
@@ -366,12 +318,13 @@ jobs:
             echo ""
             echo "🌐 Site: ${{ env.SITE_URL }}"
             echo "📦 Commit: ${{ needs.build.outputs.commit_hash }}"
-            echo "📁 Estrutura:"
-            echo "   dist/      → tema/dist/"
-            echo "   inc/       → tema/inc/"
-            echo "   *.php      → tema/"
-            echo "   plugins/   → wp-content/plugins/"
-            echo "   public/    → root/"
+            echo ""
+            echo "📁 Estrutura deployada:"
+            echo "  ✅ dist/         → tema/dist/"
+            [ -d "inc" ] && echo "  ✅ inc/          → tema/inc/" || echo "  ℹ️  inc/         (não existe)"
+            echo "  ✅ *.php, *.css  → tema/"
+            [ -d "plugins" ] && echo "  ✅ plugins/      → wp-content/plugins/" || echo "  ℹ️  plugins/     (não existe)"
+            [ -d "public" ] && echo "  ✅ public/       → root/" || echo "  ℹ️  public/      (não existe)"
           else
             echo "❌ DEPLOY FALHOU"
             echo "Verifique os logs acima"
