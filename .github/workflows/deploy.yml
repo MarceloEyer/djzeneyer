@@ -6,61 +6,52 @@ on:
       - main
 
 env:
-  
-SITE_URL
-${{ secrets.SITE_URL }}
-URL do site principal
-VITE_WP_SITE_URL
-${{ secrets.VITE_WP_SITE_URL }}
-URL do site WordPress para o Vite
-VITE_WP_REST_URL
-${{ secrets.VITE_WP_REST_URL }}
-URL da API REST do WordPress
-VITE_GOOGLE_CLIENT_ID
-${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-ID do cliente Google para autenticação
-VITE_WC_CONSUMER_KEY
-${{ secrets.VITE_WC_CONSUMER_KEY }}
-Chave do consumidor WooCommerce
-VITE_WC_CONSUMER_SECRET
-${{ secrets.VITE_WC_CONSUMER_SECRET }}
-Segredo do consumidor WooCommerce
+  SITE_URL: ${{ secrets.SITE_URL }}
+  VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
+  VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
+  VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+  VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
+  VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+
 jobs:
-build-and-deploy:
-runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  - name: Install Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: '20'
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-  - name: Install dependencies
-    run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-  - name: Build project
-    run: npm run build
+      - name: Build project
+        run: npm run build
 
-  - name: Deploy via SSH
-    if: ${{ secrets.SSH_HOST && secrets.SSH_USER && secrets.SSH_PRIVATE_KEY && secrets.SSH_THEME_PATH }}
-    uses: appleboy/scp-action@v0.1.7
-    with:
-      host: ${{ secrets.SSH_HOST }}
-      username: ${{ secrets.SSH_USER }}
-      key: ${{ secrets.SSH_PRIVATE_KEY }}
-      port: ${{ secrets.SSH_PORT }}
-      source: ./dist/
-      target: ${{ secrets.SSH_THEME_PATH }}
+      - name: Deploy via SSH
+        if: ${{ secrets.SSH_HOST != '' && secrets.SSH_USER != '' && secrets.SSH_PRIVATE_KEY != '' && secrets.SSH_THEME_PATH != '' }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "dist/*"
+          target: ${{ secrets.SSH_THEME_PATH }}
+          strip_components: 1
+          rm: true
 
-  - name: Deploy via FTP (fallback)
-    if: ${{ secrets.FTP_SERVER && secrets.FTP_USERNAME && secrets.FTP_PASSWORD && secrets.SSH_THEME_PATH == '' }}
-    uses: SamKirkland/FTP-Deploy-Action@v4.3.0
-    with:
-      server: ${{ secrets.FTP_SERVER }}
-      username: ${{ secrets.FTP_USERNAME }}
-      password: ${{ secrets.FTP_PASSWORD }}
-      local-dir: ./dist/
-      server-dir: ${{ secrets.SSH_THEME_PATH }}
+      - name: Deploy via FTP (fallback)
+        if: ${{ secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != '' && secrets.FTP_THEME_PATH != '' && secrets.SSH_HOST == '' }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_THEME_PATH }}
+          dangerous-clean-slate: false
