@@ -31,27 +31,15 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          NODE_ENV: production
 
       - name: Deploy via SSH
-        if: ${{ secrets.SSH_PRIVATE_KEY }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          source: "dist/*"
+          port: 22
+          source: "dist/"
           target: ${{ secrets.SSH_THEME_PATH }}
-          strip_components: 1
-          rm: true
-
-      - name: Deploy via FTP (fallback)
-        if: ${{ !secrets.SSH_PRIVATE_KEY && secrets.FTP_PASSWORD }}
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_THEME_PATH }}
-          dangerous-clean-slate: false
