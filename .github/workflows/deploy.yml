@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Hostinger via SSH
+name: 🚀 Deploy para Hostinger (direto no código para teste)
 
 on:
   push:
@@ -12,9 +12,7 @@ permissions:
 
 jobs:
   build-and-deploy:
-    name: 🧱 Build & Deploy
     runs-on: ubuntu-latest
-
     steps:
       - name: 📂 Checkout do Repositório
         uses: actions/checkout@v4
@@ -25,39 +23,31 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: 📥 Instalar Dependências
-        run: npm ci
+      - name: 📥 Instalar dependências
+        run: npm install
 
       - name: 🏗️ Build do Projeto
         run: npm run build
-        env:
-          VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
-          VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
-          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
-          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - name: 🧾 Listar arquivos gerados
-        run: |
-          echo "📁 Conteúdo da pasta dist/"
-          ls -la dist
+      - name: 🧾 Listar arquivos do build
+        run: ls -l dist
 
-      - name: 📤 Deploy via SCP para Hostinger
+      - name: 📤 Deploy via SCP (com dados direto do painel)
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: 147.79.84.222
-          username: u790739895
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: 65002
+          host: 147.79.84.222                 # DIRETO DA IMAGEM
+          username: u790739895                # DIRETO DA IMAGEM
+          password: ${{ secrets.SSH_PASSWORD }} # Usa secret SÓ para senha
+          port: 65002                         # DIRETO DA IMAGEM
           source: "dist/*"
           target: "/home/u790739895/domains/djzeneyer.com/public_html/"
           strip_components: 1
           overwrite: true
           rm: false
-          timeout: 180s
           debug: true
+          timeout: 180s
 
-      - name: 🔎 Verificar upload remoto
+      - name: 🔎 Listar arquivos no Hostinger após deploy
         uses: appleboy/ssh-action@v1.1.0
         with:
           host: 147.79.84.222
@@ -65,7 +55,5 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 65002
           script: |
-            echo "🧭 Verificando arquivos em /home/u790739895/domains/djzeneyer.com/public_html/"
+            echo "Conteúdo em /home/u790739895/domains/djzeneyer.com/public_html/"
             ls -la /home/u790739895/domains/djzeneyer.com/public_html/
-            echo "📦 Total de arquivos:"
-            find /home/u790739895/domains/djzeneyer.com/public_html/ -type f | wc -l
