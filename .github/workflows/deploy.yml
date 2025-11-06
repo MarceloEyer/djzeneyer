@@ -299,7 +299,7 @@ jobs:
               tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
             fi
             
-            mkdir -p "${THEME_PATH}"/{dist,inc,assets} "${REMOTE_ROOT}/wp-content/plugins"
+            # Só cria as pastas do tema (que você controla) mkdir -p "${THEME_PATH}/dist" "${THEME_PATH}/inc" "${THEME_PATH}/assets"  # NÃO tenta criar wp-content/plugins — já existe!
             
             cd "$HOME/backups" && ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
             
