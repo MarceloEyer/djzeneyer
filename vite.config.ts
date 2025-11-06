@@ -1,10 +1,15 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import removeConsole from 'vite-plugin-remove-console';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    removeConsole({
+      exclude: ['error', 'warn'], // mantém console.error e console.warn
+    }),
+  ],
   server: {
     port: 5173,
   },
@@ -12,14 +17,7 @@ export default defineConfig({
     outDir: 'dist',
     manifest: true,
     target: 'es2015',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-      },
-    },
+    minify: 'esbuild', // ← esbuild é mais rápido e nativo
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name].[ext]',
