@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     removeConsole({
-      exclude: ['error', 'warn'], // mantém console.error e console.warn
+      exclude: ['error', 'warn'], // mantém console.error e console.warn bundinha
     }),
   ],
   server: {
