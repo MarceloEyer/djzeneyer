@@ -1,19 +1,17 @@
-name: 🚀 Build & Deploy to Hostinger (via SSH)
+name: 🧪 Debug Deploy to Hostinger (SSH Verbose)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  build:
-    name: 📦 Build do Projeto
+  build-and-deploy:
+    name: 🧱 Build & Verbose Deploy
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📂 Checkout do Repositório
         uses: actions/checkout@v4
@@ -27,8 +25,11 @@ jobs:
       - name: 📥 Instalar Dependências
         run: npm ci
 
-      - name: 🏗️ Compilar o Projeto (Build)
-        run: npm run build
+      - name: 🏗️ Build do Projeto (com variáveis)
+        run: |
+          echo "🔧 Iniciando build..."
+          echo "VITE_WP_SITE_URL=${{ secrets.VITE_WP_SITE_URL }}"
+          npm run build
         env:
           VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
           VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
@@ -36,7 +37,33 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-      - name: 📤 Deploy para Hostinger via SSH (pasta dist)
+      - name: 🧾 Listar arquivos gerados
+        run: |
+          echo "📁 Conteúdo da pasta dist/"
+          ls -la dist
+
+      - name: 🧠 Debug Secrets (sem chaves privadas)
+        run: |
+          echo "🌍 Host: ${{ secrets.SSH_HOST }}"
+          echo "👤 User: ${{ secrets.SSH_USER }}"
+          echo "📦 Port: ${{ secrets.SSH_PORT }}"
+          echo "🎯 Path: ${{ secrets.SSH_THEME_PATH }}"
+
+      - name: 💣 Limpar pasta remota antes do deploy
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            echo "🚨 Limpando diretório remoto: ${{ secrets.SSH_THEME_PATH }}"
+            rm -rf ${{ secrets.SSH_THEME_PATH }}/*
+            echo "✅ Pasta limpa. Verificando conteúdo..."
+            ls -la ${{ secrets.SSH_THEME_PATH }}
+
+      - name: 📤 Deploy via SCP (verbose total)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -45,5 +72,24 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: "dist/*"
           target: ${{ secrets.SSH_THEME_PATH }}
-          strip_components: 1
+          strip_components: 0
+          overwrite: true
           rm: false
+          timeout: 180s
+          debug: true
+
+      - name: 🔎 Verificar upload remoto
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            echo "🧭 Verificando arquivos em ${{ secrets.SSH_THEME_PATH }}..."
+            ls -la ${{ secrets.SSH_THEME_PATH }}
+            echo "📦 Total de arquivos:"
+            find ${{ secrets.SSH_THEME_PATH }} -type f | wc -l
+            echo "📂 Estrutura completa:"
+            tree ${{ secrets.SSH_THEME_PATH }} || find ${{ secrets.SSH_THEME_PATH }} -maxdepth 3
