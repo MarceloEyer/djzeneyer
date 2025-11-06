@@ -33,7 +33,7 @@ jobs:
         run: npm run build
 
       - name: Deploy via SSH
-        if: ${{ secrets.SSH_HOST != '' && secrets.SSH_USER != '' && secrets.SSH_PRIVATE_KEY != '' && secrets.SSH_THEME_PATH != '' }}
+        if: ${{ secrets.SSH_PRIVATE_KEY }}
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -46,7 +46,7 @@ jobs:
           rm: true
 
       - name: Deploy via FTP (fallback)
-        if: ${{ secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != '' && secrets.FTP_THEME_PATH != '' && secrets.SSH_HOST == '' }}
+        if: ${{ !secrets.SSH_PRIVATE_KEY && secrets.FTP_PASSWORD }}
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
