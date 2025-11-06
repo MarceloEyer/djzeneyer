@@ -1,7 +1,9 @@
-name: 🧪 Debug Deploy to Hostinger (SSH Verbose)
+name: 🚀 Deploy Corrigido para Hostinger (Tema zentheme)
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -9,7 +11,7 @@ permissions:
 
 jobs:
   build-and-deploy:
-    name: 🧱 Build & Verbose Deploy
+    name: 📦 Build & Deploy (Hostinger)
     runs-on: ubuntu-latest
 
     steps:
@@ -25,10 +27,9 @@ jobs:
       - name: 📥 Instalar Dependências
         run: npm ci
 
-      - name: 🏗️ Build do Projeto (com variáveis)
+      - name: 🏗️ Compilar o Projeto
         run: |
           echo "🔧 Iniciando build..."
-          echo "VITE_WP_SITE_URL=${{ secrets.VITE_WP_SITE_URL }}"
           npm run build
         env:
           VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
@@ -42,36 +43,31 @@ jobs:
           echo "📁 Conteúdo da pasta dist/"
           ls -la dist
 
-      - name: 🧠 Debug Secrets (sem chaves privadas)
-        run: |
-          echo "🌍 Host: ${{ secrets.SSH_HOST }}"
-          echo "👤 User: ${{ secrets.SSH_USER }}"
-          echo "📦 Port: ${{ secrets.SSH_PORT }}"
-          echo "🎯 Path: ${{ secrets.SSH_THEME_PATH }}"
-
-      - name: 💣 Limpar pasta remota antes do deploy
+      - name: 💣 Limpar e preparar pasta remota
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          host: 147.79.84.222
+          username: u790739895
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: 65002
           script_stop: true
           script: |
-            echo "🚨 Limpando diretório remoto: ${{ secrets.SSH_THEME_PATH }}"
-            rm -rf ${{ secrets.SSH_THEME_PATH }}/*
-            echo "✅ Pasta limpa. Verificando conteúdo..."
-            ls -la ${{ secrets.SSH_THEME_PATH }}
+            echo "🚨 Limpando diretório remoto do tema..."
+            rm -rf /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/*
+            echo "✅ Pasta limpa. Recriando estrutura..."
+            mkdir -p /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/
+            echo "📂 Verificando pasta:"
+            ls -la /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/
 
-      - name: 📤 Deploy via SCP (verbose total)
+      - name: 📤 Enviar arquivos (SCP com debug)
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          host: 147.79.84.222
+          username: u790739895
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: 65002
           source: "dist/*"
-          target: ${{ secrets.SSH_THEME_PATH }}
+          target: "/home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/"
           strip_components: 0
           overwrite: true
           rm: false
@@ -81,15 +77,15 @@ jobs:
       - name: 🔎 Verificar upload remoto
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          host: 147.79.84.222
+          username: u790739895
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: 65002
           script_stop: true
           script: |
-            echo "🧭 Verificando arquivos em ${{ secrets.SSH_THEME_PATH }}..."
-            ls -la ${{ secrets.SSH_THEME_PATH }}
+            echo "🧭 Verificando conteúdo do tema:"
+            ls -la /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/
             echo "📦 Total de arquivos:"
-            find ${{ secrets.SSH_THEME_PATH }} -type f | wc -l
-            echo "📂 Estrutura completa:"
-            tree ${{ secrets.SSH_THEME_PATH }} || find ${{ secrets.SSH_THEME_PATH }} -maxdepth 3
+            find /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/ -type f | wc -l
+            echo "📂 Estrutura do tema:"
+            find /home/u790739895/domains/djzeneyer.com/public_html/wp-content/themes/zentheme/ -maxdepth 3
