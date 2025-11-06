@@ -45,45 +45,20 @@ jobs:
       - name: Detectar mudanças relevantes
         id: check
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html)$' || true)
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html|php)$' || true)
           
           if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.force_deploy }}" = "true" ]; then
             echo "should_build=true" >> $GITHUB_OUTPUT
-            echo "Alterações detectadas - compilação necessária"
-            echo "Arquivos: $CHANGED_FILES"
           else
             echo "should_build=false" >> $GITHUB_OUTPUT
-            echo "Nenhuma alteração de compilação detectada"
           fi
 
-      - name: Verificar arquivos críticos
+      - name: Validar arquivos críticos
         run: |
-          REQUIRED_FILES=(
-            "package.json"
-            "vite.config.ts"
-            "tsconfig.json"
-            "tailwind.config.js"
-            "src/main.tsx"
-            "functions.php"
-          )
+          REQUIRED_FILES=("package.json" "vite.config.ts" "src/main.tsx" "functions.php")
           for file in "${REQUIRED_FILES[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "Arquivo necessário ausente: $file"
-              exit 1
-            fi
+            [ -f "$file" ] || (echo "Falta: $file" && exit 1)
           done
-          echo "Todos os arquivos necessários presentes"
-
-      - name: Validar segredos
-        run: |
-          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
-            echo "Segredo SSH_PRIVATE_KEY não definido!"
-            exit 1
-          fi
-          if [ -z "${{ secrets.VITE_WC_CONSUMER_KEY }}" ]; then
-            echo "Aviso: VITE_WC_CONSUMER_KEY não definido"
-          fi
-          echo "Segredos críticos validados"
 
   build-production:
     name: Build Production
@@ -108,17 +83,27 @@ jobs:
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
         run: npm run build
 
+      - name: Preparar artefato
+        run: |
+          mkdir -p deploy/theme deploy/root
+
+          # Arquivos do tema
+          cp -r dist deploy/theme/
+          cp -r inc deploy/theme/
+          cp functions.php style.css screenshot.png deploy/theme/ 2>/dev/null || true
+
+          # Arquivos da raiz
+          cp public/robots.txt public/favicon.ico public/apple-touch-icon.png deploy/root/ 2>/dev/null || true
+          cp public/*.png public/*.ico public/*.svg deploy/root/ 2>/dev/null || true
+
+          # Remove index.html (nunca vai pro servidor)
+          rm -f deploy/root/index.html deploy/theme/dist/index.html
+
       - name: Upload artefato
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ needs.pre-build-validation.outputs.commit_hash }}
-          path: |
-            dist/
-            inc/
-            assets/
-            functions.php
-            style.css
-            screenshot.png
+          path: deploy/
           retention-days: 7
 
   deploy-to-production:
@@ -136,11 +121,11 @@ jobs:
           sparse-checkout: .github
           sparse-checkout-cone-mode: false
 
-      - name: Baixar artefato do build
+      - name: Baixar artefato
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.pre-build-validation.outputs.commit_hash }}
-          path: ./
+          path: ./deploy
 
       - name: Configurar chave SSH
         uses: shimataro/ssh-key-action@v2
@@ -157,12 +142,9 @@ jobs:
           port: ${{ env.SSH_PORT }}
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo 'SSH connection successful'
-            pwd && whoami
+          script: echo 'SSH OK' && whoami
 
-      - name: Preparar servidor remoto
-        id: prepare
+      - name: Preparar servidor
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -171,37 +153,41 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-            BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            BACKUP_DIR="$HOME/backups/deploy_$(date +%Y%m%d_%H%M%S)"
 
-            # Backup do tema atual
-            mkdir -p "${BACKUP_DIR}"
-            if [ -d "${THEME_PATH}" ]; then
-              echo "Fazendo backup do tema atual..."
-              tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
-            fi
+            mkdir -p "$BACKUP_DIR"
+            [ -d "$THEME_PATH" ] && tar -czf "$BACKUP_DIR/theme_backup.tar.gz" -C "$THEME_PATH" . 2>/dev/null || true
 
-            # Garante estrutura do tema
-            mkdir -p "${THEME_PATH}/dist" "${THEME_PATH}/inc" "${THEME_PATH}/assets"
+            mkdir -p "$THEME_PATH/dist" "$THEME_PATH/inc" "$THEME_PATH/assets"
 
-            # Corrige permissões (crítico!)
-            echo "Corrigindo permissões do wp-content..."
+            # Corrige permissões
             chown -R ${{ env.SSH_USER }}:${{ env.SSH_USER }} "${{ env.REMOTE_ROOT }}/wp-content" || true
             chmod -R 755 "${{ env.REMOTE_ROOT }}/wp-content"
 
-            # Limpa backups antigos (máx 5)
             cd "$HOME/backups" && ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
 
-            echo "${BACKUP_DIR}" > /tmp/last_backup_path.txt
-            echo "Servidor remoto pronto para deploy"
+            echo "Servidor pronto"
 
-      - name: Deploy via rsync
+      # === DEPLOY DO TEMA ===
+      - name: Deploy: Tema (zentheme)
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr --delete --exclude=".*" --exclude="node_modules"
-          path: .
+          switches: -avzr --delete --exclude=".*"
+          path: deploy/theme/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # === DEPLOY DA RAIZ ===
+      - name: Deploy: Raiz (public_html/)
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avz --delete
+          path: deploy/root/
+          remote_path: ${{ env.REMOTE_ROOT }}/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
@@ -210,7 +196,7 @@ jobs:
       - name: Health Check
         run: |
           sleep 5
-          curl -f -s -o /dev/null "${{ env.SITE_URL }}" && echo "Site está online" || exit 1
+          curl -f -s -o /dev/null "${{ env.SITE_URL }}" && echo "Site online" || exit 1
 
       - name: Resumo final
         run: |
@@ -222,7 +208,7 @@ jobs:
           fi
           echo "════════════════════════════════════════"
 
-      - name: Notificar falha (apenas em PR)
+      - name: Notificar falha (PR)
         if: failure() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
@@ -231,5 +217,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Deploy failed! Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+              body: 'Deploy failed! Ver logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
             })
