@@ -2,19 +2,8 @@ name: Production Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      skip_build:
-        description: 'Pular build (usar artefato existente)'
-        required: false
-        default: 'false'
-        type: boolean
-      force_deploy:
-        description: 'Forçar deploy mesmo sem mudanças'
-        required: false
-        default: 'false'
-        type: boolean
 
 env:
   NODE_VERSION: 20
@@ -26,125 +15,100 @@ env:
   SITE_URL: https://djzeneyer.com
 
 jobs:
-  pre-build-validation:
-    name: Validação de Pré-compilação
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 1: BUILD
+  # ═══════════════════════════════════════════════════════════════════════════
+  build:
+    name: 🏗️ Build
     runs-on: ubuntu-24.04
     outputs:
-      should_build: ${{ steps.check.outputs.should_build }}
-      commit_hash: ${{ steps.commit.outputs.commit_hash }}
+      commit_hash: ${{ steps.commit.outputs.hash }}
+    
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
 
-      - name: Obter hash do commit
+      - name: 🔖 Commit hash
         id: commit
-        run: |
-          echo "commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Detectar mudanças relevantes
-        id: check
-        run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html|php)$' || true)
-          
-          if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.force_deploy }}" = "true" ]; then
-            echo "should_build=true" >> $GITHUB_OUTPUT
-          else
-            echo "should_build=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Validar arquivos críticos
-        run: |
-          REQUIRED_FILES=("package.json" "vite.config.ts" "src/main.tsx" "functions.php")
-          for file in "${REQUIRED_FILES[@]}"; do
-            [ -f "$file" ] || (echo "Falta: $file" && exit 1)
-          done
-
-  build-production:
-    name: Build Production
-    needs: pre-build-validation
-    if: needs.pre-build-validation.outputs.should_build == 'true' || inputs.skip_build == 'false'
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
+      - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Instalar dependências
+      - name: 📦 Instalar dependências
         run: npm ci
 
-      - name: Build com Vite
+      - name: 🔨 Build produção
         env:
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
-      - name: Preparar artefato
+      - name: ✅ Validar build
         run: |
-          mkdir -p deploy/theme deploy/root
+          if [ ! -d "dist" ]; then
+            echo "❌ dist/ não encontrado!"
+            exit 1
+          fi
+          echo "✅ Build OK - $(du -sh dist/ | cut -f1)"
 
-          # Arquivos do tema
-          cp -r dist deploy/theme/
-          cp -r inc deploy/theme/
-          cp functions.php style.css screenshot.png deploy/theme/ 2>/dev/null || true
-
-          # Arquivos da raiz
-          cp public/robots.txt public/favicon.ico public/apple-touch-icon.png deploy/root/ 2>/dev/null || true
-          cp public/*.png public/*.ico public/*.svg deploy/root/ 2>/dev/null || true
-
-          # Remove index.html (nunca vai pro servidor)
-          rm -f deploy/root/index.html deploy/theme/dist/index.html
-
-      - name: Upload artefato
+      - name: 📤 Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ needs.pre-build-validation.outputs.commit_hash }}
-          path: deploy/
+          name: build-${{ steps.commit.outputs.hash }}
+          path: |
+            dist/
+            inc/
+            plugins/
+            functions.php
+            style.css
+            screenshot.png
+            header.php
+            footer.php
+            index.php
           retention-days: 7
 
-  deploy-to-production:
-    name: Deploy to Production
-    needs: [pre-build-validation, build-production]
-    if: always() && (needs.pre-build-validation.outputs.should_build == 'true' || inputs.force_deploy == 'true')
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 2: DEPLOY (ESTRUTURA CORRETA)
+  # ═══════════════════════════════════════════════════════════════════════════
+  deploy:
+    name: 🚀 Deploy
+    needs: build
     runs-on: ubuntu-24.04
     environment:
       name: production
       url: ${{ env.SITE_URL }}
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: .github
-          sparse-checkout-cone-mode: false
-
-      - name: Baixar artefato
+      - name: 📥 Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-${{ needs.pre-build-validation.outputs.commit_hash }}
-          path: ./deploy
+          name: build-${{ needs.build.outputs.commit_hash }}
+          path: ./
 
-      - name: Configurar chave SSH
+      - name: 🔐 Setup SSH
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: unnecessary
           name: id_rsa
-          if_key_exists: replace
 
-      - name: Testar conexão SSH
+      - name: 🧪 Testar SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: echo 'SSH OK' && whoami
+          script: |
+            echo "✅ SSH OK"
+            pwd && whoami
 
-      - name: Preparar servidor
+      - name: 📦 Backup no servidor
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -153,69 +117,263 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
-            BACKUP_DIR="$HOME/backups/deploy_$(date +%Y%m%d_%H%M%S)"
-
-            mkdir -p "$BACKUP_DIR"
-            [ -d "$THEME_PATH" ] && tar -czf "$BACKUP_DIR/theme_backup.tar.gz" -C "$THEME_PATH" . 2>/dev/null || true
-
-            mkdir -p "$THEME_PATH/dist" "$THEME_PATH/inc" "$THEME_PATH/assets"
-
-            # Corrige permissões
-            chown -R ${{ env.SSH_USER }}:${{ env.SSH_USER }} "${{ env.REMOTE_ROOT }}/wp-content" || true
-            chmod -R 755 "${{ env.REMOTE_ROOT }}/wp-content"
-
+            
+            echo "📦 Criando backup..."
+            mkdir -p "${BACKUP_DIR}"
+            
+            if [ -d "${THEME_PATH}" ]; then
+              tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
+              echo "✅ Backup criado"
+            fi
+            
+            # Criar estrutura
+            mkdir -p "${THEME_PATH}"/{dist,inc,assets}
+            mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
+            
+            # Limpar backups antigos
             cd "$HOME/backups" && ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
 
-            echo "Servidor pronto"
-
-      # === DEPLOY DO TEMA ===
-      - name: Deploy: Tema (zentheme)
+      # ═══════════════════════════════════════════════════════════════════════
+      # DEPLOY ORGANIZADO POR DESTINO
+      # ═══════════════════════════════════════════════════════════════════════
+      
+      # 1. TEMA: dist/ (React build)
+      - name: 🚀 Deploy dist/ → tema/dist/
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr --delete --exclude=".*"
-          path: deploy/theme/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
+          switches: -avzr --delete
+          path: dist/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # === DEPLOY DA RAIZ ===
-      - name: Deploy: Raiz (public_html/)
+      # 2. TEMA: inc/ (PHP helpers)
+      - name: 📚 Deploy inc/ → tema/inc/
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avz --delete
-          path: deploy/root/
+          switches: -avzr --delete
+          path: inc/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/inc/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 3. TEMA: Arquivos PHP root (functions.php, style.css, etc)
+      - name: 📝 Deploy PHP files → tema/
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "functions.php,style.css,screenshot.png,header.php,footer.php,index.php"
+          target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
+          strip_components: 0
+
+      # 4. PLUGINS: plugins/ → wp-content/plugins/
+      - name: 🔌 Deploy plugins/ → wp-content/plugins/
+        if: hashFiles('plugins/**') != ''
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Receber arquivos via rsync (precisa estar no runner)
+            echo "Preparando diretório de plugins..."
+            mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
+
+      - name: 🔌 Sync plugins/
+        if: hashFiles('plugins/**') != ''
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avzr --delete
+          path: plugins/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 5. PUBLIC: public/ → root (robots.txt, favicon, etc)
+      - name: 📄 Deploy public/ → root
+        if: hashFiles('public/**') != ''
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd "${{ env.REMOTE_ROOT }}"
+            
+            # Apenas arquivos seguros (não sobrescreve WordPress)
+            SAFE_FILES=(
+              "robots.txt"
+              "ai-bots.txt"
+              "favicon.ico"
+              "favicon.svg"
+              "apple-touch-icon.png"
+              "site.webmanifest"
+              "browserconfig.xml"
+            )
+            
+            echo "Preparando para receber assets públicos..."
+
+      - name: 📄 Sync public assets
+        if: hashFiles('public/**') != ''
+        run: |
+          # Criar arquivo temporário com lista de arquivos seguros
+          mkdir -p temp_public
+          cd public
+          
+          for file in robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest browserconfig.xml; do
+            if [ -f "$file" ]; then
+              cp "$file" ../temp_public/
+            fi
+          done
+          
+          cd ..
+          
+          if [ "$(ls -A temp_public)" ]; then
+            echo "Enviando assets públicos..."
+          fi
+
+      - name: 📄 Upload public assets
+        if: hashFiles('public/**') != ''
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avz
+          path: public/
           remote_path: ${{ env.REMOTE_ROOT }}/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Health Check
-        run: |
-          sleep 5
-          curl -f -s -o /dev/null "${{ env.SITE_URL }}" && echo "Site online" || exit 1
+      # ═══════════════════════════════════════════════════════════════════════
+      # VERIFICAÇÃO
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: ✅ Verificar estrutura
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo ""
+            echo "════════════════════════════════════════"
+            echo "🔍 VERIFICANDO ESTRUTURA"
+            echo "════════════════════════════════════════"
+            echo ""
+            
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            ROOT_PATH="${{ env.REMOTE_ROOT }}"
+            
+            # Verificar tema
+            echo "📁 TEMA (${{ env.THEME_NAME }}):"
+            if [ -d "$THEME_PATH" ]; then
+              echo "  ✅ $THEME_PATH"
+              ls -lh "$THEME_PATH" | grep -E '^d|\.php$|\.css$'
+            else
+              echo "  ❌ Tema não encontrado!"
+              exit 1
+            fi
+            
+            echo ""
+            echo "📁 dist/:"
+            if [ -d "$THEME_PATH/dist" ]; then
+              DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
+              FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
+              echo "  ✅ $DIST_SIZE ($FILE_COUNT arquivos)"
+              find "$THEME_PATH/dist" -type f -name "*.js" | head -3
+            else
+              echo "  ❌ dist/ não encontrado!"
+              exit 1
+            fi
+            
+            echo ""
+            echo "📁 inc/:"
+            if [ -d "$THEME_PATH/inc" ]; then
+              INC_COUNT=$(find "$THEME_PATH/inc" -name "*.php" | wc -l)
+              echo "  ✅ $INC_COUNT arquivos PHP"
+            else
+              echo "  ⚠️  inc/ não encontrado (pode ser opcional)"
+            fi
+            
+            echo ""
+            echo "📄 Arquivos do tema:"
+            [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ❌ functions.php"
+            [ -f "$THEME_PATH/style.css" ] && echo "  ✅ style.css" || echo "  ❌ style.css"
+            [ -f "$THEME_PATH/screenshot.png" ] && echo "  ✅ screenshot.png" || echo "  ℹ️  screenshot.png"
+            
+            echo ""
+            echo "🔌 PLUGINS:"
+            if [ -d "$ROOT_PATH/wp-content/plugins" ]; then
+              PLUGIN_COUNT=$(find "$ROOT_PATH/wp-content/plugins" -mindepth 1 -maxdepth 1 -type d | wc -l)
+              echo "  ✅ $PLUGIN_COUNT plugins instalados"
+            fi
+            
+            echo ""
+            echo "📄 ROOT (public_html/):"
+            [ -f "$ROOT_PATH/robots.txt" ] && echo "  ✅ robots.txt" || echo "  ℹ️  robots.txt"
+            [ -f "$ROOT_PATH/favicon.ico" ] && echo "  ✅ favicon.ico" || echo "  ℹ️  favicon.ico"
+            [ -f "$ROOT_PATH/wp-config.php" ] && echo "  ✅ wp-config.php (preservado)" || echo "  ❌ wp-config.php"
+            
+            echo ""
+            echo "════════════════════════════════════════"
+            echo "✅ ESTRUTURA CORRETA!"
+            echo "════════════════════════════════════════"
 
-      - name: Resumo final
+      # ═══════════════════════════════════════════════════════════════════════
+      # HEALTH CHECK
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: 🏥 Health check
         run: |
+          echo "🔍 Testando ${{ env.SITE_URL }}..."
+          sleep 5
+          
+          for i in {1..3}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 20 ${{ env.SITE_URL }})
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Site OK (HTTP $HTTP_CODE)"
+              exit 0
+            else
+              echo "⚠️  Tentativa $i/3: HTTP $HTTP_CODE"
+              sleep 5
+            fi
+          done
+          
+          echo "❌ Site não acessível"
+          exit 1
+
+      - name: 📊 Resumo
+        if: always()
+        run: |
+          echo ""
           echo "════════════════════════════════════════"
           if [ "${{ job.status }}" = "success" ]; then
-            echo "DEPLOY SUCCESSFUL | Commit: ${{ needs.pre-build-validation.outputs.commit_hash }}"
+            echo "✅ DEPLOY CONCLUÍDO COM SUCESSO!"
+            echo ""
+            echo "🌐 Site: ${{ env.SITE_URL }}"
+            echo "📦 Commit: ${{ needs.build.outputs.commit_hash }}"
+            echo "📁 Estrutura:"
+            echo "   dist/      → tema/dist/"
+            echo "   inc/       → tema/inc/"
+            echo "   *.php      → tema/"
+            echo "   plugins/   → wp-content/plugins/"
+            echo "   public/    → root/"
           else
-            echo "DEPLOY FAILED | See logs"
+            echo "❌ DEPLOY FALHOU"
+            echo "Verifique os logs acima"
           fi
           echo "════════════════════════════════════════"
-
-      - name: Notificar falha (PR)
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Deploy failed! Ver logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-            })
