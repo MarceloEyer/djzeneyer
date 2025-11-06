@@ -7,10 +7,9 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # necessário para SSH com chave privada
+  id-token: write
 
 jobs:
-  # --- ETAPA 1: BUILD ---
   build:
     name: 📦 Build do Projeto
     runs-on: ubuntu-latest
@@ -42,7 +41,6 @@ jobs:
           name: dist-folder
           path: ./dist
 
-  # --- ETAPA 2: DEPLOY VIA SSH ---
   deploy:
     name: 🚚 Deploy via SSH para Hostinger
     runs-on: ubuntu-latest
@@ -57,9 +55,8 @@ jobs:
           name: dist-folder
           path: ./dist
 
-      # ✅ STEP 1: Deploy dos arquivos públicos (public/) → raiz do site
       - name: 🎨 Deploy de arquivos públicos para a raiz
-        uses: appleboy/scp-action@v0.1.11
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
@@ -69,9 +66,8 @@ jobs:
           target: ${{ secrets.SSH_PUBLIC_PATH }}
           overwrite: true
 
-      # ✅ STEP 2: Deploy da pasta dist/ → dentro do tema
       - name: 📡 Deploy do app React (dist/) para a pasta do tema
-        uses: appleboy/scp-action@v0.1.11
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
@@ -80,11 +76,10 @@ jobs:
           source: "./dist/*"
           target: ${{ secrets.SSH_THEME_PATH }}/dist
           overwrite: true
-          rm: true  # apaga conteúdo antigo da pasta dist
+          rm: true
 
-      # ✅ STEP 3: Deploy dos arquivos PHP do tema (root do repo) → pasta do tema
       - name: 📦 Deploy dos arquivos do tema WordPress
-        uses: appleboy/scp-action@v0.1.11
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
