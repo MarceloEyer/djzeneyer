@@ -1,91 +1,62 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (ENTERPRISE-GRADE v2.0)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-name: 🚀 Production Deploy
+name: Production Deploy
 
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '.gitignore'
-      - 'LICENSE'
-  
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       skip_build:
-        description: 'Skip build step'
+        description: 'Pular build (usar artefato existente)'
         required: false
+        default: 'false'
         type: boolean
-        default: false
       force_deploy:
-        description: 'Force deploy (skip validations)'
+        description: 'Forçar deploy mesmo sem mudanças'
         required: false
+        default: 'false'
         type: boolean
-        default: false
-
-concurrency:
-  group: production-deploy
-  cancel-in-progress: false
-
-permissions:
-  contents: read
-  deployments: write
-  issues: write  # Para notificações via comments
-  actions: read
 
 env:
-  NODE_VERSION: '20'
-  SSH_HOST: '147.79.84.222'
-  SSH_PORT: '65002'
-  SSH_USER: 'u790739895'
-  REMOTE_ROOT: '/home/u790739895/domains/djzeneyer.com/public_html'
-  THEME_NAME: 'zentheme'
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# JOBS
-# ═══════════════════════════════════════════════════════════════════════════════
+  NODE_VERSION: 20
+  SSH_HOST: 147.79.84.222
+  SSH_PORT: 65002
+  SSH_USER: u790739895
+  REMOTE_ROOT: /home/u790739895/domains/djzeneyer.com/public_html
+  THEME_NAME: zentheme
+  SITE_URL: https://djzeneyer.com
 
 jobs:
-  # ═══════════════════════════════════════════════════════════════════════════
-  # JOB 1: VALIDATE (PRE-BUILD CHECKS)
-  # ═══════════════════════════════════════════════════════════════════════════
-  validate:
-    name: ✅ Pre-build Validation
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    
+  pre-build-validation:
+    name: Validação de Pré-compilação
+    runs-on: ubuntu-24.04
     outputs:
-      should_build: ${{ steps.changes.outputs.should_build }}
-      commit_hash: ${{ steps.hash.outputs.value }}
-    
+      should_build: ${{ steps.check.outputs.should_build }}
+      commit_hash: ${{ steps.commit.outputs.commit_hash }}
     steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: 🔖 Generate commit hash
-        id: hash
-        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Obter hash do commit
+        id: commit
+        run: |
+          echo "commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: 🔍 Check changed files
-        id: changes
+      - name: Detectar mudanças relevantes
+        id: check
         run: |
           CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | grep -E '\.(ts|tsx|js|jsx|css|scss|json|html)$' || true)
           
-          if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.skip_build }}" = "false" ]; then
+          if [ -n "$CHANGED_FILES" ] || [ "${{ inputs.force_deploy }}" = "true" ]; then
             echo "should_build=true" >> $GITHUB_OUTPUT
-            echo "✅ Changes detected - build required"
-            echo "Files: $CHANGED_FILES"
+            echo "Alterações detectadas - compilação necessária"
+            echo "Arquivos: $CHANGED_FILES"
           else
             echo "should_build=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ No build changes detected"
+            echo "Nenhuma alteração de compilação detectada"
           fi
 
-      - name: 📋 Validate required files
+      - name: Verificar arquivos críticos
         run: |
           REQUIRED_FILES=(
             "package.json"
@@ -95,182 +66,91 @@ jobs:
             "src/main.tsx"
             "functions.php"
           )
-          
           for file in "${REQUIRED_FILES[@]}"; do
             if [ ! -f "$file" ]; then
-              echo "❌ Required file missing: $file"
+              echo "Arquivo necessário ausente: $file"
               exit 1
             fi
           done
-          
-          echo "✅ All required files present"
+          echo "Todos os arquivos necessários presentes"
 
-      - name: 🔐 Validate secrets
+      - name: Validar segredos
         run: |
           if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
-            echo "❌ SSH_PRIVATE_KEY secret not set!"
+            echo "Segredo SSH_PRIVATE_KEY não definido!"
             exit 1
           fi
-          
           if [ -z "${{ secrets.VITE_WC_CONSUMER_KEY }}" ]; then
-            echo "⚠️ Warning: VITE_WC_CONSUMER_KEY not set"
+            echo "Aviso: VITE_WC_CONSUMER_KEY não definido"
           fi
-          
-          echo "✅ Critical secrets validated"
+          echo "Segredos críticos validados"
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # JOB 2: BUILD
-  # ═══════════════════════════════════════════════════════════════════════════
-  build:
-    name: 🏗️ Build Production
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: validate
-    if: |
-      needs.validate.outputs.should_build == 'true' && 
-      !inputs.skip_build
-    
-    outputs:
-      build_status: ${{ job.status }}
-      build_size: ${{ steps.size.outputs.value }}
-      timestamp: ${{ steps.timestamp.outputs.value }}
-    
+  build-production:
+    name: Build Production
+    needs: pre-build-validation
+    if: needs.pre-build-validation.outputs.should_build == 'true' || inputs.skip_build == 'false'
+    runs-on: ubuntu-24.04
     steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - name: 🔧 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'  # Cache mais preciso
 
-      - name: ⏰ Generate timestamp
-        id: timestamp
-        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+      - name: Instalar dependências
+        run: npm ci
 
-      - name: 📦 Install dependencies
-        run: |
-          echo "Installing dependencies..."
-          npm ci --prefer-offline --no-audit --no-fund
-          echo "✅ Dependencies installed"
-
-      - name: 🔍 Audit security
-        run: |
-          echo "Running security audit..."
-          npm audit --audit-level=high || echo "⚠️ Security vulnerabilities found (not blocking)"
-        continue-on-error: true
-
-      - name: 🗺️ Generate sitemaps
-        run: |
-          echo "Generating sitemaps..."
-          npm run generate-sitemaps 2>&1 || echo "⚠️ Sitemap generation failed (not blocking)"
-        continue-on-error: true
-
-      - name: 🔨 Build production bundle
-        run: |
-          echo "Building production bundle..."
-          npm run build
+      - name: Build com Vite
         env:
-          NODE_ENV: production
-          VITE_WP_SITE_URL: https://djzeneyer.com
-          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        run: npm run build
 
-      - name: ✅ Validate build output
-        id: validate_build
-        run: |
-          echo "Validating build output..."
-          
-          if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
-            echo "❌ dist/ or index.html missing"
-            exit 1
-          fi
-          
-          JS_COUNT=$(find dist -name '*.js' | wc -l)
-          CSS_COUNT=$(find dist -name '*.css' | wc -l)
-          DIST_SIZE=$(du -sh dist/ | cut -f1)
-          
-          echo "📊 Build: JS=$JS_COUNT, CSS=$CSS_COUNT, Size=$DIST_SIZE"
-          
-          if [ "$JS_COUNT" -eq 0 ]; then
-            echo "❌ No JS files!"
-            exit 1
-          fi
-          
-          if [ "$(du -sk dist/ | cut -f1)" -gt 10240 ]; then
-            echo "⚠️ Large build (>10MB)"
-          fi
-          
-          echo "✅ Build OK"
-
-      - name: 📊 Calculate build size
-        id: size
-        run: |
-          SIZE=$(du -sh dist/ | cut -f1)
-          echo "value=$SIZE" >> $GITHUB_OUTPUT
-
-      - name: 📤 Upload build artifact
+      - name: Upload artefato
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ needs.validate.outputs.commit_hash }}
+          name: build-${{ needs.pre-build-validation.outputs.commit_hash }}
           path: |
             dist/
-            plugins/
             inc/
-            *.php
+            assets/
+            functions.php
             style.css
             screenshot.png
           retention-days: 7
-          compression-level: 6
-          if-no-files-found: error
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # JOB 3: DEPLOY
-  # ═══════════════════════════════════════════════════════════════════════════
-  deploy:
-    name: 🚀 Deploy to Production
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: [validate, build]
-    if: |
-      always() && 
-      (needs.build.result == 'success' || inputs.skip_build) &&
-      needs.validate.result == 'success'
-    
+  deploy-to-production:
+    name: Deploy to Production
+    needs: [pre-build-validation, build-production]
+    if: always() && (needs.pre-build-validation.outputs.should_build == 'true' || inputs.force_deploy == 'true')
+    runs-on: ubuntu-24.04
     environment:
       name: production
-      url: https://djzeneyer.com
-    
+      url: ${{ env.SITE_URL }}
+
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          sparse-checkout: |
-            .github
+          sparse-checkout: .github
           sparse-checkout-cone-mode: false
 
-      - name: 📥 Download build artifact
-        if: ${{ !inputs.skip_build }}
+      - name: Baixar artefato do build
         uses: actions/download-artifact@v4
         with:
-          name: build-${{ needs.validate.outputs.commit_hash }}
+          name: build-${{ needs.pre-build-validation.outputs.commit_hash }}
           path: ./
 
-      - name: 🔐 Setup SSH Key
+      - name: Configurar chave SSH
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary  # Usa keyscan interno
+          known_hosts: unnecessary
           name: id_rsa
           if_key_exists: replace
 
-      - name: 🧪 Test SSH connection
+      - name: Testar conexão SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -278,10 +158,11 @@ jobs:
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo '✅ SSH connection successful'
+            echo 'SSH connection successful'
             pwd && whoami
 
-      - name: 📁 Prepare remote environment
+      - name: Preparar servidor remoto
+        id: prepare
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -292,116 +173,57 @@ jobs:
             set -e
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
-            THEME_PATH="${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}"
-            
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+
+            # Backup do tema atual
             mkdir -p "${BACKUP_DIR}"
             if [ -d "${THEME_PATH}" ]; then
+              echo "Fazendo backup do tema atual..."
               tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
             fi
-            
-            # Só cria as pastas do tema (que você controla) mkdir -p "${THEME_PATH}/dist" "${THEME_PATH}/inc" "${THEME_PATH}/assets"  # NÃO tenta criar wp-content/plugins — já existe!
-            
+
+            # Garante estrutura do tema
+            mkdir -p "${THEME_PATH}/dist" "${THEME_PATH}/inc" "${THEME_PATH}/assets"
+
+            # Corrige permissões (crítico!)
+            echo "Corrigindo permissões do wp-content..."
+            chown -R ${{ env.SSH_USER }}:${{ env.SSH_USER }} "${{ env.REMOTE_ROOT }}/wp-content" || true
+            chmod -R 755 "${{ env.REMOTE_ROOT }}/wp-content"
+
+            # Limpa backups antigos (máx 5)
             cd "$HOME/backups" && ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
-            
+
             echo "${BACKUP_DIR}" > /tmp/last_backup_path.txt
-            echo "✅ Remote ready"
+            echo "Servidor remoto pronto para deploy"
 
-      - name: 🚀 Deploy React build
+      - name: Deploy via rsync
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          local_dir: ./dist/
-          remote_path: "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/"
+          switches: -avzr --delete --exclude=".*" --exclude="node_modules"
+          path: .
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           remote_host: ${{ env.SSH_HOST }}
-          remote_port: ${{ env.SSH_PORT }}
           remote_user: ${{ env.SSH_USER }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          rsync_options: --delete --checksum --stats --human-readable --partial  # Adicionado --partial pra resumes
-
-      - name: 📝 Deploy theme files
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          local_dir: ./
-          remote_path: "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/"
-          remote_host: ${{ env.SSH_HOST }}
           remote_port: ${{ env.SSH_PORT }}
-          remote_user: ${{ env.SSH_USER }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          rsync_options: --checksum --include='*.php' --include='style.css' --include='screenshot.png' --include='readme.txt' --exclude='*'
-          # Nota: Para inc/, rode um rsync separado se precisar
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: 🔌 Deploy plugins (SAFE)
-        if: hashFiles('plugins/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          local_dir: ./plugins/
-          remote_path: "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_ROOT }}/wp-content/plugins/"
-          remote_host: ${{ env.SSH_HOST }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_user: ${{ env.SSH_USER }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          rsync_options: --checksum --recursive
-
-      - name: 📄 Deploy public assets (SAFE)
+      - name: Health Check
         run: |
-          SAFE_FILES=("robots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest" "browserconfig.xml")
-          for file in "${SAFE_FILES[@]}"; do
-            if [ -f "public/$file" ]; then
-              uses: burnett01/rsync-deployments@5.2.1
-              with:
-                local_dir: "public/$file"
-                remote_path: "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_ROOT }}/"
-                # ... resto das configs SSH
-            fi
-          done
-        # Nota: Rsync loop manual; ajuste se precisar de action por arquivo
+          sleep 5
+          curl -f -s -o /dev/null "${{ env.SITE_URL }}" && echo "Site está online" || exit 1
 
-      - name: 🗺️ Deploy sitemaps
-        if: hashFiles('dist/sitemap*.xml') != ''
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          local_dir: ./dist/
-          remote_path: "${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_ROOT }}/"
-          remote_host: ${{ env.SSH_HOST }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_user: ${{ env.SSH_USER }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          rsync_options: --include='sitemap*.xml' --exclude='*'
+      - name: Resumo final
+        run: |
+          echo "════════════════════════════════════════"
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "DEPLOY SUCCESSFUL | Commit: ${{ needs.pre-build-validation.outputs.commit_hash }}"
+          else
+            echo "DEPLOY FAILED | See logs"
+          fi
+          echo "════════════════════════════════════════"
 
-      - name: ✅ Verify deployment
-        id: verify
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            THEME_PATH="${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}"
-            echo "🎨 Theme: $([ -d '$THEME_PATH' ] && echo '✅ Exists' || echo '❌ Missing')"
-            echo "📁 Dist: $([ -d '$THEME_PATH/dist' ] && du -sh '$THEME_PATH/dist' | cut -f1 || echo '❌ Missing')"
-            echo "🔐 Perms: $(stat -c %a '$THEME_PATH' 2>/dev/null || stat -f %A '$THEME_PATH')"
-            # Adicione mais checks aqui
-            echo "status=success"  # Defina como failed se erro
-
-      - name: 🔄 Rollback on failure
-        if: failure() && steps.verify.outputs.status == 'failed'
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            BACKUP_PATH=$(cat /tmp/last_backup_path.txt 2>/dev/null || echo "")
-            if [ -n "$BACKUP_PATH" ] && [ -f "$BACKUP_PATH/theme_backup.tar.gz" ]; then
-              THEME_PATH="${REMOTE_ROOT}/wp-content/themes/${THEME_NAME}"
-              rm -rf "$THEME_PATH"/*
-              tar -xzf "$BACKUP_PATH/theme_backup.tar.gz" -C "$THEME_PATH"
-              echo "✅ Rolled back"
-            fi
-
-      - name: 🔔 Notify on failure
-        if: failure()
+      - name: Notificar falha (apenas em PR)
+        if: failure() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
@@ -409,48 +231,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '🚨 Deploy failed! Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+              body: 'Deploy failed! Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
             })
-
-      - name: 📊 Deployment summary
-        if: always()
-        run: |
-          echo "════════════════════════════════════════"
-          if [ "${{ steps.verify.outputs.status }}" = "success" ]; then
-            echo "✅ DEPLOY SUCCESSFUL | Commit: ${{ needs.validate.outputs.commit_hash }} | Size: ${{ needs.build.outputs.build_size }}"
-          else
-            echo "❌ DEPLOY FAILED | See logs"
-          fi
-          echo "════════════════════════════════════════"
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # JOB 4: HEALTH CHECK
-  # ═══════════════════════════════════════════════════════════════════════════
-  health-check:
-    name: 🏥 Health Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: deploy
-    if: needs.deploy.result == 'success'
-    
-    steps:
-      - name: 🔍 Check site & API (with retries)
-        run: |
-          ENDPOINTS=("https://djzeneyer.com" "https://djzeneyer.com/wp-json/" "https://djzeneyer.com/wp-json/djz/v1/config")
-          for endpoint in "${ENDPOINTS[@]}"; do
-            for i in {1..3}; do
-              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 "$endpoint")
-              if [ "$HTTP_CODE" = "200" ]; then
-                echo "✅ $endpoint OK (attempt $i)"
-                break
-              else
-                echo "⚠️ $endpoint: $HTTP_CODE (attempt $i)"
-                sleep 5
-                if [ $i -eq 3 ]; then exit 1; fi
-              fi
-            done
-          done
-
-      - name: 📊 Final status
-        run: |
-          echo "🎉 DEPLOYMENT COMPLETE! 🌐 https://djzeneyer.com"
