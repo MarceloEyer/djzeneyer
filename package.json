@@ -1,48 +1,109 @@
 {
   "name": "dj-zen-eyer-app",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "npm run build:clean && vite build",
+    "build:clean": "rm -rf dist && mkdir dist",
+    "preview": "vite preview",
+
+    // ✅ OTIMIZAÇÃO DE IMAGENS (Sharp)
+    "optimize:images": "npm run optimize:webp && npm run optimize:compress",
+    "optimize:webp": "sharp public/images/**/*.{jpg,png} --output public/images --webp --quality 85",
+    "optimize:compress": "sharp public/images/**/*.{jpg,png} --output public/images --quality 85",
+
+    // ✅ OTIMIZAÇÃO DE ÁUDIOS (FFmpeg)
+    "optimize:audio": "npm run optimize:audio:preview && npm run optimize:audio:full",
+    "optimize:audio:preview": "find public/music -name '*preview.mp3' -exec ffmpeg -i {} -codec:a libmp3lame -b:a 128k -write_xing 0 -id3v2_version 3 -metadata artist=\"DJ Zen Eyer\" -metadata album=\"Brazilian Zouk Collection\" {}.optimized.mp3 \\;",
+    "optimize:audio:full": "find public/music -name '*full.mp3' -exec ffmpeg -i {} -codec:a libmp3lame -b:a 320k -write_xing 0 -id3v2_version 3 -metadata artist=\"DJ Zen Eyer\" -metadata album=\"Brazilian Zouk Collection\" {}.optimized.mp3 \\;",
+
+    // ✅ ANÁLISE DE BUNDLE (para identificar gargalos)
+    "analyze": "vite-bundle-visualizer",
+
+    // ✅ LIGHTHOUSE CI (para testar performance)
+    "lighthouse": "lighthouse https://djzeneyer.com --view --preset=desktop",
+
+    // ✅ LINT E FORMATACAO (ESLint + Prettier)
+    "lint": "eslint . --fix",
+    "format": "prettier --write .",
+
+    // ✅ REMOÇÃO DE CONSOLE.LOG (para produção)
+    "build:prod": "vite build --mode production && vite-plugin-remove-console"
   },
   "dependencies": {
-    "date-fns": "^3.3.1",
+    // ✅ REACT E ECOSISTEMA
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.22.1",
+    "react-helmet-async": "^2.0.5",
+
+    // ✅ ANIMAÇÕES E UI
     "framer-motion": "^11.0.5",
+    "lucide-react": "^0.344.0",
+
+    // ✅ INTERNACIONALIZAÇÃO (i18n)
     "i18next": "^25.5.3",
+    "react-i18next": "^16.0.0",
     "i18next-browser-languagedetector": "^8.2.0",
-    "jwt-decode": "^4.0.0",
+
+    // ✅ UTILITÁRIOS
+    "date-fns": "^3.3.1",
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
-    "lucide-react": "^0.344.0",
-    "react": "^18.3.1",
+    "jwt-decode": "^4.0.0",
+
+    // ✅ MÍDIA (ÁUDIO/VIDEO)
     "react-audio-player": "^0.17.0",
-    "react-dom": "^18.3.1",
-    "react-helmet-async": "^2.0.5",
-    "react-i18next": "^16.0.0",
-    "react-input-mask": "^2.0.4",
-    "react-router-dom": "^6.22.1",
-    "react-youtube": "^10.1.0"
+    "react-youtube": "^10.1.0",
+
+    // ✅ INPUT MASK (para formulários)
+    "react-input-mask": "^2.0.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.1",
+    // ✅ VITE E PLUGINS
+    "vite": "^5.4.2",
+    "@vitejs/plugin-react": "^4.3.1",
+
+    // ✅ OTIMIZAÇÃO
+    "vite-plugin-compression": "^0.5.1",
+    "vite-bundle-visualizer": "^0.10.0",
+    "vite-plugin-remove-console": "^2.2.0",
+
+    // ✅ TYPESCRIPT
+    "typescript": "^5.5.3",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@types/react-input-mask": "^3.0.6",
-    "@vitejs/plugin-react": "^4.3.1",
+
+    // ✅ ESTILOS (Tailwind + PostCSS)
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.35",
     "autoprefixer": "^10.4.18",
+
+    // ✅ QUALIDADE DE CÓDIGO
     "eslint": "^9.9.1",
+    "@eslint/js": "^9.9.1",
+    "globals": "^15.9.0",
+    "typescript-eslint": "^8.3.0",
+    "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.11",
-    "globals": "^15.9.0",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.5.3",
-    "typescript-eslint": "^8.3.0",
-    "vite": "^5.4.2",
-    "vite-plugin-remove-console": "^2.2.0"
-  }
+
+    // ✅ FERRAMENTAS DE OTIMIZAÇÃO
+    "sharp-cli": "^4.0.1",  // Para otimização de imagens
+    "ffmpeg-static": "^5.2.0",  // Para otimização de áudio
+    "lighthouse": "^11.4.0",  // Para testes de performance
+    "prettier": "^3.3.3"  // Para formatação de código
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead",
+    "not op_mini all"
+  ]
 }
