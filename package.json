@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
-    "build:prod": "vite build --mode production && vite-plugin-remove-console"
+    "build:prod": "vite build --mode production"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -46,8 +46,7 @@
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.11",
-    "prettier": "^3.3.3",
-    "vite-plugin-remove-console": "^2.2.0"
+    "prettier": "^3.3.3"
   },
   "engines": {
     "node": ">=18.0.0"
