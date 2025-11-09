@@ -7,60 +7,38 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-
-    // ✅ LINT E FORMATACAO (útil para qualquer projeto)
     "lint": "eslint . --fix",
     "format": "prettier --write .",
-
-    // ✅ REMOÇÃO DE CONSOLE.LOG (útil para produção)
     "build:prod": "vite build --mode production && vite-plugin-remove-console"
   },
   "dependencies": {
-    // ✅ REACT E ECOSISTEMA (essencial)
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.1",
     "react-helmet-async": "^2.0.5",
-
-    // ✅ ANIMAÇÕES E UI (você já usa)
     "framer-motion": "^11.0.5",
     "lucide-react": "^0.344.0",
-
-    // ✅ INTERNACIONALIZAÇÃO (i18n)
     "i18next": "^25.5.3",
     "react-i18next": "^16.0.0",
     "i18next-browser-languagedetector": "^8.2.0",
-
-    // ✅ UTILITÁRIOS (você já usa)
     "date-fns": "^3.3.1",
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
     "jwt-decode": "^4.0.0",
-
-    // ✅ MÍDIA (você já usa)
     "react-audio-player": "^0.17.0",
     "react-youtube": "^10.1.0",
-
-    // ✅ INPUT MASK (para formulários)
     "react-input-mask": "^2.0.4"
   },
   "devDependencies": {
-    // ✅ VITE E PLUGINS (essencial)
     "vite": "^5.4.2",
     "@vitejs/plugin-react": "^4.3.1",
-
-    // ✅ TYPESCRIPT (essencial)
     "typescript": "^5.5.3",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@types/react-input-mask": "^3.0.6",
-
-    // ✅ ESTILOS (você já usa)
     "tailwindcss": "^3.4.1",
     "postcss": "^8.4.35",
     "autoprefixer": "^10.4.18",
-
-    // ✅ QUALIDADE DE CÓDIGO (útil para qualquer projeto)
     "eslint": "^9.9.1",
     "@eslint/js": "^9.9.1",
     "globals": "^15.9.0",
@@ -69,8 +47,6 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.11",
     "prettier": "^3.3.3",
-
-    // ✅ REMOÇÃO DE CONSOLE (útil para produção)
     "vite-plugin-remove-console": "^2.2.0"
   },
   "engines": {
