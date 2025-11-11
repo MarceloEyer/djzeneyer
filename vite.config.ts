@@ -15,13 +15,7 @@ export default defineConfig({
     emptyOutDir: true,
     manifest: true, // Gera manifest.json
     target: 'es2020',
-    minify: 'esbuild',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    minify: 'esbuild', // Usa esbuild (rápido) para minificação
     sourcemap: false,
     rollupOptions: {
       input: path.resolve(__dirname, 'src/index.tsx'), // ou index.js se for JS
