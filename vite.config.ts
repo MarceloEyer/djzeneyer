@@ -3,51 +3,50 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
 
   server: {
     port: 5173,
-    host: true, // Permite acesso externo (útil no Bolt.new)
+    host: true, // Permite acesso externo
   },
 
   build: {
-    outDir: 'dist',
-    emptyOutDir: true, // Limpa a pasta dist antes de cada build
-    manifest: true,   // Gera manifest para cache
-    target: 'es2020', // Navegadores modernos (código menor)
-    minify: 'esbuild', // Minificação rápida e eficiente
+    outDir: 'dist/assets', // Gera arquivos dentro de dist/assets
+    emptyOutDir: true,
+    manifest: true, // Gera manifest.json
+    target: 'es2020',
+    minify: 'esbuild',
     terserOptions: {
       compress: {
-        drop_console: true, // Remove console.log em produção
-        drop_debugger: true, // Remove debugger em produção
+        drop_console: true,
+        drop_debugger: true,
       },
     },
-    sourcemap: false, // Desabilita sourcemaps em produção
+    sourcemap: false,
     rollupOptions: {
+      input: path.resolve(__dirname, 'src/index.tsx'), // ou index.js se for JS
       output: {
-        assetFileNames: 'assets/[name]-[hash].[ext]', // Nomes com hash para cache
-        chunkFileNames: 'assets/[name]-[hash].js',    // Nomes com hash para cache
-        entryFileNames: 'assets/[name]-[hash].js',    // Nomes com hash para cache
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'], // Agrupa bibliotecas principais
-          i18n: ['i18next', 'react-i18next'],                  // Agrupa i18n
-          motion: ['framer-motion'],                          // Agrupa framer-motion
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          i18n: ['i18next', 'react-i18next'],
+          motion: ['framer-motion'],
         },
       },
     },
-    chunkSizeWarningLimit: 500, // Avisa se chunks > 500KB
+    chunkSizeWarningLimit: 500,
   },
 
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'], // Pré-carrega dependências críticas
-    exclude: ['lucide-react'], // Evita pré-carregar lucide-react (pode causar problemas)
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['lucide-react'],
   },
 
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // Permite imports como @/components/Button
+      '@': path.resolve(__dirname, './src'),
     },
   },
 });
