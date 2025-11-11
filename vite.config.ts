@@ -13,16 +13,16 @@ export default defineConfig({
   build: {
     outDir: 'dist/assets', // Gera arquivos dentro de dist/assets
     emptyOutDir: true,
-    manifest: true, // Gera manifest.json para o WordPress ler os hashes
+    manifest: true, // Gera manifest.json para WordPress
     target: 'es2020',
-    minify: 'esbuild', // Usa esbuild (rápido) para minificação
+    minify: 'esbuild', // Usa esbuild para minificação
     sourcemap: false,
     rollupOptions: {
       input: path.resolve(__dirname, 'src/main.tsx'), // Corrigido para o entry real
       output: {
-        assetFileNames: 'assets/[name]-[hash].[ext]',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: '[name]-[hash].[ext]',       // Corrigido: sem pasta "assets/"
+        chunkFileNames: '[name]-[hash].js',           // Corrigido: sem pasta "assets/"
+        entryFileNames: '[name]-[hash].js',           // Corrigido: sem pasta "assets/"
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           i18n: ['i18next', 'react-i18next'],
