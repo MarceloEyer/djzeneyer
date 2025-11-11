@@ -98,6 +98,7 @@
         "https://link.deezer.com/s/31zX6ApjwZkOvnUVGhTzf",
         "https://music.apple.com/us/artist/zen-eyer/1439280950",
         "https://ra.co/dj/djzeneyer"
+        "https://www.last.fm/music/Zen+Eyer"
       ],
       "jobTitle": "Brazilian Zouk DJ and Music Producer",
       "description": "World-renowned DJ and producer specializing exclusively in Brazilian Zouk. Performs globally, produces original Zouk music, and teaches masterclasses worldwide.",
