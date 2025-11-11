@@ -13,12 +13,12 @@ export default defineConfig({
   build: {
     outDir: 'dist/assets', // Gera arquivos dentro de dist/assets
     emptyOutDir: true,
-    manifest: true, // Gera manifest.json
+    manifest: true, // Gera manifest.json para o WordPress ler os hashes
     target: 'es2020',
     minify: 'esbuild', // Usa esbuild (rápido) para minificação
     sourcemap: false,
     rollupOptions: {
-      input: path.resolve(__dirname, 'src/index.tsx'), // ou index.js se for JS
+      input: path.resolve(__dirname, 'src/main.tsx'), // Corrigido para o entry real
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]',
         chunkFileNames: 'assets/[name]-[hash].js',
