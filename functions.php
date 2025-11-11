@@ -38,7 +38,7 @@ add_filter('template_include', function ($template) {
 });
 
 /* =========================
- * ENQUEUE SCRIPTS - OTIMIZADO 
+ * ENQUEUE SCRIPTS - OTIMIZADO
  * ========================= */
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('djzeneyer-style', get_stylesheet_uri(), [], djz_get_asset_version());
@@ -68,6 +68,7 @@ add_action('wp_enqueue_scripts', function () {
         ]);
     }
 });
+
 
 add_filter('script_loader_tag', function ($tag, $handle, $src) {
     if ('djzeneyer-react' === $handle) {
@@ -796,10 +797,6 @@ add_action('template_redirect', function() {
 }, 999);
 
 add_filter('wp_sitemaps_enabled', '__return_false');
-
-
-
-
 
 /**
  * Funções para gerenciamento de assets (CSS/JS) e manifesto
