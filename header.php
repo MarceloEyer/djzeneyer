@@ -102,12 +102,12 @@
       "jobTitle": "Brazilian Zouk DJ and Music Producer",
       "description": "World-renowned DJ and producer specializing exclusively in Brazilian Zouk. Performs globally, produces original Zouk music, and teaches masterclasses worldwide.",
       "nationality": "Brazilian",
-      "genre": ["Brazilian Zouk", "Electronic Music", "Dance Music"],
+      "genre": ["Brazilian Zouk", "Kizomba", "Zouk"],
       "birthPlace": {
         "@type": "Place",
         "address": {
           "@type": "PostalAddress",
-          "addressLocality": "São Paulo",
+          "addressLocality": "Rio de Janeiro",
           "addressCountry": "Brazil"
         }
       }
