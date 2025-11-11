@@ -6,24 +6,31 @@
 
     <!-- Primary Meta Tags -->
     <meta name="description" content="DJ Zen Eyer - Two-time world champion Brazilian Zouk DJ and music producer. International performances, award-winning remixes, Zouk authority.">
-    <link rel="canonical" href="<?php echo esc_url(home_url('/')); ?>">
+    <link rel="canonical" href="https://djzeneyer.com">
     <meta name="author" content="DJ Zen Eyer">
     <meta name="creator" content="Marcelo Eyer Fernandes">
 
     <!-- Identity Linking (CRÍTICO para IAs) -->
-    <link rel="me" href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154">
-    <meta property="music:musician" content="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154">
-    <link rel="me" href="https://www.wikidata.org/wiki/Q136551855">
-    <link rel="me" href="https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw">
-    <meta property="music:song" content="https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw">
-    <link rel="me" href="https://instagram.com/djzeneyer">
+    <link rel="me" href="https://artists.bandsintown.com/artists/15619775">
+    <link rel="me" href="https://www.songkick.com/artists/8815204-zen-eyer">
+    <link rel="me" href="https://www.instagram.com/djzeneyer/">
     <link rel="me" href="https://facebook.com/djzeneyer">
     <link rel="me" href="https://youtube.com/@djzeneyer">
+    <link rel="me" href="https://tiktok.com/@djzeneyer">
     <link rel="me" href="https://soundcloud.com/djzeneyer">
+    <link rel="me" href="https://www.mixcloud.com/djzeneyer/">
+    <link rel="me" href="https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw">
+    <link rel="me" href="https://zeneyer.bandcamp.com">
+    <link rel="me" href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154">
+    <link rel="me" href="https://www.wikidata.org/wiki/Q136551855">
+    <link rel="me" href="https://www.discogs.com/artist/16872046-Zen-Eyer">
+    <link rel="me" href="https://link.deezer.com/s/31zX6ApjwZkOvnUVGhTzf">
+    <link rel="me" href="https://music.apple.com/us/artist/zen-eyer/1439280950">
+    <link rel="me" href="https://ra.co/dj/djzeneyer">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="music.musician">
-    <meta property="og:url" content="<?php echo esc_url(home_url('/')); ?>">
+    <meta property="og:url" content="https://djzeneyer.com">
     <meta property="og:site_name" content="DJ Zen Eyer">
     <meta property="og:title" content="DJ Zen Eyer - Brazilian Zouk DJ & Producer">
     <meta property="og:description" content="Two-time world champion Brazilian Zouk DJ. International performances, award-winning remixes, Zouk authority.">
@@ -38,7 +45,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@djzeneyer">
     <meta name="twitter:creator" content="@djzeneyer">
-    <meta name="twitter:url" content="<?php echo esc_url(home_url('/')); ?>">
+    <meta name="twitter:url" content="https://djzeneyer.com">
     <meta name="twitter:title" content="DJ Zen Eyer - Brazilian Zouk DJ & Producer">
     <meta name="twitter:description" content="Two-time world champion Brazilian Zouk DJ. International performances, award-winning remixes.">
     <meta name="twitter:image" content="<?php echo get_template_directory_uri(); ?>/assets/images/twitter-image.jpg">
@@ -73,22 +80,29 @@
       "@type": ["Person", "MusicGroup"],
       "name": "Zen Eyer",
       "alternateName": "Marcelo Eyer Fernandes",
-      "url": "<?php echo esc_url(home_url('/')); ?>",
+      "url": "https://djzeneyer.com",
       "sameAs": [
-        "https://www.wikidata.org/wiki/Q136551855",
-        "https://www.discogs.com/pt_BR/artist/16872046-Zen-Eyer",
-        "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
-        "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
+        "https://artists.bandsintown.com/artists/15619775",
+        "https://www.songkick.com/artists/8815204-zen-eyer",
         "https://www.instagram.com/djzeneyer/",
+        "https://facebook.com/djzeneyer",
+        "https://youtube.com/@djzeneyer",
+        "https://tiktok.com/@djzeneyer",
         "https://soundcloud.com/djzeneyer",
-        "https://youtube.com/@DJZenEyer",
-        "https://ra.co/dj/djzeneyer",
-        "https://facebook.com/djzeneyer"
+        "https://www.mixcloud.com/djzeneyer/",
+        "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
+        "https://zeneyer.bandcamp.com",
+        "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
+        "https://www.wikidata.org/wiki/Q136551855",
+        "https://www.discogs.com/artist/16872046-Zen-Eyer",
+        "https://link.deezer.com/s/31zX6ApjwZkOvnUVGhTzf",
+        "https://music.apple.com/us/artist/zen-eyer/1439280950",
+        "https://ra.co/dj/djzeneyer"
       ],
       "jobTitle": "Brazilian Zouk DJ and Music Producer",
       "description": "World-renowned DJ and producer specializing exclusively in Brazilian Zouk. Performs globally, produces original Zouk music, and teaches masterclasses worldwide.",
       "nationality": "Brazilian",
-      "genre": "Brazilian Zouk",
+      "genre": ["Brazilian Zouk", "Electronic Music", "Dance Music"],
       "birthPlace": {
         "@type": "Place",
         "address": {
