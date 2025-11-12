@@ -1,12 +1,16 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-// Define a versão (fallback)
+/* =========================
+ * CONSTANTES & CONFIGURAÇÕES GLOBAIS
+ * ========================= */
 if (!defined('DJZ_VERSION')) {
     define('DJZ_VERSION', '12.0.2');
 }
 
-// Função Helper: Origens Permitidas (Usada em vários lugares)
+/**
+ * Retorna a lista de origens permitidas para CORS.
+ */
 function djz_allowed_origins(): array {
     return [
         'https://djzeneyer.com',
@@ -17,19 +21,9 @@ function djz_allowed_origins(): array {
     ];
 }
 
-// Headers de Segurança
-add_action('send_headers', function() {
-    if (is_admin() || headers_sent()) return;
-    header_remove('X-Powered-By');
-    header('X-Content-Type-Options: nosniff');
-    header('X-Frame-Options: DENY');
-    header('Referrer-Policy: strict-origin-when-cross-origin');
-    if (is_ssl()) {
-        header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
-    }
-});
-
-// Suporte do Tema
+/* =========================
+ * THEME SUPPORT
+ * ========================= */
 add_action('after_setup_theme', function () {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
@@ -38,13 +32,31 @@ add_action('after_setup_theme', function () {
     register_nav_menus(['primary_menu' => __('Menu Principal', 'djzeneyer')]);
 });
 
-// Configuração de CORS para API
+/* =========================
+ * SEGURANÇA (HEADERS)
+ * ========================= */
+add_action('send_headers', function() {
+    if (is_admin() || headers_sent()) return;
+    
+    header_remove('X-Powered-By');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    
+    if (is_ssl()) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
+    }
+});
+
+/* =========================
+ * CORS (REST API)
+ * ========================= */
 add_action('rest_api_init', function() {
     add_filter('rest_pre_serve_request', function($served) {
-        $allowed = djz_allowed_origins();
+        $allowed_origins = djz_allowed_origins();
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? trim($_SERVER['HTTP_ORIGIN']) : '';
         
-        if (in_array($origin, $allowed, true)) {
+        if (in_array($origin, $allowed_origins, true)) {
             header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
             header('Access-Control-Allow-Credentials: true');
             header('Vary: Origin', false);
@@ -57,6 +69,7 @@ add_action('rest_api_init', function() {
             status_header(200);
             exit;
         }
+        
         return $served;
     }, 15);
 });
