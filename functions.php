@@ -43,6 +43,16 @@ function djz_allowed_origins(): array {
 }
 
 /* =========================
+ * INCLUDES (MODULARIZAÇÃO)
+ * ========================= */
+// Carrega as otimizações de limpeza
+require_once get_theme_file_path('/inc/headless-cleanup.php');
+
+// Futuramente você pode criar:
+// require_once get_theme_file_path('/inc/api-endpoints.php');
+// require_once get_theme_file_path('/inc/seo-schemas.php');
+
+/* =========================
  * ROTEAMENTO SPA
  * ========================= */
 
