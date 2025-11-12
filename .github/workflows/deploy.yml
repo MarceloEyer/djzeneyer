@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-dist-${{ steps.commit.outputs.hash }}
-          path: dist/
+          path: dist/ # <-- APENAS a pasta dist
           include-dotfiles: true # Garante que .vite/ seja incluído
           retention-days: 7
 
@@ -111,13 +111,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-dist-${{ needs.build.outputs.commit_hash }}
-          path: ./dist # Baixa DIRETAMENTE para uma pasta 'dist'
+          path: ./dist # Baixa DIRETAMENTE para uma pasta 'dist' local
 
       - name: 📥 Download build artifact (theme files)
         uses: actions/download-artifact@v4
         with:
           name: build-theme-${{ needs.build.outputs.commit_hash }}
-          path: ./ # Baixa os arquivos PHP na raiz
+          path: ./ # Baixa os arquivos PHP na raiz (./)
 
       - name: 🕵️ Verificar artefato baixado
         run: |
@@ -181,13 +181,15 @@ jobs:
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete
-          path: dist/ # <-- Isso agora vai funcionar
+          path: dist/ # <-- Isso agora vai funcionar, pois 'dist/' existe
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      # ... (O restante do seu arquivo de deploy está perfeito, pode manter) ...
+      
       # ═══════════════════════════════════════════════════════════════════════
       # DEPLOY: inc/ (SE EXISTIR)
       # ═══════════════════════════════════════════════════════════════════════
