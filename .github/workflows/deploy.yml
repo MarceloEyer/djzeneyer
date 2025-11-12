@@ -69,20 +69,22 @@ jobs:
           fi
           echo "✅ Build OK - $(du -sh dist/ | cut -f1)"
 
+      # =======================================================
+      # AQUI ESTÁ A CORREÇÃO FINAL
+      # =======================================================
       - name: 📤 Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ steps.commit.outputs.hash }}
           path: |
-            dist/
+            dist/assets   # <-- CORREÇÃO: Listar subpasta de assets
+            dist/.vite    # <-- CORREÇÃO: Listar subpasta oculta .vite
             functions.php
             style.css
             screenshot.png
             header.php
             footer.php
             index.php
-          # <-- 2. CORREÇÃO PRINCIPAL: Força a inclusão de pastas ocultas como .vite -->
-          include-dotfiles: true 
           retention-days: 7
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -163,6 +165,8 @@ jobs:
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete
+          # CORREÇÃO: O 'path' agora é só 'dist/' pois o artefato
+          # foi baixado na raiz (./) e contém 'dist/assets' e 'dist/.vite'
           path: dist/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
