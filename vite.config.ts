@@ -11,16 +11,15 @@ export default defineConfig({
   },
 
   build: {
-    outDir: 'dist', // ✅ CORRIGIDO: gera direto em dist/
+    outDir: 'dist',
     emptyOutDir: true,
-    manifest: true, // Gera .vite/manifest.json
+    manifest: true, // Gera dist/.vite/manifest.json
     target: 'es2020',
     minify: 'esbuild',
     sourcemap: false,
     rollupOptions: {
       input: path.resolve(__dirname, 'src/main.tsx'),
       output: {
-        // ✅ Assets vão para dist/assets/
         assetFileNames: 'assets/[name]-[hash].[ext]',
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
@@ -45,6 +44,7 @@ export default defineConfig({
     },
   },
 
-  // ✅ Arquivos de public/ vão para dist/ (raiz do tema)
-  publicDir: 'public',
+  // ❌ REMOVER publicDir - não use pasta public para WordPress headless
+  // Os arquivos robots.txt, favicon, etc devem ser gerenciados via deploy
+  publicDir: false,
 });
