@@ -60,14 +60,15 @@ jobs:
           fi
 
       # =======================================================
-      # CORREÇÃO: Criar DOIS artefatos separados
+      # CORREÇÃO: Usar dois artefatos E o parâmetro CORRETO
       # =======================================================
       - name: 📤 Upload artifact (dist)
         uses: actions/upload-artifact@v4
         with:
           name: build-dist-${{ steps.commit.outputs.hash }}
           path: dist/ # <-- APENAS a pasta dist
-          include-dotfiles: true # Garante que .vite/ seja incluído
+          # ✅ ESTA É A CORREÇÃO: include-hidden-files
+          include-hidden-files: true 
           retention-days: 7
 
       - name: 📤 Upload artifact (theme files)
@@ -181,7 +182,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete
-          path: dist/ # <-- Isso agora vai funcionar, pois 'dist/' existe
+          path: dist/ 
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
