@@ -61,6 +61,22 @@ add_action('init', function() {
     remove_action('wp_head', 'wp_oembed_add_discovery_links');
 });
 
+/* =========================
+ * 🔌 LIMPEZA DE PLUGINS (RANK MATH)
+ * ========================= */
+add_action('wp_enqueue_scripts', function () {
+    // Remove scripts do Rank Math que causam erro 404 em Headless
+    if (!is_admin()) {
+        wp_dequeue_script('rank-math');
+        wp_dequeue_script('rank-math-analyzer'); // O principal culpado
+        wp_dequeue_style('rank-math-animate');
+    }
+}, 100);
+
+// Desativa a injeção automática de JSON-LD do Rank Math
+// (Já estamos fazendo isso manualmente no inc/seo.php, então evita duplicidade)
+add_filter('rank_math/json_ld', '__return_false');
+
 // Garante que a Admin Bar não injete CSS/JS mesmo se o usuário for admin
 add_action('wp_footer', function(){
     wp_dequeue_script('admin-bar');
