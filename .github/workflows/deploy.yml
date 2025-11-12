@@ -48,7 +48,6 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
-      # <-- 1. VERIFICAÇÃO ADICIONADA: Confirma que o build criou o manifest -->
       - name: 🕵️ Verificar estrutura do build
         run: |
           echo "Listando conteúdo de dist/..."
@@ -77,14 +76,14 @@ jobs:
         with:
           name: build-${{ steps.commit.outputs.hash }}
           path: |
-            dist/assets   # <-- CORREÇÃO: Listar subpasta de assets
-            dist/.vite    # <-- CORREÇÃO: Listar subpasta oculta .vite
+            dist/           # <-- CORREÇÃO: Pegar a pasta dist/ inteira
             functions.php
             style.css
             screenshot.png
             header.php
             footer.php
             index.php
+          include-dotfiles: true  # <-- CORREÇÃO: E garantir que .vite venha junto
           retention-days: 7
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -113,6 +112,12 @@ jobs:
         with:
           name: build-${{ needs.build.outputs.commit_hash }}
           path: ./
+
+      # ADICIONADO: Passo de verificação para ver o que foi baixado
+      - name: 🕵️ Verificar artefato baixado
+        run: |
+          echo "Listando arquivos baixados (deve incluir 'dist/'):"
+          ls -R ./
 
       - name: 🔐 Setup SSH
         uses: shimataro/ssh-key-action@v2
@@ -165,9 +170,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete
-          # CORREÇÃO: O 'path' agora é só 'dist/' pois o artefato
-          # foi baixado na raiz (./) e contém 'dist/assets' e 'dist/.vite'
-          path: dist/
+          path: dist/ # <-- Isso agora vai funcionar, pois a pasta dist/ existirá
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
@@ -259,7 +262,6 @@ jobs:
       # ═══════════════════════════════════════════════════════════════════════
       # VERIFICAÇÃO
       # ═══════════════════════════════════════════════════════════════════════
-      # <-- 3. VERIFICAÇÃO ATUALIZADA: Agora checa o manifest.json no servidor -->
       - name: ✅ Verificar
         uses: appleboy/ssh-action@v1.0.3
         with:
