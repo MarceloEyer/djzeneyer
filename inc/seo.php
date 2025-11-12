@@ -95,7 +95,7 @@ add_action('wp_head', function() {
     $desc = "Experience exclusive Brazilian Zouk remixes, live shows and premium music experiences by DJ Zen Eyer.";
     $url = home_url('/');
     // Tenta pegar a imagem do tema, ou usa uma padrão externa se não existir
-    $img = get_template_directory_uri() . '/images/og-image.jpg'; 
+    $img = 'https://djzeneyer.com/wp-content/uploads/2025/11/og-image.jpg'; 
 
     echo "\n\n";
     
