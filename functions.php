@@ -813,11 +813,9 @@ add_filter('wp_sitemaps_enabled', '__return_false');
  */
 function djz_get_asset_version() {
     static $version = null;
-
     if ($version !== null) {
         return $version;
     }
-
     $manifest_path = get_theme_file_path('/dist/mix-manifest.json');
     if (file_exists($manifest_path)) {
         $manifest = json_decode(file_get_contents($manifest_path), true);
@@ -825,23 +823,57 @@ function djz_get_asset_version() {
     } else {
         $version = DJZ_VERSION;
     }
-
     return $version;
 }
 
 function djz_get_manifest() {
     static $manifest = null;
-
     if ($manifest !== null) {
         return $manifest;
     }
-
     $manifest_path = get_theme_file_path('/dist/mix-manifest.json');
     if (file_exists($manifest_path)) {
         $manifest = json_decode(file_get_contents($manifest_path), true);
     } else {
         $manifest = [];
     }
-
     return $manifest;
 }
+
+add_action('wp_enqueue_scripts', function () {
+    $manifest = djz_get_manifest();
+
+    // Carregar CSS principal
+    if (isset($manifest['/dist/assets/index.css'])) {
+        wp_enqueue_style(
+            'djzeneyer-react-styles',
+            get_template_directory_uri() . $manifest['/dist/assets/index.css']['file'],
+            [],
+            djz_get_asset_version()
+        );
+    }
+
+    // Carregar JS principal
+    if (isset($manifest['/dist/assets/index.js'])) {
+        wp_enqueue_script(
+            'djzeneyer-react',
+            get_template_directory_uri() . $manifest['/dist/assets/index.js']['file'],
+            [],
+            djz_get_asset_version(),
+            true
+        );
+        wp_localize_script('djzeneyer-react', 'wpData', [
+            'siteUrl' => esc_url(home_url('/')),
+            'restUrl' => esc_url_raw(rest_url()),
+            'nonce' => wp_create_nonce('wp_rest'),
+            'themeUrl' => get_template_directory_uri(),
+            'allowedOrigins' => djz_allowed_origins(),
+            'isUserLoggedIn' => is_user_logged_in(),
+            'currentUser' => is_user_logged_in() ? [
+                'id' => get_current_user_id(),
+                'name' => wp_get_current_user()->display_name,
+                'email' => wp_get_current_user()->user_email,
+            ] : null,
+        ]);
+    }
+});
