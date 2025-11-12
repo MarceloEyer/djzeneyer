@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
-    "build:prod": "vite build --mode production"
+    "build:prod": "vite build --mode production",
+    "check-build": "node scripts/check-build.js"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -57,12 +58,4 @@
     "not dead",
     "not op_mini all"
   ]
-}
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check-build": "node scripts/check-build.js"
-  }
 }
