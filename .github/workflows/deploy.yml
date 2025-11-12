@@ -52,7 +52,6 @@ jobs:
         run: |
           echo "Listando conteúdo de dist/..."
           ls -R dist/
-          echo "--- Verificando manifest ---"
           if [ -f "dist/.vite/manifest.json" ]; then
             echo "✅ SUCESSO: manifest.json foi encontrado!"
           else
@@ -60,30 +59,28 @@ jobs:
             exit 1
           fi
 
-      - name: ✅ Validar build
-        run: |
-          if [ ! -d "dist" ]; then
-            echo "❌ dist/ não encontrado!"
-            exit 1
-          fi
-          echo "✅ Build OK - $(du -sh dist/ | cut -f1)"
-
       # =======================================================
-      # AQUI ESTÁ A CORREÇÃO FINAL
+      # CORREÇÃO: Criar DOIS artefatos separados
       # =======================================================
-      - name: 📤 Upload artifact
+      - name: 📤 Upload artifact (dist)
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ steps.commit.outputs.hash }}
+          name: build-dist-${{ steps.commit.outputs.hash }}
+          path: dist/
+          include-dotfiles: true # Garante que .vite/ seja incluído
+          retention-days: 7
+
+      - name: 📤 Upload artifact (theme files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-theme-${{ steps.commit.outputs.hash }}
           path: |
-            dist/           # <-- CORREÇÃO: Pegar a pasta dist/ inteira
             functions.php
             style.css
             screenshot.png
             header.php
             footer.php
             index.php
-          include-dotfiles: true  # <-- CORREÇÃO: E garantir que .vite venha junto
           retention-days: 7
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -107,17 +104,31 @@ jobs:
             public
           sparse-checkout-cone-mode: false
 
-      - name: 📥 Download build artifact
+      # =======================================================
+      # CORREÇÃO: Baixar os DOIS artefatos separadamente
+      # =======================================================
+      - name: 📥 Download build artifact (dist)
         uses: actions/download-artifact@v4
         with:
-          name: build-${{ needs.build.outputs.commit_hash }}
-          path: ./
+          name: build-dist-${{ needs.build.outputs.commit_hash }}
+          path: ./dist # Baixa DIRETAMENTE para uma pasta 'dist'
 
-      # ADICIONADO: Passo de verificação para ver o que foi baixado
+      - name: 📥 Download build artifact (theme files)
+        uses: actions/download-artifact@v4
+        with:
+          name: build-theme-${{ needs.build.outputs.commit_hash }}
+          path: ./ # Baixa os arquivos PHP na raiz
+
       - name: 🕵️ Verificar artefato baixado
         run: |
           echo "Listando arquivos baixados (deve incluir 'dist/'):"
           ls -R ./
+          if [ -f "dist/.vite/manifest.json" ]; then
+            echo "✅ SUCESSO: O artefato baixado contém o manifest.json!"
+          else
+            echo "❌ FALHA: O artefato baixado NÃO contém o manifest.json!"
+            exit 1
+          fi
 
       - name: 🔐 Setup SSH
         uses: shimataro/ssh-key-action@v2
@@ -170,7 +181,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete
-          path: dist/ # <-- Isso agora vai funcionar, pois a pasta dist/ existirá
+          path: dist/ # <-- Isso agora vai funcionar
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
