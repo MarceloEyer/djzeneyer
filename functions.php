@@ -41,18 +41,27 @@ add_filter('template_include', function ($template) {
  * ENQUEUE SCRIPTS - OTIMIZADO
  * ========================= */
 add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_style('djzeneyer-style', get_stylesheet_uri(), [], djz_get_asset_version());
+    $manifest = djz_get_manifest();
 
-    $js_src = get_template_directory_uri() . '/dist/assets/index.js';
-    $css_src = get_template_directory_uri() . '/dist/assets/index.css';
-
-    if (file_exists(get_theme_file_path('/dist/assets/index.css'))) {
-        wp_enqueue_style('djzeneyer-react-styles', $css_src, [], djz_get_asset_version());
+    // Carregar CSS principal
+    if (isset($manifest['/dist/assets/index.css'])) {
+        wp_enqueue_style(
+            'djzeneyer-react-styles',
+            get_template_directory_uri() . $manifest['/dist/assets/index.css']['file'],
+            [],
+            djz_get_asset_version()
+        );
     }
 
-    if (file_exists(get_theme_file_path('/dist/assets/index.js'))) {
-        wp_register_script('djzeneyer-react', $js_src, [], djz_get_asset_version(), true);
-        wp_enqueue_script('djzeneyer-react');
+    // Carregar JS principal
+    if (isset($manifest['/dist/assets/index.js'])) {
+        wp_enqueue_script(
+            'djzeneyer-react',
+            get_template_directory_uri() . $manifest['/dist/assets/index.js']['file'],
+            [],
+            djz_get_asset_version(),
+            true
+        );
         wp_localize_script('djzeneyer-react', 'wpData', [
             'siteUrl' => esc_url(home_url('/')),
             'restUrl' => esc_url_raw(rest_url()),
@@ -68,6 +77,7 @@ add_action('wp_enqueue_scripts', function () {
         ]);
     }
 });
+
 
 
 add_filter('script_loader_tag', function ($tag, $handle, $src) {
