@@ -88,7 +88,7 @@ add_filter('robots_txt', function($output) {
 });
 
 /* =========================
- * SCHEMAS (LocalBusiness & Org)
+ * SCHEMAS (Global Artist Profile)
  * ========================= */
 add_action('wp_head', function() {
     if (!is_front_page()) return;
@@ -97,43 +97,54 @@ add_action('wp_head', function() {
     $logo_url = esc_url($site_url . 'images/zen-eyer-logo.png');
     $image_url = esc_url($site_url . 'images/zen-eyer-profile.jpg');
 
-    // 1. LocalBusiness/MusicGroup
-    $schema_lb = [
+    // 1. MusicGroup + Person (Foco Global)
+    // Usamos 'MusicGroup' porque o Google entende melhor para artistas musicais do que 'Person' isolado
+    $schema_artist = [
         "@context" => "https://schema.org",
-        "@type" => ["MusicGroup", "LocalBusiness"],
+        "@type" => ["MusicGroup", "Person"], 
         "name" => "DJ Zen Eyer",
         "alternateName" => ["Zen Eyer", "DJ Zen", "Marcelo Fernandes"],
-        "description" => "Two-time world champion Brazilian Zouk DJ and music producer based in Niterói, Brazil.",
+        "description" => "World-class Brazilian Zouk DJ and music producer based in Brazil, performing globally.",
         "url" => $site_url,
         "logo" => $logo_url,
         "image" => $image_url,
-        "address" => [
-            "@type" => "PostalAddress",
-            "addressLocality" => "Niterói",
-            "addressRegion" => "RJ",
-            "addressCountry" => "BR"
+        "genre" => ["Brazilian Zouk", "Electronic Music", "Dance"],
+        
+        // Dados de Contato e Preço (Para Rich Snippets)
+        "telephone" => "+55-21-98741-3091",
+        "priceRange" => "$$$",
+        
+        // Localização Base (Apenas Cidade/País para privacidade e alcance global)
+        "location" => [
+            "@type" => "Place",
+            "address" => [
+                "@type" => "PostalAddress",
+                "addressLocality" => "Niterói",
+                "addressRegion" => "RJ",
+                "addressCountry" => "BR"
+            ]
         ],
-        "geo" => [
-            "@type" => "GeoCoordinates",
-            "latitude" => "-22.8833",
-            "longitude" => "-43.1036"
+
+        // Área de Atuação Global
+        "areaServed" => [
+            ["@type" => "Country", "name" => "Worldwide"],
+            ["@type" => "Country", "name" => "Brazil"],
+            ["@type" => "Country", "name" => "United States"],
+            ["@type" => "Country", "name" => "Europe"]
         ],
-        "contactPoint" => [
-            "@type" => "ContactPoint",
-            "telephone" => "+55-21-98741-3091",
-            "contactType" => "Booking",
-            "email" => "booking@djzeneyer.com",
-            "availableLanguage" => ["Portuguese", "English"]
-        ],
+
         "sameAs" => [
             "https://instagram.com/djzeneyer",
             "https://soundcloud.com/djzeneyer",
-            "https://youtube.com/@djzeneyer"
+            "https://youtube.com/@djzeneyer",
+            "https://www.wikidata.org/wiki/Q136551855",
+            "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
+            "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw"
         ]
     ];
-    echo '<script type="application/ld+json">' . json_encode($schema_lb, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
+    echo '<script type="application/ld+json">' . json_encode($schema_artist, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
 
-    // 2. Organization
+    // 2. Organization (Para fins comerciais e Knowledge Graph)
     $schema_org = [
         "@context" => "https://schema.org",
         "@type" => "Organization",
@@ -145,6 +156,13 @@ add_action('wp_head', function() {
             "@type" => "Person",
             "name" => "Marcelo Fernandes",
             "alternateName" => "DJ Zen Eyer"
+        ],
+        "contactPoint" => [
+            "@type" => "ContactPoint",
+            "telephone" => "+55-21-98741-3091",
+            "contactType" => "Booking",
+            "email" => "booking@djzeneyer.com",
+            "availableLanguage" => ["English", "Portuguese"]
         ]
     ];
     echo '<script type="application/ld+json">' . json_encode($schema_org, JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
@@ -170,6 +188,7 @@ add_action('woocommerce_single_product_summary', function() {
             "priceCurrency" => "BRL",
             "price" => (float) $product->get_price(),
             "availability" => $product->is_in_stock() ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            "priceValidUntil" => date('Y-12-31'),
             "seller" => [
                 "@type" => "Organization",
                 "name" => "DJ Zen Eyer"
