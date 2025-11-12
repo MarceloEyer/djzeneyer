@@ -7,22 +7,23 @@ export default defineConfig({
 
   server: {
     port: 5173,
-    host: true, // Permite acesso externo
+    host: true,
   },
 
   build: {
-    outDir: 'dist/assets', // Gera arquivos dentro de dist/assets
+    outDir: 'dist', // ✅ CORRIGIDO: gera direto em dist/
     emptyOutDir: true,
-    manifest: true, // Gera manifest.json para WordPress
+    manifest: true, // Gera .vite/manifest.json
     target: 'es2020',
-    minify: 'esbuild', // Usa esbuild para minificação
+    minify: 'esbuild',
     sourcemap: false,
     rollupOptions: {
-      input: path.resolve(__dirname, 'src/main.tsx'), // Corrigido para o entry real
+      input: path.resolve(__dirname, 'src/main.tsx'),
       output: {
-        assetFileNames: '[name]-[hash].[ext]',       // Corrigido: sem pasta "assets/"
-        chunkFileNames: '[name]-[hash].js',           // Corrigido: sem pasta "assets/"
-        entryFileNames: '[name]-[hash].js',           // Corrigido: sem pasta "assets/"
+        // ✅ Assets vão para dist/assets/
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           i18n: ['i18next', 'react-i18next'],
@@ -43,4 +44,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+
+  // ✅ Arquivos de public/ vão para dist/ (raiz do tema)
+  publicDir: 'public',
 });
