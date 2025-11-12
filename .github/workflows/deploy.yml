@@ -48,6 +48,19 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
+      # <-- 1. VERIFICAÇÃO ADICIONADA: Confirma que o build criou o manifest -->
+      - name: 🕵️ Verificar estrutura do build
+        run: |
+          echo "Listando conteúdo de dist/..."
+          ls -R dist/
+          echo "--- Verificando manifest ---"
+          if [ -f "dist/.vite/manifest.json" ]; then
+            echo "✅ SUCESSO: manifest.json foi encontrado!"
+          else
+            echo "❌ FALHA: dist/.vite/manifest.json NÃO foi encontrado!"
+            exit 1
+          fi
+
       - name: ✅ Validar build
         run: |
           if [ ! -d "dist" ]; then
@@ -68,6 +81,8 @@ jobs:
             header.php
             footer.php
             index.php
+          # <-- 2. CORREÇÃO PRINCIPAL: Força a inclusão de pastas ocultas como .vite -->
+          include-dotfiles: true 
           retention-days: 7
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -240,6 +255,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════════════
       # VERIFICAÇÃO
       # ═══════════════════════════════════════════════════════════════════════
+      # <-- 3. VERIFICAÇÃO ATUALIZADA: Agora checa o manifest.json no servidor -->
       - name: ✅ Verificar
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -266,12 +282,21 @@ jobs:
             
             echo ""
             echo "📁 dist/:"
-            if [ -d "$THEME_PATH/dist" ]; then
+            if [ ! -d "$THEME_PATH/dist" ]; then
+              echo "❌ dist/ não encontrado!"
+              exit 1
+            fi
+
+            echo "--- Verificando manifest.json (O MAIS IMPORTANTE) ---"
+            if [ -f "$THEME_PATH/dist/.vite/manifest.json" ]; then
+              echo "✅ SUCESSO! manifest.json está no servidor!"
               DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
               FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
               echo "✅ $DIST_SIZE ($FILE_COUNT arquivos)"
             else
-              echo "❌ dist/ não encontrado!"
+              echo "❌ FALHA! manifest.json NÃO está no servidor!"
+              echo "Listando conteúdo de dist/ para debug:"
+              ls -R "$THEME_PATH/dist"
               exit 1
             fi
             
