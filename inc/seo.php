@@ -88,6 +88,38 @@ add_filter('robots_txt', function($output) {
 });
 
 /* =========================
+ * SOCIAL META TAGS (Open Graph & Twitter)
+ * ========================= */
+add_action('wp_head', function() {
+    $title = get_bloginfo('name') . ' | ' . get_bloginfo('description');
+    $desc = "Experience exclusive Brazilian Zouk remixes, live shows and premium music experiences by DJ Zen Eyer.";
+    $url = home_url('/');
+    // Tenta pegar a imagem do tema, ou usa uma padrão externa se não existir
+    $img = get_template_directory_uri() . '/images/og-image.jpg'; 
+
+    echo "\n\n";
+    
+    // Open Graph (Facebook/WhatsApp/LinkedIn)
+    echo '<meta property="og:type" content="website">' . "\n";
+    echo '<meta property="og:site_name" content="DJ Zen Eyer">' . "\n";
+    echo '<meta property="og:url" content="' . esc_url($url) . '">' . "\n";
+    echo '<meta property="og:title" content="' . esc_attr($title) . '">' . "\n";
+    echo '<meta property="og:description" content="' . esc_attr($desc) . '">' . "\n";
+    echo '<meta property="og:image" content="' . esc_url($img) . '">' . "\n";
+    echo '<meta property="og:image:width" content="1200">' . "\n";
+    echo '<meta property="og:image:height" content="630">' . "\n";
+    echo '<meta property="og:locale" content="en_US">' . "\n";
+
+    // Twitter Cards
+    echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+    echo '<meta name="twitter:domain" content="djzeneyer.com">' . "\n";
+    echo '<meta name="twitter:url" content="' . esc_url($url) . '">' . "\n";
+    echo '<meta name="twitter:title" content="' . esc_attr($title) . '">' . "\n";
+    echo '<meta name="twitter:description" content="' . esc_attr($desc) . '">' . "\n";
+    echo '<meta name="twitter:image" content="' . esc_url($img) . '">' . "\n";
+}, 0);
+
+/* =========================
  * SCHEMAS (Global Artist Profile)
  * ========================= */
 add_action('wp_head', function() {
@@ -97,8 +129,6 @@ add_action('wp_head', function() {
     $logo_url = esc_url($site_url . 'images/zen-eyer-logo.png');
     $image_url = esc_url($site_url . 'images/zen-eyer-profile.jpg');
 
-    // 1. MusicGroup + Person (Foco Global)
-    // Usamos 'MusicGroup' porque o Google entende melhor para artistas musicais do que 'Person' isolado
     $schema_artist = [
         "@context" => "https://schema.org",
         "@type" => ["MusicGroup", "Person"], 
@@ -109,12 +139,8 @@ add_action('wp_head', function() {
         "logo" => $logo_url,
         "image" => $image_url,
         "genre" => ["Brazilian Zouk", "Electronic Music", "Dance"],
-        
-        // Dados de Contato e Preço (Para Rich Snippets)
         "telephone" => "+55-21-98741-3091",
         "priceRange" => "$$$",
-        
-        // Localização Base (Apenas Cidade/País para privacidade e alcance global)
         "location" => [
             "@type" => "Place",
             "address" => [
@@ -124,15 +150,12 @@ add_action('wp_head', function() {
                 "addressCountry" => "BR"
             ]
         ],
-
-        // Área de Atuação Global
         "areaServed" => [
             ["@type" => "Country", "name" => "Worldwide"],
             ["@type" => "Country", "name" => "Brazil"],
             ["@type" => "Country", "name" => "United States"],
             ["@type" => "Country", "name" => "Europe"]
         ],
-
         "sameAs" => [
             "https://instagram.com/djzeneyer",
             "https://soundcloud.com/djzeneyer",
@@ -144,7 +167,6 @@ add_action('wp_head', function() {
     ];
     echo '<script type="application/ld+json">' . json_encode($schema_artist, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
 
-    // 2. Organization (Para fins comerciais e Knowledge Graph)
     $schema_org = [
         "@context" => "https://schema.org",
         "@type" => "Organization",
