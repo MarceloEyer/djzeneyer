@@ -100,7 +100,6 @@ Disallow: /wp-content/cache/
 Disallow: /trackback/
 Disallow: /feed/
 Disallow: /comments/
-Disallow: /*?*
 
 # Bots de IA (Permitido para citações)
 User-agent: GPTBot
