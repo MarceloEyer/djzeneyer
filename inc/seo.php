@@ -94,12 +94,12 @@ add_action('wp_head', function() {
     $title = get_bloginfo('name') . ' | ' . get_bloginfo('description');
     $desc = "Experience exclusive Brazilian Zouk remixes, live shows and premium music experiences by DJ Zen Eyer.";
     $url = home_url('/');
-    // Tenta pegar a imagem do tema, ou usa uma padrão externa se não existir
+    // Aponta para a raiz onde você subiu a imagem PNG
     $img = home_url('/images/og-image.png'); 
 
     echo "\n\n";
     
-    // Open Graph (Facebook/WhatsApp/LinkedIn)
+    // Open Graph
     echo '<meta property="og:type" content="website">' . "\n";
     echo '<meta property="og:site_name" content="DJ Zen Eyer">' . "\n";
     echo '<meta property="og:url" content="' . esc_url($url) . '">' . "\n";
@@ -129,6 +129,7 @@ add_action('wp_head', function() {
     $logo_url = esc_url($site_url . 'images/zen-eyer-logo.png');
     $image_url = esc_url($site_url . 'images/zen-eyer-profile.jpg');
 
+    // 1. MusicGroup + Person (Foco Global)
     $schema_artist = [
         "@context" => "https://schema.org",
         "@type" => ["MusicGroup", "Person"], 
@@ -139,8 +140,12 @@ add_action('wp_head', function() {
         "logo" => $logo_url,
         "image" => $image_url,
         "genre" => ["Brazilian Zouk", "Electronic Music", "Dance"],
+        
+        // Dados de Contato e Preço (Para Rich Snippets)
         "telephone" => "+55-21-98741-3091",
         "priceRange" => "$$$",
+        
+        // Localização Base (Apenas Cidade/País para privacidade e alcance global)
         "location" => [
             "@type" => "Place",
             "address" => [
@@ -150,12 +155,15 @@ add_action('wp_head', function() {
                 "addressCountry" => "BR"
             ]
         ],
+
+        // Área de Atuação Global
         "areaServed" => [
             ["@type" => "Country", "name" => "Worldwide"],
             ["@type" => "Country", "name" => "Brazil"],
             ["@type" => "Country", "name" => "United States"],
             ["@type" => "Country", "name" => "Europe"]
         ],
+
         "sameAs" => [
             "https://instagram.com/djzeneyer",
             "https://soundcloud.com/djzeneyer",
@@ -167,6 +175,7 @@ add_action('wp_head', function() {
     ];
     echo '<script type="application/ld+json">' . json_encode($schema_artist, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
 
+    // 2. Organization (Para fins comerciais e Knowledge Graph)
     $schema_org = [
         "@context" => "https://schema.org",
         "@type" => "Organization",
