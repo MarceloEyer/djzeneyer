@@ -10,6 +10,16 @@ import { normalizePath, tryDynamicMapping } from '../../utils/routeUtils';
 
 type Lang = 'pt' | 'en';
 
+// Função de segurança para garantir que o redirecionamento seja sempre interno (Corrige Open Redirect - Snyk)
+const sanitizePath = (path: string) => {
+  // Remove qualquer coisa que pareça um protocolo (http:) ou domínio
+  // Garante que começa com / e não é // (protocol relative)
+  const cleanPath = path.replace(/^(?:https?:\/\/[^\/]+)?/, '');
+  return cleanPath.startsWith('/') && !cleanPath.startsWith('//') 
+    ? cleanPath 
+    : '/';
+};
+
 // Componente seletor de idioma PT/EN
 const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
@@ -34,7 +44,8 @@ const LanguageSelector: React.FC = () => {
     if (mapping) {
       const dest = mapping[newLang];
       console.debug('[LanguageSelector] direct mapping ->', dest);
-      navigate(dest + search + hash);
+      // Aplica sanitização antes de navegar
+      navigate(sanitizePath(dest) + search + hash);
       return;
     }
 
@@ -42,7 +53,8 @@ const LanguageSelector: React.FC = () => {
     const dyn = tryDynamicMapping(rawPath, newLang);
     if (dyn) {
       console.debug('[LanguageSelector] dynamic mapping ->', dyn);
-      navigate(dyn + search + hash);
+      // Aplica sanitização antes de navegar
+      navigate(sanitizePath(dyn) + search + hash);
       return;
     }
 
@@ -50,12 +62,12 @@ const LanguageSelector: React.FC = () => {
     if (newLang === 'pt') {
       const newPath = rawPath === '/' ? '/pt' : `/pt${rawPath}`;
       console.debug('[LanguageSelector] fallback prefix ->', newPath);
-      navigate(newPath + search + hash);
+      navigate(sanitizePath(newPath) + search + hash);
       return;
     } else {
       const withoutPt = rawPath.startsWith('/pt') ? rawPath.replace(/^\/pt/, '') || '/' : rawPath;
       console.debug('[LanguageSelector] fallback remove pt ->', withoutPt);
-      navigate(withoutPt + search + hash);
+      navigate(sanitizePath(withoutPt) + search + hash);
       return;
     }
   };
@@ -155,7 +167,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             {user?.isLoggedIn ? (
               <UserMenu />
             ) : (
-              <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2" aria-label={t('sign_in')}>
+              // Removido aria-label redundante (texto visível "Sign In" já é suficiente)
+              <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2">
                 <LogIn size={18} />
                 <span>{t('sign_in')}</span>
               </button>
@@ -182,7 +195,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
               {user?.isLoggedIn ? (
                 <UserMenu orientation="vertical" />
               ) : (
-                <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2" aria-label={t('join_the_tribe')}>
+                // Removido aria-label redundante (texto visível "Join the Tribe" já é suficiente)
+                <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2">
                   <LogIn size={18} />
                   <span>{t('join_the_tribe')}</span>
                 </button>
