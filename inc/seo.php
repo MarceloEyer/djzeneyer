@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) exit;
 
 /* =========================
- * SITEMAP.XML
+ * 1. SITEMAP.XML (Híbrido: React + WP)
  * ========================= */
 add_action('init', function() {
     add_rewrite_rule('^sitemap\.xml$', 'index.php?djz_sitemap=1', 'top');
@@ -13,6 +13,7 @@ add_filter('query_vars', function($vars) {
     return $vars;
 });
 
+// Desativa sitemaps nativos do WP (para não conflitar)
 add_filter('wp_sitemaps_enabled', '__return_false');
 
 add_action('template_redirect', function() {
@@ -20,28 +21,41 @@ add_action('template_redirect', function() {
     
     header('Content-Type: application/xml; charset=utf-8');
     
+    // 1. Rotas Estáticas do React (Adicione aqui se criar novas páginas no Frontend)
     $urls = [
         ['loc' => home_url('/'), 'priority' => '1.0', 'changefreq' => 'daily'],
-        ['loc' => home_url('/about'), 'priority' => '0.9', 'changefreq' => 'monthly'],
-        ['loc' => home_url('/music'), 'priority' => '0.9', 'changefreq' => 'weekly'],
         ['loc' => home_url('/events'), 'priority' => '0.9', 'changefreq' => 'weekly'],
-        ['loc' => home_url('/shop'), 'priority' => '0.8', 'changefreq' => 'daily'],
-        ['loc' => home_url('/work-with-me'), 'priority' => '0.9', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/shop'), 'priority' => '0.9', 'changefreq' => 'daily'],
         ['loc' => home_url('/zentribe'), 'priority' => '0.8', 'changefreq' => 'monthly'],
-        ['loc' => home_url('/faq'), 'priority' => '0.7', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/music'), 'priority' => '0.8', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/work-with-me'), 'priority' => '0.8', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/faq'), 'priority' => '0.6', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/minha-conta'), 'priority' => '0.5', 'changefreq' => 'yearly'], // Login
     ];
     
+    // 2. Conteúdo Dinâmico do WordPress (Produtos WooCommerce)
     if (class_exists('WooCommerce')) {
         $products = wc_get_products(['limit' => -1, 'status' => 'publish']);
         foreach ($products as $product) {
             $urls[] = [
                 'loc' => get_permalink($product->get_id()),
-                'priority' => '0.7',
+                'priority' => '0.8',
                 'changefreq' => 'weekly'
             ];
         }
     }
+
+    // 3. Posts do Blog (Se houver)
+    $posts = get_posts(['numberposts' => -1, 'post_type' => 'post', 'post_status' => 'publish']);
+    foreach ($posts as $post) {
+        $urls[] = [
+            'loc' => get_permalink($post->ID),
+            'priority' => '0.7',
+            'changefreq' => 'monthly'
+        ];
+    }
     
+    // Gera o XML
     echo '<?xml version="1.0" encoding="UTF-8"?>';
     echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
     
@@ -59,17 +73,15 @@ add_action('template_redirect', function() {
 });
 
 /* =========================
- * ROBOTS.TXT (OTIMIZADO PARA RENDERIZAÇÃO & IA)
+ * 2. ROBOTS.TXT (Permissivo para Renderização)
  * ========================= */
 add_filter('robots_txt', function($output) {
     $sitemap = home_url('/sitemap.xml');
     
-    return "# DJ Zen Eyer - Robots.txt
-# Otimizado para Googlebot (Render) e AI Bots
-
+    return "# DJ Zen Eyer - Robots.txt Otimizado
 User-agent: *
 Allow: /
-# Recursos essenciais para o Google renderizar o site
+# Libera recursos para o Google renderizar o site corretamente
 Allow: /wp-content/uploads/
 Allow: /wp-content/themes/
 Allow: /wp-content/plugins/
@@ -77,7 +89,7 @@ Allow: /wp-includes/js/
 Allow: /wp-includes/css/
 Allow: /wp-includes/images/
 
-# Bloqueios de Segurança e Admin
+# Bloqueia áreas sensíveis
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /xmlrpc.php
@@ -85,51 +97,36 @@ Disallow: /wp-content/cache/
 Disallow: /trackback/
 Disallow: /feed/
 Disallow: /comments/
-Disallow: */trackback/
-Disallow: */feed/
-Disallow: */comments/
 Disallow: /*?*
-Disallow: /*?
 
-# Bots de IA - Acesso Total Permitido
-# Isso ajuda seu conteúdo a ser citado pelo ChatGPT/Claude/Perplexity
+# Bots de IA (Permitido para citações)
 User-agent: GPTBot
 Allow: /
-
 User-agent: ChatGPT-User
 Allow: /
-
 User-agent: Google-Extended
 Allow: /
-
 User-agent: PerplexityBot
 Allow: /
-
 User-agent: ClaudeBot
 Allow: /
-
 User-agent: anthropic-ai
-Allow: /
-
-User-agent: Applebot-Extended
 Allow: /
 
 Sitemap: {$sitemap}";
 });
 
 /* =========================
- * SOCIAL META TAGS (Open Graph & Twitter)
+ * 3. SOCIAL META TAGS (Open Graph & Twitter)
  * ========================= */
 add_action('wp_head', function() {
     $title = get_bloginfo('name') . ' | ' . get_bloginfo('description');
     $desc = "Experience exclusive Brazilian Zouk remixes, live shows and premium music experiences by DJ Zen Eyer.";
     $url = home_url('/');
-    // Aponta para a raiz onde você subiu a imagem PNG
+    // URL da imagem na raiz (upload manual)
     $img = home_url('/images/og-image.png'); 
 
     echo "\n\n";
-    
-    // Open Graph
     echo '<meta property="og:type" content="website">' . "\n";
     echo '<meta property="og:site_name" content="DJ Zen Eyer">' . "\n";
     echo '<meta property="og:url" content="' . esc_url($url) . '">' . "\n";
@@ -140,7 +137,6 @@ add_action('wp_head', function() {
     echo '<meta property="og:image:height" content="630">' . "\n";
     echo '<meta property="og:locale" content="en_US">' . "\n";
 
-    // Twitter Cards
     echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
     echo '<meta name="twitter:domain" content="djzeneyer.com">' . "\n";
     echo '<meta name="twitter:url" content="' . esc_url($url) . '">' . "\n";
@@ -150,7 +146,7 @@ add_action('wp_head', function() {
 }, 0);
 
 /* =========================
- * SCHEMAS (Global Artist Profile)
+ * 4. SCHEMAS (Artist & Organization)
  * ========================= */
 add_action('wp_head', function() {
     if (!is_front_page()) return;
@@ -159,7 +155,6 @@ add_action('wp_head', function() {
     $logo_url = esc_url($site_url . 'images/zen-eyer-logo.png');
     $image_url = esc_url($site_url . 'images/zen-eyer-profile.jpg');
 
-    // 1. MusicGroup + Person (Foco Global)
     $schema_artist = [
         "@context" => "https://schema.org",
         "@type" => ["MusicGroup", "Person"], 
@@ -170,12 +165,8 @@ add_action('wp_head', function() {
         "logo" => $logo_url,
         "image" => $image_url,
         "genre" => ["Brazilian Zouk", "Electronic Music", "Dance"],
-        
-        // Dados de Contato e Preço (Para Rich Snippets)
         "telephone" => "+55-21-98741-3091",
         "priceRange" => "$$$",
-        
-        // Localização Base (Apenas Cidade/País para privacidade e alcance global)
         "location" => [
             "@type" => "Place",
             "address" => [
@@ -185,15 +176,12 @@ add_action('wp_head', function() {
                 "addressCountry" => "BR"
             ]
         ],
-
-        // Área de Atuação Global
         "areaServed" => [
             ["@type" => "Country", "name" => "Worldwide"],
             ["@type" => "Country", "name" => "Brazil"],
             ["@type" => "Country", "name" => "United States"],
             ["@type" => "Country", "name" => "Europe"]
         ],
-
         "sameAs" => [
             "https://instagram.com/djzeneyer",
             "https://soundcloud.com/djzeneyer",
@@ -205,7 +193,6 @@ add_action('wp_head', function() {
     ];
     echo '<script type="application/ld+json">' . json_encode($schema_artist, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
 
-    // 2. Organization (Para fins comerciais e Knowledge Graph)
     $schema_org = [
         "@context" => "https://schema.org",
         "@type" => "Organization",
@@ -230,7 +217,7 @@ add_action('wp_head', function() {
 }, 1);
 
 /* =========================
- * SCHEMA (WooCommerce Product)
+ * 5. SCHEMA (WooCommerce Product)
  * ========================= */
 add_action('woocommerce_single_product_summary', function() {
     global $product;
