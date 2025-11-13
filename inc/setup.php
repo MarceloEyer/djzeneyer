@@ -33,6 +33,17 @@ add_action('after_setup_theme', function () {
 });
 
 /* =========================
+ * SEGURANÇA: HttpOnly Cookies
+ * Garante que cookies de sessão não autenticados (WooCommerce) não possam
+ * ser acessados por JavaScript (XSS), mitigando a vulnerabilidade.
+ * ========================= */
+add_filter( 'woocommerce_cookie_duration', function ( $duration ) {
+    // O true no final da função session_set_cookie_params é o HttpOnly
+    session_set_cookie_params( $duration, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true ); 
+    return $duration;
+} );
+
+/* =========================
  * SEGURANÇA (HEADERS)
  * ========================= */
 add_action('send_headers', function() {
