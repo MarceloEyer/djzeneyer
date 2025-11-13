@@ -100,3 +100,18 @@ O tema reside em `wp-content/themes/zentheme/` e é composto por:
 ### Instalação Local
 ```bash
 npm install
+
+Desenvolvimento
+Bash
+
+npm run dev
+# Roda em localhost:5173. Requer que o WP local tenha CORS configurado.
+Build de Produção
+Bash
+
+npm run build
+# Gera a pasta dist/ pronta para deploy.
+Verificação de Integridade
+Se o site ficar com tela branca, verifique se o arquivo dist/.vite/manifest.json existe no servidor. Ele é a chave que liga o PHP ao React.
+
+Documentação gerada em: Novembro 2025. Status do Projeto: Produção Estável (Performance A+, SEO Otimizado).
