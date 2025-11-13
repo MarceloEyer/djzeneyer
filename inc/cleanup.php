@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 /* ==========================================
  * 🧹 LIMPEZA PROFUNDA (Deep Cleanup)
- * Remove CSS e JS desnecessários do WP Core
+ * Remove CSS e JS desnecessários do WP Core & Plugins
  * ========================================== */
 
 add_action('after_setup_theme', function () {
@@ -26,26 +26,34 @@ add_action('wp_enqueue_scripts', function () {
     wp_dequeue_style('wc-blocks-style');         // WooCommerce Blocks
     wp_dequeue_style('global-styles');           // Inline Global Styles
     wp_dequeue_style('classic-theme-styles');    // WP 6.x Classic Styles
+    wp_dequeue_style('rank-math-animate');       // Rank Math Animation CSS
 
-    // 4. REMOVER SCRIPTS (JS) - AQUI ESTÁ A CORREÇÃO DOS ERROS
-    // Remove scripts que causam conflito com React (Gutenberg, Embeds, Admin Bar)
-    
+    // 4. REMOVER CSS PADRÃO DO WOOCOMMERCE
+    add_filter('woocommerce_enqueue_styles', '__return_false');
+
+    // 5. REMOVER SCRIPTS (JS) - CORREÇÃO DE ERROS DE CONSOLE
+    // Apenas no frontend (não quebra o admin)
     if (!is_admin()) {
+        // WP Core Bloat
         wp_dequeue_script('wp-embed');
-        wp_dequeue_script('admin-bar');          // O culpado do erro "admin-bar.js"
+        wp_dequeue_script('admin-bar');          // Remove erro "admin-bar.js"
         wp_dequeue_script('wp-emoji');
         
-        // Remove scripts do Gutenberg que dependem do React do WP
+        // Gutenberg / React Conflicts (Remove erros "primitives.min.js", "data.min.js")
         wp_dequeue_script('wp-i18n');
         wp_dequeue_script('wp-hooks');
-        wp_dequeue_script('wp-data');            // O culpado do erro "data.min.js"
+        wp_dequeue_script('wp-data');            
         wp_dequeue_script('wp-api-fetch');
-        wp_dequeue_script('wp-primitives');      // O culpado do erro "primitives.min.js"
-    }
+        wp_dequeue_script('wp-primitives');      
 
-    // 5. Remover CSS padrão do WooCommerce
-    add_filter('woocommerce_enqueue_styles', '__return_false');
-}, 100);
+        // Rank Math (Remove erro 404 de analytics)
+        // Deregister remove o registro completamente, garantindo que não carregue
+        wp_deregister_script('rank-math'); 
+        wp_dequeue_script('rank-math');
+        wp_deregister_script('rank-math-analyzer'); 
+        wp_dequeue_script('rank-math-analyzer');
+    }
+}, 100); // Prioridade alta (100) para rodar depois dos plugins
 
 add_action('init', function() {
     // 6. Limpeza de Cabeçalho (Security)
@@ -59,25 +67,13 @@ add_action('init', function() {
     // Remove JSON API Links do head (se você não usa descoberta automática)
     remove_action('wp_head', 'rest_output_link_wp_head');
     remove_action('wp_head', 'wp_oembed_add_discovery_links');
+
+    // Desativa a injeção automática de JSON-LD do Rank Math
+    // (Já estamos fazendo isso manualmente no inc/seo.php)
+    add_filter('rank_math/json_ld', '__return_false');
 });
 
-/* =========================
- * 🔌 LIMPEZA DE PLUGINS (RANK MATH)
- * ========================= */
-add_action('wp_enqueue_scripts', function () {
-    // Remove scripts do Rank Math que causam erro 404 em Headless
-    if (!is_admin()) {
-        wp_dequeue_script('rank-math');
-        wp_dequeue_script('rank-math-analyzer'); // O principal culpado
-        wp_dequeue_style('rank-math-animate');
-    }
-}, 100);
-
-// Desativa a injeção automática de JSON-LD do Rank Math
-// (Já estamos fazendo isso manualmente no inc/seo.php, então evita duplicidade)
-add_filter('rank_math/json_ld', '__return_false');
-
-// Garante que a Admin Bar não injete CSS/JS mesmo se o usuário for admin
+// 7. Garante que a Admin Bar não injete CSS/JS no footer
 add_action('wp_footer', function(){
     wp_dequeue_script('admin-bar');
     wp_dequeue_style('admin-bar');
