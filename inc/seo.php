@@ -199,7 +199,8 @@ add_action('wp_head', function() {
             "https://youtube.com/@djzeneyer",
             "https://www.wikidata.org/wiki/Q136551855",
             "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
-            "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw"
+            "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
+            "https://ra.co/dj/djzeneyer"
         ]
     ];
     echo '<script type="application/ld+json">' . json_encode($schema_artist, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
