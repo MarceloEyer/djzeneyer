@@ -57,7 +57,7 @@ add_action('template_redirect', function() {
     
     // Gera o XML
     echo '<?xml version="1.0" encoding="UTF-8"?>';
-    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
     
     foreach ($urls as $url) {
         echo '<url>';
@@ -65,6 +65,9 @@ add_action('template_redirect', function() {
         echo '<priority>' . $url['priority'] . '</priority>';
         echo '<changefreq>' . $url['changefreq'] . '</changefreq>';
         echo '<lastmod>' . date('Y-m-d') . '</lastmod>';
+        // Hreflang Básico (Assumindo estrutura /pt no frontend)
+        echo '<xhtml:link rel="alternate" hreflang="en" href="' . esc_url($url['loc']) . '"/>';
+        echo '<xhtml:link rel="alternate" hreflang="pt-BR" href="' . esc_url($url['loc'] . 'pt') . '"/>';
         echo '</url>';
     }
     
@@ -127,6 +130,13 @@ add_action('wp_head', function() {
     $img = home_url('/images/og-image.png'); 
 
     echo "\n\n";
+    
+    // HREFLANG (SEO Internacional)
+    echo '<link rel="alternate" hreflang="en" href="' . esc_url($url) . '" />' . "\n";
+    echo '<link rel="alternate" hreflang="pt-BR" href="' . esc_url($url . 'pt') . '" />' . "\n";
+    echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($url) . '" />' . "\n";
+
+    // Open Graph
     echo '<meta property="og:type" content="website">' . "\n";
     echo '<meta property="og:site_name" content="DJ Zen Eyer">' . "\n";
     echo '<meta property="og:url" content="' . esc_url($url) . '">' . "\n";
@@ -136,7 +146,9 @@ add_action('wp_head', function() {
     echo '<meta property="og:image:width" content="1200">' . "\n";
     echo '<meta property="og:image:height" content="630">' . "\n";
     echo '<meta property="og:locale" content="en_US">' . "\n";
+    echo '<meta property="og:locale:alternate" content="pt_BR">' . "\n";
 
+    // Twitter
     echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
     echo '<meta name="twitter:domain" content="djzeneyer.com">' . "\n";
     echo '<meta name="twitter:url" content="' . esc_url($url) . '">' . "\n";
