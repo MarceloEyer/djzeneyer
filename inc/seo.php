@@ -59,32 +59,62 @@ add_action('template_redirect', function() {
 });
 
 /* =========================
- * ROBOTS.TXT
+ * ROBOTS.TXT (OTIMIZADO PARA RENDERIZAÇÃO & IA)
  * ========================= */
 add_filter('robots_txt', function($output) {
-    $output = "# DJ Zen Eyer - Optimized for AI Bots\n";
-    $output .= "User-agent: *\n";
-    $output .= "Allow: /\n";
-    $output .= "Allow: /wp-content/uploads/\n";
-    $output .= "Allow: /wp-content/themes/zentheme/dist/\n";
-    $output .= "\n";
-    $output .= "Disallow: /wp-admin/\n";
-    $output .= "Disallow: /wp-includes/\n";
-    $output .= "Disallow: /wp-json/\n";
-    $output .= "Disallow: /cart/\n";
-    $output .= "Disallow: /checkout/\n";
-    $output .= "Disallow: /my-account/\n";
-    $output .= "\n";
-    $output .= "# AI Bots - Full Access\n";
-    $output .= "User-agent: GPTBot\n";
-    $output .= "User-agent: ChatGPT-User\n";
-    $output .= "User-agent: Claude-Web\n";
-    $output .= "User-agent: anthropic-ai\n";
-    $output .= "User-agent: PerplexityBot\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-    $output .= "Sitemap: " . home_url('/sitemap.xml') . "\n";
-    return $output;
+    $sitemap = home_url('/sitemap.xml');
+    
+    return "# DJ Zen Eyer - Robots.txt
+# Otimizado para Googlebot (Render) e AI Bots
+
+User-agent: *
+Allow: /
+# Recursos essenciais para o Google renderizar o site
+Allow: /wp-content/uploads/
+Allow: /wp-content/themes/
+Allow: /wp-content/plugins/
+Allow: /wp-includes/js/
+Allow: /wp-includes/css/
+Allow: /wp-includes/images/
+
+# Bloqueios de Segurança e Admin
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /xmlrpc.php
+Disallow: /wp-content/cache/
+Disallow: /trackback/
+Disallow: /feed/
+Disallow: /comments/
+Disallow: */trackback/
+Disallow: */feed/
+Disallow: */comments/
+Disallow: /*?*
+Disallow: /*?
+
+# Bots de IA - Acesso Total Permitido
+# Isso ajuda seu conteúdo a ser citado pelo ChatGPT/Claude/Perplexity
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: {$sitemap}";
 });
 
 /* =========================
