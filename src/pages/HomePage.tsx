@@ -297,7 +297,7 @@ const HomePage: React.FC = () => {
               "knowsAbout": [
                 "Brazilian Zouk Music Production",
                 "DJ Performance and Mixing",
-                "Electronic Music Production",
+                "Zouk Music Production",
                 "Dance Music Composition",
                 "Bootleg and Remix Production",
                 "Jack and Jill Competition DJing",
