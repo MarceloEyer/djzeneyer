@@ -175,7 +175,7 @@ add_action('wp_head', function() {
         "url" => $site_url,
         "logo" => $logo_url,
         "image" => $image_url,
-        "genre" => ["Brazilian Zouk", "Electronic Music", "Dance"],
+        "genre" => ["Brazilian Zouk", "RnB", "Kizomba"],
         "telephone" => "+55-21-98741-3091",
         "priceRange" => "$$$",
         "location" => [
