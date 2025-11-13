@@ -477,6 +477,7 @@ const MyAccountPage: React.FC = () => {
                   <input 
                     type="text" 
                     value={user.name} 
+                    autoComplete="name"
                     className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
                     disabled
                   />
@@ -486,6 +487,7 @@ const MyAccountPage: React.FC = () => {
                   <input 
                     type="email" 
                     value={user.email} 
+                    autoComplete="email"
                     className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
                     disabled
                   />
