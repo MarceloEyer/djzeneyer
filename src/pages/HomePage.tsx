@@ -253,7 +253,7 @@ const HomePage: React.FC = () => {
             
             "description": "DJ Zen Eyer is the 2022 World Champion Brazilian Zouk DJ, winning both Best Performance and Best Remix categories at the Brazilian Zouk DJ Championship. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ, he specializes in bootleg remixes and original productions. With over 500,000 streams across platforms and performances at major international festivals in Europe, USA, and South America, DJ Zen Eyer is recognized as one of the top Brazilian Zouk DJs globally. His unique style blends traditional Brazilian Zouk with modern electronic elements.",
             
-            "genre": ["Brazilian Zouk", "Electronic Dance Music", "Zouk Music", "Latin Electronic", "Dance Music"],
+            "genre": ["Brazilian Zouk", "Kizomba", "Zouk Music", "Zouk", "RnB"],
             
             "url": "https://djzeneyer.com",
             "image": {
