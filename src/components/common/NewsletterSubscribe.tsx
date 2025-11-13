@@ -86,6 +86,7 @@ const NewsletterSubscribe: React.FC<Props> = ({ listId = 1, className = '', onSu
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Seu melhor e‑mail"
+          autoComplete="email"
           required
           aria-required
           className="w-full px-4 py-2 rounded-md bg-white/5 border border-white/10 placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-primary"
