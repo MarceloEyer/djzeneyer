@@ -54,9 +54,9 @@
     <!-- Music-Specific Meta -->
     <meta property="music:musician" content="https://djzeneyer.com">
     <meta property="music:release_date" content="2014">
-    <meta name="music:genre" content="Brazilian Zouk">
-    <meta name="music:genre" content="Electronic Music">
-    <meta name="music:genre" content="Dance Music">
+    <meta name="music:genre" content="RnB">
+    <meta name="music:genre" content="Zouk">
+    <meta name="music:genre" content="kizomba">
 
     <!-- Indexação e Crawlers -->
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
