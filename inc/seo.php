@@ -228,9 +228,9 @@ add_action('wp_head', function() {
     $schema_org = [
         "@context" => "https://schema.org",
         "@type" => "Organization",
-		"name" => "Marcelo Eyer Fernandes", // ATUALIZADO: Razão Social
+		"name" => "Zen Eyer", // ATUALIZADO: Razão Social
 		"legalName" => "Marcelo Eyer Fernandes", // ATUALIZADO: Nome Legal
-		"alternateName" => "Zen Eyer", // ATUALIZADO: Nome Fantasia
+		"alternateName" => "DJ Zen Eyer", // ATUALIZADO: Nome Fantasia
         "url" => $site_url,
         "logo" => $logo_url,
 		"foundingDate" => "2021-10-28", // ATUALIZADO: Data de fundação do CNPJ
