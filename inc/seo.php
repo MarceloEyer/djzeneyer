@@ -242,7 +242,7 @@ add_action('wp_head', function() {
         "founder" => [
             "@type" => "Person",
             "name" => "Marcelo Eyer Fernandes", 
-            "alternateName" => "DJ Zen Eyer"
+            "alternateName" => "Zen Eyer"
         ],
         "contactPoint" => [
             "@type" => "ContactPoint",
