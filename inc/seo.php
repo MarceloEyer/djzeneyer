@@ -170,7 +170,7 @@ add_action('wp_head', function() {
         "@context" => "https://schema.org",
         "@type" => ["MusicGroup", "Person"], 
         "name" => "DJ Zen Eyer",
-        "alternateName" => ["Zen Eyer", "DJ Zen", "Marcelo Fernandes"],
+        "alternateName" => ["Zen Eyer", "DJ Zen", "Marcelo Eyer Fernandes"], // ATUALIZADO
         "description" => "World-class Brazilian Zouk DJ and music producer based in Brazil, performing globally.",
         "url" => $site_url,
         "logo" => $logo_url,
@@ -193,15 +193,32 @@ add_action('wp_head', function() {
             ["@type" => "Country", "name" => "United States"],
             ["@type" => "Country", "name" => "Europe"]
         ],
-        "sameAs" => [
+        "sameAs" => [ // INÍCIO DA ATUALIZAÇÃO DO PLAYBOOK 1
             "https://instagram.com/djzeneyer",
-            "https://soundcloud.com/djzeneyer",
             "https://youtube.com/@djzeneyer",
+            "https://www.tiktok.com/@djzeneyer",
+            "https://facebook.com/djzeneyer",
+            "https://x.com/djzeneyer",
+            "https://www.linkedin.com/in/eyermarcelo",
+            "https://pin.it/gbr9qqSNi",
+            "https://t.me/djzeneyer",
+            "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
+            "https://music.apple.com/us/artist/zen-eyer/1439280950",
+            "https://www.deezer.com/br/artist/72153362",
+            "https://djzeneyer.bandcamp.com/",
+            "https://soundcloud.com/djzeneyer",
+            "https://www.mixcloud.com/djzeneyer/",
+            "https://hearthis.at/djzeneyer/",
+            "https://www.last.fm/music/Zen+Eyer",
+            "https://ra.co/dj/djzeneyer",
+            "https://www.gigmit.com/djzeneyer",
+            "https://www.bandsintown.com/a/15552355-dj-zen-eyer",
+            "https://www.songkick.com/artists/8815204-zen-eyer",
             "https://www.wikidata.org/wiki/Q136551855",
             "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
-            "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
-            "https://ra.co/dj/djzeneyer"
-        ]
+            "https://www.discogs.com/artist/Zen-Eyer",
+            "https://www.crunchbase.com/organization/zen-eyer"
+        ] // FIM DA ATUALIZAÇÃO
     ];
     echo '<script type="application/ld+json">' . json_encode($schema_artist, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
 
@@ -214,7 +231,7 @@ add_action('wp_head', function() {
         "foundingDate" => "2014",
         "founder" => [
             "@type" => "Person",
-            "name" => "Marcelo Fernandes",
+            "name" => "Marcelo Eyer Fernandes", // Atualizado aqui também para consistência
             "alternateName" => "DJ Zen Eyer"
         ],
         "contactPoint" => [
