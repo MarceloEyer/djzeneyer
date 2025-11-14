@@ -280,7 +280,7 @@ add_action('woocommerce_single_product_summary', function() {
             "priceValidUntil" => date('Y-12-31'),
             "seller" => [
                 "@type" => "Organization",
-                "name" => "DJ Zen Eyer" // Isso está correto, pois o vendedor é a "marca"
+                "name" => "Zen Eyer" // Isso está correto, pois o vendedor é a "marca"
             ]
         ]
     ];
