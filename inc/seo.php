@@ -217,7 +217,7 @@ add_action('wp_head', function() {
 			"https://www.discogs.com/artist/Zen-Eyer",
 			"https://www.crunchbase.com/organization/zen-eyer",
 			"https://www.reverbnation.com/zeneyer",
-            // Adicionado o ISNI
+            // Adicionado o ISNI (Identificador Pessoal)
             "https://isni.org/isni/0000000528931015"
 		]
     ];
@@ -230,18 +230,18 @@ add_action('wp_head', function() {
 		"name" => "Zen Eyer",
 		"legalName" => "Marcelo Eyer Fernandes", 
 		"alternateName" => "DJ Zen Eyer", 
-		"taxID" => "44063765000146", 
+		"taxID" => "44063765000146", // CNPJ puro para taxID
         "url" => $site_url,
         "logo" => $logo_url,
-		"foundingDate" => "2021-10-28", 
-		"identifier" => [ // Adicionado o CNPJ em formato de propriedade (melhor para validação)
+		"foundingDate" => "2021-10-28", // Data de fundação
+		"identifier" => [ 
 			"@type" => "PropertyValue",
 			"name" => "CNPJ",
-			"value" => "44.063.765/0001-46"
+			"value" => "44.063.765/0001-46" // CNPJ formatado para exibição
 		],
         "founder" => [
             "@type" => "Person",
-            "name" => "Marcelo Eyer Fernandes", 
+            "name" => "Marcelo Fernandes", 
             "alternateName" => "Zen Eyer"
         ],
         "contactPoint" => [
