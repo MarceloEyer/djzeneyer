@@ -32,7 +32,7 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <LanguageWrapper>
-                <Routes>
+                <Routes> 
                   {/* English routes (root) */}
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
