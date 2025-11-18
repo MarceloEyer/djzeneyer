@@ -4,14 +4,13 @@ import React, { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
-// Importação removida: Helmet (Usaremos HeadlessSEO)
+// Importações de Componentes/Contextos
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
 import { useMusicPlayer } from '../contexts/MusicPlayerContext';
-// Componente SEO customizado
 import { HeadlessSEO } from '../components/HeadlessSEO'; 
 
 // ============================================================================
-// LAZY LOADING DE COMPONENTES NÃO CRÍTICOS (Mantido intacto)
+// LAZY LOADING E COMPONENTES AUXILIARES (Mantido)
 // ============================================================================
 
 const FeatureCard: React.FC<{ 
@@ -45,7 +44,7 @@ const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
   const { t } = useTranslation();
 
-  // DADOS ESTRUTURADOS PARA FEATURES e Animações (Mantidos intactos)
+  // DADOS ESTRUTURADOS PARA FEATURES e Animações
   const features = [
     { id: 'music', icon: <Music size={32} aria-hidden="true" />, titleKey: 'home_feat_exclusive_title', descKey: 'home_feat_exclusive_desc' },
     { id: 'achievements', icon: <Award size={32} aria-hidden="true" />, titleKey: 'home_feat_achievements_title', descKey: 'home_feat_achievements_desc' },
@@ -75,7 +74,7 @@ const HomePage: React.FC = () => {
       />
 
       {/* ====================================================================== */}
-      {/* HERO SECTION - OTIMIZADO PARA LCP (Mantido intacto) */}
+      {/* HERO SECTION - OTIMIZADO PARA LCP */}
       {/* ====================================================================== */}
       <section 
         className="relative h-screen flex items-center justify-center text-center overflow-hidden"
@@ -87,7 +86,7 @@ const HomePage: React.FC = () => {
             className="w-full h-full bg-cover bg-center bg-no-repeat opacity-50"
             style={{ backgroundImage: "url('/images/hero-background.webp')" }}
             initial={{ scale: 1.1 }}
-            animate={{ scale: scale: 1 }}
+            animate={{ scale: 1 }} // ✅ SINTAXE CORRIGIDA
             transition={{ duration: 10, ease: "linear" }}
             role="img"
             aria-label="DJ Zen Eyer performing at Brazilian Zouk festival"
