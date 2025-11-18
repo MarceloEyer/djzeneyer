@@ -766,6 +766,7 @@ const ZenTribePage = () => {
 
           </div>
 
+        </section>
 
 
 
@@ -776,4 +777,3 @@ const ZenTribePage = () => {
 
 
 export default ZenTribePage;
-        
