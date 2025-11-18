@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
   const { t } = useTranslation();
 
-  // DADOS ESTRUTURADOS PARA FEATURES (Corrigido o erro de duplicação de 'id')
+  // DADOS ESTRUTURADOS PARA FEATURES
   const features = [
     { id: 'music', icon: <Music size={32} aria-hidden="true" />, titleKey: 'home_feat_exclusive_title', descKey: 'home_feat_exclusive_desc' },
     { id: 'achievements', icon: <Award size={32} aria-hidden="true" />, titleKey: 'home_feat_achievements_title', descKey: 'home_feat_achievements_desc' },
@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
             className="w-full h-full bg-cover bg-center bg-no-repeat opacity-50"
             style={{ backgroundImage: "url('/images/hero-background.webp')" }}
             initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }} // ✅ CORREÇÃO DE SINTAXE (Linha 90)
+            animate={{ scale: 1 }}
             transition={{ duration: 10, ease: "linear" }}
             role="img"
             aria-label="DJ Zen Eyer performing at Brazilian Zouk festival"
@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
 
       {/* ====================================================================== */}
       {/* FEATURES SECTION (Mantido intacto com H2) */}
-      {======================================================================}
+      {/* ====================================================================== */}
       <section 
         className="py-24 bg-surface"
         aria-labelledby="features-heading"
