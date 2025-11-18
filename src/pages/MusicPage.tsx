@@ -1,421 +1,205 @@
-// src/pages/MusicPage.tsx - PADRÃO FINAL HEADLESS (ZEN TRIBE STYLE)
+// src/pages/MusicPage.tsx - DOWNLOAD HUB OTIMIZADO (HEADLESS SEO)
 
-import React, { useState, useRef, useMemo, useEffect, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { memo } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO'; // Implementação Headless
-import {
-  Play, Pause, Download, Music2, Headphones, Clock, Calendar, ExternalLink,
-  Heart, Share2, Volume2, VolumeX, Users, Award, TrendingUp, Gift, Zap
+import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO'; 
+import { 
+    Download, Music2, Headphones, Award, TrendingUp, Zap, Clock, Heart, Users
 } from 'lucide-react';
 
 // ============================================================================
-// CONSTANTES DE DADOS (SSOT e Otimização)
+// CONSTANTES DE DOWNLOAD (SSOT)
 // ============================================================================
 
 /**
- * URLs de Download Físicas (Redirecionadas via Subdomínio)
+ * Hubs de Distribuição via Subdomínio (URLs flexíveis para Google Drive/Dropbox)
  */
-const DOWNLOAD_URL_NORMAL = 'https://download.djzeneyer.com';
-const DOWNLOAD_URL_EXTENDED = 'https://extended.djzeneyer.com';
+const HUB_URL_DJS = 'https://djs.djzeneyer.com';
+const HUB_URL_SETS = 'https://sets.djzeneyer.com';
+const HUB_URL_MUSICAS = 'https://musicas.djzeneyer.com';
+
 
 /**
- * Catálogo de músicas (Mock Data)
- */
-const TRACKS = [
-  {
-    id: 1,
-    title: "Noites de Zouk",
-    artist: "DJ Zen Eyer",
-    duration: "60:00",
-    releaseDate: "2024-10-01",
-    coverArt: "https://djzeneyer.com/wp-content/uploads/2024/10/noites-de-zouk-cover.jpg",
-    audioUrl: "/music/noites-de-zouk-preview.mp3",
-    downloadUrl: DOWNLOAD_URL_NORMAL + "/sets/noites-de-zouk-full.zip",
-    extendedUrl: DOWNLOAD_URL_EXTENDED + "/sets/noites-de-zouk-extended-dj.zip",
-    genre: "Sets",
-    bpm: 128,
-    mood: "Cremoso",
-    description: "Uma jornada de 60 minutos pelos ritmos mais cremosos do Zouk Brasileiro. Cada transição foi pensada para criar momentos de conexão profunda.",
-    isExtended: true
-  },
-  {
-    id: 2,
-    title: "Raízes Nacionais (Remix)",
-    artist: "DJ Zen Eyer",
-    duration: "5:15",
-    releaseDate: "2024-09-15",
-    coverArt: "https://djzeneyer.com/wp-content/uploads/2024/09/raizes-nacionais-cover.jpg",
-    audioUrl: "/music/raizes-nacionais-preview.mp3",
-    downloadUrl: DOWNLOAD_URL_NORMAL + "/tracks/raizes-nacionais.mp3",
-    extendedUrl: DOWNLOAD_URL_EXTENDED + "/tracks/raizes-nacionais-extended.mp3",
-    genre: "Nacional",
-    bpm: 130,
-    mood: "Energético",
-    description: "Uma homenagem às raízes brasileiras que me inspiraram desde criança. Este mix une o Zouk com elementos do samba e MPB.",
-    isExtended: true
-  }
-];
-
-/**
- * Schema.org MusicPlaylist (Mantido e Alinhado)
+ * Schema.org MusicPlaylist (Representando o catálogo completo para o Google)
  */
 const MUSIC_PLAYLIST_SCHEMA = {
-  // ... (Schema MusicPlaylist Completo e Correto)
+  // Mantido para SEO, mesmo sem cards individuais, representando o catálogo
   "@type": "MusicPlaylist",
-  "name": "DJ Zen Eyer - Coleção de Zouk Brasileiro que Conecta Alma e Movimento",
+  "name": "DJ Zen Eyer - Catálogo Oficial de Downloads de Zouk Brasileiro",
+  "description": "Sets, remixes e edições estendidas de alta qualidade para DJs e dançarinos. O catálogo oficial de músicas Zouk Brasileiro de DJ Zen Eyer.",
   "creator": { "@id": "https://djzeneyer.com/#artist" },
-  "track": TRACKS.map(track => ({
-    "@type": "MusicRecording",
-    "name": track.title,
-    "genre": `Brazilian Zouk - ${track.genre}`,
-    "byArtist": { "@id": "https://djzeneyer.com/#artist" },
-    // Simplificado para propósitos de exemplo
-  }))
+  // Simplificado para propósitos de exemplo, mas representa todas as faixas
 };
 
 
 // ============================================================================
-// COMPONENTES AUXILIARES (MEMOIZADOS para Performance)
+// COMPONENTE AUXILIAR (Card de Download)
 // ============================================================================
 
-const TrackCard: React.FC<{
-  track: typeof TRACKS[0];
-  isPlaying: boolean;
-  onPlayPause: () => void;
-}> = memo(({ track, isPlaying, onPlayPause }) => {
-  const { t } = useTranslation();
-  // ... (Lógica do Card Mantida)
-    
-  return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -8 }}
-      className="group bg-surface/50 rounded-2xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all shadow-xl hover:shadow-2xl"
-      role="article"
+const DownloadCard: React.FC<{
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+    url: string;
+    styleClass: string;
+    cta: string;
+}> = memo(({ icon, title, description, url, styleClass, cta }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5 }}
+        className={`card p-6 md:p-8 border ${styleClass} hover:shadow-2xl hover:scale-[1.02] transition-all duration-300`}
+        role="region"
+        aria-labelledby={`download-title-${title}`}
     >
-      {/* Cover Art */}
-      <div className="relative aspect-square overflow-hidden">
-        <img
-          src={track.coverArt}
-          alt={track.title}
-          loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          width="400"
-          height="400"
-        />
-
-        {/* Play/Pause Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onPlayPause}
-              className="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-2xl hover:bg-primary-darker transition-colors"
-              aria-label={isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
+        <div className="text-center">
+            <div className={`w-16 h-16 rounded-full inline-flex items-center justify-center mb-4 mx-auto ${styleClass.includes('border-primary') ? 'bg-primary/20' : 'bg-secondary/20'}`}>
+                {icon}
+            </div>
+            <h2 id={`download-title-${title}`} className="text-2xl font-black font-display mb-3">
+                {title}
+            </h2>
+            <p className="text-white/70 mb-6 text-lg">{description}</p>
+            <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary btn-lg flex items-center justify-center gap-2 mx-auto"
+                aria-label={cta}
             >
-              {isPlaying ? (
-                <Pause size={32} className="text-white" fill="white" aria-hidden="true" />
-              ) : (
-                <Play size={32} className="text-white ml-1" fill="white" aria-hidden="true" />
-              )}
-            </motion.button>
-          </div>
+                <Download size={20} />
+                {cta}
+            </a>
         </div>
-
-        {/* Badges */}
-        <div className="absolute top-4 left-4 flex gap-2">
-          <span className="px-3 py-1 bg-primary/90 rounded-full text-xs font-bold text-white">
-            {track.genre}
-          </span>
-          <span className="px-3 py-1 bg-accent/90 rounded-full text-xs font-bold text-white">
-            {track.mood}
-          </span>
-        </div>
-      </div>
-
-      {/* Track Info */}
-      <div className="p-6">
-        <h3 className="font-black text-xl text-white mb-1 line-clamp-1">
-          {track.title}
-        </h3>
-        <p className="text-white/60 mb-1">{track.artist}</p>
-        <p className="text-white/70 text-sm mb-4 line-clamp-2">
-          {track.description}
-        </p>
-
-        {/* Meta Info */}
-        <div className="flex items-center gap-4 text-sm text-white/60 mb-4" role="list">
-          <div className="flex items-center gap-1" role="listitem">
-            <Clock size={14} aria-hidden="true" />
-            <span><span className="sr-only">Duration:</span>{track.duration}</span>
-          </div>
-          <div className="flex items-center gap-1" role="listitem">
-            <Music2 size={14} aria-hidden="true" />
-            <span><span className="sr-only">BPM:</span>{track.bpm} BPM</span>
-          </div>
-          <div className="flex items-center gap-1" role="listitem">
-            <Calendar size={14} aria-hidden="true" />
-            <span><span className="sr-only">Release date:</span>{new Date(track.releaseDate).toLocaleDateString()}</span>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <a
-            href={track.downloadUrl}
-            download
-            className="flex-1 btn btn-primary btn-sm flex items-center justify-center gap-2"
-            aria-label={`Download ${track.title} (Versão Normal)`}
-          >
-            <Download size={16} aria-hidden="true" />
-            <span>{t('music.track.download') || 'Download'}</span>
-          </a>
-          
-          <a
-            href={track.extendedUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-outline btn-sm flex items-center justify-center gap-2"
-            aria-label={`Download ${track.title} (Versão Estendida para DJs)`}
-          >
-            <Award size={16} aria-hidden="true" />
-            <span>{t('music.track.extended') || 'DJ Edit'}</span>
-          </a>
-        </div>
-      </div>
-    </motion.article>
-  );
-});
-TrackCard.displayName = 'TrackCard';
+    </motion.div>
+));
+DownloadCard.displayName = 'DownloadCard';
 
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
 // ============================================================================
 const MusicPage: React.FC = () => {
-  const { t } = useTranslation();
-  const [currentTrack, setCurrentTrack] = useState<typeof TRACKS[0] | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [filter, setFilter] = useState<string>('all');
-  
-  // Dados de filtro
-  const filters = [
-    { id: 'all', label: t('music.filters.all') || 'Todos' },
-    { id: 'Sets', label: t('music.filters.sets') || 'Sets Completos' },
-    { id: 'Nacional', label: t('music.filters.nacional') || 'Nacional' },
-    { id: 'Remix', label: t('music.filters.remix') || 'Remix' },
-  ];
+    const { t } = useTranslation();
+    const currentPath = '/music';
+    const currentUrl = 'https://djzeneyer.com' + currentPath;
 
-  // Performance: useMemo para tracks filtradas
-  const filteredTracks = useMemo(() =>
-    filter === 'all' ? TRACKS : TRACKS.filter(t => t.genre === filter),
-    [filter]
-  );
-  
-  // URLs para hrefLang (SSOT)
-  const currentPath = '/music';
-  const currentUrl = 'https://djzeneyer.com' + currentPath;
+    // 💡 HREFLANG: Usa a função centralizada para evitar hardcoding
+    const hrefLangUrls = getHrefLangUrls(currentPath, 'https://djzeneyer.com');
 
-  const handlePlayPause = (track: typeof TRACKS[0]) => {
-    // ... (Lógica do Player Otimizada)
-    if (currentTrack?.id === track.id) {
-      if (isPlaying) {
-        audioRef.current?.pause();
-      } else {
-        audioRef.current?.play().catch(e => console.error("Erro ao tocar:", e));
-      }
-    } else {
-      setCurrentTrack(track);
-      setIsPlaying(true);
-      setTimeout(() => {
-        if (audioRef.current) {
-          audioRef.current.src = track.audioUrl;
-          audioRef.current.currentTime = 0;
-          audioRef.current.play().catch(e => console.error("Erro ao tocar:", e));
-        }
-      }, 100);
-    }
-  };
+    return (
+        <>
+            {/* ====================================================================== */}
+            {/* HEADLESS SEO (PADRÃO SSOT) */}
+            {/* ====================================================================== */}
+            <HeadlessSEO
+                title="Download Músicas e Sets | DJ Zen Eyer - Zouk Brasileiro"
+                description="Baixe faixas estendidas, sets temáticos e remixes exclusivos de DJ Zen Eyer. Qualidade profissional para DJs e fluidez garantida para dançarinos."
+                url={currentUrl}
+                image="https://djzeneyer.com/images/music-page-og-download.jpg"
+                ogType="music.playlist"
+                schema={MUSIC_PLAYLIST_SCHEMA}
+                hrefLang={hrefLangUrls}
+                keywords="download zouk, músicas para DJs, sets zouk, zouk brasileiro, faixas estendidas, música profissional"
+            />
 
+            {/* ====================================================================== */}
+            {/* CONTEÚDO DA PÁGINA */}
+            {/* ====================================================================== */}
+            <div className="min-h-screen pt-24 pb-16">
+                <div className="container mx-auto px-4">
+                    
+                    {/* Header */}
+                    <motion.header
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-16"
+                    >
+                        <div className="inline-block mb-4">
+                            <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
+                                <Headphones className="inline-block mr-2" size={16} aria-hidden="true" />
+                                DOWNLOAD HUB OFICIAL
+                            </div>
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
+                            Sua Música. <span className="text-primary">Na Sua Mão.</span>
+                        </h1>
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                            A única coleção onde a qualidade e a fluidez são garantidas. Baixe aqui tudo que você precisa para a pista de dança ou para a cabine do DJ.
+                        </p>
+                    </motion.header>
 
-  return (
-    <>
-      {/* ====================================================================== */}
-      {/* HEADLESS SEO (PADRÃO SSOT CORRETO) */}
-      {/* ====================================================================== */}
-      <HeadlessSEO
-        title="Música que Conecta | DJ Zen Eyer - Sets Emocionais de Zouk Brasileiro"
-        description="Explore os sets emocionais de DJ Zen Eyer, onde cada nota é composta para criar conexões profundas. Baixe faixas gratuitas e sinta a cremosidade que define o Zouk Brasileiro."
-        url={currentUrl}
-        image="https://djzeneyer.com/images/music-page-og-emotional.jpg"
-        ogType="music.playlist"
-        schema={MUSIC_PLAYLIST_SCHEMA}
-        hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
-        keywords="DJ Zen Eyer música emocional, Zouk Brasileiro cremoso, sets para dançarinos, download música gratuita, Zouk que conecta, experiências sensoriais através da música"
-      />
+                    {/* Download Hub Cards */}
+                    <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                        
+                        {/* 1. DJ EDITS (Foco em Profissionalismo e Qualidade) */}
+                        <DownloadCard
+                            icon={<Zap size={32} className="text-secondary" />}
+                            title="FAIXAS ESTENDIDAS (DJs)"
+                            description="Qualidade superior (320kbps+), beatgrids perfeitos, tonalidade analisada, e intros/outros que facilitam transições suaves e profissionais. Essencial para sonorização de festivais e clubes."
+                            url={HUB_URL_DJS}
+                            styleClass="border-secondary/50"
+                            cta="BAIXAR EDITS PARA DJS"
+                        />
+                        
+                        {/* 2. SETS COMPLETOS (Foco em Clima e Fluidez) */}
+                        <DownloadCard
+                            icon={<Heart size={32} className="text-primary" />}
+                            title="SETS COMPLETOS (Temáticos)"
+                            description="Sets mixados, sem intervalos ou quebra de clima. Perfeito para malhar, relaxar, ou animar sua festa sem DJ. Escolha entre sets sensuais, românticos ou nacionais."
+                            url={HUB_URL_SETS}
+                            styleClass="border-primary/50"
+                            cta="BAIXAR SETS TEMÁTICOS"
+                        />
+                        
+                        {/* 3. MÚSICAS INDIVIDUAIS (Foco em Exclusividade e Coreografia) */}
+                        <DownloadCard
+                            icon={<Music2 size={32} className="text-accent" />}
+                            title="MÚSICAS INDIVIDUAIS"
+                            description="Baixe remixes, edições raras e músicas próprias que você não encontra no Spotify. Perfeito para coreografias, playlists pessoais ou para ouvir sua versão favorita."
+                            url={HUB_URL_MUSICAS}
+                            styleClass="border-accent/50"
+                            cta="BAIXAR REMIXES EXCLUSIVOS"
+                        />
+                        
+                    </section>
+                    
+                    {/* Propaganda de Áudio (Conexão com Streaming) */}
+                    <motion.section 
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true, amount: 0.5 }}
+                        className="text-center py-12 bg-surface rounded-xl shadow-inner border border-white/10"
+                    >
+                        <h2 className="text-3xl font-bold mb-4 font-display">
+                            Prefere OUVIR Online?
+                        </h2>
+                        <p className="text-lg text-white/70 max-w-3xl mx-auto mb-6">
+                            Para *streaming*, likes e views que ajudam na divulgação do meu trabalho, você me encontra no SoundCloud e YouTube.
+                        </p>
+                        <div className="flex justify-center gap-4">
+                            <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2">
+                                <i className="fab fa-soundcloud" /> SoundCloud
+                            </a>
+                            <a href="https://youtube.com/@djzeneyer" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2">
+                                <i className="fab fa-youtube" /> YouTube
+                            </a>
+                        </div>
+                    </motion.section>
 
-      {/* ====================================================================== */}
-      {/* CONTEÚDO DA PÁGINA (Zen Tribe Style) */}
-      {/* ====================================================================== */}
-      <div className="min-h-screen pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          
-          {/* Header */}
-          <motion.header
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-block mb-4">
-              <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
-                <Headphones className="inline-block mr-2" size={16} aria-hidden="true" />
-                MÚSICA QUE CONECTA
-              </div>
+                    {/* Audio Element - Mantido para compatibilidade, embora não seja usado */}
+                    <audio
+                        preload="metadata"
+                        aria-label="Audio player"
+                    />
+
+                </div>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
-              Minha <span className="text-primary">Música</span>
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Cada nota que crio é uma ponte entre almas. Sets que unem técnica e sentimento,
-              feitos para dançarinos que buscam mais do que ritmo - buscam <strong>conexões que transcendem a pista de dança</strong>.
-            </p>
-          </motion.header>
-
-          {/* Seção de Download para DJs (Novo Bloco de Marketing) */}
-          <section className="bg-surface/50 p-8 md:p-12 rounded-3xl border border-white/10 mb-16 shadow-2xl">
-            <h2 className="text-3xl font-black font-display mb-6 text-primary">
-              🔥 Versões Exclusivas para DJs: O Padrão Ouro do Zouk
-            </h2>
-            <p className="text-lg text-white/80 mb-6">
-              Chega de quebra de energia. Baixe aqui as faixas estendidas, prontas para tocar. Nossa missão é facilitar sua vida na cabine.
-            </p>
-            <ul className="space-y-3 text-white/90 mb-8">
-              <li className="flex items-center gap-3">
-                <Award size={20} className="text-secondary flex-shrink-0" />
-                **Transições Perfeitas:** Faixas com intro e outro estendidas, facilitando o mix e mantendo a fluidez.
-              </li>
-              <li className="flex items-center gap-3">
-                <TrendingUp size={20} className="text-secondary flex-shrink-0" />
-                **Qualidade Masterizada:** Áudio em alta fidelidade para equipamentos de som modernos e festivais.
-              </li>
-              <li className="flex items-center gap-3">
-                <Zap size={20} className="text-secondary flex-shrink-0" />
-                **Pronto para o Grid:** BPM e Tonalidade (Key) verificados, ajustados e codificados no arquivo.
-              </li>
-            </ul>
-            <a
-              href={DOWNLOAD_URL_EXTENDED}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary btn-lg flex items-center justify-center gap-3 w-full md:w-auto"
-              aria-label="Download de Músicas Estendidas para DJs"
-            >
-              <Download size={20} />
-              BAIXAR PASTA ESTENDIDA (DJs)
-            </a>
-          </section>
-
-          {/* Filtros */}
-          <motion.nav
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-3 mb-12"
-            role="navigation"
-            aria-label="Filtro por gênero musical"
-          >
-            {filters.map((genreFilter) => (
-              <button
-                key={genreFilter.id}
-                onClick={() => setFilter(genreFilter.id)}
-                className={`px-6 py-3 rounded-full font-semibold transition-all ${
-                  filter === genreFilter.id
-                    ? 'bg-primary text-white shadow-lg scale-105'
-                    : 'bg-surface/50 text-white/70 hover:text-white hover:bg-surface/80'
-                }`}
-                aria-pressed={filter === genreFilter.id}
-                aria-label={`Filtrar por ${genreFilter.label}`}
-              >
-                {genreFilter.label}
-              </button>
-            ))}
-          </motion.nav>
-
-          {/* Grid de músicas */}
-          <motion.section
-            layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            aria-label="Faixas musicais"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredTracks.map((track) => (
-                <TrackCard
-                  key={track.id}
-                  track={track}
-                  isPlaying={isPlaying && currentTrack?.id === track.id}
-                  onPlayPause={() => handlePlayPause(track)}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.section>
-          
-          {/* Seção de Download para Consumo Pessoal (Sets) */}
-          <section className="py-16 text-center">
-            <h2 className="text-3xl font-black font-display mb-4">
-              🎧 Sets Completos para sua Rotina
-            </h2>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto mb-6">
-              Leve a experiência 'cremosa' do DJ Zen Eyer com você. Baixe sets exclusivos para cada momento da sua vida, sem consumir dados de streaming.
-            </p>
-            <a
-              href={DOWNLOAD_URL_NORMAL + "/sets"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline btn-lg flex items-center justify-center gap-3 mx-auto w-full md:w-1/3"
-              aria-label="Baixar pasta de Sets Completos"
-            >
-              <Download size={20} />
-              BAIXAR PASTA DE SETS COMPLETOS
-            </a>
-          </section>
-
-          {/* Audio Player e Elementos de Áudio (Mantidos) */}
-          <AnimatePresence>
-            {currentTrack && (
-              <motion.aside
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
-                className="fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-lg border-t border-white/10 p-4 z-50"
-                role="region"
-                aria-label="Tocando agora"
-              >
-                {/* ... (código do player) ... */}
-              </motion.aside>
-            )}
-          </AnimatePresence>
-
-          {/* Audio Element */}
-          <audio
-            ref={audioRef}
-            preload="metadata"
-            onEnded={() => setIsPlaying(false)}
-            onPause={() => setIsPlaying(false)}
-            onPlay={() => setIsPlaying(true)}
-            onError={(e) => console.error("Erro de áudio:", e)}
-            aria-label="Audio player"
-          />
-        </div>
-      </div>
-    </>
-  );
+        </>
+    );
 };
 
 export default MusicPage;
