@@ -2,78 +2,89 @@
 if (!defined('ABSPATH')) exit;
 
 /* =========================
- * 🎯 SEO OTIMIZADO PARA KNOWLEDGE GRAPH DO GOOGLE
- * Versão: 3.0 - Limpa para Headless (Meta Tags e Schema de Home Removidos)
- * ========================= */
+ * 🎯 SEO OTIMIZADO PARA KNOWLEDGE GRAPH DO GOOGLE
+ * Versão: 4.0 - CORRIGIDO SITEMAP (Inclusão de Rotas Estáticas)
+ * ========================= */
 
 /* =========================
- * 1. SITEMAP.XML (Híbrido: React + WP) - MANTIDO
- * ========================= */
+ * 1. SITEMAP.XML (Híbrido: React + WP) - CORRIGIDO
+ * ========================= */
 add_action('init', function() {
-    add_rewrite_rule('^sitemap\.xml$', 'index.php?djz_sitemap=1', 'top');
+    add_rewrite_rule('^sitemap\.xml$', 'index.php?djz_sitemap=1', 'top');
 });
 
 add_filter('query_vars', function($vars) {
-    $vars[] = 'djz_sitemap';
-    return $vars;
+    $vars[] = 'djz_sitemap';
+    return $vars;
 });
 
 add_filter('wp_sitemaps_enabled', '__return_false');
 
 add_action('template_redirect', function() {
-    if (get_query_var('djz_sitemap') != 1) return;
-    
-    header('Content-Type: application/xml; charset=utf-8');
-    
-    // Rotas Estáticas do React
-    $urls = [
-        ['loc' => home_url('/'), 'priority' => '1.0', 'changefreq' => 'daily'],
-        ['loc' => home_url('/events'), 'priority' => '0.9', 'changefreq' => 'weekly'],
-        ['loc' => home_url('/shop'), 'priority' => '0.9', 'changefreq' => 'daily'],
-        ['loc' => home_url('/zentribe'), 'priority' => '0.8', 'changefreq' => 'monthly'],
-        ['loc' => home_url('/music'), 'priority' => '0.8', 'changefreq' => 'weekly'],
-        ['loc' => home_url('/work-with-me'), 'priority' => '0.8', 'changefreq' => 'monthly'],
-        ['loc' => home_url('/faq'), 'priority' => '0.6', 'changefreq' => 'monthly'],
-    ];
-    
-    // Produtos WooCommerce
-    if (class_exists('WooCommerce')) {
-        $products = wc_get_products(['limit' => -1, 'status' => 'publish']);
-        foreach ($products as $product) {
-            $urls[] = [
-                'loc' => get_permalink($product->get_id()),
-                'priority' => '0.8',
-                'changefreq' => 'weekly'
-            ];
-        }
-    }
-    
-    // Posts do Blog
-    $posts = get_posts(['numberposts' => -1, 'post_type' => 'post', 'post_status' => 'publish']);
-    foreach ($posts as $post) {
-        $urls[] = [
-            'loc' => get_permalink($post->ID),
-            'priority' => '0.7',
-            'changefreq' => 'monthly'
-        ];
-    }
-    
-    echo '<?xml version="1.0" encoding="UTF-8"?>';
-    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
-    
-    foreach ($urls as $url) {
-        echo '<url>';
-        echo '<loc>' . esc_url($url['loc']) . '</loc>';
-        echo '<priority>' . $url['priority'] . '</priority>';
-        echo '<changefreq>' . $url['changefreq'] . '</changefreq>';
-        echo '<lastmod>' . date('Y-m-d') . '</lastmod>';
-        echo '<xhtml:link rel="alternate" hreflang="en" href="' . esc_url($url['loc']) . '"/>';
-        echo '<xhtml:link rel="alternate" hreflang="pt-BR" href="' . esc_url($url['loc'] . '/pt') . '"/>';
-        echo '</url>';
-    }
-    
-    echo '</urlset>';
-    exit;
+    if (get_query_var('djz_sitemap') != 1) return;
+    
+    header('Content-Type: application/xml; charset=utf-8');
+    
+    // Rotas Estáticas do React (COMPLETAS)
+    $urls = [
+        ['loc' => home_url('/'), 'priority' => '1.0', 'changefreq' => 'daily'],
+        // Rotas principais corrigidas (incluídas todas as páginas refatoradas)
+        ['loc' => home_url('/about'), 'priority' => '0.9', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/events'), 'priority' => '0.9', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/music'), 'priority' => '0.8', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/faq'), 'priority' => '0.7', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/zentribe'), 'priority' => '0.7', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/press-kit'), 'priority' => '0.6', 'changefreq' => 'monthly'],
+        
+        // Rotas de utilidade/e-commerce
+        ['loc' => home_url('/shop'), 'priority' => '0.5', 'changefreq' => 'daily'],
+        ['loc' => home_url('/work-with-me'), 'priority' => '0.5', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/cart'), 'priority' => '0.3', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/checkout'), 'priority' => '0.3', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/my-account'), 'priority' => '0.3', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/dashboard'), 'priority' => '0.3', 'changefreq' => 'weekly'],
+        ['loc' => home_url('/privacy-policy'), 'priority' => '0.1', 'changefreq' => 'monthly'],
+        ['loc' => home_url('/return-policy'), 'priority' => '0.1', 'changefreq' => 'monthly'],
+    ];
+    
+    // Produtos WooCommerce
+    if (class_exists('WooCommerce')) {
+        $products = wc_get_products(['limit' => -1, 'status' => 'publish']);
+        foreach ($products as $product) {
+            $urls[] = [
+                'loc' => get_permalink($product->get_id()),
+                'priority' => '0.8',
+                'changefreq' => 'weekly'
+            ];
+        }
+    }
+    
+    // Posts do Blog
+    $posts = get_posts(['numberposts' => -1, 'post_type' => 'post', 'post_status' => 'publish']);
+    foreach ($posts as $post) {
+        $urls[] = [
+            'loc' => get_permalink($post->ID),
+            'priority' => '0.7',
+            'changefreq' => 'monthly'
+        ];
+    }
+    
+    echo '<?xml version="1.0" encoding="UTF-8"?>';
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
+    
+    foreach ($urls as $url) {
+        echo '<url>';
+        echo '<loc>' . esc_url($url['loc']) . '</loc>';
+        echo '<priority>' . $url['priority'] . '</priority>';
+        echo '<changefreq>' . $url['changefreq'] . '</changefreq>';
+        echo '<lastmod>' . date('Y-m-d') . '</lastmod>';
+        echo '<xhtml:link rel="alternate" hreflang="en" href="' . esc_url($url['loc']) . '"/>';
+        echo '<xhtml:link rel="alternate" hreflang="pt-BR" href="' . esc_url($url['loc'] . '/pt') . '"/>';
+        echo '</url>';
+    }
+    
+    echo '</urlset>';
+    exit;
 });
 
 /* =========================
