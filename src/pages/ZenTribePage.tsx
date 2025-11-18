@@ -186,237 +186,230 @@ const ZenTribePage = () => {
 
 
   // Scroll to section function (Mantido)
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+const scrollToSection = (id) => {
+        const element = document.getElementById(id);
+        if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+      };
 
-  return (
-    <>
-      {/* 🎯 HEADLESSEO CENTRALIZADO */}
-      <HeadlessSEO
-          title={t('tribe_page_title')}
-          description={t('tribe_page_meta_desc')}
-          url="https://djzeneyer.com/zentribe"
-          image="https://djzeneyer.com/images/zen-tribe-og.jpg" 
-          ogType="organization"
-          schema={TRIBE_SCHEMA_ORG(t)}
-          hrefLang={[
-            { lang: 'en', href: 'https://djzeneyer.com/zentribe' },
-            { lang: 'pt-BR', href: 'https://djzeneyer.com/pt/tribo-zen' },
-            { lang: 'x-default', href: 'https://djzeneyer.com/zentribe' }
-          ]}
-      />
+      return (
+              <>
+                        {/* 🎯 HEADLESSEO CENTRALIZADO */}
+                        <HeadlessSEO
+                                      title={t('tribe_page_title')}
+                                      description={t('tribe_page_meta_desc')}
+                                      url="https://djzeneyer.com/zentribe"
+                                      image="https://djzeneyer.com/images/zen-tribe-og.jpg"
+                                      ogType="organization"
+                                      schema={TRIBE_SCHEMA_ORG(t)}
+                                      hrefLang={[
+                                                      { lang: 'en', href: 'https://djzeneyer.com/zentribe' },
+                                                      { lang: 'pt-BR', href: 'https://djzeneyer.com/pt/tribo-zen' },
+                                                      { lang: 'x-default', href: 'https://djzeneyer.com/zentribe' }
+                                                    ]}
+                                  />
+                        <div className="pt-24 min-h-screen">
+                                    {/* Page Header */}
+                                    <div className="bg-surface py-12 md:py-16" id="tribe-intro">
+                                                  <div className="container mx-auto px-4">
+                                                                  <motion.div
+                                                                                    className="text-center"
+                                                                                    initial={{ opacity: 0, y: 20 }}
+                                                                                    animate={{ opacity: 1, y: 0 }}
+                                                                                    transition={{ duration: 0.5 }}
+                                                                                  >
+                                                                                    {/* Badge */}
+                                                                                    <div className="inline-block mb-4">
+                                                                                                        <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
+                                                                                                                              {t('zenTribe.badge')}
+                                                                                                                            </div>
+                                                                                                      </div>
+                                                                                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
+                                                                                                        {t('zenTribe.welcome')} <span className="text-primary">{t('zenTribe.tribe')}</span>
+                                                                                                      </h1>
+                                                                                    <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+                                                                                                        {t('zenTribe.subtitle')}
+                                                                                                      </p>
+                                                                                    <div className="mt-8 flex flex-wrap justify-center gap-4">
+                                                                                                        <button
+                                                                                                                              className="btn btn-primary transition-all duration-300 hover:scale-105"
+                                                                                                                              onClick={() => scrollToSection('membership-tiers')}
+                                                                                                                              aria-label="View membership options"
+                                                                                                                            >
+                                                                                                                              {t('zenTribe.viewMemberships')}
+                                                                                                                            </button>
+                                                                                                        <button
+                                                                                                                              className="btn btn-outline transition-all duration-300 hover:scale-105"
+                                                                                                                              onClick={() => scrollToSection('tribe-benefits')}
+                                                                                                                              aria-label="Learn more about tribe benefits"
+                                                                                                                            >
+                                                                                                                              {t('zenTribe.learnMore')}
+                                                                                                                            </button>
+                                                                                                      </div>
+                                                                                  </motion.div>
+                                                                </div>
+                                                </div>
 
-      <div className="pt-24 min-h-screen"> 
-        {/* Page Header */}
-        <div className="bg-surface py-12 md:py-16" id="tribe-intro">
-          <div className="container mx-auto px-4">
-            <motion.div 
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Badge */}
-              <div className="inline-block mb-4">
-                <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
-                  {t('zenTribe.badge')}
-                </div>
-              </div>
+                                    {/* Tribe Benefits */}
+                                    <section className="py-16 bg-background" id="tribe-benefits">
+                                                  <div className="container mx-auto px-4">
+                                                                  <motion.h2
+                                                                                    className="text-2xl md:text-3xl font-bold mb-12 text-center font-display"
+                                                                                    initial={{ opacity: 0, y: 20 }}
+                                                                                    animate={{ opacity: 1, y: 0 }}
+                                                                                    transition={{ duration: 0.5 }}
+                                                                                  >
+                                                                                    {t('zenTribe.whyJoin')}
+                                                                                  </motion.h2>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
-                {t('zenTribe.welcome')} <span className="text-primary">{t('zenTribe.tribe')}</span>
-              </h1>
-              <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
-                {t('zenTribe.subtitle')}
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <button 
-                  className="btn btn-primary transition-all duration-300 hover:scale-105"
-                  onClick={() => scrollToSection('membership-tiers')}
-                  aria-label="View membership options"
-                >
-                  {t('zenTribe.viewMemberships')}
-                </button>
-                <button 
-                  className="btn btn-outline transition-all duration-300 hover:scale-105"
-                  onClick={() => scrollToSection('tribe-benefits')}
-                  aria-label="Learn more about tribe benefits"
-                >
-                  {t('zenTribe.learnMore')}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
+                                                                  <motion.div
+                                                                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+                                                                                    variants={containerVariants}
+                                                                                    initial="hidden"
+                                                                                    animate="visible"
+                                                                                  >
+                                                                                    <BenefitCard
+                                                                                                        icon={<Award className="text-primary" size={24} aria-hidden="true" />}
+                                                                                                        title={t('zenTribe.benefits.exclusiveMusic.title')}
+                                                                                                        description={t('zenTribe.benefits.exclusiveMusic.desc')}
+                                                                                                        color="primary"
+                                                                                                      />
 
-        {/* Tribe Benefits */}
-        <section className="py-16 bg-background" id="tribe-benefits">
-          <div className="container mx-auto px-4">
-            <motion.h2 
-              className="text-2xl md:text-3xl font-bold mb-12 text-center font-display"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {t('zenTribe.whyJoin')}
-            </motion.h2>
+                                                                                    <BenefitCard
+                                                                                                        icon={<Star className="text-secondary" size={24} aria-hidden="true" />}
+                                                                                                        title={t('zenTribe.benefits.earlyAccess.title')}
+                                                                                                        description={t('zenTribe.benefits.earlyAccess.desc')}
+                                                                                                        color="secondary"
+                                                                                                      />
 
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <BenefitCard 
-                icon={<Award className="text-primary" size={24} aria-hidden="true" />}
-                title={t('zenTribe.benefits.exclusiveMusic.title')}
-                description={t('zenTribe.benefits.exclusiveMusic.desc')}
-                color="primary"
-              />
+                                                                                    <BenefitCard
+                                                                                                        icon={<TrendingUp className="text-accent" size={24} aria-hidden="true" />}
+                                                                                                        title={t('zenTribe.benefits.vipStatus.title')}
+                                                                                                        description={t('zenTribe.benefits.vipStatus.desc')}
+                                                                                                        color="accent"
+                                                                                                      />
 
-              <BenefitCard 
-                icon={<Star className="text-secondary" size={24} aria-hidden="true" />}
-                title={t('zenTribe.benefits.earlyAccess.title')}
-                description={t('zenTribe.benefits.earlyAccess.desc')}
-                color="secondary"
-              />
+                                                                                    <BenefitCard
+                                                                                                        icon={<Users className="text-success" size={24} aria-hidden="true" />}
+                                                                                                        title={t('zenTribe.benefits.community.title')}
+                                                                                                        description={t('zenTribe.benefits.community.desc')}
+                                                                                                        color="success"
+                                                                                                      />
+                                                                                  </motion.div>
+                                                                </div>
+                                                </section>
 
-              <BenefitCard 
-                icon={<TrendingUp className="text-accent" size={24} aria-hidden="true" />}
-                title={t('zenTribe.benefits.vipStatus.title')}
-                description={t('zenTribe.benefits.vipStatus.desc')}
-                color="accent"
-              />
+                                    {/* Membership Tiers */}
+                                    <section className="py-16 bg-surface" id="membership-tiers">
+                                                  <div className="container mx-auto px-4">
+                                                                  <div className="text-center mb-12">
+                                                                                    <h2 className="text-2xl md:text-3xl font-bold mb-4 font-display">
+                                                                                                        {t('zenTribe.chooseMembership')}
+                                                                                                      </h2>
+                                                                                    <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+                                                                                                        {t('zenTribe.selectTier')}
+                                                                                                      </p>
+                                                                                  </div>
 
-              <BenefitCard 
-                icon={<Users className="text-success" size={24} aria-hidden="true" />}
-                title={t('zenTribe.benefits.community.title')}
-                description={t('zenTribe.benefits.community.desc')}
-                color="success"
-              />
-            </motion.div>
-          </div>
-        </section>
+                                                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                                                                                    {membershipTiers.map((tier, index) => (
+                                  <MembershipCard key={index} tier={tier} user={user} t={t} />
+                                ))}
+                                                                                  </div>
+                                                                </div>
+                                                </section>
 
-        {/* Membership Tiers */}
-        <section className="py-16 bg-surface" id="membership-tiers">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 font-display">
-                {t('zenTribe.chooseMembership')}
-              </h2>
-              <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
-                {t('zenTribe.selectTier')}
-              </p>
-            </div>
+                                    {/* Achievement System */}
+                                    <section className="py-16 bg-background" id="achievement-system">
+                                                  <div className="container mx-auto px-4">
+                                                                  <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
+                                                                                    <motion.div
+                                                                                                        className="lg:w-1/2"
+                                                                                                        initial={{ opacity: 0, x: -30 }}
+                                                                                                        animate={{ opacity: 1, x: 0 }}
+                                                                                                        transition={{ duration: 0.5 }}
+                                                                                                      >
+                                                                                                        <h2 className="text-4xl font-bold mb-6 font-display">
+                                                                                                                              {t('zenTribe.levelUpTitle')}
+                                                                                                                            </h2>
+                                                                                                        <p className="text-lg text-white/70 mb-8">
+                                                                                                                              {t('zenTribe.levelUpDesc')}
+                                                                                                                            </p>
+                                                                                                        <div className="space-y-8">
+                                                                                                                              <div className="flex items-start">
+                                                                                                                                                      <TrendingUp className="text-primary mr-4 mt-1" size={24} />
+                                                                                                                                                      <div>
+                                                                                                                                                                                <h3 className="text-xl font-display mb-2">{t('zenTribe.xpTitle')}</h3>
+                                                                                                                                                                                <p className="text-white/70">{t('zenTribe.xpDesc')}</p>
+                                                                                                                                                                              </div>
+                                                                                                                                                    </div>
+                                                                                                                              <div className="flex items-start">
+                                                                                                                                                      <Award className="text-secondary mr-4 mt-1" size={24} />
+                                                                                                                                                      <div>
+                                                                                                                                                                                <h3 className="text-xl font-display mb-2">{t('zenTribe.badgesTitle')}</h3>
+                                                                                                                                                                                <p className="text-white/70">{t('zenTribe.badgesDesc')}</p>
+                                                                                                                                                                              </div>
+                                                                                                                                                    </div>
+                                                                                                                              <div className="flex items-start">
+                                                                                                                                                      <Gift className="text-accent mr-4 mt-1" size={24} />
+                                                                                                                                                      <div>
+                                                                                                                                                                                <h3 className="text-xl font-display mb-2">{t('zenTribe.rewardsTitle')}</h3>
+                                                                                                                                                                                <p className="text-white/70">{t('zenTribe.rewardsDesc')}</p>
+                                                                                                                                                                              </div>
+                                                                                                                                                    </div>
+                                                                                                                              <div className="flex items-start">
+                                                                                                                                                      <Clock className="text-success mr-4 mt-1" size={24} />
+                                                                                                                                                      <div>
+                                                                                                                                                                                <h3 className="text-xl font-display mb-2">{t('zenTribe.streaksTitle')}</h3>
+                                                                                                                                                                                <p className="text-white/70">{t('zenTribe.streaksDesc')}</p>
+                                                                                                                                                                              </div>
+                                                                                                                                                    </div>
+                                                                                                                            </div>
+                                                                                                      </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {membershipTiers.map((tier, index) => (
-                <MembershipCard key={index} tier={tier} user={user} t={t} />
-              ))}
-            </div>
-          </div>
-        </section>
+                                                                                    <motion.div
+                                                                                                        className="lg:w-1/2 bg-surface rounded-xl p-8"
+                                                                                                        initial={{ opacity: 0, x: 30 }}
+                                                                                                        animate={{ opacity: 1, x: 0 }}
+                                                                                                        transition={{ duration: 0.5, delay: 0.2 }}
+                                                                                                      >
+                                                                                                        <div className="flex items-center gap-2 mb-8">
+                                                                                                                              <Zap className="text-primary" size={24} />
+                                                                                                                              <h3 className="text-2xl font-display">{t('zenTribe.achievementShowcase')}</h3>
+                                                                                                                            </div>
 
-        {/* Achievement System */}
-        <section className="py-16 bg-background" id="achievement-system">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
-              <motion.div 
-                className="lg:w-1/2"
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-4xl font-bold mb-6 font-display">
-                  {t('zenTribe.levelUpTitle')}
-                </h2>
-                <p className="text-lg text-white/70 mb-8">
-                  {t('zenTribe.levelUpDesc')}
-                </p>
-
-                <div className="space-y-8">
-                  <div className="flex items-start">
-                    <TrendingUp className="text-primary mr-4 mt-1" size={24} />
-                    <div>
-                      <h3 className="text-xl font-display mb-2">{t('zenTribe.xpTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.xpDesc')}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <Award className="text-secondary mr-4 mt-1" size={24} />
-                    <div>
-                      <h3 className="text-xl font-display mb-2">{t('zenTribe.badgesTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.badgesDesc')}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <Gift className="text-accent mr-4 mt-1" size={24} />
-                    <div>
-                      <h3 className="text-xl font-display mb-2">{t('zenTribe.rewardsTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.rewardsDesc')}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start">
-                    <Clock className="text-success mr-4 mt-1" size={24} />
-                    <div>
-                      <h3 className="text-xl font-display mb-2">{t('zenTribe.streaksTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.streaksDesc')}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                className="lg:w-1/2 bg-surface rounded-xl p-8"
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <div className="flex items-center gap-2 mb-8">
-                  <Zap className="text-primary" size={24} />
-                  <h3 className="text-2xl font-display">{t('zenTribe.achievementShowcase')}</h3>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {achievements.map((achievement, index) => (
-                    <AchievementCard
-                      key={index}
-                      emoji={achievement.emoji}
-                      title={achievement.title}
-                      description={achievement.description}
-                      unlocked={achievement.unlocked}
-                      t={t}
-                    />
-                  ))}
-                </div>
-
-                <div className="mt-8">
-                  <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-xl font-display">{t('zenTribe.currentLevel')}</h4>
-                    <span className="text-2xl text-primary">3</span>
-                  </div>
-                  <h5 className="text-lg mb-4">{t('zenTribe.zenApprentice')}</h5>
-                  <p className="text-sm text-white/70 mb-2">{t('zenTribe.progressToLevel')}</p>
-                  <div className="h-2 bg-background rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full" style={{ width: '87.5%' }}></div>
-                  </div>
-                  <p className="text-right text-sm text-white/70 mt-1">350/400 XP</p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-      </div> {/* FIM DO DIV PRINCIPAL */}
-    </> {/* FIM DO FRAGMENTO */}
-  );
+                                                                                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                                                                                                              {achievements.map((achievement, index) => (
+                                                                                                                              <AchievementCard
+                                                                                                                                                        key={index}
+                                                                                                                                                        emoji={achievement.emoji}
+                                                                                                                                                        title={achievement.title}
+                                                                                                                                                        description={achievement.description}
+                                                                                                                                                        unlocked={achievement.unlocked}
+                                                                                                                                                        t={t}
+                                                                                                                                                      />
+                                                                                                                            ))}
+                                                                                                                            </div>
+                                                                                                        <div className="mt-8">
+                                                                                                                              <div className="flex justify-between items-center mb-2">
+                                                                                                                                                      <h4 className="text-xl font-display">{t('zenTribe.currentLevel')}</h4>
+                                                                                                                                                      <span className="text-2xl text-primary">3</span>
+                                                                                                                                                    </div>
+                                                                                                                              <h5 className="text-lg mb-4">{t('zenTribe.zenApprentice')}</h5>
+                                                                                                                              <p className="text-sm text-white/70 mb-2">{t('zenTribe.progressToLevel')}</p>
+                                                                                                                              <div className="h-2 bg-background rounded-full overflow-hidden">
+                                                                                                                                                      <div className="h-full bg-primary rounded-full" style={{ width: '87.5%' }}></div>
+                                                                                                                                                    </div>
+                                                                                                                              <p className="text-right text-sm text-white/70 mt-1">350/400 XP</p>
+                                                                                                                            </div>
+                                                                                                      </motion.div>
+                                                                                  </div>
+                                                                </div>
+                                                </section>
+                                  </div> {/* FIM DO DIV PRINCIPAL */}
+                      </> {/* FIM DO FRAGMENTO */}
+  );
 };
 
 export default ZenTribePage;
