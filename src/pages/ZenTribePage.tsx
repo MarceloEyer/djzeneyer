@@ -5,17 +5,16 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
-// Componente SEO centralizado (IMPORTAÇÃO CORRETA)
+// Componente SEO centralizado
 import { HeadlessSEO } from '../components/HeadlessSEO'; 
 
 // ============================================================================
 // DADOS ESTRUTURADOS (Schema.org Organization para a Tribo Zen)
 // ============================================================================
-// Definido como função para usar o t() de i18n
 const TRIBE_SCHEMA_ORG = (t) => ({
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": t('zenTribe.badge'), // "Tribo Zen" ou similar
+    "name": t('zenTribe.badge'), 
     "url": "https://djzeneyer.com/zentribe",
     "founder": {
         "@type": "Person",
@@ -62,7 +61,6 @@ const MembershipCard = memo(({ tier, user, t }) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: tier.popular ? 0 : 0.1 }}
   >
-    {/* ... (restante do código do MembershipCard) ... */}
     {tier.popular && (
       <div className="absolute top-0 right-0 bg-secondary text-white px-4 py-1 text-sm font-medium">
         {t('zenTribe.mostPopular')}
@@ -75,6 +73,7 @@ const MembershipCard = memo(({ tier, user, t }) => (
       <h3 className="text-2xl font-bold mb-2 font-display">{tier.name}</h3>
       <div className="mb-6">
         <span className="text-3xl font-bold">{tier.price}</span>
+        
       </div>
     </div>
     <div className="p-6">
@@ -84,7 +83,6 @@ const MembershipCard = memo(({ tier, user, t }) => (
             <div className={`text-${tier.color} mr-2 mt-1`} aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
             </div>
             <span className="text-white/80">{feature}</span>
           </li>
@@ -133,15 +131,61 @@ const ZenTribePage = () => {
     },
   };
 
-  // Tribe membership tiers (Mantido)
+  // Tribe membership tiers e achievements (Mantido)
   const membershipTiers = [
-    // ... dados omitidos para brevidade, mas estão corretos
-  ];
-
-  // Achievement data (Mantido)
-  const achievements = [
-    // ... dados omitidos para brevidade, mas estão corretos
+     {
+      name: t('zenTribe.tiers.novice.name'),
+      price: t('zenTribe.tiers.novice.price'),
+      features: [
+        t('zenTribe.tiers.novice.feature1'),
+        t('zenTribe.tiers.novice.feature2'),
+        t('zenTribe.tiers.novice.feature3'),
+        t('zenTribe.tiers.novice.feature4'),
+      ],
+      color: 'primary',
+      icon: <Users size={24} aria-hidden="true" />,
+      popular: false,
+    },
+    {
+      name: t('zenTribe.tiers.voyager.name'),
+      price: t('zenTribe.tiers.voyager.price'),
+      features: [
+        t('zenTribe.tiers.voyager.feature1'),
+        t('zenTribe.tiers.voyager.feature2'),
+        t('zenTribe.tiers.voyager.feature3'),
+        t('zenTribe.tiers.voyager.feature4'),
+        t('zenTribe.tiers.voyager.feature5'),
+      ],
+      color: 'secondary',
+      icon: <Star size={24} aria-hidden="true" />,
+      popular: true,
+    },
+    {
+      name: t('zenTribe.tiers.master.name'),
+      price: t('zenTribe.tiers.master.price'),
+      features: [
+        t('zenTribe.tiers.master.feature1'),
+        t('zenTribe.tiers.master.feature2'),
+        t('zenTribe.tiers.master.feature3'),
+        t('zenTribe.tiers.master.feature4'),
+        t('zenTribe.tiers.master.feature5'),
+        t('zenTribe.tiers.master.feature6'),
+      ],
+      color: 'accent',
+      icon: <Shield size={24} aria-hidden="true" />,
+      popular: false,
+    },
   ];
+
+  const achievements = [
+    { emoji: '🎧', title: t('zenTribe.achievements.firstTrack.title'), description: t('zenTribe.achievements.firstTrack.desc'), unlocked: true },
+    { emoji: '🚀', title: t('zenTribe.achievements.firstEvent.title'), description: t('zenTribe.achievements.firstEvent.desc'), unlocked: true },
+    { emoji: '🔍', title: t('zenTribe.achievements.collector.title'), description: t('zenTribe.achievements.collector.desc'), unlocked: false },
+    { emoji: '🦋', title: t('zenTribe.achievements.marketer.title'), description: t('zenTribe.achievements.marketer.desc'), unlocked: false },
+    { emoji: '🎪', title: t('zenTribe.achievements.legend.title'), description: t('zenTribe.achievements.legend.desc'), unlocked: false },
+    { emoji: '⏱️', title: t('zenTribe.achievements.streak.title'), description: t('zenTribe.achievements.streak.desc'), unlocked: false },
+  ];
+
 
   // Scroll to section function (Mantido)
   const scrollToSection = (id) => {
@@ -159,7 +203,7 @@ const ZenTribePage = () => {
           description={t('tribe_page_meta_desc')}
           url="https://djzeneyer.com/zentribe"
           image="https://djzeneyer.com/images/zen-tribe-og.jpg" 
-          ogType="organization" // Tipo Organization é mais apropriado para uma comunidade
+          ogType="organization"
           schema={TRIBE_SCHEMA_ORG(t)}
           hrefLang={[
             { lang: 'en', href: 'https://djzeneyer.com/zentribe' },
@@ -168,7 +212,7 @@ const ZenTribePage = () => {
           ]}
       />
 
-      <div className="pt-24 min-h-screen">
+      <div className="pt-24 min-h-screen"> 
         {/* Page Header */}
         <div className="bg-surface py-12 md:py-16" id="tribe-intro">
           <div className="container mx-auto px-4">
@@ -317,63 +361,61 @@ const ZenTribePage = () => {
                     <Gift className="text-accent mr-4 mt-1" size={24} />
                     <div>
                       <h3 className="text-xl font-display mb-2">{t('zenTribe.rewardsTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.rewardsDesc')}</p>
-                    </div>
-                  </div>
+    146 |                      <p className="text-white/70">{t('zenTribe.rewardsDesc')}</p>
+    147 |                    </div>
+    148 |                  </div>
 
-                  <div className="flex items-start">
-                    <Clock className="text-success mr-4 mt-1" size={24} />
-                    <div>
-                      <h3 className="text-xl font-display mb-2">{t('zenTribe.streaksTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.streaksDesc')}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+    149 |                  <div className="flex items-start">
+    150 |                    <Clock className="text-success mr-4 mt-1" size={24} />
+    151 |                    <div>
+    152 |                      <h3 className="text-xl font-display mb-2">{t('zenTribe.streaksTitle')}</h3>
+    153 |                      <p className="text-white/70">{t('zenTribe.streaksDesc')}</p>
+    154 |                    </div>
+    155 |                  </div>
+    156 |                </div>
+    157 |              </motion.div>
 
-              <motion.div 
-                className="lg:w-1/2 bg-surface rounded-xl p-8"
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <div className="flex items-center gap-2 mb-8">
-                  <Zap className="text-primary" size={24} />
-                  <h3 className="text-2xl font-display">{t('zenTribe.achievementShowcase')}</h3>
-                </div>
+    158 |              <motion.div 
+    159 |                className="lg:w-1/2 bg-surface rounded-xl p-8"
+    160 |                initial={{ opacity: 0, x: 30 }}
+    161 |                animate={{ opacity: 1, x: 0 }}
+    162 |                transition={{ duration: 0.5, delay: 0.2 }}
+    163 |              >
+    164 |                <div className="flex items-center gap-2 mb-8">
+    165 |                  <Zap className="text-primary" size={24} />
+    166 |                  <h3 className="text-2xl font-display">{t('zenTribe.achievementShowcase')}</h3>
+    167 |                </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {achievements.map((achievement, index) => (
-                    <AchievementCard
-                      key={index}
-                      emoji={achievement.emoji}
-                      title={achievement.title}
-                      description={achievement.description}
-                      unlocked={achievement.unlocked}
-                      t={t}
-                    />
-                  ))}
-                </div>
+    168 |                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    169 |                  {achievements.map((achievement, index) => (
+    170 |                    <AchievementCard
+    171 |                      key={index}
+    172 |                      emoji={achievement.emoji}
+    173 |                      title={achievement.title}
+    174 |                      description={achievement.description}
+    175 |                      unlocked={achievement.unlocked}
+    176 |                      t={t}
+    177 |                    />
+    178 |                  ))}
+    179 |                </div>
 
-                <div className="mt-8">
-                  <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-xl font-display">{t('zenTribe.currentLevel')}</h4>
-                    <span className="text-2xl text-primary">3</span>
-                  </div>
-                  <h5 className="text-lg mb-4">{t('zenTribe.zenApprentice')}</h5>
-                  <p className="text-sm text-white/70 mb-2">{t('zenTribe.progressToLevel')}</p>
-                  <div className="h-2 bg-background rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full" style={{ width: '87.5%' }}></div>
-                  </div>
-                  <p className="text-right text-sm text-white/70 mt-1">350/400 XP</p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-      </div> 
-    </>
-  );
-};
-
-export default ZenTribePage;
+    180 |                <div className="mt-8">
+    181 |                  <div className="flex justify-between items-center mb-2">
+    182 |                    <h4 className="text-xl font-display">{t('zenTribe.currentLevel')}</h4>
+    183 |                    <span className="text-2xl text-primary">3</span>
+    184 |                  </div>
+    185 |                  <h5 className="text-lg mb-4">{t('zenTribe.zenApprentice')}</h5>
+    186 |                  <p className="text-sm text-white/70 mb-2">{t('zenTribe.progressToLevel')}</p>
+    187 |                  <div className="h-2 bg-background rounded-full overflow-hidden">
+    188 |                    <div className="h-full bg-primary rounded-full" style={{ width: '87.5%' }}></div>
+    189 |                  </div>
+    190 |                  <p className="text-right text-sm text-white/70 mt-1">350/400 XP</p>
+    191 |                </div>
+    192 |              </motion.div>
+    193 |            </div>
+    194 |          </div>
+    195 |        </section>
+    196 |      </div>
+    197 |    </>
+    198 |  );
+    199 | };
