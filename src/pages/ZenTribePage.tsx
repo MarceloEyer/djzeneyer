@@ -770,7 +770,6 @@ const ZenTribePage = () => {
 
       </div>
 
-    </>
 
   );
 
