@@ -8,6 +8,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
 import { useMusicPlayer } from '../contexts/MusicPlayerContext';
 import { HeadlessSEO } from '../components/HeadlessSEO'; 
+import { Helmet } from 'react-helmet-async';
 
 // ============================================================================
 // LAZY LOADING E COMPONENTES AUXILIARES
@@ -62,6 +63,32 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+            <Helmet>
+        <title>DJ Zen Eyer | World Champion Brazilian Zouk DJ</title>
+        <meta name="description" content="Two-time world champion DJ specializing in Brazilian Zouk music. Experience immersive audio, world-class remixes, and live performances by DJ Zen Eyer." />
+        <meta name="keywords" content="DJ Zen Eyer, Brazilian Zouk, DJ, music producer, remixes, live events" />
+        <link rel="canonical" href="https://djzeneyer.com" />
+        <meta property="og:title" content="DJ Zen Eyer | World Champion Brazilian Zouk DJ" />
+        <meta property="og:description" content="Two-time world champion DJ creating immersive audio experiences with Brazilian Zouk music" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://djzeneyer.com" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="DJ Zen Eyer | World Champion Zouk DJ" />
+        <meta name="twitter:description" content="Experience immersive Brazilian Zouk music and live performances" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "MusicArtist",
+          "name": "DJ Zen Eyer",
+          "url": "https://djzeneyer.com",
+          "sameAs": [
+            "https://wikidata.org/wiki/Q136551855",
+            "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
+            "https://instagram.com/djzeneyer",
+            "https://soundcloud.com/djzeneyer"
+          ],
+          "genre": "Brazilian Zouk"
+        })}</script>
+      </Helmet>
       {/* ====================================================================== */}
       {/* 🎯 INJEÇÃO DE SEO CENTRALIZADA */}
       {/* ====================================================================== */}
