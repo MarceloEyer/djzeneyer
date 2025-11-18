@@ -766,7 +766,6 @@ const ZenTribePage = () => {
 
           </div>
 
-        </section>
 
 
 
