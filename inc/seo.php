@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
  * 1. SITEMAP.XML (Híbrido: React + WP) - CORRIGIDO
  * ========================= */
 add_action('init', function() {
-    add_rewrite_rule('^sitemap\.xml$', 'index.php?djz_sitemap=1', 'top');
+    add_rewrite_rule('^sitemap\.xml$', 'index.php?djz_sitemap=1', 'top');
 });
 
 add_filter('query_vars', function($vars) {
