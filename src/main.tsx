@@ -1,13 +1,22 @@
-// src/main.tsx
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async'; // <-- ADICIONAR
+import { HelmetProvider } from 'react-helmet-async'; 
 import App from './App';
-import { UserProvider } from './contexts/UserContext'; // <-- ADICIONAR
+import { UserProvider } from './contexts/UserContext'; 
 import './index.css';
 import './i18n';
+
+// Definição global da interface (Assumindo que está em um global.d.ts ou similar)
+declare global {
+  interface Window {
+    wpData?: {
+      siteUrl: string;
+      restUrl: string;
+      nonce: string;
+    };
+  }
+}
 
 console.log('[Main] 🚀 Inicializando aplicação DJ Zen Eyer...');
 
@@ -24,6 +33,7 @@ if (window.wpData) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    {/* CRÍTICO: Envolve a aplicação para permitir manipulação do <head> */}
     <HelmetProvider>
       <BrowserRouter>
         <UserProvider>
