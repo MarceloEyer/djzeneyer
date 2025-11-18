@@ -5,8 +5,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
-// IMPORTAÇÃO REMOVIDA: Helmet
-// IMPORTAÇÃO CRÍTICA: Componente SEO centralizado
 import { HeadlessSEO } from '../components/HeadlessSEO'; 
 
 // ============================================================================
@@ -74,7 +72,6 @@ const MembershipCard = memo(({ tier, user, t }) => (
       <h3 className="text-2xl font-bold mb-2 font-display">{tier.name}</h3>
       <div className="mb-6">
         <span className="text-3xl font-bold">{tier.price}</span>
-        
       </div>
     </div>
     <div className="p-6">
@@ -198,7 +195,7 @@ const ZenTribePage = () => {
 
   return (
     <>
-      {/* 🎯 HEADLESSEO CENTRALIZADO - Implementação Headless */}
+      {/* 🎯 HEADLESSEO CENTRALIZADO */}
       <HeadlessSEO
           title={t('tribe_page_title')}
           description={t('tribe_page_meta_desc')}
@@ -213,7 +210,7 @@ const ZenTribePage = () => {
           ]}
       />
 
-      <div className="pt-24 min-h-screen"> {/* DIV PRINCIPAL - INÍCIO */}
+      <div className="pt-24 min-h-screen"> 
         {/* Page Header */}
         <div className="bg-surface py-12 md:py-16" id="tribe-intro">
           <div className="container mx-auto px-4">
