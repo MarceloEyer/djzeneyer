@@ -408,8 +408,8 @@ const scrollToSection = (id) => {
                                                                 </div>
                                                 </section>
                                   </div> {/* FIM DO DIV PRINCIPAL */}
-                      </> {/* FIM DO FRAGMENTO */}
-  );
+                        </>
+    );
 };
 
 export default ZenTribePage;
