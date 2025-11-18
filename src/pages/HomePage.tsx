@@ -28,8 +28,7 @@ const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; description:
       </div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-white/70">{description}</p>
-    </motion.div>);
-
+</div>);
 const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
   const { t } = useTranslation();
