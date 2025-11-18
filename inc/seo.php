@@ -176,4 +176,4 @@ add_action('woocommerce_single_product_summary', function() {
    ];
     
     echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>';
-}, 5);
+}});
