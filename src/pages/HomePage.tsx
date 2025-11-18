@@ -4,13 +4,13 @@ import React, { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
-// Importações de Componentes/Contextos
+// Componentes/Contextos
 import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
 import { useMusicPlayer } from '../contexts/MusicPlayerContext';
 import { HeadlessSEO } from '../components/HeadlessSEO'; 
 
 // ============================================================================
-// LAZY LOADING E COMPONENTES AUXILIARES (Mantido)
+// LAZY LOADING E COMPONENTES AUXILIARES
 // ============================================================================
 
 const FeatureCard: React.FC<{ 
@@ -44,11 +44,11 @@ const HomePage: React.FC = () => {
   const { playTrack, queue } = useMusicPlayer();
   const { t } = useTranslation();
 
-  // DADOS ESTRUTURADOS PARA FEATURES e Animações
+  // DADOS ESTRUTURADOS PARA FEATURES (Corrigido o erro de duplicação de 'id')
   const features = [
     { id: 'music', icon: <Music size={32} aria-hidden="true" />, titleKey: 'home_feat_exclusive_title', descKey: 'home_feat_exclusive_desc' },
     { id: 'achievements', icon: <Award size={32} aria-hidden="true" />, titleKey: 'home_feat_achievements_title', descKey: 'home_feat_achievements_desc' },
-    { id: 'community', id: 'community', icon: <Users size={32} aria-hidden="true" />, titleKey: 'home_feat_community_title', descKey: 'home_feat_community_desc' },
+    { id: 'community', icon: <Users size={32} aria-hidden="true" />, titleKey: 'home_feat_community_title', descKey: 'home_feat_community_desc' },
   ];
   
   const handlePlayFeatured = () => {
@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
             className="w-full h-full bg-cover bg-center bg-no-repeat opacity-50"
             style={{ backgroundImage: "url('/images/hero-background.webp')" }}
             initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }} // ✅ SINTAXE CORRIGIDA
+            animate={{ scale: 1 }} // ✅ CORREÇÃO DE SINTAXE (Linha 90)
             transition={{ duration: 10, ease: "linear" }}
             role="img"
             aria-label="DJ Zen Eyer performing at Brazilian Zouk festival"
@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
 
       {/* ====================================================================== */}
       {/* FEATURES SECTION (Mantido intacto com H2) */}
-      {/* ====================================================================== */}
+      {======================================================================}
       <section 
         className="py-24 bg-surface"
         aria-labelledby="features-heading"
