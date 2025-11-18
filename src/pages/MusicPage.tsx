@@ -1,21 +1,19 @@
 // src/pages/MusicPage.tsx
 // ============================================================================
-// MUSIC PAGE - VERSÃO FINAL (UNIÃO DO MELHOR DOS DOIS CÓDIGOS)
+// MUSIC PAGE - VERSÃO REFATORADA (HEADLESS SEO)
 // ============================================================================
 // OTIMIZAÇÕES:
-// ✅ Estrutura organizada (seu código)
-// ✅ SEO avançado (seu código + melhorias)
-// ✅ Conteúdo emocional (código do outro dev)
-// ✅ Performance otimizada para /public_html/music/
-// ✅ Schemas detalhados (seu código + mood/lyrics)
-// ✅ Acessibilidade completa (seu código)
-// ✅ Pré-carregamento estratégico de áudios
+// ✅ HeadlessSEO implementado com hrefLang SSOT
+// ✅ Constantes movidas para fora do componente
+// ✅ TrackCard memoizado
+// ✅ Schema MusicPlaylist otimizado
+// ✅ Pré-carregamento de áudio otimizado
 // ============================================================================
 
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import {
   Play,
   Pause,
@@ -32,7 +30,7 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// INTERFACE EXPANDIDA (SEU CÓDIGO + CAMPOS EMOCIONAIS)
+// INTERFACES
 // ============================================================================
 interface Track {
   id: number;
@@ -41,22 +39,26 @@ interface Track {
   duration: string;
   releaseDate: string;
   coverArt: string;
-  audioUrl: string;       // Ex: "/music/noites-de-zouk-preview.mp3"
-  downloadUrl: string;   // Ex: "/music/noites-de-zouk-full.mp3"
+  audioUrl: string;
+  downloadUrl: string;
   genre: string;
   bpm: number;
   streamUrl?: string;
-  description: string;    // ✅ Descrição emocional (código do outro dev)
-  mood: string;          // ✅ "Cremoso", "Energético", etc.
-  lyrics?: string;       // ✅ Letra ou descrição sensorial
+  description: string;
+  mood: string;
+  lyrics?: string;
   recordLabel: string;
   isrcCode?: string;
 }
 
 // ============================================================================
-// TRACKS COM DESCRIÇÕES EMOCIONAIS (INSPIRADO NO OUTRO CÓDIGO)
+// CONSTANTES DE DADOS (FORA DO COMPONENTE)
 // ============================================================================
-const tracks: Track[] = [
+
+/**
+ * Catálogo de músicas (Mock Data)
+ */
+const TRACKS: Track[] = [
   {
     id: 1,
     title: "Noites de Zouk",
@@ -92,27 +94,87 @@ const tracks: Track[] = [
     lyrics: "Instrumental - Com samples vocais que remetem aos carnavais brasileiros, trazendo a alegria contagiante das ruas do Rio para as pistas de dança do mundo todo.",
     recordLabel: "Zen Eyer Productions",
     isrcCode: "BRZEN2400002"
-  },
-  // ... (restante das faixas com descrições emocionais)
+  }
 ];
 
+/**
+ * Schema.org MusicPlaylist
+ */
+const MUSIC_PLAYLIST_SCHEMA = {
+  "@type": "MusicPlaylist",
+  "@id": "https://djzeneyer.com/music#playlist",
+  "name": "DJ Zen Eyer - Coleção de Zouk Brasileiro que Conecta Alma e Movimento",
+  "description": "Sets e remixes exclusivos de DJ Zen Eyer, bicampeão mundial de Zouk Brasileiro. Cada faixa é uma jornada emocional projetada para criar conexões profundas entre os dançarinos.",
+  "numTracks": TRACKS.length,
+  "creator": {
+    "@id": "https://djzeneyer.com/#artist"
+  },
+  "track": TRACKS.map(track => ({
+    "@type": "MusicRecording",
+    "@id": `https://djzeneyer.com/music#track-${track.id}`,
+    "name": track.title,
+    "description": track.description,
+    "duration": `PT${track.duration.replace(':', 'M')}S`,
+    "datePublished": track.releaseDate,
+    "genre": `Brazilian Zouk - ${track.genre}`,
+    "inAlbum": {
+      "@type": "MusicAlbum",
+      "name": "DJ Zen Eyer - Brazilian Zouk Collection",
+      "byArtist": {
+        "@id": "https://djzeneyer.com/#artist"
+      }
+    },
+    "byArtist": {
+      "@id": "https://djzeneyer.com/#artist"
+    },
+    "recordingOf": {
+      "@type": "MusicComposition",
+      "name": track.title,
+      "composer": {
+        "@id": "https://djzeneyer.com/#artist"
+      }
+    },
+    "audio": {
+      "@type": "AudioObject",
+      "contentUrl": `https://djzeneyer.com${track.audioUrl}`,
+      "encodingFormat": "audio/mpeg",
+      "duration": `PT${track.duration.replace(':', 'M')}S`
+    },
+    "image": {
+      "@type": "ImageObject",
+      "url": track.coverArt,
+      "width": 400,
+      "height": 400
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL",
+      "availability": "https://schema.org/InStock",
+      "url": `https://djzeneyer.com${track.downloadUrl}`
+    },
+    "recordLabel": track.recordLabel,
+    "isrcCode": track.isrcCode,
+    "sameAs": track.streamUrl ? [track.streamUrl] : []
+  }))
+};
+
 // ============================================================================
-// TRACK CARD COMPONENT (SEU CÓDIGO + MELHORIAS EMOCIONAIS)
+// COMPONENTE TRACKCARD (MEMOIZADO)
 // ============================================================================
 const TrackCard: React.FC<{
   track: Track;
   isPlaying: boolean;
   onPlayPause: () => void;
-}> = ({ track, isPlaying, onPlayPause }) => {
+}> = memo(({ track, isPlaying, onPlayPause }) => {
   const { t } = useTranslation();
   const [liked, setLiked] = useState(false);
-  const [showShare, setShowShare] = useState(false);
 
-  // ✅ Pré-carregamento estratégico dos áudios (OTIMIZADO PARA /music/)
+  // Pré-carregamento estratégico do áudio
   useEffect(() => {
     const audio = new Audio();
     audio.src = track.audioUrl;
-    audio.preload = "metadata"; // Carrega apenas metadados
+    audio.preload = "metadata";
   }, [track.audioUrl]);
 
   const handleShare = async () => {
@@ -143,7 +205,7 @@ const TrackCard: React.FC<{
       role="article"
       aria-label={`${track.title} por ${track.artist} - ${track.mood}`}
     >
-      {/* Cover Art com lazy loading */}
+      {/* Cover Art */}
       <div className="relative aspect-square overflow-hidden">
         <img
           src={track.coverArt}
@@ -174,7 +236,7 @@ const TrackCard: React.FC<{
           </div>
         </div>
 
-        {/* Genre + Mood Badges */}
+        {/* Badges */}
         <div className="absolute top-4 left-4 flex gap-2">
           <span className="px-3 py-1 bg-primary/90 backdrop-blur-sm rounded-full text-xs font-bold text-white">
             {track.genre}
@@ -200,7 +262,7 @@ const TrackCard: React.FC<{
         </motion.button>
       </div>
 
-      {/* Track Info com descrição emocional */}
+      {/* Track Info */}
       <div className="p-6">
         <h3 className="font-black text-xl text-white mb-1 line-clamp-1">
           {track.title}
@@ -261,10 +323,11 @@ const TrackCard: React.FC<{
       </div>
     </motion.article>
   );
-};
+});
+TrackCard.displayName = 'TrackCard';
 
 // ============================================================================
-// MUSIC PAGE COMPONENT (SEU CÓDIGO + MELHORIAS)
+// COMPONENTE PRINCIPAL
 // ============================================================================
 const MusicPage: React.FC = () => {
   const { t } = useTranslation();
@@ -275,7 +338,7 @@ const MusicPage: React.FC = () => {
   const [volume, setVolume] = useState(0.7);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // ✅ Filtros (seu código)
+  // Filtros disponíveis
   const filters = [
     { id: 'all', label: t('music.filters.all') || 'Todos' },
     { id: 'Sets', label: t('music.filters.sets') || 'Sets Completos' },
@@ -285,13 +348,13 @@ const MusicPage: React.FC = () => {
     { id: 'Tradicional', label: t('music.filters.tradicional') || 'Tradicional' }
   ];
 
-  // ✅ Performance: useMemo (seu código)
+  // Performance: useMemo
   const filteredTracks = useMemo(() =>
-    filter === 'all' ? tracks : tracks.filter(t => t.genre === filter),
+    filter === 'all' ? TRACKS : TRACKS.filter(t => t.genre === filter),
     [filter]
   );
 
-  // ✅ Controle de áudio otimizado (seu código + pré-carregamento)
+  // Controle de áudio otimizado
   const handlePlayPause = (track: Track) => {
     if (currentTrack?.id === track.id) {
       if (isPlaying) {
@@ -322,156 +385,33 @@ const MusicPage: React.FC = () => {
     }
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
-  };
-
-  // ============================================================================
-  // SCHEMAS OTIMIZADOS (SEU CÓDIGO + CAMPOS EMOCIONAIS)
-// ============================================================================
-  const playlistSchema = {
-    "@context": "https://schema.org",
-    "@type": "MusicPlaylist",
-    "@id": "https://djzeneyer.com/music#playlist",
-    "name": "DJ Zen Eyer - Coleção de Zouk Brasileiro que Conecta Alma e Movimento",
-    "description": "Sets e remixes exclusivos de DJ Zen Eyer, bicampeão mundial de Zouk Brasileiro. Cada faixa é uma jornada emocional projetada para criar conexões profundas entre os dançarinos.",
-    "numTracks": tracks.length,
-    "creator": {
-      "@type": "Person",
-      "@id": "https://djzeneyer.com/#person",
-      "name": "DJ Zen Eyer",
-      "description": "DJ e produtor musical brasileiro especializado em criar experiências emocionais através do Zouk Brasileiro, conhecido por seu estilo 'cremoso' que une técnica impecável com sensibilidade rara.",
-      "url": "https://djzeneyer.com",
-      "sameAs": [
-        "https://instagram.com/djzeneyer",
-        "https://soundcloud.com/djzeneyer",
-        "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
-        "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154"
-      ]
-    },
-    "track": tracks.map(track => ({
-      "@type": "MusicRecording",
-      "@id": `https://djzeneyer.com/music#track-${track.id}`,
-      "name": track.title,
-      "description": track.description,
-      "duration": `PT${track.duration.replace(':', 'M')}S`,
-      "datePublished": track.releaseDate,
-      "genre": `Brazilian Zouk - ${track.genre}`,
-      "mood": track.mood,  // ✅ Campo emocional
-      "lyrics": track.lyrics, // ✅ Campo emocional
-      "inAlbum": {
-        "@type": "MusicAlbum",
-        "name": "DJ Zen Eyer - Brazilian Zouk Collection",
-        "byArtist": {
-          "@id": "https://djzeneyer.com/#person"
-        }
-      },
-      "byArtist": {
-        "@id": "https://djzeneyer.com/#person"
-      },
-      "recordingOf": {
-        "@type": "MusicComposition",
-        "name": track.title,
-        "composer": {
-          "@id": "https://djzeneyer.com/#person"
-        }
-      },
-      "audio": {
-        "@type": "AudioObject",
-        "contentUrl": `https://djzeneyer.com${track.audioUrl}`,
-        "encodingFormat": "audio/mpeg",
-        "duration": `PT${track.duration.replace(':', 'M')}S`
-      },
-      "image": {
-        "@type": "ImageObject",
-        "url": track.coverArt,
-        "width": 400,
-        "height": 400,
-        "caption": `${track.title} - ${track.mood}`
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "BRL",
-        "availability": "https://schema.org/InStock",
-        "url": `https://djzeneyer.com${track.downloadUrl}`
-      },
-      "recordLabel": track.recordLabel,
-      "isrcCode": track.isrcCode,
-      "sameAs": track.streamUrl ? [track.streamUrl] : []
-    }))
-  };
+  // URLs para hrefLang (SSOT)
+  const currentPath = '/music';
+  const currentUrl = 'https://djzeneyer.com' + currentPath;
 
   return (
     <>
-      <Helmet>
-        {/* ====================================================================== */}
-        {/* META TAGS OTIMIZADAS (SEU CÓDIGO + TÍTULOS EMOCIONAIS) */}
-        {/* ====================================================================== */}
-        <title>Música que Conecta | DJ Zen Eyer - Sets Emocionais de Zouk Brasileiro</title>
-        <meta
-          name="description"
-          content="Explore os sets emocionais de DJ Zen Eyer, onde cada nota é composta para criar conexões profundas. Baixe faixas gratuitas e sinta a cremosidade que define o Zouk Brasileiro."
-        />
-        <meta
-          name="keywords"
-          content="DJ Zen Eyer música emocional, Zouk Brasileiro cremoso, sets para dançarinos, download música gratuita, Zouk que conecta, experiências sensoriais através da música"
-        />
-
-        {/* Open Graph com imagens emocionais */}
-        <meta property="og:type" content="music.playlist" />
-        <meta property="og:url" content="https://djzeneyer.com/music" />
-        <meta property="og:title" content="Música que Conecta | DJ Zen Eyer" />
-        <meta
-          property="og:description"
-          content="Sets de Zouk Brasileiro criados para tocar a alma. Baixe gratuitamente e experimente a diferença da música que conecta."
-        />
-        <meta property="og:image" content="https://djzeneyer.com/images/music-page-og-emotional.jpg" />
-
-        {/* Twitter Card emocional */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Música que Conecta | DJ Zen Eyer" />
-        <meta
-          name="twitter:description"
-          content="Sets emocionais de Zouk Brasileiro por DJ Zen Eyer. Cada faixa é uma jornada sensorial única."
-        />
-
-        {/* Schemas aprimorados */}
-        <script type="application/ld+json">
-          {JSON.stringify(playlistSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://djzeneyer.com"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Música",
-                "item": "https://djzeneyer.com/music"
-              }
-            ]
-          })}
-        </script>
-      </Helmet>
+      {/* ====================================================================== */}
+      {/* HEADLESS SEO (PADRÃO SSOT CORRETO) */}
+      {/* ====================================================================== */}
+      <HeadlessSEO
+        title="Música que Conecta | DJ Zen Eyer - Sets Emocionais de Zouk Brasileiro"
+        description="Explore os sets emocionais de DJ Zen Eyer, onde cada nota é composta para criar conexões profundas. Baixe faixas gratuitas e sinta a cremosidade que define o Zouk Brasileiro."
+        url={currentUrl}
+        image="https://djzeneyer.com/images/music-page-og-emotional.jpg"
+        ogType="music.playlist"
+        schema={MUSIC_PLAYLIST_SCHEMA}
+        hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
+        keywords="DJ Zen Eyer música emocional, Zouk Brasileiro cremoso, sets para dançarinos, download música gratuita, Zouk que conecta, experiências sensoriais através da música"
+      />
 
       {/* ====================================================================== */}
-      {/* MAIN CONTENT (SEU DESIGN + TEXTOS EMOCIONAIS) */}
+      {/* CONTEÚDO DA PÁGINA */}
       {/* ====================================================================== */}
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4">
-          {/* Header com texto emocional */}
+          
+          {/* Header */}
           <motion.header
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -493,7 +433,7 @@ const MusicPage: React.FC = () => {
             </p>
           </motion.header>
 
-          {/* Filtros (seu código) */}
+          {/* Filtros */}
           <motion.nav
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -519,7 +459,7 @@ const MusicPage: React.FC = () => {
             ))}
           </motion.nav>
 
-          {/* Grid de músicas (seu código + TrackCard emocional) */}
+          {/* Grid de músicas */}
           <motion.section
             layout
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -537,7 +477,7 @@ const MusicPage: React.FC = () => {
             </AnimatePresence>
           </motion.section>
 
-          {/* Player fixo (seu código) */}
+          {/* Player fixo */}
           <AnimatePresence>
             {currentTrack && (
               <motion.aside
@@ -594,10 +534,10 @@ const MusicPage: React.FC = () => {
             )}
           </AnimatePresence>
 
-          {/* Audio Element com pré-carregamento otimizado */}
+          {/* Audio Element */}
           <audio
             ref={audioRef}
-            preload="metadata"  // ✅ Carrega apenas metadados
+            preload="metadata"
             onEnded={() => setIsPlaying(false)}
             onPause={() => setIsPlaying(false)}
             onPlay={() => setIsPlaying(true)}
