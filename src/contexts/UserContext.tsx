@@ -38,7 +38,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [error, setError] = useState<string | null>(null);
 
   // URL base da API (Plugin ZenEyer)
-  const API_URL = `${window.location.origin}/wp-json/zeneyer/v1`;
+  const API_URL = `${window.location.origin}/wp-json/zeneyer-auth/v1`;
 
   // ✅ Inicialização: Configs + Sessão
   useEffect(() => {
