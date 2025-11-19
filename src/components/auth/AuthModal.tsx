@@ -1,9 +1,11 @@
-// src/components/AuthModal.tsx - VERSÃO FINAL (LIMPA)
-import React, { useState, useEffect } from 'react';
+// src/components/AuthModal.tsx - VERSÃO ZEN EYER (HEADLESS & CONTEXT)
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { GoogleLogin } from '@react-oauth/google'; // 📦 Lib oficial
+import { useUser } from '../contexts/UserContext'; // 🧠 O Cérebro
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -14,130 +16,77 @@ interface AuthModalProps {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  
+  // Consumindo o Cérebro (Contexto)
+  const { login, register, googleLogin, googleClientId } = useUser();
+
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [googleClientId] = useState('960427404700-2a7p5kcgj3dgiabora5hn7rafdc73n7v.apps.googleusercontent.com');
 
-  // ✅ Login normal (email/senha)
-  const handleLogin = async (e: React.FormEvent) => {
+  // ✅ Login/Registro Unificado (Via Contexto)
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const response = await fetch(`${window.location.origin}/wp-json/simple-jwt-login/v1/auth`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      const data = { 
+        email, 
+        password, 
+        name: mode === 'register' ? username : undefined 
+      };
 
-      const data = await response.json();
-
-      if (data.success && data.data?.jwt) {
-        localStorage.setItem('jwt_token', data.data.jwt);
-        localStorage.setItem('user_email', email);
-        
-        console.log('✅ Login successful! Redirecting to dashboard...');
-        
-        if (onSuccess) onSuccess();
-        onClose();
-        
-        // 🎯 Redireciona para dashboard
-        navigate('/dashboard');
-        setTimeout(() => window.location.reload(), 100);
+      if (mode === 'login') {
+        await login(data);
       } else {
-        throw new Error(data.data?.message || 'Login failed');
+        await register(data);
       }
+
+      // Sucesso!
+      console.log('✅ Autenticação realizada com sucesso!');
+      if (onSuccess) onSuccess();
+      onClose();
+      navigate('/dashboard'); // SPA Navigation (sem reload)
+
     } catch (err: any) {
-      console.error('❌ Login error:', err);
-      setError(err.message || t('auth_error_login') || 'Login failed. Please try again.');
+      console.error('❌ Auth error:', err);
+      setError(err.message || 'Falha na autenticação. Verifique seus dados.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Registro normal
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // 🔥 Google OAuth (Via Componente Oficial)
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    if (!credentialResponse.credential) return;
+    
     setLoading(true);
     setError('');
-
+    
     try {
-      const response = await fetch(`${window.location.origin}/wp-json/simple-jwt-login/v1/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        console.log('✅ Registration successful! Logging in...');
-        // Após registro, faz login automaticamente
-        handleLogin(e);
-      } else {
-        throw new Error(data.data?.message || 'Registration failed');
-      }
-    } catch (err: any) {
-      console.error('❌ Registration error:', err);
-      setError(err.message || t('auth_error_register') || 'Registration failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 🔥 Google OAuth Login
-  const handleGoogleLogin = () => {
-    const redirectUri = `${window.location.origin}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=google`;
-    const scope = 'openid email profile';
-    
-    // Salva página atual para redirecionar depois
-    localStorage.setItem('pre_login_page', window.location.pathname);
-    
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-      `client_id=${encodeURIComponent(googleClientId)}&` +
-      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-      `response_type=code&` +
-      `scope=${encodeURIComponent(scope)}&` +
-      `access_type=offline&` +
-      `prompt=select_account`;
-
-    console.log('🚀 Redirecting to Google OAuth...');
-    window.location.href = googleAuthUrl;
-  };
-
-  // ✅ Detecta retorno do Google OAuth
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasGoogleCallback = urlParams.has('rest_route') && urlParams.get('rest_route')?.includes('oauth');
-    
-    if (hasGoogleCallback) {
-      console.log('🔍 Google OAuth callback detected!');
+      // Envia o ID Token para o nosso Backend validar
+      await googleLogin(credentialResponse.credential);
       
-      // Aguarda 2 segundos para o WordPress processar
-      setTimeout(() => {
-        const preLoginPage = localStorage.getItem('pre_login_page');
-        localStorage.removeItem('pre_login_page');
-        
-        // Limpa URL params
-        window.history.replaceState({}, '', window.location.pathname);
-        
-        // Redireciona para dashboard
-        navigate('/dashboard');
-        window.location.reload();
-      }, 2000);
+      if (onSuccess) onSuccess();
+      onClose();
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError('Erro ao conectar com Google. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
-  }, [navigate]);
+  };
 
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -146,23 +95,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
 
+        {/* Modal Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-md bg-surface rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
+          className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
         >
+          {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10"
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white"
             aria-label="Close"
           >
             <X size={24} />
           </button>
 
           <div className="p-8">
+            {/* Header */}
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-black font-display mb-2">
+              <h2 className="text-3xl font-black text-white mb-2">
                 {mode === 'login' ? (t('auth_welcome_back') || 'Bem-vindo de Volta') : (t('auth_create_account') || 'Criar Conta')}
               </h2>
               <p className="text-white/60">
@@ -172,30 +124,38 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </p>
             </div>
 
+            {/* Error Message */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-error/20 border border-error/50 rounded-lg text-error text-sm"
+                className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center"
               >
                 {error}
               </motion.div>
             )}
 
-            {/* 🔥 Google Login Button */}
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full mb-6 py-4 px-6 bg-white hover:bg-gray-100 text-gray-800 font-bold rounded-lg flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <svg className="w-6 h-6" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              <span>Continuar com Google</span>
-            </button>
+            {/* 🔥 Google Login Button (Dinâmico) */}
+            <div className="flex justify-center mb-6 w-full">
+              {googleClientId ? (
+                <div className="w-full flex justify-center">
+                   {/* Google OAuth Provider já está no UserContext, mas o componente precisa do wrapper se for usado isolado. 
+                       Como importamos a lib, usamos direto aqui. */}
+                   <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() => setError('Login falhou')}
+                      theme="filled_black"
+                      shape="pill"
+                      size="large"
+                      text={mode === 'login' ? "signin_with" : "signup_with"}
+                      width="100%" // Tenta preencher largura
+                   />
+                </div>
+              ) : (
+                // Skeleton loader enquanto carrega o ID do WordPress
+                <div className="w-full h-12 bg-white/10 animate-pulse rounded-full"></div>
+              )}
+            </div>
 
             {/* Divider */}
             <div className="relative my-6">
@@ -203,25 +163,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-surface text-white/60">ou use email</span>
+                <span className="px-4 bg-gray-900 text-white/60">ou use email</span>
               </div>
             </div>
 
-            {/* Form */}
-            <form onSubmit={mode === 'login' ? handleLogin : handleRegister} className="space-y-4">
+            {/* Email/Pass Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
               {mode === 'register' && (
                 <div>
-                  <label className="block text-sm font-semibold mb-2">
-                    {t('auth_username') || 'Nome de Usuário'}
-                  </label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Nome</label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                     <input
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="input pl-11"
-                      placeholder="Digite seu nome de usuário"
+                      className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                      placeholder="Seu nome"
                       required
                     />
                   </div>
@@ -229,14 +187,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               )}
 
               <div>
-                <label className="block text-sm font-semibold mb-2">Email</label>
+                <label className="block text-sm font-semibold mb-2 text-white">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="input pl-11"
+                    className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                     placeholder="seu@email.com"
                     required
                   />
@@ -244,14 +202,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2">Senha</label>
+                <label className="block text-sm font-semibold mb-2 text-white">Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="input pl-11"
+                    className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                     placeholder="••••••••"
                     required
                   />
@@ -261,12 +219,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary w-full py-4 text-lg font-bold"
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-4 rounded-lg shadow-lg hover:opacity-90 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
               >
                 {loading ? (
                   <>
                     <Loader2 size={20} className="animate-spin" />
-                    <span>Carregando...</span>
+                    <span>Processando...</span>
                   </>
                 ) : (
                   <span>{mode === 'login' ? 'Entrar' : 'Criar Conta'}</span>
@@ -274,6 +232,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </button>
             </form>
 
+            {/* Toggle Mode */}
             <div className="mt-6 text-center">
               <p className="text-white/60">
                 {mode === 'login' ? 'Não tem uma conta?' : 'Já tem uma conta?'}
@@ -283,7 +242,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                     setMode(mode === 'login' ? 'register' : 'login');
                     setError('');
                   }}
-                  className="text-primary font-bold hover:underline"
+                  className="text-purple-400 font-bold hover:underline ml-1"
                 >
                   {mode === 'login' ? 'Criar Conta' : 'Entrar'}
                 </button>
