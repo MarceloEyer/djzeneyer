@@ -231,4 +231,33 @@ add_action('rest_api_init', function () {
             return rest_ensure_response(['success' => true, 'message' => 'Updated!']);
         }
     ]);
+    // --- ENDPOINTS DE DASHBOARD (MOCK/PLACEHOLDER) ---
+    
+    // GET /tracks/{id}
+    register_rest_route($ns, '/tracks/(?P<user_id>\d+)', [
+        'methods' => 'GET',
+        'callback' => function() {
+            // Lógica real viria aqui (contar downloads do user)
+            return rest_ensure_response(['count' => 12]); // Exemplo estático
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // GET /streak/{id}
+    register_rest_route($ns, '/streak/(?P<user_id>\d+)', [
+        'methods' => 'GET',
+        'callback' => function() {
+            return rest_ensure_response(['days' => 5, 'fire' => true]); 
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // GET /events/{id}
+    register_rest_route($ns, '/events/(?P<user_id>\d+)', [
+        'methods' => 'GET',
+        'callback' => function() {
+            return rest_ensure_response(['attended' => 3, 'next' => 'Zouk Night SP']); 
+        },
+        'permission_callback' => '__return_true'
+    ]);
 });
