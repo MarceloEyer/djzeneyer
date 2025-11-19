@@ -75,6 +75,11 @@ add_action('init', function() {
     remove_action('wp_head', 'feed_links_extra', 3);
     remove_action('wp_head', 'rest_output_link_wp_head');
     remove_action('wp_head', 'wp_oembed_add_discovery_links');
+    // Remove SVG Filters feios injetados no body
+remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
+
+// Remove CSS de Duotone (Gutenberg lixo)
+remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
 
     add_filter('rank_math/json_ld', '__return_false');
     add_filter('rank_math/sitemap/enable_caching', '__return_false');
