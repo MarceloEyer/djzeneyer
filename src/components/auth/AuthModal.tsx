@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GoogleLogin } from '@react-oauth/google'; // 📦 Lib oficial
-import { useUser } from '../contexts/UserContext'; // 🧠 O Cérebro
+import { useUser } from "../../contexts/UserContext"; // 🧠 O Cérebro
 
 interface AuthModalProps {
   isOpen: boolean;
