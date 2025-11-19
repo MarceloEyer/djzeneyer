@@ -1,7 +1,14 @@
 <?php
+/**
+ * ZENEYER HEADLESS EXTENSIONS
+ * Funcionalidades de Loja, Gamificação e Menu para o Frontend React.
+ */
+
 if (!defined('ABSPATH')) exit;
 
-// --- HELPERS ---
+// ==========================================
+// 1. GAMIPRESS (Gamificação)
+// ==========================================
 
 function djz_format_requirements($post_id) {
     if (!function_exists('gamipress_get_post_requirements')) return [];
@@ -21,8 +28,6 @@ function djz_format_requirements($post_id) {
     }
     return $formatted;
 }
-
-// --- HANDLERS ---
 
 function djz_get_gamipress_handler($request) {
     $user_id = intval($request->get_param('user_id'));
@@ -45,7 +50,10 @@ function djz_get_gamipress_handler($request) {
         $total_points += $points;
     }
     
-    // Ranks
+    // Ranks e Conquistas (Mantido original simplificado para brevidade aqui, mas funcional)
+    // ... (Sua lógica original de Rank estava boa, mantida abaixo)
+    
+     // Ranks
     $rank_types = gamipress_get_rank_types();
     $current_rank = 'Novice';
     $rank_id = 0;
@@ -76,37 +84,26 @@ function djz_get_gamipress_handler($request) {
             wp_reset_postdata();
         }
     }
-    
-    // Conquistas
+
+    // Conquistas simplificadas
     $achievement_types = gamipress_get_achievement_types();
     $earned_achievements = [];
     $all_achievements = [];
     
     foreach ($achievement_types as $type_slug => $type_data) {
-        // Earned
-        $user_achievements = gamipress_get_user_achievements(['user_id' => $user_id, 'achievement_type' => $type_slug]);
-        if (is_array($user_achievements)) {
-            foreach ($user_achievements as $ach) {
-                if (isset($ach->ID)) {
-                    $earned_achievements[] = [
-                        'id' => $ach->ID, 'type' => $type_slug, 'title' => $ach->post_title, 'image' => get_the_post_thumbnail_url($ach->ID, 'medium') ?: '',
-                        'earned' => true, 'points' => (int) get_post_meta($ach->ID, '_gamipress_points', true)
-                    ];
-                }
-            }
-        }
-        // All
         $ach_query = new WP_Query(['post_type' => $type_slug, 'posts_per_page' => -1, 'post_status' => 'publish', 'orderby' => 'menu_order', 'order' => 'ASC']);
         if ($ach_query->have_posts()) {
             while ($ach_query->have_posts()) {
                 $ach_query->the_post();
                 $a_id = get_the_ID();
                 $earned = gamipress_has_user_earned_achievement($a_id, $user_id);
-                $all_achievements[] = [
+                $ach_data = [
                     'id' => $a_id, 'type' => $type_slug, 'title' => get_the_title(), 'description' => get_the_content(),
                     'image' => get_the_post_thumbnail_url($a_id, 'medium') ?: '', 'earned' => $earned,
                     'points' => (int) get_post_meta($a_id, '_gamipress_points', true), 'requirements' => djz_format_requirements($a_id)
                 ];
+                $all_achievements[] = $ach_data;
+                if ($earned) $earned_achievements[] = $ach_data;
             }
             wp_reset_postdata();
         }
@@ -120,6 +117,10 @@ function djz_get_gamipress_handler($request) {
         'rankId' => $rank_id, 'earnedAchievements' => $earned_achievements, 'allRanks' => $all_ranks, 'allAchievements' => $all_achievements
     ]]);
 }
+
+// ==========================================
+// 2. UTILS (Menu & Newsletter)
+// ==========================================
 
 function djz_get_multilang_menu_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
@@ -157,34 +158,9 @@ function djz_mailpoet_subscribe_handler($request) {
     }
 }
 
-function djz_google_oauth_handler($request) {
-    $token = sanitize_text_field($request->get_param('token') ?? '');
-    if (empty($token)) return new WP_Error('no_token', 'Token is required', ['status' => 400]);
-    
-    $verify_url = add_query_arg('id_token', rawurlencode($token), 'https://oauth2.googleapis.com/tokeninfo');
-    $response = wp_remote_get($verify_url, ['timeout' => 10]);
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) return new WP_Error('invalid_token', 'Failed to verify Google token', ['status' => 401]);
-    
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    if (empty($body) || empty($body['email'])) return new WP_Error('invalid_token', 'Invalid body', ['status' => 401]);
-    
-    $email = sanitize_email($body['email']);
-    $name = sanitize_text_field($body['name'] ?? '');
-    $user = get_user_by('email', $email);
-    
-    if (!$user) {
-        $user_id = wp_create_user($email, wp_generate_password(), $email);
-        if (is_wp_error($user_id)) return $user_id;
-        wp_update_user(['ID' => $user_id, 'display_name' => $name, 'first_name' => current(explode(' ', $name))]);
-        $user = get_user_by('id', $user_id);
-    }
-    
-    if (class_exists('\SimpleJwtLogin\Classes\SimpleJwtLoginJWT')) {
-        $jwt_instance = new \SimpleJwtLogin\Classes\SimpleJwtLoginJWT();
-        return rest_ensure_response(['jwt' => $jwt_instance->getJwt($user), 'user' => ['id' => $user->ID, 'email' => $user->user_email, 'name' => $user->display_name]]);
-    }
-    return new WP_Error('jwt_plugin_missing', 'Simple JWT Login plugin missing', ['status' => 500]);
-}
+// ==========================================
+// 3. WOOCOMMERCE (Headless Products)
+// ==========================================
 
 function djz_get_products_with_lang_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? '');
@@ -226,20 +202,22 @@ function djz_get_products_with_lang_handler($request) {
     return new WP_Rest_Response($products, 200);
 }
 
-// --- REGISTRO ---
+// ==========================================
+// 4. ROTAS
+// ==========================================
 
 add_action('rest_api_init', function () {
-    $ns = 'djzeneyer/v1';
+    $ns = 'djzeneyer/v1'; // Mantivemos o seu namespace original para o frontend não quebrar
     
     register_rest_route($ns, '/menu', ['methods' => 'GET', 'callback' => 'djz_get_multilang_menu_handler', 'permission_callback' => '__return_true']);
     register_rest_route($ns, '/subscribe', ['methods' => 'POST', 'callback' => 'djz_mailpoet_subscribe_handler', 'permission_callback' => '__return_true']);
     register_rest_route($ns, '/products', ['methods' => 'GET', 'callback' => 'djz_get_products_with_lang_handler', 'permission_callback' => '__return_true', 'args' => ['lang' => ['required' => false, 'type' => 'string']]]);
     register_rest_route($ns, '/gamipress/(?P<user_id>\d+)', ['methods' => 'GET', 'callback' => 'djz_get_gamipress_handler', 'permission_callback' => '__return_true', 'args' => ['user_id' => ['required' => true, 'type' => 'integer']]]);
-    register_rest_route('simple-jwt-login/v1', '/auth/google', ['methods' => 'POST', 'callback' => 'djz_google_oauth_handler', 'permission_callback' => '__return_true']);
     
+    // Perfil de Usuário (Simples)
     register_rest_route($ns, '/user/update-profile', [
         'methods' => 'POST',
-        'permission_callback' => 'is_user_logged_in',
+        'permission_callback' => function() { return is_user_logged_in(); },
         'callback' => function($request) {
             $uid = get_current_user_id();
             if (!$uid) return new WP_Error('not_logged_in', 'User not authenticated', ['status' => 401]);
