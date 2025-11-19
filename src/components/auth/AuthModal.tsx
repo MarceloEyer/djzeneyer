@@ -132,7 +132,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                           shape="pill"
                           size="large"
                           text={mode === 'login' ? "signin_with" : "signup_with"}
-                          width="100%" 
                        />
                    </GoogleOAuthProvider>
                 </div>
