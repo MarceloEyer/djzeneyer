@@ -1,11 +1,12 @@
-// src/components/AuthModal.tsx - VERSÃO ZEN EYER (HEADLESS & CONTEXT)
+// src/components/auth/AuthModal.tsx - VERSÃO CORRIGIDA (WRAPPER DO GOOGLE)
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { GoogleLogin } from '@react-oauth/google'; // 📦 Lib oficial
-import { useUser } from "../../contexts/UserContext"; // 🧠 O Cérebro
+// 👇 IMPORTANTE: Adicionei GoogleOAuthProvider aqui
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'; 
+import { useUser } from '../../contexts/UserContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,7 +18,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const { t } = useTranslation();
   const navigate = useNavigate();
   
-  // Consumindo o Cérebro (Contexto)
   const { login, register, googleLogin, googleClientId } = useUser();
 
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -27,7 +27,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // ✅ Login/Registro Unificado (Via Contexto)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -41,16 +40,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       };
 
       if (mode === 'login') {
-        await login(data);
+        await login(data.email, data.password);
       } else {
-        await register(data);
+        await register(data.name || '', data.email, data.password);
       }
 
-      // Sucesso!
       console.log('✅ Autenticação realizada com sucesso!');
       if (onSuccess) onSuccess();
       onClose();
-      navigate('/dashboard'); // SPA Navigation (sem reload)
+      navigate('/dashboard');
 
     } catch (err: any) {
       console.error('❌ Auth error:', err);
@@ -60,7 +58,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     }
   };
 
-  // 🔥 Google OAuth (Via Componente Oficial)
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse.credential) return;
     
@@ -68,9 +65,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     setError('');
     
     try {
-      // Envia o ID Token para o nosso Backend validar
       await googleLogin(credentialResponse.credential);
-      
       if (onSuccess) onSuccess();
       onClose();
       navigate('/dashboard');
@@ -86,7 +81,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -95,24 +89,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
 
-        {/* Modal Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white"
-            aria-label="Close"
           >
             <X size={24} />
           </button>
 
           <div className="p-8">
-            {/* Header */}
             <div className="text-center mb-8">
               <h2 className="text-3xl font-black text-white mb-2">
                 {mode === 'login' ? (t('auth_welcome_back') || 'Bem-vindo de Volta') : (t('auth_create_account') || 'Criar Conta')}
@@ -124,40 +114,35 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </p>
             </div>
 
-            {/* Error Message */}
             {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center"
-              >
+              <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center">
                 {error}
-              </motion.div>
+              </div>
             )}
 
-            {/* 🔥 Google Login Button (Dinâmico) */}
+            {/* 🔥 CORREÇÃO AQUI: O Provider envolve o Login */}
             <div className="flex justify-center mb-6 w-full">
               {googleClientId ? (
                 <div className="w-full flex justify-center">
-                   {/* Google OAuth Provider já está no UserContext, mas o componente precisa do wrapper se for usado isolado. 
-                       Como importamos a lib, usamos direto aqui. */}
-                   <GoogleLogin
-                      onSuccess={handleGoogleSuccess}
-                      onError={() => setError('Login falhou')}
-                      theme="filled_black"
-                      shape="pill"
-                      size="large"
-                      text={mode === 'login' ? "signin_with" : "signup_with"}
-                      width="100%" // Tenta preencher largura
-                   />
+                   <GoogleOAuthProvider clientId={googleClientId}>
+                       <GoogleLogin
+                          onSuccess={handleGoogleSuccess}
+                          onError={() => setError('Login falhou')}
+                          theme="filled_black"
+                          shape="pill"
+                          size="large"
+                          text={mode === 'login' ? "signin_with" : "signup_with"}
+                          width="100%" 
+                       />
+                   </GoogleOAuthProvider>
                 </div>
               ) : (
-                // Skeleton loader enquanto carrega o ID do WordPress
-                <div className="w-full h-12 bg-white/10 animate-pulse rounded-full"></div>
+                <div className="w-full h-12 bg-white/10 animate-pulse rounded-full flex items-center justify-center text-xs text-white/40">
+                    Conectando ao servidor...
+                </div>
               )}
             </div>
 
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-white/10"></div>
@@ -167,7 +152,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </div>
             </div>
 
-            {/* Email/Pass Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === 'register' && (
                 <div>
@@ -232,7 +216,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </button>
             </form>
 
-            {/* Toggle Mode */}
             <div className="mt-6 text-center">
               <p className="text-white/60">
                 {mode === 'login' ? 'Não tem uma conta?' : 'Já tem uma conta?'}
