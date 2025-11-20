@@ -1,7 +1,7 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions
- * v12.0.3 - Modular & Optimized for Vite/React
+ * v12.0.4 - Modular & Optimized for Vite/React
  */
 
 if (!defined('ABSPATH')) exit;
@@ -28,19 +28,32 @@ require_once get_theme_file_path('/inc/seo.php');
 // 6. API REST Endpoints
 require_once get_theme_file_path('/inc/api.php');
 
-// Flyers
+/* ==========================================
+ * CUSTOM POST TYPES
+ * ========================================== */
+
+// Registro do CPT "Flyers" para Galeria Automática
 function create_flyer_post_type() {
     register_post_type('flyers',
         array(
             'labels' => array(
                 'name' => __('Flyers'),
-                'singular_name' => __('Flyer')
+                'singular_name' => __('Flyer'),
+                'add_new' => __('Adicionar Novo Flyer'),
+                'add_new_item' => __('Adicionar Novo Flyer de Evento'),
+                'edit_item' => __('Editar Flyer'),
+                'new_item' => __('Novo Flyer'),
+                'view_item' => __('Ver Flyer'),
+                'search_items' => __('Buscar Flyers'),
+                'not_found' => __('Nenhum flyer encontrado'),
+                'not_found_in_trash' => __('Nenhum flyer na lixeira')
             ),
             'public' => true,
             'has_archive' => false,
-            'show_in_rest' => true, // Habilita a API para o React ler
-            'supports' => array('title', 'thumbnail'), // Só precisa de Título e Imagem
+            'show_in_rest' => true, // CRUCIAL: Habilita API JSON para o React
+            'supports' => array('title', 'editor', 'thumbnail'), // Título + Imagem Destacada
             'menu_icon' => 'dashicons-format-gallery',
+            'rewrite' => array('slug' => 'flyers'),
         )
     );
 }
