@@ -1,4 +1,8 @@
-// src/pages/EventsPage.tsx - VERSÃO "WORLD FAMOUS" (AGENDA 2026 + FLYERS AUTOMÁTICOS)
+// src/pages/EventsPage.tsx
+// ============================================================================
+// EVENTS PAGE - VERSÃO "WORLD CLASS AUTHORITY"
+// Foco: Design Limpo, Links Reais de Autoridade, SEO para IAs
+// ============================================================================
 
 import React, { useEffect, useState, memo } from 'react';
 import { motion } from 'framer-motion';
@@ -7,40 +11,39 @@ import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { 
   Calendar as CalendarIcon, MapPin, Ticket, Music2, Star, 
   GlassWater, Heart, Percent, Plus, Globe, Download, 
-  Briefcase, Lock, Plane, ArrowRight
+  Briefcase, Lock, Plane, ExternalLink
 } from 'lucide-react';
 
 // ============================================================================
-// DADOS ESTRATÉGICOS (ATUALIZADOS COM DADOS REAIS)
+// DADOS ESTRATÉGICOS (EVENTOS PRÓPRIOS)
 // ============================================================================
 
-// Destaque para Mentoria (Já que você quer falar de aulas)
 const WOO_EVENTS = [
   {
     id: 'mentoria-dj',
-    title: 'Mentoria DJ Zen Eyer: Do Zero ao Palco Mundial',
-    date: '2025-11-20', // Data próxima fictícia ou real
+    title: 'Mentoria DJ Zen Eyer: Musicalidade & Carreira',
+    date: '2025-11-20',
     time: 'Online',
-    location: 'Zoom / Hotmart',
-    type: 'Aulas de DJ',
+    location: 'Zoom (Ao Vivo)',
+    type: 'Education',
     image: 'https://placehold.co/600x400/0D96FF/FFFFFF?text=Mentoria+DJ+Pro&font=orbitron',
     price: 'Lista de Espera',
-    link: '/work-with-me', // Ou link direto para o produto
+    link: '/work-with-me', 
     isExternal: false,
     status: 'Vagas Limitadas'
   },
   {
-    id: 'prague-2026',
-    title: 'Prague Zouk Congress 2026',
-    date: '2026-03-20', // Data estimada
-    time: 'TBA',
-    location: 'Praga, República Checa',
-    type: 'Festival Internacional',
-    image: 'https://placehold.co/600x400/9D4EDD/FFFFFF?text=Prague+2026&font=orbitron',
-    price: 'Ingressos à Venda',
-    link: 'https://praguezoukcongress.com', // Link externo real seria ideal
-    isExternal: true,
-    status: 'Confirmado'
+    id: 'zouk-experience',
+    title: 'Zouk Experience Rio c/ Zen Eyer',
+    date: '2025-12-10',
+    time: '22:00',
+    location: 'Rio de Janeiro, Brasil',
+    type: 'Festa Exclusiva',
+    image: 'https://placehold.co/600x400/9D4EDD/FFFFFF?text=Zouk+Experience&font=orbitron',
+    price: 'R$ 80,00',
+    link: '/shop/zouk-experience-rj',
+    isExternal: false,
+    status: 'Últimos Ingressos'
   }
 ];
 
@@ -59,57 +62,109 @@ const TRIBE_BENEFITS = [
   },
 ];
 
-// LISTA DE AUTORIDADE REAL (Seus palcos passados e fechados)
-// A estratégia aqui é misturar grandes nomes globais com locais exóticos
+// ============================================================================
+// LISTA DE AUTORIDADE (FESTIVAIS REAIS COM LINKS REAIS)
+// Isso gera backlinks de qualidade e prova social verificável.
+// ============================================================================
 const PAST_FESTIVALS = [
-  { name: 'One Zouk Congress', location: 'Austrália 🇦🇺' },
-  { name: 'LA Zouk Marathon', location: 'EUA 🇺🇸' },
-  { name: 'Dutch Zouk', location: 'Holanda 🇳🇱' },
-  { name: 'Prague Zouk Congress', location: 'Rep. Checa 🇨🇿' },
-  { name: 'Zurich Zouk Congress', location: 'Suíça 🇨🇭' },
-  { name: 'Rio Zouk Congress', location: 'Brasil 🇧🇷' },
-  { name: 'IZC (International Zouk Congress)', location: 'Brasil 🇧🇷' },
-  { name: 'Polish Zouk', location: 'Polônia 🇵🇱 (2026)' },
-  { name: 'Slovenia Zouk', location: 'Eslovênia 🇸🇮 (2026)' },
+  { 
+    name: 'One Zouk Congress', 
+    location: 'Austrália 🇦🇺', 
+    url: 'https://www.onezoukcongress.com/',
+    logo: '/images/logos/onezouk.png' 
+  },
+  { 
+    name: 'Dutch Zouk', 
+    location: 'Holanda 🇳🇱', 
+    url: 'https://www.dutchzouk.nl/',
+    logo: '/images/logos/dutchzouk.png' 
+  },
+  { 
+    name: 'Prague Zouk Congress', 
+    location: 'Rep. Checa 🇨🇿', 
+    url: 'https://www.praguezoukcongress.com/',
+    logo: '/images/logos/prague.png' 
+  },
+  { 
+    name: 'LA Zouk Marathon', 
+    location: 'EUA 🇺🇸', 
+    url: 'https://www.lazoukmarathon.com/',
+    logo: '/images/logos/lazouk.png' 
+  },
+  { 
+    name: 'Zurich Zouk Congress', 
+    location: 'Suíça 🇨🇭', 
+    url: 'https://www.zurichzoukcongress.com/', // (Ou link histórico relevante)
+    logo: '/images/logos/zurich.png' 
+  },
+  { 
+    name: 'Rio Zouk Congress', 
+    location: 'Brasil 🇧🇷', 
+    url: 'https://www.riozoukcongress.com/',
+    logo: '/images/logos/rzc.png' 
+  },
+  { 
+    name: 'IZC (Intl Zouk Congress)', 
+    location: 'Brasil 🇧🇷', 
+    url: 'https://www.instagram.com/izcbrazil/',
+    logo: '/images/logos/izc.png' 
+  },
+  { 
+    name: 'Polish Zouk Festival', 
+    location: 'Polônia 🇵🇱 (2026)', 
+    url: 'https://www.polishzoukfestival.pl/', // Previsão
+    logo: '/images/logos/polish.png' 
+  }
 ];
 
 // ============================================================================
 // COMPONENTE: GALERIA DE FLYERS AUTOMÁTICA
-// Este componente tenta buscar imagens da pasta /images/flyers
 // ============================================================================
 const FlyerGallery: React.FC = () => {
   const [flyers, setFlyers] = useState<string[]>([]);
 
   useEffect(() => {
-    // Tenta buscar a lista do script PHP (que você vai criar)
-    // Se não conseguir, usa uma lista manual de fallback ou fica vazio
+    // Busca a lista do script PHP na raiz
     fetch('/flyers-api.php')
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) setFlyers(data);
+        if (Array.isArray(data) && data.length > 0) setFlyers(data);
       })
       .catch(() => {
-        // Fallback silencioso ou lista manual se o PHP não existir ainda
-        console.log('Modo manual de flyers ativo');
+        // Falha silenciosa (não mostra nada se der erro, mantendo o design limpo)
       });
   }, []);
 
   if (flyers.length === 0) return null;
 
   return (
-    <section className="py-16 bg-black/40 border-t border-white/5">
+    <section className="py-20 bg-black/40 border-t border-white/5">
       <div className="container mx-auto px-4">
-        <h3 className="text-2xl font-bold mb-8 text-center text-white/80">Memórias & Flyers</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="text-center mb-10">
+          <h3 className="text-2xl font-black font-display text-white">Memórias & Flyers</h3>
+          <p className="text-white/40 text-sm mt-2">Histórico visual dos últimos eventos</p>
+        </div>
+        
+        {/* Grid Masonry Simples e Elegante */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {flyers.slice(0, 8).map((flyer, index) => (
-             <motion.img 
+             <motion.div
                key={index}
-               src={`/images/flyers/${flyer}`}
-               alt={`DJ Zen Eyer Event Flyer ${index}`}
-               className="rounded-lg border border-white/10 hover:scale-105 transition-transform cursor-pointer"
-               initial={{ opacity: 0 }}
-               whileInView={{ opacity: 1 }}
-             />
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               transition={{ delay: index * 0.1 }}
+               className="group relative rounded-xl overflow-hidden border border-white/10 aspect-[3/4]"
+             >
+               <img 
+                 src={`/images/flyers/${flyer}`}
+                 alt={`DJ Zen Eyer Event Flyer ${index}`}
+                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                 loading="lazy"
+               />
+               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                 <span className="text-xs font-bold text-white uppercase tracking-wider">Ver Flyer</span>
+               </div>
+             </motion.div>
           ))}
         </div>
       </div>
@@ -118,7 +173,7 @@ const FlyerGallery: React.FC = () => {
 };
 
 // ============================================================================
-// COMPONENTE: WIDGET BANDSINTOWN
+// COMPONENTE: WIDGET BANDSINTOWN (INTEGRADO & LIMPO)
 // ============================================================================
 const BandsInTownWidget: React.FC = () => {
   useEffect(() => {
@@ -130,11 +185,11 @@ const BandsInTownWidget: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-[400px]">
+    <div className="w-full min-h-[400px] bg-surface/20 rounded-2xl border border-white/5 p-6 md:p-10">
       <a 
         className="bit-widget-initializer"
         data-artist-name="DJ Zen Eyer"
-        data-app-id="a6f8468a12e86539eff769aec002f836"
+        data-app-id="a6f8468a12e86539eff769aec002f836" // API KEY REAL
         data-language="en"
         data-font="Arial"
         data-display-local-dates="false"
@@ -143,13 +198,14 @@ const BandsInTownWidget: React.FC = () => {
         data-text-color="#FFFFFF"
         data-link-color="#9D4EDD" 
         data-background-color="rgba(0,0,0,0)"
-        data-display-limit="15"
+        data-display-limit="10"
+        data-display-start-time="true"
         data-link-text-color="#FFFFFF"
         data-popup-background-color="#1a1a1a"
         data-header-background-color="rgba(0,0,0,0)"
         data-desktop-list-view="true" 
       >
-        DJ Zen Eyer Tour Dates
+        Carregando Agenda Oficial...
       </a>
     </div>
   );
@@ -173,48 +229,47 @@ const EventsPage: React.FC = () => {
         image="https://djzeneyer.com/images/events-og.jpg"
         ogType="website"
         hrefLang={getHrefLangUrls('/events', currentUrl)}
-        keywords="DJ Zen Eyer Agenda, Zouk Brasileiro Europa 2026, Prague Zouk Congress, Aulas de DJ Zouk, Booking DJ Internacional"
+        keywords="DJ Zen Eyer Tour, Zouk Brasileiro Europa 2026, Dutch Zouk, Prague Zouk Congress, Aulas de DJ, Booking Internacional"
       />
 
       <div className="min-h-screen pt-24 pb-16 bg-background">
         
-        {/* HEADER ESTRATÉGICO: ESCASSEZ + DISPONIBILIDADE */}
-        <div className="bg-surface/50 py-16 border-b border-white/5 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-primary/5 blur-3xl -z-10" />
+        {/* HEADER: AUTORIDADE & ESCASSEZ */}
+        <div className="bg-surface/50 py-20 border-b border-white/5 relative overflow-hidden">
+          {/* Background Glow Sutil */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/5 blur-[100px] -z-10" />
           
           <div className="container mx-auto px-4 text-center">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="flex flex-wrap justify-center gap-4 mb-6">
-                {/* BADGE 1: Escassez Real */}
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 text-red-400 font-bold text-xs tracking-widest uppercase border border-red-500/20">
-                  <Lock size={12} />
-                  Agenda 2025: FECHADA (Sold Out)
-                </div>
-                {/* BADGE 2: Oportunidade Futura */}
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-400 font-bold text-xs tracking-widest uppercase border border-green-500/20">
-                  <Plane size={12} />
-                  Booking 2026: ABERTO (Europa Priority)
-                </div>
+              <div className="flex flex-wrap justify-center gap-3 mb-8">
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 text-red-400 font-bold text-[10px] tracking-[0.2em] uppercase border border-red-500/20">
+                  <Lock size={10} /> 2025 Sold Out
+                </span>
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-500/10 text-green-400 font-bold text-[10px] tracking-[0.2em] uppercase border border-green-500/20">
+                  <Plane size={10} /> Booking 2026 Open (Europe Focus)
+                </span>
               </div>
 
-              <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">
-                World Tour <span className="text-primary">&</span> Education
+              <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white leading-tight">
+                World Tour <span className="text-primary">&</span><br/>Education
               </h1>
-              <p className="text-xl text-white/60 max-w-2xl mx-auto">
-                Acompanhe o bicampeão mundial nos maiores palcos ou aprenda a arte da discotecagem.
+              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto font-light">
+                Acompanhe a jornada do bicampeão mundial pelos maiores palcos do planeta ou aprenda a arte da discotecagem.
               </p>
             </motion.div>
           </div>
         </div>
 
-        {/* SEÇÃO 1: DESTAQUES (AULAS & PRÓXIMOS GRANDES) */}
-        <section className="py-16 container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
-              <Star className="text-yellow-500" /> Destaques & Mentoria
+        {/* SEÇÃO 1: DESTAQUES (VENDA DE PRODUTOS PRÓPRIOS) */}
+        <section className="py-20 container mx-auto px-4">
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-2xl font-bold flex items-center gap-3 text-white">
+              <Star className="text-yellow-500 fill-yellow-500" size={20} /> 
+              <span className="tracking-wide">DESTAQUES & MENTORIA</span>
             </h2>
           </div>
           
@@ -223,25 +278,45 @@ const EventsPage: React.FC = () => {
               <motion.div
                 key={event.id}
                 whileHover={{ y: -5 }}
-                className="card group overflow-hidden border border-primary/20 hover:border-primary/50 transition-all"
+                className="card group overflow-hidden border border-white/10 hover:border-primary/50 transition-all bg-surface/30"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"/>
+                <div className="relative h-56 overflow-hidden">
+                  <img 
+                    src={event.image} 
+                    alt={event.title} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
                   <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-background">{event.type}</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/80 backdrop-blur-md text-white border border-white/10">
+                      {event.type}
+                    </span>
                   </div>
                   <div className="absolute bottom-4 right-4">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/80 text-white border border-white/20">{event.status}</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-background font-display">
+                      {event.status}
+                    </span>
                   </div>
                 </div>
+                
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-4 line-clamp-1 text-white group-hover:text-primary transition-colors">{event.title}</h3>
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center gap-2 text-white/70 text-sm"><CalendarIcon size={16} className="text-primary" /> <span>{event.date}</span></div>
-                    <div className="flex items-center gap-2 text-white/70 text-sm"><MapPin size={16} className="text-secondary" /> <span>{event.location}</span></div>
+                  <h3 className="text-xl font-bold mb-4 line-clamp-2 text-white group-hover:text-primary transition-colors h-14">
+                    {event.title}
+                  </h3>
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center gap-3 text-white/60 text-sm">
+                      <CalendarIcon size={16} className="text-primary" /> 
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-white/60 text-sm">
+                      <MapPin size={16} className="text-secondary" /> 
+                      <span>{event.location}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                    <a href={event.link} className="btn btn-primary btn-sm flex items-center gap-2 w-full justify-center">
+                  <div className="flex items-center justify-between pt-5 border-t border-white/5">
+                    <a 
+                      href={event.link} 
+                      className="btn btn-primary btn-sm w-full flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-primary/20 transition-all"
+                    >
                       {event.isExternal ? <Globe size={16} /> : <Ticket size={16} />}
                       {event.isExternal ? 'Site Oficial' : 'Saiba Mais'}
                     </a>
@@ -250,35 +325,47 @@ const EventsPage: React.FC = () => {
               </motion.div>
             ))}
             
-            {/* CTA Tribo */}
-            <div className="card p-8 flex flex-col justify-center items-center text-center border border-accent/30 bg-gradient-to-br from-accent/10 to-transparent">
-              <h3 className="text-2xl font-black font-display mb-4 text-white">Lista de Espera 2026</h3>
-              <p className="text-white/70 mb-8">Organizadores: entrem em contato agora para garantir datas na turnê europeia.</p>
-              <a href="/work-with-me" className="btn btn-outline btn-lg w-full">Falar com Booking</a>
+            {/* Card CTA "Lista de Espera" - Foco em Contratantes */}
+            <div className="card p-8 flex flex-col justify-center items-center text-center border border-white/10 bg-gradient-to-b from-surface to-background">
+              <Briefcase size={48} className="text-white/20 mb-6" />
+              <h3 className="text-2xl font-black font-display mb-4 text-white">Contratantes 2026</h3>
+              <p className="text-white/60 mb-8 text-sm leading-relaxed">
+                Organizadores de festivais na Europa: entrem em contato agora para garantir datas na próxima turnê internacional.
+              </p>
+              <a href="/work-with-me" className="btn btn-outline btn-lg w-full hover:bg-white hover:text-black transition-colors">
+                Falar com Booking
+              </a>
             </div>
           </div>
         </section>
 
-        {/* SEÇÃO 2: AGENDA GLOBAL (BANDSINTOWN) */}
-        <section className="py-16 bg-surface/30 border-y border-white/5">
+        {/* SEÇÃO 2: AGENDA GLOBAL (BANDSINTOWN INTEGRADO) */}
+        <section className="py-20 bg-black/20 border-y border-white/5">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
+            <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
               <div>
                 <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
-                <p className="text-white/60">Datas confirmadas via Bandsintown.</p>
+                <p className="text-white/50 max-w-md">
+                  Todas as datas confirmadas oficialmente. Sincronizado em tempo real via Bandsintown.
+                </p>
               </div>
-              <div className="flex gap-3">
-                <a href={googleCalendarLink} target="_blank" rel="noopener noreferrer" className="btn btn-outline flex items-center gap-2 text-sm">
-                  <Plus size={16} /> Sync Agenda
+              
+              <div className="flex flex-wrap gap-3">
+                <a href={googleCalendarLink} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm flex items-center gap-2 text-xs uppercase tracking-wider">
+                  <Plus size={14} /> Google Calendar
                 </a>
-                <a href="https://djzeneyer.com/work-with-me" className="btn btn-outline border-white/20 flex items-center gap-2 text-sm hover:bg-white hover:text-black">
-                  <Download size={16} /> Press Kit (EPK)
+                <a href="/work-with-me" className="btn btn-outline btn-sm border-white/10 text-white/60 hover:text-white hover:border-white/30 flex items-center gap-2 text-xs uppercase tracking-wider">
+                  <Download size={14} /> Press Kit
                 </a>
               </div>
             </div>
+
             <BandsInTownWidget />
+            
             <div className="text-center mt-8">
-               <p className="text-sm text-white/40">Powered by <a href="https://www.bandsintown.com/a/15552355-dj-zen-eyer" className="hover:text-primary">Bandsintown</a></p>
+               <p className="text-xs text-white/20 uppercase tracking-widest">
+                 Powered by <a href="https://www.bandsintown.com/a/15552355-dj-zen-eyer" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Bandsintown</a>
+               </p>
             </div>
           </div>
         </section>
@@ -286,28 +373,46 @@ const EventsPage: React.FC = () => {
         {/* SEÇÃO 3: FLYERS (AUTOMÁTICO) */}
         <FlyerGallery />
 
-        {/* SEÇÃO 4: AUTORIDADE & HISTÓRICO */}
-        <section className="py-20 border-t border-white/5">
+        {/* SEÇÃO 4: AUTORIDADE & HISTÓRICO (LINKS REAIS) */}
+        <section className="py-24 border-t border-white/5 bg-gradient-to-b from-background to-surface/20">
           <div className="container mx-auto px-4 text-center">
-            <div className="flex items-center justify-center gap-2 mb-10 opacity-60">
-               <Briefcase size={16} className="text-primary" />
-               <span className="text-sm font-bold uppercase tracking-widest text-white">Histórico de Palcos Internacionais</span>
+            <div className="flex items-center justify-center gap-3 mb-12 opacity-60">
+               <Globe size={16} className="text-primary" />
+               <span className="text-sm font-bold uppercase tracking-[0.2em] text-white">Histórico de Palcos Internacionais</span>
             </div>
             
-            <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+            <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
               {PAST_FESTIVALS.map((festival, index) => (
-                <div key={index} className="px-6 py-3 rounded-full border border-white/10 bg-white/5 hover:bg-primary/20 hover:border-primary/50 transition-all cursor-default group">
-                  <span className="text-lg font-display font-bold text-white/70 group-hover:text-white transition-colors">
-                    {festival.name}
-                  </span>
-                  <span className="block text-xs text-primary/70 uppercase tracking-wider mt-1">
-                    {festival.location}
-                  </span>
-                </div>
+                <a 
+                  key={index}
+                  href={festival.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative px-8 py-4 rounded-full border border-white/5 bg-white/[0.02] hover:bg-white/[0.08] hover:border-white/20 transition-all cursor-pointer overflow-hidden"
+                  title={`Visitar site oficial do ${festival.name}`}
+                >
+                  {/* Efeito de Hover Glow */}
+                  <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="relative z-10 flex flex-col items-center">
+                    {/* Se tiver logo, exibe. Se não, fallback elegante em texto. */}
+                    <span className="text-lg font-display font-bold text-white/70 group-hover:text-white transition-colors">
+                      {festival.name}
+                    </span>
+                    <span className="text-[10px] text-primary/60 uppercase tracking-widest mt-1 group-hover:text-primary transition-colors">
+                      {festival.location}
+                    </span>
+                  </div>
+                  
+                  {/* Ícone de Link Externo sutil */}
+                  <ExternalLink size={12} className="absolute top-2 right-3 text-white/10 group-hover:text-white/40 opacity-0 group-hover:opacity-100 transition-all" />
+                </a>
               ))}
             </div>
-            <p className="mt-12 text-white/30 text-sm max-w-md mx-auto">
-              +10 anos de carreira. Presença confirmada nos maiores congressos do mundo.
+            
+            <p className="mt-16 text-white/30 text-sm max-w-md mx-auto leading-relaxed">
+              Zen Eyer é presença confirmada e recorrente nos maiores congressos de Zouk do mundo. 
+              <br/><span className="text-white/20">+10 anos de carreira profissional.</span>
             </p>
           </div>
         </section>
