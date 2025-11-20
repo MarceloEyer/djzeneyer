@@ -9,7 +9,7 @@ declare global {
     wpData: {
       siteUrl: string;
       restUrl: string;
-      nonce: string;
+      nonce: string; 
     };
   }
 }
