@@ -1,6 +1,6 @@
-// src/pages/EventsPage.tsx - VERSÃO FINAL (COM BANDSINTOWN REAL INTEGRADO)
+// src/pages/EventsPage.tsx - VERSÃO FINAL "REFERÊNCIA MUNDIAL"
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO'; 
@@ -14,32 +14,31 @@ import {
   Heart, 
   Percent,
   Plus,
-  Globe
+  Globe,
+  Download,
+  Briefcase
 } from 'lucide-react';
 
 // ============================================================================
-// DADOS ESTRATÉGICOS (MOCKUP PARA WOOCOMMERCE E AUTORIDADE)
+// DADOS ESTRATÉGICOS
 // ============================================================================
 
-/**
- * Eventos Próprios (WooCommerce) - Destaque Ouro (Venda Direta)
- */
 const WOO_EVENTS = [
   {
     id: 'woo-1',
-    title: 'Mentoria DJ Zen Eyer: Turma X',
+    title: 'Mentoria DJ Zen Eyer: Masterclass de Musicalidade',
     date: '2025-11-20',
     time: '19:00',
     location: 'Online (Zoom)',
     type: 'Mentoria',
-    image: 'https://placehold.co/600x400/0D96FF/FFFFFF?text=Mentoria+DJ&font=orbitron',
+    image: 'https://placehold.co/600x400/0D96FF/FFFFFF?text=Masterclass+Musicalidade&font=orbitron',
     price: 'R$ 497,00',
-    link: '/shop/mentoria-turma-x',
+    link: '/shop/mentoria-musicalidade',
     isExternal: false
   },
   {
     id: 'woo-2',
-    title: 'Zouk Experience c/ Zen Eyer',
+    title: 'Zouk Experience Rio c/ Zen Eyer',
     date: '2025-12-10',
     time: '22:00',
     location: 'Rio de Janeiro, RJ',
@@ -51,9 +50,6 @@ const WOO_EVENTS = [
   }
 ];
 
-/**
- * Benefícios da Tribo Zen (Gamificação Real)
- */
 const TRIBE_BENEFITS = [
   { 
     id: 'discount', 
@@ -67,7 +63,7 @@ const TRIBE_BENEFITS = [
     id: 'drink', 
     icon: <GlassWater size={24} />, 
     title: 'Welcome Drink', 
-    desc: 'Um drink por conta da casa em eventos produzidos por nós.',
+    desc: 'Drink cortesia em eventos produzidos pela Tribo Zen.',
     color: 'text-blue-400',
     bg: 'bg-blue-400/10'
   },
@@ -75,61 +71,50 @@ const TRIBE_BENEFITS = [
     id: 'dance', 
     icon: <Heart size={24} />, 
     title: 'Dança Garantida', 
-    desc: 'Prioridade para dançar com o artista durante o social.',
+    desc: 'Prioridade para dançar com o artista nos sociais.',
     color: 'text-pink-400',
     bg: 'bg-pink-400/10'
   },
 ];
 
 /**
- * Logos de Festivais Passados (Prova Social)
+ * LOGOS DE AUTORIDADE (PAST EVENTS)
+ * Estratégia: Use logos reais em PNG branco transparente para impacto visual.
+ * Enquanto não tiver as imagens, o código usa texto como fallback.
  */
 const PAST_FESTIVALS = [
-  { name: 'Brazilian Dance Festival', location: 'Amsterdam' },
-  { name: 'Prague Zouk Congress', location: 'República Checa' },
-  { name: 'Dutch Zouk', location: 'Holanda' },
-  { name: 'Ilha do Zouk', location: 'Brasil' },
-  { name: 'Rio Zouk Congress', location: 'Brasil' },
-  { name: 'ZoukFest', location: 'Londres' },
+  { name: 'Brazilian Dance Festival', location: 'Amsterdam', logo: '/images/logos/bdf.png' },
+  { name: 'Prague Zouk Congress', location: 'República Checa', logo: '/images/logos/prague.png' },
+  { name: 'Dutch Zouk', location: 'Holanda', logo: '/images/logos/dutch.png' },
+  { name: 'Ilha do Zouk', location: 'Brasil', logo: '/images/logos/ilha.png' },
+  { name: 'Rio Zouk Congress', location: 'Brasil', logo: '/images/logos/rzc.png' },
+  { name: 'ZoukFest', location: 'Londres', logo: '/images/logos/zoukfest.png' },
 ];
 
 // ============================================================================
-// COMPONENTE: BANDSINTOWN WIDGET (AUTOMÁTICO)
+// COMPONENTE: BANDSINTOWN WIDGET (AUTOMÁTICO & SEO FRIENDLY)
 // ============================================================================
 
 const BandsInTownWidget: React.FC = () => {
   useEffect(() => {
-    // Injeta o script oficial do Bandsintown
     const script = document.createElement('script');
     script.src = "https://widget.bandsintown.com/main.min.js";
     script.async = true;
     document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    }
+    return () => { document.body.removeChild(script); }
   }, []);
 
   return (
     <div className="w-full min-h-[400px]">
-      {/* Configuração do Widget:
-         - Artist Name: "DJ Zen Eyer" (Conforme sua URL no BIT)
-         - App ID: Sua API Key fornecida
-         - Cores: Configuradas para Transparente/Branco para bater com seu tema
-      */}
       <a 
         className="bit-widget-initializer"
-        
         data-artist-name="DJ Zen Eyer"
-        data-app-id="a6f8468a12e86539eff769aec002f836"
-        
+        data-app-id="a6f8468a12e86539eff769aec002f836" // Sua API Key Real
         data-language="en"
         data-font="Arial"
         data-display-local-dates="false"
         data-display-past-dates="true"
         data-auto-style="false"
-        
-        // Estilização Dark/Neon Customizada
         data-text-color="#FFFFFF"
         data-link-color="#9D4EDD" 
         data-background-color="rgba(0,0,0,0)"
@@ -175,7 +160,6 @@ const EventCard: React.FC<{ event: typeof WOO_EVENTS[0] }> = memo(({ event }) =>
       <h3 className="text-xl font-bold mb-4 line-clamp-1 text-white group-hover:text-primary transition-colors">
         {event.title}
       </h3>
-      
       <div className="space-y-2 mb-6">
         <div className="flex items-center gap-2 text-white/70 text-sm">
           <CalendarIcon size={16} className="text-primary" />
@@ -186,15 +170,11 @@ const EventCard: React.FC<{ event: typeof WOO_EVENTS[0] }> = memo(({ event }) =>
           <span>{event.location}</span>
         </div>
       </div>
-
       <div className="flex items-center justify-between pt-4 border-t border-white/10">
         <span className="text-2xl font-black text-white">{event.price}</span>
-        <a 
-          href={event.link}
-          className="btn btn-primary btn-sm flex items-center gap-2"
-        >
+        <a href={event.link} className="btn btn-primary btn-sm flex items-center gap-2">
           <Ticket size={16} />
-          Comprar
+          Garantir Vaga
         </a>
       </div>
     </div>
@@ -208,50 +188,54 @@ EventCard.displayName = 'EventCard';
 const EventsPage: React.FC = () => {
   const { t } = useTranslation();
   const currentUrl = 'https://djzeneyer.com/events';
-  
-  // Link para adicionar ao Google Calendar (Pessoal)
   const googleCalendarId = 'eyer.marcelo@gmail.com'; 
   const googleCalendarLink = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(googleCalendarId)}`;
 
   return (
     <>
       <HeadlessSEO
-        title="Agenda & Tickets - DJ Zen Eyer | Zouk Brasileiro e Festivais"
-        description="Confira a agenda completa de DJ Zen Eyer. Ingressos para festas, workshops e mentorias, além das datas da turnê internacional de Zouk."
+        title="Tour & Agenda - DJ Zen Eyer | Zouk Brasileiro World Tour"
+        description="Agenda oficial do DJ Zen Eyer. Ingressos para festas, workshops e as datas confirmadas da turnê mundial de Zouk Brasileiro."
         url={currentUrl}
         image="https://djzeneyer.com/images/events-og.jpg"
         ogType="website"
         hrefLang={getHrefLangUrls('/events', currentUrl)}
+        keywords="DJ Zen Eyer Tour Dates, Brazilian Zouk Festivals, Zouk Agenda, DJ Booking"
       />
 
       <div className="min-h-screen pt-24 pb-16 bg-background">
         
-        {/* HEADER */}
-        <div className="bg-surface/50 py-16 border-b border-white/5">
+        {/* HEADER & BOOKING STATUS */}
+        <div className="bg-surface/50 py-16 border-b border-white/5 relative overflow-hidden">
+          {/* Efeito de fundo sutil */}
+          <div className="absolute top-0 left-0 w-full h-full bg-primary/5 blur-3xl -z-10" />
+          
           <div className="container mx-auto px-4 text-center">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-bold text-sm mb-6 border border-primary/20">
-                <Music2 size={16} />
-                AGENDA OFICIAL 2025
+              {/* BADGE DE STATUS DE BOOKING (Para Jornalistas/Organizadores) */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-400 font-bold text-xs tracking-widest uppercase mb-6 border border-green-500/20">
+                <Globe size={12} />
+                Now Booking: Europe & USA 2025/26
               </div>
+
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">
-                Tour & <span className="text-primary">Experiências</span>
+                World Tour <span className="text-primary">&</span> Experiências
               </h1>
               <p className="text-xl text-white/60 max-w-2xl mx-auto">
-                Encontre DJ Zen Eyer nos maiores festivais do mundo ou participe de eventos exclusivos da nossa comunidade.
+                Acompanhe o bicampeão mundial nos maiores palcos de Zouk do planeta.
               </p>
             </motion.div>
           </div>
         </div>
 
-        {/* SEÇÃO 1: DESTAQUES (WOOCOMMERCE / VENDAS) */}
+        {/* SEÇÃO 1: DESTAQUES (VENDA DIRETA) */}
         <section className="py-16 container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <Star className="text-yellow-500" /> Destaques & Ingressos
+            <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+              <Star className="text-yellow-500" /> Eventos Exclusivos (Venda Direta)
             </h2>
           </div>
           
@@ -260,16 +244,16 @@ const EventsPage: React.FC = () => {
               <EventCard key={event.id} event={event} />
             ))}
             
-            {/* Card da Tribo (Fixo) */}
+            {/* Card da Tribo */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="card p-8 flex flex-col justify-center items-center text-center border border-accent/30 bg-gradient-to-br from-accent/10 to-transparent"
             >
-              <h3 className="text-2xl font-black font-display mb-4 text-white">Não achou sua cidade?</h3>
+              <h3 className="text-2xl font-black font-display mb-4 text-white">Quer na sua cidade?</h3>
               <p className="text-white/70 mb-8">
-                Entre na Tribo Zen para pedir eventos e ser avisado em primeira mão.
+                Entre na Tribo Zen para solicitar eventos e ter preferência na compra.
               </p>
               <a href="/zentribe" className="btn btn-outline btn-lg w-full">
                 Entrar na Tribo
@@ -278,49 +262,56 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* SEÇÃO 2: AGENDA GLOBAL (BANDSINTOWN REAL) */}
+        {/* SEÇÃO 2: AGENDA GLOBAL (BANDSINTOWN) */}
         <section className="py-16 bg-surface/30 border-y border-white/5">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
               <div>
                 <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
-                <p className="text-white/60">Todas as datas confirmadas da turnê.</p>
+                <p className="text-white/60">Todas as datas confirmadas em festivais internacionais.</p>
               </div>
               
-              {/* Botão de Exportar Calendário Google */}
-              <a 
-                href={googleCalendarLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-outline flex items-center gap-2 group hover:bg-white hover:text-background"
-              >
-                <Plus size={18} className="group-hover:rotate-90 transition-transform" />
-                Sincronizar com Google Calendar
-              </a>
+              <div className="flex gap-3">
+                <a 
+                  href={googleCalendarLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline flex items-center gap-2 text-sm"
+                >
+                  <Plus size={16} />
+                  Sync Google Calendar
+                </a>
+                <a 
+                  href="/press-kit" // Link futuro para página de imprensa
+                  className="btn btn-outline border-white/20 flex items-center gap-2 text-sm hover:bg-white hover:text-black"
+                >
+                  <Download size={16} />
+                  Press Kit (EPK)
+                </a>
+              </div>
             </div>
 
-            {/* WIDGET AUTOMÁTICO DO BANDSINTOWN */}
             <div className="w-full">
               <BandsInTownWidget />
             </div>
             
             <div className="text-center mt-8">
                <p className="text-sm text-white/40">
-                 Dados fornecidos oficialmente por <a href="https://www.bandsintown.com/a/15552355-dj-zen-eyer" target="_blank" className="hover:text-primary">Bandsintown</a>
+                 Powered by <a href="https://www.bandsintown.com/a/15552355-dj-zen-eyer" target="_blank" className="hover:text-primary transition-colors">Bandsintown</a>
                </p>
             </div>
           </div>
         </section>
 
-        {/* SEÇÃO 3: BENEFÍCIOS DA TRIBO (GAMIFICAÇÃO REAL) */}
+        {/* SEÇÃO 3: BENEFÍCIOS DA TRIBO */}
         <section className="py-20 container mx-auto px-4">
           <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 rounded-3xl p-8 md:p-12 border border-white/10">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-black font-display mb-4">
-                Vantagens de ir aos eventos com a <span className="text-primary">Tribo Zen</span>
+              <h2 className="text-3xl md:text-4xl font-black font-display mb-4 text-white">
+                Experiência <span className="text-primary">Tribo Zen</span>
               </h2>
               <p className="text-xl text-white/60">
-                A experiência é outra quando você faz parte.
+                Vantagens reais para quem vive a música.
               </p>
             </div>
 
@@ -337,30 +328,43 @@ const EventsPage: React.FC = () => {
             </div>
             
             <div className="mt-12 text-center">
-              <a href="/zentribe" className="btn btn-primary btn-lg px-12">
-                Quero Esses Benefícios
+              <a href="/zentribe" className="btn btn-primary btn-lg px-12 shadow-lg shadow-primary/20">
+                Quero Ser Membro
               </a>
             </div>
           </div>
         </section>
 
-        {/* SEÇÃO 4: PAST EVENTS (PROVA SOCIAL) */}
-        <section className="py-16 border-t border-white/5">
+        {/* SEÇÃO 4: PAST EVENTS (AUTORIDADE VISUAL) */}
+        <section className="py-20 border-t border-white/5">
           <div className="container mx-auto px-4 text-center">
-            <p className="text-sm font-bold uppercase tracking-widest text-white/30 mb-8 flex items-center justify-center gap-2">
-               <Globe size={14} /> Histórico de Palcos & Festivais
-            </p>
+            <div className="flex items-center justify-center gap-2 mb-10 opacity-60">
+               <Briefcase size={16} className="text-primary" />
+               <span className="text-sm font-bold uppercase tracking-widest text-white">Histórico de Palcos & Festivais</span>
+            </div>
             
-            <div className="flex flex-wrap justify-center gap-x-12 gap-y-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-              {/* DICA: Substitua estas divs por tags <img src="/logos/festival.png" /> 
-                 para impacto visual máximo. Use logos brancos com fundo transparente.
-              */}
+            <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-10">
               {PAST_FESTIVALS.map((festival, index) => (
-                <div key={index} className="text-xl font-display font-bold text-white/60 hover:text-white hover:scale-105 transition-all cursor-default">
-                  {festival.name}
+                <div 
+                  key={index} 
+                  className="group relative flex flex-col items-center"
+                >
+                  {/* Fallback Visual (Texto Estilizado) - Substitua por <img src={festival.logo} /> quando tiver os arquivos */}
+                  <span className="text-2xl font-display font-bold text-white/40 group-hover:text-white group-hover:scale-110 transition-all duration-500 cursor-default">
+                    {festival.name}
+                  </span>
+                  
+                  {/* Tooltip simples de localização */}
+                  <span className="absolute -bottom-6 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {festival.location}
+                  </span>
                 </div>
               ))}
             </div>
+            
+            <p className="mt-12 text-white/30 text-sm max-w-md mx-auto">
+              Mais de 100 eventos internacionais realizados em 11 países.
+            </p>
           </div>
         </section>
 
