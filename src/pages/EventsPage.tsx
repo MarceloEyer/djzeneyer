@@ -1,22 +1,20 @@
-// src/pages/EventsPage.tsx - VERSÃO FINAL ESTRATÉGICA (WOOCOMMERCE + BANDSINTOWN + CALENDAR)
+// src/pages/EventsPage.tsx - VERSÃO FINAL (COM BANDSINTOWN REAL INTEGRADO)
 
-import React, { useState, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO'; 
 import { 
   Calendar as CalendarIcon, 
   MapPin, 
-  Clock, 
   Ticket, 
-  Download, 
   Music2, 
   Star, 
-  GlassWater, // Para o Drink
-  Heart, // Para a Dança
-  Percent, // Para o Desconto
-  ExternalLink,
-  Plus
+  GlassWater, 
+  Heart, 
+  Percent,
+  Plus,
+  Globe
 } from 'lucide-react';
 
 // ============================================================================
@@ -24,8 +22,7 @@ import {
 // ============================================================================
 
 /**
- * Eventos Próprios (WooCommerce) - O que dá lucro direto
- * No futuro, isso virá da API do WooCommerce
+ * Eventos Próprios (WooCommerce) - Destaque Ouro (Venda Direta)
  */
 const WOO_EVENTS = [
   {
@@ -37,7 +34,7 @@ const WOO_EVENTS = [
     type: 'Mentoria',
     image: 'https://placehold.co/600x400/0D96FF/FFFFFF?text=Mentoria+DJ&font=orbitron',
     price: 'R$ 497,00',
-    link: '/shop/mentoria-turma-x', // Link interno
+    link: '/shop/mentoria-turma-x',
     isExternal: false
   },
   {
@@ -49,7 +46,7 @@ const WOO_EVENTS = [
     type: 'Festa Exclusiva',
     image: 'https://placehold.co/600x400/9D4EDD/FFFFFF?text=Zouk+Experience&font=orbitron',
     price: 'R$ 80,00',
-    link: '/shop/zouk-experience-rj', // Link interno
+    link: '/shop/zouk-experience-rj',
     isExternal: false
   }
 ];
@@ -86,7 +83,6 @@ const TRIBE_BENEFITS = [
 
 /**
  * Logos de Festivais Passados (Prova Social)
- * Substitua os SRCs pelos logos reais dos festivais
  */
 const PAST_FESTIVALS = [
   { name: 'Brazilian Dance Festival', location: 'Amsterdam' },
@@ -98,7 +94,60 @@ const PAST_FESTIVALS = [
 ];
 
 // ============================================================================
-// COMPONENTES AUXILIARES
+// COMPONENTE: BANDSINTOWN WIDGET (AUTOMÁTICO)
+// ============================================================================
+
+const BandsInTownWidget: React.FC = () => {
+  useEffect(() => {
+    // Injeta o script oficial do Bandsintown
+    const script = document.createElement('script');
+    script.src = "https://widget.bandsintown.com/main.min.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    }
+  }, []);
+
+  return (
+    <div className="w-full min-h-[400px]">
+      {/* Configuração do Widget:
+         - Artist Name: "DJ Zen Eyer" (Conforme sua URL no BIT)
+         - App ID: Sua API Key fornecida
+         - Cores: Configuradas para Transparente/Branco para bater com seu tema
+      */}
+      <a 
+        className="bit-widget-initializer"
+        
+        data-artist-name="DJ Zen Eyer"
+        data-app-id="a6f8468a12e86539eff769aec002f836"
+        
+        data-language="en"
+        data-font="Arial"
+        data-display-local-dates="false"
+        data-display-past-dates="true"
+        data-auto-style="false"
+        
+        // Estilização Dark/Neon Customizada
+        data-text-color="#FFFFFF"
+        data-link-color="#9D4EDD" 
+        data-background-color="rgba(0,0,0,0)"
+        data-display-limit="15"
+        data-display-start-time="true"
+        data-link-text-color="#FFFFFF"
+        data-popup-background-color="#1a1a1a"
+        data-header-background-color="rgba(0,0,0,0)"
+        data-desktop-list-view="true" 
+      >
+        DJ Zen Eyer Tour Dates
+      </a>
+    </div>
+  );
+};
+
+// ============================================================================
+// COMPONENTE: EVENT CARD (WOOCOMMERCE)
 // ============================================================================
 
 const EventCard: React.FC<{ event: typeof WOO_EVENTS[0] }> = memo(({ event }) => (
@@ -160,7 +209,7 @@ const EventsPage: React.FC = () => {
   const { t } = useTranslation();
   const currentUrl = 'https://djzeneyer.com/events';
   
-  // Seu ID público do Google Calendar (substitua se tiver um específico para fãs)
+  // Link para adicionar ao Google Calendar (Pessoal)
   const googleCalendarId = 'eyer.marcelo@gmail.com'; 
   const googleCalendarLink = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(googleCalendarId)}`;
 
@@ -229,16 +278,16 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* SEÇÃO 2: AGENDA GLOBAL (BANDSINTOWN / SONGKICK WIDGET) */}
-        <section className="py-16 bg-surface/30">
+        {/* SEÇÃO 2: AGENDA GLOBAL (BANDSINTOWN REAL) */}
+        <section className="py-16 bg-surface/30 border-y border-white/5">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
               <div>
-                <h2 className="text-3xl font-black font-display mb-2">Agenda Global</h2>
+                <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
                 <p className="text-white/60">Todas as datas confirmadas da turnê.</p>
               </div>
               
-              {/* Botão de Exportar Calendário */}
+              {/* Botão de Exportar Calendário Google */}
               <a 
                 href={googleCalendarLink}
                 target="_blank"
@@ -250,24 +299,15 @@ const EventsPage: React.FC = () => {
               </a>
             </div>
 
-            {/* Placeholder do Widget */}
-            <div className="w-full bg-black/40 rounded-xl border border-white/10 p-8 min-h-[400px] flex flex-col items-center justify-center text-center">
-              <p className="text-white/40 mb-4">
-                (Aqui entra o Widget do Bandsintown ou Songkick)
-              </p>
-              <a 
-                href="https://www.bandsintown.com/artist-signup" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary text-sm hover:underline"
-              >
-                Configurar Widget do Artista
-              </a>
-              {/* DICA PARA O ARTISTA:
-                1. Cadastre-se no artists.bandsintown.com
-                2. Pegue o código do "Widget"
-                3. Cole o código <script> e <a> aqui dentro desta div.
-              */}
+            {/* WIDGET AUTOMÁTICO DO BANDSINTOWN */}
+            <div className="w-full">
+              <BandsInTownWidget />
+            </div>
+            
+            <div className="text-center mt-8">
+               <p className="text-sm text-white/40">
+                 Dados fornecidos oficialmente por <a href="https://www.bandsintown.com/a/15552355-dj-zen-eyer" target="_blank" className="hover:text-primary">Bandsintown</a>
+               </p>
             </div>
           </div>
         </section>
@@ -307,13 +347,13 @@ const EventsPage: React.FC = () => {
         {/* SEÇÃO 4: PAST EVENTS (PROVA SOCIAL) */}
         <section className="py-16 border-t border-white/5">
           <div className="container mx-auto px-4 text-center">
-            <p className="text-sm font-bold uppercase tracking-widest text-white/30 mb-8">
-              Histórico de Palcos & Festivais
+            <p className="text-sm font-bold uppercase tracking-widest text-white/30 mb-8 flex items-center justify-center gap-2">
+               <Globe size={14} /> Histórico de Palcos & Festivais
             </p>
             
             <div className="flex flex-wrap justify-center gap-x-12 gap-y-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-              {/* Substitua este texto pelos LOGOS reais (<img>) dos festivais.
-                Use imagens PNG transparentes brancas para melhor efeito.
+              {/* DICA: Substitua estas divs por tags <img src="/logos/festival.png" /> 
+                 para impacto visual máximo. Use logos brancos com fundo transparente.
               */}
               {PAST_FESTIVALS.map((festival, index) => (
                 <div key={index} className="text-xl font-display font-bold text-white/60 hover:text-white hover:scale-105 transition-all cursor-default">
