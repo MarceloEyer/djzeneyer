@@ -27,3 +27,21 @@ require_once get_theme_file_path('/inc/seo.php');
 
 // 6. API REST Endpoints
 require_once get_theme_file_path('/inc/api.php');
+
+// Flyers
+function create_flyer_post_type() {
+    register_post_type('flyers',
+        array(
+            'labels' => array(
+                'name' => __('Flyers'),
+                'singular_name' => __('Flyer')
+            ),
+            'public' => true,
+            'has_archive' => false,
+            'show_in_rest' => true, // Habilita a API para o React ler
+            'supports' => array('title', 'thumbnail'), // Só precisa de Título e Imagem
+            'menu_icon' => 'dashicons-format-gallery',
+        )
+    );
+}
+add_action('init', 'create_flyer_post_type');
