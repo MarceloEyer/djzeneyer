@@ -1,7 +1,7 @@
 // src/pages/EventsPage.tsx
 // ============================================================================
-// EVENTS PAGE - VERSÃO "WORLD CLASS AUTHORITY"
-// Foco: Design Limpo, Links Reais de Autoridade, SEO para IAs
+// EVENTS PAGE - VERSÃO FINAL "WORLD CLASS AUTHORITY"
+// Integração: Bandsintown API + WordPress REST API (Flyers) + Links de Autoridade
 // ============================================================================
 
 import React, { useEffect, useState, memo } from 'react';
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// DADOS ESTRATÉGICOS (EVENTOS PRÓPRIOS)
+// DADOS ESTRATÉGICOS (EVENTOS PRÓPRIOS - WOOCOMMERCE)
 // ============================================================================
 
 const WOO_EVENTS = [
@@ -63,8 +63,7 @@ const TRIBE_BENEFITS = [
 ];
 
 // ============================================================================
-// LISTA DE AUTORIDADE (FESTIVAIS REAIS COM LINKS REAIS)
-// Isso gera backlinks de qualidade e prova social verificável.
+// LISTA DE AUTORIDADE (FESTIVAIS REAIS COM BACKLINKS)
 // ============================================================================
 const PAST_FESTIVALS = [
   { 
@@ -94,7 +93,7 @@ const PAST_FESTIVALS = [
   { 
     name: 'Zurich Zouk Congress', 
     location: 'Suíça 🇨🇭', 
-    url: 'https://www.zurichzoukcongress.com/', // (Ou link histórico relevante)
+    url: 'https://www.zurichzoukcongress.com/', 
     logo: '/images/logos/zurich.png' 
   },
   { 
@@ -112,27 +111,46 @@ const PAST_FESTIVALS = [
   { 
     name: 'Polish Zouk Festival', 
     location: 'Polônia 🇵🇱 (2026)', 
-    url: 'https://www.polishzoukfestival.pl/', // Previsão
+    url: 'https://www.polishzoukfestival.pl/', 
     logo: '/images/logos/polish.png' 
   }
 ];
 
 // ============================================================================
-// COMPONENTE: GALERIA DE FLYERS AUTOMÁTICA
+// COMPONENTE: GALERIA DE FLYERS (VIA WP REST API)
+// Consome o Custom Post Type "Flyers" criado no functions.php
 // ============================================================================
+
+// Interface para tipagem dos dados vindos do WordPress
+interface FlyerData {
+  id: number;
+  title: { rendered: string };
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{
+      source_url: string;
+      alt_text: string;
+      media_details?: {
+        sizes?: {
+          medium_large?: { source_url: string };
+          full?: { source_url: string };
+        };
+      };
+    }>;
+  };
+}
+
 const FlyerGallery: React.FC = () => {
-  const [flyers, setFlyers] = useState<string[]>([]);
+  const [flyers, setFlyers] = useState<FlyerData[]>([]);
 
   useEffect(() => {
-    // Busca a lista do script PHP na raiz
-    fetch('/flyers-api.php')
+    // Busca os flyers diretamente da API nativa do WordPress
+    // Requer que os flyers tenham sido cadastrados com Imagem Destacada
+    fetch('https://djzeneyer.com/wp-json/wp/v2/flyers?_embed&per_page=12')
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data) && data.length > 0) setFlyers(data);
+        if (Array.isArray(data)) setFlyers(data);
       })
-      .catch(() => {
-        // Falha silenciosa (não mostra nada se der erro, mantendo o design limpo)
-      });
+      .catch(err => console.error("Erro ao carregar flyers via WP API", err));
   }, []);
 
   if (flyers.length === 0) return null;
@@ -142,30 +160,43 @@ const FlyerGallery: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h3 className="text-2xl font-black font-display text-white">Memórias & Flyers</h3>
-          <p className="text-white/40 text-sm mt-2">Histórico visual dos últimos eventos</p>
+          <p className="text-white/40 text-sm mt-2">Histórico visual dos últimos eventos internacionais</p>
         </div>
         
-        {/* Grid Masonry Simples e Elegante */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {flyers.slice(0, 8).map((flyer, index) => (
+        {/* Grid Masonry */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {flyers.map((flyer, index) => {
+            // Extração segura da imagem destacada
+            const media = flyer._embedded?.['wp:featuredmedia']?.[0];
+            const imageUrl = media?.media_details?.sizes?.medium_large?.source_url || media?.source_url;
+            const altText = media?.alt_text || `${flyer.title.rendered} - DJ Zen Eyer Flyer`; // SEO Automático
+
+            if (!imageUrl) return null;
+
+            return (
              <motion.div
-               key={index}
+               key={flyer.id}
                initial={{ opacity: 0, y: 20 }}
                whileInView={{ opacity: 1, y: 0 }}
                transition={{ delay: index * 0.1 }}
-               className="group relative rounded-xl overflow-hidden border border-white/10 aspect-[3/4]"
+               className="group relative rounded-xl overflow-hidden border border-white/10 bg-surface/50 cursor-pointer"
              >
                <img 
-                 src={`/images/flyers/${flyer}`}
-                 alt={`DJ Zen Eyer Event Flyer ${index}`}
-                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                 src={imageUrl}
+                 alt={altText}
+                 title={flyer.title.rendered}
+                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
                  loading="lazy"
+                 width="400"
+                 height="600"
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                 <span className="text-xs font-bold text-white uppercase tracking-wider">Ver Flyer</span>
+               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                 <span className="text-xs font-bold text-primary uppercase tracking-wider mb-1">Evento</span>
+                 <span className="text-sm font-bold text-white leading-tight">{flyer.title.rendered}</span>
                </div>
              </motion.div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -173,7 +204,7 @@ const FlyerGallery: React.FC = () => {
 };
 
 // ============================================================================
-// COMPONENTE: WIDGET BANDSINTOWN (INTEGRADO & LIMPO)
+// COMPONENTE: WIDGET BANDSINTOWN (INTEGRADO)
 // ============================================================================
 const BandsInTownWidget: React.FC = () => {
   useEffect(() => {
@@ -189,7 +220,7 @@ const BandsInTownWidget: React.FC = () => {
       <a 
         className="bit-widget-initializer"
         data-artist-name="DJ Zen Eyer"
-        data-app-id="a6f8468a12e86539eff769aec002f836" // API KEY REAL
+        data-app-id="a6f8468a12e86539eff769aec002f836" // API Key Zen Eyer
         data-language="en"
         data-font="Arial"
         data-display-local-dates="false"
@@ -236,7 +267,6 @@ const EventsPage: React.FC = () => {
         
         {/* HEADER: AUTORIDADE & ESCASSEZ */}
         <div className="bg-surface/50 py-20 border-b border-white/5 relative overflow-hidden">
-          {/* Background Glow Sutil */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/5 blur-[100px] -z-10" />
           
           <div className="container mx-auto px-4 text-center">
@@ -370,7 +400,7 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* SEÇÃO 3: FLYERS (AUTOMÁTICO) */}
+        {/* SEÇÃO 3: FLYERS (AUTOMÁTICO VIA WP REST API) */}
         <FlyerGallery />
 
         {/* SEÇÃO 4: AUTORIDADE & HISTÓRICO (LINKS REAIS) */}
@@ -391,11 +421,9 @@ const EventsPage: React.FC = () => {
                   className="group relative px-8 py-4 rounded-full border border-white/5 bg-white/[0.02] hover:bg-white/[0.08] hover:border-white/20 transition-all cursor-pointer overflow-hidden"
                   title={`Visitar site oficial do ${festival.name}`}
                 >
-                  {/* Efeito de Hover Glow */}
                   <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
                   <div className="relative z-10 flex flex-col items-center">
-                    {/* Se tiver logo, exibe. Se não, fallback elegante em texto. */}
+                    {/* Fallback Visual (Texto Estilizado) - Substituir por <img src={festival.logo} /> quando tiver os arquivos */}
                     <span className="text-lg font-display font-bold text-white/70 group-hover:text-white transition-colors">
                       {festival.name}
                     </span>
@@ -403,8 +431,6 @@ const EventsPage: React.FC = () => {
                       {festival.location}
                     </span>
                   </div>
-                  
-                  {/* Ícone de Link Externo sutil */}
                   <ExternalLink size={12} className="absolute top-2 right-3 text-white/10 group-hover:text-white/40 opacity-0 group-hover:opacity-100 transition-all" />
                 </a>
               ))}
