@@ -318,6 +318,47 @@
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
   "footer_copyright": "© {{year}} DJ Zen Eyer. Elevating vibes, one beat at a time.",
+
+  {
+  "home_page_title": "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
+  "home_page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
+  
+  "home_hero_badge": "2× World Champion - Brazilian Zouk World Championships 2022",
+  "home_hero_title": "DJ Zen Eyer",
+  "home_hero_subtitle": "2× World Champion Brazilian Zouk DJ & Producer",
+  
+  "home_stat_champion": "World Champion",
+  "home_stat_countries": "Countries",
+  "home_stat_events": "Events",
+  "home_stat_years": "Years Active",
+  
+  "home_bio_p1": "is the world-renowned Brazilian DJ and producer specializing in Brazilian Zouk. Two-time world champion at the largest international Zouk DJ competition — winning Best Remix and Best DJ Performance at the Brazilian Zouk World Championships 2022 in Phoenix, Arizona —, Zen Eyer has performed in over 11 countries at major Zouk congresses and festivals worldwide.",
+  "home_bio_p2": "Known for his slow, sensual, and deeply \"creamy\" style, he rejects fast BPMs and advocates that true connection in dance only happens when the body has time to melt. His signature audio tag \"Zen… Zen… Zen… Zen… Eyer… Eyer… Eyer… Eyer…\" has become a trademark on dance floors worldwide.",
+  "home_bio_p3": "Creator of the reZENha event series and the Tribo Zen (Zen Tribe) movement, Zen Eyer is not just a DJ: he is the ideological leader of the new generation of Brazilian Zouk that prioritizes connection, presence, and pleasure over acrobatics and speed.",
+  
+  "home_festivals_title": "Performed at International Festivals",
+  "home_festivals_subtitle": "Recognized at major Zouk events worldwide",
+  "home_festivals_more": "many more",
+  
+  "home_press_title": "For Press & Media",
+  "home_press_desc": "Complete press kit, high-resolution photos, releases, and interviews available.",
+  "home_press_cta": "DOWNLOAD PRESS KIT 2025",
+  
+  "home_booking_title": "Bookers & Promoters",
+  "home_booking_desc": "Available for congresses, festivals, workshops, and exclusive events in Brazil and abroad.",
+  "home_booking_cta": "REQUEST QUOTE",
+  
+  "home_authority_title": "Verified Profiles",
+  
+  "home_tribe_title": "Join the",
+  "home_tribe_highlight": "Zen Tribe",
+  "home_tribe_subtitle": "No rush here. Just prolonged melting.",
+  "home_tribe_cta": "Join the Tribe",
+  
+  "home_cta_soundcloud": "Listen on SoundCloud",
+  "home_cta_booking": "Booking / Press Kit",
+  "home_cta_music": "Explore Music"
+}
   
   "auth": {
     "loading": "Loading...",
