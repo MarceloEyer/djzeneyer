@@ -196,7 +196,7 @@ const HomePage: React.FC = () => {
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium">
                 <Trophy size={16} />
-                <span>2× World Champion - Brazilian Zouk World Championships 2022</span>
+                <span>2× World Champion - Brazilian Zouk World Championships</span>
               </span>
             </motion.div>
 
