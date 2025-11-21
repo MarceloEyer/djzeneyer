@@ -9,28 +9,30 @@
   "nav_logout": "Logout",
   "nav_dashboard": "Dashboard",
   "nav_my_account": "My Account",
-  
+
   "sign_in": "Sign In",
   "loading": "Loading...",
   "error": "Error",
   "success": "Success",
-  
+
   "badge_featured": "Featured",
   "badge_new": "New",
   "badge_sale": "Sale",
-  
+
   "join_now_button": "Join Now",
   "explore_music_button": "Explore Music",
   "play_featured_mix": "Play Featured Mix",
   "upcoming_events": "Upcoming Events",
+
+  "home_page_title": "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
+  "home_page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
   
-  "home_page_title": "DJ Zen Eyer - Brazilian Zouk",
-  "home_page_meta_desc": "Professional DJ specialized in Brazilian Zouk. Events, mixes, and unique musical experiences.",
   "home_headline": "Experience the <1>Zen</1> in Brazilian Zouk",
   "home_subheadline": "Transforming dance floors into immersive audio experiences",
   "home_welcome": "Welcome to DJ Zen Eyer",
   "home_tagline": "Brazilian Zouk DJ & Producer",
   "home_cta": "Explore My Music",
+  
   "home_features_title": "Why Join the Zen Tribe?",
   "home_features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
   "home_feat_exclusive_title": "Exclusive Music",
@@ -39,6 +41,7 @@
   "home_feat_achievements_desc": "Earn XP, unlock badges, and level up",
   "home_feat_community_title": "Active Community",
   "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
+  
   "home_cta_title": "Ready to Join the Zen Tribe?",
   "home_cta_subtitle": "Join thousands of members and transform your experience",
   
@@ -46,7 +49,7 @@
   "hero_subtitle": "Brazilian Zouk",
   "hero_cta": "Listen Now",
   "hero_cta_secondary": "View Events",
-  
+
   "events_page_title": "Events",
   "events_page_meta_desc": "Upcoming events and performances by DJ Zen Eyer",
   "events_title": "Upcoming Events",
@@ -78,7 +81,7 @@
   "event_badge_available": "Available",
   "event_badge_members_only": "Members Only",
   "event_get_ticket": "Get Ticket",
-  
+
   "music_page_title": "Music",
   "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
   "music": {
@@ -109,7 +112,7 @@
       "pausePreview": "Pause Preview"
     }
   },
-  
+
   "shop_page_title": "Shop",
   "shop_page_meta_desc": "Event tickets, exclusive merchandise, and more",
   "shop_title": "Zen Tribe Shop",
@@ -134,7 +137,7 @@
   "shop_fast_delivery": "Fast Delivery",
   "shop_fast_delivery_desc": "2-3 Business Days",
   "shop_hot_near_you": "Hot Near You",
-  
+
   "tribe_page_title": "Zen Tribe",
   "tribe_page_meta_desc": "Join the Zen Tribe community and become part of the family",
   "zenTribe": {
@@ -280,7 +283,7 @@
       }
     }
   },
-  
+
   "presskit_page_title": "Work With Me",
   "presskit_page_meta_desc": "Book DJ Zen Eyer for your event. Press kit and contact information.",
   "presskit_badge": "Professional Press Kit",
@@ -290,10 +293,10 @@
   "presskit_stat_people": "People Impacted",
   "presskit_stat_streams": "Total Streams",
   "presskit_stat_years": "Years Experience",
-  
+
   "dashboard_page_title": "Dashboard",
   "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
-  
+
   "footer_rights": "All rights reserved.",
   "footer_about": "About",
   "footer_contact": "Contact",
@@ -318,48 +321,35 @@
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
   "footer_copyright": "© {{year}} DJ Zen Eyer. Elevating vibes, one beat at a time.",
-
-  {
-  "home_page_title": "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
-  "home_page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
   
   "home_hero_badge": "2× World Champion - Brazilian Zouk World Championships 2022",
   "home_hero_title": "DJ Zen Eyer",
   "home_hero_subtitle": "2× World Champion Brazilian Zouk DJ & Producer",
-  
   "home_stat_champion": "World Champion",
   "home_stat_countries": "Countries",
   "home_stat_events": "Events",
   "home_stat_years": "Years Active",
-  
   "home_bio_p1": "is the world-renowned Brazilian DJ and producer specializing in Brazilian Zouk. Two-time world champion at the largest international Zouk DJ competition — winning Best Remix and Best DJ Performance at the Brazilian Zouk World Championships 2022 in Phoenix, Arizona —, Zen Eyer has performed in over 11 countries at major Zouk congresses and festivals worldwide.",
   "home_bio_p2": "Known for his slow, sensual, and deeply \"creamy\" style, he rejects fast BPMs and advocates that true connection in dance only happens when the body has time to melt. His signature audio tag \"Zen… Zen… Zen… Zen… Eyer… Eyer… Eyer… Eyer…\" has become a trademark on dance floors worldwide.",
   "home_bio_p3": "Creator of the reZENha event series and the Tribo Zen (Zen Tribe) movement, Zen Eyer is not just a DJ: he is the ideological leader of the new generation of Brazilian Zouk that prioritizes connection, presence, and pleasure over acrobatics and speed.",
-  
   "home_festivals_title": "Performed at International Festivals",
   "home_festivals_subtitle": "Recognized at major Zouk events worldwide",
   "home_festivals_more": "many more",
-  
   "home_press_title": "For Press & Media",
   "home_press_desc": "Complete press kit, high-resolution photos, releases, and interviews available.",
   "home_press_cta": "DOWNLOAD PRESS KIT 2025",
-  
   "home_booking_title": "Bookers & Promoters",
   "home_booking_desc": "Available for congresses, festivals, workshops, and exclusive events in Brazil and abroad.",
   "home_booking_cta": "REQUEST QUOTE",
-  
   "home_authority_title": "Verified Profiles",
-  
   "home_tribe_title": "Join the",
   "home_tribe_highlight": "Zen Tribe",
   "home_tribe_subtitle": "No rush here. Just prolonged melting.",
   "home_tribe_cta": "Join the Tribe",
-  
   "home_cta_soundcloud": "Listen on SoundCloud",
   "home_cta_booking": "Booking / Press Kit",
-  "home_cta_music": "Explore Music"
-}
-  
+  "home_cta_music": "Explore Music",
+
   "auth": {
     "loading": "Loading...",
     "login": {
