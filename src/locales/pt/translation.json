@@ -18,6 +18,47 @@
   "badge_featured": "Destaque",
   "badge_new": "Novo",
   "badge_sale": "Promoção",
+
+  {
+  "home_page_title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
+  "home_page_meta_desc": "DJ Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais.",
+  
+  "home_hero_badge": "2× Campeão Mundial - Brazilian Zouk World Championships 2022",
+  "home_hero_title": "DJ Zen Eyer",
+  "home_hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
+  
+  "home_stat_champion": "Campeão Mundial",
+  "home_stat_countries": "Países",
+  "home_stat_events": "Eventos",
+  "home_stat_years": "Anos Ativos",
+  
+  "home_bio_p1": "é o DJ e produtor brasileiro referência mundial em Brazilian Zouk. Bicampeão mundial na maior competição internacional de DJs de Zouk — vencendo as categorias Melhor Remix e Melhor Performance DJ no Brazilian Zouk World Championships 2022 em Phoenix, Arizona —, Zen Eyer já se apresentou em mais de 11 países e nos principais congressos e festivais de Zouk do planeta.",
+  "home_bio_p2": "Conhecido pelo estilo lento, sensual e profundamente \"cremoso\", ele rejeita BPMs acelerados e defende que a verdadeira conexão na dança só acontece quando o corpo tem tempo de derreter. Seu signature drop \"Zen… Zen… Zen… Zen… Eyer… Eyer… Eyer… Eyer…\" já virou marca registrada nas pistas do mundo inteiro.",
+  "home_bio_p3": "Criador do evento reZENha e do movimento Tribo Zen, Zen Eyer não é só um DJ: é o líder ideológico da nova geração do Zouk brasileiro que prioriza conexão, presença e prazer acima de acrobacias e velocidade.",
+  
+  "home_festivals_title": "Tocou em Festivais Internacionais",
+  "home_festivals_subtitle": "Reconhecido nos principais eventos de Zouk do mundo",
+  "home_festivals_more": "muitos outros",
+  
+  "home_press_title": "Para Imprensa e Mídia",
+  "home_press_desc": "Press kit completo, fotos em alta resolução, releases e entrevistas disponíveis.",
+  "home_press_cta": "BAIXAR PRESS KIT 2025",
+  
+  "home_booking_title": "Contratantes e Promoters",
+  "home_booking_desc": "Disponível para congressos, festivais, workshops e noites exclusivas no Brasil e exterior.",
+  "home_booking_cta": "FAZER COTAÇÃO",
+  
+  "home_authority_title": "Perfis Verificados",
+  
+  "home_tribe_title": "Junte-se à",
+  "home_tribe_highlight": "Tribo Zen",
+  "home_tribe_subtitle": "Aqui não tem pressa. Só derretimento prolongado.",
+  "home_tribe_cta": "Entrar na Tribo",
+  
+  "home_cta_soundcloud": "Ouvir no SoundCloud",
+  "home_cta_booking": "Contrate / Press Kit",
+  "home_cta_music": "Explorar Músicas"
+}
   
   "join_now_button": "Entrar Agora",
   "explore_music_button": "Explorar Músicas",
