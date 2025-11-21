@@ -406,7 +406,7 @@ const PressKitPage: React.FC = () => {
                   
                   <div className="space-y-4 text-lg text-white/80 leading-relaxed">
                     <p>
-                      <strong className="text-white">Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ brasileiro especializado em Zouk Brasileiro</strong>, bicampeão mundial no gênero (2022) e membro da Mensa International. Seu estilo único, chamado de "<strong>cremosidade</strong>", combina técnica apurada com emoção profunda, criando sets que são verdadeiras jornadas musicais para os dançarinos.
+                      <strong className="text-white">Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ brasileiro especializado em Zouk Brasileiro</strong>, bicampeão mundial no gênero e membro da Mensa International. Seu estilo único, chamado de "<strong>cremosidade</strong>", combina técnica apurada com emoção profunda, criando sets que são verdadeiras jornadas musicais para os dançarinos.
                     </p>
                     <p>
                       Com mais de 10 anos de carreira, Zen Eyer já se apresentou em <strong>100+ eventos em 11 países</strong>, incluindo Holanda, Espanha, República Tcheca e Alemanha. Seu repertório é 100% focado no Zouk Brasileiro, com influências de kizomba, lambada e black music, sempre priorizando a conexão emocional com a dança.
