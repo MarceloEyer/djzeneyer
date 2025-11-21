@@ -82,7 +82,7 @@ const MILESTONES = [
     color: "bg-gradient-to-br from-blue-500 to-cyan-600"
   },
   {
-    year: "2022",
+    year:,
     title: "Consagração Mundial",
     description: "Conquistou o bicampeonato mundial de Zouk Brasileiro, provando que sua abordagem emocional e técnica era única. 'Foi a realização de um sonho de infância', conta.",
     icon: <Trophy className="w-8 h-8 text-white" />,
