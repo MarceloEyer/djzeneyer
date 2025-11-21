@@ -20,7 +20,7 @@ export const ARTIST = {
 
   // 🏆 Títulos e Credenciais
   titles: {
-    primary: `Bicampeão Mundial de Zouk Brasileiro (${2022})`, // Poderia ser dinâmico se tiver mais
+    primary: `Bicampeão Mundial de Zouk Brasileiro`, // Poderia ser dinâmico se tiver mais
     categories: ['Melhor Performance', 'Melhor Remix'],
     event: 'Brazilian Zouk World Championships',
     eventUrl: 'https://www.brazilianzoukworldchampionships.com/',
