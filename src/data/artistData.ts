@@ -7,6 +7,22 @@
 const START_YEAR = 2014;
 const CURRENT_YEAR = new Date().getFullYear();
 
+// --- Interfaces para Tipagem Forte ---
+interface Festival {
+  name: string;
+  country: string;
+  flag: string;
+  url: string;
+  upcoming?: boolean;
+}
+
+interface SocialLink {
+  handle?: string;
+  id?: string;
+  url: string;
+}
+
+// --- DADOS PRINCIPAIS ---
 export const ARTIST = {
   // 🆔 Identidade
   identity: {
@@ -20,12 +36,12 @@ export const ARTIST = {
 
   // 🏆 Títulos e Credenciais
   titles: {
-    primary: `Bicampeão Mundial de Zouk Brasileiro`, // Poderia ser dinâmico se tiver mais
-    categories: ['Melhor Performance', 'Melhor Remix'],
+    primary: 'Bicampeão Mundial de Zouk Brasileiro',
     event: 'Brazilian Zouk World Championships',
     eventUrl: 'https://www.brazilianzoukworldchampionships.com/',
     location: 'Phoenix, Arizona, EUA',
     year: 2022,
+    categories: ['Melhor Performance', 'Melhor Remix'],
   },
 
   // 🧠 Diferencial (Mensa)
@@ -56,7 +72,7 @@ export const ARTIST = {
     { name: 'Rio Zouk Congress', country: 'Brasil', flag: '🇧🇷', url: 'https://www.riozoukcongress.com/' },
     { name: 'IZC Brazil', country: 'Brasil', flag: '🇧🇷', url: 'https://www.instagram.com/izcbrazil/' },
     { name: 'Polish Zouk Festival', country: 'Polônia', flag: '🇵🇱', url: 'https://www.polishzoukfestival.pl/', upcoming: true },
-  ],
+  ] as Festival[],
 
   // 🔗 Identificadores de Autoridade (SEO Técnico)
   identifiers: {
@@ -80,7 +96,7 @@ export const ARTIST = {
     spotify: { id: '68SHKGndTlq3USQ2LZmyLw', url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw' },
     appleMusic: { url: 'https://music.apple.com/us/artist/zen-eyer/1439280950' },
     bandsintown: { url: 'https://www.bandsintown.com/a/15552355-dj-zen-eyer' },
-  },
+  } as Record<string, SocialLink>,
 
   // 📍 Contato
   contact: {
