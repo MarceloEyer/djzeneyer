@@ -1,23 +1,26 @@
 // src/data/artistData.ts
+
 // ============================================================================
-// SINGLE SOURCE OF TRUTH (SSOT) - DADOS DO ARTISTA
+// SINGLE SOURCE OF TRUTH (SSOT) - DJ ZEN EYER
 // ============================================================================
-// REGRA: Todas as páginas DEVEM importar daqui. Nunca hardcode dados do artista.
-// Atualizar APENAS este arquivo quando houver mudanças.
-// ============================================================================
+
+const START_YEAR = 2014;
+const CURRENT_YEAR = new Date().getFullYear();
 
 export const ARTIST = {
-  // Identidade
-  name: {
-    stage: 'DJ Zen Eyer',
-    short: 'Zen Eyer',
-    full: 'Marcelo Eyer Fernandes',
-    display: 'Zen Eyer', // Para uso em textos corridos
+  // 🆔 Identidade
+  identity: {
+    stageName: 'DJ Zen Eyer',
+    shortName: 'Zen Eyer',
+    fullName: 'Marcelo Eyer Fernandes',
+    displayTitle: 'Zen Eyer', 
+    birthDate: '1985-08-20',
+    nationality: 'Brazilian',
   },
 
-  // Títulos e Credenciais (VERIFICÁVEIS)
+  // 🏆 Títulos e Credenciais
   titles: {
-    primary: 'Bicampeão Mundial de Zouk Brasileiro (2022)',
+    primary: `Bicampeão Mundial de Zouk Brasileiro (${2022})`, // Poderia ser dinâmico se tiver mais
     categories: ['Melhor Performance', 'Melhor Remix'],
     event: 'Brazilian Zouk World Championships',
     eventUrl: 'https://www.brazilianzoukworldchampionships.com/',
@@ -25,25 +28,25 @@ export const ARTIST = {
     year: 2022,
   },
 
-  // Mensa (diferencial único)
+  // 🧠 Diferencial (Mensa)
   mensa: {
     isMember: true,
     organization: 'Mensa International',
     url: 'https://www.mensa.org',
-    description: 'Sociedade internacional para pessoas com QI no top 2% da população',
+    description: 'Membro da sociedade de alto QI (Top 2%)',
   },
 
-  // Carreira (NÚMEROS VERIFICÁVEIS - atualizar mensalmente)
+  // 📊 Estatísticas (Algumas automáticas)
   stats: {
-    yearsActive: 10, // Desde 2015
+    yearsActive: CURRENT_YEAR - START_YEAR, // Calcula automático (ex: 11 anos)
     countriesPlayed: 11,
-    eventsPlayed: 500, // Ser específico: 10 anos x ~1 evento/semana
-    streamsTotal: 500000, // Somar Spotify + SoundCloud + YouTube
-    followersTotal: 15000, // Somar todas as redes
-    lastUpdated: '2025-01-15',
+    eventsPlayed: (CURRENT_YEAR - START_YEAR) * 50, // Estimativa: ~500+
+    streamsTotal: '500K+',
+    followersTotal: '15K+',
+    lastUpdated: new Date().toISOString().split('T')[0], // Data de hoje
   },
 
-  // Festivais Confirmados (COM URLS PARA BACKLINKS)
+  // 🌎 Festivais de Destaque
   festivals: [
     { name: 'One Zouk Congress', country: 'Austrália', flag: '🇦🇺', url: 'https://www.onezoukcongress.com/' },
     { name: 'Dutch Zouk', country: 'Holanda', flag: '🇳🇱', url: 'https://www.dutchzouk.nl/' },
@@ -55,7 +58,7 @@ export const ARTIST = {
     { name: 'Polish Zouk Festival', country: 'Polônia', flag: '🇵🇱', url: 'https://www.polishzoukfestival.pl/', upcoming: true },
   ],
 
-  // Identifiers (para Schema.org e verificação)
+  // 🔗 Identificadores de Autoridade (SEO Técnico)
   identifiers: {
     wikidata: 'Q136551855',
     wikidataUrl: 'https://www.wikidata.org/wiki/Q136551855',
@@ -66,10 +69,10 @@ export const ARTIST = {
     discogsUrl: 'https://www.discogs.com/artist/16872046',
     residentAdvisor: 'djzeneyer',
     residentAdvisorUrl: 'https://pt-br.ra.co/dj/djzeneyer',
-    danceWikiFandom: 'https://dance.fandom.com/wiki/Brazilian_Zouk', // Você é citado aqui!
+    danceWikiFandom: 'https://dance.fandom.com/wiki/Brazilian_Zouk',
   },
 
-  // Redes Sociais
+  // 📱 Redes Sociais
   social: {
     instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
     youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
@@ -79,7 +82,7 @@ export const ARTIST = {
     bandsintown: { url: 'https://www.bandsintown.com/a/15552355-dj-zen-eyer' },
   },
 
-  // Contato
+  // 📍 Contato
   contact: {
     email: 'booking@djzeneyer.com',
     whatsapp: {
@@ -93,15 +96,15 @@ export const ARTIST = {
     },
   },
 
-  // Filosofia (para consistência de messaging)
+  // 💡 Filosofia & Marca
   philosophy: {
     slogan: 'A pressa é inimiga da cremosidade',
-    style: 'cremosidade',
+    style: 'Cremosidade',
     styleDefinition: 'Fluidez harmônica e manutenção da tensão musical através de transições longas e imperceptíveis',
     mission: 'Criar um espaço seguro onde as pessoas podem ser quem realmente são através da música',
   },
 
-  // URLs do Site
+  // 🌐 URLs Internas
   site: {
     baseUrl: 'https://djzeneyer.com',
     pages: {
@@ -118,19 +121,21 @@ export const ARTIST = {
 } as const;
 
 // ============================================================================
-// HELPERS
+// 🛠️ HELPERS EXPORTADOS
 // ============================================================================
 
 export const getFullTitle = () => 
-  `${ARTIST.name.stage} - ${ARTIST.titles.primary}`;
+  `${ARTIST.identity.stageName} - ${ARTIST.titles.primary}`;
 
 export const getWhatsAppUrl = (message?: string) => {
   const defaultMsg = "Olá Zen Eyer! Gostaria de conversar sobre booking.";
   return `https://wa.me/${ARTIST.contact.whatsapp.number}?text=${encodeURIComponent(message || defaultMsg)}`;
 };
 
+// Gera lista plana de URLs para Schema
 export const getSocialUrls = () => Object.values(ARTIST.social).map(s => s.url);
 
+// Gera lista de URLs de verificação
 export const getVerificationUrls = () => [
   ARTIST.identifiers.wikidataUrl,
   ARTIST.identifiers.musicbrainzUrl,
@@ -139,17 +144,17 @@ export const getVerificationUrls = () => [
   ARTIST.identifiers.danceWikiFandom,
 ];
 
-// Schema.org Person (usar em todas as páginas)
-export const ARTIST_SCHEMA = {
+// Schema.org Person (Base para injetar nas páginas)
+export const ARTIST_SCHEMA_BASE = {
   "@type": "Person",
   "@id": `${ARTIST.site.baseUrl}/#artist`,
-  "name": ARTIST.name.stage,
-  "alternateName": [ARTIST.name.short, ARTIST.name.full],
+  "name": ARTIST.identity.stageName,
+  "alternateName": [ARTIST.identity.shortName, ARTIST.identity.fullName],
   "jobTitle": "DJ e Produtor Musical de Zouk Brasileiro",
-  "description": `${ARTIST.titles.primary}. Membro da ${ARTIST.mensa.organization}. Especialista em criar sets 'cremosos' que unem técnica e emoção.`,
+  "description": `${ARTIST.titles.primary}. Membro da ${ARTIST.mensa.organization}. Especialista em ${ARTIST.philosophy.style}.`,
   "url": ARTIST.site.baseUrl,
-  "image": `${ARTIST.site.baseUrl}/images/zen-eyer-official.jpg`,
-  "sameAs": getSocialUrls().concat(getVerificationUrls()),
+  "image": `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.jpg`,
+  "sameAs": [...getSocialUrls(), ...getVerificationUrls()],
   "award": ARTIST.titles.categories.map(cat => ({
     "@type": "Award",
     "name": `${cat} - ${ARTIST.titles.event}`,
