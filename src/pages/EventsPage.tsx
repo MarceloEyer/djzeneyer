@@ -1,14 +1,6 @@
 // src/pages/EventsPage.tsx
 // ============================================================================
-// EVENTS PAGE - VERSÃO OTIMIZADA "WORLD CLASS AUTHORITY"
-// ============================================================================
-// MELHORIAS:
-// ✅ Usa SSOT (artistData.ts) para dados consistentes
-// ✅ Schema.org Event para SEO de eventos
-// ✅ Seção de Testemunhos de organizadores
-// ✅ Estatísticas dinâmicas do SSOT
-// ✅ CTA otimizado para jornalistas e contratantes
-// ✅ Componentes memoizados para performance
+// EVENTS PAGE - VERSÃO OTIMIZADA COM MELHORIAS
 // ============================================================================
 
 import React, { useEffect, useState, memo } from 'react';
@@ -16,17 +8,17 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
-import { 
-  Calendar as CalendarIcon, 
-  MapPin, 
-  Ticket, 
-  Star, 
-  Plus, 
-  Globe, 
-  Download, 
-  Briefcase, 
-  Lock, 
-  Plane, 
+import {
+  Calendar as CalendarIcon,
+  MapPin,
+  Ticket,
+  Star,
+  Plus,
+  Globe,
+  Download,
+  Briefcase,
+  Lock,
+  Plane,
   ExternalLink,
   Trophy,
   Users,
@@ -59,12 +51,35 @@ interface FlyerData {
   };
 }
 
+interface Testimonial {
+  name: string;
+  role: string;
+  event: string;
+  country: string;
+  quote: string;
+  avatar?: string;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  type: string;
+  image: string;
+  price: string;
+  link: string;
+  isExternal: boolean;
+  status: string;
+  description: string;
+}
+
 // ============================================================================
 // DADOS ESTRATÉGICOS
 // ============================================================================
 
-// Eventos próprios (WooCommerce) - Mantidos locais pois são dinâmicos
-const FEATURED_EVENTS = [
+const FEATURED_EVENTS: Event[] = [
   {
     id: 'mentoria-dj',
     title: 'Mentoria DJ: Musicalidade & Carreira',
@@ -72,7 +87,7 @@ const FEATURED_EVENTS = [
     time: 'Online',
     location: 'Zoom (Ao Vivo)',
     type: 'Education',
-    image: '/images/events/mentoria-dj.jpg', // Certifique-se que esta imagem existe ou use placeholder
+    image: '/images/events/mentoria-dj.jpg',
     price: 'Lista de Espera',
     link: '/work-with-me',
     isExternal: false,
@@ -86,7 +101,7 @@ const FEATURED_EVENTS = [
     time: '22:00',
     location: 'Rio de Janeiro, Brasil',
     type: 'Festa Exclusiva',
-    image: '/images/events/zouk-experience.jpg', // Certifique-se que esta imagem existe ou use placeholder
+    image: '/images/events/zouk-experience.jpg',
     price: 'R$ 80,00',
     link: '/shop/zouk-experience-rj',
     isExternal: false,
@@ -95,15 +110,14 @@ const FEATURED_EVENTS = [
   }
 ];
 
-// Testemunhos de organizadores (PROVA SOCIAL CRÍTICA)
-const ORGANIZER_TESTIMONIALS = [
+const ORGANIZER_TESTIMONIALS: Testimonial[] = [
   {
     name: 'Maria Silva',
     role: 'Organizadora',
     event: 'Rio Zouk Congress',
     country: '🇧🇷',
     quote: 'Zen Eyer entende a pista como ninguém. Seus sets cremosos mantêm os dançarinos conectados por horas.',
-    avatar: '' // Pode deixar vazio ou colocar URL
+    avatar: ''
   },
   {
     name: 'Thomas van der Berg',
@@ -124,7 +138,7 @@ const ORGANIZER_TESTIMONIALS = [
 ];
 
 // ============================================================================
-// SCHEMA.ORG 
+// SCHEMA.ORG
 // ============================================================================
 
 const EVENTS_PAGE_SCHEMA = {
@@ -173,9 +187,8 @@ const EVENTS_PAGE_SCHEMA = {
 // COMPONENTES AUXILIARES (MEMOIZADOS)
 // ============================================================================
 
-// Estatísticas do Hero
 const HeroStats = memo(() => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.4 }}
@@ -197,18 +210,18 @@ const HeroStats = memo(() => (
     ))}
   </motion.div>
 ));
+
 HeroStats.displayName = 'HeroStats';
 
-// Card de Evento em Destaque
-const FeaturedEventCard = memo<{ event: typeof FEATURED_EVENTS[0] }>(({ event }) => (
+const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
   <motion.div
     whileHover={{ y: -5 }}
     className="card group overflow-hidden border border-white/10 hover:border-primary/50 transition-all bg-surface/30"
   >
     <div className="relative h-48 overflow-hidden">
-      <img 
-        src={event.image} 
-        alt={event.title} 
+      <img
+        src={event.image}
+        alt={event.title}
         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         loading="lazy"
         onError={(e) => {
@@ -232,23 +245,23 @@ const FeaturedEventCard = memo<{ event: typeof FEATURED_EVENTS[0] }>(({ event })
         {event.title}
       </h3>
       <p className="text-sm text-white/60 mb-4 line-clamp-2">{event.description}</p>
-      
+
       <div className="space-y-2 mb-6">
         <div className="flex items-center gap-3 text-white/60 text-sm">
-          <CalendarIcon size={16} className="text-primary" /> 
+          <CalendarIcon size={16} className="text-primary" />
           <span>{new Date(event.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
           {event.time !== 'Online' && <span>• {event.time}</span>}
         </div>
         <div className="flex items-center gap-3 text-white/60 text-sm">
-          <MapPin size={16} className="text-secondary" /> 
+          <MapPin size={16} className="text-secondary" />
           <span>{event.location}</span>
         </div>
       </div>
 
       <div className="flex items-center justify-between pt-4 border-t border-white/5">
         <span className="text-lg font-bold text-primary">{event.price}</span>
-        <a 
-          href={event.link} 
+        <a
+          href={event.link}
           className="btn btn-primary btn-sm flex items-center gap-2"
         >
           <Ticket size={16} />
@@ -258,11 +271,11 @@ const FeaturedEventCard = memo<{ event: typeof FEATURED_EVENTS[0] }>(({ event })
     </div>
   </motion.div>
 ));
+
 FeaturedEventCard.displayName = 'FeaturedEventCard';
 
-// Card de Festival (usa SSOT)
 const FestivalBadge = memo<{ festival: typeof ARTIST.festivals[0]; index: number }>(({ festival, index }) => (
-  <motion.a 
+  <motion.a
     href={festival.url}
     target="_blank"
     rel="noopener noreferrer"
@@ -288,11 +301,11 @@ const FestivalBadge = memo<{ festival: typeof ARTIST.festivals[0]; index: number
     </div>
   </motion.a>
 ));
+
 FestivalBadge.displayName = 'FestivalBadge';
 
-// Card de Testemunho
-const TestimonialCard = memo<{ testimonial: typeof ORGANIZER_TESTIMONIALS[0]; index: number }>(({ testimonial, index }) => (
-  <motion.div 
+const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ testimonial, index }) => (
+  <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -316,20 +329,29 @@ const TestimonialCard = memo<{ testimonial: typeof ORGANIZER_TESTIMONIALS[0]; in
     </div>
   </motion.div>
 ));
+
 TestimonialCard.displayName = 'TestimonialCard';
 
-// Galeria de Flyers (WP REST API)
 const FlyerGallery: React.FC = () => {
   const [flyers, setFlyers] = useState<FlyerData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`${ARTIST.site.baseUrl}/wp-json/wp/v2/flyers?_embed&per_page=8`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Não foi possível carregar os flyers.');
+        }
+        return res.json();
+      })
+      .then((data) => {
         if (Array.isArray(data)) setFlyers(data);
       })
-      .catch(err => console.error("Erro ao carregar flyers:", err))
+      .catch((err) => {
+        setError(err.message);
+        console.error("Erro ao carregar flyers:", err);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -337,6 +359,14 @@ const FlyerGallery: React.FC = () => {
     return (
       <div className="py-16 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-16 text-center text-red-400">
+        <p>{error}</p>
       </div>
     );
   }
@@ -350,7 +380,7 @@ const FlyerGallery: React.FC = () => {
           <h2 className="text-2xl font-black font-display text-white mb-2">Memórias & Flyers</h2>
           <p className="text-white/40 text-sm">Histórico visual de {ARTIST.stats.countriesPlayed} países</p>
         </div>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {flyers.map((flyer, index) => {
             const media = flyer._embedded?.['wp:featuredmedia']?.[0];
@@ -366,8 +396,8 @@ const FlyerGallery: React.FC = () => {
                 transition={{ delay: index * 0.05 }}
                 className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10"
               >
-                <img 
-                  src={imageUrl} 
+                <img
+                  src={imageUrl}
                   alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                   loading="lazy"
@@ -384,19 +414,20 @@ const FlyerGallery: React.FC = () => {
   );
 };
 
-// Widget Bandsintown
 const BandsInTownWidget: React.FC = () => {
   useEffect(() => {
     const script = document.createElement('script');
     script.src = "https://widget.bandsintown.com/main.min.js";
     script.async = true;
     document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   return (
     <div className="w-full min-h-[400px] bg-surface/20 rounded-2xl border border-white/5 p-6 md:p-10">
-      <a 
+      <a
         className="bit-widget-initializer"
         data-artist-name="DJ Zen Eyer"
         data-app-id="a6f8468a12e86539eff769aec002f836"
@@ -405,14 +436,14 @@ const BandsInTownWidget: React.FC = () => {
         data-display-past-dates="true"
         data-auto-style="false"
         data-text-color="#FFFFFF"
-        data-link-color="#9D4EDD" 
+        data-link-color="#9D4EDD"
         data-background-color="rgba(0,0,0,0)"
         data-display-limit="10"
         data-display-start-time="true"
         data-link-text-color="#FFFFFF"
         data-popup-background-color="#1a1a1a"
         data-header-background-color="rgba(0,0,0,0)"
-        data-desktop-list-view="true" 
+        data-desktop-list-view="true"
       >
         Carregando Agenda Oficial...
       </a>
@@ -441,19 +472,15 @@ const EventsPage: React.FC = () => {
         ogType="website"
         schema={EVENTS_PAGE_SCHEMA}
         hrefLang={getHrefLangUrls(currentPath, ARTIST.site.baseUrl)}
-        keywords={`${ARTIST.identity.stageName} Tour, Zouk Brasileiro, ${ARTIST.festivals.map(f => f.name).join(', ')}`}
+        keywords={`${ARTIST.identity.stageName} Tour, Zouk Brasileiro, ${ARTIST.festivals.map((f) => f.name).join(', ')}`}
       />
 
       <div className="min-h-screen pt-24 pb-16 bg-background">
-        
-        {/* ════════════════════════════════════════════════════════════════════
-            HERO: AUTORIDADE + ESCASSEZ 
-        ════════════════════════════════════════════════════════════════════ */}
+        {/* Hero Section */}
         <section className="relative py-20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-          
           <div className="container mx-auto px-4 relative z-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-center"
@@ -475,7 +502,6 @@ const EventsPage: React.FC = () => {
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">
                 World Tour <span className="text-primary">&</span> Events
               </h1>
-              
               <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-4">
                 {ARTIST.stats.yearsActive} anos levando a <span className="text-primary font-semibold">{ARTIST.philosophy.style}</span> para os maiores palcos do mundo
               </p>
@@ -485,7 +511,7 @@ const EventsPage: React.FC = () => {
 
               {/* CTAs */}
               <div className="flex flex-wrap justify-center gap-4 mt-10">
-                <a 
+                <a
                   href={getWhatsAppUrl("Olá! Gostaria de contratar DJ Zen Eyer para meu evento.")}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -494,10 +520,7 @@ const EventsPage: React.FC = () => {
                   <Phone size={20} />
                   Contratar para Evento
                 </a>
-                <a 
-                  href="/work-with-me" 
-                  className="btn btn-outline btn-lg flex items-center gap-2"
-                >
+                <a href="/work-with-me" className="btn btn-outline btn-lg flex items-center gap-2">
                   <Briefcase size={20} />
                   Press Kit & Rider
                 </a>
@@ -506,9 +529,7 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════════════════════════
-            SEÇÃO 1: EVENTOS EM DESTAQUE
-        ════════════════════════════════════════════════════════════════════ */}
+        {/* Eventos em Destaque */}
         <section className="py-20 container mx-auto px-4">
           <div className="flex items-center justify-between mb-10">
             <div>
@@ -522,13 +543,10 @@ const EventsPage: React.FC = () => {
               Ver todos <ChevronRight size={16} />
             </a>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {FEATURED_EVENTS.map(event => (
+            {FEATURED_EVENTS.map((event) => (
               <FeaturedEventCard key={event.id} event={event} />
             ))}
-            
-            {/* Card CTA para Contratantes */}
             <motion.div
               whileHover={{ scale: 1.02 }}
               className="card p-8 flex flex-col justify-center items-center text-center border border-dashed border-white/20 bg-gradient-to-b from-surface/50 to-transparent"
@@ -538,7 +556,7 @@ const EventsPage: React.FC = () => {
               <p className="text-white/60 mb-6 text-sm leading-relaxed">
                 Organizadores de festivais: garanta a {ARTIST.philosophy.style} no seu próximo evento.
               </p>
-              <a 
+              <a
                 href={getWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -550,9 +568,7 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════════════════════════
-            SEÇÃO 2: AGENDA GLOBAL (BANDSINTOWN)
-        ════════════════════════════════════════════════════════════════════ */}
+        {/* Agenda Global */}
         <section className="py-20 bg-surface/30 border-y border-white/5">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
@@ -562,30 +578,24 @@ const EventsPage: React.FC = () => {
                   Datas confirmadas oficialmente. Atualizado em tempo real.
                 </p>
               </div>
-              
               <div className="flex flex-wrap gap-3">
-                <a 
+                <a
                   href={googleCalendarLink}
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="btn btn-outline btn-sm flex items-center gap-2"
                 >
                   <Plus size={14} /> Google Calendar
                 </a>
-                <a 
-                  href="/work-with-me" 
-                  className="btn btn-outline btn-sm flex items-center gap-2"
-                >
+                <a href="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2">
                   <Download size={14} /> Press Kit
                 </a>
               </div>
             </div>
-
             <BandsInTownWidget />
-            
             <p className="text-center text-xs text-white/20 mt-6">
               Powered by{' '}
-              <a 
+              <a
                 href={ARTIST.social.bandsintown.url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -597,9 +607,7 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════════════════════════
-            SEÇÃO 3: TESTEMUNHOS DE ORGANIZADORES
-        ════════════════════════════════════════════════════════════════════ */}
+        {/* Testemunhos */}
         <section className="py-20 container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black font-display mb-4 text-white">
@@ -609,7 +617,6 @@ const EventsPage: React.FC = () => {
               Feedback de quem já contratou {ARTIST.identity.shortName} para seus eventos
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {ORGANIZER_TESTIMONIALS.map((testimonial, index) => (
               <TestimonialCard key={index} testimonial={testimonial} index={index} />
@@ -617,14 +624,10 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════════════════════════
-            SEÇÃO 4: GALERIA DE FLYERS
-        ════════════════════════════════════════════════════════════════════ */}
+        {/* Galeria de Flyers */}
         <FlyerGallery />
 
-        {/* ════════════════════════════════════════════════════════════════════
-            SEÇÃO 5: HISTÓRICO DE FESTIVAIS (USA SSOT)
-        ════════════════════════════════════════════════════════════════════ */}
+        {/* Histórico de Festivais */}
         <section className="py-20 border-t border-white/5">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -634,7 +637,6 @@ const EventsPage: React.FC = () => {
                   Palcos Internacionais
                 </span>
               </div>
-              
               <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
                 {ARTIST.festivals.map((festival, index) => (
                   <FestivalBadge key={index} festival={festival} index={index} />
@@ -643,7 +645,6 @@ const EventsPage: React.FC = () => {
             </div>
           </div>
         </section>
-
       </div>
     </>
   );
