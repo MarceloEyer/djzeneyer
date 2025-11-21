@@ -157,7 +157,7 @@ const PERSON_SCHEMA = {
     {
       "@type": "Award",
       "name": "Bicampeão Mundial de Zouk Brasileiro - Melhor Performance",
-      "datePublished": "2022"
+      "datePublished": 
     },
     {
       "@type": "Award",
