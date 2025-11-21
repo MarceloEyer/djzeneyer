@@ -243,8 +243,8 @@ const HomePage: React.FC = () => {
             <motion.div variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
               <p className="text-xl leading-relaxed">
                 <strong>DJ Zen Eyer</strong> ({ARTIST.identity.fullName}) {isPortuguese 
-                  ? 'é o DJ e produtor brasileiro referência mundial em Brazilian Zouk. Bicampeão mundial na maior competição internacional de DJs de Zouk — vencendo as categorias Melhor Remix e Melhor Performance DJ no Brazilian Zouk World Championships 2022 em Phoenix, Arizona —, Zen Eyer já se apresentou em mais de 11 países e nos principais congressos e festivais de Zouk do planeta.'
-                  : 'is the world-renowned Brazilian DJ and producer specializing in Brazilian Zouk. Two-time world champion at the largest international Zouk DJ competition — winning Best Remix and Best DJ Performance at the Brazilian Zouk World Championships 2022 in Phoenix, Arizona —, Zen Eyer has performed in over 11 countries at major Zouk congresses and festivals worldwide.'}
+                  ? 'é o DJ e produtor brasileiro referência mundial em Brazilian Zouk. Bicampeão mundial na maior competição internacional de DJs de Zouk — vencendo as categorias Melhor Remix e Melhor Performance DJ, Zen Eyer já se apresentou em mais de 11 países e nos principais congressos e festivais de Zouk do planeta.'
+                  : 'is the world-renowned Brazilian DJ and producer specializing in Brazilian Zouk. Two-time world champion at the largest international Zouk DJ competition — winning Best Remix and Best DJ Performance, Zen Eyer has performed in over 11 countries at major Zouk congresses and festivals worldwide.'}
               </p>
               <p className="text-lg leading-relaxed text-white/80">
                 {isPortuguese 
