@@ -162,7 +162,7 @@ const PERSON_SCHEMA = {
     {
       "@type": "Award",
       "name": "Bicampeão Mundial de Zouk Brasileiro - Melhor Remix",
-      "datePublished": "2022"
+      "datePublished": 
     }
   ],
   
