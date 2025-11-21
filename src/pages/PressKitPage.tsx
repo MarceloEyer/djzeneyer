@@ -138,7 +138,7 @@ const PERSON_SCHEMA = {
   "name": "DJ Zen Eyer",
   "alternateName": ["Zen Eyer", "Marcelo Eyer Fernandes"],
   "jobTitle": "DJ e Produtor Musical de Zouk Brasileiro",
-  "description": "DJ brasileiro bicampeão mundial de Zouk Brasileiro (2022), membro da Mensa International e referência global no gênero. Especializado em criar sets 'cremosos' que unem técnica e emoção para dançarinos.",
+  "description": "DJ brasileiro bicampeão mundial de Zouk Brasileiro, membro da Mensa International e referência global no gênero. Especializado em criar sets 'cremosos' que unem técnica e emoção para dançarinos.",
   "url": "https://djzeneyer.com",
   "image": "https://djzeneyer.com/images/zen-eyer-presskit-photo.jpg",
   
