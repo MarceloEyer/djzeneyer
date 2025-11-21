@@ -558,4 +558,95 @@ const EventsPage: React.FC = () => {
             <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
               <div>
                 <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
-                <p className="text-white/50 max-w
+                <p className="text-white/50 max-w-md">
+                  Datas confirmadas oficialmente. Atualizado em tempo real.
+                </p>
+              </div>
+              
+              <div className="flex flex-wrap gap-3">
+                <a 
+                  href={googleCalendarLink}
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn btn-outline btn-sm flex items-center gap-2"
+                >
+                  <Plus size={14} /> Google Calendar
+                </a>
+                <a 
+                  href="/work-with-me" 
+                  className="btn btn-outline btn-sm flex items-center gap-2"
+                >
+                  <Download size={14} /> Press Kit
+                </a>
+              </div>
+            </div>
+
+            <BandsInTownWidget />
+            
+            <p className="text-center text-xs text-white/20 mt-6">
+              Powered by{' '}
+              <a 
+                href={ARTIST.social.bandsintown.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary"
+              >
+                Bandsintown
+              </a>
+            </p>
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════════════════════════
+            SEÇÃO 3: TESTEMUNHOS DE ORGANIZADORES
+        ════════════════════════════════════════════════════════════════════ */}
+        <section className="py-20 container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black font-display mb-4 text-white">
+              O Que Dizem os Organizadores
+            </h2>
+            <p className="text-white/50 max-w-xl mx-auto">
+              Feedback de quem já contratou {ARTIST.identity.shortName} para seus eventos
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {ORGANIZER_TESTIMONIALS.map((testimonial, index) => (
+              <TestimonialCard key={index} testimonial={testimonial} index={index} />
+            ))}
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════════════════════════
+            SEÇÃO 4: GALERIA DE FLYERS
+        ════════════════════════════════════════════════════════════════════ */}
+        <FlyerGallery />
+
+        {/* ════════════════════════════════════════════════════════════════════
+            SEÇÃO 5: HISTÓRICO DE FESTIVAIS (USA SSOT)
+        ════════════════════════════════════════════════════════════════════ */}
+        <section className="py-20 border-t border-white/5">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Globe size={20} className="text-primary" />
+                <span className="text-sm font-bold uppercase tracking-wider text-white/60">
+                  Palcos Internacionais
+                </span>
+              </div>
+              
+              <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+                {ARTIST.festivals.map((festival, index) => (
+                  <FestivalBadge key={index} festival={festival} index={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </>
+  );
+};
+
+export default EventsPage;
