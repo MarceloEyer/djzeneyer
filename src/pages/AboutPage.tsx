@@ -46,7 +46,7 @@ const SCHEMA_DATA = {
     {
       "@type": "Award",
       "name": "Bicampeão Mundial de Zouk Brasileiro",
-      "description": "Vencedor nas categorias Melhor Performance e Melhor Remix (2022).",
+      "description": "Vencedor nas categorias Melhor Performance e Melhor Remix.",
       "datePublished": "2022"
     }
   ],
