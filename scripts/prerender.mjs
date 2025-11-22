@@ -182,6 +182,9 @@ function generateHTML(route, lang = 'en') {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+  <!-- Preload critical images for LCP optimization -->
+  <link rel="preload" as="image" href="/images/hero-background.webp" type="image/webp" fetchpriority="high" />
+
   <!-- JSON-LD Schema -->
   <script type="application/ld+json">
   {

@@ -168,11 +168,16 @@ const HomePage: React.FC = () => {
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-20 pb-12">
         <div className="absolute inset-0 z-0 bg-black">
-          <motion.div 
-            className="w-full h-full bg-cover bg-center bg-no-repeat opacity-40"
-            style={{ backgroundImage: "url('/images/hero-background.webp')" }}
+          <motion.img
+            src="/images/hero-background.webp"
+            alt="DJ Zen Eyer performing at Brazilian Zouk event"
+            className="w-full h-full object-cover object-center opacity-40"
+            width={1920}
+            height={1080}
+            loading="eager"
+            fetchPriority="high"
             initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }} 
+            animate={{ scale: 1 }}
             transition={{ duration: 12, ease: "linear" }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
