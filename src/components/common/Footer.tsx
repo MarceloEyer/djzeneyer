@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
+import { ARTIST, getWhatsAppUrl } from '../../data/artistData';
 
 declare global {
   interface Window {
@@ -40,9 +41,7 @@ const Footer: React.FC = () => {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
 
-  const whatsappNumber = "+5521987413091";
-  const whatsappMessage = "Hello DJ Zen Eyer!";
-  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = getWhatsAppUrl('Hello DJ Zen Eyer!');
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,13 +103,13 @@ const Footer: React.FC = () => {
               {t('footer_bio')}
             </p>
             <div className="flex space-x-4">
-              <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
+              <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
                 <Instagram size={22} />
               </a>
-              <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
+              <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
                 <Music2 size={22} />
               </a>
-              <a href="https://youtube.com/@djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
+              <a href={ARTIST.social.youtube.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
                 <Youtube size={22} />
               </a>
               <a href="https://facebook.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
@@ -130,7 +129,7 @@ const Footer: React.FC = () => {
               <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
               <li><Link to="/zentribe" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><a href="mailto:booking@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">{t('footer_contact_text')}</a></li>
+              <li><a href={`mailto:${ARTIST.contact.email}`} className="text-white/70 hover:text-primary transition-colors">{t('footer_contact_text')}</a></li>
             </ul>
           </div>
 

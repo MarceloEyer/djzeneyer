@@ -4,25 +4,12 @@
 // SINGLE SOURCE OF TRUTH (SSOT) - DJ ZEN EYER
 // ============================================================================
 
+import type { Festival, SocialLink } from '../types';
+
 // Ano estimado de início da carreira como DJ, conforme o próprio artista lembra (2015)
 // Pode ser ajustado se forem encontrados registros mais antigos confirmados.
-const START_YEAR = 2015; 
+const START_YEAR = 2015;
 const CURRENT_YEAR = new Date().getFullYear();
-
-// --- Interfaces para Tipagem Forte ---
-interface Festival {
-  name: string;
-  country: string;
-  flag: string;
-  url: string;
-  upcoming?: boolean;
-}
-
-interface SocialLink {
-  handle?: string;
-  id?: string;
-  url: string;
-}
 
 // --- DADOS PRINCIPAIS ---
 export const ARTIST = {
@@ -80,7 +67,7 @@ export const ARTIST = {
 
   // 🔗 Identificadores de Autoridade (SEO Técnico)
   identifiers: {
-    wiki 'Q136551855',
+    wikidata: 'Q136551855',
     wikidataUrl: 'https://www.wikidata.org/wiki/Q136551855',
     musicbrainz: '13afa63c-8164-4697-9cad-c5100062a154',
     musicbrainzUrl: 'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',

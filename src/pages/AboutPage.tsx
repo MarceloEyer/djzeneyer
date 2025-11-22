@@ -47,7 +47,7 @@ const SCHEMA_DATA = {
       "@type": "Award",
       "name": "Bicampeão Mundial de Zouk Brasileiro",
       "description": "Vencedor nas categorias Melhor Performance e Melhor Remix.",
-      "datePublished": 
+      "datePublished": "2022"
     }
   ],
   "knowsAbout": [
@@ -82,7 +82,7 @@ const MILESTONES = [
     color: "bg-gradient-to-br from-blue-500 to-cyan-600"
   },
   {
-    year:,
+    year: "2022",
     title: "Consagração Mundial",
     description: "Conquistou o bicampeonato mundial de Zouk Brasileiro, provando que sua abordagem emocional e técnica era única. 'Foi a realização de um sonho de infância', conta.",
     icon: <Trophy className="w-8 h-8 text-white" />,

@@ -3,11 +3,13 @@
 // EVENTS PAGE - VERSÃO OTIMIZADA COM MELHORIAS
 // ============================================================================
 
-import React, { useEffect, useState, memo } from 'react';
+import type { FC } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
+import type { Event, Testimonial, FlyerData } from '../types';
 import {
   Calendar as CalendarIcon,
   MapPin,
@@ -30,50 +32,7 @@ import {
   Mail
 } from 'lucide-react';
 
-// ============================================================================
-// TIPOS
-// ============================================================================
-
-interface FlyerData {
-  id: number;
-  title: { rendered: string };
-  _embedded?: {
-    'wp:featuredmedia'?: Array<{
-      source_url: string;
-      alt_text: string;
-      media_details?: {
-        sizes?: {
-          medium_large?: { source_url: string };
-          full?: { source_url: string };
-        };
-      };
-    }>;
-  };
-}
-
-interface Testimonial {
-  name: string;
-  role: string;
-  event: string;
-  country: string;
-  quote: string;
-  avatar?: string;
-}
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  type: string;
-  image: string;
-  price: string;
-  link: string;
-  isExternal: boolean;
-  status: string;
-  description: string;
-}
+// Types imported from centralized types file
 
 // ============================================================================
 // DADOS ESTRATÉGICOS

@@ -39,20 +39,13 @@ const FEATURES_DATA = [
   },
 ];
 
-const FESTIVALS_HIGHLIGHT = [
-  { name: 'Dutch Zouk Congress', country: 'Netherlands', flag: '🇳🇱' },
-  { name: 'Prague Zouk Congress', country: 'Czech Republic', flag: '🇨🇿' },
-  { name: 'Sampa Zouk Congress', country: 'Brazil', flag: '🇧🇷' },
-  { name: 'Zouk Jampa', country: 'Brazil', flag: '🇧🇷' },
-  { name: 'Rio Zouk Congress', country: 'Brazil', flag: '🇧🇷' },
-  { name: 'IZC Brazil', country: 'Brazil', flag: '🇧🇷' },
-];
+const FESTIVALS_HIGHLIGHT = ARTIST.festivals.slice(0, 6);
 
 const STATS = [
   { value: '2×', label: 'World Champion', icon: Trophy },
-  { value: '11+', label: 'Countries', icon: Globe },
-  { value: '500+', label: 'Events', icon: Mic2 },
-  { value: '10+', label: 'Years Active', icon: Sparkles },
+  { value: `${ARTIST.stats.countriesPlayed}+`, label: 'Countries', icon: Globe },
+  { value: `${ARTIST.stats.eventsPlayed}+`, label: 'Events', icon: Mic2 },
+  { value: `${ARTIST.stats.yearsActive}+`, label: 'Years Active', icon: Sparkles },
 ];
 
 // Animações

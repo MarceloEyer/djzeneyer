@@ -37,13 +37,11 @@ const LanguageSelector: React.FC = () => {
     const search = location.search || '';
     const hash = location.hash || '';
 
-    console.debug('[LanguageSelector] changeLanguage:', { from: currentLang, to: newLang, rawPath });
 
     // Tenta mapeamento direto das rotas (ex: /pt -> /)
     const mapping = routeMap[rawPath];
     if (mapping) {
       const dest = mapping[newLang];
-      console.debug('[LanguageSelector] direct mapping ->', dest);
       // Aplica sanitização antes de navegar
       navigate(sanitizePath(dest) + search + hash);
       return;
@@ -52,7 +50,6 @@ const LanguageSelector: React.FC = () => {
     // Tenta mapeamento dinâmico para rotas parametrizadas
     const dyn = tryDynamicMapping(rawPath, newLang);
     if (dyn) {
-      console.debug('[LanguageSelector] dynamic mapping ->', dyn);
       // Aplica sanitização antes de navegar
       navigate(sanitizePath(dyn) + search + hash);
       return;
@@ -61,12 +58,10 @@ const LanguageSelector: React.FC = () => {
     // Fallback: adiciona ou remove /pt do caminho
     if (newLang === 'pt') {
       const newPath = rawPath === '/' ? '/pt' : `/pt${rawPath}`;
-      console.debug('[LanguageSelector] fallback prefix ->', newPath);
       navigate(sanitizePath(newPath) + search + hash);
       return;
     } else {
       const withoutPt = rawPath.startsWith('/pt') ? rawPath.replace(/^\/pt/, '') || '/' : rawPath;
-      console.debug('[LanguageSelector] fallback remove pt ->', withoutPt);
       navigate(sanitizePath(withoutPt) + search + hash);
       return;
     }

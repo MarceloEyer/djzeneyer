@@ -1,28 +1,26 @@
-// src/App.tsx - VERSÃO FINAL 100% CORRIGIDA
-
-import React from 'react';
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
-
-import FAQPage from './pages/FAQPage';
-import AboutPage from './pages/AboutPage';
-import MainLayout from './layouts/MainLayout';
-import LanguageWrapper from './components/common/LanguageWrapper';
-import HomePage from './pages/HomePage';
-import EventsPage from './pages/EventsPage';
-import MusicPage from './pages/MusicPage';
-import ZenTribePage from './pages/ZenTribePage';
-import PressKitPage from './pages/PressKitPage';
-import ShopPage from './pages/ShopPage';
-import DashboardPage from './pages/DashboardPage';
-import MyAccountPage from './pages/MyAccountPage';
-import NotFoundPage from './pages/NotFoundPage';
-
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
 import './i18n';
+
+import MainLayout from './layouts/MainLayout';
+import LanguageWrapper from './components/common/LanguageWrapper';
+import HomePage from './pages/HomePage';
+
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const EventsPage = lazy(() => import('./pages/EventsPage'));
+const MusicPage = lazy(() => import('./pages/MusicPage'));
+const ZenTribePage = lazy(() => import('./pages/ZenTribePage'));
+const PressKitPage = lazy(() => import('./pages/PressKitPage'));
+const ShopPage = lazy(() => import('./pages/ShopPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const MyAccountPage = lazy(() => import('./pages/MyAccountPage'));
+const FAQPage = lazy(() => import('./pages/FAQPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
   return (
@@ -32,7 +30,8 @@ function App() {
           <MusicPlayerProvider>
             <AnimatePresence mode="wait">
               <LanguageWrapper>
-                <Routes> 
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>}>
+                  <Routes> 
                   {/* English routes (root) */}
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
@@ -72,7 +71,8 @@ function App() {
 
                   {/* Fallback 404 */}
                   <Route path="*" element={<NotFoundPage />} />
-                </Routes>
+                  </Routes>
+                </Suspense>
               </LanguageWrapper>
             </AnimatePresence>
           </MusicPlayerProvider>
