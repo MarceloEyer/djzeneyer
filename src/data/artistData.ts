@@ -4,7 +4,7 @@
 // SINGLE SOURCE OF TRUTH (SSOT) - DJ ZEN EYER
 // ============================================================================
 
-const START_YEAR = 2014;
+const START_YEAR = 2015;
 const CURRENT_YEAR = new Date().getFullYear();
 
 // --- Interfaces para Tipagem Forte ---
