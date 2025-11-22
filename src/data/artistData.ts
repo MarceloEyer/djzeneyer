@@ -4,7 +4,9 @@
 // SINGLE SOURCE OF TRUTH (SSOT) - DJ ZEN EYER
 // ============================================================================
 
-const START_YEAR = 2015; // Ano ajustado com base na memória do usuário e ausência de registros anteriores específicos
+// Ano estimado de início da carreira como DJ, conforme o próprio artista lembra (2015)
+// Pode ser ajustado se forem encontrados registros mais antigos confirmados.
+const START_YEAR = 2015; 
 const CURRENT_YEAR = new Date().getFullYear();
 
 // --- Interfaces para Tipagem Forte ---
@@ -36,12 +38,13 @@ export const ARTIST = {
 
   // 🏆 Títulos e Credenciais
   titles: {
-    primary: 'Bicampeão Mundial de Zouk Brasileiro',
-    event: 'Ilha do Zouk DJ Championship',
+    primary: 'Bicampeão Mundial de Zouk Brasileiro (Atual Campeão)',
+    event: 'Ilha do Zouk DJ Championship', // Nome oficial da competição
     eventUrl: 'https://alexdecarvalho.com.br/ilhadozouk/dj-championship/',
-    location: 'Ilha do Governador, Rio de Janeiro, Brasil', // Local do Ilha do Zouk
-    year: 2022,
-    categories: ['Campeão DJ Championship', 'Melhor Remix'], // Categorias ajustadas
+    location: 'Ilha Grande, RJ, Brasil', // Local correto do evento
+    year: 2022, // Ano da última competição
+    categories: ['DJ Championship', 'Melhor Remix'], // Nome exato das categorias
+    description: 'Campeão nas categorias de DJ Championship e Melhor Remix no Ilha do Zouk em 2022. Atual campeão nestas categorias.',
   },
 
   // 🧠 Diferencial (Mensa)
@@ -52,13 +55,14 @@ export const ARTIST = {
     description: 'Membro da sociedade de alto QI (Top 2%)',
   },
 
-  // 📊 Estatísticas (Algumas automáticas ou estimativas com base em pesquisa)
+  // 📊 Estatísticas (Valores estimados ou placeholders, pois os exatos não estão confirmados)
+  // Poderiam ser atualizados com dados reais de APIs de redes sociais e plataformas musicais no futuro.
   stats: {
     yearsActive: CURRENT_YEAR - START_YEAR, // Calcula automático (ex: 10 anos em 2025)
-    countriesPlayed: 11,
-    eventsPlayed: (CURRENT_YEAR - START_YEAR) * 50, // Estimativa: ~500+
-    streamsTotal: '500K+', // Confirmado por fonte [[47]]
-    followersTotal: '15K+', // Estimativa baseada em perfis somados
+    countriesPlayed: 11, // Valor conforme o arquivo original
+    eventsPlayed: (CURRENT_YEAR - START_YEAR) * 50, // Estimativa: ~500+ (conforme original)
+    streamsTotal: 'N/A', // Não consta valores exatos, mantém como N/A ou placeholder
+    followersTotal: 'N/A', // Não consta valores exatos, mantém como N/A ou placeholder
     lastUpdated: new Date().toISOString().split('T')[0], // Data de hoje
   },
 
@@ -71,12 +75,12 @@ export const ARTIST = {
     { name: 'Zurich Zouk Congress', country: 'Suíça', flag: '🇨🇭', url: 'https://www.zurichzoukcongress.com/' },
     { name: 'Rio Zouk Congress', country: 'Brasil', flag: '🇧🇷', url: 'https://www.riozoukcongress.com/' },
     { name: 'IZC Brazil', country: 'Brasil', flag: '🇧🇷', url: 'https://www.instagram.com/izcbrazil/' },
-    { name: 'Polish Zouk Festival', country: 'Polônia', flag: '🇵🇱', url: 'https://www.polishzoukfestival.pl/', upcoming: true },
+    { name: 'Polish Zouk Festival - Katowice', country: 'Polônia', flag: '🇵🇱', url: 'https://www.polishzoukfestival.pl/', upcoming: true }, // Nome do local adicionado
   ] as Festival[],
 
   // 🔗 Identificadores de Autoridade (SEO Técnico)
   identifiers: {
-    wikidata: 'Q136551855',
+    wiki 'Q136551855',
     wikidataUrl: 'https://www.wikidata.org/wiki/Q136551855',
     musicbrainz: '13afa63c-8164-4697-9cad-c5100062a154',
     musicbrainzUrl: 'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
@@ -85,7 +89,8 @@ export const ARTIST = {
     discogsUrl: 'https://www.discogs.com/artist/16872046',
     residentAdvisor: 'djzeneyer',
     residentAdvisorUrl: 'https://pt-br.ra.co/dj/djzeneyer',
-    danceWikiFandom: 'https://dance.fandom.com/wiki/Zen_Eyer', // Página dedicada, conforme solicitado
+    // Página dedicada ao Zen Eyer na Dance Wiki, conforme fornecido
+    danceWikiFandom: 'https://dance.fandom.com/wiki/Zen_Eyer', 
   },
 
   // 📱 Redes Sociais
@@ -174,13 +179,13 @@ export const ARTIST_SCHEMA_BASE = {
   "award": [
     {
       "@type": "Award",
-      "name": "Campeão DJ Championship - Ilha do Zouk",
-      "datePublished": "2022" // Valor explícito
+      "name": "Campeão Ilha do Zouk DJ Championship",
+      "datePublished": "2022"
     },
     {
       "@type": "Award",
-      "name": "Melhor Remix - Ilha do Zouk",
-      "datePublished": "2022" // Valor explícito
+      "name": "Campeão Ilha do Zouk - Melhor Remix",
+      "datePublished": "2022"
     }
   ],
   "memberOf": {
