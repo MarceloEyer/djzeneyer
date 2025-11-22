@@ -18,7 +18,6 @@ export default {
     sourcemap: false,
     ssrManifest: false,
     rollupOptions: {
-      input: resolve(import.meta.url.replace('file://', ''), '../src/main.tsx'),
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]',
         chunkFileNames: 'assets/[name]-[hash].js',
