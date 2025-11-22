@@ -1,8 +1,7 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import { resolve } from 'path';
 
-export default defineConfig({
+export default {
   plugins: [react()],
 
   server: {
@@ -13,12 +12,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    manifest: true, // Gera dist/.vite/manifest.json
+    manifest: false,
     target: 'es2020',
     minify: 'esbuild',
     sourcemap: false,
+    ssrManifest: false,
     rollupOptions: {
-      input: path.resolve(__dirname, 'src/main.tsx'),
+      input: resolve(import.meta.url.replace('file://', ''), '../src/main.tsx'),
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]',
         chunkFileNames: 'assets/[name]-[hash].js',
@@ -40,11 +40,9 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': resolve(import.meta.url.replace('file://', ''), '../src'),
     },
   },
 
-  // ❌ REMOVER publicDir - não use pasta public para WordPress headless
-  // Os arquivos robots.txt, favicon, etc devem ser gerenciados via deploy
-  publicDir: false,
-});
+  publicDir: 'public',
+};
