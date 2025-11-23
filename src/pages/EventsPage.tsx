@@ -513,4 +513,68 @@ const EventsPage: React.FC = () => {
         <section className="py-20 container mx-auto px-4">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-2xl font-bold flex items-
+              <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Star className="text-yellow-500 fill-yellow-500" size={24} /> Eventos em Destaque</h2>
+              <p className="text-white/50 text-sm mt-1">Experiências exclusivas com {ARTIST.identity.shortName}</p>
+            </div>
+            <a href="/shop" className="text-primary text-sm hover:underline flex items-center gap-1">Ver todos <ChevronRight size={16} /></a>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {FEATURED_EVENTS.map((event) => (<FeaturedEventCard key={event.id} event={event} />))}
+            <motion.div whileHover={{ scale: 1.02 }} className="card p-8 flex flex-col justify-center items-center text-center border border-dashed border-white/20 bg-gradient-to-b from-surface/50 to-transparent">
+              <Sparkles size={48} className="text-primary/40 mb-6" />
+              <h3 className="text-2xl font-black font-display mb-4 text-white">Seu Evento Aqui</h3>
+              <p className="text-white/60 mb-6 text-sm leading-relaxed">Organizadores de festivais: garanta a {ARTIST.philosophy.style} no seu próximo evento.</p>
+              <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg w-full">Solicitar Orçamento</a>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Agenda Global */}
+        <section className="py-20 bg-surface/30 border-y border-white/5">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
+              <div>
+                <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
+                <p className="text-white/50 max-w-md">Datas confirmadas oficialmente. Atualizado em tempo real.</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a href={googleCalendarLink} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm flex items-center gap-2"><Plus size={14} /> Google Calendar</a>
+                <a href="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2"><Download size={14} /> Press Kit</a>
+              </div>
+            </div>
+            <BandsInTownWidget />
+            <p className="text-center text-xs text-white/20 mt-6">Powered by <a href={ARTIST.social.bandsintown.url} target="_blank" rel="noopener noreferrer" className="hover:text-primary">Bandsintown</a></p>
+          </div>
+        </section>
+
+        {/* Testemunhos */}
+        <section className="py-20 container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black font-display mb-4 text-white">O Que Dizem os Organizadores</h2>
+            <p className="text-white/50 max-w-xl mx-auto">Feedback de quem já contratou {ARTIST.identity.shortName} para seus eventos</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {ORGANIZER_TESTIMONIALS.map((testimonial, index) => (<TestimonialCard key={index} testimonial={testimonial} index={index} />))}
+          </div>
+        </section>
+
+        {/* Galeria de Flyers (Agora com Lightbox!) */}
+        <FlyerGallery />
+
+        {/* Histórico de Festivais */}
+        <section className="py-20 border-t border-white/5">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-4"><Globe size={20} className="text-primary" /><span className="text-sm font-bold uppercase tracking-wider text-white/60">Palcos Internacionais</span></div>
+              <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+                {ARTIST.festivals.map((festival, index) => (<FestivalBadge key={index} festival={festival} index={index} />))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </>
+  );
+};
+
+export default EventsPage;
