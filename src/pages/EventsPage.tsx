@@ -1,6 +1,6 @@
 // src/pages/EventsPage.tsx
 // ============================================================================
-// EVENTS PAGE - VERSÃO OTIMIZADA COM MELHORIAS
+// EVENTS PAGE - CORRIGIDA (SCHEMA.ORG OFFERS & PRICE FIX)
 // ============================================================================
 
 import type { FC } from 'react';
@@ -32,8 +32,6 @@ import {
   Mail
 } from 'lucide-react';
 
-// Types imported from centralized types file
-
 // ============================================================================
 // DADOS ESTRATÉGICOS
 // ============================================================================
@@ -47,7 +45,7 @@ const FEATURED_EVENTS: Event[] = [
     location: 'Zoom (Ao Vivo)',
     type: 'Education',
     image: '/images/events/mentoria-dj.jpg',
-    price: 'Lista de Espera',
+    price: 'Lista de Espera', // Schema tratará isso como 0.00
     link: '/work-with-me',
     isExternal: false,
     status: 'Vagas Limitadas',
@@ -61,7 +59,7 @@ const FEATURED_EVENTS: Event[] = [
     location: 'Rio de Janeiro, Brasil',
     type: 'Festa Exclusiva',
     image: '/images/events/zouk-experience.jpg',
-    price: 'R$ 80,00',
+    price: 'R$ 80,00', // Schema extrairá 80.00
     link: '/shop/zouk-experience-rj',
     isExternal: false,
     status: 'Últimos Ingressos',
@@ -97,49 +95,93 @@ const ORGANIZER_TESTIMONIALS: Testimonial[] = [
 ];
 
 // ============================================================================
-// SCHEMA.ORG
+// SCHEMA.ORG HELPER (CORREÇÃO DO GOOGLE)
 // ============================================================================
 
-const EVENTS_PAGE_SCHEMA = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebPage",
-      "@id": `${ARTIST.site.baseUrl}/events#webpage`,
-      "url": `${ARTIST.site.baseUrl}/events`,
-      "name": `Agenda & Tour - ${ARTIST.identity.stageName}`,
-      "description": `Agenda oficial do ${ARTIST.titles.primary}. Datas da turnê, workshops e ingressos.`,
-      "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
-      "about": { "@id": `${ARTIST.site.baseUrl}/#artist` }
-    },
-    {
-      "@type": "ItemList",
-      "name": "Festivais onde DJ Zen Eyer se apresentou",
-      "numberOfItems": ARTIST.festivals.length,
-      "itemListElement": ARTIST.festivals.map((festival, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "item": {
-          "@type": "Event",
-          "name": festival.name,
-          "location": {
-            "@type": "Place",
-            "name": festival.country,
-            "address": { "@type": "PostalAddress", "addressCountry": festival.country }
-          },
-          "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` },
-          "url": festival.url
-        }
-      }))
-    },
-    {
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": ARTIST.site.baseUrl },
-        { "@type": "ListItem", "position": 2, "name": "Events", "item": `${ARTIST.site.baseUrl}/events` }
-      ]
+/**
+ * Gera o Schema.org dinâmico para os eventos, garantindo que o campo 'offers'
+ * esteja presente e formatado corretamente para evitar erros no Search Console.
+ */
+const generateEventsSchema = () => {
+  const eventItems = FEATURED_EVENTS.map((event) => {
+    // 1. Limpeza do Preço (R$ 80,00 -> 80.00)
+    let priceValue = "0";
+    const numericMatch = event.price.match(/[\d,.]+/);
+    
+    if (numericMatch && !event.price.toLowerCase().includes('lista')) {
+      priceValue = numericMatch[0].replace('.', '').replace(',', '.');
     }
-  ]
+
+    // 2. Determinar Disponibilidade
+    const availability = event.status.toLowerCase().includes('sold out') || event.status.toLowerCase().includes('esgotado')
+      ? "https://schema.org/SoldOut"
+      : "https://schema.org/InStock";
+
+    // 3. Estrutura do Evento Individual
+    return {
+      "@type": "Event",
+      "name": event.title,
+      "description": event.description,
+      "startDate": `${event.date}T${event.time === 'Online' ? '00:00' : event.time}`,
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": event.time === 'Online' ? "https://schema.org/OnlineEventAttendanceMode" : "https://schema.org/OfflineEventAttendanceMode",
+      "image": `${ARTIST.site.baseUrl}${event.image}`,
+      "location": {
+        "@type": event.time === 'Online' ? "VirtualLocation" : "Place",
+        "name": event.location,
+        "address": {
+          "@type": "PostalAddress",
+          "name": event.location
+        },
+        "url": event.time === 'Online' ? event.link : undefined
+      },
+      // ✅ CORREÇÃO CRÍTICA: Offers Object
+      "offers": {
+        "@type": "Offer",
+        "url": `${ARTIST.site.baseUrl}${event.link}`,
+        "price": priceValue,
+        "priceCurrency": "BRL",
+        "availability": availability,
+        "validFrom": new Date().toISOString().split('T')[0]
+      },
+      "performer": {
+        "@type": "Person",
+        "@id": `${ARTIST.site.baseUrl}/#artist`,
+        "name": ARTIST.identity.stageName
+      }
+    };
+  });
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${ARTIST.site.baseUrl}/events#webpage`,
+        "url": `${ARTIST.site.baseUrl}/events`,
+        "name": `Agenda & Tour - ${ARTIST.identity.stageName}`,
+        "description": `Agenda oficial do ${ARTIST.titles.primary}. Datas da turnê, workshops e ingressos.`,
+        "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
+        "about": { "@id": `${ARTIST.site.baseUrl}/#artist` }
+      },
+      {
+        "@type": "ItemList",
+        "name": "Próximos Eventos de DJ Zen Eyer",
+        "itemListElement": eventItems.map((item, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "item": item
+        }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": ARTIST.site.baseUrl },
+          { "@type": "ListItem", "position": 2, "name": "Events", "item": `${ARTIST.site.baseUrl}/events` }
+        ]
+      }
+    ]
+  };
 };
 
 // ============================================================================
@@ -420,6 +462,9 @@ const EventsPage: React.FC = () => {
   const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
   const googleCalendarLink = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('eyer.marcelo@gmail.com')}`;
 
+  // Gera o schema atualizado com Offers
+  const schemaData = generateEventsSchema();
+
   return (
     <>
       {/* SEO */}
@@ -429,7 +474,7 @@ const EventsPage: React.FC = () => {
         url={currentUrl}
         image={`${ARTIST.site.baseUrl}/images/events-og.jpg`}
         ogType="website"
-        schema={EVENTS_PAGE_SCHEMA}
+        schema={schemaData}
         hrefLang={getHrefLangUrls(currentPath, ARTIST.site.baseUrl)}
         keywords={`${ARTIST.identity.stageName} Tour, Zouk Brasileiro, ${ARTIST.festivals.map((f) => f.name).join(', ')}`}
       />
