@@ -1,11 +1,11 @@
 // src/pages/EventsPage.tsx
 // ============================================================================
-// EVENTS PAGE - CORRIGIDA (SCHEMA.ORG OFFERS & PRICE FIX)
+// EVENTS PAGE - FINAL (COM LIGHTBOX DE FLYERS + SCHEMA FIX)
 // ============================================================================
 
 import type { FC } from 'react';
 import { useEffect, useState, memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion'; // Adicionado AnimatePresence
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
@@ -29,7 +29,8 @@ import {
   ChevronRight,
   Sparkles,
   Phone,
-  Mail
+  Mail,
+  X // Adicionado ícone de fechar
 } from 'lucide-react';
 
 // ============================================================================
@@ -45,7 +46,7 @@ const FEATURED_EVENTS: Event[] = [
     location: 'Zoom (Ao Vivo)',
     type: 'Education',
     image: '/images/events/mentoria-dj.jpg',
-    price: 'Lista de Espera', // Schema tratará isso como 0.00
+    price: 'Lista de Espera',
     link: '/work-with-me',
     isExternal: false,
     status: 'Vagas Limitadas',
@@ -59,7 +60,7 @@ const FEATURED_EVENTS: Event[] = [
     location: 'Rio de Janeiro, Brasil',
     type: 'Festa Exclusiva',
     image: '/images/events/zouk-experience.jpg',
-    price: 'R$ 80,00', // Schema extrairá 80.00
+    price: 'R$ 80,00',
     link: '/shop/zouk-experience-rj',
     isExternal: false,
     status: 'Últimos Ingressos',
@@ -95,16 +96,11 @@ const ORGANIZER_TESTIMONIALS: Testimonial[] = [
 ];
 
 // ============================================================================
-// SCHEMA.ORG HELPER (CORREÇÃO DO GOOGLE)
+// SCHEMA.ORG HELPER
 // ============================================================================
 
-/**
- * Gera o Schema.org dinâmico para os eventos, garantindo que o campo 'offers'
- * esteja presente e formatado corretamente para evitar erros no Search Console.
- */
 const generateEventsSchema = () => {
   const eventItems = FEATURED_EVENTS.map((event) => {
-    // 1. Limpeza do Preço (R$ 80,00 -> 80.00)
     let priceValue = "0";
     const numericMatch = event.price.match(/[\d,.]+/);
     
@@ -112,12 +108,10 @@ const generateEventsSchema = () => {
       priceValue = numericMatch[0].replace('.', '').replace(',', '.');
     }
 
-    // 2. Determinar Disponibilidade
     const availability = event.status.toLowerCase().includes('sold out') || event.status.toLowerCase().includes('esgotado')
       ? "https://schema.org/SoldOut"
       : "https://schema.org/InStock";
 
-    // 3. Estrutura do Evento Individual
     return {
       "@type": "Event",
       "name": event.title,
@@ -129,13 +123,9 @@ const generateEventsSchema = () => {
       "location": {
         "@type": event.time === 'Online' ? "VirtualLocation" : "Place",
         "name": event.location,
-        "address": {
-          "@type": "PostalAddress",
-          "name": event.location
-        },
+        "address": { "@type": "PostalAddress", "name": event.location },
         "url": event.time === 'Online' ? event.link : undefined
       },
-      // ✅ CORREÇÃO CRÍTICA: Offers Object
       "offers": {
         "@type": "Offer",
         "url": `${ARTIST.site.baseUrl}${event.link}`,
@@ -261,12 +251,8 @@ const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
 
       <div className="flex items-center justify-between pt-4 border-t border-white/5">
         <span className="text-lg font-bold text-primary">{event.price}</span>
-        <a
-          href={event.link}
-          className="btn btn-primary btn-sm flex items-center gap-2"
-        >
-          <Ticket size={16} />
-          Saiba Mais
+        <a href={event.link} className="btn btn-primary btn-sm flex items-center gap-2">
+          <Ticket size={16} /> Saiba Mais
         </a>
       </div>
     </div>
@@ -333,17 +319,22 @@ const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ tes
 
 TestimonialCard.displayName = 'TestimonialCard';
 
+// ============================================================================
+// FLYER GALLERY COM LIGHTBOX
+// ============================================================================
+
 const FlyerGallery: React.FC = () => {
   const [flyers, setFlyers] = useState<FlyerData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // State para o Lightbox
+  const [selectedFlyer, setSelectedFlyer] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`${ARTIST.site.baseUrl}/wp-json/wp/v2/flyers?_embed&per_page=8`)
       .then((res) => {
-        if (!res.ok) {
-          throw new Error('Não foi possível carregar os flyers.');
-        }
+        if (!res.ok) throw new Error('Não foi possível carregar os flyers.');
         return res.json();
       })
       .then((data) => {
@@ -356,62 +347,93 @@ const FlyerGallery: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="py-16 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-16 text-center text-red-400">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (flyers.length === 0) return null;
+  if (loading) return <div className="py-16 text-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" /></div>;
+  if (error || flyers.length === 0) return null;
 
   return (
-    <section className="py-20 bg-black/40 border-t border-white/5">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-black font-display text-white mb-2">Memórias & Flyers</h2>
-          <p className="text-white/40 text-sm">Histórico visual de {ARTIST.stats.countriesPlayed} países</p>
+    <>
+      <section className="py-20 bg-black/40 border-t border-white/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-black font-display text-white mb-2">Memórias & Flyers</h2>
+            <p className="text-white/40 text-sm">Histórico visual de {ARTIST.stats.countriesPlayed} países</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {flyers.map((flyer, index) => {
+              const media = flyer._embedded?.['wp:featuredmedia']?.[0];
+              // Pega a URL Full para o Lightbox
+              const fullImageUrl = media?.source_url;
+              // Pega a URL Média para a Thumbnail
+              const thumbUrl = media?.media_details?.sizes?.medium_large?.source_url || fullImageUrl;
+              
+              if (!thumbUrl) return null;
+
+              return (
+                <motion.div
+                  key={flyer.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => setSelectedFlyer(fullImageUrl)}
+                  className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 cursor-pointer"
+                >
+                  <img
+                    src={thumbUrl}
+                    alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                    <span className="text-sm font-bold text-white">{flyer.title.rendered}</span>
+                  </div>
+                  {/* Ícone de Zoom para indicar clique */}
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-black/50 p-1 rounded-full text-white/80">
+                      <Plus size={16} />
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
+      </section>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {flyers.map((flyer, index) => {
-            const media = flyer._embedded?.['wp:featuredmedia']?.[0];
-            const imageUrl = media?.media_details?.sizes?.medium_large?.source_url || media?.source_url;
-            if (!imageUrl) return null;
-
-            return (
-              <motion.div
-                key={flyer.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10"
+      {/* LIGHTBOX MODAL */}
+      <AnimatePresence>
+        {selectedFlyer && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedFlyer(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-5xl max-h-[90vh] w-full flex justify-center"
+              onClick={(e) => e.stopPropagation()} // Evita fechar ao clicar na imagem
+            >
+              <img
+                src={selectedFlyer}
+                alt="Flyer Full View"
+                className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10"
+              />
+              <button
+                onClick={() => setSelectedFlyer(null)}
+                className="absolute -top-12 right-0 md:-right-12 text-white/70 hover:text-white transition-colors p-2"
               >
-                <img
-                  src={imageUrl}
-                  alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                  <span className="text-sm font-bold text-white">{flyer.title.rendered}</span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+                <X size={32} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
@@ -422,30 +444,13 @@ const BandsInTownWidget: React.FC = () => {
     script.async = true;
     document.body.appendChild(script);
     return () => {
-      document.body.removeChild(script);
+      try { document.body.removeChild(script); } catch(e) {}
     };
   }, []);
 
   return (
     <div className="w-full min-h-[400px] bg-surface/20 rounded-2xl border border-white/5 p-6 md:p-10">
-      <a
-        className="bit-widget-initializer"
-        data-artist-name="DJ Zen Eyer"
-        data-app-id="a6f8468a12e86539eff769aec002f836"
-        data-language="en"
-        data-display-local-dates="false"
-        data-display-past-dates="true"
-        data-auto-style="false"
-        data-text-color="#FFFFFF"
-        data-link-color="#9D4EDD"
-        data-background-color="rgba(0,0,0,0)"
-        data-display-limit="10"
-        data-display-start-time="true"
-        data-link-text-color="#FFFFFF"
-        data-popup-background-color="#1a1a1a"
-        data-header-background-color="rgba(0,0,0,0)"
-        data-desktop-list-view="true"
-      >
+      <a className="bit-widget-initializer" data-artist-name="DJ Zen Eyer" data-app-id="a6f8468a12e86539eff769aec002f836" data-language="en" data-display-local-dates="false" data-display-past-dates="true" data-auto-style="false" data-text-color="#FFFFFF" data-link-color="#9D4EDD" data-background-color="rgba(0,0,0,0)" data-display-limit="10" data-display-start-time="true" data-link-text-color="#FFFFFF" data-popup-background-color="#1a1a1a" data-header-background-color="rgba(0,0,0,0)" data-desktop-list-view="true">
         Carregando Agenda Oficial...
       </a>
     </div>
@@ -462,12 +467,10 @@ const EventsPage: React.FC = () => {
   const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
   const googleCalendarLink = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('eyer.marcelo@gmail.com')}`;
 
-  // Gera o schema atualizado com Offers
   const schemaData = generateEventsSchema();
 
   return (
     <>
-      {/* SEO */}
       <HeadlessSEO
         title={`Agenda & Tour - ${ARTIST.identity.stageName} | ${ARTIST.titles.primary}`}
         description={`Agenda oficial de ${ARTIST.identity.stageName}. ${ARTIST.stats.eventsPlayed}+ eventos em ${ARTIST.stats.countriesPlayed} países. Booking para 2026 aberto.`}
@@ -484,50 +487,23 @@ const EventsPage: React.FC = () => {
         <section className="relative py-20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
           <div className="container mx-auto px-4 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center"
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+              
               {/* Badges de Status */}
               <div className="flex flex-wrap justify-center gap-3 mb-8">
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 text-red-400 font-bold text-xs tracking-wider uppercase border border-red-500/20">
-                  <Lock size={12} /> 2025 Sold Out
-                </span>
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-400 font-bold text-xs tracking-wider uppercase border border-green-500/20">
-                  <Plane size={12} /> Booking 2026 Open
-                </span>
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 text-yellow-400 font-bold text-xs tracking-wider uppercase border border-yellow-500/20">
-                  <Trophy size={12} /> {ARTIST.titles.primary}
-                </span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 text-red-400 font-bold text-xs tracking-wider uppercase border border-red-500/20"><Lock size={12} /> 2025 Sold Out</span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-400 font-bold text-xs tracking-wider uppercase border border-green-500/20"><Plane size={12} /> Booking 2026 Open</span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 text-yellow-400 font-bold text-xs tracking-wider uppercase border border-yellow-500/20"><Trophy size={12} /> {ARTIST.titles.primary}</span>
               </div>
 
-              {/* Título */}
-              <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">
-                World Tour <span className="text-primary">&</span> Events
-              </h1>
-              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-4">
-                {ARTIST.stats.yearsActive} anos levando a <span className="text-primary font-semibold">{ARTIST.philosophy.style}</span> para os maiores palcos do mundo
-              </p>
+              <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">World Tour <span className="text-primary">&</span> Events</h1>
+              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-4">{ARTIST.stats.yearsActive} anos levando a <span className="text-primary font-semibold">{ARTIST.philosophy.style}</span> para os maiores palcos do mundo</p>
 
-              {/* Estatísticas do SSOT */}
               <HeroStats />
 
-              {/* CTAs */}
               <div className="flex flex-wrap justify-center gap-4 mt-10">
-                <a
-                  href={getWhatsAppUrl("Olá! Gostaria de contratar DJ Zen Eyer para meu evento.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary btn-lg flex items-center gap-2"
-                >
-                  <Phone size={20} />
-                  Contratar para Evento
-                </a>
-                <a href="/work-with-me" className="btn btn-outline btn-lg flex items-center gap-2">
-                  <Briefcase size={20} />
-                  Press Kit & Rider
-                </a>
+                <a href={getWhatsAppUrl("Olá! Gostaria de contratar DJ Zen Eyer para meu evento.")} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg flex items-center gap-2"><Phone size={20} /> Contratar para Evento</a>
+                <a href="/work-with-me" className="btn btn-outline btn-lg flex items-center gap-2"><Briefcase size={20} /> Press Kit & Rider</a>
               </div>
             </motion.div>
           </div>
@@ -537,121 +513,4 @@ const EventsPage: React.FC = () => {
         <section className="py-20 container mx-auto px-4">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-2xl font-bold flex items-center gap-3 text-white">
-                <Star className="text-yellow-500 fill-yellow-500" size={24} />
-                Eventos em Destaque
-              </h2>
-              <p className="text-white/50 text-sm mt-1">Experiências exclusivas com {ARTIST.identity.shortName}</p>
-            </div>
-            <a href="/shop" className="text-primary text-sm hover:underline flex items-center gap-1">
-              Ver todos <ChevronRight size={16} />
-            </a>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {FEATURED_EVENTS.map((event) => (
-              <FeaturedEventCard key={event.id} event={event} />
-            ))}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="card p-8 flex flex-col justify-center items-center text-center border border-dashed border-white/20 bg-gradient-to-b from-surface/50 to-transparent"
-            >
-              <Sparkles size={48} className="text-primary/40 mb-6" />
-              <h3 className="text-2xl font-black font-display mb-4 text-white">Seu Evento Aqui</h3>
-              <p className="text-white/60 mb-6 text-sm leading-relaxed">
-                Organizadores de festivais: garanta a {ARTIST.philosophy.style} no seu próximo evento.
-              </p>
-              <a
-                href={getWhatsAppUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-outline btn-lg w-full"
-              >
-                Solicitar Orçamento
-              </a>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Agenda Global */}
-        <section className="py-20 bg-surface/30 border-y border-white/5">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
-              <div>
-                <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
-                <p className="text-white/50 max-w-md">
-                  Datas confirmadas oficialmente. Atualizado em tempo real.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href={googleCalendarLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-outline btn-sm flex items-center gap-2"
-                >
-                  <Plus size={14} /> Google Calendar
-                </a>
-                <a href="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2">
-                  <Download size={14} /> Press Kit
-                </a>
-              </div>
-            </div>
-            <BandsInTownWidget />
-            <p className="text-center text-xs text-white/20 mt-6">
-              Powered by{' '}
-              <a
-                href={ARTIST.social.bandsintown.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-primary"
-              >
-                Bandsintown
-              </a>
-            </p>
-          </div>
-        </section>
-
-        {/* Testemunhos */}
-        <section className="py-20 container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-black font-display mb-4 text-white">
-              O Que Dizem os Organizadores
-            </h2>
-            <p className="text-white/50 max-w-xl mx-auto">
-              Feedback de quem já contratou {ARTIST.identity.shortName} para seus eventos
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {ORGANIZER_TESTIMONIALS.map((testimonial, index) => (
-              <TestimonialCard key={index} testimonial={testimonial} index={index} />
-            ))}
-          </div>
-        </section>
-
-        {/* Galeria de Flyers */}
-        <FlyerGallery />
-
-        {/* Histórico de Festivais */}
-        <section className="py-20 border-t border-white/5">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <Globe size={20} className="text-primary" />
-                <span className="text-sm font-bold uppercase tracking-wider text-white/60">
-                  Palcos Internacionais
-                </span>
-              </div>
-              <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
-                {ARTIST.festivals.map((festival, index) => (
-                  <FestivalBadge key={index} festival={festival} index={index} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </>
-  );
-};
-
-export default EventsPage;
+              <h2 className="text-2xl font-bold flex items-
