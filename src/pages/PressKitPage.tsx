@@ -1,11 +1,6 @@
 // src/pages/PressKitPage.tsx
 // ============================================================================
-// PRESS KIT PAGE - VERSÃO DEFINITIVA (RICH CONTENT + SSG + I18N)
-// ============================================================================
-// 🎨 Design: Layout rico aprovado (Mensa, Cremosidade, Contato Detalhado)
-// 🌍 i18n: Conteúdo bilíngue (PT/EN) com switch automático
-// ⚡ Performance: Imagens com lazy-loading e prevenção de CLS
-// 🔍 SEO: Schema.org dinâmico e Meta Tags corretas
+// PRESS KIT PAGE - VERSÃO FINAL (VISUAL RICO + TÉCNICA I18N/SEO)
 // ============================================================================
 
 import React, { memo } from 'react';
@@ -34,14 +29,20 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// CONTEÚDO BILÍNGUE (PT/EN)
+// 1. CONTEÚDO BILÍNGUE (VISUAL RICO + TRADUÇÃO)
 // ============================================================================
 
 const CONTENT_PT = {
+  seo: {
+    title: "Press Kit Oficial - Zen Eyer | DJ Brasileiro de Zouk Brasileiro",
+    description: "Press Kit oficial de Zen Eyer, DJ brasileiro bicampeão mundial de Zouk Brasileiro. Baixe fotos, biografia e informações para imprensa."
+  },
   hero: {
     tag: "Press Kit Oficial",
-    subtitle: "Sets cremosos, emocionais e conectados à dança",
-    description: "DJ brasileiro bicampeão mundial de Zouk Brasileiro"
+    title_prefix: "Zen",
+    title_suffix: "Eyer",
+    role: "DJ brasileiro bicampeão mundial de Zouk Brasileiro",
+    subtitle: "Sets cremosos, emocionais e conectados à dança"
   },
   stats: [
     { number: "11+", label: "Países", icon: <Globe size={32} />, color: "bg-gradient-to-br from-blue-500 to-blue-700" },
@@ -51,13 +52,21 @@ const CONTENT_PT = {
   ],
   bio: {
     title: "Sobre Zen Eyer",
-    p1_start: "Zen Eyer (Marcelo Eyer Fernandes) é um ",
-    p1_strong1: "DJ brasileiro especializado em Zouk Brasileiro",
-    p1_mid: ", bicampeão mundial no gênero (2022) e membro da Mensa International. Seu estilo único, chamado de ",
-    p1_strong2: "\"cremosidade\"",
-    p1_end: ", combina técnica apurada com emoção profunda, criando sets que são verdadeiras jornadas musicais para os dançarinos.",
-    p2: "Com mais de 10 anos de carreira, Zen Eyer já se apresentou em 100+ eventos em 11 países, incluindo Holanda, Espanha, República Tcheca e Alemanha. Seu repertório é 100% focado no Zouk Brasileiro, com influências de kizomba, lambada e black music, sempre priorizando a conexão emocional com a dança.",
-    p3: "Como produtor musical, Zen Eyer cria remixes exclusivos e edições especiais para o floor de Zouk, com mais de 500.000 streams globais. É criador do evento reZENha e da comunidade Tribo Zen, que oferece conteúdo exclusivo para amantes do Zouk Brasileiro.",
+    p1: (
+      <>
+        <strong className="text-white">Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ brasileiro especializado em Zouk Brasileiro</strong>, bicampeão mundial no gênero (2022) e membro da Mensa International. Seu estilo único, chamado de "<strong>cremosidade</strong>", combina técnica apurada com emoção profunda, criando sets que são verdadeiras jornadas musicais para os dançarinos.
+      </>
+    ),
+    p2: (
+      <>
+        Com mais de 10 anos de carreira, Zen Eyer já se apresentou em <strong>100+ eventos em 11 países</strong>, incluindo Holanda, Espanha, República Tcheca e Alemanha. Seu repertório é 100% focado no Zouk Brasileiro, com influências de kizomba, lambada e black music, sempre priorizando a conexão emocional com a dança.
+      </>
+    ),
+    p3: (
+      <>
+        Como produtor musical, Zen Eyer cria remixes exclusivos e edições especiais para o floor de Zouk, com mais de <strong>500.000 streams globais</strong>. É criador do evento <strong>reZENha</strong> e da comunidade <strong>Tribo Zen</strong>, que oferece conteúdo exclusivo para amantes do Zouk Brasileiro.
+      </>
+    ),
     quickStats: [
       { title: "Cremosidade", desc: "Sets fluidos e emocionais", icon: <Star size={20} className="text-primary" /> },
       { title: "Repertório", desc: "Zouk, Kizomba, Lambada", icon: <Music2 size={20} className="text-accent" /> },
@@ -93,10 +102,16 @@ const CONTENT_PT = {
 };
 
 const CONTENT_EN = {
+  seo: {
+    title: "Official Press Kit - Zen Eyer | Brazilian Zouk DJ & Producer",
+    description: "Official Press Kit for Zen Eyer, 2x World Champion Brazilian Zouk DJ. Download high-res photos, biography, and technical rider."
+  },
   hero: {
     tag: "Official Press Kit",
-    subtitle: "Creamy sets, emotional journeys, and dance connection",
-    description: "2x World Champion Brazilian Zouk DJ & Producer"
+    title_prefix: "Zen",
+    title_suffix: "Eyer",
+    role: "2x World Champion Brazilian Zouk DJ & Producer",
+    subtitle: "Creamy sets, emotional journeys, and deep dance connection"
   },
   stats: [
     { number: "11+", label: "Countries", icon: <Globe size={32} />, color: "bg-gradient-to-br from-blue-500 to-blue-700" },
@@ -106,15 +121,23 @@ const CONTENT_EN = {
   ],
   bio: {
     title: "About Zen Eyer",
-    p1_start: "Zen Eyer (Marcelo Eyer Fernandes) is a ",
-    p1_strong1: "Brazilian Zouk DJ specialized in the genre",
-    p1_mid: ", 2x World Champion (2022), and member of Mensa International. His unique style, known as ",
-    p1_strong2: "\"creaminess\" (cremosidade)",
-    p1_end: ", combines precise technique with deep emotion, creating sets that are true musical journeys for dancers.",
-    p2: "With over 10 years of career, Zen Eyer has performed at 100+ events in 11 countries, including the Netherlands, Spain, Czech Republic, and Germany. His repertoire is 100% focused on Brazilian Zouk, with influences from Kizomba, Lambada, and Black Music, always prioritizing the emotional connection with the dance.",
-    p3: "As a music producer, Zen Eyer creates exclusive remixes and special edits for the Zouk floor, with over 500,000 global streams. He is the creator of the reZENha event and the Tribo Zen community.",
+    p1: (
+      <>
+        <strong className="text-white">Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>Brazilian Zouk DJ specialized in the genre</strong>, 2x World Champion (2022), and member of Mensa International. His unique style, known as "<strong>creaminess</strong>" (cremosidade), combines precise technique with deep emotion, creating sets that are true musical journeys for dancers.
+      </>
+    ),
+    p2: (
+      <>
+        With over 10 years of career, Zen Eyer has performed at <strong>100+ events in 11 countries</strong>, including the Netherlands, Spain, Czech Republic, and Germany. His repertoire is 100% focused on Brazilian Zouk, with influences from Kizomba, Lambada, and Black Music, always prioritizing the emotional connection with the dance.
+      </>
+    ),
+    p3: (
+      <>
+        As a music producer, Zen Eyer creates exclusive remixes and special edits for the Zouk floor, with over <strong>500,000 global streams</strong>. He is the creator of the event <strong>reZENha</strong> and the <strong>Tribo Zen</strong> community.
+      </>
+    ),
     quickStats: [
-      { title: "Creaminess", desc: "Fluid and emotional sets", icon: <Star size={20} className="text-primary" /> },
+      { title: "Creaminess", desc: "Fluid & emotional sets", icon: <Star size={20} className="text-primary" /> },
       { title: "Repertoire", desc: "Zouk, Kizomba, Lambada", icon: <Music2 size={20} className="text-accent" /> },
       { title: "Connection", desc: "Dance-focused", icon: <Users size={20} className="text-success" /> },
       { title: "Global", desc: "International presence", icon: <Globe size={20} className="text-purple-400" /> }
@@ -147,22 +170,25 @@ const CONTENT_EN = {
   }
 };
 
-const WHATSAPP_CONFIG = {
-  number: '5521987413091',
-  message: "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking."
-};
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_CONFIG.number}?text=${encodeURIComponent(WHATSAPP_CONFIG.message)}`;
-
 const RELEVANT_LINKS = [
   { name: "Instagram", url: "https://instagram.com/djzeneyer", icon: <Instagram size={20} /> },
   { name: "YouTube", url: "https://www.youtube.com/@djzeneyer", icon: <Radio size={20} /> },
   { name: "Spotify", url: "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw", icon: <PlayCircle size={20} /> },
   { name: "Apple Music", url: "https://music.apple.com/us/artist/zen-eyer/1439280950", icon: <PlayCircle size={20} /> },
+  { name: "MusicBrainz", url: "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154", icon: <Database size={20} /> },
+  { name: "Wikidata", url: "https://www.wikidata.org/wiki/Q136551855", icon: <Globe size={20} /> },
+  { name: "Discogs", url: "https://www.discogs.com/artist/16872046", icon: <Database size={20} /> },
   { name: "Resident Advisor", url: "https://pt-br.ra.co/dj/djzeneyer", icon: <ExternalLink size={20} /> }
 ];
 
+const WHATSAPP_CONFIG = {
+  number: '5521987413091',
+  message: "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking. Como podemos prosseguir?"
+};
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_CONFIG.number}?text=${encodeURIComponent(WHATSAPP_CONFIG.message)}`;
+
 // ============================================================================
-// COMPONENTES AUXILIARES (MEMOIZADOS)
+// 2. COMPONENTES AUXILIARES (MEMOIZADOS)
 // ============================================================================
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string; }>(({ icon, number, label, color }) => (
@@ -204,34 +230,41 @@ const MediaKitCard = memo<{ icon: React.ReactNode; title: string; description: s
 MediaKitCard.displayName = 'MediaKitCard';
 
 // ============================================================================
-// COMPONENTE PRINCIPAL
+// 3. COMPONENTE PRINCIPAL
 // ============================================================================
 const PressKitPage: React.FC = () => {
   const { i18n } = useTranslation();
+  // Força PT se a url for /pt, senão EN (Fallback para i18n seguro)
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
   const content = lang === 'pt' ? CONTENT_PT : CONTENT_EN;
 
+  // URL Canonical
   const currentPath = '/press-kit';
   const currentUrl = 'https://djzeneyer.com' + currentPath;
 
-  // Schema Schema.org Dinâmico
+  // Schema Dinâmico
   const PERSON_SCHEMA = {
     "@type": "Person",
     "@id": "https://djzeneyer.com/#artist",
     "name": "DJ Zen Eyer",
-    "jobTitle": lang === 'pt' ? "DJ e Produtor Musical de Zouk Brasileiro" : "Brazilian Zouk DJ & Producer",
-    "description": content.hero.description,
+    "alternateName": ["Zen Eyer", "Marcelo Eyer Fernandes"],
+    "jobTitle": lang === 'pt' ? "DJ e Produtor Musical" : "DJ & Music Producer",
+    "description": content.seo.description,
     "url": "https://djzeneyer.com",
     "image": "https://djzeneyer.com/images/zen-eyer-presskit-photo.jpg",
     "sameAs": RELEVANT_LINKS.map(l => l.url),
-    "memberOf": { "@type": "Organization", "name": "Mensa International" }
+    "memberOf": { "@type": "Organization", "name": "Mensa International" },
+    "award": [
+      { "@type": "Award", "name": "World Champion DJ (Ilha do Zouk 2022)", "datePublished": "2022" },
+      { "@type": "Award", "name": "Best Remix (Ilha do Zouk 2022)", "datePublished": "2022" }
+    ]
   };
 
   return (
     <>
       <HeadlessSEO
-        title={`Press Kit - Zen Eyer | ${content.hero.description}`}
-        description={content.bio.p1_start + content.bio.p1_strong1 + "..."}
+        title={content.seo.title}
+        description={content.seo.description}
         url={currentUrl}
         image="https://djzeneyer.com/images/zen-eyer-presskit-cover.jpg"
         ogType="profile"
@@ -240,12 +273,10 @@ const PressKitPage: React.FC = () => {
       />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-surface/20 to-background text-white">
-
-        {/* ====================================================================== */}
-        {/* HERO SECTION */}
-        {/* ====================================================================== */}
+        
+        {/* Hero Section */}
         <div className="relative pt-24 pb-16 overflow-hidden">
-          {/* Background Effects */}
+          {/* Efeitos de Fundo */}
           <div className="absolute inset-0 pointer-events-none opacity-30">
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -259,18 +290,18 @@ const PressKitPage: React.FC = () => {
                   {content.hero.tag}
                 </div>
               </motion.div>
-
+              
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
-                Zen <span className="text-primary">Eyer</span>
+                {content.hero.title_prefix} <span className="text-primary">{content.hero.title_suffix}</span>
               </h1>
-
+              
               <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-                {content.hero.description}
+                {content.hero.role}
                 <br />
                 <span className="text-primary font-semibold">{content.hero.subtitle}</span>
               </p>
             </motion.div>
-
+            
             {/* Stats Grid */}
             <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-20" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.8 }}>
               {content.stats.map((stat, index) => (
@@ -280,20 +311,17 @@ const PressKitPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ====================================================================== */}
-        {/* BIO SECTION (VISUAL RICO) */}
-        {/* ====================================================================== */}
+        {/* Bio Section */}
         <section className="py-20 bg-surface/30">
           <div className="container mx-auto px-4">
-            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="max-w-6xl mx-auto">
+            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.8 }} className="max-w-6xl mx-auto">
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 
-                {/* Imagem Bio com suporte a lazy loading e decoding */}
                 <motion.div className="relative" whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 300 }}>
                   <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 shadow-2xl">
                     <img
                       src="https://djzeneyer.com/images/zen-eyer-presskit-photo.jpg"
-                      alt="Zen Eyer - DJ Brasileiro de Zouk Brasileiro"
+                      alt="Zen Eyer - Press Photo"
                       className="w-full h-full object-cover"
                       loading="lazy"
                       decoding="async"
@@ -310,18 +338,11 @@ const PressKitPage: React.FC = () => {
                   </h2>
 
                   <div className="space-y-4 text-lg text-white/80 leading-relaxed">
-                    <p>
-                      {content.bio.p1_start}
-                      <strong className="text-white">{content.bio.p1_strong1}</strong>
-                      {content.bio.p1_mid}
-                      <strong className="text-primary italic">{content.bio.p1_strong2}</strong>
-                      {content.bio.p1_end}
-                    </p>
+                    <p>{content.bio.p1}</p>
                     <p>{content.bio.p2}</p>
                     <p>{content.bio.p3}</p>
                   </div>
 
-                  {/* Quick Stats (Visual Rico) */}
                   <div className="mt-8 grid grid-cols-2 gap-4">
                     {content.bio.quickStats.map((item, i) => (
                       <div key={i} className="flex items-start gap-3">
@@ -339,9 +360,7 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        {/* ====================================================================== */}
-        {/* MEDIA KIT DOWNLOADS */}
-        {/* ====================================================================== */}
+        {/* Media Kit Downloads */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="max-w-6xl mx-auto">
@@ -352,16 +371,14 @@ const PressKitPage: React.FC = () => {
 
               <div className="grid md:grid-cols-3 gap-8">
                 {content.media.items.map((item, index) => (
-                  <MediaKitCard key={index} icon={item.icon} title={item.title} description={item.desc} path={item.path} />
+                  <MediaKitCard key={index} {...item} />
                 ))}
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* ====================================================================== */}
-        {/* GALLERY */}
-        {/* ====================================================================== */}
+        {/* Press Photos Gallery */}
         <section className="py-20 bg-surface/30">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="max-w-6xl mx-auto">
@@ -396,33 +413,20 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        {/* ====================================================================== */}
-        {/* CONTACT CTA & DETAILS */}
-        {/* ====================================================================== */}
+        {/* Contact CTA */}
         <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-4xl mx-auto text-center">
               <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-12 border border-primary/30">
-                <h2 className="text-4xl md:text-5xl font-black font-display mb-6">
-                  {content.contact.title}
-                </h2>
-                <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-                  {content.contact.subtitle}
-                </p>
+                <h2 className="text-4xl md:text-5xl font-black font-display mb-6">{content.contact.title}</h2>
+                <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">{content.contact.subtitle}</p>
 
                 <div className="flex flex-wrap justify-center gap-4">
-                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg inline-flex items-center gap-3">
-                    <Phone size={20} /> WhatsApp
-                  </a>
-                  <a href="mailto:booking@djzeneyer.com" className="btn btn-outline btn-lg inline-flex items-center gap-3">
-                    <Mail size={20} /> Email
-                  </a>
-                  <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg inline-flex items-center gap-3">
-                    <Instagram size={20} /> Instagram
-                  </a>
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg inline-flex items-center gap-3"><Phone size={20} /> WhatsApp</a>
+                  <a href="mailto:booking@djzeneyer.com" className="btn btn-outline btn-lg inline-flex items-center gap-3"><Mail size={20} /> Email</a>
+                  <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg inline-flex items-center gap-3"><Instagram size={20} /> Instagram</a>
                 </div>
 
-                {/* Contact Details Grid */}
                 <div className="mt-12 pt-8 border-t border-white/10">
                   <div className="grid md:grid-cols-3 gap-6 text-left">
                     <div className="flex items-start gap-3">
@@ -449,7 +453,6 @@ const PressKitPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Official Links */}
                 <div className="mt-12 pt-8 border-t border-white/10">
                   <h3 className="text-xl font-bold mb-6 text-center">{content.contact.linksTitle}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
