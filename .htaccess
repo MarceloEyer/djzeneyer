@@ -1,0 +1,249 @@
+# ==========================================
+# DJ ZEN EYER - WORDPRESS HEADLESS + REACT
+# Optimized for: LiteSpeed Cache + Cloudflare + WooCommerce + GamiPress
+# ==========================================
+
+# LiteSpeed Cache Configuration
+<IfModule LiteSpeed>
+    # Enable LiteSpeed Cache
+    CacheLookup on
+
+    # Cache Static Assets
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf|eot)$ [NC]
+    RewriteRule .* - [E=Cache-Control:max-age=31536000,public]
+
+    # Vary by Language (for bilingual support)
+    Header append Vary Accept-Language
+
+    # Don't cache logged-in users (WooCommerce + GamiPress)
+    RewriteCond %{HTTP_COOKIE} wordpress_logged_in [NC]
+    RewriteRule .* - [E=Cache-Control:no-cache]
+</IfModule>
+
+# ==========================================
+# SECURITY HEADERS (Cloudflare Compatible)
+# ==========================================
+<IfModule mod_headers.c>
+    # Remove server information
+    Header unset Server
+    Header unset X-Powered-By
+
+    # Security headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+    # HSTS (HTTPS Strict Transport Security)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+
+    # CSP for React SPA (adjusted for inline scripts)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://accounts.google.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://djzeneyer.com https://*.djzeneyer.com; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self';"
+</IfModule>
+
+# ==========================================
+# CORS (Cross-Origin Resource Sharing)
+# Required for React frontend consuming WordPress API
+# ==========================================
+<IfModule mod_headers.c>
+    # Allow credentials for logged-in users
+    SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173|127\.0\.0\.1:5173)$" ALLOWED_ORIGIN=$0
+    Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+    Header always set Access-Control-Allow-Credentials "true" env=ALLOWED_ORIGIN
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Client-Info, Apikey, X-Requested-With"
+
+    # Handle preflight requests
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+</IfModule>
+
+# ==========================================
+# COMPRESSION (Cloudflare handles this, but backup)
+# ==========================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml application/rss+xml image/svg+xml
+
+    # Don't compress images (already optimized)
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|webp|ico)$ no-gzip
+</IfModule>
+
+# ==========================================
+# BROWSER CACHING (Asset Optimization)
+# ==========================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Images
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+
+    # Fonts
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+
+    # CSS & JavaScript (versioned assets)
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType application/x-javascript "access plus 1 year"
+
+    # HTML (short cache for SPA updates)
+    ExpiresByType text/html "access plus 1 hour"
+
+    # Manifest & JSON
+    ExpiresByType application/json "access plus 1 week"
+    ExpiresByType application/manifest+json "access plus 1 week"
+    ExpiresByType application/xml "access plus 1 week"
+    ExpiresByType text/xml "access plus 1 week"
+</IfModule>
+
+# ==========================================
+# WORDPRESS PERMALINKS (Required)
+# ==========================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteBase /
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
+</IfModule>
+
+# ==========================================
+# BILINGUAL ROUTES (EN / PT)
+# Ensure /pt/* routes work correctly
+# ==========================================
+<IfModule mod_rewrite.c>
+    # Portuguese routes
+    RewriteRule ^pt(/.*)?$ /index.php [L,QSA]
+
+    # Preserve query strings for WooCommerce
+    RewriteCond %{QUERY_STRING} !=""
+    RewriteRule ^(.*)$ $1 [QSA,L]
+</IfModule>
+
+# ==========================================
+# SECURITY: Block Access to Sensitive Files
+# ==========================================
+<FilesMatch "^(\.htaccess|\.env|\.git|wp-config\.php|readme\.html|license\.txt)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Protect wp-includes
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^wp-admin/includes/ - [F,L]
+    RewriteRule !^wp-includes/ - [S=3]
+    RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
+    RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
+    RewriteRule ^wp-includes/theme-compat/ - [F,L]
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Block PHP execution in uploads
+<Directory "*/wp-content/uploads/">
+    <FilesMatch "\.php$">
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order allow,deny
+            Deny from all
+        </IfModule>
+    </FilesMatch>
+</Directory>
+
+# ==========================================
+# WOOCOMMERCE OPTIMIZATION
+# ==========================================
+<IfModule mod_rewrite.c>
+    # Don't cache checkout/cart/account pages
+    RewriteCond %{REQUEST_URI} ^/(checkout|cart|my-account|minha-conta)
+    RewriteRule .* - [E=Cache-Control:no-cache]
+
+    # Preserve AJAX requests
+    RewriteCond %{HTTP:X-Requested-With} =XMLHttpRequest
+    RewriteRule .* - [E=Cache-Control:no-cache]
+</IfModule>
+
+# ==========================================
+# CLOUDFLARE COMPATIBILITY
+# ==========================================
+<IfModule mod_headers.c>
+    # Trust Cloudflare IPs
+    SetEnvIf CF-Connecting-IP "^(.*)$" CF_IP=$1
+    RequestHeader set X-Forwarded-For "%{CF_IP}e" env=CF_IP
+
+    # Restore visitor IP
+    SetEnvIf CF-Connecting-IP "^(.*)$" REMOTE_ADDR=$1
+
+    # Cache static assets at Cloudflare edge
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf|eot|mp4|webm|mp3)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# ==========================================
+# PERFORMANCE: ETags & Compression
+# ==========================================
+<IfModule mod_headers.c>
+    # Remove ETags (use cache-control instead)
+    Header unset ETag
+    FileETag None
+</IfModule>
+
+# ==========================================
+# LITESPEED CACHE RULES
+# ==========================================
+<IfModule LiteSpeed>
+    # Cache public pages
+    CacheEnable public /
+
+    # Don't cache these URLs
+    CacheDisable /wp-admin
+    CacheDisable /checkout
+    CacheDisable /cart
+    CacheDisable /my-account
+    CacheDisable /minha-conta
+
+    # Vary by cookies for logged-in users
+    CacheVary cookie=wordpress_logged_in
+    CacheVary cookie=woocommerce_items_in_cart
+
+    # ESI for dynamic content
+    CacheEnableESI on
+</IfModule>
+
+# ==========================================
+# MIME TYPES (Modern Web Formats)
+# ==========================================
+<IfModule mod_mime.c>
+    AddType image/svg+xml svg svgz
+    AddEncoding gzip svgz
+    AddType image/webp webp
+    AddType application/manifest+json webmanifest
+    AddType font/woff2 woff2
+    AddType font/woff woff
+    AddType application/json json
+</IfModule>
+
+# END DJ ZEN EYER .htaccess

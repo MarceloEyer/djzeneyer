@@ -1,0 +1,122 @@
+# DJ ZEN EYER - PROJECT PROMPT
+
+You are assisting with the DJ Zen Eyer website, a high-performance headless WordPress + React application for a 2× World Champion Brazilian Zouk DJ and producer.
+
+## CRITICAL CONTEXT
+
+### Architecture
+- **Frontend:** React 18 + Vite 5 + TypeScript + Tailwind CSS (SSG with prerendering)
+- **Backend:** WordPress headless (REST API only, no theme rendering)
+- **Plugins:** WooCommerce (shop), GamiPress (gamification), Polylang (i18n), MailPoet (newsletter)
+- **Infrastructure:** LiteSpeed Cache + Cloudflare CDN
+
+### Key Features
+1. **Bilingual (EN/PT):** All routes must exist in both languages (`/` = EN, `/pt` = PT)
+2. **Static Site Generation:** HTML pre-rendered for SEO (see `scripts/prerender.mjs`)
+3. **Lazy Loading:** React components code-split for performance
+4. **Gamification:** User points, ranks, achievements via GamiPress API
+5. **E-commerce:** WooCommerce products consumed via REST API
+
+### Directory Structure
+```
+/inc/           → WordPress PHP configuration (API, CPT, SEO, cache, security)
+/src/           → React application
+  /components/  → Reusable UI components
+  /pages/       → Route pages (HomePage, ShopPage, etc.)
+  /contexts/    → Global state (User, Cart, MusicPlayer)
+  /locales/     → i18n translations (en/pt)
+/dist/          → Production build output (deploy this folder)
+/public/        → Static assets (images, fonts, manifests)
+```
+
+## RULES FOR AI ASSISTANTS
+
+### When Editing PHP (/inc)
+- **NEVER** remove CORS headers (breaks React API calls)
+- **NEVER** disable `show_in_rest` for CPTs (breaks API access)
+- **ALWAYS** maintain bilingual support in API endpoints
+- **TEST** WordPress REST API after changes: `/wp-json/djzeneyer/v1/`
+
+### When Editing React (/src)
+- **NEVER** hardcode API URLs (use environment variables or config)
+- **ALWAYS** handle loading states (Suspense + lazy imports)
+- **ALWAYS** add Portuguese translations to `/src/locales/pt/translation.json`
+- **NEVER** remove `fetchPriority="high"` from hero images
+- **MAINTAIN** lazy loading for pages (see `src/App.tsx`)
+
+### When Editing Styles
+- **USE** Tailwind classes (no inline CSS)
+- **FOLLOW** design system: spacing (8px grid), colors (from `tailwind.config.js`)
+- **ENSURE** responsive breakpoints: `sm:`, `md:`, `lg:`, `xl:`
+- **AVOID** purple/indigo colors (client preference: dark + red accents)
+
+### Performance Requirements
+- **LCP:** < 1.8s (preload hero image, no render-blocking scripts)
+- **CLS:** < 0.05 (explicit image dimensions, no layout shift)
+- **Bundle:** < 200KB gzipped (code splitting active)
+- **SEO:** All routes must have static HTML with meta tags
+
+### Security
+- **CORS:** Only allow `djzeneyer.com` + localhost origins
+- **CSP:** Strict Content Security Policy in `.htaccess`
+- **HSTS:** HTTPS only (Cloudflare handles SSL)
+- **No inline scripts** (except React hydration)
+
+### Language/Translation
+- **Detection:** Browser language → redirect to `/pt` if `pt-BR`
+- **Storage:** `localStorage` persists user choice
+- **URLs:** English = `/about`, Portuguese = `/pt/about`
+- **API:** Pass `?lang=pt` to WP endpoints for translated content
+
+### Build & Deploy
+1. **Development:** `npm run dev` (Vite dev server at :5173)
+2. **Build:** `npm run build` (compiles + prerenders 16 HTML files)
+3. **Deploy:** Upload `/dist` folder to server root (not in `/wp-content/themes`)
+4. **Cache:** Clear LiteSpeed Cache + Cloudflare after deploy
+
+## COMMON TASKS
+
+### Add New Route
+1. Create page in `/src/pages/NewPage.tsx`
+2. Add lazy import in `/src/App.tsx`
+3. Add route metadata to `/scripts/prerender.mjs`
+4. Add translations to `en/translation.json` + `pt/translation.json`
+5. Rebuild: `npm run build`
+
+### Add New Product Type
+1. Register CPT in `/inc/cpt.php`
+2. Enable `show_in_rest: true`
+3. Create API endpoint in `/inc/api.php` if custom logic needed
+4. Consume in React via `fetch(wpData.restUrl + '/wp/v2/your-cpt')`
+
+### Debug API Issues
+1. Check CORS: `curl -H "Origin: https://djzeneyer.com" https://your-site.com/wp-json/`
+2. Verify nonce: `console.log(wpData.nonce)` in browser
+3. Test endpoint: `/wp-json/djzeneyer/v1/products?lang=pt`
+4. Check PHP errors: `wp-content/debug.log`
+
+## CONTACT & BRAND VOICE
+- **Artist Name:** DJ Zen Eyer (legal: Marcelo Eyer Fernandes)
+- **Tagline:** "A pressa é inimiga da cremosidade" (Haste is the enemy of creaminess)
+- **Genre:** Brazilian Zouk (not generic EDM)
+- **Tone:** Professional, premium, international appeal
+- **Target:** Dancers, event organizers, DJs (B2C + B2B)
+
+## NEVER DO
+- ❌ Break bilingual routing
+- ❌ Remove lazy loading
+- ❌ Disable LiteSpeed Cache rules
+- ❌ Add heavy libraries without justification
+- ❌ Ignore accessibility (alt texts, ARIA labels)
+- ❌ Deploy without building (`npm run build`)
+
+## PRIORITY ORDER
+1. **Security** (CORS, XSS protection, HTTPS)
+2. **Performance** (LCP, bundle size, caching)
+3. **SEO** (static HTML, meta tags, structured data)
+4. **UX** (loading states, error handling, mobile-first)
+5. **Aesthetics** (animations, polish, dark theme consistency)
+
+---
+
+**For more details:** Check `SETUP.md` for full deployment guide.
