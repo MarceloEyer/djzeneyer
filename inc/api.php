@@ -1,25 +1,25 @@
 <?php
 /**
  * ZENEYER HEADLESS EXTENSIONS (API)
- * Funcionalidades de Auth, Loja, Gamificação e Menu.
+ * v2.0 - Versão Estável e Completa
+ * Funcionalidades: Auth, Menu (Fallback), Loja, Gamificação, Newsletter.
  */
 
 if (!defined('ABSPATH')) exit;
 
-// ==========================================
-// 1. AUTENTICAÇÃO (CRÍTICO PARA LOGIN)
-// ==========================================
+// ============================================================================
+// 1. AUTENTICAÇÃO (Login & Validação de Sessão)
+// ============================================================================
 
-// Registra as rotas de Auth que o Frontend espera
 add_action('rest_api_init', function () {
-    // Settings (URL de login, etc)
+    // Endpoint de Configurações (URLs de Login)
     register_rest_route('zeneyer-auth/v1', '/settings', array(
         'methods' => 'GET',
         'callback' => 'djz_get_auth_settings',
         'permission_callback' => '__return_true',
     ));
     
-    // Validação de Token/Sessão
+    // Endpoint de Validação de Token/Cookie
     register_rest_route('zeneyer-auth/v1', '/auth/validate', array(
         'methods' => 'POST',
         'callback' => 'djz_validate_token',
@@ -36,7 +36,7 @@ function djz_get_auth_settings() {
 }
 
 function djz_validate_token($request) {
-    // Se o usuário já tem o cookie do WP, ele está validado
+    // Se o cookie de sessão do WP for válido, o usuário está logado
     if (is_user_logged_in()) {
         $user = wp_get_current_user();
         return array(
@@ -48,7 +48,6 @@ function djz_validate_token($request) {
                     'email' => $user->user_email,
                     'nicename' => $user->user_nicename,
                     'display_name' => $user->display_name,
-                    // Adicione roles se necessário para controle de acesso
                     'roles' => $user->roles
                 )
             )
@@ -57,10 +56,9 @@ function djz_validate_token($request) {
     return new WP_Error('jwt_auth_invalid_token', 'Token inválido ou expirado', array('status' => 403));
 }
 
-
-// ==========================================
-// 2. GAMIPRESS (Gamificação)
-// ==========================================
+// ============================================================================
+// 2. GAMIPRESS (Gamificação & Pontos)
+// ============================================================================
 
 function djz_format_requirements($post_id) {
     if (!function_exists('gamipress_get_post_requirements')) return [];
@@ -168,27 +166,70 @@ function djz_get_gamipress_handler($request) {
     ]]);
 }
 
-// ==========================================
-// 3. UTILS (Menu & Newsletter)
-// ==========================================
+// ============================================================================
+// 3. UTILS (MENU BLINDADO & Newsletter)
+// ============================================================================
 
 function djz_get_multilang_menu_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
-    if (function_exists('pll_set_language')) pll_set_language($lang);
+    
+    // Suporte a Polylang
+    if (function_exists('pll_set_language')) {
+        pll_set_language($lang);
+    }
     
     $locations = get_nav_menu_locations();
-    // IMPORTANTE: Verifique se o slug do menu no seu tema é 'primary' ou 'primary_menu'
-    $menu_id = $locations['primary'] ?? $locations['primary_menu'] ?? null;
+    $menu_id = null;
     
+    // 1. Tenta encontrar por localizações comuns (Fallback Cascading)
+    $possible_locations = ['primary', 'primary_menu', 'header_menu', 'main', 'top'];
+    
+    foreach ($possible_locations as $loc) {
+        if (isset($locations[$loc])) {
+            $menu_id = $locations[$loc];
+            break;
+        }
+    }
+    
+    // 2. FALLBACK ABSOLUTO: Se não achou local, pega o primeiro menu que existe no banco
+    if (!$menu_id) {
+        $all_menus = wp_get_nav_menus();
+        if (!empty($all_menus)) {
+            $menu_id = $all_menus[0]->term_id;
+        }
+    }
+    
+    // Se ainda assim falhar, não tem menu criado
     if (!$menu_id) return rest_ensure_response([]);
     
+    // Busca os itens
     $items = wp_get_nav_menu_items($menu_id);
     if (!is_array($items)) return rest_ensure_response([]);
     
     $formatted = [];
+    $home_url = home_url();
+
     foreach ($items as $item) {
-        if (empty($item->ID) || (int)$item->menu_item_parent !== 0) continue;
-        $formatted[] = ['ID' => (int)$item->ID, 'title' => $item->title ?? '', 'url' => wp_make_link_relative($item->url ?? '#'), 'target' => $item->target ?: '_self'];
+        if (empty($item->ID)) continue;
+        // Filtra apenas itens de topo se o React não suportar dropdown ainda
+        if ((int)$item->menu_item_parent !== 0) continue; 
+        
+        $url = $item->url;
+        
+        // Transforma links internos em rotas relativas para o React (SPA)
+        if (strpos($url, $home_url) !== false) {
+            $url = str_replace($home_url, '', $url);
+            // Garante a barra inicial
+            if (empty($url) || $url === '') $url = '/';
+            elseif ($url[0] !== '/') $url = '/' . $url;
+        }
+
+        $formatted[] = [
+            'ID' => (int)$item->ID,
+            'title' => $item->title ?? $item->post_title,
+            'url' => $url,
+            'target' => $item->target ?: '_self'
+        ];
     }
     return rest_ensure_response($formatted);
 }
@@ -210,9 +251,9 @@ function djz_mailpoet_subscribe_handler($request) {
     }
 }
 
-// ==========================================
+// ============================================================================
 // 4. WOOCOMMERCE (Headless Products)
-// ==========================================
+// ============================================================================
 
 function djz_get_products_with_lang_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? '');
@@ -254,19 +295,26 @@ function djz_get_products_with_lang_handler($request) {
     return new WP_Rest_Response($products, 200);
 }
 
-// ==========================================
-// 5. REGISTRO DAS ROTAS PRINCIPAIS
-// ==========================================
+// ============================================================================
+// 5. REGISTRO GERAL DAS ROTAS
+// ============================================================================
 
 add_action('rest_api_init', function () {
     $ns = 'djzeneyer/v1';
     
+    // Menu
     register_rest_route($ns, '/menu', ['methods' => 'GET', 'callback' => 'djz_get_multilang_menu_handler', 'permission_callback' => '__return_true']);
+    
+    // Newsletter
     register_rest_route($ns, '/subscribe', ['methods' => 'POST', 'callback' => 'djz_mailpoet_subscribe_handler', 'permission_callback' => '__return_true']);
+    
+    // Loja
     register_rest_route($ns, '/products', ['methods' => 'GET', 'callback' => 'djz_get_products_with_lang_handler', 'permission_callback' => '__return_true', 'args' => ['lang' => ['required' => false, 'type' => 'string']]]);
+    
+    // Gamificação
     register_rest_route($ns, '/gamipress/(?P<user_id>\d+)', ['methods' => 'GET', 'callback' => 'djz_get_gamipress_handler', 'permission_callback' => '__return_true', 'args' => ['user_id' => ['required' => true, 'type' => 'integer']]]);
     
-    // Perfil
+    // Perfil de Usuário
     register_rest_route($ns, '/user/update-profile', [
         'methods' => 'POST',
         'permission_callback' => function() { return is_user_logged_in(); },
@@ -284,7 +332,7 @@ add_action('rest_api_init', function () {
         }
     ]);
 
-    // --- ENDPOINTS DE DASHBOARD (MOCK) ---
+    // Mock Dashboards (Placeholders)
     register_rest_route($ns, '/tracks/(?P<user_id>\d+)', [
         'methods' => 'GET', 'callback' => function() { return rest_ensure_response(['count' => 12]); }, 'permission_callback' => '__return_true'
     ]);
@@ -296,9 +344,9 @@ add_action('rest_api_init', function () {
     ]);
 });
 
-// ==========================================
+// ============================================================================
 // 6. CORREÇÃO DE CORS (GLOBAL)
-// ==========================================
+// ============================================================================
 add_action('init', function() {
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
