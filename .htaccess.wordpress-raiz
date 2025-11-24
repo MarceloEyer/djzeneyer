@@ -1,0 +1,35 @@
+# ==========================================
+# WORDPRESS NA RAIZ + REACT COMO TEMA
+# ==========================================
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Preservar autorização HTTP
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# NÃO mexer com arquivos/pastas reais do WordPress
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirecionar para index.php do WordPress
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
+
+# CORS para API REST
+<IfModule mod_headers.c>
+    SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173|127\.0\.0\.1:5173)$" ALLOWED_ORIGIN=$0
+    Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+    Header always set Access-Control-Allow-Credentials "true" env=ALLOWED_ORIGIN
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce"
+</IfModule>
+
+# Security
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
