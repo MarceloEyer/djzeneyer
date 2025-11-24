@@ -1,13 +1,65 @@
 <?php
 /**
- * ZENEYER HEADLESS EXTENSIONS
- * Funcionalidades de Loja, Gamificação e Menu para o Frontend React.
+ * ZENEYER HEADLESS EXTENSIONS (API)
+ * Funcionalidades de Auth, Loja, Gamificação e Menu.
  */
 
 if (!defined('ABSPATH')) exit;
 
 // ==========================================
-// 1. GAMIPRESS (Gamificação)
+// 1. AUTENTICAÇÃO (CRÍTICO PARA LOGIN)
+// ==========================================
+
+// Registra as rotas de Auth que o Frontend espera
+add_action('rest_api_init', function () {
+    // Settings (URL de login, etc)
+    register_rest_route('zeneyer-auth/v1', '/settings', array(
+        'methods' => 'GET',
+        'callback' => 'djz_get_auth_settings',
+        'permission_callback' => '__return_true',
+    ));
+    
+    // Validação de Token/Sessão
+    register_rest_route('zeneyer-auth/v1', '/auth/validate', array(
+        'methods' => 'POST',
+        'callback' => 'djz_validate_token',
+        'permission_callback' => '__return_true',
+    ));
+});
+
+function djz_get_auth_settings() {
+    return array(
+        'login_url' => home_url('/wp-login.php'),
+        'register_allowed' => get_option('users_can_register'),
+        'site_name' => get_bloginfo('name'),
+    );
+}
+
+function djz_validate_token($request) {
+    // Se o usuário já tem o cookie do WP, ele está validado
+    if (is_user_logged_in()) {
+        $user = wp_get_current_user();
+        return array(
+            'code' => 'jwt_auth_valid_token',
+            'data' => array(
+                'status' => 200,
+                'user' => array(
+                    'id' => $user->ID,
+                    'email' => $user->user_email,
+                    'nicename' => $user->user_nicename,
+                    'display_name' => $user->display_name,
+                    // Adicione roles se necessário para controle de acesso
+                    'roles' => $user->roles
+                )
+            )
+        );
+    }
+    return new WP_Error('jwt_auth_invalid_token', 'Token inválido ou expirado', array('status' => 403));
+}
+
+
+// ==========================================
+// 2. GAMIPRESS (Gamificação)
 // ==========================================
 
 function djz_format_requirements($post_id) {
@@ -50,14 +102,12 @@ function djz_get_gamipress_handler($request) {
         $total_points += $points;
     }
     
-    // Ranks e Conquistas (Mantido original simplificado para brevidade aqui, mas funcional)
-    // ... (Sua lógica original de Rank estava boa, mantida abaixo)
-    
-     // Ranks
+    // Ranks
     $rank_types = gamipress_get_rank_types();
     $current_rank = 'Novice';
     $rank_id = 0;
     $rank_type_slug = '';
+    
     foreach ($rank_types as $slug => $data) {
         $user_rank = gamipress_get_user_rank($user_id, $slug);
         if ($user_rank && is_object($user_rank)) {
@@ -85,7 +135,7 @@ function djz_get_gamipress_handler($request) {
         }
     }
 
-    // Conquistas simplificadas
+    // Conquistas
     $achievement_types = gamipress_get_achievement_types();
     $earned_achievements = [];
     $all_achievements = [];
@@ -119,7 +169,7 @@ function djz_get_gamipress_handler($request) {
 }
 
 // ==========================================
-// 2. UTILS (Menu & Newsletter)
+// 3. UTILS (Menu & Newsletter)
 // ==========================================
 
 function djz_get_multilang_menu_handler($request) {
@@ -127,7 +177,9 @@ function djz_get_multilang_menu_handler($request) {
     if (function_exists('pll_set_language')) pll_set_language($lang);
     
     $locations = get_nav_menu_locations();
-    $menu_id = $locations['primary_menu'] ?? null;
+    // IMPORTANTE: Verifique se o slug do menu no seu tema é 'primary' ou 'primary_menu'
+    $menu_id = $locations['primary'] ?? $locations['primary_menu'] ?? null;
+    
     if (!$menu_id) return rest_ensure_response([]);
     
     $items = wp_get_nav_menu_items($menu_id);
@@ -159,7 +211,7 @@ function djz_mailpoet_subscribe_handler($request) {
 }
 
 // ==========================================
-// 3. WOOCOMMERCE (Headless Products)
+// 4. WOOCOMMERCE (Headless Products)
 // ==========================================
 
 function djz_get_products_with_lang_handler($request) {
@@ -203,18 +255,18 @@ function djz_get_products_with_lang_handler($request) {
 }
 
 // ==========================================
-// 4. ROTAS
+// 5. REGISTRO DAS ROTAS PRINCIPAIS
 // ==========================================
 
 add_action('rest_api_init', function () {
-    $ns = 'djzeneyer/v1'; // Mantivemos o seu namespace original para o frontend não quebrar
+    $ns = 'djzeneyer/v1';
     
     register_rest_route($ns, '/menu', ['methods' => 'GET', 'callback' => 'djz_get_multilang_menu_handler', 'permission_callback' => '__return_true']);
     register_rest_route($ns, '/subscribe', ['methods' => 'POST', 'callback' => 'djz_mailpoet_subscribe_handler', 'permission_callback' => '__return_true']);
     register_rest_route($ns, '/products', ['methods' => 'GET', 'callback' => 'djz_get_products_with_lang_handler', 'permission_callback' => '__return_true', 'args' => ['lang' => ['required' => false, 'type' => 'string']]]);
     register_rest_route($ns, '/gamipress/(?P<user_id>\d+)', ['methods' => 'GET', 'callback' => 'djz_get_gamipress_handler', 'permission_callback' => '__return_true', 'args' => ['user_id' => ['required' => true, 'type' => 'integer']]]);
     
-    // Perfil de Usuário (Simples)
+    // Perfil
     register_rest_route($ns, '/user/update-profile', [
         'methods' => 'POST',
         'permission_callback' => function() { return is_user_logged_in(); },
@@ -231,33 +283,24 @@ add_action('rest_api_init', function () {
             return rest_ensure_response(['success' => true, 'message' => 'Updated!']);
         }
     ]);
-    // --- ENDPOINTS DE DASHBOARD (MOCK/PLACEHOLDER) ---
-    
-    // GET /tracks/{id}
+
+    // --- ENDPOINTS DE DASHBOARD (MOCK) ---
     register_rest_route($ns, '/tracks/(?P<user_id>\d+)', [
-        'methods' => 'GET',
-        'callback' => function() {
-            // Lógica real viria aqui (contar downloads do user)
-            return rest_ensure_response(['count' => 12]); // Exemplo estático
-        },
-        'permission_callback' => '__return_true'
+        'methods' => 'GET', 'callback' => function() { return rest_ensure_response(['count' => 12]); }, 'permission_callback' => '__return_true'
     ]);
-
-    // GET /streak/{id}
     register_rest_route($ns, '/streak/(?P<user_id>\d+)', [
-        'methods' => 'GET',
-        'callback' => function() {
-            return rest_ensure_response(['days' => 5, 'fire' => true]); 
-        },
-        'permission_callback' => '__return_true'
+        'methods' => 'GET', 'callback' => function() { return rest_ensure_response(['days' => 5, 'fire' => true]); }, 'permission_callback' => '__return_true'
     ]);
-
-    // GET /events/{id}
     register_rest_route($ns, '/events/(?P<user_id>\d+)', [
-        'methods' => 'GET',
-        'callback' => function() {
-            return rest_ensure_response(['attended' => 3, 'next' => 'Zouk Night SP']); 
-        },
-        'permission_callback' => '__return_true'
+        'methods' => 'GET', 'callback' => function() { return rest_ensure_response(['attended' => 3, 'next' => 'Zouk Night SP']); }, 'permission_callback' => '__return_true'
     ]);
+});
+
+// ==========================================
+// 6. CORREÇÃO DE CORS (GLOBAL)
+// ==========================================
+add_action('init', function() {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
+    header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
 });
