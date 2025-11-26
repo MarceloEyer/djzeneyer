@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
+    "@types/lodash": "^4.17.21",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.18.2",
     "i18next": "^25.6.3",
