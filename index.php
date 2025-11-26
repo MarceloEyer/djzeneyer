@@ -3,7 +3,7 @@
  * Main template file - DJ Zen Eyer Theme
  * Mode: React SPA with Server-Side SEO
  * @package DJZenEyer
- * @version 2.2.0 - FIXED
+ * @version 2.3.0 - MIME TYPE FIX (URLs Absolutas)
  */
 if (!defined('ABSPATH')) exit;
 
@@ -22,7 +22,7 @@ if (have_posts()) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 2️⃣ VITE ASSET DISCOVERY (CORRIGIDO)
+// 2️⃣ VITE ASSET DISCOVERY (CORRIGIDO COM URL ABSOLUTA)
 // ═══════════════════════════════════════════════════════════════════════════
 
 function get_vite_manifest() {
@@ -96,6 +96,9 @@ if ($manifest && isset($manifest['src/main.tsx'])) {
     }
 }
 
+// 🎯 CORREÇÃO CRÍTICA: URL absoluta do tema WordPress
+$theme_uri = get_template_directory_uri(); // Ex: https://djzeneyer.com/wp-content/themes/djzeneyer
+
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> prefix="og: https://ogp.me/ns#">
@@ -104,11 +107,11 @@ if ($manifest && isset($manifest['src/main.tsx'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <!-- Favicons (URLs Absolutas) -->
+    <link rel="icon" type="image/svg+xml" href="<?php echo esc_url($theme_uri); ?>/favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="<?php echo esc_url($theme_uri); ?>/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo esc_url($theme_uri); ?>/apple-touch-icon.png">
+    <link rel="manifest" href="<?php echo esc_url($theme_uri); ?>/site.webmanifest">
     <meta name="theme-color" content="#0A0E27">
     
     <!-- Preconnect -->
@@ -116,9 +119,9 @@ if ($manifest && isset($manifest['src/main.tsx'])) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <!-- 🔥 VITE CSS (com fallback) -->
+    <!-- 🔥 VITE CSS (URLs Absolutas - FIX DO MIME TYPE) -->
     <?php foreach ($css_files as $css_file): ?>
-        <link rel="stylesheet" href="<?php echo esc_url($css_file); ?>">
+        <link rel="stylesheet" href="<?php echo esc_url($theme_uri . $css_file); ?>">
     <?php endforeach; ?>
     
     <!-- Critical CSS -->
@@ -232,14 +235,14 @@ if ($manifest && isset($manifest['src/main.tsx'])) {
         </div>
     </noscript>
     
-    <!-- 🔥 VITE REACT (com error handling) -->
+    <!-- 🔥 VITE REACT (URL Absoluta - FIX DO MIME TYPE) -->
     <?php if ($main_js): ?>
-        <script type="module" src="<?php echo esc_url($main_js); ?>" onerror="console.error('Failed to load:', this.src)"></script>
+        <script type="module" src="<?php echo esc_url($theme_uri . $main_js); ?>" onerror="console.error('Failed to load:', this.src)"></script>
     <?php else: ?>
         <!-- Fallback crítico se nenhum JS for encontrado -->
         <script>
             console.error('[Theme] ❌ No JavaScript bundle found. Check your build.');
-            document.body.innerHTML += '<div style="position:fixed;top:0;left:0;right:0;background:#ff4444;color:white;padding:10px;text-align:center;z-index:99999;"><strong>⚠️ Build Error:</strong> JavaScript bundle not found. Run <code>npm run build</code></div>';
+            document.body.innerHTML += '<div style="position:fixed;top:0;left:0;right:0;background:#ff4444;color:white;padding:10px;text-align:center;z-index:99999;"><strong>⚠️ Build Error:</strong> JavaScript bundle not found. Run de>npm run build</code></div>';
         </script>
     <?php endif; ?>
     
@@ -256,10 +259,10 @@ if ($manifest && isset($manifest['src/main.tsx'])) {
                 
                 if (rootContent) {
                     document.body.classList.add('react-loaded');
-                    console.log('[Theme] ✅ React mounted, SSR hidden');
+                    console.log('[Theme] ✅ React montado, SSR oculto');
                     clearInterval(checkReact);
                 } else if (attempts >= maxAttempts) {
-                    console.warn('[Theme] ⚠️ React did not mount within 10s');
+                    console.warn('[Theme] ⚠️ React não montou em 10s');
                     clearInterval(checkReact);
                 }
             }, 500);
