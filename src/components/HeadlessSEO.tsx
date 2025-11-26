@@ -1,13 +1,13 @@
 // src/components/HeadlessSEO.tsx
 // ============================================================================
-// COMPONENTE SEO HÍBRIDO (Zen SEO Plugin + Dados Locais)
+// COMPONENTE SEO INTELIGENTE (Recebe dados prontos do Plugin Zen SEO)
 // ============================================================================
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 
-// 1. Tipagem dos dados que vêm do Plugin WordPress
+// Tipagem dos dados que vêm da API do WordPress (Plugin Zen SEO)
 interface ZenSeoData {
   title: string;
   meta: Array<{
@@ -15,7 +15,7 @@ interface ZenSeoData {
     property?: string;
     content: string;
   }>;
-  schema: object;
+  schema: object; // O JSON-LD pronto
 }
 
 interface HrefLang {
@@ -24,23 +24,22 @@ interface HrefLang {
 }
 
 interface HeadlessSEOProps {
-  // Dados automáticos (Vêm da API do WordPress)
+  // 1. Dados Automáticos (Vindos da API)
   data?: ZenSeoData; 
   
-  // Dados manuais (Fallbacks para páginas estáticas do React)
+  // 2. Dados Manuais (Fallbacks para páginas estáticas como Home/Music)
   title?: string;
   description?: string;
   url?: string;
   image?: string;
-  type?: string; // 'website', 'article', etc.
-  isHomepage?: boolean;
+  type?: string; 
   hrefLang?: HrefLang[];
   schema?: object;
   noindex?: boolean;
   keywords?: string;
 }
 
-// Helper para gerar URLs hrefLang (Mantido da sua versão)
+// Helper para gerar URLs hrefLang (Internacionalização)
 export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '') || '/';
   return [
@@ -50,16 +49,8 @@ export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   ];
 };
 
-// Schema padrão (Fallback)
-const getDefaultArtistSchema = (url: string) => ({
-  "@context": "https://schema.org",
-  "@type": "Person",
-  ...ARTIST_SCHEMA_BASE,
-  "url": url,
-});
-
 export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
-  data, // Dados vindos do Zen SEO Plugin
+  data, 
   title,
   description,
   url,
@@ -70,14 +61,17 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   noindex = false,
   keywords
 }) => {
-  // 1. Lógica de Prioridade: Se tem dados do Plugin, usa eles. Senão, usa os props manuais.
+  // LÓGICA HÍBRIDA:
+  // Se a API mandou dados (data), usamos eles (Prioridade Total).
+  // Se não (página estática), usamos os props manuais ou padrões.
+
   const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
   
-  // Procura a descrição nos metadados do plugin ou usa o prop
+  // Busca descrição na API ou usa manual
   const metaDescPlugin = data?.meta.find(m => m.name === 'description')?.content;
   const finalDescription = metaDescPlugin || description || '';
   
-  // Trunca descrição se for muito longa (Segurança)
+  // Trunca descrição para não estourar no Google
   const truncatedDesc = finalDescription.length > 160 
     ? finalDescription.substring(0, 157) + '...' 
     : finalDescription;
@@ -85,8 +79,13 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   const finalUrl = data?.meta.find(m => m.property === 'og:url')?.content || url || 'https://djzeneyer.com';
   const finalImage = data?.meta.find(m => m.property === 'og:image')?.content || image;
   
-  // Schema: Se vier do plugin, é o 'schema'. Se não, usa o manual ou o padrão.
-  const finalSchema = data?.schema || schema || getDefaultArtistSchema(finalUrl);
+  // O PULO DO GATO: O Schema já vem montado do servidor ou usa o padrão
+  const finalSchema = data?.schema || schema || {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    ...ARTIST_SCHEMA_BASE,
+    "url": finalUrl
+  };
 
   return (
     <Helmet>
@@ -99,7 +98,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       {/* Robots */}
       <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
 
-      {/* --- Open Graph (Facebook/WhatsApp) --- */}
+      {/* --- Open Graph (Facebook/WhatsApp/LinkedIn) --- */}
       <meta property="og:site_name" content="DJ Zen Eyer" />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={finalTitle} />
@@ -112,30 +111,28 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta property="og:locale" content="en_US" />
       <meta property="og:locale:alternate" content="pt_BR" />
 
-      {/* --- Twitter Cards --- */}
+      {/* --- Twitter Cards (X) --- */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
       <meta name="twitter:image" content={finalImage} />
       <meta name="twitter:site" content="@djzeneyer" />
 
-      {/* --- Identidade & Autoridade --- */}
+      {/* --- Identidade & Autoridade (IAs) --- */}
       <meta name="author" content={ARTIST.identity.stageName} />
       <link rel="author" href={ARTIST.identifiers.wikidataUrl} />
 
-      {/* --- HrefLang (Internacionalização) --- */}
+      {/* --- Internacionalização --- */}
       {hrefLang.map(({ lang, url: hrefUrl }) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
-      {/* --- Performance --- */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-      {/* --- Schema.org JSON-LD --- */}
+      {/* --- JSON-LD (Schema.org) --- */}
       <script type="application/ld+json">
         {JSON.stringify(finalSchema)}
       </script>
     </Helmet>
   );
 };
+
+export default HeadlessSEO;
