@@ -90,3 +90,48 @@ add_action('wp_footer', function(){
     wp_dequeue_style('admin-bar');
     wp_dequeue_script('wp-api-fetch');
 }, 9999);
+
+/**
+ * Defer jQuery Migrate (performance)
+ */
+add_filter('script_loader_tag', function($tag, $handle) {
+    if ($handle === 'jquery-migrate') {
+        return str_replace(' src', ' defer src', $tag);
+    }
+    return $tag;
+}, 10, 2);
+
+/**
+ * Desabilita Dashicons no frontend (usuários não-logados)
+ */
+add_action('wp_enqueue_scripts', function() {
+    if (!is_user_logged_in()) {
+        wp_dequeue_style('dashicons');
+        wp_deregister_style('dashicons');
+    }
+}, 100);
+
+/**
+ * Heartbeat API: Reduz frequência de 15s para 60s
+ */
+add_filter('heartbeat_settings', function($settings) {
+    $settings['interval'] = 60;
+    return $settings;
+});
+
+/**
+ * Desabilita Auto-Save no admin
+ */
+add_action('admin_init', function() {
+    wp_deregister_script('autosave');
+});
+
+/**
+ * Fix WooCommerce Order Attribution (se WooCommerce ativo)
+ */
+add_action('wp_enqueue_scripts', function() {
+    if (!is_checkout() && !is_cart()) {
+        wp_dequeue_script('wc-order-attribution');
+        wp_deregister_script('wc-order-attribution');
+    }
+}, 100);
