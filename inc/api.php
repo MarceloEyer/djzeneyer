@@ -325,3 +325,44 @@ add_action('init', function() {
     header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
     header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
 });
+
+/**
+ * FIX: Permitir acesso público a imagens destacadas na REST API
+ * Corrige erro 401 "Sem permissão para fazer isso" no _embed
+ */
+add_filter('rest_prepare_attachment', function($response, $post, $request) {
+    if (!empty($response->data['id'])) {
+        $attachment_id = $response->data['id'];
+        $response->data['source_url'] = wp_get_attachment_url($attachment_id);
+        $response->data['media_details'] = wp_get_attachment_metadata($attachment_id);
+    }
+    return $response;
+}, 10, 3);
+
+add_filter('rest_authentication_errors', function($result) {
+    if (!empty($result)) {
+        return $result;
+    }
+    
+    global $wp;
+    if (strpos($wp->request, 'wp/v2/media') !== false) {
+        return true;
+    }
+    
+    return $result;
+});
+
+/**
+ * Otimiza REST API: Remove endpoints não-usados
+ */
+add_filter('rest_endpoints', function($endpoints) {
+    if (!is_user_logged_in()) {
+        unset($endpoints['/wp/v2/users']);
+        unset($endpoints['/wp/v2/users/(?P<id>[\d]+)']);
+    }
+    
+    unset($endpoints['/wp/v2/comments']);
+    unset($endpoints['/wp/v2/comments/(?P<id>[\d]+)']);
+    
+    return $endpoints;
+});
