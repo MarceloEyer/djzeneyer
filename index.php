@@ -3,7 +3,7 @@
  * Main template file - DJ Zen Eyer Theme
  * Mode: React SPA with Server-Side SEO + Performance Optimizations
  * @package DJZenEyer
- * @version 2.4.0 - PERFORMANCE & SECURITY 10/10
+ * @version 2.4.1 - CONSOLE LIMPO (Sem preload hero)
  */
 if (!defined('ABSPATH')) exit;
 
@@ -123,11 +123,6 @@ $theme_uri = get_template_directory_uri();
         <link rel="preload" as="style" href="<?php echo esc_url($theme_uri . $css_file); ?>">
         <link rel="stylesheet" href="<?php echo esc_url($theme_uri . $css_file); ?>">
     <?php endforeach; ?>
-    
-    <!-- Preload Hero Image (Melhora LCP - Ajuste o caminho se necessário) -->
-    <?php if ($is_front_page): ?>
-        <link rel="preload" as="image" href="<?php echo esc_url($theme_uri); ?>/assets/images/hero-bg.jpg" fetchpriority="high">
-    <?php endif; ?>
     
     <!-- Critical CSS -->
     <style>
