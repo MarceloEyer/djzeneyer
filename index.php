@@ -4,6 +4,38 @@
  * Optimized for React SPA + SEO + AI Crawlers + Performance LCP
  * @package DJZenEyer
  */
+
+if (!defined('ABSPATH')) exit;
+
+// ============================================================================
+// 1. LÓGICA DE ARQUIVOS ESTÁTICOS (SSG) - O "TURBO" PARA SEO
+// ============================================================================
+// Verifica se existe um arquivo HTML pronto para esta URL.
+// Se existir, entrega ele direto (Google ama isso: H1 e Texto prontos).
+// ============================================================================
+
+$request_uri = strtok($_SERVER['REQUEST_URI'], '?');
+$dist_path = get_template_directory() . '/dist';
+
+// Mapeia a URL para o arquivo físico
+$static_file = ($request_uri === '/' || $request_uri === '') 
+    ? $dist_path . '/index.html' 
+    : $dist_path . untrailingslashit($request_uri) . '/index.html';
+
+// Se o arquivo estático existe, serve ele e encerra o PHP.
+if (file_exists($static_file)) {
+    // Define o Content-Type correto
+    header('Content-Type: text/html; charset=UTF-8');
+    readfile($static_file);
+    exit;
+}
+
+// ============================================================================
+// 2. FALLBACK (SEU CÓDIGO ORIGINAL) - O "ESQUELETO" BONITO
+// ============================================================================
+// Se não houver arquivo estático, carrega o shell padrão para o React assumir.
+// Mantivemos seus ícones, fontes e estilos críticos aqui.
+// ============================================================================
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> prefix="og: https://ogp.me/ns#">
@@ -21,7 +53,6 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <style>
@@ -33,7 +64,9 @@
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
+    
     <div id="root"></div>
+    
     <?php wp_footer(); ?>
 </body>
 </html>
