@@ -1,14 +1,13 @@
 // src/components/HeadlessSEO.tsx
-import React, { useEffect } from 'react';
+// ============================================================================
+// COMPONENTE SEO HÍBRIDO (Conectado ao Zen SEO v5.1)
+// ============================================================================
+
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 
-/**
- * 🔥 ATUALIZAÇÃO IMPORTANTE:
- * - O plugin WordPress agora renderiza meta tags no servidor
- * - Este componente agora é apenas para ATUALIZAR tags em rotas React
- * - Não duplica tags que já existem no HTML inicial
- */
-
+// Tipagem exata do que vem da API do WordPress
 export interface ZenSeoData {
   title: string;
   meta: Array<{
@@ -16,7 +15,7 @@ export interface ZenSeoData {
     property?: string;
     content: string;
   }>;
-  schema?: object;
+  jsonld: object; // O Plugin manda como 'jsonld', não 'schema'
 }
 
 interface HrefLang {
@@ -25,98 +24,94 @@ interface HrefLang {
 }
 
 interface HeadlessSEOProps {
-  // Dados manuais (para rotas React puras)
+  // 1. Dados Automáticos (Vindos da API)
+  data?: ZenSeoData; 
+  
+  // 2. Dados Manuais (Fallbacks)
   title?: string;
   description?: string;
   url?: string;
   image?: string;
-  type?: string;
+  type?: string; 
   hrefLang?: HrefLang[];
   schema?: object;
   noindex?: boolean;
-  
-  // Dados da API (para posts/páginas WP)
-  data?: ZenSeoData;
+  keywords?: string;
 }
 
 // Helper para gerar URLs hrefLang
-export const getHrefLangUrls = (path: string, baseUrl: string = 'https://djzeneyer.com'): HrefLang[] => {
+export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '') || '/';
-  const enPath = cleanPath === '/' ? '' : `/${cleanPath}`;
-  const ptPath = cleanPath === '/' ? '/pt/' : `/pt/${cleanPath}`;
-  
   return [
-    { lang: 'en', url: `${baseUrl}${enPath}` },
-    { lang: 'pt-BR', url: `${baseUrl}${ptPath}` },
-    { lang: 'x-default', url: `${baseUrl}${enPath}` },
+    { lang: 'en', url: `${baseUrl}${cleanPath === '/' ? '' : `/${cleanPath}`}` },
+    { lang: 'pt-BR', url: `${baseUrl}/pt${cleanPath === '/' ? '' : `/${cleanPath}`}` },
+    { lang: 'x-default', url: `${baseUrl}${cleanPath === '/' ? '' : `/${cleanPath}`}` },
   ];
 };
 
 export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
-  data,
-  title,
-  description,
-  url,
-  image,
-  type = 'website',
-  hrefLang = [],
-  schema,
-  noindex = false
+  data, title, description, url, image, type = 'website', hrefLang = [], schema, noindex = false, keywords
 }) => {
-  // Prioridade: API > Manual > Padrão
-  const finalTitle = data?.title || title || 'DJ Zen Eyer | Brazilian Zouk DJ';
-  const finalDesc = data?.meta.find(m => m.name === 'description')?.content 
-    || description 
-    || 'International Brazilian Zouk DJ, music producer, and Mensa member.';
-  const finalImage = data?.meta.find(m => m.property === 'og:image')?.content 
-    || image 
-    || 'https://djzeneyer.com/images/zen-eyer-og-default.jpg';
-  const finalUrl = url || 'https://djzeneyer.com';
+  // LÓGICA DE PRIORIDADE: API (Plugin) > Manual (Props) > Padrão (ArtistData)
   
-  useEffect(() => {
-    // Atualiza title do documento (mais rápido que Helmet)
-    document.title = finalTitle;
-  }, [finalTitle]);
+  const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
+  
+  // Busca descrição na API ou usa manual
+  const metaDescPlugin = data?.meta.find(m => m.name === 'description')?.content;
+  const finalDescription = metaDescPlugin || description || '';
+  
+  // Trunca descrição para segurança (Google)
+  const truncatedDesc = finalDescription.length > 160 
+    ? finalDescription.substring(0, 157) + '...' 
+    : finalDescription;
+
+  const finalUrl = data?.meta.find(m => m.property === 'og:url')?.content || url || 'https://djzeneyer.com';
+  const finalImage = data?.meta.find(m => m.property === 'og:image')?.content || image || `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.jpg`;
+  
+  // Schema: Usa o 'jsonld' do Plugin ou o manual
+  const finalSchema = data?.jsonld || schema || {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    ...ARTIST_SCHEMA_BASE,
+    "url": finalUrl
+  };
 
   return (
     <Helmet>
-      {/* Title & Meta básicas */}
+      {/* --- Tags Básicas --- */}
       <title>{finalTitle}</title>
-      <meta name="description" content={finalDesc} />
+      <meta name="description" content={truncatedDesc} />
       <link rel="canonical" href={finalUrl} />
+      {keywords && <meta name="keywords" content={keywords} />}
+      
+      {/* Robots */}
       <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
 
-      {/* Open Graph */}
+      {/* --- Open Graph (Facebook/WhatsApp) --- */}
       <meta property="og:site_name" content="DJ Zen Eyer" />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={finalTitle} />
-      <meta property="og:description" content={finalDesc} />
+      <meta property="og:description" content={truncatedDesc} />
       <meta property="og:url" content={finalUrl} />
       <meta property="og:image" content={finalImage} />
       <meta property="og:locale" content="en_US" />
 
-      {/* Twitter */}
+      {/* --- Twitter Cards --- */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
-      <meta name="twitter:description" content={finalDesc} />
+      <meta name="twitter:description" content={truncatedDesc} />
       <meta name="twitter:image" content={finalImage} />
+      <meta name="twitter:site" content="@djzeneyer" />
 
-      {/* HrefLang */}
-      {hrefLang.map((link) => (
-        <link 
-          key={link.lang} 
-          rel="alternate" 
-          hrefLang={link.lang} 
-          href={link.url} 
-        />
+      {/* --- HrefLang (Internacionalização) --- */}
+      {hrefLang.map(({ lang, url: hrefUrl }) => (
+        <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
-      {/* Schema.org (se fornecido via API ou manual) */}
-      {(data?.schema || schema) && (
-        <script type="application/ld+json">
-          {JSON.stringify(data?.schema || schema)}
-        </script>
-      )}
+      {/* --- Schema.org JSON-LD --- */}
+      <script type="application/ld+json">
+        {JSON.stringify(finalSchema)}
+      </script>
     </Helmet>
   );
 };
