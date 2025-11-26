@@ -7,9 +7,8 @@
 if (!defined('ABSPATH')) exit;
 
 // ============================================================================
-// 1. AUTENTICAÇÃO (mantém integração com plugin JWT externo)
+// 1. AUTENTICAÇÃO (JWT auxiliar, mantém seu plugin ativo)
 // ============================================================================
-
 add_action('rest_api_init', function () {
     register_rest_route('zeneyer-auth/v1', '/settings', [
         'methods' => 'GET',
@@ -50,7 +49,7 @@ function djz_validate_token($request) {
 }
 
 // ============================================================================
-// 2. GAMIPRESS (Gamificação)
+// 2. GAMIPRESS (Zen Points, Níveis, Insignias, Streak real, Actions)
 // ============================================================================
 function djz_format_requirements($post_id) {
     if (!function_exists('gamipress_get_post_requirements')) return [];
@@ -73,76 +72,115 @@ function djz_get_gamipress_handler($request) {
     if ($user_id <= 0) return new WP_Error('invalid_user_id', 'Invalid user ID', ['status' => 400]);
     if (!function_exists('gamipress_get_user_points')) {
         return rest_ensure_response([
-            'success' => false, 'message' => 'GamiPress not active',
-            'data' => ['points' => 0, 'rank' => 'Novice', 'achievements' => [], 'allRanks' => [], 'allAchievements' => []]
+            'success' => false, 
+            'message' => 'GamiPress not active',
+            'data' => [
+                'points' => 0, 
+                'level' => 1, 
+                'rank' => 'Zen Novice', 
+                'nextLevelPoints' => 100, 
+                'achievements' => [], 
+                'allRanks' => [], 
+                'streak' => 0, 
+                'actions' => []
+            ]
         ]);
     }
-    $points_types = gamipress_get_points_types();
-    $user_points = [];
-    $total_points = 0;
-    foreach ($points_types as $slug => $data) {
-        $points = (int) gamipress_get_user_points($user_id, $slug);
-        $user_points[] = ['slug' => $slug, 'name' => $data['plural_name'], 'points' => $points];
-        $total_points += $points;
-    }
-    $rank_types = gamipress_get_rank_types();
-    $current_rank = 'Novice';
-    $rank_id = 0;
-    $rank_type_slug = '';
-    foreach ($rank_types as $slug => $data) {
-        $user_rank = gamipress_get_user_rank($user_id, $slug);
-        if ($user_rank && is_object($user_rank)) {
-            $rank_id = $user_rank->ID;
-            $current_rank = $user_rank->post_title;
-            $rank_type_slug = $slug;
-            break;
+    // Slugs customizados — pronto para crescer
+    $points_slug = 'zen-points';
+    $rank_slug = 'zen-level';
+    $achievement_slug = 'insigna';
+    // Ranks dinâmico: só expandir array para adicionar níveis
+    $rank_tiers = [
+        1 => ['name' => 'Zen Novice',      'min' => 0,    'priority' => 1],
+        2 => ['name' => 'Zen Apprentice',  'min' => 100,  'priority' => 2],
+        3 => ['name' => 'Zen Voyager',     'min' => 500,  'priority' => 3],
+        4 => ['name' => 'Zen Master',      'min' => 1500, 'priority' => 4],
+        // 5 => ['name' => 'Zen Legend', 'min' => 4000, 'priority' => 5],
+    ];
+    $zen_points = (int) gamipress_get_user_points($user_id, $points_slug);
+    $user_level = 1;
+    $rank_title = $rank_tiers[1]['name'];
+    $next_level_points = 100;
+    foreach ($rank_tiers as $level => $r) {
+        if ($zen_points >= $r['min']) {
+            $user_level = $level;
+            $rank_title = $r['name'];
+            $next_level_points = $rank_tiers[$level + 1]['min'] ?? $zen_points + 100;
         }
     }
-    $all_ranks = [];
-    if (!empty($rank_type_slug)) {
-        $ranks_query = new WP_Query(['post_type' => $rank_type_slug, 'posts_per_page' => -1, 'post_status' => 'publish', 'orderby' => 'menu_order', 'order' => 'ASC']);
-        if ($ranks_query->have_posts()) {
-            while ($ranks_query->have_posts()) {
-                $ranks_query->the_post();
-                $r_id = get_the_ID();
-                $all_ranks[] = [
-                    'id' => $r_id, 'title' => get_the_title(), 'description' => get_the_content(), 'excerpt' => get_the_excerpt(),
-                    'image' => get_the_post_thumbnail_url($r_id, 'medium') ?: '', 'current' => ($r_id === $rank_id),
-                    'requirements' => djz_format_requirements($r_id)
-                ];
-            }
-            wp_reset_postdata();
-        }
-    }
-    $achievement_types = gamipress_get_achievement_types();
-    $earned_achievements = [];
+    $progress_to_next = min(100, ($next_level_points > 0 ? round(100 * ($zen_points - $rank_tiers[$user_level]['min']) / max(1, $next_level_points - $rank_tiers[$user_level]['min']) : 100));
+    // Insignias (qualquer badge criada aparece automatico)
     $all_achievements = [];
-    foreach ($achievement_types as $type_slug => $type_data) {
-        $ach_query = new WP_Query(['post_type' => $type_slug, 'posts_per_page' => -1, 'post_status' => 'publish', 'orderby' => 'menu_order', 'order' => 'ASC']);
-        if ($ach_query->have_posts()) {
-            while ($ach_query->have_posts()) {
-                $ach_query->the_post();
-                $a_id = get_the_ID();
-                $earned = gamipress_has_user_earned_achievement($a_id, $user_id);
-                $ach_data = [
-                    'id' => $a_id, 'type' => $type_slug, 'title' => get_the_title(), 'description' => get_the_content(),
-                    'image' => get_the_post_thumbnail_url($a_id, 'medium') ?: '', 'earned' => $earned,
-                    'points' => (int) get_post_meta($a_id, '_gamipress_points', true), 'requirements' => djz_format_requirements($a_id)
-                ];
-                $all_achievements[] = $ach_data;
-                if ($earned) $earned_achievements[] = $ach_data;
-            }
-            wp_reset_postdata();
+    $earned_achievements = [];
+    $query = new WP_Query([
+        'post_type'      => $achievement_slug,
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'menu_order',
+        'order'          => 'ASC',
+    ]);
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $a_id = get_the_ID();
+            $earned = gamipress_has_user_earned_achievement($a_id, $user_id);
+            $img = get_the_post_thumbnail_url($a_id, 'medium') ?: '';
+            $ach = [
+                'id' => $a_id,
+                'title' => get_the_title(),
+                'description' => get_the_excerpt() ?: '',
+                'image' => $img,
+                'earned' => !!$earned
+            ];
+            $all_achievements[] = $ach;
+            if ($earned) $earned_achievements[] = $ach;
+        }
+        wp_reset_postdata();
+    }
+    // Streak real (slug para login diário)
+    $streak_days = function_exists('gamipress_get_user_streak') ? (int) gamipress_get_user_streak($user_id, 'daily-visit-the-website') : 0;
+    // Próximas ações automáticas — expansão fácil adicionando badges/ranks
+    $actions = [];
+    if ($streak_days < 7) {
+        $actions[] = [
+            'description' => "Faça login diariamente para conquistar um streak de 7 dias!",
+            'points' => 10,
+            'type' => 'streak'
+        ];
+    }
+    if ($zen_points < ($next_level_points)) {
+        $actions[] = [
+            'description' => "Conquiste mais Zen Points participando de eventos, ouvindo músicas e coletando badges.",
+            'points' => ($next_level_points - $zen_points),
+            'type' => 'points'
+        ];
+    }
+    foreach ($all_achievements as $ach) {
+        if (!$ach['earned']) {
+            $actions[] = [
+                'description' => "Conquiste a insígnia: " . $ach['title'],
+                'type' => 'achievement'
+            ];
         }
     }
-    $level = 1;
-    foreach ($all_ranks as $index => $rank) { if ($rank['current']) { $level = $index + 1; break; } }
-    return rest_ensure_response(['success' => true, 'data' => [
-        'points' => $total_points, 'pointsBreakdown' => $user_points, 'level' => $level, 'rank' => $current_rank,
-        'rankId' => $rank_id, 'earnedAchievements' => $earned_achievements, 'allRanks' => $all_ranks, 'allAchievements' => $all_achievements
-    ]]);
+    return rest_ensure_response([
+        'success' => true,
+        'data' => [
+            'points'      => $zen_points,
+            'level'       => $user_level,
+            'rank'        => $rank_title,
+            'nextLevel'   => $user_level + 1,
+            'nextLevelPoints' => $next_level_points,
+            'progressToNextLevel' => $progress_to_next,
+            'achievements' => $all_achievements,
+            'earnedAchievements' => $earned_achievements,
+            'streak'      => $streak_days,
+            'actions'     => $actions
+        ]
+    ]);
 }
-// Exemplo real de streak GamiPress (expanda conforme sua estratégia "streak"!)
+// Exemplo real de streak GamiPress (pode customizar para outros eventos)
 function djz_streak_handler($request) {
     $user_id = intval($request->get_param('user_id'));
     $days = 0;
@@ -160,9 +198,7 @@ function djz_get_multilang_menu_handler($request) {
     $cache_key = 'djz_menu_' . $lang;
     $cached = get_transient($cache_key);
     if ($cached !== false) return rest_ensure_response($cached);
-
     if (function_exists('pll_set_language')) pll_set_language($lang);
-
     $locations = get_nav_menu_locations();
     $menu_id = $locations['primary'] ?? $locations['primary_menu'] ?? $locations['header_menu'] ?? false;
     if (!$menu_id) {
@@ -170,10 +206,8 @@ function djz_get_multilang_menu_handler($request) {
         $menu_id = $menu_obj && isset($menu_obj->term_id) ? $menu_obj->term_id : 0;
     }
     if (!$menu_id) return rest_ensure_response([]);
-
     $items = wp_get_nav_menu_items($menu_id);
     if (!is_array($items)) return rest_ensure_response([]);
-
     $formatted = [];
     $home_url = home_url();
     foreach ($items as $item) {
@@ -191,7 +225,6 @@ function djz_get_multilang_menu_handler($request) {
             'target' => $item->target ?: '_self'
         ];
     }
-
     set_transient($cache_key, $formatted, HOUR_IN_SECONDS);
     return rest_ensure_response($formatted);
 }
@@ -228,10 +261,8 @@ function djz_get_products_with_lang_handler($request) {
     $cache_key = 'djz_products_' . $lang;
     $cached = get_transient($cache_key);
     if ($cached !== false) return new WP_Rest_Response($cached, 200);
-
     $args = ['post_type' => 'product', 'posts_per_page' => -1, 'post_status' => 'publish', 'orderby' => 'date', 'order' => 'DESC'];
     if (function_exists('pll_get_post_language')) $args['lang'] = $lang;
-
     $query = new WP_Query($args);
     $products = [];
     if ($query->have_posts()) {
@@ -240,7 +271,6 @@ function djz_get_products_with_lang_handler($request) {
             $p_id = get_the_ID();
             $product = function_exists('wc_get_product') ? wc_get_product($p_id) : null;
             if (!$product) continue;
-
             $p_lang = (function_exists('pll_get_post_language')) ? pll_get_post_language($p_id) ?: $lang : $lang;
             $translations = (function_exists('pll_get_post_translations')) ? pll_get_post_translations($p_id) : [];
             $images = [];
@@ -276,11 +306,9 @@ add_action('rest_api_init', function () {
     register_rest_route($ns, '/subscribe', ['methods' => 'POST', 'callback' => 'djz_mailpoet_subscribe_handler', 'permission_callback' => '__return_true']);
     register_rest_route($ns, '/products', ['methods' => 'GET', 'callback' => 'djz_get_products_with_lang_handler', 'permission_callback' => '__return_true', 'args' => ['lang' => ['required' => false, 'type' => 'string']]]);
     register_rest_route($ns, '/gamipress/(?P<user_id>\d+)', ['methods' => 'GET', 'callback' => 'djz_get_gamipress_handler', 'permission_callback' => '__return_true', 'args' => ['user_id' => ['required' => true, 'type' => 'integer']]]);
-    // Exemplo expandido de streak real
     register_rest_route($ns, '/streak/(?P<user_id>\d+)', [
         'methods' => 'GET', 'callback' => 'djz_streak_handler', 'permission_callback' => '__return_true'
     ]);
-    // Perfil
     register_rest_route($ns, '/user/update-profile', [
         'methods' => 'POST',
         'permission_callback' => function() { return is_user_logged_in(); },
@@ -295,7 +323,6 @@ add_action('rest_api_init', function () {
             return rest_ensure_response(['success' => true, 'message' => 'Updated!']);
         }
     ]);
-    // Dashboards mocks (remova quando implementar os reais)
     register_rest_route($ns, '/tracks/(?P<user_id>\d+)', [
         'methods' => 'GET', 'callback' => function() { return rest_ensure_response(['count' => 12]); }, 'permission_callback' => '__return_true'
     ]);
