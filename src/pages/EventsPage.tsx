@@ -1,11 +1,11 @@
 // src/pages/EventsPage.tsx
 // ============================================================================
-// EVENTS PAGE - FINAL (COM LIGHTBOX DE FLYERS + SCHEMA FIX)
+// EVENTS PAGE - VERSÃO FINAL (LIGHTBOX + SAFE ACCESS + SCHEMA FIX)
 // ============================================================================
 
 import type { FC } from 'react';
 import { useEffect, useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // Adicionado AnimatePresence
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
@@ -30,7 +30,7 @@ import {
   Sparkles,
   Phone,
   Mail,
-  X // Adicionado ícone de fechar
+  X
 } from 'lucide-react';
 
 // ============================================================================
@@ -96,85 +96,6 @@ const ORGANIZER_TESTIMONIALS: Testimonial[] = [
 ];
 
 // ============================================================================
-// SCHEMA.ORG HELPER
-// ============================================================================
-
-const generateEventsSchema = () => {
-  const eventItems = FEATURED_EVENTS.map((event) => {
-    let priceValue = "0";
-    const numericMatch = event.price.match(/[\d,.]+/);
-    
-    if (numericMatch && !event.price.toLowerCase().includes('lista')) {
-      priceValue = numericMatch[0].replace('.', '').replace(',', '.');
-    }
-
-    const availability = event.status.toLowerCase().includes('sold out') || event.status.toLowerCase().includes('esgotado')
-      ? "https://schema.org/SoldOut"
-      : "https://schema.org/InStock";
-
-    return {
-      "@type": "Event",
-      "name": event.title,
-      "description": event.description,
-      "startDate": `${event.date}T${event.time === 'Online' ? '00:00' : event.time}`,
-      "eventStatus": "https://schema.org/EventScheduled",
-      "eventAttendanceMode": event.time === 'Online' ? "https://schema.org/OnlineEventAttendanceMode" : "https://schema.org/OfflineEventAttendanceMode",
-      "image": `${ARTIST.site.baseUrl}${event.image}`,
-      "location": {
-        "@type": event.time === 'Online' ? "VirtualLocation" : "Place",
-        "name": event.location,
-        "address": { "@type": "PostalAddress", "name": event.location },
-        "url": event.time === 'Online' ? event.link : undefined
-      },
-      "offers": {
-        "@type": "Offer",
-        "url": `${ARTIST.site.baseUrl}${event.link}`,
-        "price": priceValue,
-        "priceCurrency": "BRL",
-        "availability": availability,
-        "validFrom": new Date().toISOString().split('T')[0]
-      },
-      "performer": {
-        "@type": "Person",
-        "@id": `${ARTIST.site.baseUrl}/#artist`,
-        "name": ARTIST.identity.stageName
-      }
-    };
-  });
-
-  return {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebPage",
-        "@id": `${ARTIST.site.baseUrl}/events#webpage`,
-        "url": `${ARTIST.site.baseUrl}/events`,
-        "name": `Agenda & Tour - ${ARTIST.identity.stageName}`,
-        "description": `Agenda oficial do ${ARTIST.titles.primary}. Datas da turnê, workshops e ingressos.`,
-        "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
-        "about": { "@id": `${ARTIST.site.baseUrl}/#artist` }
-      },
-      {
-        "@type": "ItemList",
-        "name": "Próximos Eventos de DJ Zen Eyer",
-        "itemListElement": eventItems.map((item, index) => ({
-          "@type": "ListItem",
-          "position": index + 1,
-          "item": item
-        }))
-      },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": ARTIST.site.baseUrl },
-          { "@type": "ListItem", "position": 2, "name": "Events", "item": `${ARTIST.site.baseUrl}/events` }
-        ]
-      }
-    ]
-  };
-};
-
-// ============================================================================
 // COMPONENTES AUXILIARES (MEMOIZADOS)
 // ============================================================================
 
@@ -201,7 +122,6 @@ const HeroStats = memo(() => (
     ))}
   </motion.div>
 ));
-
 HeroStats.displayName = 'HeroStats';
 
 const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
@@ -220,23 +140,16 @@ const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
         }}
       />
       <div className="absolute top-4 left-4">
-        <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/80 backdrop-blur-md text-white border border-white/10">
-          {event.type}
-        </span>
+        <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/80 backdrop-blur-md text-white border border-white/10">{event.type}</span>
       </div>
       <div className="absolute bottom-4 right-4">
-        <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-background font-display">
-          {event.status}
-        </span>
+        <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-background font-display">{event.status}</span>
       </div>
     </div>
 
     <div className="p-6">
-      <h3 className="text-xl font-bold mb-2 text-white group-hover:text-primary transition-colors">
-        {event.title}
-      </h3>
+      <h3 className="text-xl font-bold mb-2 text-white group-hover:text-primary transition-colors">{event.title}</h3>
       <p className="text-sm text-white/60 mb-4 line-clamp-2">{event.description}</p>
-
       <div className="space-y-2 mb-6">
         <div className="flex items-center gap-3 text-white/60 text-sm">
           <CalendarIcon size={16} className="text-primary" />
@@ -248,17 +161,13 @@ const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
           <span>{event.location}</span>
         </div>
       </div>
-
       <div className="flex items-center justify-between pt-4 border-t border-white/5">
         <span className="text-lg font-bold text-primary">{event.price}</span>
-        <a href={event.link} className="btn btn-primary btn-sm flex items-center gap-2">
-          <Ticket size={16} /> Saiba Mais
-        </a>
+        <a href={event.link} className="btn btn-primary btn-sm flex items-center gap-2"><Ticket size={16} /> Saiba Mais</a>
       </div>
     </div>
   </motion.div>
 ));
-
 FeaturedEventCard.displayName = 'FeaturedEventCard';
 
 const FestivalBadge = memo<{ festival: typeof ARTIST.festivals[0]; index: number }>(({ festival, index }) => (
@@ -276,19 +185,13 @@ const FestivalBadge = memo<{ festival: typeof ARTIST.festivals[0]; index: number
     <div className="flex items-center gap-3">
       <span className="text-2xl">{festival.flag}</span>
       <div>
-        <div className="font-bold text-white group-hover:text-primary transition-colors">
-          {festival.name}
-        </div>
-        <div className="text-xs text-white/50">
-          {festival.country}
-          {festival.upcoming && <span className="ml-2 text-green-400">• 2026</span>}
-        </div>
+        <div className="font-bold text-white group-hover:text-primary transition-colors">{festival.name}</div>
+        <div className="text-xs text-white/50">{festival.country}{festival.upcoming && <span className="ml-2 text-green-400">• 2026</span>}</div>
       </div>
       <ExternalLink size={14} className="ml-auto text-white/20 group-hover:text-primary/60 transition-colors" />
     </div>
   </motion.a>
 ));
-
 FestivalBadge.displayName = 'FestivalBadge';
 
 const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ testimonial, index }) => (
@@ -303,11 +206,7 @@ const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ tes
     <p className="text-white/80 italic mb-6 leading-relaxed">"{testimonial.quote}"</p>
     <div className="flex items-center gap-3">
       <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
-        {testimonial.avatar ? (
-          <img src={testimonial.avatar} alt={testimonial.name} className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-lg font-bold text-primary">{testimonial.name.charAt(0)}</span>
-        )}
+        {testimonial.avatar ? <img src={testimonial.avatar} alt={testimonial.name} className="w-full h-full object-cover" /> : <span className="text-lg font-bold text-primary">{testimonial.name.charAt(0)}</span>}
       </div>
       <div>
         <div className="font-bold text-white">{testimonial.name} {testimonial.country}</div>
@@ -316,19 +215,16 @@ const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ tes
     </div>
   </motion.div>
 ));
-
 TestimonialCard.displayName = 'TestimonialCard';
 
 // ============================================================================
-// FLYER GALLERY COM LIGHTBOX
+// FLYER GALLERY COM LIGHTBOX (O PONTO CRÍTICO)
 // ============================================================================
 
 const FlyerGallery: React.FC = () => {
   const [flyers, setFlyers] = useState<FlyerData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // State para o Lightbox
   const [selectedFlyer, setSelectedFlyer] = useState<string | null>(null);
 
   useEffect(() => {
@@ -342,12 +238,14 @@ const FlyerGallery: React.FC = () => {
       })
       .catch((err) => {
         setError(err.message);
-        console.error("Erro ao carregar flyers:", err);
+        // Não logar erro no console de produção para manter limpo
       })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="py-16 text-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" /></div>;
+  if (loading) return <section className="py-20 bg-black/40 border-t border-white/5"><div className="flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></section>;
+  
+  // Se der erro ou não tiver flyers, não mostra nada (melhor que mostrar erro)
   if (error || flyers.length === 0) return null;
 
   return (
@@ -362,9 +260,7 @@ const FlyerGallery: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {flyers.map((flyer, index) => {
               const media = flyer._embedded?.['wp:featuredmedia']?.[0];
-              // Pega a URL Full para o Lightbox
               const fullImageUrl = media?.source_url;
-              // Pega a URL Média para a Thumbnail
               const thumbUrl = media?.media_details?.sizes?.medium_large?.source_url || fullImageUrl;
               
               if (!thumbUrl) return null;
@@ -384,15 +280,13 @@ const FlyerGallery: React.FC = () => {
                     alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                     loading="lazy"
+                    onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} // Esconde se quebrar
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                     <span className="text-sm font-bold text-white">{flyer.title.rendered}</span>
                   </div>
-                  {/* Ícone de Zoom para indicar clique */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-black/50 p-1 rounded-full text-white/80">
-                      <Plus size={16} />
-                    </div>
+                    <div className="bg-black/50 p-1 rounded-full text-white/80"><Plus size={16} /></div>
                   </div>
                 </motion.div>
               );
@@ -409,14 +303,14 @@ const FlyerGallery: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedFlyer(null)}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm cursor-pointer"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="relative max-w-5xl max-h-[90vh] w-full flex justify-center"
-              onClick={(e) => e.stopPropagation()} // Evita fechar ao clicar na imagem
+              onClick={(e) => e.stopPropagation()}
             >
               <img
                 src={selectedFlyer}
@@ -443,16 +337,12 @@ const BandsInTownWidget: React.FC = () => {
     script.src = "https://widget.bandsintown.com/main.min.js";
     script.async = true;
     document.body.appendChild(script);
-    return () => {
-      try { document.body.removeChild(script); } catch(e) {}
-    };
+    return () => { try { document.body.removeChild(script); } catch(e) {} };
   }, []);
 
   return (
     <div className="w-full min-h-[400px] bg-surface/20 rounded-2xl border border-white/5 p-6 md:p-10">
-      <a className="bit-widget-initializer" data-artist-name="DJ Zen Eyer" data-app-id="a6f8468a12e86539eff769aec002f836" data-language="en" data-display-local-dates="false" data-display-past-dates="true" data-auto-style="false" data-text-color="#FFFFFF" data-link-color="#9D4EDD" data-background-color="rgba(0,0,0,0)" data-display-limit="10" data-display-start-time="true" data-link-text-color="#FFFFFF" data-popup-background-color="#1a1a1a" data-header-background-color="rgba(0,0,0,0)" data-desktop-list-view="true">
-        Carregando Agenda Oficial...
-      </a>
+      <a className="bit-widget-initializer" data-artist-name="DJ Zen Eyer" data-app-id="a6f8468a12e86539eff769aec002f836" data-language="en" data-display-local-dates="false" data-display-past-dates="true" data-auto-style="false" data-text-color="#FFFFFF" data-link-color="#9D4EDD" data-background-color="rgba(0,0,0,0)" data-display-limit="10" data-display-start-time="true" data-link-text-color="#FFFFFF" data-popup-background-color="#1a1a1a" data-header-background-color="rgba(0,0,0,0)" data-desktop-list-view="true">Carregando Agenda Oficial...</a>
     </div>
   );
 };
@@ -464,43 +354,33 @@ const BandsInTownWidget: React.FC = () => {
 const EventsPage: React.FC = () => {
   const { t } = useTranslation();
   const currentPath = '/events';
-  const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
-  const googleCalendarLink = `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('eyer.marcelo@gmail.com')}`;
-
-  const schemaData = generateEventsSchema();
-
+  
+  // O plugin de SEO já manda o Schema completo. Não precisamos gerar manual.
+  
   return (
     <>
-      <HeadlessSEO
+      {/* HeadlessSEO agora usa o 'data' automático da API se disponível, ou fallback manual */}
+      <HeadlessSEO 
         title={`Agenda & Tour - ${ARTIST.identity.stageName} | ${ARTIST.titles.primary}`}
         description={`Agenda oficial de ${ARTIST.identity.stageName}. ${ARTIST.stats.eventsPlayed}+ eventos em ${ARTIST.stats.countriesPlayed} países. Booking para 2026 aberto.`}
-        url={currentUrl}
+        url={`${ARTIST.site.baseUrl}${currentPath}`}
         image={`${ARTIST.site.baseUrl}/images/events-og.jpg`}
-        ogType="website"
-        schema={schemaData}
         hrefLang={getHrefLangUrls(currentPath, ARTIST.site.baseUrl)}
-        keywords={`${ARTIST.identity.stageName} Tour, Zouk Brasileiro, ${ARTIST.festivals.map((f) => f.name).join(', ')}`}
       />
 
       <div className="min-h-screen pt-24 pb-16 bg-background">
-        {/* Hero Section */}
         <section className="relative py-20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
           <div className="container mx-auto px-4 relative z-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-              
-              {/* Badges de Status */}
               <div className="flex flex-wrap justify-center gap-3 mb-8">
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 text-red-400 font-bold text-xs tracking-wider uppercase border border-red-500/20"><Lock size={12} /> 2025 Sold Out</span>
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-400 font-bold text-xs tracking-wider uppercase border border-green-500/20"><Plane size={12} /> Booking 2026 Open</span>
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 text-yellow-400 font-bold text-xs tracking-wider uppercase border border-yellow-500/20"><Trophy size={12} /> {ARTIST.titles.primary}</span>
               </div>
-
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">World Tour <span className="text-primary">&</span> Events</h1>
               <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-4">{ARTIST.stats.yearsActive} anos levando a <span className="text-primary font-semibold">{ARTIST.philosophy.style}</span> para os maiores palcos do mundo</p>
-
               <HeroStats />
-
               <div className="flex flex-wrap justify-center gap-4 mt-10">
                 <a href={getWhatsAppUrl("Olá! Gostaria de contratar DJ Zen Eyer para meu evento.")} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg flex items-center gap-2"><Phone size={20} /> Contratar para Evento</a>
                 <a href="/work-with-me" className="btn btn-outline btn-lg flex items-center gap-2"><Briefcase size={20} /> Press Kit & Rider</a>
@@ -509,7 +389,6 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Eventos em Destaque */}
         <section className="py-20 container mx-auto px-4">
           <div className="flex items-center justify-between mb-10">
             <div>
@@ -529,7 +408,6 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Agenda Global */}
         <section className="py-20 bg-surface/30 border-y border-white/5">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
@@ -538,7 +416,7 @@ const EventsPage: React.FC = () => {
                 <p className="text-white/50 max-w-md">Datas confirmadas oficialmente. Atualizado em tempo real.</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <a href={googleCalendarLink} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm flex items-center gap-2"><Plus size={14} /> Google Calendar</a>
+                <a href={`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('eyer.marcelo@gmail.com')}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm flex items-center gap-2"><Plus size={14} /> Google Calendar</a>
                 <a href="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2"><Download size={14} /> Press Kit</a>
               </div>
             </div>
@@ -547,7 +425,6 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Testemunhos */}
         <section className="py-20 container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black font-display mb-4 text-white">O Que Dizem os Organizadores</h2>
@@ -558,10 +435,9 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Galeria de Flyers (Agora com Lightbox!) */}
+        {/* GALERIA COM LIGHTBOX */}
         <FlyerGallery />
 
-        {/* Histórico de Festivais */}
         <section className="py-20 border-t border-white/5">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
