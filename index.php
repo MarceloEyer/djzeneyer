@@ -1,9 +1,9 @@
 <?php
 /**
  * Main template file - DJ Zen Eyer Theme
- * Mode: React SPA with Server-Side SEO
+ * Mode: React SPA with Server-Side SEO + Performance Optimizations
  * @package DJZenEyer
- * @version 2.3.0 - MIME TYPE FIX (URLs Absolutas)
+ * @version 2.4.0 - PERFORMANCE & SECURITY 10/10
  */
 if (!defined('ABSPATH')) exit;
 
@@ -30,7 +30,6 @@ function get_vite_manifest() {
     
     if ($manifest !== null) return $manifest;
     
-    // Tenta carregar o manifest.json do Vite
     $possible_paths = [
         get_template_directory() . '/dist/.vite/manifest.json',
         get_template_directory() . '/dist/manifest.json'
@@ -44,12 +43,10 @@ function get_vite_manifest() {
         }
     }
     
-    // Fallback: busca diretamente por arquivos no dist/assets
     $manifest = false;
     return $manifest;
 }
 
-// Carrega o manifest
 $manifest = get_vite_manifest();
 
 // 🔥 FIX: Busca assets de forma robusta
@@ -57,37 +54,31 @@ $main_js = null;
 $css_files = [];
 
 if ($manifest && isset($manifest['src/main.tsx'])) {
-    // Caminho do JS
     if (isset($manifest['src/main.tsx']['file'])) {
         $main_js = '/dist/' . $manifest['src/main.tsx']['file'];
     }
     
-    // CSS files
     if (isset($manifest['src/main.tsx']['css'])) {
         foreach ($manifest['src/main.tsx']['css'] as $css) {
             $css_files[] = '/dist/' . $css;
         }
     }
 } else {
-    // 🔥 FALLBACK CRÍTICO: Busca arquivos reais no sistema de arquivos
     $dist_assets = get_template_directory() . '/dist/assets';
     
     if (is_dir($dist_assets)) {
         $files = scandir($dist_assets);
         
         foreach ($files as $file) {
-            // Busca por index-*.js
             if (preg_match('/^index-[a-zA-Z0-9]+\.js$/', $file)) {
                 $main_js = '/dist/assets/' . $file;
             }
-            // Busca por index-*.css
             if (preg_match('/^index-[a-zA-Z0-9]+\.css$/', $file)) {
                 $css_files[] = '/dist/assets/' . $file;
             }
         }
     }
     
-    // Último recurso: tenta os nomes padrão
     if (!$main_js) {
         $main_js = '/dist/assets/index.js';
     }
@@ -96,8 +87,8 @@ if ($manifest && isset($manifest['src/main.tsx'])) {
     }
 }
 
-// 🎯 CORREÇÃO CRÍTICA: URL absoluta do tema WordPress
-$theme_uri = get_template_directory_uri(); // Ex: https://djzeneyer.com/wp-content/themes/djzeneyer
+// 🎯 URL absoluta do tema WordPress
+$theme_uri = get_template_directory_uri();
 
 ?>
 <!DOCTYPE html>
@@ -107,6 +98,10 @@ $theme_uri = get_template_directory_uri(); // Ex: https://djzeneyer.com/wp-conte
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
+    <!-- DNS Prefetch (Performance) -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    
     <!-- Favicons (URLs Absolutas) -->
     <link rel="icon" type="image/svg+xml" href="<?php echo esc_url($theme_uri); ?>/favicon.svg">
     <link rel="icon" type="image/png" sizes="96x96" href="<?php echo esc_url($theme_uri); ?>/favicon-96x96.png">
@@ -114,15 +109,25 @@ $theme_uri = get_template_directory_uri(); // Ex: https://djzeneyer.com/wp-conte
     <link rel="manifest" href="<?php echo esc_url($theme_uri); ?>/site.webmanifest">
     <meta name="theme-color" content="#0A0E27">
     
-    <!-- Preconnect -->
+    <!-- Preconnect + Preload de Fontes (Melhora FCP) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap">
+    </noscript>
     
-    <!-- 🔥 VITE CSS (URLs Absolutas - FIX DO MIME TYPE) -->
+    <!-- 🔥 VITE CSS (Preload + URLs Absolutas - FIX MIME + Performance) -->
     <?php foreach ($css_files as $css_file): ?>
+        <link rel="preload" as="style" href="<?php echo esc_url($theme_uri . $css_file); ?>">
         <link rel="stylesheet" href="<?php echo esc_url($theme_uri . $css_file); ?>">
     <?php endforeach; ?>
+    
+    <!-- Preload Hero Image (Melhora LCP - Ajuste o caminho se necessário) -->
+    <?php if ($is_front_page): ?>
+        <link rel="preload" as="image" href="<?php echo esc_url($theme_uri); ?>/assets/images/hero-bg.jpg" fetchpriority="high">
+    <?php endif; ?>
     
     <!-- Critical CSS -->
     <style>
@@ -235,11 +240,10 @@ $theme_uri = get_template_directory_uri(); // Ex: https://djzeneyer.com/wp-conte
         </div>
     </noscript>
     
-    <!-- 🔥 VITE REACT (URL Absoluta - FIX DO MIME TYPE) -->
+    <!-- 🔥 VITE REACT (URL Absoluta - FIX MIME TYPE) -->
     <?php if ($main_js): ?>
-        <script type="module" src="<?php echo esc_url($theme_uri . $main_js); ?>" onerror="console.error('Failed to load:', this.src)"></script>
+        <script type="module" src="<?php echo esc_url($theme_uri . $main_js); ?>"></script>
     <?php else: ?>
-        <!-- Fallback crítico se nenhum JS for encontrado -->
         <script>
             console.error('[Theme] ❌ No JavaScript bundle found. Check your build.');
             document.body.innerHTML += '<div style="position:fixed;top:0;left:0;right:0;background:#ff4444;color:white;padding:10px;text-align:center;z-index:99999;"><strong>⚠️ Build Error:</strong> JavaScript bundle not found. Run de>npm run build</code></div>';
@@ -249,9 +253,8 @@ $theme_uri = get_template_directory_uri(); // Ex: https://djzeneyer.com/wp-conte
     <!-- Hide SSR when React loads -->
     <script>
         (function() {
-            // Aguarda o React montar
             let attempts = 0;
-            const maxAttempts = 20; // 10 segundos
+            const maxAttempts = 20;
             
             const checkReact = setInterval(function() {
                 attempts++;
