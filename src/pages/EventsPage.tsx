@@ -1,6 +1,6 @@
 // src/pages/EventsPage.tsx
 // ============================================================================
-// EVENTS PAGE - VERSÃO FINAL (LIGHTBOX + SAFE ACCESS + SCHEMA FIX)
+// EVENTS PAGE - VERSÃO 2.0 (BANDSINTOWN WIDGET CORRIGIDO)
 // ============================================================================
 
 import type { FC } from 'react';
@@ -218,7 +218,7 @@ const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ tes
 TestimonialCard.displayName = 'TestimonialCard';
 
 // ============================================================================
-// FLYER GALLERY COM LIGHTBOX (O PONTO CRÍTICO)
+// FLYER GALLERY COM LIGHTBOX
 // ============================================================================
 
 const FlyerGallery: React.FC = () => {
@@ -238,14 +238,12 @@ const FlyerGallery: React.FC = () => {
       })
       .catch((err) => {
         setError(err.message);
-        // Não logar erro no console de produção para manter limpo
       })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <section className="py-20 bg-black/40 border-t border-white/5"><div className="flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></section>;
   
-  // Se der erro ou não tiver flyers, não mostra nada (melhor que mostrar erro)
   if (error || flyers.length === 0) return null;
 
   return (
@@ -280,7 +278,7 @@ const FlyerGallery: React.FC = () => {
                     alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                     loading="lazy"
-                    onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} // Esconde se quebrar
+                    onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                     <span className="text-sm font-bold text-white">{flyer.title.rendered}</span>
@@ -295,7 +293,6 @@ const FlyerGallery: React.FC = () => {
         </div>
       </section>
 
-      {/* LIGHTBOX MODAL */}
       <AnimatePresence>
         {selectedFlyer && (
           <motion.div
@@ -331,18 +328,90 @@ const FlyerGallery: React.FC = () => {
   );
 };
 
+// ============================================================================
+// BANDSINTOWN WIDGET (CORRIGIDO)
+// ============================================================================
+
 const BandsInTownWidget: React.FC = () => {
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+
   useEffect(() => {
+    // Verifica se o script já foi carregado
+    if (document.querySelector('script[src*="bandsintown.com"]')) {
+      setScriptLoaded(true);
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = "https://widget.bandsintown.com/main.min.js";
     script.async = true;
+    script.charset = "utf-8";
+    
+    script.onload = () => {
+      setScriptLoaded(true);
+      console.log('[BIT] Widget script carregado');
+    };
+    
+    script.onerror = () => {
+      console.error('[BIT] Erro ao carregar widget');
+    };
+
     document.body.appendChild(script);
-    return () => { try { document.body.removeChild(script); } catch(e) {} };
+
+    return () => {
+      const widgets = document.querySelectorAll('.bit-widget-initializer');
+      if (widgets.length <= 1) {
+        try {
+          document.body.removeChild(script);
+        } catch (e) {
+          // Já removido
+        }
+      }
+    };
   }, []);
 
   return (
-    <div className="w-full min-h-[400px] bg-surface/20 rounded-2xl border border-white/5 p-6 md:p-10">
-      <a className="bit-widget-initializer" data-artist-name="DJ Zen Eyer" data-app-id="a6f8468a12e86539eff769aec002f836" data-language="en" data-display-local-dates="false" data-display-past-dates="true" data-auto-style="false" data-text-color="#FFFFFF" data-link-color="#9D4EDD" data-background-color="rgba(0,0,0,0)" data-display-limit="10" data-display-start-time="true" data-link-text-color="#FFFFFF" data-popup-background-color="#1a1a1a" data-header-background-color="rgba(0,0,0,0)" data-desktop-list-view="true">Carregando Agenda Oficial...</a>
+    <div className="w-full min-h-[500px] bg-surface/20 rounded-2xl border border-white/5 p-6 md:p-10">
+      {!scriptLoaded && (
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4" />
+          <p className="text-white/40 text-sm">Carregando agenda oficial...</p>
+        </div>
+      )}
+      
+      <a 
+        className="bit-widget-initializer" 
+        data-artist-name="DJ Zen Eyer"
+        data-app-id="a6f8468a12e86539eff769aec002f836"
+        data-language="en"
+        data-display-local-dates="false"
+        data-display-past-dates="true"
+        data-auto-style="false"
+        data-text-color="#FFFFFF"
+        data-link-color="#9D4EDD"
+        data-background-color="rgba(0,0,0,0)"
+        data-display-limit="15"
+        data-display-start-time="true"
+        data-link-text-color="#FFFFFF"
+        data-popup-background-color="#0A0E27"
+        data-header-background-color="rgba(0,0,0,0)"
+        data-desktop-list-view="true"
+        data-display-lineup="false"
+        data-separator-color="rgba(255,255,255,0.1)"
+        style={{ display: scriptLoaded ? 'block' : 'none' }}
+      >
+        <span className="text-white/60">
+          📅 Carregando agenda... Se não aparecer,{' '}
+          <a 
+            href="https://www.bandsintown.com/a/15596281-dj-zen-eyer" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            veja no Bandsintown
+          </a>
+        </span>
+      </a>
     </div>
   );
 };
@@ -355,11 +424,8 @@ const EventsPage: React.FC = () => {
   const { t } = useTranslation();
   const currentPath = '/events';
   
-  // O plugin de SEO já manda o Schema completo. Não precisamos gerar manual.
-  
   return (
     <>
-      {/* HeadlessSEO agora usa o 'data' automático da API se disponível, ou fallback manual */}
       <HeadlessSEO 
         title={`Agenda & Tour - ${ARTIST.identity.stageName} | ${ARTIST.titles.primary}`}
         description={`Agenda oficial de ${ARTIST.identity.stageName}. ${ARTIST.stats.eventsPlayed}+ eventos em ${ARTIST.stats.countriesPlayed} países. Booking para 2026 aberto.`}
@@ -435,7 +501,6 @@ const EventsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* GALERIA COM LIGHTBOX */}
         <FlyerGallery />
 
         <section className="py-20 border-t border-white/5">
