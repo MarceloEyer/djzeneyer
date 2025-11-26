@@ -1,6 +1,6 @@
 // src/pages/MusicPage.tsx
 // ============================================================================
-// MUSIC HUB 2.0 - VERSÃO ULTIMATE (SCHEMA + ANALYTICS + DEBOUNCE + PAGINAÇÃO)
+// MUSIC HUB 2.2 - VERSÃO ULTIMATE (SCHEMA + ANALYTICS + DEBOUNCE + PAGINAÇÃO)
 // ============================================================================
 
 import React, { useState, useEffect, useCallback } from 'react';
