@@ -86,3 +86,57 @@ add_action('rest_api_init', function() {
         return $served;
     }, 15);
 });
+
+/**
+ * Lazy Load nativo (WordPress 5.5+)
+ */
+add_filter('wp_lazy_loading_enabled', '__return_true');
+
+/**
+ * Remove query strings (?ver=) para melhor cache CDN
+ */
+add_filter('style_loader_src', 'djzen_remove_query_strings', 10, 2);
+add_filter('script_loader_src', 'djzen_remove_query_strings', 10, 2);
+
+function djzen_remove_query_strings($src) {
+    if (strpos($src, '?ver=')) {
+        $src = remove_query_arg('ver', $src);
+    }
+    return $src;
+}
+
+/**
+ * DNS Prefetch para Google Fonts
+ */
+add_action('wp_head', function() {
+    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">';
+    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">';
+}, 0);
+
+/**
+ * Limita revisões de posts (economia de DB)
+ */
+if (!defined('WP_POST_REVISIONS')) {
+    define('WP_POST_REVISIONS', 3);
+}
+
+/**
+ * Aumenta limite de memória PHP
+ */
+if (!defined('WP_MEMORY_LIMIT')) {
+    define('WP_MEMORY_LIMIT', '256M');
+}
+
+/**
+ * Fetchpriority na primeira imagem (melhora LCP)
+ */
+add_filter('wp_get_attachment_image_attributes', function($attr, $attachment) {
+    static $first_image = true;
+    
+    if ($first_image && is_front_page()) {
+        $attr['fetchpriority'] = 'high';
+        $first_image = false;
+    }
+    
+    return $attr;
+}, 10, 2);
