@@ -1,23 +1,27 @@
 // src/pages/MusicPage.tsx
 // ============================================================================
-// MUSIC HUB - CORREÇÃO DE ERRO (SAFE ACCESS)
+// MUSIC HUB 2.0 - VERSÃO ULTIMATE (SCHEMA + ANALYTICS + DEBOUNCE + PAGINAÇÃO)
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import debounce from 'lodash/debounce';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { 
-  Download, Music2, Filter, Youtube, Cloud, Search 
+  Download, Music2, Filter, Youtube, Cloud, Search, X, Clock, Headphones 
 } from 'lucide-react';
+import { ARTIST } from '../data/artistData';
 
-// Tipo de dados vindo da API do WordPress
+// ============================================================================
+// 1. TIPAGEM & UTILS
+// ============================================================================
+
 interface MusicTrack {
   id: number;
   title: { rendered: string };
   category_name: string; 
   tag_names: string[];
-  // Links podem ser undefined se o post for antigo
   links?: { 
     download?: string;
     soundcloud?: string;
@@ -28,19 +32,100 @@ interface MusicTrack {
   };
 }
 
+// Tracking de Downloads (Google Analytics 4)
+const trackDownload = (trackName: string, type: 'download' | 'stream') => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', type, {
+      event_category: 'Music',
+      event_label: trackName,
+      value: 1
+    });
+  }
+  console.log(`[Analytics] ${type}: ${trackName}`);
+};
+
+// Gerador de Schema.org (JSON-LD)
+const generateMusicSchema = (tracks: MusicTrack[]) => {
+  const musicItems = tracks.slice(0, 20).map((track) => {
+    const coverUrl = track._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    const links = track.links || {};
+    
+    return {
+      "@type": "MusicRecording",
+      "name": track.title.rendered,
+      "byArtist": {
+        "@type": "Person",
+        "@id": "https://djzeneyer.com/#artist",
+        "name": "DJ Zen Eyer"
+      },
+      "genre": track.tag_names?.join(', ') || "Brazilian Zouk",
+      "image": coverUrl || "https://djzeneyer.com/images/music-default.jpg",
+      "url": links.soundcloud || links.youtube || `https://djzeneyer.com/music#${track.id}`,
+      ...(links.download && {
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "url": links.download
+        }
+      })
+    };
+  });
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://djzeneyer.com/music#webpage",
+        "url": "https://djzeneyer.com/music",
+        "name": "Downloads & Sets | DJ Zen Eyer",
+        "description": "Download remixes exclusivos de Zouk Brasileiro. Escute no SoundCloud e YouTube.",
+        "isPartOf": { "@id": "https://djzeneyer.com/#website" },
+        "about": { "@id": "https://djzeneyer.com/#artist" }
+      },
+      {
+        "@type": "MusicPlaylist",
+        "name": "DJ Zen Eyer - Remixes & Sets Collection",
+        "numTracks": tracks.length,
+        "track": musicItems
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://djzeneyer.com" },
+          { "@type": "ListItem", "position": 2, "name": "Music", "item": "https://djzeneyer.com/music" }
+        ]
+      }
+    ]
+  };
+};
+
+// Constantes
+const ITEMS_PER_PAGE = 12;
+
+// ============================================================================
+// 2. COMPONENTE PRINCIPAL
+// ============================================================================
+
 const MusicPage: React.FC = () => {
   const { t } = useTranslation();
   const currentPath = '/music';
   const currentUrl = 'https://djzeneyer.com' + currentPath;
   
-  // Estados
+  // States
   const [tracks, setTracks] = useState<MusicTrack[]>([]);
   const [filteredTracks, setFilteredTracks] = useState<MusicTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTag, setActiveTag] = useState<string>('Todos');
+  
+  // Busca & Paginação
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState(''); // Input visual imediato
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // 1. Busca Músicas da API
+  // 3. Fetch de Dados
   useEffect(() => {
     fetch('https://djzeneyer.com/wp-json/wp/v2/remixes?_embed&per_page=100')
       .then(res => res.json())
@@ -57,10 +142,19 @@ const MusicPage: React.FC = () => {
       });
   }, []);
 
-  // 2. Gera lista de tags únicas baseada no conteúdo
-  const allTags = ['Todos', ...Array.from(new Set(tracks.flatMap(t => t.tag_names || [])))].filter(Boolean);
+  // 4. Lógica de Debounce (Otimização de Busca)
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      setSearchQuery(query);
+    }, 300),
+    []
+  );
 
-  // 3. Filtra as músicas
+  useEffect(() => {
+    return () => { debouncedSearch.cancel(); };
+  }, [debouncedSearch]);
+
+  // 5. Lógica de Filtro Centralizada
   useEffect(() => {
     let result = tracks;
 
@@ -69,23 +163,36 @@ const MusicPage: React.FC = () => {
       result = result.filter(t => t.tag_names && t.tag_names.includes(activeTag));
     }
 
-    // Filtro por Busca (Texto)
+    // Filtro por Texto
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
       result = result.filter(t => t.title.rendered.toLowerCase().includes(lowerQuery));
     }
 
     setFilteredTracks(result);
+    setCurrentPage(1); // Resetar página ao filtrar
   }, [activeTag, searchQuery, tracks]);
+
+  // 6. Paginação (Slice)
+  const indexOfLastTrack = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstTrack = indexOfLastTrack - ITEMS_PER_PAGE;
+  const currentTracks = filteredTracks.slice(indexOfFirstTrack, indexOfLastTrack);
+  const totalPages = Math.ceil(filteredTracks.length / ITEMS_PER_PAGE);
+
+  const allTags = ['Todos', ...Array.from(new Set(tracks.flatMap(t => t.tag_names || [])))].filter(Boolean);
+
+  // Schema gerado dinamicamente com os dados carregados
+  const musicSchema = generateMusicSchema(tracks);
 
   return (
     <>
       <HeadlessSEO 
-        title="Downloads & Sets | DJ Zen Eyer" 
-        description="Baixe remixes exclusivos e sets de Zouk Brasileiro. Ouça no SoundCloud e YouTube."
+        title="Downloads & Sets | DJ Zen Eyer | Brazilian Zouk" 
+        description="Baixe remixes exclusivos, sets mixados e edits de Zouk Brasileiro. A biblioteca oficial de DJ Zen Eyer."
         url={currentUrl}
         image="https://djzeneyer.com/images/music-og.jpg"
         hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
+        schema={musicSchema} // 🔥 Schema.org injetado aqui
       />
 
       <div className="min-h-screen pt-24 pb-20 bg-background">
@@ -105,19 +212,30 @@ const MusicPage: React.FC = () => {
 
           {/* Barra de Ferramentas */}
           <div className="mb-12 space-y-6">
-            {/* Campo de Busca */}
+            {/* Busca Debounced */}
             <div className="max-w-md mx-auto relative">
               <input 
                 type="text" 
                 placeholder="Buscar música, artista ou estilo..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value);
+                  debouncedSearch(e.target.value);
+                }}
                 className="w-full bg-surface/50 border border-white/10 rounded-full py-3 px-12 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
               />
               <Search className="absolute left-4 top-3.5 text-white/40" size={20} />
+              {searchInput && (
+                <button
+                  onClick={() => { setSearchInput(''); setSearchQuery(''); }}
+                  className="absolute right-4 top-3.5 text-white/40 hover:text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              )}
             </div>
 
-            {/* Tags de Filtro */}
+            {/* Filtros por Tag */}
             <div className="flex flex-wrap justify-center gap-2">
               {allTags.map(tag => (
                 <button
@@ -135,7 +253,7 @@ const MusicPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Loading State */}
+          {/* Loading */}
           {loading && (
             <div className="flex justify-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -146,10 +264,8 @@ const MusicPage: React.FC = () => {
           {!loading && (
             <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence mode='popLayout'>
-                {filteredTracks.map((track) => {
+                {currentTracks.map((track) => {
                   const coverUrl = track._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-                  
-                  // CORREÇÃO AQUI: Garante que links nunca seja undefined
                   const links = track.links || {};
                   
                   return (
@@ -161,7 +277,7 @@ const MusicPage: React.FC = () => {
                       exit={{ opacity: 0, scale: 0.9 }}
                       className="bg-surface/40 border border-white/5 rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:bg-surface/60 group flex flex-col"
                     >
-                      {/* Capa (Imagem Estática) */}
+                      {/* Capa com Fallback e Cor Dinâmica */}
                       <div className="relative aspect-video bg-black overflow-hidden">
                         {coverUrl ? (
                           <img 
@@ -169,6 +285,11 @@ const MusicPage: React.FC = () => {
                             alt={track.title.rendered} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
                             loading="lazy" 
+                            onError={(e) => {
+                              const bgColor = track.category_name === 'Sets' ? '9D4EDD' : '0D96FF';
+                              const placeholder = `https://placehold.co/600x400/${bgColor}/FFFFFF?text=${encodeURIComponent(track.title.rendered.substring(0, 20))}`;
+                              (e.target as HTMLImageElement).src = placeholder;
+                            }}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-surface border-b border-white/5">
@@ -184,30 +305,29 @@ const MusicPage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Conteúdo do Card */}
+                      {/* Conteúdo */}
                       <div className="p-5 flex-1 flex flex-col">
                         <h3 className="text-lg font-bold text-white mb-2 line-clamp-1" title={track.title.rendered}>
                           {track.title.rendered}
                         </h3>
                         
-                        {/* Lista de Tags */}
+                        {/* Tags */}
                         <div className="flex flex-wrap gap-1 mb-6">
                           {track.tag_names?.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-[10px] px-2 py-0.5 bg-white/10 rounded text-white/60">
-                              #{tag}
-                            </span>
+                            <span key={tag} className="text-[10px] px-2 py-0.5 bg-white/10 rounded text-white/60">#{tag}</span>
                           ))}
                         </div>
 
-                        {/* Botões de Ação (Footer do Card) */}
+                        {/* Botões de Ação */}
                         <div className="mt-auto space-y-3">
                           
-                          {/* Botão Principal: DOWNLOAD */}
+                          {/* Botão Download + Tracking */}
                           {links.download ? (
                             <a 
                               href={links.download} 
                               target="_blank" 
                               rel="noopener noreferrer"
+                              onClick={() => trackDownload(track.title.rendered, 'download')}
                               className="btn btn-primary w-full flex items-center justify-center gap-2 shadow-lg shadow-primary/10"
                             >
                               <Download size={18} /> Download Grátis
@@ -218,12 +338,13 @@ const MusicPage: React.FC = () => {
                             </div>
                           )}
 
-                          {/* Botões Secundários: Streaming */}
+                          {/* Links Secundários + Tracking */}
                           {(links.soundcloud || links.youtube) && (
                             <div className="flex gap-2 pt-2 border-t border-white/5">
                               {links.soundcloud && (
                                 <a 
                                   href={links.soundcloud} target="_blank" rel="noopener noreferrer"
+                                  onClick={() => trackDownload(track.title.rendered, 'stream')}
                                   className="flex-1 btn btn-outline btn-xs flex items-center justify-center gap-2 hover:bg-[#ff5500] hover:border-[#ff5500] hover:text-white transition-colors"
                                   title="Ouvir no SoundCloud"
                                 >
@@ -233,6 +354,7 @@ const MusicPage: React.FC = () => {
                               {links.youtube && (
                                 <a 
                                   href={links.youtube} target="_blank" rel="noopener noreferrer"
+                                  onClick={() => trackDownload(track.title.rendered, 'stream')}
                                   className="flex-1 btn btn-outline btn-xs flex items-center justify-center gap-2 hover:bg-[#ff0000] hover:border-[#ff0000] hover:text-white transition-colors"
                                   title="Ver no YouTube"
                                 >
@@ -258,10 +380,23 @@ const MusicPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">Nenhuma música encontrada</h3>
               <p className="text-white/50">Tente buscar por outro termo ou selecione outra categoria.</p>
-              <button onClick={() => { setActiveTag('Todos'); setSearchQuery(''); }} className="text-primary mt-4 hover:underline font-bold">
+              <button onClick={() => { setActiveTag('Todos'); setSearchQuery(''); setSearchInput(''); }} className="text-primary mt-4 hover:underline font-bold">
                 Limpar Filtros
               </button>
             </div>
+          )}
+
+          {/* Paginação */}
+          {!loading && totalPages > 1 && (
+             <div className="flex justify-center gap-2 mt-12">
+               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="btn btn-outline btn-sm disabled:opacity-30">← Anterior</button>
+               <div className="flex items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                     <button key={page} onClick={() => setCurrentPage(page)} className={`w-8 h-8 rounded-full text-sm font-bold transition-all ${currentPage === page ? 'bg-primary text-black' : 'bg-surface text-white/60 hover:text-white'}`}>{page}</button>
+                  ))}
+               </div>
+               <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="btn btn-outline btn-sm disabled:opacity-30">Próxima →</button>
+             </div>
           )}
 
         </div>
