@@ -1,7 +1,7 @@
 <?php
 /**
  * DJ Zen Eyer Theme Functions
- * v13.2.0 - Production Optimized (Zero Redundancy)
+ * v13.2.1 - Production Optimized (Console Limpo)
  * Headless Architecture + Zen SEO Plugin
  */
 
@@ -152,6 +152,17 @@ add_filter('wp_get_attachment_image_attributes', function($attr, $attachment) {
     
     return $attr;
 }, 10, 2);
+
+/**
+ * 1️⃣2️⃣ Fix WooCommerce Order Attribution Error
+ * Desabilita script problemático fora do checkout/carrinho
+ */
+add_action('wp_enqueue_scripts', function() {
+    if (!is_checkout() && !is_cart()) {
+        wp_dequeue_script('wc-order-attribution');
+        wp_deregister_script('wc-order-attribution');
+    }
+}, 100);
 
 /* ==========================================
  * FIM DAS OTIMIZAÇÕES
