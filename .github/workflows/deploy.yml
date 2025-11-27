@@ -219,8 +219,12 @@ jobs:
           strip_components: 0
 
       # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: plugins/ (APENAS CUSTOM PLUGINS - SEM DELETE!)
+      # DEPLOY: plugins/ (TODOS OS CUSTOM PLUGINS - SEM DELETE!)
       # ═══════════════════════════════════════════════════════════════════════
+      # IMPORTANTE: Faz deploy de CADA plugin individualmente
+      # Adicione novos plugins aqui seguindo o mesmo padrão
+      # ═══════════════════════════════════════════════════════════════════════
+      
       - name: 🔌 Deploy Custom Plugins (zen-seo-lite)
         if: hashFiles('plugins/zen-seo-lite/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
@@ -244,6 +248,24 @@ jobs:
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      # ═══════════════════════════════════════════════════════════════════════
+      # ADICIONE NOVOS PLUGINS AQUI
+      # ═══════════════════════════════════════════════════════════════════════
+      # Exemplo para adicionar um novo plugin chamado "meu-plugin":
+      #
+      # - name: 🔌 Deploy Custom Plugins (meu-plugin)
+      #   if: hashFiles('plugins/meu-plugin/**') != ''
+      #   uses: burnett01/rsync-deployments@5.2.1
+      #   with:
+      #     switches: -avzr
+      #     path: plugins/meu-plugin/
+      #     remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/meu-plugin/
+      #     remote_host: ${{ env.SSH_HOST }}
+      #     remote_user: ${{ env.SSH_USER }}
+      #     remote_port: ${{ env.SSH_PORT }}
+      #     remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # ═══════════════════════════════════════════════════════════════════════
       
       # Instalar dependências do ZenEyer Auth (composer)
       - name: 📦 Install Plugin Dependencies
