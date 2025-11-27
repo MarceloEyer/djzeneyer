@@ -219,35 +219,19 @@ jobs:
           strip_components: 0
 
       # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: plugins/ (CUSTOM PLUGINS)
+      # DEPLOY: plugins/ (SE EXISTIR)
       # ═══════════════════════════════════════════════════════════════════════
-      - name: 🔌 Deploy Custom Plugins
+      - name: 🔌 Deploy plugins/ (se existir)
         if: hashFiles('plugins/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr --delete --exclude='index.php'
+          switches: -avzr --delete
           path: plugins/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-      
-      # Instalar dependências do ZenEyer Auth (composer)
-      - name: 📦 Install Plugin Dependencies
-        if: hashFiles('plugins/zeneyer-auth/composer.json') != ''
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ env.REMOTE_ROOT }}/wp-content/plugins/zeneyer-auth
-            if [ -f "composer.json" ]; then
-              echo "📦 Instalando dependências do ZenEyer Auth..."
-              composer install --no-dev --optimize-autoloader 2>/dev/null || echo "⚠️ Composer não disponível, pular"
-            fi
 
       # ═══════════════════════════════════════════════════════════════════════
       # DEPLOY: public/ (SE EXISTIR - apenas arquivos seguros)
@@ -287,22 +271,6 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # CACHE PURGE (Opcional)
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: 🧹 Purge LiteSpeed Cache
-        continue-on-error: true
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "🧹 Limpando cache do LiteSpeed..."
-            cd ${{ env.REMOTE_ROOT }}
-            wp litespeed-purge all 2>/dev/null || echo "⚠️ LiteSpeed Cache plugin não encontrado ou WP-CLI não disponível"
-      
       # ═══════════════════════════════════════════════════════════════════════
       # VERIFICAÇÃO
       # ═══════════════════════════════════════════════════════════════════════
@@ -354,25 +322,6 @@ jobs:
             echo "📄 Arquivos PHP:"
             [ -f "$THEME_PATH/functions.php" ] && echo "✅ functions.php" || echo "⚠️ functions.php"
             [ -f "$THEME_PATH/style.css" ] && echo "✅ style.css" || echo "⚠️ style.css"
-            
-            echo ""
-            echo "🔌 Plugins Customizados:"
-            PLUGINS_PATH="${{ env.REMOTE_ROOT }}/wp-content/plugins"
-            
-            if [ -d "$PLUGINS_PATH/zen-seo-lite" ]; then
-              echo "✅ Zen SEO Lite Pro"
-              [ -f "$PLUGINS_PATH/zen-seo-lite/zen-seo-lite.php" ] && echo "   ✓ Plugin file exists" || echo "   ✗ Plugin file missing!"
-            else
-              echo "⚠️ Zen SEO Lite Pro não encontrado"
-            fi
-            
-            if [ -d "$PLUGINS_PATH/zeneyer-auth" ]; then
-              echo "✅ ZenEyer Auth Pro"
-              [ -f "$PLUGINS_PATH/zeneyer-auth/zeneyer-auth.php" ] && echo "   ✓ Plugin file exists" || echo "   ✗ Plugin file missing!"
-              [ -d "$PLUGINS_PATH/zeneyer-auth/vendor" ] && echo "   ✓ Composer dependencies installed" || echo "   ⚠️ Composer dependencies missing (run composer install)"
-            else
-              echo "⚠️ ZenEyer Auth Pro não encontrado"
-            fi
             
             echo ""
             echo "════════════════════════════════════════"
