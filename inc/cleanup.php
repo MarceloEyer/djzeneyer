@@ -127,11 +127,22 @@ add_action('admin_init', function() {
 });
 
 /**
- * Fix WooCommerce Order Attribution (se WooCommerce ativo)
+ * Fix WooCommerce Order Attribution (somente se WooCommerce ativo)
  */
 add_action('wp_enqueue_scripts', function() {
-    if (!is_checkout() && !is_cart()) {
+
+    // WooCommerce não carregado ainda → não toca em nada
+    if (!class_exists('WooCommerce')) {
+        return;
+    }
+
+    // Protege chamadas às funções condicionais
+    $is_checkout = function_exists('is_checkout') ? is_checkout() : false;
+    $is_cart     = function_exists('is_cart') ? is_cart() : false;
+
+    if (!$is_checkout && !$is_cart) {
         wp_dequeue_script('wc-order-attribution');
         wp_deregister_script('wc-order-attribution');
     }
+
 }, 100);
