@@ -219,27 +219,15 @@ jobs:
           strip_components: 0
 
       # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: plugins/ (APENAS CUSTOM PLUGINS - SEM DELETE!)
+      # DEPLOY: plugins/ (CUSTOM PLUGINS)
       # ═══════════════════════════════════════════════════════════════════════
-      - name: 🔌 Deploy Custom Plugins (zen-seo-lite)
-        if: hashFiles('plugins/zen-seo-lite/**') != ''
+      - name: 🔌 Deploy Custom Plugins
+        if: hashFiles('plugins/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr
-          path: plugins/zen-seo-lite/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/zen-seo-lite/
-          remote_host: ${{ env.SSH_HOST }}
-          remote_user: ${{ env.SSH_USER }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-      
-      - name: 🔌 Deploy Custom Plugins (zeneyer-auth)
-        if: hashFiles('plugins/zeneyer-auth/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avzr
-          path: plugins/zeneyer-auth/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/zeneyer-auth/
+          switches: -avzr --delete --exclude='index.php'
+          path: plugins/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
