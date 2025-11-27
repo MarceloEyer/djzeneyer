@@ -86,17 +86,16 @@ function djz_get_gamipress_handler($request) {
             ]
         ]);
     }
-    // Slugs customizados — pronto para crescer
+    // Configurações: Slugs e níveis futuros
     $points_slug = 'zen-points';
     $rank_slug = 'zen-level';
     $achievement_slug = 'insigna';
-    // Ranks dinâmico: só expandir array para adicionar níveis
     $rank_tiers = [
         1 => ['name' => 'Zen Novice',      'min' => 0,    'priority' => 1],
         2 => ['name' => 'Zen Apprentice',  'min' => 100,  'priority' => 2],
         3 => ['name' => 'Zen Voyager',     'min' => 500,  'priority' => 3],
         4 => ['name' => 'Zen Master',      'min' => 1500, 'priority' => 4],
-        // 5 => ['name' => 'Zen Legend', 'min' => 4000, 'priority' => 5],
+        // 5 => ['name' => 'Zen Legend',  'min' => 4000, 'priority' => 5],
     ];
     $zen_points = (int) gamipress_get_user_points($user_id, $points_slug);
     $user_level = 1;
@@ -110,7 +109,7 @@ function djz_get_gamipress_handler($request) {
         }
     }
     $progress_to_next = min(100, ($next_level_points > 0 ? round(100 * ($zen_points - $rank_tiers[$user_level]['min']) / max(1, $next_level_points - $rank_tiers[$user_level]['min']) : 100));
-    // Insignias (qualquer badge criada aparece automatico)
+    // BADGES (Insignias dinâmico)
     $all_achievements = [];
     $earned_achievements = [];
     $query = new WP_Query([
@@ -138,9 +137,9 @@ function djz_get_gamipress_handler($request) {
         }
         wp_reset_postdata();
     }
-    // Streak real (slug para login diário)
+    // STREAK (usando login diário verdadeiro GamiPress)
     $streak_days = function_exists('gamipress_get_user_streak') ? (int) gamipress_get_user_streak($user_id, 'daily-visit-the-website') : 0;
-    // Próximas ações automáticas — expansão fácil adicionando badges/ranks
+    // Próximas ações baseadas em badges/ranks
     $actions = [];
     if ($streak_days < 7) {
         $actions[] = [
@@ -180,7 +179,7 @@ function djz_get_gamipress_handler($request) {
         ]
     ]);
 }
-// Exemplo real de streak GamiPress (pode customizar para outros eventos)
+// Streak extra/multiversão, caso precise
 function djz_streak_handler($request) {
     $user_id = intval($request->get_param('user_id'));
     $days = 0;
