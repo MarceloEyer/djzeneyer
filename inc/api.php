@@ -86,7 +86,7 @@ function djz_get_gamipress_handler($request) {
             ]
         ]);
     }
-    // Configurações: Slugs e níveis futuros
+    // Slugs e níveis - future proof!
     $points_slug = 'zen-points';
     $rank_slug = 'zen-level';
     $achievement_slug = 'insigna';
@@ -95,7 +95,7 @@ function djz_get_gamipress_handler($request) {
         2 => ['name' => 'Zen Apprentice',  'min' => 100,  'priority' => 2],
         3 => ['name' => 'Zen Voyager',     'min' => 500,  'priority' => 3],
         4 => ['name' => 'Zen Master',      'min' => 1500, 'priority' => 4],
-        // 5 => ['name' => 'Zen Legend',  'min' => 4000, 'priority' => 5],
+        // 5 => ['name' => 'Zen Legend',  'min' => 4000, 'priority' => 5], // só adicionar se precisar
     ];
     $zen_points = (int) gamipress_get_user_points($user_id, $points_slug);
     $user_level = 1;
@@ -137,9 +137,8 @@ function djz_get_gamipress_handler($request) {
         }
         wp_reset_postdata();
     }
-    // STREAK (usando login diário verdadeiro GamiPress)
+    // STREAK
     $streak_days = function_exists('gamipress_get_user_streak') ? (int) gamipress_get_user_streak($user_id, 'daily-visit-the-website') : 0;
-    // Próximas ações baseadas em badges/ranks
     $actions = [];
     if ($streak_days < 7) {
         $actions[] = [
@@ -179,7 +178,7 @@ function djz_get_gamipress_handler($request) {
         ]
     ]);
 }
-// Streak extra/multiversão, caso precise
+// Para outros tipos de streak
 function djz_streak_handler($request) {
     $user_id = intval($request->get_param('user_id'));
     $days = 0;
@@ -190,7 +189,7 @@ function djz_streak_handler($request) {
 }
 
 // ============================================================================
-// 3. MENU MULTILÍNGUE (Polylang) COM CACHE
+// 3. MENU MULTILÍNGUE (Polylang) COM CACHE 1h
 // ============================================================================
 function djz_get_multilang_menu_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
@@ -253,7 +252,7 @@ function djz_mailpoet_subscribe_handler($request) {
 }
 
 // ============================================================================
-// 5. WOOCOMMERCE PRODUCTS - CACHE POR IDIOMA
+// 5. WOOCOMMERCE PRODUCTS - CACHE POR IDIOMA 30min
 // ============================================================================
 function djz_get_products_with_lang_handler($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
