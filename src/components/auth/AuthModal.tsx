@@ -1,10 +1,10 @@
-// src/components/auth/AuthModal.tsx - DESIGN LIMPO E FUNCIONAL
+// src/components/auth/AuthModal.tsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { X, Mail, Lock, User, Loader2, AlertCircle } from 'lucide-react';
+import { X, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import { useUser } from '../../contexts/UserContext';
 
 interface AuthModalProps {
@@ -16,9 +16,7 @@ interface AuthModalProps {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  
   const { login, register, googleLogin, googleClientId } = useUser();
-
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,27 +28,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
-      const data = { 
-        email, 
-        password, 
-        name: mode === 'register' ? username : undefined 
+      const data = {
+        email,
+        password,
+        name: mode === 'register' ? username : undefined,
       };
-
       if (mode === 'login') {
         await login(data.email, data.password);
       } else {
         await register(data.name || '', data.email, data.password);
       }
-
-      console.log('✅ Autenticação realizada com sucesso!');
       if (onSuccess) onSuccess();
       onClose();
       navigate('/dashboard');
-
     } catch (err: any) {
-      console.error('❌ Auth error:', err);
       setError(err.message || 'Falha na autenticação. Verifique seus dados.');
     } finally {
       setLoading(false);
@@ -59,10 +51,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse.credential) return;
-    
     setLoading(true);
     setError('');
-    
     try {
       await googleLogin(credentialResponse.credential);
       if (onSuccess) onSuccess();
@@ -75,180 +65,130 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     }
   };
 
+  const { signIn: googleSignIn } = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () => setError('Login com Google falhou'),
+  });
+
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-black/90 backdrop-blur-md"
+          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
-
-        {/* Modal */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: 'spring', duration: 0.5 }}
-          className="relative w-full max-w-md bg-[#0A0E27] rounded-2xl shadow-2xl border border-white/5 overflow-hidden"
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/5 transition-colors z-10 text-white/60 hover:text-white"
-            aria-label="Fechar"
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white"
           >
             <X size={24} />
           </button>
-
           <div className="p-8">
-            {/* Header */}
             <div className="text-center mb-8">
-              <motion.div
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                <h2 className="text-3xl font-black text-white mb-2 font-['Orbitron']">
-                  {mode === 'login' ? 'Bem-vindo de Volta' : 'Criar Conta'}
-                </h2>
-                <p className="text-white/50 text-sm">
-                  {mode === 'login' 
-                    ? 'Entre na sua conta Zen Tribe'
-                    : 'Junte-se à Zen Tribe'}
-                </p>
-              </motion.div>
+              <h2 className="text-3xl font-black text-white mb-2">
+                {mode === 'login' ? 'Bem-vindo de Volta' : 'Criar Conta'}
+              </h2>
+              <p className="text-white/60">
+                {mode === 'login' ? 'Entre na sua conta Zen Tribe' : 'Junte-se à Zen Tribe'}
+              </p>
             </div>
-
-            {/* Error Message */}
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3"
-                >
-                  <AlertCircle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
-                  <p className="text-red-200 text-sm">{error}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Google Login */}
-            <div className="mb-6">
+            {error && (
+              <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm text-center">
+                {error}
+              </div>
+            )}
+            <div className="flex justify-center mb-6 w-full">
               {googleClientId ? (
-                <div className="flex justify-center">
-                  <GoogleOAuthProvider clientId={googleClientId}>
-                    <GoogleLogin
-                      onSuccess={handleGoogleSuccess}
-                      onError={() => setError('Login com Google falhou')}
-                      theme="filled_black"
-                      shape="pill"
-                      size="large"
-                      text={mode === 'login' ? "signin_with" : "signup_with"}
-                      width="320"
-                    />
-                  </GoogleOAuthProvider>
-                </div>
+                <button
+                  onClick={() => googleSignIn()}
+                  className="w-full flex items-center justify-center gap-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg border border-white/20 transition-all hover:shadow-lg hover:shadow-white/10"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="text-white"
+                  >
+                    <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 0 0-8.6 3.893-8.6 8.72 0 4.827 3.893 8.72 8.6 8.72 0 0 1.44-.627 2.307-1.467-2.307-1.387-3.787-3.28-3.787-5.627 0-1.76 1.12-3.28 2.627-4.133-.313-.687-.473-1.473-.473-2.347 0-2.2 1.567-4.027 3.707-4.407z" />
+                  </svg>
+                  <span>Continuar com Google</span>
+                </button>
               ) : (
-                <div className="h-12 bg-white/5 animate-pulse rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white/30">Conectando ao servidor...</span>
+                <div className="w-full h-12 bg-white/10 animate-pulse rounded-lg flex items-center justify-center text-xs text-white/40">
+                  Conectando ao servidor...
                 </div>
               )}
             </div>
-
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/5"></div>
+                <div className="w-full border-t border-white/10"></div>
               </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-4 bg-[#0A0E27] text-white/40">ou use email</span>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-gray-900 text-white/60">ou use email</span>
               </div>
             </div>
-
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name (Register only) */}
               {mode === 'register' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                >
-                  <label className="block text-xs font-semibold mb-2 text-white/70 uppercase tracking-wide">
-                    Nome
-                  </label>
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-white">Nome</label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                     <input
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="w-full bg-white/5 text-white border border-white/10 rounded-xl py-3.5 pl-12 pr-4 
-                                 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.07]
-                                 transition-all placeholder:text-white/30"
+                      className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                       placeholder="Seu nome"
                       required
                     />
                   </div>
-                </motion.div>
+                </div>
               )}
-
-              {/* Email */}
               <div>
-                <label className="block text-xs font-semibold mb-2 text-white/70 uppercase tracking-wide">
-                  Email
-                </label>
+                <label className="block text-sm font-semibold mb-2 text-white">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white/5 text-white border border-white/10 rounded-xl py-3.5 pl-12 pr-4 
-                               focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.07]
-                               transition-all placeholder:text-white/30"
+                    className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                     placeholder="seu@email.com"
                     required
                   />
                 </div>
               </div>
-
-              {/* Password */}
               <div>
-                <label className="block text-xs font-semibold mb-2 text-white/70 uppercase tracking-wide">
-                  Senha
-                </label>
+                <label className="block text-sm font-semibold mb-2 text-white">Senha</label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white/5 text-white border border-white/10 rounded-xl py-3.5 pl-12 pr-4 
-                               focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.07]
-                               transition-all placeholder:text-white/30"
+                    className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                     placeholder="••••••••"
                     required
                   />
                 </div>
               </div>
-
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl 
-                           transition-all transform hover:scale-[1.02] active:scale-[0.98]
-                           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-                           flex justify-center items-center gap-2 shadow-lg shadow-purple-500/20"
+                className="w-full bg-gradient-to-r from-purple-700 to-indigo-700 text-white font-bold py-4 rounded-lg shadow-lg hover:opacity-90 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
               >
                 {loading ? (
                   <>
@@ -260,21 +200,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 )}
               </button>
             </form>
-
-            {/* Toggle Mode */}
             <div className="mt-6 text-center">
-              <p className="text-white/50 text-sm">
+              <p className="text-white/60">
                 {mode === 'login' ? 'Não tem uma conta?' : 'Já tem uma conta?'}
                 {' '}
                 <button
                   onClick={() => {
                     setMode(mode === 'login' ? 'register' : 'login');
                     setError('');
-                    setEmail('');
-                    setPassword('');
-                    setUsername('');
                   }}
-                  className="text-purple-400 font-bold hover:text-purple-300 transition-colors ml-1"
+                  className="text-purple-400 font-bold hover:underline ml-1"
                 >
                   {mode === 'login' ? 'Criar Conta' : 'Entrar'}
                 </button>
