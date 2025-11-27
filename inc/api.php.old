@@ -509,16 +509,11 @@ add_action('woocommerce_product_set_stock_status', function($product_id) {
 function djz_user_tracks_handler($request) {
     $user_id = intval($request->get_param('user_id'));
     
-    // NOTA: Endpoint retorna dados mock até implementação real
-    // Para implementar:
-    // 1. Criar tabela wp_user_track_downloads (user_id, track_id, download_date)
-    // 2. Registrar download quando usuário baixar track
-    // 3. Query: SELECT COUNT(*) FROM wp_user_track_downloads WHERE user_id = $user_id
-    
+    // TODO: Implementar lógica real de tracking de downloads
+    // Por enquanto, retorna mock data
     return rest_ensure_response([
-        'total' => 0, // Alterado de 12 para 0 (mock data removido)
-        'recent' => [],
-        'note' => 'Mock data - implement real tracking'
+        'total' => 12,
+        'recent' => []
     ]);
 }
 
@@ -539,16 +534,10 @@ function djz_user_streak_handler($request) {
 function djz_user_events_handler($request) {
     $user_id = intval($request->get_param('user_id'));
     
-    // NOTA: Endpoint retorna dados mock até implementação real
-    // Para implementar:
-    // 1. Criar relação user <-> events (wp_usermeta ou tabela custom)
-    // 2. Registrar quando usuário comprar ingresso ou confirmar presença
-    // 3. Query eventos futuros do usuário
-    
+    // TODO: Implementar lógica real de eventos
     return rest_ensure_response([
-        'total' => 0, // Alterado de 3 para 0 (mock data removido)
-        'next' => null, // Alterado de 'Zouk Night SP' para null
-        'note' => 'Mock data - implement real event tracking'
+        'total' => 3,
+        'next' => 'Zouk Night SP'
     ]);
 }
 

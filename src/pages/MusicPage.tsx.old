@@ -31,8 +31,7 @@ const MusicPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const baseUrl = window.wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json/';
-    fetch(`${baseUrl}wp/v2/remixes?_embed&per_page=100`)
+    fetch('https://djzeneyer.com/wp-json/wp/v2/remixes?_embed&per_page=100')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

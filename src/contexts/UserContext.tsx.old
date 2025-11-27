@@ -56,26 +56,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const savedUser = localStorage.getItem('zen_user');
 
         if (token && savedUser) {
-          // Carrega usuário do localStorage primeiro (performance)
-          const parsedUser = JSON.parse(savedUser);
-          setUser(parsedUser);
+          // Opcional: Validar token no backend para garantir que não expirou
+          // Por performance, carregamos o local primeiro e validamos em background
+          setUser(JSON.parse(savedUser));
           
-          // Validação silenciosa em background
+          // Validação silenciosa
           fetch(`${API_URL}/auth/validate`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (!data.success) {
-              console.log('[UserContext] Token inválido, fazendo logout');
-              logout();
-            }
-          })
-          .catch(err => {
-            console.error('[UserContext] Erro na validação do token:', err);
-            // Não faz logout em caso de erro de rede, apenas loga
-          });
+          }).then(res => res.json()).then(data => {
+             if (!data.success) logout(); // Se expirou, desloga
+          }).catch(() => logout());
         }
       } catch (err) {
         console.error('[UserContext] Falha na inicialização:', err);

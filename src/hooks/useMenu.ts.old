@@ -48,7 +48,7 @@ export function useMenu() {
           const formattedData = data.map((item: any) => ({
             ...item,
             // Usando a lógica mais segura para formatar a URL
-            url: (item.url || '').replace(config.siteUrl, '') || '/',
+            url: item.url.replace(config.siteUrl, '') || '/',
           }));
           setItems(formattedData);
         } else {
