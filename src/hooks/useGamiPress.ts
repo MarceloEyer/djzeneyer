@@ -6,21 +6,21 @@ import { useAuth } from '../contexts/UserContext';
  * INTERFACES
  * ========================= */
 
-export interface PointsBreakdown {
+interface PointsBreakdown {
   slug: string;
   name: string;
   singular: string;
   points: number;
 }
 
-export interface Requirement {
+interface Requirement {
   id: number;
   title: string;
   type: string;
   count: number;
 }
 
-export interface Rank {
+interface Rank {
   id: number;
   title: string;
   description: string;
@@ -30,7 +30,7 @@ export interface Rank {
   requirements: Requirement[];
 }
 
-export interface Achievement {
+interface Achievement {
   id: number;
   type: string;
   typeName?: string;
@@ -44,14 +44,14 @@ export interface Achievement {
   requirements: Requirement[];
 }
 
-export interface GamiPressStats {
+interface GamiPressStats {
   totalAchievements: number;
   earnedAchievements: number;
   totalRanks: number;
   currentRankIndex: number;
 }
 
-export interface GamiPressData {
+interface GamiPressData {
   // Basic info
   points: number;
   level: number;
@@ -194,7 +194,7 @@ export const useGamiPress = (): GamiPressData => {
  * ========================= */
 
 // Calcular progresso até próximo rank
-export const getNextRankProgress = (data: GamiPressData): {
+const getNextRankProgress = (data: GamiPressData): {
   current: Rank | null;
   next: Rank | null;
   progress: number;
@@ -215,7 +215,7 @@ export const getNextRankProgress = (data: GamiPressData): {
 };
 
 // Filtrar achievements por tipo
-export const filterAchievementsByType = (
+const filterAchievementsByType = (
   achievements: Achievement[],
   type: string
 ): Achievement[] => {
@@ -223,12 +223,12 @@ export const filterAchievementsByType = (
 };
 
 // Pegar achievements pendentes
-export const getPendingAchievements = (data: GamiPressData): Achievement[] => {
+const getPendingAchievements = (data: GamiPressData): Achievement[] => {
   return data.allAchievements.filter(ach => !ach.earned);
 };
 
 // Calcular completion percentage
-export const getCompletionPercentage = (data: GamiPressData): number => {
+const getCompletionPercentage = (data: GamiPressData): number => {
   if (data.stats.totalAchievements === 0) return 0;
   return Math.round(
     (data.stats.earnedAchievements / data.stats.totalAchievements) * 100

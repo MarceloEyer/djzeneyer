@@ -30,7 +30,7 @@ export interface Event {
   description: string;
 }
 
-export interface Track {
+interface Track {
   id: number;
   title: string;
   artist?: string;
@@ -39,7 +39,7 @@ export interface Track {
   artwork?: string;
 }
 
-export interface Product {
+interface Product {
   id: number;
   name: string;
   slug: string;
@@ -64,7 +64,7 @@ export interface Product {
   stock_quantity?: number | null;
 }
 
-export interface CartItem {
+interface CartItem {
   productId: number;
   name: string;
   price: string;
@@ -98,7 +98,7 @@ export interface FlyerData {
   };
 }
 
-export interface UserProfile {
+interface UserProfile {
   id: number;
   email: string;
   name: string;
@@ -109,7 +109,7 @@ export interface UserProfile {
   level?: number;
 }
 
-export interface GamiPressAchievement {
+interface GamiPressAchievement {
   id: number;
   title: string;
   points: number;
@@ -118,7 +118,7 @@ export interface GamiPressAchievement {
   date_earned?: string;
 }
 
-export interface Ranking {
+interface Ranking {
   position: number;
   user_id: number;
   display_name: string;

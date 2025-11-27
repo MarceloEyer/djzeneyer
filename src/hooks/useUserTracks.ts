@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/UserContext';
 
-export interface Track {
+interface Track {
   id: number;
   title: string;
   artist: string;
@@ -12,7 +12,7 @@ export interface Track {
   order_id: number;
 }
 
-export interface UserTracksData {
+interface UserTracksData {
   total: number;
   tracks: Track[];
   loading: boolean;

@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 // --- Interfaces ---
-export interface WordPressUser {
+interface WordPressUser {
   id: number;
   email: string;
   name?: string;
@@ -190,4 +190,4 @@ export const useUser = () => {
 
 // Mantendo compatibilidade com código legado
 export const useAuth = useUser; 
-export { UserContext };
+;

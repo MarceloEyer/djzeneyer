@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface MenuItem {
+interface MenuItem {
   ID: number;
   title: string;
   url: string;

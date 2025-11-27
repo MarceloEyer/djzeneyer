@@ -8,7 +8,7 @@ import { Helmet } from 'react-helmet-async';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 
 // Tipagem exata do que vem da API do WordPress
-export interface ZenSeoData {
+interface ZenSeoData {
   title: string;
   meta: Array<{
     name?: string;
@@ -116,4 +116,3 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   );
 };
 
-export default HeadlessSEO;

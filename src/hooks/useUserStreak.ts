@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/UserContext';
 
-export interface UserStreakData {
+interface UserStreakData {
   streak: number;
   lastLogin: string | null;
   loading: boolean;

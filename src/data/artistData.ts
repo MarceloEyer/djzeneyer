@@ -132,7 +132,7 @@ export const ARTIST = {
 // 🛠️ HELPERS EXPORTADOS
 // ============================================================================
 
-export const getFullTitle = () => 
+const getFullTitle = () => 
   `${ARTIST.identity.stageName} - ${ARTIST.titles.primary}`;
 
 export const getWhatsAppUrl = (message?: string) => {
@@ -141,10 +141,10 @@ export const getWhatsAppUrl = (message?: string) => {
 };
 
 // Gera lista plana de URLs para Schema
-export const getSocialUrls = () => Object.values(ARTIST.social).map(s => s.url);
+const getSocialUrls = () => Object.values(ARTIST.social).map(s => s.url);
 
 // Gera lista de URLs de verificação
-export const getVerificationUrls = () => [
+const getVerificationUrls = () => [
   ARTIST.identifiers.wikidataUrl,
   ARTIST.identifiers.musicbrainzUrl,
   ARTIST.identifiers.discogsUrl,
