@@ -1,0 +1,21 @@
+{
+    "name": "zeneyer/auth-pro",
+    "description": "Enterprise-grade JWT Authentication for Headless WordPress + React",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "DJ Zen Eyer",
+            "email": "booking@djzeneyer.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "firebase/php-jwt": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ZenEyer\\Auth\\": "includes/"
+        }
+    }
+}
