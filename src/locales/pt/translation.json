@@ -20,6 +20,39 @@
   "error": "Erro",
   "success": "Sucesso",
 
+  "auth": {
+    "welcomeBack": "Bem-vindo de Volta",
+    "createAccount": "Criar Conta",
+    "loginSubtitle": "Entre na sua conta Zen Tribe",
+    "registerSubtitle": "Junte-se à comunidade Zen Tribe",
+    "name": "Nome",
+    "email": "Email",
+    "password": "Senha",
+    "namePlaceholder": "Seu nome",
+    "emailPlaceholder": "seu@email.com",
+    "orUseEmail": "ou use email",
+    "login": "Entrar",
+    "register": "Criar Conta",
+    "processing": "Processando...",
+    "noAccount": "Não tem uma conta?",
+    "hasAccount": "Já tem uma conta?",
+    "connectingServer": "Conectando...",
+    "errors": {
+      "emailRequired": "Email é obrigatório",
+      "emailInvalid": "Email inválido",
+      "passwordRequired": "Senha é obrigatória",
+      "passwordTooShort": "Senha deve ter no mínimo 6 caracteres",
+      "nameRequired": "Nome é obrigatório",
+      "generic": "Erro ao autenticar. Tente novamente.",
+      "googleNoCredential": "Credencial do Google não recebida",
+      "googleFailed": "Falha ao conectar com Google"
+    }
+  },
+
+  "common": {
+    "close": "Fechar"
+  },
+
   "badge_featured": "Destaque",
   "badge_new": "Novo",
   "badge_sale": "Promoção",

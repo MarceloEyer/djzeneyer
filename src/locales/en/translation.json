@@ -15,6 +15,39 @@
   "error": "Error",
   "success": "Success",
 
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "createAccount": "Create Account",
+    "loginSubtitle": "Sign in to your Zen Tribe account",
+    "registerSubtitle": "Join the Zen Tribe community",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "your@email.com",
+    "orUseEmail": "or use email",
+    "login": "Sign In",
+    "register": "Create Account",
+    "processing": "Processing...",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "connectingServer": "Connecting...",
+    "errors": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "nameRequired": "Name is required",
+      "generic": "Authentication failed. Please try again.",
+      "googleNoCredential": "Google credential not received",
+      "googleFailed": "Failed to connect with Google"
+    }
+  },
+
+  "common": {
+    "close": "Close"
+  },
+
   "badge_featured": "Featured",
   "badge_new": "New",
   "badge_sale": "Sale",

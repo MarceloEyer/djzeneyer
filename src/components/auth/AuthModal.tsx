@@ -177,7 +177,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
             {/* Google OAuth */}
             {googleClientId ? (
-              <div className="mb-6">
+              <div className="mb-6 flex justify-center">
                 <GoogleOAuthProvider clientId={googleClientId}>
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
@@ -185,7 +185,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                     theme="filled_black"
                     size="large"
                     text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                    width="100%"
+                    width="384"
                     logo_alignment="left"
                   />
                 </GoogleOAuthProvider>
@@ -294,7 +294,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-4 rounded-lg shadow-lg hover:from-red-700 hover:to-red-800 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex justify-center items-center gap-2"
+                className="w-full bg-white text-gray-900 font-bold py-4 rounded-lg shadow-lg hover:bg-gray-100 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex justify-center items-center gap-2"
               >
                 {loading ? (
                   <>
@@ -321,7 +321,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 <button
                   onClick={switchMode}
                   disabled={loading}
-                  className="text-red-400 font-bold hover:text-red-300 hover:underline transition-colors disabled:opacity-50"
+                  className="text-white font-bold hover:text-gray-300 hover:underline transition-colors disabled:opacity-50"
                 >
                   {mode === 'login'
                     ? (t('auth.createAccount') || 'Criar Conta')
