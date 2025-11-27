@@ -1,143 +1,253 @@
-# ==========================================
-# DJ ZEN EYER - WORDPRESS HEADLESS + REACT
-# FIXED VERSION - API REST funcionando
-# ==========================================
+# ==============================================================================
+# DJ ZEN EYER - PRODUCTION .htaccess v5.1 (GOOGLE OAUTH FIX)
+# ==============================================================================
 
+# ==============================================================================
+# 1. LITESPEED CACHE (Mantido do servidor)
+# ==============================================================================
+# BEGIN LSCACHE
+<IfModule LiteSpeed>
+RewriteEngine on
+CacheLookup on
+RewriteRule .* - [E=Cache-Control:no-autoflush]
+RewriteRule litespeed/debug/.*\.log$ - [F,L]
+RewriteRule \.litespeed_conf\.dat - [F,L]
+
+### marker ASYNC start ###
+RewriteCond %{REQUEST_URI} /wp-admin/admin-ajax\.php
+RewriteCond %{QUERY_STRING} action=async_litespeed
+RewriteRule .* - [E=noabort:1]
+### marker ASYNC end ###
+
+### marker MOBILE start ###
+RewriteCond %{HTTP_USER_AGENT} Mobile|Android|Silk/|Kindle|BlackBerry|Opera\ Mini|Opera\ Mobi [NC]
+RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+ismobile]
+### marker MOBILE end ###
+
+### marker NOCACHE COOKIES start ###
+RewriteCond %{HTTP_COOKIE} wordpress_logged_in_|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|wordpress_logged_in_\*|woocommerce_\*
+RewriteRule .* - [E=Cache-Control:no-cache]
+### marker NOCACHE COOKIES end ###
+
+### marker NOCACHE USER AGENTS start ###
+RewriteCond %{HTTP_USER_AGENT} /wp\-json/\*|/feed/\*|/comments/feed/\*|/api/\* [NC]
+RewriteRule .* - [E=Cache-Control:no-cache]
+### marker NOCACHE USER AGENTS end ###
+
+### marker WEBP start ###
+RewriteCond %{HTTP_ACCEPT} image/webp [OR]
+RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
+RewriteCond %{HTTP_USER_AGENT} Firefox/([6-9][0-9]|[1-9][0-9]{2,})
+RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+webp]
+### marker WEBP end ###
+
+### marker DROPQS start ###
+CacheKeyModify -qs:fbclid
+CacheKeyModify -qs:gclid
+CacheKeyModify -qs:utm*
+CacheKeyModify -qs:_ga
+### marker DROPQS end ###
+
+</IfModule>
+# END LSCACHE
+
+# BEGIN NON_LSCACHE
+<IfModule mod_expires.c>
+ExpiresActive on
+ExpiresByType application/pdf A31557600
+ExpiresByType image/x-icon A31557600
+ExpiresByType image/vnd.microsoft.icon A31557600
+ExpiresByType image/svg+xml A31557600
+ExpiresByType image/jpg A31557600
+ExpiresByType image/jpeg A31557600
+ExpiresByType image/png A31557600
+ExpiresByType image/gif A31557600
+ExpiresByType image/webp A31557600
+ExpiresByType image/avif A31557600
+ExpiresByType video/ogg A31557600
+ExpiresByType audio/ogg A31557600
+ExpiresByType video/mp4 A31557600
+ExpiresByType video/webm A31557600
+ExpiresByType text/css A31557600
+ExpiresByType text/javascript A31557600
+ExpiresByType application/javascript A31557600
+ExpiresByType application/x-javascript A31557600
+ExpiresByType application/x-font-ttf A31557600
+ExpiresByType application/x-font-woff A31557600
+ExpiresByType application/font-woff A31557600
+ExpiresByType application/font-woff2 A31557600
+ExpiresByType application/vnd.ms-fontobject A31557600
+ExpiresByType font/ttf A31557600
+ExpiresByType font/otf A31557600
+ExpiresByType font/woff A31557600
+ExpiresByType font/woff2 A31557600
+</IfModule>
+# END NON_LSCACHE
+
+# ==============================================================================
+# 2. MIME TYPES (FIX CRÍTICO PARA REACT)
+# ==============================================================================
+<IfModule mod_mime.c>
+    # JavaScript (CRÍTICO)
+    AddType application/javascript .js .mjs
+    AddType module .mjs
+    
+    # CSS
+    AddType text/css .css
+    
+    # JSON
+    AddType application/json .json .map
+    
+    # Fonts
+    AddType font/woff .woff
+    AddType font/woff2 .woff2
+    AddType font/ttf .ttf
+    AddType font/otf .otf
+    AddType font/eot .eot
+    
+    # Images
+    AddType image/svg+xml .svg .svgz
+    AddType image/webp .webp
+    AddType image/avif .avif
+    
+    # Video
+    AddType video/mp4 .mp4
+    AddType video/webm .webm
+    
+    # Other
+    AddType application/manifest+json .webmanifest
+    AddType application/xml .xml
+    AddType text/plain .txt .md
+    
+    AddDefaultCharset UTF-8
+    AddCharset UTF-8 .html .css .js .xml .json .rss .atom
+</IfModule>
+
+# ==============================================================================
+# 3. SECURITY HEADERS (GOOGLE OAUTH COMPATÍVEL)
+# ==============================================================================
+<IfModule mod_headers.c>
+    # Remove server info
+    Header unset Server
+    Header unset X-Powered-By
+    Header always unset X-Pingback
+    
+    # Basic security
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    
+    # HSTS
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+    
+    # Cross-Origin policies
+    Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+    Header always set Cross-Origin-Resource-Policy "cross-origin"
+    
+    # CSP (GOOGLE OAUTH LIBERADO)
+    <If "%{REQUEST_URI} !~ m#^/wp-admin|^/wp-login\.php#">
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.googletagmanager.com https://fonts.gstatic.com https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://widget.bandsintown.com https://rest.bandsintown.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https: data: blob:; connect-src 'self' https://djzeneyer.com https://www.googletagmanager.com https://accounts.google.com https://oauth2.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com; frame-src https://accounts.google.com https://widget.bandsintown.com; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
+    </If>
+</IfModule>
+
+# ==============================================================================
+# 4. CORS (Cross-Origin Resource Sharing)
+# ==============================================================================
+<IfModule mod_headers.c>
+    SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173|127\.0\.0\.1:5173|localhost:3000)$" ALLOWED_ORIGIN=$0
+    Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
+    Header always set Access-Control-Allow-Credentials "true"
+    Header always set Vary "Origin"
+    
+    # Handle OPTIONS preflight
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=204,L]
+</IfModule>
+
+# ==============================================================================
+# 5. COMPRESSION
+# ==============================================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
+    AddOutputFilterByType DEFLATE application/javascript application/x-javascript application/json
+    AddOutputFilterByType DEFLATE application/xml application/xhtml+xml application/rss+xml
+    AddOutputFilterByType DEFLATE image/svg+xml image/x-icon
+    AddOutputFilterByType DEFLATE font/ttf font/otf font/woff font/woff2
+    
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|zip|gz|bz2|rar|7z)$ no-gzip
+</IfModule>
+
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/javascript
+    AddOutputFilterByType BROTLI_COMPRESS application/javascript application/json application/xml
+</IfModule>
+
+# ==============================================================================
+# 6. BROWSER CACHING
+# ==============================================================================
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+        Header set Cache-Control "public, max-age=15552000"
+    </FilesMatch>
+    
+    <FilesMatch "\.(woff|woff2|ttf|otf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# ==============================================================================
+# 7. SECURITY
+# ==============================================================================
+<FilesMatch "^(wp-config\.php|\.htaccess|readme\.html|license\.txt|\.git.*|\.env.*|composer\.json|package\.json)$">
+    Require all denied
+</FilesMatch>
+
+<Files xmlrpc.php>
+    Require all denied
+</Files>
+
+Options -Indexes -MultiViews
+
+<Directory wp-content/uploads>
+    <Files *.php>
+        Require all denied
+    </Files>
+</Directory>
+
+# ==============================================================================
+# 8. WORDPRESS REWRITE
+# ==============================================================================
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
 RewriteRule ^index\.php$ - [L]
-
-# CRÍTICO: NÃO redirecionar wp-json (API REST)
-RewriteCond %{REQUEST_URI} ^/wp-json/ [NC]
-RewriteRule .* - [L]
-
-# CRÍTICO: NÃO redirecionar wp-admin
-RewriteCond %{REQUEST_URI} ^/wp-admin/ [NC]
-RewriteRule .* - [L]
-
-# CRÍTICO: NÃO redirecionar wp-login.php
-RewriteCond %{REQUEST_URI} ^/wp-login\.php [NC]
-RewriteRule .* - [L]
-
-# Redirecionar todo o resto para index.php (WordPress + React)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
 # END WordPress
 
-# ==========================================
-# SECURITY HEADERS
-# ==========================================
+# ==============================================================================
+# 9. KEEP-ALIVE
+# ==============================================================================
 <IfModule mod_headers.c>
-    # Remove server info
-    Header unset X-Powered-By
-
-    # Security headers
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-
-    # HSTS
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+    Header set Connection keep-alive
 </IfModule>
 
-# ==========================================
-# CORS (apenas para wp-json)
-# ==========================================
+# ==============================================================================
+# 10. ETAGS
+# ==============================================================================
 <IfModule mod_headers.c>
-    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
-        SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173|127\.0\.0\.1:5173|localhost:3000|127\.0\.0\.1:3000)$" ALLOWED_ORIGIN=$0
-        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
-        Header always set Access-Control-Allow-Credentials "true" env=ALLOWED_ORIGIN
-        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
-        Header always set Vary "Origin"
-    </If>
+    Header unset ETag
 </IfModule>
-
-# Handle OPTIONS preflight
-<IfModule mod_rewrite.c>
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteCond %{REQUEST_URI} ^/wp-json/
-    RewriteRule ^(.*)$ $1 [R=200,L]
-</IfModule>
-
-# ==========================================
-# COMPRESSION
-# ==========================================
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml
-</IfModule>
-
-# ==========================================
-# BROWSER CACHING
-# ==========================================
-<IfModule mod_expires.c>
-    ExpiresActive On
-
-    # Images
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-
-    # Fonts
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-
-    # CSS & JavaScript
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType application/javascript "access plus 1 year"
-
-    # HTML (short cache)
-    ExpiresByType text/html "access plus 1 hour"
-</IfModule>
-
-# ==========================================
-# SECURITY: Block sensitive files
-# ==========================================
-<FilesMatch "^(\.htaccess|\.env|\.git|wp-config\.php|readme\.html|license\.txt)$">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-</FilesMatch>
-
-# Disable directory browsing
-Options -Indexes
-
-# ==========================================
-# LITESPEED CACHE (se disponível)
-# ==========================================
-<IfModule LiteSpeed>
-    # Cache público
-    CacheEnable public /
-
-    # NÃO cachear admin e checkout
-    CacheDisable /wp-admin
-    CacheDisable /wp-login.php
-    CacheDisable /checkout
-    CacheDisable /cart
-    CacheDisable /my-account
-    CacheDisable /minha-conta
-
-    # Vary por cookies
-    CacheVary cookie=wordpress_logged_in
-    CacheVary cookie=woocommerce_items_in_cart
-</IfModule>
-
-# ==========================================
-# MIME TYPES
-# ==========================================
-<IfModule mod_mime.c>
-    AddType image/svg+xml svg svgz
-    AddType image/webp webp
-    AddType application/manifest+json webmanifest
-    AddType font/woff2 woff2
-    AddType font/woff woff
-</IfModule>
+FileETag None
