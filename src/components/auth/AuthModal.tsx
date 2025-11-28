@@ -1,4 +1,4 @@
-// src/components/auth/AuthModal.tsx
+// src/components/auth/AuthModal.tsx (VERSÃO COM DEBUG)
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -31,26 +31,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 
-  // Validação de formulário
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
-
-    // Validação de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
     if (!email) {
       errors.email = t('auth.errors.emailRequired') || 'Email é obrigatório';
     } else if (!emailRegex.test(email)) {
       errors.email = t('auth.errors.emailInvalid') || 'Email inválido';
     }
 
-    // Validação de senha
     if (!password) {
       errors.password = t('auth.errors.passwordRequired') || 'Senha é obrigatória';
     } else if (password.length < 6) {
       errors.password = t('auth.errors.passwordTooShort') || 'Senha deve ter no mínimo 6 caracteres';
     }
 
-    // Validação de nome (apenas no registro)
     if (mode === 'register' && !username.trim()) {
       errors.username = t('auth.errors.nameRequired') || 'Nome é obrigatório';
     }
@@ -76,6 +72,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
+      console.error('❌ [AuthModal] Erro:', err);
       setError(err.message || t('auth.errors.generic') || 'Erro ao autenticar');
     } finally {
       setLoading(false);
@@ -83,25 +80,41 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   };
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
+    console.log('🔵 [AuthModal] Google Login iniciado');
+    
     if (!credentialResponse.credential) {
+      console.error('❌ [AuthModal] Sem credencial do Google');
       setError(t('auth.errors.googleNoCredential') || 'Credencial do Google não recebida');
       return;
     }
+
     setLoading(true);
     setError('');
+    
     try {
+      console.log('🔵 [AuthModal] Enviando token para backend...');
       await googleLogin(credentialResponse.credential);
+      
+      console.log('✅ [AuthModal] Login Google bem-sucedido');
       if (onSuccess) onSuccess();
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || t('auth.errors.googleFailed') || 'Erro ao conectar com Google');
+      console.error('❌ [AuthModal] Erro no Google Login:', err);
+      
+      // Erro específico de JSON inválido
+      if (err.message.includes('Unexpected token') || err.message.includes('JSON')) {
+        setError('Erro de servidor: o backend retornou HTML ao invés de JSON. Verifique se o plugin ZenEyer Auth está ativo.');
+      } else {
+        setError(err.message || t('auth.errors.googleFailed') || 'Erro ao conectar com Google');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleError = () => {
+    console.error('❌ [AuthModal] Google OAuth error callback');
     setError(t('auth.errors.googleFailed') || 'Falha ao conectar com Google');
   };
 
@@ -139,7 +152,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white/80 hover:text-white"
@@ -149,7 +161,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           </button>
 
           <div className="p-8">
-            {/* Header */}
             <div className="text-center mb-8">
               <h2 className="text-3xl font-black text-white mb-2">
                 {mode === 'login'
@@ -163,7 +174,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </p>
             </div>
 
-            {/* Error Alert */}
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -175,7 +185,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </motion.div>
             )}
 
-            {/* Google OAuth */}
             {googleClientId ? (
               <div className="mb-6 flex justify-center">
                 <GoogleOAuthProvider clientId={googleClientId}>
@@ -196,7 +205,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </div>
             )}
 
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-white/10"></div>
@@ -208,9 +216,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </div>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Username (apenas registro) */}
               {mode === 'register' && (
                 <div>
                   <label className="block text-sm font-semibold mb-2 text-white">
@@ -238,7 +244,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </div>
               )}
 
-              {/* Email */}
               <div>
                 <label className="block text-sm font-semibold mb-2 text-white">
                   {t('auth.email') || 'Email'}
@@ -264,7 +269,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 )}
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm font-semibold mb-2 text-white">
                   {t('auth.password') || 'Senha'}
@@ -290,7 +294,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 )}
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -311,7 +314,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               </button>
             </form>
 
-            {/* Toggle Mode */}
             <div className="mt-6 text-center">
               <p className="text-white/60 text-sm">
                 {mode === 'login'
