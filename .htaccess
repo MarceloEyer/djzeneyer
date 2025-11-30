@@ -1,9 +1,26 @@
 # ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v5.3 (OPTIMIZED + CSP FIXED)
+# DJ ZEN EYER - PRODUCTION .htaccess v5.4 (CLOUDFLARE + REST API FIX)
 # ==============================================================================
 
 # ==============================================================================
-# 1. LITESPEED CACHE (Mantido do servidor)
+# 1. CLOUDFLARE + REST API BYPASS (CRÍTICO PARA AUTH)
+# ==============================================================================
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Bypass Cloudflare para endpoints REST API (evita challenge)
+RewriteCond %{REQUEST_URI} ^/wp-json/ [NC]
+RewriteCond %{HTTP:CF-Worker} ^$
+RewriteRule .* - [E=Cache-Control:no-cache,E=no-gzip:1]
+
+# Allow REST API cors preflight
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteCond %{REQUEST_URI} ^/wp-json/
+RewriteRule ^(.*)$ $1 [R=204,L]
+</IfModule>
+
+# ==============================================================================
+# 2. LITESPEED CACHE (Mantido do servidor)
 # ==============================================================================
 # BEGIN LSCACHE
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
@@ -48,6 +65,10 @@ CacheKeyModify -qs:gclid
 CacheKeyModify -qs:utm*
 CacheKeyModify -qs:_ga
 ### marker DROPQS end ###
+
+# NOCACHE para REST API (CRÍTICO)
+RewriteCond %{REQUEST_URI} ^/wp-json/ [NC]
+RewriteRule .* - [E=Cache-Control:no-cache]
 
 </IfModule>
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
@@ -97,7 +118,7 @@ ExpiresByType font/woff2 A31557600
 # END NON_LSCACHE
 
 # ==============================================================================
-# 2. MIME TYPES (FIX CRÍTICO PARA REACT)
+# 3. MIME TYPES (FIX CRÍTICO PARA REACT)
 # ==============================================================================
 <IfModule mod_mime.c>
     # JavaScript (CRÍTICO)
@@ -136,7 +157,7 @@ ExpiresByType font/woff2 A31557600
 </IfModule>
 
 # ==============================================================================
-# 3. SECURITY HEADERS (GOOGLE OAUTH + BANDSINTOWN + CLOUDFLARE)
+# 4. SECURITY HEADERS (GOOGLE OAUTH + BANDSINTOWN + CLOUDFLARE)
 # ==============================================================================
 <IfModule mod_headers.c>
     # Remove server info
@@ -158,20 +179,33 @@ ExpiresByType font/woff2 A31557600
     Header always set Cross-Origin-Resource-Policy "cross-origin"
     
     # CSP (OPTIMIZED FOR GOOGLE OAUTH + BANDSINTOWN + CLOUDFLARE + GOOGLE FONTS)
-    <If "%{REQUEST_URI} !~ m#^/wp-admin|^/wp-login\.php#">
+    <If "%{REQUEST_URI} !~ m#^/wp-admin|^/wp-login\.php|^/wp-json#">
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' https: data: blob:; connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com; frame-src https://accounts.google.com https://widget.bandsintown.com; object-src 'none'; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
     </If>
 </IfModule>
 
 # ==============================================================================
-# 4. CORS (Cross-Origin Resource Sharing)
+# 5. CORS (Cross-Origin Resource Sharing) - ATUALIZADO PARA REST API
 # ==============================================================================
 <IfModule mod_headers.c>
     SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173|127\.0\.0\.1:5173|localhost:3000)$" ALLOWED_ORIGIN=$0
-    Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
-    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
-    Header always set Access-Control-Allow-Credentials "true"
+    
+    # REST API sempre permite CORS
+    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
+        Header always set Access-Control-Allow-Origin "*"
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
+        Header always set Access-Control-Allow-Credentials "true"
+    </If>
+    
+    # Outros recursos usam origem permitida
+    <If "%{REQUEST_URI} !~ m#^/wp-json/#">
+        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
+        Header always set Access-Control-Allow-Credentials "true"
+    </If>
+    
     Header always set Vary "Origin"
     
     # Handle OPTIONS preflight
@@ -181,7 +215,7 @@ ExpiresByType font/woff2 A31557600
 </IfModule>
 
 # ==============================================================================
-# 5. COMPRESSION
+# 6. COMPRESSION
 # ==============================================================================
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
@@ -199,9 +233,17 @@ ExpiresByType font/woff2 A31557600
 </IfModule>
 
 # ==============================================================================
-# 6. BROWSER CACHING
+# 7. BROWSER CACHING (NÃO CACHEAR REST API)
 # ==============================================================================
 <IfModule mod_headers.c>
+    # REST API - NUNCA CACHEAR
+    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </If>
+    
+    # Assets estáticos
     <FilesMatch "\.(css|js|mjs)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
@@ -216,7 +258,7 @@ ExpiresByType font/woff2 A31557600
 </IfModule>
 
 # ==============================================================================
-# 7. SECURITY
+# 8. SECURITY
 # ==============================================================================
 <FilesMatch "^(wp-config\.php|\.htaccess|readme\.html|license\.txt|\.git.*|\.env.*|composer\.json|package\.json)$">
     Require all denied
@@ -235,12 +277,9 @@ Options -Indexes -MultiViews
 </Directory>
 
 # ==============================================================================
-# 8. WORDPRESS REWRITE
+# 9. WORDPRESS REWRITE
 # ==============================================================================
 # BEGIN WordPress
-# As diretrizes (linhas) entre "BEGIN WordPress" e "END WordPress" são
-# geradas dinamicamente e só devem ser modificadas através de filtros do WordPress.
-# Quaisquer alterações nas diretivas entre esses marcadores serão sobrescritas.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -250,18 +289,17 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
-
 # END WordPress
 
 # ==============================================================================
-# 9. KEEP-ALIVE
+# 10. KEEP-ALIVE
 # ==============================================================================
 <IfModule mod_headers.c>
     Header set Connection keep-alive
 </IfModule>
 
 # ==============================================================================
-# 10. ETAGS
+# 11. ETAGS
 # ==============================================================================
 <IfModule mod_headers.c>
     Header unset ETag
