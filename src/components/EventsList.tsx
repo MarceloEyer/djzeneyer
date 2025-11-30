@@ -30,13 +30,24 @@ export function EventsList({ limit = 10, showTitle = true }: EventsListProps) {
       try {
         const wpRestUrl = ((window as any).wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json').replace(/\/$/, '');
         const response = await fetch(`${wpRestUrl}/zen-bit/v1/events?limit=${limit}`);
+        
+        if (!response.ok) {
+          console.error('API response not OK:', response.status);
+          setLoading(false);
+          return;
+        }
+        
         const data = await response.json();
         
-        if (data.success && data.events) {
+        if (data.success && Array.isArray(data.events)) {
           setEvents(data.events);
+        } else {
+          console.error('Invalid API response:', data);
+          setEvents([]);
         }
       } catch (error) {
         console.error('Error fetching events:', error);
+        setEvents([]);
       } finally {
         setLoading(false);
       }

@@ -58,7 +58,10 @@ class Zen_BIT {
     
     public function activate() {
         if (!get_option('zen_bit_artist_id')) {
-            add_option('zen_bit_artist_id', '15552355');
+            add_option('zen_bit_artist_id', '15619775');
+        }
+        if (!get_option('zen_bit_api_key')) {
+            add_option('zen_bit_api_key', 'f8f1216ea03be95a3ea91c7ebe7117e7');
         }
         if (!get_option('zen_bit_cache_time')) {
             add_option('zen_bit_cache_time', '3600');

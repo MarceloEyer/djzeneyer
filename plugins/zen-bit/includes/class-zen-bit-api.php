@@ -4,7 +4,11 @@ if (!defined('ABSPATH')) exit;
 class Zen_BIT_API {
     
     private static function get_artist_id() {
-        return get_option('zen_bit_artist_id', '15552355');
+        return get_option('zen_bit_artist_id', '15619775');
+    }
+    
+    private static function get_api_key() {
+        return get_option('zen_bit_api_key', 'f8f1216ea03be95a3ea91c7ebe7117e7');
     }
     
     private static function get_cache_time() {
@@ -20,7 +24,8 @@ class Zen_BIT_API {
         }
         
         $artist_id = self::get_artist_id();
-        $url = "https://rest.bandsintown.com/artists/id_{$artist_id}/events?app_id=djzeneyer";
+        $api_key = self::get_api_key();
+        $url = "https://rest.bandsintown.com/artists/id_{$artist_id}/events?app_id={$api_key}";
         
         $response = wp_remote_get($url, array(
             'timeout' => 15,
@@ -36,7 +41,15 @@ class Zen_BIT_API {
         $body = wp_remote_retrieve_body($response);
         $events = json_decode($body, true);
         
+        // Handle error responses from Bandsintown
         if (!is_array($events)) {
+            error_log('Zen BIT: Invalid response from Bandsintown API - ' . substr($body, 0, 200));
+            return array();
+        }
+        
+        // Check if it's an error response
+        if (isset($events['error']) || isset($events['message'])) {
+            error_log('Zen BIT: API error - ' . ($events['message'] ?? $events['error']));
             return array();
         }
         

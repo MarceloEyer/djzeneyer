@@ -36,6 +36,7 @@ class Zen_BIT_Admin {
     
     public function register_settings() {
         register_setting('zen_bit_settings', 'zen_bit_artist_id');
+        register_setting('zen_bit_settings', 'zen_bit_api_key');
         register_setting('zen_bit_settings', 'zen_bit_cache_time');
     }
     
@@ -61,11 +62,27 @@ class Zen_BIT_Admin {
                             <input type="text" 
                                    id="zen_bit_artist_id" 
                                    name="zen_bit_artist_id" 
-                                   value="<?php echo esc_attr(get_option('zen_bit_artist_id', '15552355')); ?>" 
+                                   value="<?php echo esc_attr(get_option('zen_bit_artist_id', '15619775')); ?>" 
                                    class="regular-text">
                             <p class="description">
                                 <?php _e('Your Bandsintown artist ID. Find it at:', 'zen-bit'); ?> 
-                                <a href="https://www.bandsintown.com/a/15552355" target="_blank">bandsintown.com/a/15552355</a>
+                                <a href="https://www.bandsintown.com/a/15619775" target="_blank">bandsintown.com/a/15619775</a>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th scope="row">
+                            <label for="zen_bit_api_key"><?php _e('Bandsintown API Key', 'zen-bit'); ?></label>
+                        </th>
+                        <td>
+                            <input type="text" 
+                                   id="zen_bit_api_key" 
+                                   name="zen_bit_api_key" 
+                                   value="<?php echo esc_attr(get_option('zen_bit_api_key', 'f8f1216ea03be95a3ea91c7ebe7117e7')); ?>" 
+                                   class="regular-text">
+                            <p class="description">
+                                <?php _e('Your Bandsintown API key (app_id)', 'zen-bit'); ?>
                             </p>
                         </td>
                     </tr>
