@@ -16,9 +16,11 @@ WordPress plugin to display Bandsintown events with beautiful design and full SE
 ## Installation
 
 1. Upload `zen-bit` folder to `/wp-content/plugins/`
-2. Activate plugin in WordPress admin
-3. Go to Settings → Zen BIT Events
+2. **Activate plugin in WordPress admin** (Plugins → Installed Plugins → Zen BIT → Activate)
+3. Go to Zen Plugins → Zen BIT Events
 4. Configure your Bandsintown Artist ID (default: 15552355)
+
+**IMPORTANT:** The plugin MUST be activated in WordPress for the REST API endpoint to work. The React frontend depends on `/wp-json/zen-bit/v1/events` being available.
 
 ## Usage
 

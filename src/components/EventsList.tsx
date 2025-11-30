@@ -28,7 +28,7 @@ export function EventsList({ limit = 10, showTitle = true }: EventsListProps) {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const wpRestUrl = (window as any).wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json';
+        const wpRestUrl = ((window as any).wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json').replace(/\/$/, '');
         const response = await fetch(`${wpRestUrl}/zen-bit/v1/events?limit=${limit}`);
         const data = await response.json();
         
