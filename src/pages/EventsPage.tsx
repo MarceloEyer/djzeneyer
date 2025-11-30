@@ -341,43 +341,6 @@ const FlyerGallery: React.FC = () => {
   );
 };
 
-const BandsInTownWidget: React.FC = () => {
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://widget.bandsintown.com/main.min.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => { try { document.body.removeChild(script); } catch(e) {} };
-  }, []);
-
-  return (
-    <div className="w-full min-h-[400px] bg-surface/20 rounded-2xl border border-white/5 p-6 md:p-10">
-      <a 
-        className="bit-widget-initializer" 
-        data-artist-name="DJ Zen Eyer" 
-        data-app-id="a6f8468a12e86539eff769aec002f836" 
-        data-language="en" 
-        data-display-local-dates="false" 
-        data-display-past-dates="true" 
-        data-auto-style="false" 
-        data-text-color="#FFFFFF" 
-        data-link-color="#9D4EDD" 
-        data-background-color="rgba(0,0,0,0)" 
-        data-display-limit="10" 
-        data-display-start-time="true" 
-        data-link-text-color="#FFFFFF" 
-        data-popup-background-color="#1a1a1a" 
-        data-header-background-color="rgba(0,0,0,0)" 
-        data-desktop-list-view="true"
-        data-notify-me="true"
-        data-rsvp="true"
-      >
-        Carregando Agenda Oficial...
-      </a>
-    </div>
-  );
-};
-
 // ============================================================================
 // COMPONENTE PRINCIPAL
 // ============================================================================
@@ -449,9 +412,7 @@ const EventsPage: React.FC = () => {
               </div>
             </div>
             
-            <EventsList limit={15} showTitle={false} variant="full" />
-            <BandsInTownWidget />
-            <p className="text-center text-xs text-white/20 mt-6">Powered by <a href={ARTIST.social.bandsintown.url} target="_blank" rel="noopener noreferrer" className="hover:text-primary">Bandsintown</a></p>
+            <EventsList limit={15} showTitle={false} variant="compact" />
           </div>
         </section>
 

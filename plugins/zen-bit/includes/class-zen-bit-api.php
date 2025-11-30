@@ -20,7 +20,8 @@ class Zen_BIT_API {
         $cached = get_transient($cache_key);
         
         if (false !== $cached) {
-            return $cached;
+            // Apply limit to cached data
+            return array_slice($cached, 0, $limit);
         }
         
         $artist_id = self::get_artist_id();
@@ -65,10 +66,13 @@ class Zen_BIT_API {
             return array();
         }
         
-        $events = array_slice($data, 0, $limit);
-        error_log('Zen BIT: Returning ' . count($events) . ' events');
+        // Cache ALL events, apply limit when serving
+        error_log('Zen BIT: Caching ' . count($data) . ' events');
+        set_transient($cache_key, $data, self::get_cache_time());
         
-        set_transient($cache_key, $events, self::get_cache_time());
+        // Return limited events
+        $events = array_slice($data, 0, $limit);
+        error_log('Zen BIT: Returning ' . count($events) . ' events (limit: ' . $limit . ')');
         
         return $events;
     }
