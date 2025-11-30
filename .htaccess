@@ -1,11 +1,12 @@
 # ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v5.2 (OPTIMIZED)
+# DJ ZEN EYER - PRODUCTION .htaccess v5.3 (OPTIMIZED + CSP FIXED)
 # ==============================================================================
 
 # ==============================================================================
 # 1. LITESPEED CACHE (Mantido do servidor)
 # ==============================================================================
 # BEGIN LSCACHE
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
 <IfModule LiteSpeed>
 RewriteEngine on
 CacheLookup on
@@ -29,10 +30,10 @@ RewriteCond %{HTTP_COOKIE} wordpress_logged_in_|woocommerce_cart_hash|woocommerc
 RewriteRule .* - [E=Cache-Control:no-cache]
 ### marker NOCACHE COOKIES end ###
 
-### marker NOCACHE PATHS start ###
-RewriteCond %{REQUEST_URI} ^/wp-json/|^/feed/|^/comments/feed/|^/api/ [NC]
+### marker NOCACHE USER AGENTS start ###
+RewriteCond %{HTTP_USER_AGENT} /wp\-json/\*|/feed/\*|/comments/feed/\*|/api/\* [NC]
 RewriteRule .* - [E=Cache-Control:no-cache]
-### marker NOCACHE PATHS end ###
+### marker NOCACHE USER AGENTS end ###
 
 ### marker WEBP start ###
 RewriteCond %{HTTP_ACCEPT} image/webp [OR]
@@ -49,29 +50,36 @@ CacheKeyModify -qs:_ga
 ### marker DROPQS end ###
 
 </IfModule>
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
 # END LSCACHE
 
 # BEGIN NON_LSCACHE
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+### marker BROWSER CACHE start ###
 <IfModule mod_expires.c>
 ExpiresActive on
 ExpiresByType application/pdf A31557600
 ExpiresByType image/x-icon A31557600
 ExpiresByType image/vnd.microsoft.icon A31557600
 ExpiresByType image/svg+xml A31557600
+
 ExpiresByType image/jpg A31557600
 ExpiresByType image/jpeg A31557600
 ExpiresByType image/png A31557600
 ExpiresByType image/gif A31557600
 ExpiresByType image/webp A31557600
 ExpiresByType image/avif A31557600
+
 ExpiresByType video/ogg A31557600
 ExpiresByType audio/ogg A31557600
 ExpiresByType video/mp4 A31557600
 ExpiresByType video/webm A31557600
+
 ExpiresByType text/css A31557600
 ExpiresByType text/javascript A31557600
 ExpiresByType application/javascript A31557600
 ExpiresByType application/x-javascript A31557600
+
 ExpiresByType application/x-font-ttf A31557600
 ExpiresByType application/x-font-woff A31557600
 ExpiresByType application/font-woff A31557600
@@ -81,7 +89,11 @@ ExpiresByType font/ttf A31557600
 ExpiresByType font/otf A31557600
 ExpiresByType font/woff A31557600
 ExpiresByType font/woff2 A31557600
+
 </IfModule>
+### marker BROWSER CACHE end ###
+
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
 # END NON_LSCACHE
 
 # ==============================================================================
@@ -124,7 +136,7 @@ ExpiresByType font/woff2 A31557600
 </IfModule>
 
 # ==============================================================================
-# 3. SECURITY HEADERS (GOOGLE OAUTH COMPATÍVEL) + BandsInTown
+# 3. SECURITY HEADERS (GOOGLE OAUTH + BANDSINTOWN + CLOUDFLARE)
 # ==============================================================================
 <IfModule mod_headers.c>
     # Remove server info
@@ -145,10 +157,10 @@ ExpiresByType font/woff2 A31557600
     Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
     Header always set Cross-Origin-Resource-Policy "cross-origin"
     
-    # CSP (OPTIMIZED FOR GOOGLE OAUTH + BANDSINTOWN + CLOUDFLARE + GOOGLE FONTS) - v2
+    # CSP (OPTIMIZED FOR GOOGLE OAUTH + BANDSINTOWN + CLOUDFLARE + GOOGLE FONTS)
     <If "%{REQUEST_URI} !~ m#^/wp-admin|^/wp-login\.php#">
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' https: data: blob:; connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com; frame-src https://accounts.google.com https://widget.bandsintown.com; object-src 'none'; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
-</If>
+    </If>
 </IfModule>
 
 # ==============================================================================
