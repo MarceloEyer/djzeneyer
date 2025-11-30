@@ -265,7 +265,7 @@ const HomePage: React.FC = () => {
                 : 'A small preview of the next official dates. The full calendar with all confirmed festivals and congresses is available on the Events page.'}
             </motion.p>
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
-              <EventsList limit={3} showTitle={false} />
+              <EventsList limit={3} showTitle={false} variant="compact" />
             </motion.div>
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
               <Link to="/events" className="btn btn-primary btn-lg flex items-center gap-2">

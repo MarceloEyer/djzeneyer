@@ -449,7 +449,7 @@ const EventsPage: React.FC = () => {
               </div>
             </div>
             
-            <EventsList limit={15} showTitle={false} />
+            <EventsList limit={15} showTitle={false} variant="full" />
             <BandsInTownWidget />
             <p className="text-center text-xs text-white/20 mt-6">Powered by <a href={ARTIST.social.bandsintown.url} target="_blank" rel="noopener noreferrer" className="hover:text-primary">Bandsintown</a></p>
           </div>
