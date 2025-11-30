@@ -10,7 +10,22 @@ class BIT_Zen_Admin {
     }
     
     public function add_admin_menu() {
-        add_options_page(
+        // Create parent menu if it doesn't exist
+        global $admin_page_hooks;
+        if (empty($admin_page_hooks['zen-plugins'])) {
+            add_menu_page(
+                __('Zen Plugins', 'bit-zen'),
+                __('Zen Plugins', 'bit-zen'),
+                'manage_options',
+                'zen-plugins',
+                null,
+                'dashicons-admin-plugins',
+                99
+            );
+        }
+        
+        add_submenu_page(
+            'zen-plugins',
             __('BIT-Zen Settings', 'bit-zen'),
             __('BIT-Zen Events', 'bit-zen'),
             'manage_options',

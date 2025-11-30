@@ -32,20 +32,33 @@ class Zen_SEO_Admin {
      * Add admin menu
      */
     public function add_admin_menu() {
-        add_menu_page(
+        // Create parent menu if it doesn't exist
+        global $admin_page_hooks;
+        if (empty($admin_page_hooks['zen-plugins'])) {
+            add_menu_page(
+                __('Zen Plugins', 'zen-seo'),
+                __('Zen Plugins', 'zen-seo'),
+                'manage_options',
+                'zen-plugins',
+                null,
+                'dashicons-admin-plugins',
+                99
+            );
+        }
+        
+        add_submenu_page(
+            'zen-plugins',
             __('Zen SEO Settings', 'zen-seo'),
             __('Zen SEO', 'zen-seo'),
             'manage_options',
             'zen-seo-settings',
-            [$this, 'render_settings_page'],
-            'dashicons-chart-line',
-            99
+            [$this, 'render_settings_page']
         );
         
         add_submenu_page(
-            'zen-seo-settings',
+            'zen-plugins',
             __('Cache Manager', 'zen-seo'),
-            __('Cache', 'zen-seo'),
+            __('SEO Cache', 'zen-seo'),
             'manage_options',
             'zen-seo-cache',
             [$this, 'render_cache_page']
