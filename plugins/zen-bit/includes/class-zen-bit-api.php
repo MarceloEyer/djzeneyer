@@ -39,21 +39,26 @@ class Zen_BIT_API {
         }
         
         $body = wp_remote_retrieve_body($response);
-        $events = json_decode($body, true);
+        $data = json_decode($body, true);
         
         // Handle error responses from Bandsintown
-        if (!is_array($events)) {
+        if (!is_array($data)) {
             error_log('Zen BIT: Invalid response from Bandsintown API - ' . substr($body, 0, 200));
             return array();
         }
         
         // Check if it's an error response
-        if (isset($events['error']) || isset($events['message'])) {
-            error_log('Zen BIT: API error - ' . ($events['message'] ?? $events['error']));
+        if (isset($data['error']) || isset($data['message'])) {
+            error_log('Zen BIT: API error - ' . ($data['message'] ?? $data['error']));
             return array();
         }
         
-        $events = array_slice($events, 0, $limit);
+        // Bandsintown sometimes returns single event as object, not array
+        if (!isset($data[0]) && isset($data['id'])) {
+            $data = array($data);
+        }
+        
+        $events = array_slice($data, 0, $limit);
         
         set_transient($cache_key, $events, self::get_cache_time());
         
