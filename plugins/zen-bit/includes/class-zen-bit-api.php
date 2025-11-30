@@ -55,10 +55,18 @@ class Zen_BIT_API {
         
         // Bandsintown sometimes returns single event as object, not array
         if (!isset($data[0]) && isset($data['id'])) {
+            error_log('Zen BIT: Converting single event object to array');
             $data = array($data);
         }
         
+        // Final validation
+        if (!is_array($data) || empty($data)) {
+            error_log('Zen BIT: No valid events after processing');
+            return array();
+        }
+        
         $events = array_slice($data, 0, $limit);
+        error_log('Zen BIT: Returning ' . count($events) . ' events');
         
         set_transient($cache_key, $events, self::get_cache_time());
         

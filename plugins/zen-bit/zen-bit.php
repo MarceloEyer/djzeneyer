@@ -54,6 +54,22 @@ class Zen_BIT {
             'callback' => array('Zen_BIT_API', 'get_events_rest'),
             'permission_callback' => '__return_true'
         ));
+        
+        register_rest_route('zen-bit/v1', '/clear-cache', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'clear_cache_rest'),
+            'permission_callback' => function() {
+                return current_user_can('manage_options');
+            }
+        ));
+    }
+    
+    public function clear_cache_rest() {
+        Zen_BIT_API::clear_cache();
+        return rest_ensure_response(array(
+            'success' => true,
+            'message' => 'Cache cleared successfully'
+        ));
     }
     
     public function activate() {
