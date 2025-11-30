@@ -1,8 +1,8 @@
-// src/components/auth/AuthModal.tsx (VERSÃO COM DEBUG)
+// src/components/auth/AuthModal.tsx - VERSÃO ESTILIZADA
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { X, Mail, Lock, User, Loader2, AlertCircle } from 'lucide-react';
+import { X, Mail, Lock, User, Loader2, AlertCircle, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { useUser } from '../../contexts/UserContext';
@@ -36,19 +36,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
     if (!email) {
-      errors.email = t('auth.errors.emailRequired') || 'Email é obrigatório';
+      errors.email = 'Email é obrigatório';
     } else if (!emailRegex.test(email)) {
-      errors.email = t('auth.errors.emailInvalid') || 'Email inválido';
+      errors.email = 'Email inválido';
     }
 
     if (!password) {
-      errors.password = t('auth.errors.passwordRequired') || 'Senha é obrigatória';
+      errors.password = 'Senha é obrigatória';
     } else if (password.length < 6) {
-      errors.password = t('auth.errors.passwordTooShort') || 'Senha deve ter no mínimo 6 caracteres';
+      errors.password = 'Senha deve ter no mínimo 6 caracteres';
     }
 
     if (mode === 'register' && !username.trim()) {
-      errors.username = t('auth.errors.nameRequired') || 'Nome é obrigatório';
+      errors.username = 'Nome é obrigatório';
     }
 
     setFormErrors(errors);
@@ -73,7 +73,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       navigate('/dashboard');
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro:', err);
-      setError(err.message || t('auth.errors.generic') || 'Erro ao autenticar');
+      setError(err.message || 'Erro ao autenticar');
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     
     if (!credentialResponse.credential) {
       console.error('❌ [AuthModal] Sem credencial do Google');
-      setError(t('auth.errors.googleNoCredential') || 'Credencial do Google não recebida');
+      setError('Credencial do Google não recebida');
       return;
     }
 
@@ -102,11 +102,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro no Google Login:', err);
       
-      // Erro específico de JSON inválido
       if (err.message.includes('Unexpected token') || err.message.includes('JSON')) {
         setError('Erro de servidor: o backend retornou HTML ao invés de JSON. Verifique se o plugin ZenEyer Auth está ativo.');
       } else {
-        setError(err.message || t('auth.errors.googleFailed') || 'Erro ao conectar com Google');
+        setError(err.message || 'Erro ao conectar com Google');
       }
     } finally {
       setLoading(false);
@@ -115,7 +114,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
   const handleGoogleError = () => {
     console.error('❌ [AuthModal] Google OAuth error callback');
-    setError(t('auth.errors.googleFailed') || 'Falha ao conectar com Google');
+    setError('Falha ao conectar com Google');
   };
 
   const switchMode = () => {
@@ -138,198 +137,229 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         onClick={handleOverlayClick}
       >
+        {/* Backdrop com blur */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/90 backdrop-blur-md"
         />
+
+        {/* Modal Container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: 'spring', duration: 0.5 }}
-          className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
+          transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
+          className="relative w-full max-w-md"
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white/80 hover:text-white"
-            aria-label={t('common.close') || 'Fechar'}
-          >
-            <X size={24} />
-          </button>
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-background/20 rounded-3xl blur-xl" />
+          
+          {/* Main Card */}
+          <div className="relative bg-surface/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white/80 hover:text-white"
+              aria-label="Fechar"
+            >
+              <X size={24} />
+            </button>
 
-          <div className="p-8">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-black text-white mb-2">
-                {mode === 'login'
-                  ? (t('auth.welcomeBack') || 'Bem-vindo de Volta')
-                  : (t('auth.createAccount') || 'Criar Conta')}
-              </h2>
-              <p className="text-white/60">
-                {mode === 'login'
-                  ? (t('auth.loginSubtitle') || 'Entre na sua conta Zen Tribe')
-                  : (t('auth.registerSubtitle') || 'Junte-se à Zen Tribe')}
-              </p>
-            </div>
-
-            {error && (
+            {/* Header with animated gradient */}
+            <div className="relative overflow-hidden pt-12 pb-8 px-8">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 opacity-50" />
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm flex items-start gap-3"
-              >
-                <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </motion.div>
-            )}
-
-            {googleClientId ? (
-              <div className="mb-6 flex justify-center">
-                <GoogleOAuthProvider clientId={googleClientId}>
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleError}
-                    theme="filled_black"
-                    size="large"
-                    text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                    width="384"
-                    logo_alignment="left"
-                  />
-                </GoogleOAuthProvider>
-              </div>
-            ) : (
-              <div className="mb-6 h-12 bg-white/5 animate-pulse rounded-lg flex items-center justify-center">
-                <span className="text-xs text-white/40">{t('auth.connectingServer') || 'Conectando...'}</span>
-              </div>
-            )}
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-gray-900 text-white/60">
-                  {t('auth.orUseEmail') || 'ou use email'}
-                </span>
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: 'linear',
+                }}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                style={{ backgroundSize: '200% 100%' }}
+              />
+              
+              <div className="relative text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: 'spring', bounce: 0.5 }}
+                  className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-br from-primary to-secondary"
+                >
+                  <Sparkles className="text-white" size={28} />
+                </motion.div>
+                
+                <h2 className="text-3xl font-black text-white mb-2">
+                  {mode === 'login' ? 'Bem-vindo de Volta' : 'Junte-se à Tribe'}
+                </h2>
+                <p className="text-white/60 text-sm">
+                  {mode === 'login'
+                    ? 'Entre na sua conta Zen Tribe'
+                    : 'Crie sua conta e faça parte da comunidade'}
+                </p>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {mode === 'register' && (
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-white">
-                    {t('auth.name') || 'Nome'}
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => {
-                        setUsername(e.target.value);
-                        if (formErrors.username) setFormErrors({ ...formErrors, username: undefined });
-                      }}
-                      className={`w-full bg-gray-800 text-white border ${
-                        formErrors.username ? 'border-red-500' : 'border-gray-700'
-                      } rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all`}
-                      placeholder={t('auth.namePlaceholder') || 'Seu nome'}
-                      disabled={loading}
+            <div className="px-8 pb-8">
+              {/* Error Message */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-200 text-sm flex items-start gap-3"
+                >
+                  <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </motion.div>
+              )}
+
+              {/* Google Login */}
+              {googleClientId ? (
+                <div className="mb-6">
+                  <GoogleOAuthProvider clientId={googleClientId}>
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleError}
+                      theme="filled_black"
+                      size="large"
+                      text={mode === 'login' ? 'signin_with' : 'signup_with'}
+                      width="100%"
+                      logo_alignment="left"
                     />
-                  </div>
-                  {formErrors.username && (
-                    <p className="mt-1 text-xs text-red-400">{formErrors.username}</p>
-                  )}
+                  </GoogleOAuthProvider>
+                </div>
+              ) : (
+                <div className="mb-6 h-12 bg-white/5 animate-pulse rounded-xl flex items-center justify-center">
+                  <Loader2 size={20} className="animate-spin text-white/40" />
                 </div>
               )}
 
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-white">
-                  {t('auth.email') || 'Email'}
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
-                    }}
-                    className={`w-full bg-gray-800 text-white border ${
-                      formErrors.email ? 'border-red-500' : 'border-gray-700'
-                    } rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all`}
-                    placeholder={t('auth.emailPlaceholder') || 'seu@email.com'}
-                    disabled={loading}
-                  />
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/10"></div>
                 </div>
-                {formErrors.email && (
-                  <p className="mt-1 text-xs text-red-400">{formErrors.email}</p>
-                )}
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-surface text-white/60">ou use email</span>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-white">
-                  {t('auth.password') || 'Senha'}
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={20} />
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
-                    }}
-                    className={`w-full bg-gray-800 text-white border ${
-                      formErrors.password ? 'border-red-500' : 'border-gray-700'
-                    } rounded-lg py-3 pl-11 px-4 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all`}
-                    placeholder="••••••••"
-                    disabled={loading}
-                  />
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {mode === 'register' && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-white/90">
+                      Nome
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => {
+                          setUsername(e.target.value);
+                          if (formErrors.username) setFormErrors({ ...formErrors, username: undefined });
+                        }}
+                        className={`w-full bg-black/30 text-white border ${
+                          formErrors.username ? 'border-red-500/50' : 'border-white/10'
+                        } rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all placeholder-white/30`}
+                        placeholder="Seu nome"
+                        disabled={loading}
+                      />
+                    </div>
+                    {formErrors.username && (
+                      <p className="mt-2 text-xs text-red-400">{formErrors.username}</p>
+                    )}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-white/90">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
+                      }}
+                      className={`w-full bg-black/30 text-white border ${
+                        formErrors.email ? 'border-red-500/50' : 'border-white/10'
+                      } rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all placeholder-white/30`}
+                      placeholder="seu@email.com"
+                      disabled={loading}
+                    />
+                  </div>
+                  {formErrors.email && (
+                    <p className="mt-2 text-xs text-red-400">{formErrors.email}</p>
+                  )}
                 </div>
-                {formErrors.password && (
-                  <p className="mt-1 text-xs text-red-400">{formErrors.password}</p>
-                )}
-              </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-white text-gray-900 font-bold py-4 rounded-lg shadow-lg hover:bg-gray-100 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex justify-center items-center gap-2"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 size={20} className="animate-spin" />
-                    <span>{t('auth.processing') || 'Processando...'}</span>
-                  </>
-                ) : (
-                  <span>
-                    {mode === 'login'
-                      ? (t('auth.login') || 'Entrar')
-                      : (t('auth.register') || 'Criar Conta')}
-                  </span>
-                )}
-              </button>
-            </form>
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-white/90">
+                    Senha
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={20} />
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
+                      }}
+                      className={`w-full bg-black/30 text-white border ${
+                        formErrors.password ? 'border-red-500/50' : 'border-white/10'
+                      } rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all placeholder-white/30`}
+                      placeholder="••••••••"
+                      disabled={loading}
+                    />
+                  </div>
+                  {formErrors.password && (
+                    <p className="mt-2 text-xs text-red-400">{formErrors.password}</p>
+                  )}
+                </div>
 
-            <div className="mt-6 text-center">
-              <p className="text-white/60 text-sm">
-                {mode === 'login'
-                  ? (t('auth.noAccount') || 'Não tem uma conta?')
-                  : (t('auth.hasAccount') || 'Já tem uma conta?')}
-                {' '}
                 <button
-                  onClick={switchMode}
+                  type="submit"
                   disabled={loading}
-                  className="text-white font-bold hover:text-gray-300 hover:underline transition-colors disabled:opacity-50"
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/20 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex justify-center items-center gap-2"
                 >
-                  {mode === 'login'
-                    ? (t('auth.createAccount') || 'Criar Conta')
-                    : (t('auth.login') || 'Entrar')}
+                  {loading ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" />
+                      <span>Processando...</span>
+                    </>
+                  ) : (
+                    <span>
+                      {mode === 'login' ? 'Entrar' : 'Criar Conta'}
+                    </span>
+                  )}
                 </button>
-              </p>
+              </form>
+
+              {/* Switch Mode */}
+              <div className="mt-6 text-center">
+                <p className="text-white/60 text-sm">
+                  {mode === 'login' ? 'Não tem uma conta?' : 'Já tem uma conta?'}
+                  {' '}
+                  <button
+                    onClick={switchMode}
+                    disabled={loading}
+                    className="text-primary font-bold hover:text-primary/80 hover:underline transition-colors disabled:opacity-50"
+                  >
+                    {mode === 'login' ? 'Criar Conta' : 'Entrar'}
+                  </button>
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>
