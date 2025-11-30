@@ -1,10 +1,10 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-class BIT_Zen_Shortcode {
+class Zen_BIT_Shortcode {
     
     public function __construct() {
-        add_shortcode('bit_zen_events', array($this, 'render_events'));
+        add_shortcode('zen_bit_events', array($this, 'render_events'));
     }
     
     public function render_events($atts) {
@@ -13,19 +13,19 @@ class BIT_Zen_Shortcode {
             'layout' => 'grid'
         ), $atts);
         
-        $events = BIT_Zen_API::get_events($atts['limit']);
+        $events = Zen_BIT_API::get_events($atts['limit']);
         
         if (empty($events)) {
-            return '<div class="bit-zen-no-events"><p>' . __('No upcoming events at the moment.', 'bit-zen') . '</p></div>';
+            return '<div class="zen-bit-no-events"><p>' . __('No upcoming events at the moment.', 'zen-bit') . '</p></div>';
         }
         
         ob_start();
         ?>
-        <div class="bit-zen-events-container" itemscope itemtype="https://schema.org/EventSeries">
+        <div class="zen-bit-events-container" itemscope itemtype="https://schema.org/EventSeries">
             <meta itemprop="name" content="Zen Eyer Events">
             <meta itemprop="description" content="Upcoming events and performances by DJ Zen Eyer">
             
-            <div class="bit-zen-events-grid bit-zen-layout-<?php echo esc_attr($atts['layout']); ?>">
+            <div class="zen-bit-events-grid zen-bit-layout-<?php echo esc_attr($atts['layout']); ?>">
                 <?php foreach ($events as $event): ?>
                     <?php echo $this->render_event_card($event); ?>
                 <?php endforeach; ?>
@@ -45,38 +45,38 @@ class BIT_Zen_Shortcode {
         
         ob_start();
         ?>
-        <article class="bit-zen-event-card" itemscope itemtype="https://schema.org/MusicEvent">
+        <article class="zen-bit-event-card" itemscope itemtype="https://schema.org/MusicEvent">
             <meta itemprop="eventStatus" content="https://schema.org/EventScheduled">
             
-            <div class="bit-zen-event-date">
+            <div class="zen-bit-event-date">
                 <time itemprop="startDate" datetime="<?php echo esc_attr($datetime); ?>">
-                    <span class="bit-zen-date-day"><?php echo date('d', strtotime($datetime)); ?></span>
-                    <span class="bit-zen-date-month"><?php echo date('M', strtotime($datetime)); ?></span>
+                    <span class="zen-bit-date-day"><?php echo date('d', strtotime($datetime)); ?></span>
+                    <span class="zen-bit-date-month"><?php echo date('M', strtotime($datetime)); ?></span>
                 </time>
             </div>
             
-            <div class="bit-zen-event-content">
-                <h3 class="bit-zen-event-title" itemprop="name">
+            <div class="zen-bit-event-content">
+                <h3 class="zen-bit-event-title" itemprop="name">
                     <?php echo esc_html($event['title'] ?? 'Event'); ?>
                 </h3>
                 
-                <div class="bit-zen-event-venue" itemprop="location" itemscope itemtype="https://schema.org/Place">
+                <div class="zen-bit-event-venue" itemprop="location" itemscope itemtype="https://schema.org/Place">
                     <meta itemprop="name" content="<?php echo esc_attr($venue['name'] ?? ''); ?>">
-                    <span class="bit-zen-venue-icon">📍</span>
-                    <span class="bit-zen-venue-name"><?php echo esc_html($venue['name'] ?? ''); ?></span>
+                    <span class="zen-bit-venue-icon">📍</span>
+                    <span class="zen-bit-venue-name"><?php echo esc_html($venue['name'] ?? ''); ?></span>
                     
                     <div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
                         <meta itemprop="addressLocality" content="<?php echo esc_attr($venue['city'] ?? ''); ?>">
                         <meta itemprop="addressRegion" content="<?php echo esc_attr($venue['region'] ?? ''); ?>">
                         <meta itemprop="addressCountry" content="<?php echo esc_attr($venue['country'] ?? ''); ?>">
-                        <span class="bit-zen-venue-location">
+                        <span class="zen-bit-venue-location">
                             <?php echo esc_html($venue['city'] ?? ''); ?>, <?php echo esc_html($venue['country'] ?? ''); ?>
                         </span>
                     </div>
                 </div>
                 
-                <div class="bit-zen-event-time">
-                    <span class="bit-zen-time-icon">🕐</span>
+                <div class="zen-bit-event-time">
+                    <span class="zen-bit-time-icon">🕐</span>
                     <span><?php echo esc_html($time_formatted); ?></span>
                 </div>
                 
@@ -86,23 +86,23 @@ class BIT_Zen_Shortcode {
                 </div>
                 
                 <?php if (!empty($event['offers'])): ?>
-                    <div class="bit-zen-event-tickets" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                    <div class="zen-bit-event-tickets" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                         <meta itemprop="availability" content="https://schema.org/InStock">
                         <meta itemprop="url" content="<?php echo esc_url($event['offers'][0]['url'] ?? $event['url']); ?>">
                         <a href="<?php echo esc_url($event['offers'][0]['url'] ?? $event['url']); ?>" 
-                           class="bit-zen-ticket-button" 
+                           class="zen-bit-ticket-button" 
                            target="_blank" 
                            rel="noopener">
-                            🎫 <?php _e('Get Tickets', 'bit-zen'); ?>
+                            🎫 <?php _e('Get Tickets', 'zen-bit'); ?>
                         </a>
                     </div>
                 <?php elseif (!empty($event['url'])): ?>
-                    <div class="bit-zen-event-info">
+                    <div class="zen-bit-event-info">
                         <a href="<?php echo esc_url($event['url']); ?>" 
-                           class="bit-zen-info-button" 
+                           class="zen-bit-info-button" 
                            target="_blank" 
                            rel="noopener">
-                            ℹ️ <?php _e('More Info', 'bit-zen'); ?>
+                            ℹ️ <?php _e('More Info', 'zen-bit'); ?>
                         </a>
                     </div>
                 <?php endif; ?>
@@ -167,4 +167,4 @@ class BIT_Zen_Shortcode {
     }
 }
 
-new BIT_Zen_Shortcode();
+new Zen_BIT_Shortcode();

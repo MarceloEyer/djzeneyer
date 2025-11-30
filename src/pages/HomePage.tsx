@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { EventsList } from '../components/EventsList';
 // ============================================================================
 // 1. DADOS E CONSTANTES
 // ============================================================================
@@ -263,22 +264,8 @@ const HomePage: React.FC = () => {
                 ? 'Uma amostra das próximas datas oficiais. A agenda completa, com todos os festivais e congressos confirmados, está disponível na página Events.'
                 : 'A small preview of the next official dates. The full calendar with all confirmed festivals and congresses is available on the Events page.'}
             </motion.p>
-            {/*
-              SLOT PARA BANDSINTOWN:
-              Você pode substituir o bloco abaixo por um componente que consome a API
-              do Bandsintown e renderiza por exemplo os 3–4 próximos eventos.
-              Exemplo de ideia de uso:
-              <BandsintownEvents limit={4} />
-            */}
-            <motion.div
-              variants={ITEM_VARIANTS}
-              className="space-y-3 mb-6 text-sm text-white/70 border border-white/10 rounded-xl p-4 bg-white/5"
-            >
-              <p className="italic">
-                {isPortuguese
-                  ? 'Em breve: integração automática com a API do Bandsintown exibindo os próximos 3–4 eventos com link direto para ingressos.'
-                  : 'Coming soon: automatic integration with the Bandsintown API showing the next 3–4 events with direct ticket links.'}
-              </p>
+            <motion.div variants={ITEM_VARIANTS} className="mb-8">
+              <EventsList limit={3} showTitle={false} />
             </motion.div>
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
               <Link to="/events" className="btn btn-primary btn-lg flex items-center gap-2">

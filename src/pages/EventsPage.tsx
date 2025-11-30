@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
 import type { Event, Testimonial, FlyerData } from '../types';
+import { EventsList } from '../components/EventsList';
 import {
   Calendar as CalendarIcon,
   MapPin,
@@ -440,13 +441,15 @@ const EventsPage: React.FC = () => {
             <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
               <div>
                 <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
-                <p className="text-white/50 max-w-md">Datas confirmadas oficialmente. Atualizado em tempo real.</p>
+                <p className="text-white/50 max-w-md">Datas confirmadas oficialmente via Bandsintown. Atualizado em tempo real.</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <a href={`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent('eyer.marcelo@gmail.com')}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm flex items-center gap-2"><Plus size={14} /> Google Calendar</a>
+                <a href="https://www.bandsintown.com/a/15552355" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm flex items-center gap-2"><ExternalLink size={14} /> Bandsintown</a>
                 <a href="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2"><Download size={14} /> Press Kit</a>
               </div>
             </div>
+            
+            <EventsList limit={15} showTitle={false} />
             <BandsInTownWidget />
             <p className="text-center text-xs text-white/20 mt-6">Powered by <a href={ARTIST.social.bandsintown.url} target="_blank" rel="noopener noreferrer" className="hover:text-primary">Bandsintown</a></p>
           </div>

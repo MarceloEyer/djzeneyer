@@ -1,5 +1,5 @@
 /**
- * BIT-Zen Public JavaScript
+ * Zen BIT Public JavaScript
  */
 
 (function($) {
@@ -7,18 +7,18 @@
 
     $(document).ready(function() {
         // Add smooth scroll to ticket buttons
-        $('.bit-zen-ticket-button, .bit-zen-info-button').on('click', function(e) {
+        $('.zen-bit-ticket-button, .zen-bit-info-button').on('click', function(e) {
             // Track click event (if analytics available)
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'click', {
-                    'event_category': 'BIT-Zen Events',
+                    'event_category': 'Zen BIT Events',
                     'event_label': 'Ticket Button Click'
                 });
             }
         });
 
         // Add loading state for dynamic content
-        $('.bit-zen-events-container').addClass('bit-zen-loaded');
+        $('.zen-bit-events-container').addClass('zen-bit-loaded');
 
         // Lazy load images if any
         if ('IntersectionObserver' in window) {
@@ -33,7 +33,7 @@
                 });
             });
 
-            document.querySelectorAll('.bit-zen-event-card img[data-src]').forEach(img => {
+            document.querySelectorAll('.zen-bit-event-card img[data-src]').forEach(img => {
                 imageObserver.observe(img);
             });
         }

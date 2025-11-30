@@ -1,4 +1,4 @@
-# BIT-Zen - Bandsintown Events Plugin
+# Zen BIT - Bandsintown Events Plugin
 
 WordPress plugin to display Bandsintown events with beautiful design and full SEO optimization for search engines and AI bots.
 
@@ -11,13 +11,13 @@ WordPress plugin to display Bandsintown events with beautiful design and full SE
 ✅ **REST API** - Headless WordPress support  
 ✅ **Caching** - Smart caching to reduce API calls  
 ✅ **Responsive** - Mobile-first design  
-✅ **Easy to Use** - Simple shortcode `[bit_zen_events]`
+✅ **Easy to Use** - Simple shortcode `[zen_bit_events]`
 
 ## Installation
 
-1. Upload `bit-zen` folder to `/wp-content/plugins/`
+1. Upload `zen-bit` folder to `/wp-content/plugins/`
 2. Activate plugin in WordPress admin
-3. Go to Settings → BIT-Zen Events
+3. Go to Settings → Zen BIT Events
 4. Configure your Bandsintown Artist ID (default: 15552355)
 
 ## Usage
@@ -25,22 +25,22 @@ WordPress plugin to display Bandsintown events with beautiful design and full SE
 ### Shortcode
 
 ```
-[bit_zen_events]
-[bit_zen_events limit="10"]
-[bit_zen_events layout="grid"]
+[zen_bit_events]
+[zen_bit_events limit="10"]
+[zen_bit_events layout="grid"]
 ```
 
 ### REST API
 
 ```
-GET /wp-json/bit-zen/v1/events
-GET /wp-json/bit-zen/v1/events?limit=10
+GET /wp-json/zen-bit/v1/events
+GET /wp-json/zen-bit/v1/events?limit=10
 ```
 
 ### PHP
 
 ```php
-$events = BIT_Zen_API::get_events(50);
+$events = Zen_BIT_API::get_events(50);
 ```
 
 ## SEO Features
@@ -74,23 +74,23 @@ HTML5 microdata attributes (`itemscope`, `itemprop`) for maximum compatibility.
 
 ### Cache Management
 
-Clear cache manually from Settings → BIT-Zen Events → Clear Events Cache
+Clear cache manually from Settings → Zen BIT Events → Clear Events Cache
 
 ## File Structure
 
 ```
-bit-zen/
-├── bit-zen.php                 # Main plugin file
+zen-bit/
+├── zen-bit.php                 # Main plugin file
 ├── includes/
-│   ├── class-bit-zen-api.php       # Bandsintown API integration
-│   └── class-bit-zen-shortcode.php # Shortcode and display logic
+│   ├── class-zen-bit-api.php       # Bandsintown API integration
+│   └── class-zen-bit-shortcode.php # Shortcode and display logic
 ├── admin/
-│   └── class-bit-zen-admin.php     # Admin settings page
+│   └── class-zen-bit-admin.php     # Admin settings page
 ├── public/
 │   ├── css/
-│   │   └── bit-zen-public.css      # Frontend styles
+│   │   └── zen-bit-public.css      # Frontend styles
 │   └── js/
-│       └── bit-zen-public.js       # Frontend JavaScript
+│       └── zen-bit-public.js       # Frontend JavaScript
 └── README.md
 ```
 
@@ -125,7 +125,7 @@ bit-zen/
 Override styles by adding to your theme:
 
 ```css
-.bit-zen-event-card {
+.zen-bit-event-card {
     background: your-gradient;
 }
 ```
@@ -134,7 +134,7 @@ Override styles by adding to your theme:
 
 ```php
 // Modify events before display
-add_filter('bit_zen_events', function($events) {
+add_filter('zen_bit_events', function($events) {
     // Your modifications
     return $events;
 });
