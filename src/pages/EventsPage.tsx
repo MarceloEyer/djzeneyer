@@ -1,8 +1,4 @@
 // src/pages/EventsPage.tsx
-// ============================================================================
-// EVENTS PAGE - VERSÃO FINAL 10/10 (LIGHTBOX + SAFE ACCESS + SCHEMA COMPLETO)
-// ============================================================================
-
 import type { FC } from 'react';
 import { useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,13 +26,8 @@ import {
   ChevronRight,
   Sparkles,
   Phone,
-  Mail,
   X
 } from 'lucide-react';
-
-// ============================================================================
-// DADOS ESTRATÉGICOS
-// ============================================================================
 
 const FEATURED_EVENTS: Event[] = [
   {
@@ -95,10 +86,6 @@ const ORGANIZER_TESTIMONIALS: Testimonial[] = [
     avatar: ''
   }
 ];
-
-// ============================================================================
-// COMPONENTES AUXILIARES (MEMOIZADOS)
-// ============================================================================
 
 const HeroStats = memo(() => (
   <motion.div
@@ -218,10 +205,6 @@ const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ tes
 ));
 TestimonialCard.displayName = 'TestimonialCard';
 
-// ============================================================================
-// FLYER GALLERY COM LIGHTBOX (10/10)
-// ============================================================================
-
 const FlyerGallery: React.FC = () => {
   const [flyers, setFlyers] = useState<FlyerData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -235,15 +218,26 @@ const FlyerGallery: React.FC = () => {
         return res.json();
       })
       .then((data) => {
-        if (Array.isArray(data)) setFlyers(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setFlyers(data);
+        }
       })
       .catch((err) => {
+        console.error('Erro ao carregar flyers:', err);
         setError(err.message);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <section className="py-20 bg-black/40 border-t border-white/5"><div className="flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></section>;
+  if (loading) {
+    return (
+      <section className="py-20 bg-black/40 border-t border-white/5">
+        <div className="flex justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      </section>
+    );
+  }
   
   if (error || flyers.length === 0) return null;
 
@@ -262,7 +256,6 @@ const FlyerGallery: React.FC = () => {
               const fullImageUrl = media?.source_url;
               const thumbUrl = media?.media_details?.sizes?.medium_large?.source_url || fullImageUrl;
               
-              // ✅ CORREÇÃO 2: Placeholder visual se não tiver imagem
               if (!thumbUrl) {
                 return (
                   <div
@@ -281,7 +274,7 @@ const FlyerGallery: React.FC = () => {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  onClick={() => setSelectedFlyer(fullImageUrl)}
+                  onClick={() => setSelectedFlyer(fullImageUrl || thumbUrl)}
                   className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 cursor-pointer"
                 >
                   <img
@@ -289,10 +282,13 @@ const FlyerGallery: React.FC = () => {
                     alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                     loading="lazy"
-                    onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                    <span className="text-sm font-bold text-white">{flyer.title.rendered}</span>
+                    <span className="text-sm font-bold text-white line-clamp-2">{flyer.title.rendered}</span>
                   </div>
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="bg-black/50 p-1 rounded-full text-white/80"><Plus size={16} /></div>
@@ -304,7 +300,6 @@ const FlyerGallery: React.FC = () => {
         </div>
       </section>
 
-      {/* LIGHTBOX MODAL */}
       <AnimatePresence>
         {selectedFlyer && (
           <motion.div
@@ -340,10 +335,6 @@ const FlyerGallery: React.FC = () => {
     </>
   );
 };
-
-// ============================================================================
-// COMPONENTE PRINCIPAL
-// ============================================================================
 
 const EventsPage: React.FC = () => {
   const { t } = useTranslation();
