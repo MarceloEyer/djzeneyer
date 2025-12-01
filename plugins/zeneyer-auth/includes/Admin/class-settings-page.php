@@ -11,20 +11,6 @@ class Settings_Page {
     }
     
     public function add_admin_menu() {
-        // Create parent menu if it doesn't exist
-        global $admin_page_hooks;
-        if (empty($admin_page_hooks['zen-plugins'])) {
-            add_menu_page(
-                'Zen Plugins',
-                'Zen Plugins',
-                'manage_options',
-                'zen-plugins',
-                null,
-                'dashicons-admin-plugins',
-                99
-            );
-        }
-        
         add_submenu_page(
             'zen-plugins',
             'ZenEyer Auth Pro',

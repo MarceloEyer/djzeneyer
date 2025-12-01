@@ -32,20 +32,6 @@ class Zen_SEO_Admin {
      * Add admin menu
      */
     public function add_admin_menu() {
-        // Create parent menu if it doesn't exist
-        global $admin_page_hooks;
-        if (empty($admin_page_hooks['zen-plugins'])) {
-            add_menu_page(
-                __('Zen Plugins', 'zen-seo'),
-                __('Zen Plugins', 'zen-seo'),
-                'manage_options',
-                'zen-plugins',
-                null,
-                'dashicons-admin-plugins',
-                99
-            );
-        }
-        
         add_submenu_page(
             'zen-plugins',
             __('Zen SEO Settings', 'zen-seo'),
