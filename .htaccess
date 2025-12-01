@@ -8,15 +8,8 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-# Bypass Cloudflare para endpoints REST API (evita challenge)
-RewriteCond %{REQUEST_URI} ^/wp-json/ [NC]
-RewriteCond %{HTTP:CF-Worker} ^$
-RewriteRule .* - [E=Cache-Control:no-cache,E=no-gzip:1]
-
-# Allow REST API cors preflight
-RewriteCond %{REQUEST_METHOD} OPTIONS
-RewriteCond %{REQUEST_URI} ^/wp-json/
-RewriteRule ^(.*)$ $1 [R=204,L]
+# NÃO fazer nada com REST API - deixa Cloudflare lidar
+# (Você tem as Page Rules já configuradas)
 </IfModule>
 
 # ==============================================================================
@@ -65,10 +58,6 @@ CacheKeyModify -qs:gclid
 CacheKeyModify -qs:utm*
 CacheKeyModify -qs:_ga
 ### marker DROPQS end ###
-
-# NOCACHE para REST API (CRÍTICO)
-RewriteCond %{REQUEST_URI} ^/wp-json/ [NC]
-RewriteRule .* - [E=Cache-Control:no-cache]
 
 </IfModule>
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
@@ -280,6 +269,9 @@ Options -Indexes -MultiViews
 # 9. WORDPRESS REWRITE
 # ==============================================================================
 # BEGIN WordPress
+# As diretrizes (linhas) entre "BEGIN WordPress" e "END WordPress" são
+# geradas dinamicamente e só devem ser modificadas através de filtros do WordPress.
+# Quaisquer alterações nas diretivas entre esses marcadores serão sobrescritas.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -289,6 +281,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
+
 # END WordPress
 
 # ==============================================================================
