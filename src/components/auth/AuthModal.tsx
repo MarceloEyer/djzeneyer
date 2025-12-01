@@ -1,8 +1,8 @@
-// src/components/auth/AuthModal.tsx - VERSÃO ESTILIZADA
+// src/components/auth/AuthModal.tsx - VERSÃO CORRIGIDA
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { X, Mail, Lock, User, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { X, Mail, Lock, User, Loader2, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { useUser } from '../../contexts/UserContext';
@@ -168,32 +168,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               <X size={24} />
             </button>
 
-            {/* Header with animated gradient */}
-            <div className="relative overflow-hidden pt-12 pb-8 px-8">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 opacity-50" />
-              <motion.div
-                animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-                style={{ backgroundSize: '200% 100%' }}
-              />
-              
+            {/* Header - REMOVIDO ÍCONE, REMOVIDO GRADIENTE */}
+            <div className="relative overflow-hidden pt-8 pb-8 px-8 bg-surface/50">
               <div className="relative text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: 'spring', bounce: 0.5 }}
-                  className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-br from-primary to-secondary"
-                >
-                  <Sparkles className="text-white" size={28} />
-                </motion.div>
-                
                 <h2 className="text-3xl font-black text-white mb-2">
                   {mode === 'login' ? 'Bem-vindo de Volta' : 'Junte-se à Tribe'}
                 </h2>
@@ -218,19 +195,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </motion.div>
               )}
 
-              {/* Google Login */}
+              {/* Google Login - CORRIGIDO AVISO GSI_LOGGER */}
               {googleClientId ? (
                 <div className="mb-6">
                   <GoogleOAuthProvider clientId={googleClientId}>
-                    <GoogleLogin
-                      onSuccess={handleGoogleSuccess}
-                      onError={handleGoogleError}
-                      theme="filled_black"
-                      size="large"
-                      text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                      width="100%"
-                      logo_alignment="left"
-                    />
+                    <div className="w-full flex justify-center">
+                      <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleError}
+                        theme="filled_black"
+                        size="large"
+                        text={mode === 'login' ? 'signin_with' : 'signup_with'}
+                        logo_alignment="left"
+                      />
+                    </div>
                   </GoogleOAuthProvider>
                 </div>
               ) : (
@@ -328,10 +306,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   )}
                 </div>
 
+                {/* Botão Entrar - SEM GRADIENTE, COR SÓLIDA */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/20 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex justify-center items-center gap-2"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/20 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex justify-center items-center gap-2"
                 >
                   {loading ? (
                     <>
