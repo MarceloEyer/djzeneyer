@@ -37,14 +37,3 @@ require_once get_theme_file_path('/inc/metaboxes.php');
  * Todo o SEO (Sitemap, Schema, Meta Tags) é gerenciado
  * pelo plugin "Zen SEO Lite".
  */
-
-/**
- * TEMPORARY: Disable CSP for testing
- * Remove this after Cloudflare cache is cleared
- */
-add_action('send_headers', function() {
-    if (isset($_GET['disable_csp'])) {
-        header_remove('Content-Security-Policy');
-        header('X-CSP-Disabled: true');
-    }
-}, 999);
