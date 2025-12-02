@@ -125,7 +125,13 @@ $theme_uri = get_template_directory_uri();
         .ssr-links a:hover { background: rgba(157, 78, 221, 0.2); border-color: rgba(157, 78, 221, 0.5); transform: translateY(-2px); }
         .react-loaded .ssr-content { display: none; }
     </style>
-    
+    <script>
+        window.wpData = {
+            siteUrl: '<?php echo esc_url(home_url('/')); ?>',
+            restUrl: '<?php echo esc_url(rest_url()); ?>',
+            nonce: '<?php echo wp_create_nonce('wp_rest'); ?>' // Vital para o OAuth/Login funcionar
+        };
+    </script>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
