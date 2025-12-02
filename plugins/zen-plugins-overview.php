@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Zen Plugins Overview
- * Description: Overview page for all Zen plugins family
- * Version: 1.0.0
+ * Description: Mission Control for DJ Zen Eyer's Headless Architecture.
+ * Version: 2.0.0
  * Author: DJ Zen Eyer
  */
 
@@ -20,147 +20,254 @@ class Zen_Plugins_Overview {
     }
     
     private function __construct() {
-        add_action('admin_menu', array($this, 'add_overview_page'), 5); // Priority 5 to run before other plugins
+        add_action('admin_menu', array($this, 'add_overview_page'), 5);
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+    }
+
+    public function enqueue_styles() {
+        // Carrega CSS apenas na nossa página
+        if (isset($_GET['page']) && $_GET['page'] === 'zen-plugins') {
+            wp_enqueue_style('dashicons');
+        }
     }
     
     public function add_overview_page() {
         add_menu_page(
-            __('Zen Plugins', 'zen-plugins'),
-            __('Zen Plugins', 'zen-plugins'),
+            __('Zen Control', 'zen-plugins'),
+            __('Zen Control', 'zen-plugins'),
             'manage_options',
             'zen-plugins',
             array($this, 'render_overview_page'),
-            'dashicons-admin-plugins',
-            99
+            'dashicons-superhero', // Ícone mais legal
+            2
         );
+    }
+
+    /**
+     * Verifica se o plugin está ativo pelo caminho do arquivo (Mais seguro que class_exists)
+     */
+    private function check_active($path) {
+        if (!function_exists('is_plugin_active')) {
+            include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+        return is_plugin_active($path);
     }
     
     public function render_overview_page() {
+        // Dados do Sistema para o Header
+        $php_version = phpversion();
+        $wp_version = get_bloginfo('version');
+        $memory =  size_format(wp_convert_hr_to_bytes(WP_MEMORY_LIMIT));
+        
         ?>
-        <div class="wrap">
-            <h1><?php _e('Zen Plugins Family', 'zen-plugins'); ?></h1>
-            <p class="description"><?php _e('Suite of plugins for DJ Zen Eyer website - djzeneyer.com', 'zen-plugins'); ?></p>
-            
-            <div class="card-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+        <div class="zen-wrap">
+            <div class="zen-header">
+                <div>
+                    <h1 class="zen-title">Zen<span>Core</span> Systems</h1>
+                    <p class="zen-subtitle">Headless Architecture Command Center</p>
+                </div>
+                <div class="zen-stats">
+                    <div class="stat-badge"><span>PHP</span> <?php echo $php_version; ?></div>
+                    <div class="stat-badge"><span>WP</span> <?php echo $wp_version; ?></div>
+                    <div class="stat-badge"><span>MEM</span> <?php echo $memory; ?></div>
+                </div>
+            </div>
+
+            <div class="zen-grid">
                 
                 <?php
+                // LISTA DE PLUGINS (Ajuste os caminhos dos arquivos .php se necessário)
                 $plugins = array(
                     array(
                         'name' => 'Zen SEO Lite Pro',
-                        'slug' => 'zen-seo-lite',
+                        'path' => 'zen-seo-lite/zen-seo-lite.php', // Caminho pasta/arquivo
                         'version' => '8.0.0',
-                        'description' => 'SEO optimization with schema.org, sitemap, and meta tags for headless WordPress.',
+                        'desc' => 'Schema.org JSON-LD generator & Meta tags optimized for React Headless frontend.',
                         'icon' => 'dashicons-chart-line',
-                        'menu' => 'zen-seo-settings',
-                        'active' => class_exists('Zen_SEO_Lite')
+                        'menu' => 'zen-seo-settings'
                     ),
                     array(
                         'name' => 'ZenEyer Auth Pro',
-                        'slug' => 'zeneyer-auth',
+                        'path' => 'zeneyer-auth/zeneyer-auth.php', // Verifique se o nome do arquivo é este mesmo
                         'version' => '2.0.0',
-                        'description' => 'JWT authentication with Google OAuth and password auth for headless architecture.',
-                        'icon' => 'dashicons-lock',
-                        'menu' => 'zeneyer-auth',
-                        'active' => class_exists('ZenEyer\\Auth\\Plugin')
+                        'desc' => 'Secure JWT Authentication provider with Google OAuth 2.0 handling.',
+                        'icon' => 'dashicons-shield', // Ícone de segurança
+                        'menu' => 'zeneyer-auth'
                     ),
                     array(
-                        'name' => 'Zen BIT',
-                        'slug' => 'zen-bit',
+                        'name' => 'Zen BIT (Events)',
+                        'path' => 'zen-bit/zen-bit.php',
                         'version' => '1.0.0',
-                        'description' => 'Bandsintown events integration with beautiful design and SEO optimization.',
-                        'icon' => 'dashicons-calendar-alt',
-                        'menu' => 'zen-bit-settings',
-                        'active' => class_exists('Zen_BIT')
+                        'desc' => 'Bandsintown API Sync. Manages Tour Dates and Ticket Links automatically.',
+                        'icon' => 'dashicons-tickets-alt',
+                        'menu' => 'zen-bit-settings'
                     ),
                     array(
-                        'name' => 'Zen-RA',
-                        'slug' => 'zen-ra',
+                        'name' => 'Zen-RA (Activity)',
+                        'path' => 'zen-ra/zen-ra.php',
                         'version' => '1.0.0',
-                        'description' => 'Recent Activity API - Gamified user history from WooCommerce and GamiPress.',
-                        'icon' => 'dashicons-awards',
-                        'menu' => 'zen-ra-settings',
-                        'active' => class_exists('Zen_RA')
+                        'desc' => 'Recent Activity API. Gamification logic connecting WooCommerce & GamiPress.',
+                        'icon' => 'dashicons-performance',
+                        'menu' => 'zen-ra-settings'
                     )
                 );
                 
                 foreach ($plugins as $plugin) {
-                    $status_class = $plugin['active'] ? 'active' : 'inactive';
-                    $status_text = $plugin['active'] ? __('Active', 'zen-plugins') : __('Inactive', 'zen-plugins');
-                    $status_color = $plugin['active'] ? '#46b450' : '#dc3232';
+                    $is_active = $this->check_active($plugin['path']);
+                    $status_class = $is_active ? 'active' : 'inactive';
+                    $status_label = $is_active ? 'SYSTEM ONLINE' : 'OFFLINE';
                     ?>
-                    <div class="card" style="padding: 20px; background: white; border: 1px solid #ccd0d4; border-radius: 4px; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
-                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                            <span class="<?php echo esc_attr($plugin['icon']); ?>" style="font-size: 32px; color: #9D4EDD;"></span>
-                            <div>
-                                <h2 style="margin: 0; font-size: 18px;"><?php echo esc_html($plugin['name']); ?></h2>
-                                <span style="display: inline-block; padding: 2px 8px; background: <?php echo $status_color; ?>; color: white; border-radius: 3px; font-size: 11px; margin-top: 5px;">
-                                    <?php echo $status_text; ?>
-                                </span>
+                    
+                    <div class="zen-card <?php echo $status_class; ?>">
+                        <div class="card-header">
+                            <div class="icon-box">
+                                <span class="dashicons <?php echo esc_attr($plugin['icon']); ?>"></span>
+                            </div>
+                            <div class="status-indicator">
+                                <span class="dot"></span> <?php echo $status_label; ?>
                             </div>
                         </div>
                         
-                        <p style="color: #666; margin: 0 0 15px 0; line-height: 1.5;">
-                            <?php echo esc_html($plugin['description']); ?>
-                        </p>
+                        <h2><?php echo esc_html($plugin['name']); ?></h2>
+                        <p><?php echo esc_html($plugin['desc']); ?></p>
                         
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <?php if ($plugin['active']): ?>
-                                <a href="<?php echo admin_url('admin.php?page=' . $plugin['menu']); ?>" class="button button-primary">
-                                    <?php _e('Settings', 'zen-plugins'); ?>
+                        <div class="card-footer">
+                            <span class="version">v<?php echo esc_html($plugin['version']); ?></span>
+                            
+                            <?php if ($is_active): ?>
+                                <a href="<?php echo admin_url('admin.php?page=' . $plugin['menu']); ?>" class="zen-btn primary">
+                                    Configure <span class="dashicons dashicons-arrow-right-alt2"></span>
                                 </a>
-                                <span style="color: #666; font-size: 12px;">v<?php echo esc_html($plugin['version']); ?></span>
                             <?php else: ?>
-                                <a href="<?php echo admin_url('plugins.php'); ?>" class="button">
-                                    <?php _e('Activate', 'zen-plugins'); ?>
+                                <a href="<?php echo admin_url('plugins.php'); ?>" class="zen-btn danger">
+                                    Activate System
                                 </a>
                             <?php endif; ?>
                         </div>
                     </div>
+
                     <?php
                 }
                 ?>
-                
             </div>
-            
-            <hr style="margin: 40px 0;">
-            
-            <div style="background: #f0f0f1; padding: 20px; border-radius: 4px;">
-                <h2><?php _e('About Zen Plugins', 'zen-plugins'); ?></h2>
-                <p><?php _e('The Zen Plugins family is a suite of custom WordPress plugins developed specifically for DJ Zen Eyer\'s website (djzeneyer.com). These plugins work together to provide a complete headless WordPress solution with React frontend.', 'zen-plugins'); ?></p>
-                
-                <h3><?php _e('Architecture', 'zen-plugins'); ?></h3>
-                <ul>
-                    <li><strong>Frontend:</strong> React 18 + TypeScript + Vite + Tailwind CSS</li>
-                    <li><strong>Backend:</strong> WordPress REST API (Headless)</li>
-                    <li><strong>Authentication:</strong> JWT + Google OAuth</li>
-                    <li><strong>Hosting:</strong> Hostinger + Cloudflare CDN</li>
-                    <li><strong>Deployment:</strong> GitHub Actions CI/CD</li>
-                </ul>
-                
-                <h3><?php _e('Key Features', 'zen-plugins'); ?></h3>
-                <ul>
-                    <li>✅ SEO optimized with Schema.org markup</li>
-                    <li>✅ JWT authentication with Google OAuth</li>
-                    <li>✅ Bandsintown events integration</li>
-                    <li>✅ Gamified user activity tracking</li>
-                    <li>✅ Multilingual support (Polylang)</li>
-                    <li>✅ WooCommerce integration</li>
-                    <li>✅ GamiPress gamification</li>
-                </ul>
-                
-                <p>
-                    <strong><?php _e('Developer:', 'zen-plugins'); ?></strong> DJ Zen Eyer<br>
-                    <strong><?php _e('Website:', 'zen-plugins'); ?></strong> <a href="https://djzeneyer.com" target="_blank">djzeneyer.com</a><br>
-                    <strong><?php _e('Repository:', 'zen-plugins'); ?></strong> <a href="https://github.com/MarceloEyer/djzeneyer" target="_blank">GitHub</a>
-                </p>
+
+            <div class="zen-footer">
+                <p>Developed by <strong>DJ Zen Eyer</strong> // Running on <strong>Hostinger Cloud</strong> + <strong>Cloudflare</strong></p>
             </div>
         </div>
         
         <style>
-            .card:hover {
-                box-shadow: 0 4px 8px rgba(0,0,0,.1);
-                transition: box-shadow 0.3s ease;
+            /* Reset básico para isolar o estilo */
+            .zen-wrap {
+                background: #0A0E27; /* Cor do seu site */
+                color: #e0e0e0;
+                padding: 40px;
+                margin: -20px 0 0 -20px; /* Quebra as margens do WP */
+                min-height: 100vh;
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
             }
+
+            /* Header */
+            .zen-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: end;
+                margin-bottom: 50px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding-bottom: 20px;
+            }
+            .zen-title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #fff;
+                margin: 0;
+                letter-spacing: -1px;
+            }
+            .zen-title span { color: #9D4EDD; } /* Seu Roxo */
+            .zen-subtitle { color: #888; margin: 5px 0 0 0; font-size: 1rem; }
+
+            /* Status Badges no Header */
+            .zen-stats { display: flex; gap: 10px; }
+            .stat-badge {
+                background: rgba(255,255,255,0.05);
+                padding: 5px 12px;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                border: 1px solid rgba(255,255,255,0.1);
+                font-family: monospace;
+            }
+            .stat-badge span { color: #9D4EDD; font-weight: bold; margin-right: 5px; }
+
+            /* Grid */
+            .zen-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 25px;
+            }
+
+            /* Cards */
+            .zen-card {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 25px;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+            .zen-card:hover {
+                transform: translateY(-5px);
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(157, 78, 221, 0.3);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            }
+
+            /* Card Header */
+            .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+            .icon-box {
+                background: linear-gradient(135deg, #9D4EDD, #5a189a);
+                width: 48px; height: 48px;
+                border-radius: 10px;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
+            }
+            .icon-box .dashicons { color: white; font-size: 24px; width: 24px; height: 24px; }
+
+            /* Status Indicator */
+            .status-indicator { font-size: 0.7rem; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+            .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+            
+            /* Cores de Status */
+            .zen-card.active .status-indicator { color: #00ff88; }
+            .zen-card.active .dot { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+            .zen-card.inactive .status-indicator { color: #ff4444; }
+            .zen-card.inactive .dot { background: #ff4444; }
+            .zen-card.inactive .icon-box { background: #333; filter: grayscale(100%); }
+
+            /* Typography */
+            .zen-card h2 { color: white; margin: 0 0 10px 0; font-size: 1.2rem; }
+            .zen-card p { color: #aaa; font-size: 0.9rem; line-height: 1.6; margin: 0 0 20px 0; min-height: 45px; }
+
+            /* Footer & Buttons */
+            .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
+            .version { font-family: monospace; color: #666; font-size: 0.8rem; }
+
+            .zen-btn {
+                padding: 8px 16px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-size: 0.85rem;
+                font-weight: 600;
+                transition: all 0.2s;
+                display: flex; align-items: center; gap: 5px;
+            }
+            .zen-btn.primary { background: rgba(157, 78, 221, 0.15); color: #c77dff; border: 1px solid rgba(157, 78, 221, 0.3); }
+            .zen-btn.primary:hover { background: #9D4EDD; color: white; }
+            .zen-btn.danger { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); }
+            .zen-btn.danger:hover { background: #ff4444; color: white; }
+
+            .zen-footer { margin-top: 50px; text-align: center; color: #555; font-size: 0.8rem; }
+            .zen-footer strong { color: #777; }
         </style>
         <?php
     }
