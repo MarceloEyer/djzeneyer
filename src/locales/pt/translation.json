@@ -1,164 +1,291 @@
 {
-  "nav_home": "Início",
-  "nav_events": "Eventos",
-  "nav_music": "Música",
-  "nav_tribe": "Zen Tribe",
-  "nav_presskit": "Trabalhe Comigo",
-  "nav_shop": "Loja",
-  "nav_sign_in": "Entrar",
-  "nav_logout": "Sair",
-  "nav_dashboard": "Painel",
-  "nav_my_account": "Minha Conta",
+  "_meta": {
+    "version": "2.1.0",
+    "lastUpdated": "2025-12-03",
+    "language": "pt-BR",
+    "description": "Traduções em português brasileiro para o site oficial do DJ Zen Eyer",
+    "maintainers": ["Equipe DJ Zen Eyer"],
+    "notes": "Traduções mantêm a personalidade e filosofia do artista. Termos como 'cremosidade' são intencionalmente preservados.",
+    "philosophy": "A pressa é inimiga da cremosidade - este conceito permeia todas as traduções"
+  },
 
-  "sign_in": "Entrar",
-  "join_the_tribe": "Entrar na Tribo",
-  "close_menu": "Fechar Menu",
-  "open_menu": "Abrir Menu",
-  "main_navigation": "Navegação Principal",
-  "mobile_navigation": "Menu Mobile",
-  "loading": "Carregando...",
-  "error": "Erro",
-  "success": "Sucesso",
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "close": "Fechar",
+    "learnMore": "Saiba Mais",
+    "viewAll": "Ver Tudo",
+    "comingSoon": "Em Breve"
+  },
+
+  "navigation": {
+    "home": "Início",
+    "events": "Eventos",
+    "music": "Música",
+    "tribe": "Zen Tribe",
+    "presskit": "Trabalhe Comigo",
+    "shop": "Loja",
+    "signIn": "Entrar",
+    "logout": "Sair",
+    "dashboard": "Painel",
+    "myAccount": "Minha Conta",
+    "closeMenu": "Fechar Menu",
+    "openMenu": "Abrir Menu",
+    "mainNavigation": "Navegação Principal",
+    "mobileNavigation": "Menu Mobile"
+  },
+
+  "badges": {
+    "featured": "Destaque",
+    "new": "Novo",
+    "sale": "Promoção",
+    "available": "Disponível",
+    "membersOnly": "Apenas Membros",
+    "soldOut": "Esgotado",
+    "limitedEdition": "Edição Limitada"
+  },
+
+  "cta": {
+    "joinNow": "Entrar na Tribo",
+    "joinTheTribe": "Entrar na Tribo",
+    "exploreMusic": "Explorar Músicas",
+    "playFeaturedMix": "Ouvir no SoundCloud",
+    "listenNow": "Ouvir Agora",
+    "viewEvents": "Ver Eventos"
+  },
 
   "auth": {
     "welcomeBack": "Bem-vindo de Volta",
     "createAccount": "Criar Conta",
+    "joinTribe": "Junte-se à Tribe",
     "loginSubtitle": "Entre na sua conta Zen Tribe",
     "registerSubtitle": "Junte-se à comunidade Zen Tribe",
-    "name": "Nome",
-    "email": "Email",
-    "password": "Senha",
-    "namePlaceholder": "Seu nome",
-    "emailPlaceholder": "seu@email.com",
-    "orUseEmail": "ou use email",
-    "login": "Entrar",
-    "register": "Criar Conta",
-    "processing": "Processando...",
-    "noAccount": "Não tem uma conta?",
-    "hasAccount": "Já tem uma conta?",
-    "connectingServer": "Conectando...",
+    
+    "fields": {
+      "name": "Nome",
+      "fullName": "Nome Completo",
+      "email": "Email",
+      "password": "Senha",
+      "confirmPassword": "Confirmar Senha",
+      "namePlaceholder": "Seu nome",
+      "fullNamePlaceholder": "João Silva",
+      "emailPlaceholder": "seu@email.com",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordPlaceholder": "••••••••"
+    },
+    
+    "actions": {
+      "login": "Entrar",
+      "signIn": "Entrar",
+      "register": "Criar Conta",
+      "processing": "Processando...",
+      "connectingServer": "Conectando...",
+      "forgotPassword": "Esqueceu a senha?",
+      "googleButton": "Entrar com Google"
+    },
+    
+    "prompts": {
+      "noAccount": "Não tem uma conta?",
+      "hasAccount": "Já tem uma conta?",
+      "loginHere": "Entre aqui",
+      "orUseEmail": "ou use email"
+    },
+    
     "errors": {
+      "fillAllFields": "Por favor, preencha todos os campos",
       "emailRequired": "Email é obrigatório",
       "emailInvalid": "Email inválido",
       "passwordRequired": "Senha é obrigatória",
       "passwordTooShort": "Senha deve ter no mínimo 6 caracteres",
+      "passwordMismatch": "As senhas não coincidem",
       "nameRequired": "Nome é obrigatório",
-      "generic": "Erro ao autenticar. Tente novamente.",
+      "loginFailed": "Login falhou. Verifique suas credenciais.",
+      "registerFailed": "Falha no registro. Tente novamente.",
       "googleNoCredential": "Credencial do Google não recebida",
       "googleFailed": "Falha ao conectar com Google",
-      "fillAllFields": "Por favor, preencha todos os campos",
-      "passwordMismatch": "As senhas não coincidem",
-      "loginFailed": "Login falhou. Verifique suas credenciais.",
-      "registerFailed": "Falha no registro. Tente novamente."
+      "generic": "Erro ao autenticar. Tente novamente."
     },
+    
     "success": {
       "loginSuccess": "Login bem-sucedido! Redirecionando...",
       "registerSuccess": "Conta criada com sucesso! Redirecionando...",
       "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
-    },
-    "loading": "Carregando...",
-    "login": {
-      "title": "Bem-vindo de Volta",
-      "subtitle": "Entre na sua conta Zen Tribe",
-      "email": "Email",
-      "emailPlaceholder": "seu@email.com",
-      "password": "Senha",
-      "passwordPlaceholder": "••••••••",
-      "button": "Entrar",
-      "googleButton": "Entrar com Google",
-      "noAccount": "Não tem uma conta?",
-      "createAccount": "Criar Conta",
-      "forgotPassword": "Esqueceu a senha?"
-    },
-    "register": {
-      "title": "Junte-se à Tribe",
-      "subtitle": "Crie sua conta e desbloqueie conteúdo exclusivo",
-      "fullName": "Nome Completo",
-      "fullNamePlaceholder": "João Silva",
-      "confirmPassword": "Confirmar Senha",
-      "confirmPasswordPlaceholder": "••••••••",
-      "button": "Criar Conta",
-      "hasAccount": "Já tem uma conta?",
-      "loginHere": "Entre aqui"
     }
   },
 
-  "common": {
-    "close": "Fechar"
+  "home": {
+    "meta": {
+      "title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
+      "description": "DJ Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais."
+    },
+    
+    "hero": {
+      "badge": "2× Campeão Mundial - Brazilian Zouk World Championships",
+      "title": "DJ Zen Eyer",
+      "subtitle": "Bicampeão Mundial de Zouk Brasileiro",
+      "headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
+      "subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
+      "welcome": "Bem-vindo ao DJ Zen Eyer",
+      "tagline": "DJ e Produtor de Zouk Brasileiro",
+      "ctaPrimary": "Ouvir Agora",
+      "ctaSecondary": "Ver Eventos",
+      "ctaMusic": "Explorar Músicas",
+      "ctaSoundcloud": "Ouvir no SoundCloud",
+      "ctaBooking": "Booking / Press Kit"
+    },
+    
+    "stats": {
+      "champion": "Campeão Mundial",
+      "countries": "Países",
+      "events": "Eventos",
+      "years": "Anos de Carreira"
+    },
+    
+    "bio": {
+      "paragraph1": "é o DJ e produtor brasileiro de renome mundial especializado em Zouk Brasileiro. Bicampeão mundial na maior competição internacional de DJs de Zouk — vencedor de Melhor Remix e Melhor Performance de DJ, Zen Eyer já se apresentou em mais de 11 países nos principais congressos e festivais de Zouk do mundo.",
+      "paragraph2": "Conhecido por seu estilo lento, sensual e profundamente \"cremoso\", ele rejeita BPMs rápidos e defende que a verdadeira conexão na dança só acontece quando o corpo tem tempo para derreter. Sua assinatura sonora \"Zen… Zen… Zen… Zen… Eyer… Eyer… Eyer… Eyer…\" se tornou uma marca registrada nas pistas de dança do mundo todo.",
+      "paragraph3": "Criador da série de eventos reZENha e do movimento Tribo Zen (Zen Tribe), Zen Eyer não é apenas um DJ: ele é o líder ideológico da nova geração de Zouk Brasileiro que prioriza conexão, presença e prazer acima de acrobacias e velocidade."
+    },
+    
+    "features": {
+      "title": "Por Que Entrar na Zen Tribe?",
+      "subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
+      "exclusive": {
+        "title": "Música Exclusiva",
+        "description": "Acesso antecipado a lançamentos e remixes exclusivos"
+      },
+      "achievements": {
+        "title": "Conquistas & Recompensas",
+        "description": "Ganhe XP, desbloqueie badges e suba de nível"
+      },
+      "community": {
+        "title": "Comunidade Ativa",
+        "description": "Conecte-se com amantes de música e DJ Zen Eyer"
+      }
+    },
+    
+    "festivals": {
+      "title": "Apresentou-se em Festivais Internacionais",
+      "subtitle": "Reconhecido nos principais eventos de Zouk do mundo",
+      "viewMore": "e muitos mais"
+    },
+    
+    "press": {
+      "title": "Para Imprensa & Mídia",
+      "description": "Press kit completo, fotos em alta resolução, releases e entrevistas disponíveis.",
+      "cta": "BAIXAR PRESS KIT 2025"
+    },
+    
+    "booking": {
+      "title": "Bookers & Promotores",
+      "description": "Disponível para congressos, festivais, workshops e eventos exclusivos no Brasil e exterior.",
+      "cta": "SOLICITAR ORÇAMENTO"
+    },
+    
+    "authority": {
+      "title": "Perfis Verificados"
+    },
+    
+    "tribe": {
+      "title": "Junte-se à",
+      "highlight": "Zen Tribe",
+      "subtitle": "Sem pressa aqui. Apenas derretimento prolongado.",
+      "cta": "Entrar na Tribo"
+    },
+    
+    "cta": {
+      "title": "Pronto para Entrar na <1>Zen Tribe</1>?",
+      "subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk."
+    }
   },
 
-  "badge_featured": "Destaque",
-  "badge_new": "Novo",
-  "badge_sale": "Promoção",
+  "events": {
+    "meta": {
+      "title": "Eventos",
+      "description": "Próximos eventos e apresentações do DJ Zen Eyer"
+    },
+    
+    "loading": "Carregando eventos...",
+    "noEvents": "Nenhum evento agendado no momento. Volte em breve!",
+    
+    "title": "Próximos Eventos",
+    "upcomingEvents": "Próximos Eventos",
+    "pastEvents": "Eventos Passados",
+    "fullCalendar": "Calendário Completo",
+    
+    "header": {
+      "title": "Próximos Eventos",
+      "subtitle": "Junte-se a nós nas próximas festas e experiências",
+      "badge": "Eventos ao Vivo"
+    },
+    
+    "actions": {
+      "buyTicket": "Comprar Ingresso",
+      "getTicket": "Comprar Ingresso",
+      "viewTickets": "Ver Ingressos",
+      "tickets": "Ingressos",
+      "moreInfo": "Mais Informações",
+      "exportCalendar": "Exportar Calendário",
+      "addToCalendar": "Adicionar ao Calendário"
+    },
+    
+    "aria": {
+      "ticketButton": "Ver ingressos para {{title}} em {{location}} em {{date}}",
+      "ticketButtonFull": "Comprar ingressos para {{title}} no {{venue}}, {{location}} em {{date}}",
+      "calendarFrame": "Calendário de Eventos DJ Zen Eyer"
+    },
+    
+    "calendar": {
+      "title": "Calendário Completo",
+      "iframeTitle": "Calendário de Eventos DJ Zen Eyer",
+      "export": "Exportar Calendário",
+      "add": "Adicionar ao Calendário",
+      "note": "Clique nos eventos para mais detalhes"
+    },
+    
+    "featured": {
+      "title": "Destaque",
+      "sectionTitle": "Eventos em Destaque"
+    },
+    
+    "achievements": {
+      "sectionTitle": "Sistema de Conquistas",
+      "sectionSubtitle": "Participe de eventos e ganhe recompensas exclusivas",
+      "xp": {
+        "title": "Ganhe XP",
+        "description": "Acumule pontos de experiência em cada evento"
+      },
+      "badges": {
+        "title": "Badges Exclusivos",
+        "description": "Desbloqueie badges especiais por participação"
+      },
+      "rewards": {
+        "title": "Recompensas",
+        "description": "Ganhe acesso a conteúdo VIP e eventos"
+      },
+      "streaks": {
+        "title": "Sequências",
+        "description": "Mantenha sua sequência de eventos consecutivos"
+      }
+    },
+    
+    "cta": {
+      "title": "Pronto para Entrar na Festa?",
+      "subtitle": "Inscreva-se para receber atualizações sobre próximos eventos e experiências exclusivas",
+      "button": "Receber Notificações"
+    }
+  },
 
-  "join_now_button": "Entrar na Tribo",
-  "explore_music_button": "Explorar Músicas",
-  "play_featured_mix": "Ouvir no SoundCloud",
-  "upcoming_events": "Próximos Eventos",
-
-  "home_page_title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
-  "home_page_meta_desc": "DJ Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais.",
-
-  "home_headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
-  "home_subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
-  "home_welcome": "Bem-vindo ao DJ Zen Eyer",
-  "home_tagline": "DJ e Produtor de Zouk Brasileiro",
-  "home_cta": "Explorar Músicas",
-
-  "home_features_title": "Por Que Entrar na Zen Tribe?",
-  "home_features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
-  "home_feat_exclusive_title": "Música Exclusiva",
-  "home_feat_exclusive_desc": "Acesso antecipado a lançamentos e remixes exclusivos",
-  "home_feat_achievements_title": "Conquistas & Recompensas",
-  "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
-  "home_feat_community_title": "Comunidade Ativa",
-  "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
-
-  "home_cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
-  "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
-
-  "hero_title": "DJ Zen Eyer",
-  "hero_subtitle": "Zouk Brasileiro",
-  "hero_cta": "Ouvir Agora",
-  "hero_cta_secondary": "Ver Eventos",
-
-  "events_page_title": "Eventos",
-  "events_page_meta_desc": "Próximos eventos e apresentações do DJ Zen Eyer",
-  "events_title": "Próximos Eventos",
-  "events_past": "Eventos Passados",
-  "events_buy_ticket": "Comprar Ingresso",
-  "events_more_info": "Mais Informações",
-  "events_header_title": "Próximos Eventos",
-  "events_header_subtitle": "Junte-se a nós nas próximas festas e experiências",
-  "events_header_badge": "Eventos ao Vivo",
-  "events_featured_title": "Destaque",
-  "events_calendar_title": "Calendário Completo",
-  "events_calendar_iframe_title": "Calendário de Eventos DJ Zen Eyer",
-  "events_calendar_export": "Exportar Calendário",
-  "events_calendar_add": "Adicionar ao Calendário",
-  "events_calendar_note": "Clique nos eventos para mais detalhes",
-  "events_achievement_section_title": "Sistema de Conquistas",
-  "events_achievement_section_subtitle": "Participe de eventos e ganhe recompensas exclusivas",
-  "events_achievement_xp_title": "Ganhe XP",
-  "events_achievement_xp_desc": "Acumule pontos de experiência em cada evento",
-  "events_achievement_badges_title": "Badges Exclusivos",
-  "events_achievement_badges_desc": "Desbloqueie badges especiais por participação",
-  "events_achievement_rewards_title": "Recompensas",
-  "events_achievement_rewards_desc": "Ganhe acesso a conteúdo VIP e eventos",
-  "events_achievement_streaks_title": "Sequências",
-  "events_achievement_streaks_desc": "Mantenha sua sequência de eventos consecutivos",
-  "events_cta_title": "Pronto para Entrar na Festa?",
-  "events_cta_subtitle": "Inscreva-se para receber atualizações sobre próximos eventos e experiências exclusivas",
-  "events_cta_button": "Receber Notificações",
-  "event_badge_available": "Disponível",
-  "event_badge_members_only": "Apenas Membros",
-  "event_get_ticket": "Comprar Ingresso",
-
-  "music_page_title": "Música",
-  "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
   "music": {
+    "meta": {
+      "title": "Música",
+      "description": "Ouça as últimas mixagens e produções do DJ Zen Eyer"
+    },
+    
     "pageTitle": "Música",
-    "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer.",
+    "pageDescription": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer.",
+    
     "hero": {
       "badge": "Produções Originais & Remixes",
       "title": "Minhas",
@@ -166,6 +293,7 @@
       "subtitle": "Explore minhas últimas tracks, remixes exclusivos e conteúdo para download.",
       "cta": "Downloads grátis para a Zen Tribe!"
     },
+    
     "filters": {
       "all": "Todas as Tracks",
       "sets": "Sets",
@@ -174,6 +302,7 @@
       "black": "Black",
       "tradicional": "Tradicional"
     },
+    
     "track": {
       "download": "Baixar",
       "share": "Compartilhar",
@@ -185,147 +314,204 @@
     }
   },
 
-  "shop_page_title": "Loja",
-  "shop_page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
-  "shop_title": "Loja Zen Tribe",
-  "shop_subtitle": "Merchandise exclusivo e ingressos para eventos",
-  "shop_all_products": "Todos os Produtos",
-  "shop_featured_title": "Produtos em Destaque",
-  "shop_empty_cta": "Nenhum produto disponível no momento",
-  "shop_add_to_cart": "Adicionar ao Carrinho",
-  "shop_buy_now": "Comprar Agora",
-  "shop_buy_button": "Comprar Agora",
-  "shop_in_stock": "Em Estoque",
-  "shop_out_of_stock": "Fora de Estoque",
-  "shop_error_fetch": "Erro ao carregar produtos",
-  "shop_error_unknown": "Erro desconhecido",
-  "shop_adding_text": "Adicionando...",
-  "shop_free_shipping": "Frete Grátis",
-  "shop_free_shipping_desc": "Pedidos acima de R$150",
-  "shop_secure_payment": "Pagamento Seguro",
-  "shop_secure_payment_desc": "100% Protegido",
-  "shop_exclusive_items": "Itens Exclusivos",
-  "shop_exclusive_items_desc": "Edição Limitada",
-  "shop_fast_delivery": "Entrega Rápida",
-  "shop_fast_delivery_desc": "2-3 Dias Úteis",
-  "shop_hot_near_you": "Quente Perto de Você",
+  "shop": {
+    "meta": {
+      "title": "Loja",
+      "description": "Ingressos para eventos, merchandise exclusivo e muito mais"
+    },
+    
+    "title": "Loja Zen Tribe",
+    "subtitle": "Merchandise exclusivo e ingressos para eventos",
+    "allProducts": "Todos os Produtos",
+    "hotNearYou": "Quente Perto de Você",
+    
+    "featured": {
+      "title": "Produtos em Destaque"
+    },
+    
+    "actions": {
+      "addToCart": "Adicionar ao Carrinho",
+      "buyNow": "Comprar Agora",
+      "adding": "Adicionando..."
+    },
+    
+    "status": {
+      "inStock": "Em Estoque",
+      "outOfStock": "Fora de Estoque"
+    },
+    
+    "features": {
+      "freeShipping": {
+        "title": "Frete Grátis",
+        "description": "Pedidos acima de R$150"
+      },
+      "securePayment": {
+        "title": "Pagamento Seguro",
+        "description": "100% Protegido"
+      },
+      "exclusiveItems": {
+        "title": "Itens Exclusivos",
+        "description": "Edição Limitada"
+      },
+      "fastDelivery": {
+        "title": "Entrega Rápida",
+        "description": "2-3 Dias Úteis"
+      }
+    },
+    
+    "errors": {
+      "fetchProducts": "Erro ao carregar produtos",
+      "unknown": "Erro desconhecido"
+    },
+    
+    "empty": {
+      "message": "Nenhum produto disponível no momento"
+    }
+  },
 
-  "tribe_page_title": "Zen Tribe",
-  "tribe_page_meta_desc": "Junte-se à comunidade Zen Tribe e faça parte da família",
-  "zenTribe": {
+  "tribe": {
+    "meta": {
+      "title": "Zen Tribe",
+      "description": "Junte-se à comunidade Zen Tribe e faça parte da família"
+    },
+    
     "pageTitle": "Zen Tribe - Comunidade Exclusiva",
-    "pageDesc": "Junte-se à Zen Tribe e tenha acesso a conteúdo exclusivo, eventos VIP e muito mais!",
-    "badge": "Comunidade Exclusiva",
-    "welcome": "Bem-vindo à",
-    "tribe": "Zen Tribe",
-    "subtitle": "Uma comunidade exclusiva para verdadeiros amantes de música. Ganhe pontos, desbloqueie conquistas e aproveite benefícios incríveis.",
-    "joinNow": "Entrar Agora",
-    "learnMore": "Saiba Mais",
-    "unlockAtLevel": "Desbloquear no nível {{level}}",
-    "mostPopular": "Mais Popular",
-    "upgradeNow": "Fazer Upgrade Agora",
-    "unlocked": "Desbloqueado",
-    "viewMemberships": "Ver Planos",
-    "whyJoin": "Por Que Entrar na Zen Tribe?",
-    "chooseMembership": "Escolha Seu Plano Zen Tribe",
-    "selectTier": "Selecione o plano que se encaixa na sua jornada com a música do DJ Zen Eyer",
-    "levelUpTitle": "Evolua Sua Jornada Musical",
-    "levelUpDesc": "A Zen Tribe possui um sistema completo de conquistas que recompensa você por interagir com a música, participar de eventos e ser um membro ativo da comunidade.",
-    "xpTitle": "Pontos de Experiência (XP)",
-    "xpDesc": "Ganhe XP por cada ação que você toma, desde ouvir tracks até participar de eventos.",
-    "badgesTitle": "Badges Digitais",
-    "badgesDesc": "Desbloqueie badges colecionáveis por conquistas especiais e marcos na sua jornada.",
-    "rewardsTitle": "Recompensas & Benefícios",
-    "rewardsDesc": "Ganhe benefícios reais como descontos em merchandise, conteúdo exclusivo e upgrades VIP.",
-    "streaksTitle": "Sequências Diárias",
-    "streaksDesc": "Mantenha sua sequência de engajamento para XP bônus e recompensas exclusivas de sequência.",
-    "achievementShowcase": "Vitrine de Conquistas",
-    "currentLevel": "Nível Atual",
-    "zenApprentice": "Aprendiz Zen",
-    "progressToLevel": "Progresso para Nível 4",
+    "pageDescription": "Junte-se à Zen Tribe e tenha acesso a conteúdo exclusivo, eventos VIP e muito mais!",
+    
+    "hero": {
+      "badge": "Comunidade Exclusiva",
+      "welcome": "Bem-vindo à",
+      "tribe": "Zen Tribe",
+      "subtitle": "Uma comunidade exclusiva para verdadeiros amantes de música. Ganhe pontos, desbloqueie conquistas e aproveite benefícios incríveis.",
+      "joinNow": "Entrar Agora",
+      "learnMore": "Saiba Mais"
+    },
+    
     "stats": {
       "members": "Membros",
       "tracks": "Tracks",
       "events": "Eventos",
       "achievements": "Conquistas"
     },
+    
+    "sections": {
+      "whyJoin": "Por Que Entrar na Zen Tribe?",
+      "chooseMembership": "Escolha Seu Plano Zen Tribe",
+      "membershipSubtitle": "Selecione o plano que se encaixa na sua jornada com a música do DJ Zen Eyer",
+      "levelUp": {
+        "title": "Evolua Sua Jornada Musical",
+        "description": "A Zen Tribe possui um sistema completo de conquistas que recompensa você por interagir com a música, participar de eventos e ser um membro ativo da comunidade."
+      },
+      "achievementShowcase": "Vitrine de Conquistas"
+    },
+    
     "tabs": {
       "benefits": "Benefícios",
       "achievements": "Conquistas",
       "challenges": "Desafios"
     },
+    
     "benefits": {
       "exclusiveMusic": {
         "title": "Música Exclusiva",
-        "desc": "Acesso antecipado a lançamentos e remixes exclusivos antes de todos."
+        "description": "Acesso antecipado a lançamentos e remixes exclusivos antes de todos."
       },
       "earlyAccess": {
         "title": "Acesso Antecipado",
-        "desc": "Compre ingressos para eventos antes da venda geral."
+        "description": "Compre ingressos para eventos antes da venda geral."
       },
       "merchandise": {
         "title": "Merchandise Exclusivo",
-        "desc": "Descontos em produtos oficiais e edições limitadas."
+        "description": "Descontos em produtos oficiais e edições limitadas."
       },
       "community": {
         "title": "Comunidade Privada",
-        "desc": "Acesso ao grupo exclusivo de membros da Tribe."
+        "description": "Acesso ao grupo exclusivo de membros da Tribe."
       },
       "vipStatus": {
         "title": "Status VIP",
-        "desc": "Privilégios especiais em eventos ao vivo."
+        "description": "Privilégios especiais em eventos ao vivo."
       },
       "behindScenes": {
         "title": "Bastidores",
-        "desc": "Conteúdo exclusivo dos bastidores e processo criativo."
+        "description": "Conteúdo exclusivo dos bastidores e processo criativo."
       }
     },
+    
+    "gamification": {
+      "xp": {
+        "title": "Pontos de Experiência (XP)",
+        "description": "Ganhe XP por cada ação que você toma, desde ouvir tracks até participar de eventos."
+      },
+      "badges": {
+        "title": "Badges Digitais",
+        "description": "Desbloqueie badges colecionáveis por conquistas especiais e marcos na sua jornada."
+      },
+      "rewards": {
+        "title": "Recompensas & Benefícios",
+        "description": "Ganhe benefícios reais como descontos em merchandise, conteúdo exclusivo e upgrades VIP."
+      },
+      "streaks": {
+        "title": "Sequências Diárias",
+        "description": "Mantenha sua sequência de engajamento para XP bônus e recompensas exclusivas de sequência."
+      }
+    },
+    
+    "profile": {
+      "currentLevel": "Nível Atual",
+      "zenApprentice": "Aprendiz Zen",
+      "progressToLevel": "Progresso para Nível 4"
+    },
+    
     "achievements": {
       "firstTrack": {
         "title": "Primeira Track",
-        "desc": "Baixou sua primeira música"
+        "description": "Baixou sua primeira música"
       },
       "firstEvent": {
         "title": "Primeiro Evento",
-        "desc": "Participou do seu primeiro evento"
+        "description": "Participou do seu primeiro evento"
       },
       "collector": {
         "title": "Colecionador",
-        "desc": "Baixou 10 tracks"
+        "description": "Baixou 10 tracks"
       },
       "legend": {
         "title": "Lenda",
-        "desc": "Alcançou o nível máximo"
+        "description": "Alcançou o nível máximo"
       },
       "streak": {
         "title": "Sequência de Fogo",
-        "desc": "7 dias consecutivos ativos"
+        "description": "7 dias consecutivos ativos"
       },
-      "marketer": {
+      "ambassador": {
         "title": "Embaixador",
-        "desc": "Compartilhou 5 vezes"
+        "description": "Compartilhou 5 vezes"
       }
     },
+    
     "challenges": {
       "downloadTracks": {
         "title": "Baixe 5 Tracks",
-        "desc": "Baixe 5 músicas diferentes"
+        "description": "Baixe 5 músicas diferentes"
       },
       "attendEvents": {
         "title": "Participe de 3 Eventos",
-        "desc": "Participe de 3 eventos do DJ Zen Eyer"
+        "description": "Participe de 3 eventos do DJ Zen Eyer"
       },
       "shareContent": {
         "title": "Compartilhe 10 Vezes",
-        "desc": "Compartilhe conteúdo 10 vezes nas redes sociais"
+        "description": "Compartilhe conteúdo 10 vezes nas redes sociais"
       }
     },
-    "cta": {
-      "title": "Pronto para Evoluir Sua Experiência?",
-      "subtitle": "Junte-se a milhares de membros da Zen Tribe e desbloqueie todos os benefícios exclusivos!",
-      "button": "Entrar na Tribe Agora"
-    },
+    
     "tiers": {
+      "mostPopular": "Mais Popular",
+      "unlockAtLevel": "Desbloquear no nível {{level}}",
+      "unlocked": "Desbloqueado",
+      "upgradeNow": "Fazer Upgrade Agora",
+      "viewMemberships": "Ver Planos",
+      
       "novice": {
         "name": "Novato Zen",
         "price": "Grátis",
@@ -353,72 +539,80 @@
         "feature5": "Coleção de badges digitais Mestre Zen",
         "feature6": "Oportunidades de meet & greet"
       }
+    },
+    
+    "cta": {
+      "title": "Pronto para Evoluir Sua Experiência?",
+      "subtitle": "Junte-se a milhares de membros da Zen Tribe e desbloqueie todos os benefícios exclusivos!",
+      "button": "Entrar na Tribe Agora"
     }
   },
 
-  "presskit_page_title": "Trabalhe Comigo",
-  "presskit_page_meta_desc": "Contrate DJ Zen Eyer para seu evento. Press kit e informações de contato.",
-  "presskit_badge": "Press Kit Profissional",
-  "presskit_subtitle_line1": "Produtor de Zouk Brasileiro & DJ Internacional",
-  "presskit_subtitle_line2": "Transformando Eventos em Experiências Inesquecíveis",
-  "presskit_stat_countries": "Países",
-  "presskit_stat_people": "Pessoas Impactadas",
-  "presskit_stat_streams": "Streams",
-  "presskit_stat_years": "Anos de Experiência",
+  "presskit": {
+    "meta": {
+      "title": "Trabalhe Comigo",
+      "description": "Contrate DJ Zen Eyer para seu evento. Press kit e informações de contato."
+    },
+    
+    "pageTitle": "Trabalhe Comigo",
+    
+    "hero": {
+      "badge": "Press Kit Profissional",
+      "subtitle": {
+        "line1": "Produtor de Zouk Brasileiro & DJ Internacional",
+        "line2": "Transformando Eventos em Experiências Inesquecíveis"
+      }
+    },
+    
+    "stats": {
+      "countries": "Países",
+      "people": "Pessoas Impactadas",
+      "streams": "Streams",
+      "years": "Anos de Experiência"
+    }
+  },
 
-  "dashboard_page_title": "Painel",
-  "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
+  "dashboard": {
+    "meta": {
+      "title": "Painel",
+      "description": "Seu painel pessoal Zen Tribe"
+    },
+    
+    "pageTitle": "Painel"
+  },
 
-  "footer_rights": "Todos os direitos reservados.",
-  "footer_about": "Sobre",
-  "footer_contact": "Contato",
-  "footer_privacy": "Política de Privacidade",
-  "footer_terms": "Termos de Serviço",
-  "footer_quick_links": "Links Rápidos",
-  "footer_discover_more": "Descubra Mais",
-  "footer_music_philosophy": "Filosofia Musical",
-  "footer_press_kit_booking": "Press Kit / Booking",
-  "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine a Newsletter",
-  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
-  "footer_email_placeholder": "Seu endereço de e-mail",
-  "footer_subscribe": "Inscrever-se",
-  "footer_zen_tribe_info": "Info Zen Tribe",
-  "footer_home": "Início",
-  "footer_music": "Música",
-  "footer_events": "Eventos",
-  "footer_contact_text": "Contato",
-  "footer_bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
-  "footer_tagline": "A pressa é inimiga da cremosidade.",
-  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
-  "footer_subscribe_error": "Falha ao se inscrever. Tente novamente.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
-
-  "home_hero_badge": "2× Campeão Mundial - Brazilian Zouk World Championships",
-  "home_hero_title": "DJ Zen Eyer",
-  "home_hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
-  "home_stat_champion": "Campeão Mundial",
-  "home_stat_countries": "Países",
-  "home_stat_events": "Eventos",
-  "home_stat_years": "Anos de Carreira",
-  "home_bio_p1": "é o DJ e produtor brasileiro de renome mundial especializado em Zouk Brasileiro. Bicampeão mundial na maior competição internacional de DJs de Zouk — vencedor de Melhor Remix e Melhor Performance de DJ, Zen Eyer já se apresentou em mais de 11 países nos principais congressos e festivais de Zouk do mundo.",
-  "home_bio_p2": "Conhecido por seu estilo lento, sensual e profundamente \"cremoso\", ele rejeita BPMs rápidos e defende que a verdadeira conexão na dança só acontece quando o corpo tem tempo para derreter. Sua assinatura sonora \"Zen… Zen… Zen… Zen… Eyer… Eyer… Eyer… Eyer…\" se tornou uma marca registrada nas pistas de dança do mundo todo.",
-  "home_bio_p3": "Criador da série de eventos reZENha e do movimento Tribo Zen (Zen Tribe), Zen Eyer não é apenas um DJ: ele é o líder ideológico da nova geração de Zouk Brasileiro que prioriza conexão, presença e prazer acima de acrobacias e velocidade.",
-  "home_festivals_title": "Apresentou-se em Festivais Internacionais",
-  "home_festivals_subtitle": "Reconhecido nos principais eventos de Zouk do mundo",
-  "home_festivals_more": "e muitos mais",
-  "home_press_title": "Para Imprensa & Mídia",
-  "home_press_desc": "Press kit completo, fotos em alta resolução, releases e entrevistas disponíveis.",
-  "home_press_cta": "BAIXAR PRESS KIT 2025",
-  "home_booking_title": "Bookers & Promotores",
-  "home_booking_desc": "Disponível para congressos, festivais, workshops e eventos exclusivos no Brasil e exterior.",
-  "home_booking_cta": "SOLICITAR ORÇAMENTO",
-  "home_authority_title": "Perfis Verificados",
-  "home_tribe_title": "Junte-se à",
-  "home_tribe_highlight": "Zen Tribe",
-  "home_tribe_subtitle": "Sem pressa aqui. Apenas derretimento prolongado.",
-  "home_tribe_cta": "Entrar na Tribo",
-  "home_cta_soundcloud": "Ouvir no SoundCloud",
-  "home_cta_booking": "Booking / Press Kit",
-  "home_cta_music": "Explorar Músicas"
+  "footer": {
+    "bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
+    "tagline": "A pressa é inimiga da cremosidade.",
+    "copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
+    "rights": "Todos os direitos reservados.",
+    
+    "sections": {
+      "quickLinks": "Links Rápidos",
+      "discoverMore": "Descubra Mais",
+      "zenTribeInfo": "Info Zen Tribe"
+    },
+    
+    "links": {
+      "home": "Início",
+      "music": "Música",
+      "events": "Eventos",
+      "about": "Sobre",
+      "contact": "Contato",
+      "privacy": "Política de Privacidade",
+      "terms": "Termos de Serviço",
+      "musicPhilosophy": "Filosofia Musical",
+      "pressKitBooking": "Press Kit / Booking",
+      "supportArtist": "Apoie o Artista"
+    },
+    
+    "newsletter": {
+      "title": "Assine a Newsletter",
+      "description": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
+      "emailPlaceholder": "Seu endereço de e-mail",
+      "subscribe": "Inscrever-se",
+      "success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
+      "error": "Falha ao se inscrever. Tente novamente."
+    }
+  }
 }
