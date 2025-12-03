@@ -83,6 +83,7 @@ export const ARTIST = {
   // 📱 Redes Sociais
   social: {
     instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
+    facebook: { handle: 'djzeneyer', url: 'https://facebook.com/djzeneyer' },
     youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
     soundcloud: { handle: 'djzeneyer', url: 'https://soundcloud.com/djzeneyer' },
     spotify: { id: '68SHKGndTlq3USQ2LZmyLw', url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw' },

@@ -6,6 +6,7 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { ARTIST } from '../data/artistData';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import {
   Download,
@@ -171,10 +172,10 @@ const CONTENT_EN = {
 };
 
 const RELEVANT_LINKS = [
-  { name: "Instagram", url: "https://instagram.com/djzeneyer", icon: <Instagram size={20} /> },
-  { name: "YouTube", url: "https://www.youtube.com/@djzeneyer", icon: <Radio size={20} /> },
-  { name: "Spotify", url: "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw", icon: <PlayCircle size={20} /> },
-  { name: "Apple Music", url: "https://music.apple.com/us/artist/zen-eyer/1439280950", icon: <PlayCircle size={20} /> },
+  { name: "Instagram", url: ARTIST.social.instagram.url, icon: <Instagram size={20} /> },
+  { name: "YouTube", url: ARTIST.social.youtube.url, icon: <Radio size={20} /> },
+  { name: "Spotify", url: ARTIST.social.spotify.url, icon: <PlayCircle size={20} /> },
+  { name: "Apple Music", url: ARTIST.social.appleMusic.url, icon: <PlayCircle size={20} /> },
   { name: "MusicBrainz", url: "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154", icon: <Database size={20} /> },
   { name: "Wikidata", url: "https://www.wikidata.org/wiki/Q136551855", icon: <Globe size={20} /> },
   { name: "Discogs", url: "https://www.discogs.com/artist/16872046", icon: <Database size={20} /> },
@@ -423,8 +424,8 @@ const PressKitPage: React.FC = () => {
 
                 <div className="flex flex-wrap justify-center gap-4">
                   <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg inline-flex items-center gap-3"><Phone size={20} /> WhatsApp</a>
-                  <a href="mailto:booking@djzeneyer.com" className="btn btn-outline btn-lg inline-flex items-center gap-3"><Mail size={20} /> Email</a>
-                  <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg inline-flex items-center gap-3"><Instagram size={20} /> Instagram</a>
+                  <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline btn-lg inline-flex items-center gap-3"><Mail size={20} /> Email</a>
+                  <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg inline-flex items-center gap-3"><Instagram size={20} /> Instagram</a>
                 </div>
 
                 <div className="mt-12 pt-8 border-t border-white/10">

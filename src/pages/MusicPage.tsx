@@ -84,9 +84,12 @@ const MusicPage: React.FC = () => {
           {/* Filtros */}
           <div className="mb-12 space-y-6">
             <div className="max-w-md mx-auto relative">
-              <input 
-                type="text" 
-                placeholder="Buscar música..." 
+              <label htmlFor="music-search" className="sr-only">Buscar música</label>
+              <input
+                id="music-search"
+                name="music-search"
+                type="text"
+                placeholder="Buscar música..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-surface/50 border border-white/10 rounded-full py-3 px-12 text-white focus:border-primary outline-none transition-all"

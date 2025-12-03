@@ -480,20 +480,24 @@ const MyAccountPage: React.FC = () => {
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Full Name</label>
-                  <input 
-                    type="text" 
-                    value={user.name} 
+                  <label htmlFor="account-name" className="block text-sm font-semibold mb-2">Full Name</label>
+                  <input
+                    id="account-name"
+                    name="account-name"
+                    type="text"
+                    value={user.name}
                     autoComplete="name"
                     className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
                     disabled
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Email</label>
-                  <input 
-                    type="email" 
-                    value={user.email} 
+                  <label htmlFor="account-email" className="block text-sm font-semibold mb-2">Email</label>
+                  <input
+                    id="account-email"
+                    name="account-email"
+                    type="email"
+                    value={user.email}
                     autoComplete="email"
                     className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
                     disabled
@@ -513,16 +517,16 @@ const MyAccountPage: React.FC = () => {
                 <h3 className="text-xl font-semibold">Notifications</h3>
               </div>
               <div className="space-y-3">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" className="w-5 h-5" defaultChecked />
+                <label htmlFor="notify-events" className="flex items-center gap-3 cursor-pointer">
+                  <input id="notify-events" name="notify-events" type="checkbox" className="w-5 h-5" defaultChecked />
                   <span>Email notifications for new events</span>
                 </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" className="w-5 h-5" defaultChecked />
+                <label htmlFor="notify-achievements" className="flex items-center gap-3 cursor-pointer">
+                  <input id="notify-achievements" name="notify-achievements" type="checkbox" className="w-5 h-5" defaultChecked />
                   <span>Achievement updates</span>
                 </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" className="w-5 h-5" />
+                <label htmlFor="notify-marketing" className="flex items-center gap-3 cursor-pointer">
+                  <input id="notify-marketing" name="notify-marketing" type="checkbox" className="w-5 h-5" />
                   <span>Marketing emails</span>
                 </label>
               </div>

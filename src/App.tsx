@@ -20,6 +20,7 @@ const ShopPage = lazy(() => import('./pages/ShopPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const MyAccountPage = lazy(() => import('./pages/MyAccountPage'));
 const FAQPage = lazy(() => import('./pages/FAQPage'));
+const PhilosophyPage = lazy(() => import('./pages/PhilosophyPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="my-account" element={<MyAccountPage />} />
                     <Route path="faq" element={<FAQPage />} />
+                    <Route path="my-philosophy" element={<PhilosophyPage />} />
                   </Route>
 
                   {/* Portuguese routes under /pt */}
@@ -67,6 +69,7 @@ function App() {
                     <Route path="painel" element={<DashboardPage />} />
                     <Route path="minha-conta" element={<MyAccountPage />} />
                     <Route path="faq" element={<FAQPage />} />
+                    <Route path="minha-filosofia" element={<PhilosophyPage />} />
                   </Route>
 
                   {/* Fallback 404 */}
