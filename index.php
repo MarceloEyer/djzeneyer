@@ -3,7 +3,7 @@
  * Main template file - DJ Zen Eyer Theme
  * Mode: React SPA with Server-Side SEO + Performance Optimizations
  * @package DJZenEyer
- * @version 2.6.0 - LCP PRELOAD ADDED
+ * @version 2.7.0 - MODERN OPTIMIZATIONS (Shared Hosting Safe)
  */
 if (!defined('ABSPATH')) exit;
 
@@ -100,6 +100,18 @@ $theme_uri = get_template_directory_uri();
     <!-- ⚡ OTIMIZAÇÃO 80/20: PRELOAD LCP IMAGE -->
     <!-- Carrega a imagem de fundo IMEDIATAMENTE, resolvendo a LCP -->
     <link rel="preload" as="image" href="/images/hero-background.webp" fetchpriority="high">
+
+    <!-- ⚡ PERFORMANCE: Speculation Rules (Safe Mode para Hospedagem Compartilhada) -->
+    <!-- 'prefetch' apenas baixa o HTML, sem processamento pesado. 'moderate' exige intenção do usuário (mouse over > 200ms). -->
+    <script type="speculationrules">
+    {
+      "prefetch": [{
+        "source": "document",
+        "where": { "href_matches": "/*" },
+        "eagerness": "moderate"
+      }]
+    }
+    </script>
 
     <!-- ⚡ PRECONNECT GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
