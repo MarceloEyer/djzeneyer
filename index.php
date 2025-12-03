@@ -97,8 +97,11 @@ $theme_uri = get_template_directory_uri();
     <link rel="manifest" href="<?php echo esc_url($theme_uri); ?>/site.webmanifest">
     <meta name="theme-color" content="#0A0E27">
     
+    <!-- ⚡ OTIMIZAÇÃO 80/20: PRELOAD LCP IMAGE -->
+    <!-- Carrega a imagem de fundo IMEDIATAMENTE, resolvendo a LCP -->
     <link rel="preload" as="image" href="/images/hero-background.webp" fetchpriority="high">
 
+    <!-- ⚡ PRECONNECT GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" media="print" onload="this.media='all'">
