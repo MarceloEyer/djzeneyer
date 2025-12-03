@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
 
 interface BandsintownEvent {
@@ -23,8 +24,12 @@ interface EventsListProps {
 }
 
 export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
+  const { t, i18n } = useTranslation();
   const [events, setEvents] = useState<BandsintownEvent[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Determina o locale atual para formatação de datas
+  const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -59,9 +64,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12" role="status" aria-label="Carregando eventos">
+      <div className="flex justify-center items-center py-12" role="status" aria-label={t('events.loading', 'Loading events')}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" aria-hidden="true"></div>
-        <span className="sr-only">Carregando eventos...</span>
+        <span className="sr-only">{t('events.loading', 'Loading events...')}</span>
       </div>
     );
   }
@@ -70,10 +75,22 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     return (
       <div className="text-center py-12 text-white/60">
         <Calendar size={48} className="mx-auto mb-4 text-white/20" aria-hidden="true" />
-        <p>Nenhum evento agendado no momento. Volte em breve!</p>
+        <p>{t('events.noEvents', 'No events scheduled at the moment. Check back soon!')}</p>
       </div>
     );
   }
+
+  // Helper para formatar datas no idioma correto
+  const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) => {
+    return date.toLocaleDateString(currentLocale, options);
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString(currentLocale, {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   // Compact variant for HomePage
   if (variant === 'compact') {
@@ -85,6 +102,16 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
             const ticketUrl = event.offers?.[0]?.url || event.url;
             const eventLocation = `${event.venue.city}, ${event.venue.country}`;
             
+            // Aria-label traduzido dinamicamente
+            const ariaLabel = t('events.ticketAriaLabel', 
+              'View tickets for {{title}} at {{location}} on {{date}}', 
+              {
+                title: event.title,
+                location: eventLocation,
+                date: formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' })
+              }
+            );
+            
             return (
               <motion.article
                 key={event.id}
@@ -95,8 +122,10 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 itemScope
                 itemType="https://schema.org/MusicEvent"
               >
+                {/* Schema.org metadata - sempre em inglês para bots */}
                 <meta itemProp="eventStatus" content="https://schema.org/EventScheduled" />
                 <meta itemProp="eventAttendanceMode" content="https://schema.org/OfflineEventAttendanceMode" />
+                <meta itemProp="inLanguage" content={i18n.language} />
                 
                 <div className="flex items-start gap-4 p-4">
                   {/* Date Badge */}
@@ -104,17 +133,13 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     itemProp="startDate"
                     dateTime={event.datetime}
                     className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10"
-                    aria-label={eventDate.toLocaleDateString('pt-BR', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    })}
+                    aria-label={formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' })}
                   >
                     <div className="text-2xl font-bold text-primary" aria-hidden="true">
                       {eventDate.getDate()}
                     </div>
                     <div className="text-xs uppercase text-white/60" aria-hidden="true">
-                      {eventDate.toLocaleDateString('pt-BR', { month: 'short' })}
+                      {formatDate(eventDate, { month: 'short' })}
                     </div>
                   </time>
 
@@ -142,14 +167,14 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     </div>
                   </div>
 
-                  {/* Performer Metadata */}
+                  {/* Performer Metadata - sempre em inglês */}
                   <div itemProp="performer" itemScope itemType="https://schema.org/MusicGroup">
                     <meta itemProp="name" content="Zen Eyer" />
                     <meta itemProp="genre" content="Brazilian Zouk" />
                     <link itemProp="url" href="https://djzeneyer.com" />
                   </div>
 
-                  {/* CTA Button with Accessible Label */}
+                  {/* CTA Button - texto traduzido, aria-label descritivo */}
                   <div itemProp="offers" itemScope itemType="https://schema.org/Offer">
                     <meta itemProp="availability" content="https://schema.org/InStock" />
                     <meta itemProp="url" content={ticketUrl} />
@@ -161,10 +186,12 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-sm btn-primary flex-shrink-0 flex items-center gap-2"
-                      aria-label={`Ver ingressos para ${event.title} em ${eventLocation} - ${eventDate.toLocaleDateString('pt-BR')}`}
+                      aria-label={ariaLabel}
                     >
                       <Ticket size={14} aria-hidden="true" />
-                      <span className="sr-only md:not-sr-only">Ingressos</span>
+                      <span className="hidden sm:inline">
+                        {t('events.tickets', 'Tickets')}
+                      </span>
                     </a>
                   </div>
                 </div>
@@ -173,7 +200,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           })}
         </div>
 
-        {/* Enhanced JSON-LD for SEO */}
+        {/* JSON-LD - sempre em inglês para bots, múltiplos idiomas via inLanguage */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -181,8 +208,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               '@context': 'https://schema.org',
               '@type': 'EventSeries',
               name: 'Zen Eyer World Tour',
-              description: 'Tour oficial do bicampeão mundial DJ Zen Eyer - Brazilian Zouk. Apresentações ao vivo em festivais e congressos internacionais.',
-              url: 'https://djzeneyer.com/events',
+              description: 'Official tour schedule of two-time World Champion DJ Zen Eyer - Brazilian Zouk',
+              url: `https://djzeneyer.com/${i18n.language}/events`,
+              inLanguage: [i18n.language, 'pt-BR', 'en-US'],
               image: 'https://djzeneyer.com/images/events-og.jpg',
               performer: {
                 '@type': 'MusicGroup',
@@ -205,6 +233,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 startDate: event.datetime,
                 eventStatus: 'https://schema.org/EventScheduled',
                 eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+                inLanguage: i18n.language,
                 location: {
                   '@type': 'Place',
                   name: event.venue.name,
@@ -244,7 +273,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     <div className="w-full">
       {showTitle && (
         <h2 className="text-3xl font-bold mb-8 text-center font-display text-white">
-          Próximos Eventos
+          {t('events.title', 'Upcoming Events')}
         </h2>
       )}
       
@@ -253,16 +282,25 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           const eventDate = new Date(event.datetime);
           const ticketUrl = event.offers?.[0]?.url || event.url;
           const eventLocation = `${event.venue.city}, ${event.venue.country}`;
-          const formattedDate = eventDate.toLocaleDateString('pt-BR', {
+          
+          const formattedDate = formatDate(eventDate, {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric'
           });
-          const formattedTime = eventDate.toLocaleTimeString('pt-BR', {
-            hour: '2-digit',
-            minute: '2-digit'
-          });
+          
+          const formattedTime = formatTime(eventDate);
+          
+          const fullAriaLabel = t('events.fullTicketAriaLabel',
+            'Buy tickets for {{title}} at {{venue}}, {{location}} on {{date}}',
+            {
+              title: event.title,
+              venue: event.venue.name,
+              location: eventLocation,
+              date: formattedDate
+            }
+          );
 
           return (
             <motion.article
@@ -276,6 +314,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
             >
               <meta itemProp="eventStatus" content="https://schema.org/EventScheduled" />
               <meta itemProp="eventAttendanceMode" content="https://schema.org/OfflineEventAttendanceMode" />
+              <meta itemProp="inLanguage" content={i18n.language} />
               
               {/* Hero Date Section */}
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
@@ -290,7 +329,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     {eventDate.getDate()}
                   </div>
                   <div className="text-xl uppercase text-white/80 font-semibold" aria-hidden="true">
-                    {eventDate.toLocaleDateString('pt-BR', { month: 'short' })}
+                    {formatDate(eventDate, { month: 'short' })}
                   </div>
                   <div className="text-sm text-white/60" aria-hidden="true">
                     {eventDate.getFullYear()}
@@ -336,7 +375,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                   <link itemProp="url" href="https://djzeneyer.com" />
                 </div>
 
-                {/* Enhanced CTA with Full Context */}
+                {/* Enhanced CTA */}
                 <div itemProp="offers" itemScope itemType="https://schema.org/Offer">
                   <meta itemProp="availability" content="https://schema.org/InStock" />
                   <meta itemProp="url" content={ticketUrl} />
@@ -349,10 +388,10 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-primary w-full flex items-center justify-center gap-2 group/btn"
-                    aria-label={`Comprar ingressos para ${event.title} em ${event.venue.name}, ${eventLocation} - ${formattedDate}`}
+                    aria-label={fullAriaLabel}
                   >
                     <Ticket size={18} aria-hidden="true" />
-                    <span>Ver Ingressos</span>
+                    <span>{t('events.viewTickets', 'View Tickets')}</span>
                     <ExternalLink size={16} className="group-hover/btn:translate-x-1 transition-transform" aria-hidden="true" />
                   </a>
                 </div>
@@ -362,7 +401,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
         })}
       </div>
 
-      {/* Enhanced JSON-LD with Breadcrumbs */}
+      {/* JSON-LD idêntico à versão compact */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -370,8 +409,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
             '@context': 'https://schema.org',
             '@type': 'EventSeries',
             name: 'Zen Eyer World Tour',
-            description: 'Tour oficial do bicampeão mundial DJ Zen Eyer - Brazilian Zouk. Apresentações ao vivo em festivais e congressos internacionais.',
-            url: 'https://djzeneyer.com/events',
+            description: 'Official tour schedule of two-time World Champion DJ Zen Eyer - Brazilian Zouk',
+            url: `https://djzeneyer.com/${i18n.language}/events`,
+            inLanguage: [i18n.language, 'pt-BR', 'en-US'],
             image: 'https://djzeneyer.com/images/events-og.jpg',
             performer: {
               '@type': 'MusicGroup',
@@ -394,8 +434,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               startDate: event.datetime,
               eventStatus: 'https://schema.org/EventScheduled',
               eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+              inLanguage: i18n.language,
               image: 'https://djzeneyer.com/images/event-default.jpg',
-              description: `DJ Zen Eyer ao vivo em ${event.venue.name}, ${event.venue.city}`,
+              description: `DJ Zen Eyer live at ${event.venue.name}, ${event.venue.city}`,
               location: {
                 '@type': 'Place',
                 name: event.venue.name,
