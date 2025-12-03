@@ -3,7 +3,7 @@
  * Main template file - DJ Zen Eyer Theme
  * Mode: React SPA with Server-Side SEO + Performance Optimizations
  * @package DJZenEyer
- * @version 2.5.0 - FIX ASSET DISCOVERY
+ * @version 2.6.0 - LCP PRELOAD ADDED
  */
 if (!defined('ABSPATH')) exit;
 
@@ -97,6 +97,8 @@ $theme_uri = get_template_directory_uri();
     <link rel="manifest" href="<?php echo esc_url($theme_uri); ?>/site.webmanifest">
     <meta name="theme-color" content="#0A0E27">
     
+    <link rel="preload" as="image" href="/images/hero-background.webp" fetchpriority="high">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" media="print" onload="this.media='all'">
