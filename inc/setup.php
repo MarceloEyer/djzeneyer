@@ -36,11 +36,8 @@ add_action('after_setup_theme', function () {
 
 /* =========================
  * SEGURANÇA: HttpOnly Cookies
- * Garante que cookies de sessão não autenticados (WooCommerce) não possam
- * ser acessados por JavaScript (XSS), mitigando a vulnerabilidade.
  * ========================= */
 add_filter( 'woocommerce_cookie_duration', function ( $duration ) {
-    // O true no final da função session_set_cookie_params é o HttpOnly
     session_set_cookie_params( $duration, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true ); 
     return $duration;
 } );
@@ -88,12 +85,12 @@ add_action('rest_api_init', function() {
 });
 
 /**
- * Lazy Load nativo (WordPress 5.5+)
+ * Lazy Load nativo
  */
 add_filter('wp_lazy_loading_enabled', '__return_true');
 
 /**
- * Remove query strings (?ver=) para melhor cache CDN
+ * Remove query strings (?ver=)
  */
 add_filter('style_loader_src', 'djzen_remove_query_strings', 10, 2);
 add_filter('script_loader_src', 'djzen_remove_query_strings', 10, 2);
@@ -139,4 +136,26 @@ add_filter('wp_get_attachment_image_attributes', function($attr, $attachment) {
     }
     
     return $attr;
+}, 10, 2);
+
+
+/* ==========================================
+ * ⚡ PERFORMANCE 80/20: DEFER SCRIPTS
+ * ========================================== 
+ * Essencial para shared hosting: libera o servidor para entregar 
+ * o HTML primeiro, baixando scripts pesados em paralelo.
+ */
+add_filter('script_loader_tag', function($tag, $handle) {
+    // Não altera scripts no painel administrativo
+    if (is_admin()) {
+        return $tag;
+    }
+
+    // Se já tiver defer ou async, ignora
+    if (strpos($tag, 'defer') !== false || strpos($tag, 'async') !== false) {
+        return $tag;
+    }
+
+    // Aplica defer. Isso faz o download em paralelo e executa só no final.
+    return str_replace(' src', ' defer src', $tag);
 }, 10, 2);
