@@ -44,7 +44,7 @@ class Zen_BIT {
     }
     
     public function enqueue_public_assets() {
-        wp_enqueue_style('zen-bit-public', ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css', array(), ZEN_BIT_VERSION);
+        // wp_enqueue_style('zen-bit-public', ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css', array(), ZEN_BIT_VERSION);
         wp_enqueue_script('zen-bit-public', ZEN_BIT_PLUGIN_URL . 'public/js/zen-bit-public.js', array('jquery'), ZEN_BIT_VERSION, true);
     }
     
