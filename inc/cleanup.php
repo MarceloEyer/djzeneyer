@@ -2,13 +2,14 @@
 if (!defined('ABSPATH')) exit;
 
 /* ==========================================
- * 🧹 CLEANUP.PHP - LIMPEZA EXTREMA
+ * 🧹 CLEANUP.PHP - LIMPEZA EXTREMA HEADLESS
+ * 
  * Remove APENAS recursos desnecessários (CSS/JS/HTML bloat)
  * 
- * Este arquivo é exclusivamente para:
- * - Remover CSS/JS que não são usados no headless
- * - Limpar <head> de meta tags inúteis
- * - Desabilitar features do WP que geram output frontend
+ * FILOSOFIA:
+ * - Se pode ser desabilitado no plugin → Desabilite lá
+ * - Se é do zen-bit → Altere o zen-bit
+ * - Se não tem configuração → Vai aqui
  * 
  * NÃO coloque aqui: CORS, redirects, cache, segurança
  * ========================================== */
@@ -31,17 +32,16 @@ add_action('after_setup_theme', function () {
     remove_action('wp_head', 'wlwmanifest_link');              // Windows Live Writer
     remove_action('wp_head', 'wp_generator');                  // Meta tag com versão WP
     remove_action('wp_head', 'wp_shortlink_wp_head');          // Shortlink rel
-    remove_action('wp_head', 'rest_output_link_wp_head');      // Link para REST API (React já sabe)
+    remove_action('wp_head', 'rest_output_link_wp_head');      // Link para REST API
     remove_action('wp_head', 'wp_oembed_add_discovery_links'); // oEmbed discovery
     remove_action('template_redirect', 'rest_output_link_header', 11);
-    remove_action('wp_head', 'adjacent_posts_rel_link_wp_head'); // Next/Previous posts
-    remove_action('wp_head', 'feed_links', 2);                 // RSS feed links
-    remove_action('wp_head', 'feed_links_extra', 3);           // Extra RSS feeds
+    remove_action('wp_head', 'adjacent_posts_rel_link_wp_head'); // Next/Previous
+    remove_action('wp_head', 'feed_links', 2);                 // RSS feeds
+    remove_action('wp_head', 'feed_links_extra', 3);           // Extra RSS
 });
 
 /**
  * 2. GUTENBERG: REMOVER SVG FILTERS E GLOBAL STYLES
- * Injeta CSS inline gigante no body - totalmente desnecessário
  */
 add_action('init', function() {
     remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
@@ -52,74 +52,98 @@ add_action('init', function() {
 
 /**
  * 3. REMOVER TODO CSS/JS DO FRONTEND
- * WordPress, Gutenberg, WooCommerce, Gamipress, Plugins
+ * WordPress Core, Gutenberg, WooCommerce
  */
 add_action('wp_enqueue_scripts', function () {
     // Protege admin
     if (is_admin()) return;
 
     // === WORDPRESS CORE CSS ===
-    wp_dequeue_style('wp-block-library');           // Blocos Gutenberg
-    wp_dequeue_style('wp-block-library-theme');     // Theme do Gutenberg
-    wp_dequeue_style('global-styles');              // Inline styles globais
-    wp_dequeue_style('classic-theme-styles');       // Classic editor
+    wp_dequeue_style('wp-block-library');
+    wp_dequeue_style('wp-block-library-theme');
+    wp_dequeue_style('global-styles');
+    wp_dequeue_style('classic-theme-styles');
     wp_deregister_style('wp-block-library');
     wp_deregister_style('wp-block-library-theme');
     wp_deregister_style('global-styles');
     wp_deregister_style('classic-theme-styles');
 
     // === WOOCOMMERCE CSS ===
-    wp_dequeue_style('woocommerce-layout');         // Layout geral
-    wp_dequeue_style('woocommerce-smallscreen');    // Mobile styles
-    wp_dequeue_style('woocommerce-general');        // Estilos gerais
-    wp_dequeue_style('wc-blocks-style');            // Blocos Gutenberg Woo
-    wp_dequeue_style('wc-brands-styles');           // Brands extension
+    wp_dequeue_style('woocommerce-layout');
+    wp_dequeue_style('woocommerce-smallscreen');
+    wp_dequeue_style('woocommerce-general');
+    wp_dequeue_style('wc-blocks-style');
     wp_deregister_style('woocommerce-layout');
     wp_deregister_style('woocommerce-smallscreen');
     wp_deregister_style('woocommerce-general');
     wp_deregister_style('wc-blocks-style');
+    
+    // Desabilita TODOS os estilos do Woo
+    add_filter('woocommerce_enqueue_styles', '__return_false');
+
+    // === WOOCOMMERCE BRANDS CSS (Extension) ===
+    // Esse é o brands.css do PageSpeed
+    wp_dequeue_style('wc-brands-styles');
+    wp_dequeue_style('woocommerce-brands');
     wp_deregister_style('wc-brands-styles');
-    add_filter('woocommerce_enqueue_styles', '__return_false'); // Bloqueia tudo do Woo
+    wp_deregister_style('woocommerce-brands');
+    
+    // Fallback: busca dinamicamente qualquer CSS com "brands" no nome
+    global $wp_styles;
+    if (isset($wp_styles->registered)) {
+        foreach ($wp_styles->registered as $handle => $style) {
+            if (strpos($style->src, 'brands.css') !== false) {
+                wp_dequeue_style($handle);
+                wp_deregister_style($handle);
+            }
+        }
+    }
 
     // === GAMIPRESS CSS ===
     wp_dequeue_style('gamipress-css');
     wp_deregister_style('gamipress-css');
 
-    // === ZEN-BIT (Plugin Custom) CSS ===
+    // === NOTA: zen-bit-public.css ===
+    // ⚠️ REMOVA DIRETAMENTE NO PLUGIN ZEN-BIT (melhor prática)
+    // Mas mantemos aqui como fallback de segurança
     wp_dequeue_style('zen-bit-public-css');
     wp_deregister_style('zen-bit-public-css');
 
     // === WORDPRESS CORE JS ===
-    wp_dequeue_script('wp-embed');                  // Embed posts de outros sites WP
-    wp_dequeue_script('wp-emoji');                  // Emoji polyfill
-    wp_dequeue_script('wp-api-fetch');              // Fetch API do Gutenberg
-    wp_dequeue_script('wp-i18n');                   // Internacionalização Gutenberg
-    wp_dequeue_script('wp-hooks');                  // Hooks JS do Gutenberg
-    wp_dequeue_script('wp-polyfill');               // Polyfills modernizr
+    wp_dequeue_script('wp-embed');
+    wp_dequeue_script('wp-emoji');
+    wp_dequeue_script('wp-api-fetch');
+    wp_dequeue_script('wp-i18n');
+    wp_dequeue_script('wp-hooks');
+    wp_dequeue_script('wp-polyfill');
     wp_deregister_script('wp-embed');
     wp_deregister_script('wp-emoji');
 
     // === WOOCOMMERCE JS ===
-    wp_dequeue_script('wc-cart-fragments');         // AJAX do carrinho (pesado!)
-    wp_dequeue_script('woocommerce');               // Scripts gerais
-    wp_dequeue_script('wc-add-to-cart');            // Add to cart
-    wp_dequeue_script('wc-order-attribution');      // Tracking de pedidos
+    wp_dequeue_script('wc-cart-fragments');
+    wp_dequeue_script('woocommerce');
+    wp_dequeue_script('wc-add-to-cart');
+    wp_dequeue_script('wc-order-attribution');
     wp_deregister_script('wc-cart-fragments');
     wp_deregister_script('woocommerce');
     wp_deregister_script('wc-add-to-cart');
     wp_deregister_script('wc-order-attribution');
 
+    // === LITESPEED CACHE: WEBFONTLOADER ===
+    // ⚠️ DESABILITE NO PLUGIN: LiteSpeed → Page Optimization → CSS → "Load Google Fonts Async" = OFF
+    // Mas mantemos aqui como fallback
+    wp_dequeue_script('litespeed-webfontloader');
+    wp_deregister_script('litespeed-webfontloader');
+
     // === DASHICONS (ícones do admin) ===
-    // Remove para não-logados
     if (!is_user_logged_in()) {
         wp_dequeue_style('dashicons');
         wp_deregister_style('dashicons');
     }
-}, 9999); // Prioridade alta para sobrescrever plugins
+}, 9999);
 
 /**
  * 4. REMOVER JQUERY MIGRATE
- * Dependência legada - não necessária em headless
  */
 add_action('wp_default_scripts', function($scripts) {
     if (!is_admin() && !empty($scripts->registered['jquery'])) {
@@ -132,16 +156,14 @@ add_action('wp_default_scripts', function($scripts) {
 
 /**
  * 5. HEARTBEAT API: REDUZIR FREQUÊNCIA
- * De 15s para 60s - reduz CPU no admin
  */
 add_filter('heartbeat_settings', function($settings) {
-    $settings['interval'] = 60;
+    $settings['interval'] = 60; // De 15s para 60s
     return $settings;
 });
 
 /**
  * 6. ADMIN BAR: REMOVER CSS/JS NO FRONTEND
- * Se aparecer por algum motivo, remove completamente
  */
 add_action('wp_footer', function(){
     if (!is_admin()) {
@@ -153,14 +175,13 @@ add_action('wp_footer', function(){
 }, 9999);
 
 /**
- * 7. WOOCOMMERCE: REMOVER GALLERY NOSCRIPT TAG
- * Injeta <style> inline desnecessário
+ * 7. WOOCOMMERCE: REMOVER GALLERY NOSCRIPT
  */
 remove_action('wp_head', 'wc_gallery_noscript');
+remove_action('wp_head', 'wc_generator_tag');
 
 /**
  * 8. DESABILITAR AUTOCOMPLETE DO WOOCOMMERCE
- * Remove script de autocomplete de endereços
  */
 add_action('wp_enqueue_scripts', function() {
     if (class_exists('WooCommerce')) {
@@ -170,27 +191,12 @@ add_action('wp_enqueue_scripts', function() {
 }, 100);
 
 /**
- * 9. REMOVER JQUERY COMPLETAMENTE (OPCIONAL)
- * ⚠️ CUIDADO: Só ative se tiver certeza que nenhum plugin precisa
- * Descomente as linhas abaixo se quiser testar
- */
-// add_action('wp_enqueue_scripts', function() {
-//     if (!is_admin()) {
-//         wp_deregister_script('jquery');
-//         wp_deregister_script('jquery-core');
-//         wp_deregister_script('jquery-migrate');
-//     }
-// }, 100);
-
-/**
- * 10. DESABILITAR ATUALIZAÇÕES DE TRADUÇÃO (reduz cron)
- * Não gera output, mas reduz processamento em background
+ * 9. DESABILITAR ATUALIZAÇÕES DE TRADUÇÃO
  */
 add_filter('auto_update_translation', '__return_false');
 
 /**
- * 11. REMOVER QUERY STRINGS DE ASSETS ESTÁTICOS
- * Remove ?ver=6.4.2 dos CSS/JS (melhora cache)
+ * 10. REMOVER QUERY STRINGS (?ver=) DE ASSETS
  */
 add_filter('script_loader_src', function($src) {
     if (!is_admin() && strpos($src, 'ver=')) {
@@ -207,22 +213,23 @@ add_filter('style_loader_src', function($src) {
 }, 15);
 
 /**
- * 12. LIMPAR OUTPUT DO WOOCOMMERCE NO HEAD
- * Remove meta tags de schema.org injetadas
+ * 11. FALLBACK: REMOVE LITESPEED WEBFONTLOADER DO HTML
+ * Caso o dequeue não funcione
  */
-remove_action('wp_head', 'wc_generator_tag');
+add_filter('litespeed_optm_html_head', function($content) {
+    $content = preg_replace('/<script[^>]*webfontloader[^>]*>.*?<\/script>/is', '', $content);
+    return $content;
+}, 999);
 
-/**
- * 🎯 RESUMO DO QUE FOI REMOVIDO:
- * ================================
- * ✅ 9 arquivos CSS do PageSpeed (Woo, Gamipress, Gutenberg, Zen-bit)
- * ✅ ~15 scripts JS desnecessários
- * ✅ Emojis (CSS + JS)
- * ✅ Meta tags e discovery links
- * ✅ Global styles inline do Gutenberg
- * ✅ jQuery Migrate
- * ✅ Admin bar assets
- * ✅ Query strings (?ver=)
+/* ==========================================
+ * 🎯 RESUMO - ARQUIVOS DO PAGESPEED RESOLVIDOS:
+ * ==========================================
  * 
- * RESULTADO ESPERADO: -70KB, -1.110ms render blocking
+ * ✅ brands.css (2.9 KB)           → Removido aqui (linha 67-82)
+ * ✅ zen-bit-public.css (3.3 KB)   → Remover no plugin zen-bit + fallback aqui
+ * ✅ webfontloader.min.js (6.9 KB) → Desabilitar no LiteSpeed + fallback aqui
+ * ⚠️ index-Dv96D_EQ.css (9.9 KB)   → Carregar async no functions.php do tema
+ * 
+ * ECONOMIA ESPERADA: ~1.030 ms
+ * ==========================================
  */
