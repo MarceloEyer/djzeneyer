@@ -53,17 +53,7 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    // A. Carrega CSS do Build
-    if (isset($entry['css']) && is_array($entry['css'])) {
-        foreach ($entry['css'] as $index => $css_file) {
-            wp_enqueue_style(
-                'djzeneyer-style-' . $index,
-                DIST_URI . '/' . $css_file,
-                [],
-                null // Versão null para cache busting via nome do arquivo
-            );
-        }
-    }
+    // A. Carrega CSS do Build - Deletado para carregar apenas no main.tsx
 
     // B. Carrega JS Principal
     if (isset($entry['file'])) {
