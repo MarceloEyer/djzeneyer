@@ -1,4 +1,4 @@
-// src/components/HeadlessSEO.tsx - VERSÃO OTIMIZADA SEM REDUNDÂNCIA
+// src/components/HeadlessSEO.tsx
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
@@ -29,15 +29,25 @@ interface HeadlessSEOProps {
   schema?: object;
   noindex?: boolean;
   keywords?: string;
-  isHomepage?: boolean; // NOVO: Flag para homepage
+  isHomepage?: boolean;
 }
+
+// Garante que a URL é absoluta baseada no baseUrl
+const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
+  if (!u) return baseUrl;
+  if (u.startsWith('http://') || u.startsWith('https://')) return u;
+  const cleanBase = baseUrl.replace(/\/$/, '');
+  const cleanPath = u.replace(/^\//, '');
+  return `${cleanBase}/${cleanPath}`;
+};
 
 export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '') || '/';
+  const suffix = cleanPath === '/' ? '' : `/${cleanPath}`;
   return [
-    { lang: 'en', url: `${baseUrl}${cleanPath === '/' ? '' : `/${cleanPath}`}` },
-    { lang: 'pt-BR', url: `${baseUrl}/pt${cleanPath === '/' ? '' : `/${cleanPath}`}` },
-    { lang: 'x-default', url: `${baseUrl}${cleanPath === '/' ? '' : `/${cleanPath}`}` },
+    { lang: 'en', url: `${baseUrl}${suffix}` },
+    { lang: 'pt-BR', url: `${baseUrl}/pt${suffix}` },
+    { lang: 'x-default', url: `${baseUrl}${suffix}` },
   ];
 };
 
@@ -54,84 +64,133 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   keywords,
   isHomepage = false,
 }) => {
-  // Prioridade: API > Props > Padrão
-  const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
+  const baseUrl = ARTIST.site.baseUrl;
+
+  // Título
+  const finalTitle =
+    data?.title ||
+    title ||
+    'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
+
+  // Descrição (API → prop → fallback artistData)
   const metaDescPlugin = data?.meta.find(m => m.name === 'description')?.content;
-const finalDescription =
-  metaDescPlugin || description || ARTIST.site.defaultDescription;
-  const truncatedDesc = finalDescription.length > 160 
-    ? finalDescription.substring(0, 157) + '...' 
-    : finalDescription;
+  const finalDescription =
+    metaDescPlugin || description || ARTIST.site.defaultDescription;
 
-  const finalUrl = data?.meta.find(m => m.property === 'og:url')?.content || url || ARTIST.site.baseUrl;
-  const finalImage = data?.meta.find(m => m.property === 'og:image')?.content || image || `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.jpg`;
+  const truncatedDesc =
+    finalDescription.length > 160
+      ? `${finalDescription.substring(0, 157)}...`
+      : finalDescription;
 
-  // Schema: Se for homepage, usa o schema completo de artistData.ts
-  // Se for outra página, usa o schema fornecido ou cria um básico
+  // URL e imagem absolutas
+  const ogUrlMeta = data?.meta.find(m => m.property === 'og:url')?.content;
+  const finalUrlRaw = ogUrlMeta || url || baseUrl;
+  const finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
+
+  const ogImageMeta = data?.meta.find(m => m.property === 'og:image')?.content;
+  const finalImage = ensureAbsoluteUrl(
+    ogImageMeta || image || `${baseUrl}/images/zen-eyer-og-image.jpg`,
+    baseUrl
+  );
+
+  // Schema.org JSON-LD
   let finalSchema: any;
 
   if (isHomepage) {
-    // Homepage: Schema @graph completo (WebSite + Person + WebPage)
     finalSchema = data?.jsonld || schema || {
-      "@context": "https://schema.org",
-      "@graph": [
+      '@context': 'https://schema.org',
+      '@graph': [
         {
-          "@type": "WebSite",
-          "@id": `${ARTIST.site.baseUrl}/#website`,
-          "url": ARTIST.site.baseUrl,
-          "name": "DJ Zen Eyer - Official Website",
-          "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
-          "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
-          "inLanguage": ["en", "pt-BR"],
+          '@type': 'WebSite',
+          '@id': `${baseUrl}/#website`,
+          url: baseUrl,
+          name: 'DJ Zen Eyer - Official Website',
+          description: ARTIST.site.defaultDescription,
+          publisher: { '@id': `${baseUrl}/#artist` },
+          inLanguage: ['en', 'pt-BR'],
         },
         {
           ...ARTIST_SCHEMA_BASE,
-          "nationality": { "@type": "Country", "name": "Brazil" },
-          "birthDate": ARTIST.identity.birthDate,
-          "knowsAbout": ["Brazilian Zouk", "Music Production", "DJing", "Remixing", "Kizomba"],
+          '@id': `${baseUrl}/#artist`,
+          nationality: { '@type': 'Country', name: 'Brazil' },
+          birthDate: ARTIST.identity.birthDate,
+          knowsAbout: [
+            'Brazilian Zouk',
+            'Music Production',
+            'DJing',
+            'Remixing',
+            'Kizomba',
+          ],
         },
         {
-          "@type": "WebPage",
-          "@id": `${ARTIST.site.baseUrl}/#webpage`,
-          "url": ARTIST.site.baseUrl,
-          "name": finalTitle,
-          "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
-          "about": { "@id": `${ARTIST.site.baseUrl}/#artist` },
-          "description": truncatedDesc,
-          "inLanguage": "en",
+          '@type': 'WebPage',
+          '@id': `${baseUrl}/#webpage`,
+          url: baseUrl,
+          name: finalTitle,
+          isPartOf: { '@id': `${baseUrl}/#website` },
+          about: { '@id': `${baseUrl}/#artist` },
+          description: truncatedDesc,
+          inLanguage: 'en',
         },
       ],
     };
   } else {
-    // Outras páginas: Schema simples (Person + WebPage)
     finalSchema = data?.jsonld || schema || {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "url": finalUrl,
-      "name": finalTitle,
-      "description": truncatedDesc,
-      "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
-      "about": { "@id": `${ARTIST.site.baseUrl}/#artist` },
-      "breadcrumb": {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": ARTIST.site.baseUrl },
-          { "@type": "ListItem", "position": 2, "name": finalTitle, "item": finalUrl },
-        ],
-      },
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          '@id': `${baseUrl}/#website`,
+          url: baseUrl,
+          name: 'DJ Zen Eyer - Official Website',
+        },
+        {
+          '@type': 'WebPage',
+          '@id': `${finalUrl}#webpage`,
+          url: finalUrl,
+          name: finalTitle,
+          description: truncatedDesc,
+          isPartOf: { '@id': `${baseUrl}/#website` },
+          about: { '@id': `${baseUrl}/#artist` },
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: baseUrl,
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: finalTitle,
+                item: finalUrl,
+              },
+            ],
+          },
+        },
+      ],
     };
   }
 
   return (
     <Helmet>
-      {/* Tags Básicas */}
+      {/* Básico */}
       <title>{finalTitle}</title>
       <meta name="description" content={truncatedDesc} />
       <link rel="canonical" href={finalUrl} />
       {keywords && <meta name="keywords" content={keywords} />}
-      
+
       {/* Robots */}
-      <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+      <meta
+        name="robots"
+        content={
+          noindex
+            ? 'noindex, nofollow, max-image-preview:large'
+            : 'index, follow, max-image-preview:large'
+        }
+      />
 
       {/* Open Graph */}
       <meta property="og:site_name" content="DJ Zen Eyer" />
@@ -145,7 +204,7 @@ const finalDescription =
       <meta property="og:locale" content="en_US" />
       <meta property="og:locale:alternate" content="pt_BR" />
 
-      {/* Twitter Cards */}
+      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
@@ -153,14 +212,14 @@ const finalDescription =
       <meta name="twitter:site" content="@djzeneyer" />
       <meta name="twitter:creator" content="@djzeneyer" />
 
-      {/* HrefLang */}
+      {/* Hreflang */}
       {hrefLang.map(({ lang, url: hrefUrl }) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
-      {/* Schema.org JSON-LD */}
+      {/* JSON-LD */}
       <script type="application/ld+json">
-        {JSON.stringify(finalSchema, null, 0)}
+        {JSON.stringify(finalSchema)}
       </script>
     </Helmet>
   );
