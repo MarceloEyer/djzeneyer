@@ -57,7 +57,8 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   // Prioridade: API > Props > Padrão
   const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
   const metaDescPlugin = data?.meta.find(m => m.name === 'description')?.content;
-  const finalDescription = metaDescPlugin || description || '';
+const finalDescription =
+  metaDescPlugin || description || ARTIST.site.defaultDescription;
   const truncatedDesc = finalDescription.length > 160 
     ? finalDescription.substring(0, 157) + '...' 
     : finalDescription;
