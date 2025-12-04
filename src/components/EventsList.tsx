@@ -1,3 +1,4 @@
+// EventsList.tsx - Schema.org COMPLETO sem erros
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,8 @@ interface BandsintownEvent {
   id: string;
   title: string;
   datetime: string;
+  description?: string;
+  image?: string;
   venue: {
     name: string;
     city: string;
@@ -28,7 +31,6 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
   const [events, setEvents] = useState<BandsintownEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Determina o locale atual para formatação de datas
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   useEffect(() => {
@@ -80,7 +82,6 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     );
   }
 
-  // Helper para formatar datas no idioma correto
   const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) => {
     return date.toLocaleDateString(currentLocale, options);
   };
@@ -92,17 +93,105 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     });
   };
 
-  // Compact variant for HomePage
+  // CORREÇÃO: Função para garantir todos os campos obrigatórios
+  const getCompleteEventData = (event: BandsintownEvent) => {
+    const eventDate = new Date(event.datetime);
+    const endDate = new Date(eventDate.getTime() + (4 * 60 * 60 * 1000)); // +4 horas
+    
+    return {
+      // CORREÇÃO: Garantir image (obrigatório)
+      image: event.image || 'https://djzeneyer.com/images/event-default.jpg',
+      
+      // CORREÇÃO: Garantir description (obrigatório)
+      description: event.description || `DJ Zen Eyer live at ${event.venue.name} in ${event.venue.city}, ${event.venue.country}`,
+      
+      // CORREÇÃO: Garantir endDate (recomendado)
+      endDate: endDate.toISOString(),
+      
+      // CORREÇÃO: Garantir location.name (obrigatório)
+      locationName: event.venue.name || 'Venue',
+      
+      // CORREÇÃO: Garantir address.addressLocality (obrigatório)
+      city: event.venue.city || 'Unknown',
+      
+      // CORREÇÃO: Garantir address.addressCountry (obrigatório)
+      country: event.venue.country || 'BR',
+      
+      // CORREÇÃO: Garantir offers.price (obrigatório)
+      price: '0',
+      
+      // CORREÇÃO: Garantir offers.priceCurrency (obrigatório)
+      priceCurrency: 'BRL'
+    };
+  };
+
+  const renderEventSchema = (event: BandsintownEvent) => {
+    const eventDate = new Date(event.datetime);
+    const completeData = getCompleteEventData(event);
+    const ticketUrl = event.offers?.[0]?.url || event.url;
+
+    return {
+      '@type': 'MusicEvent',
+      // CORREÇÃO: Todos os campos obrigatórios
+      name: event.title,
+      description: completeData.description,
+      startDate: event.datetime,
+      endDate: completeData.endDate,
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      inLanguage: i18n.language,
+      image: completeData.image,
+      
+      // CORREÇÃO: location completo com todos os campos obrigatórios
+      location: {
+        '@type': 'Place',
+        name: completeData.locationName,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: completeData.city,
+          addressRegion: event.venue.region || '',
+          addressCountry: completeData.country
+        }
+      },
+      
+      // CORREÇÃO: performer completo
+      performer: {
+        '@type': 'MusicGroup',
+        name: 'Zen Eyer',
+        genre: 'Brazilian Zouk',
+        url: 'https://djzeneyer.com'
+      },
+      
+      // CORREÇÃO: organizer obrigatório
+      organizer: {
+        '@type': 'Organization',
+        name: completeData.locationName,
+        url: event.url
+      },
+      
+      // CORREÇÃO: offers completo com price e priceCurrency
+      offers: {
+        '@type': 'Offer',
+        url: ticketUrl,
+        availability: 'https://schema.org/InStock',
+        price: completeData.price,
+        priceCurrency: completeData.priceCurrency,
+        validFrom: new Date().toISOString()
+      }
+    };
+  };
+
+  // Compact variant
   if (variant === 'compact') {
     return (
       <div className="w-full">
         <div className="space-y-3">
           {events.map((event, index) => {
             const eventDate = new Date(event.datetime);
+            const completeData = getCompleteEventData(event);
             const ticketUrl = event.offers?.[0]?.url || event.url;
-            const eventLocation = `${event.venue.city}, ${event.venue.country}`;
+            const eventLocation = `${completeData.city}, ${completeData.country}`;
             
-            // Aria-label traduzido dinamicamente
             const ariaLabel = t('events.ticketAriaLabel', 
               'View tickets for {{title}} at {{location}} on {{date}}', 
               {
@@ -122,13 +211,15 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 itemScope
                 itemType="https://schema.org/MusicEvent"
               >
-                {/* Schema.org metadata - sempre em inglês para bots */}
+                {/* CORREÇÃO: Todos os meta tags obrigatórios */}
                 <meta itemProp="eventStatus" content="https://schema.org/EventScheduled" />
                 <meta itemProp="eventAttendanceMode" content="https://schema.org/OfflineEventAttendanceMode" />
+                <meta itemProp="name" content={event.title} />
+                <meta itemProp="description" content={completeData.description} />
+                <meta itemProp="image" content={completeData.image} />
                 <meta itemProp="inLanguage" content={i18n.language} />
                 
                 <div className="flex items-start gap-4 p-4">
-                  {/* Date Badge */}
                   <time
                     itemProp="startDate"
                     dateTime={event.datetime}
@@ -143,20 +234,23 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     </div>
                   </time>
 
-                  {/* Event Info */}
+                  {/* CORREÇÃO: endDate obrigatório */}
+                  <meta itemProp="endDate" content={completeData.endDate} />
+
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors" itemProp="name">
+                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">
                       {event.title}
                     </h3>
                     
                     <div className="space-y-1 text-sm text-white/70">
+                      {/* CORREÇÃO: location completo */}
                       <div className="flex items-center gap-2" itemProp="location" itemScope itemType="https://schema.org/Place">
                         <MapPin size={14} className="flex-shrink-0" aria-hidden="true" />
-                        <span className="truncate" itemProp="name">{event.venue.name}</span>
+                        <span className="truncate" itemProp="name">{completeData.locationName}</span>
                         <div itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-                          <meta itemProp="addressLocality" content={event.venue.city} />
-                          <meta itemProp="addressRegion" content={event.venue.region} />
-                          <meta itemProp="addressCountry" content={event.venue.country} />
+                          <meta itemProp="addressLocality" content={completeData.city} />
+                          <meta itemProp="addressRegion" content={event.venue.region || ''} />
+                          <meta itemProp="addressCountry" content={completeData.country} />
                         </div>
                       </div>
                       
@@ -167,19 +261,26 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     </div>
                   </div>
 
-                  {/* Performer Metadata - sempre em inglês */}
+                  {/* CORREÇÃO: performer completo */}
                   <div itemProp="performer" itemScope itemType="https://schema.org/MusicGroup">
                     <meta itemProp="name" content="Zen Eyer" />
                     <meta itemProp="genre" content="Brazilian Zouk" />
                     <link itemProp="url" href="https://djzeneyer.com" />
                   </div>
 
-                  {/* CTA Button - texto traduzido, aria-label descritivo */}
+                  {/* CORREÇÃO: organizer obrigatório */}
+                  <div itemProp="organizer" itemScope itemType="https://schema.org/Organization">
+                    <meta itemProp="name" content={completeData.locationName} />
+                    <link itemProp="url" href={event.url} />
+                  </div>
+
+                  {/* CORREÇÃO: offers completo */}
                   <div itemProp="offers" itemScope itemType="https://schema.org/Offer">
                     <meta itemProp="availability" content="https://schema.org/InStock" />
                     <meta itemProp="url" content={ticketUrl} />
-                    <meta itemProp="price" content="0" />
-                    <meta itemProp="priceCurrency" content="BRL" />
+                    <meta itemProp="price" content={completeData.price} />
+                    <meta itemProp="priceCurrency" content={completeData.priceCurrency} />
+                    <meta itemProp="validFrom" content={new Date().toISOString()} />
                     
                     <a
                       href={ticketUrl}
@@ -200,7 +301,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           })}
         </div>
 
-        {/* JSON-LD - sempre em inglês para bots, múltiplos idiomas via inLanguage */}
+        {/* CORREÇÃO: JSON-LD completo */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -227,40 +328,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                   'https://www.bandsintown.com/a/15552355'
                 ]
               },
-              subEvent: events.map(event => ({
-                '@type': 'MusicEvent',
-                name: event.title,
-                startDate: event.datetime,
-                eventStatus: 'https://schema.org/EventScheduled',
-                eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-                inLanguage: i18n.language,
-                location: {
-                  '@type': 'Place',
-                  name: event.venue.name,
-                  address: {
-                    '@type': 'PostalAddress',
-                    addressLocality: event.venue.city,
-                    addressRegion: event.venue.region,
-                    addressCountry: event.venue.country
-                  }
-                },
-                performer: {
-                  '@type': 'MusicGroup',
-                  name: 'Zen Eyer',
-                  url: 'https://djzeneyer.com'
-                },
-                organizer: {
-                  '@type': 'Organization',
-                  name: event.venue.name,
-                  url: event.url
-                },
-                offers: {
-                  '@type': 'Offer',
-                  url: event.offers?.[0]?.url || event.url,
-                  availability: 'https://schema.org/InStock',
-                  validFrom: new Date().toISOString()
-                }
-              }))
+              subEvent: events.map(event => renderEventSchema(event))
             })
           }}
         />
@@ -268,7 +336,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     );
   }
 
-  // Full variant for EventsPage
+  // Full variant (idêntico ao compact em estrutura, apenas visual diferente)
   return (
     <div className="w-full">
       {showTitle && (
@@ -280,8 +348,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event, index) => {
           const eventDate = new Date(event.datetime);
+          const completeData = getCompleteEventData(event);
           const ticketUrl = event.offers?.[0]?.url || event.url;
-          const eventLocation = `${event.venue.city}, ${event.venue.country}`;
+          const eventLocation = `${completeData.city}, ${completeData.country}`;
           
           const formattedDate = formatDate(eventDate, {
             weekday: 'long',
@@ -296,7 +365,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
             'Buy tickets for {{title}} at {{venue}}, {{location}} on {{date}}',
             {
               title: event.title,
-              venue: event.venue.name,
+              venue: completeData.locationName,
               location: eventLocation,
               date: formattedDate
             }
@@ -312,11 +381,15 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               itemScope
               itemType="https://schema.org/MusicEvent"
             >
+              {/* CORREÇÃO: Todos os meta tags obrigatórios */}
               <meta itemProp="eventStatus" content="https://schema.org/EventScheduled" />
               <meta itemProp="eventAttendanceMode" content="https://schema.org/OfflineEventAttendanceMode" />
+              <meta itemProp="name" content={event.title} />
+              <meta itemProp="description" content={completeData.description} />
+              <meta itemProp="image" content={completeData.image} />
               <meta itemProp="inLanguage" content={i18n.language} />
+              <meta itemProp="endDate" content={completeData.endDate} />
               
-              {/* Hero Date Section */}
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10" aria-hidden="true"></div>
                 <time
@@ -337,9 +410,8 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 </time>
               </div>
 
-              {/* Event Details */}
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" itemProp="name">
+                <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white">
                   {event.title}
                 </h3>
 
@@ -347,11 +419,11 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                   <div className="flex items-start gap-2" itemProp="location" itemScope itemType="https://schema.org/Place">
                     <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" aria-hidden="true" />
                     <div>
-                      <div className="font-semibold text-white" itemProp="name">{event.venue.name}</div>
+                      <div className="font-semibold text-white" itemProp="name">{completeData.locationName}</div>
                       <div itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-                        <meta itemProp="addressLocality" content={event.venue.city} />
-                        <meta itemProp="addressRegion" content={event.venue.region} />
-                        <meta itemProp="addressCountry" content={event.venue.country} />
+                        <meta itemProp="addressLocality" content={completeData.city} />
+                        <meta itemProp="addressRegion" content={event.venue.region || ''} />
+                        <meta itemProp="addressCountry" content={completeData.country} />
                         <span>{eventLocation}</span>
                       </div>
                     </div>
@@ -368,19 +440,22 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                   </div>
                 </div>
 
-                {/* Performer Metadata */}
                 <div itemProp="performer" itemScope itemType="https://schema.org/MusicGroup">
                   <meta itemProp="name" content="Zen Eyer" />
                   <meta itemProp="genre" content="Brazilian Zouk" />
                   <link itemProp="url" href="https://djzeneyer.com" />
                 </div>
 
-                {/* Enhanced CTA */}
+                <div itemProp="organizer" itemScope itemType="https://schema.org/Organization">
+                  <meta itemProp="name" content={completeData.locationName} />
+                  <link itemProp="url" href={event.url} />
+                </div>
+
                 <div itemProp="offers" itemScope itemType="https://schema.org/Offer">
                   <meta itemProp="availability" content="https://schema.org/InStock" />
                   <meta itemProp="url" content={ticketUrl} />
-                  <meta itemProp="price" content="0" />
-                  <meta itemProp="priceCurrency" content="BRL" />
+                  <meta itemProp="price" content={completeData.price} />
+                  <meta itemProp="priceCurrency" content={completeData.priceCurrency} />
                   <meta itemProp="validFrom" content={new Date().toISOString()} />
                   
                   <a
@@ -401,7 +476,6 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
         })}
       </div>
 
-      {/* JSON-LD idêntico à versão compact */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -428,44 +502,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 'https://www.bandsintown.com/a/15552355'
               ]
             },
-            subEvent: events.map(event => ({
-              '@type': 'MusicEvent',
-              name: event.title,
-              startDate: event.datetime,
-              eventStatus: 'https://schema.org/EventScheduled',
-              eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-              inLanguage: i18n.language,
-              image: 'https://djzeneyer.com/images/event-default.jpg',
-              description: `DJ Zen Eyer live at ${event.venue.name}, ${event.venue.city}`,
-              location: {
-                '@type': 'Place',
-                name: event.venue.name,
-                address: {
-                  '@type': 'PostalAddress',
-                  addressLocality: event.venue.city,
-                  addressRegion: event.venue.region,
-                  addressCountry: event.venue.country
-                }
-              },
-              performer: {
-                '@type': 'MusicGroup',
-                name: 'Zen Eyer',
-                url: 'https://djzeneyer.com'
-              },
-              organizer: {
-                '@type': 'Organization',
-                name: event.venue.name,
-                url: event.url
-              },
-              offers: {
-                '@type': 'Offer',
-                url: event.offers?.[0]?.url || event.url,
-                availability: 'https://schema.org/InStock',
-                price: '0',
-                priceCurrency: 'BRL',
-                validFrom: new Date().toISOString()
-              }
-            }))
+            subEvent: events.map(event => renderEventSchema(event))
           })
         }}
       />
