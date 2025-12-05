@@ -132,7 +132,7 @@ const AboutPage: React.FC = () => {
       {/* SEO centralizado */}
       <HeadlessSEO
         title="About DJ Zen Eyer | Brazilian Zouk DJ & Producer"
-        description="Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his signature "cremosidade" style."
+        description="Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his signature cremosidade style."
         url={currentUrl}
         image={`${ARTIST.site.baseUrl}/images/zen-eyer-about-emotional.jpg`}
         type="profile"
