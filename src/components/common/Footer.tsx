@@ -189,6 +189,7 @@ const Footer: React.FC = () => {
           <p>{t('footer_copyright', { year: currentYear })}</p>
           <div className="mt-4 space-y-1">
             <p><strong>{t('footer_legal_name', 'Razão Social')}:</strong> Marcelo Eyer Fernandes</p>
+            <p><strong>CNPJ:</strong> 44.063.765/0001-46</p>
             <p><strong>ISNI:</strong> 0000 0005 2893 1015</p>
             <p><strong>{t('footer_location', 'Localização')}:</strong> São Paulo, SP - Brasil</p>
             <p className="mt-2 text-xs">

@@ -70,6 +70,35 @@ const generateHomeSchema = () => ({
       ...ARTIST_SCHEMA_BASE,
       "nationality": { "@type": "Country", "name": "Brazil" },
       "birthDate": ARTIST.identity.birthDate,
+      "birthPlace": {
+        "@type": "Place",
+        "name": "Rio de Janeiro",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Rio de Janeiro",
+          "addressRegion": "RJ",
+          "addressCountry": "BR"
+        }
+      },
+      "workLocation": {
+        "@type": "Place",
+        "name": "São Paulo",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "São Paulo",
+          "addressRegion": "SP",
+          "addressCountry": "BR"
+        }
+      },
+      "award": [
+        "Best Remix - Ilha do Zouk Championship 2022",
+        "Best DJ Performance - Ilha do Zouk Championship 2022"
+      ],
+      "memberOf": {
+        "@type": "Organization",
+        "name": "Mensa International",
+        "url": "https://www.mensa.org"
+      },
       "knowsAbout": ["Brazilian Zouk", "Music Production", "DJing", "Remixing", "Kizomba"],
       "hasOccupation": [
         { "@type": "Occupation", "name": "DJ" },
@@ -87,6 +116,49 @@ const generateHomeSchema = () => ({
         { "@type": "PropertyValue", "propertyID": "ISNI", "value": ARTIST.identifiers.isni },
         { "@type": "PropertyValue", "propertyID": "Discogs", "value": ARTIST.identifiers.discogs },
       ],
+    },
+    {
+      "@type": "MusicGroup",
+      "@id": `${ARTIST.site.baseUrl}/#musicgroup`,
+      "name": "DJ Zen Eyer",
+      "alternateName": "Zen Eyer",
+      "legalName": "Marcelo Eyer Fernandes",
+      "taxID": "44.063.765/0001-46",
+      "url": ARTIST.site.baseUrl,
+      "genre": ["Brazilian Zouk", "Kizomba", "Brazilian Bass"],
+      "foundingDate": "2015",
+      "foundingLocation": {
+        "@type": "Place",
+        "name": "Rio de Janeiro",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Rio de Janeiro",
+          "addressRegion": "RJ",
+          "addressCountry": "BR"
+        }
+      },
+      "location": {
+        "@type": "Place",
+        "name": "São Paulo",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "São Paulo",
+          "addressRegion": "SP",
+          "addressCountry": "BR"
+        }
+      },
+      "member": {
+        "@id": `${ARTIST.site.baseUrl}/#artist`
+      },
+      "sameAs": [
+        ARTIST.social.instagram,
+        ARTIST.social.spotify,
+        ARTIST.social.soundcloud,
+        ARTIST.social.youtube,
+        ARTIST.social.facebook,
+        `https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`,
+        `https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`,
+      ]
     },
     {
       "@type": "WebPage",
