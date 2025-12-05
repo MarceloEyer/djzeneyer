@@ -187,6 +187,20 @@ const Footer: React.FC = () => {
         {/* Bottom Bar - UMA ÚNICA LINHA TRADUZIDA! */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
           <p>{t('footer_copyright', { year: currentYear })}</p>
+          <div className="mt-4 space-y-1">
+            <p><strong>{t('footer_legal_name', 'Razão Social')}:</strong> Marcelo Eyer Fernandes</p>
+            <p><strong>ISNI:</strong> 0000 0005 2893 1015</p>
+            <p><strong>{t('footer_location', 'Localização')}:</strong> São Paulo, SP - Brasil</p>
+            <p className="mt-2 text-xs">
+              <a href="https://www.wikidata.org/wiki/Q136551855" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                Wikidata
+              </a>
+              {' • '}
+              <a href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                MusicBrainz
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
