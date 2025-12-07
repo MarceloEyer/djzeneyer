@@ -1,4 +1,4 @@
-// src/components/common/Footer.tsx - VERSÃO FINAL CORRETA!
+// src/components/common/Footer.tsx - VERSÃO OTIMIZADA BRAD PARSCALE
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -89,7 +89,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           
-          {/* Logo and About */}
+          {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
@@ -121,31 +121,31 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* 2. Quick Links (Foco Comercial / Produto) */}
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">{t('footer_home')}</Link></li>
-              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
+              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to="/zentribe" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><a href={`mailto:${ARTIST.contact.email}`} className="text-white/70 hover:text-primary transition-colors">{t('footer_contact_text')}</a></li>
-            </ul>
-          </div>
-
-          {/* Discover More */}
-          <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
-            <ul className="space-y-2.5">
-              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
-              <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
-              <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
-              <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/shop" className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
               <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* 3. Discover More (Institucional / Autoridade / SEO) */}
+          <div>
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
+            <ul className="space-y-2.5">
+              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
+              <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
+              <li><Link to="/media" className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
+              <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/conduct" className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
+            </ul>
+          </div>
+
+          {/* 4. Newsletter */}
           <div className="lg:col-span-1">
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
@@ -184,7 +184,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar - UMA ÚNICA LINHA TRADUZIDA! */}
+        {/* Bottom Bar (Dados Semânticos para Bots) */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
           <p>{t('footer_copyright', { year: currentYear })}</p>
           <div className="mt-4 space-y-1">
