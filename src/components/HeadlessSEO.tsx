@@ -1,9 +1,14 @@
 // src/components/HeadlessSEO.tsx
+// VERSÃO DEFINITIVA: CENTRAL DE COMANDO SEO (PRELOAD + SCHEMA + METAS)
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 
-// Nova interface para itens de preload
+// ============================================================================
+// 1. INTERFACES E TIPOS
+// ============================================================================
+
 export interface PreloadItem {
   href: string;
   as: 'image' | 'script' | 'style' | 'font' | 'fetch';
@@ -39,8 +44,12 @@ interface HeadlessSEOProps {
   noindex?: boolean;
   keywords?: string;
   isHomepage?: boolean;
-  preload?: PreloadItem[]; // ✅ Nova Prop
+  preload?: PreloadItem[]; // ✅ Suporte a LCP Optimization
 }
+
+// ============================================================================
+// 2. HELPER FUNCTIONS
+// ============================================================================
 
 const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   if (!u) return baseUrl;
@@ -60,6 +69,10 @@ export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   ];
 };
 
+// ============================================================================
+// 3. COMPONENTE PRINCIPAL
+// ============================================================================
+
 export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   data,
   title,
@@ -72,10 +85,12 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   noindex = false,
   keywords,
   isHomepage = false,
-  preload = [], // ✅ Default vazio
+  preload = [],
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
 
+  // --- Lógica de Fallback de Dados ---
+  
   // Título
   const finalTitle =
     data?.title ||
@@ -92,7 +107,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ? `${finalDescription.substring(0, 157)}...`
       : finalDescription;
 
-  // URL e imagem absolutas
+  // URL e Imagem
   const ogUrlMeta = data?.meta.find(m => m.property === 'og:url')?.content;
   const finalUrlRaw = ogUrlMeta || url || baseUrl;
   const finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
@@ -103,11 +118,12 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
     baseUrl
   );
 
-  // Schema Logic (Simplificado para o exemplo, mantendo sua lógica original)
+  // Schema.org Construction
   let finalSchema: any = data?.jsonld || schema;
-
+  
   if (!finalSchema && isHomepage) {
-     finalSchema = {
+    // Default Homepage Schema
+    finalSchema = {
       '@context': 'https://schema.org',
       '@graph': [
         {
@@ -122,7 +138,6 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
         {
           ...ARTIST_SCHEMA_BASE,
           '@id': `${baseUrl}/#artist`,
-          // ... resto do seu schema base
         },
         {
           '@type': 'WebPage',
@@ -137,37 +152,43 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ],
     };
   } else if (!finalSchema) {
-    // Fallback genérico para páginas internas
+    // Default Internal Page Schema
     finalSchema = {
-       '@context': 'https://schema.org',
-       '@type': 'WebPage',
-       name: finalTitle,
-       description: truncatedDesc
-    }
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: finalTitle,
+      description: truncatedDesc,
+      url: finalUrl,
+    };
   }
 
   return (
     <Helmet>
-      {/* 1. Preload Links (Prioridade Alta) */}
+      {/* 1. Preload Links (Prioridade Alta para Performance) */}
       {preload.map((item, index) => (
-        <link 
-          key={`preload-${index}`} 
-          rel="preload" 
-          href={item.href} 
-          as={item.as} 
-          media={item.media} 
+        <link
+          key={`preload-${index}`}
+          rel="preload"
+          href={item.href}
+          as={item.as}
+          media={item.media}
           type={item.type}
           crossOrigin={item.crossOrigin}
         />
       ))}
 
       {/* 2. Meta Tags Básicas */}
+      <meta charSet="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="theme-color" content="#000000" />
+
+      {/* 3. SEO Meta Data */}
       <title>{finalTitle}</title>
       <meta name="description" content={truncatedDesc} />
       <link rel="canonical" href={finalUrl} />
       {keywords && <meta name="keywords" content={keywords} />}
 
-      {/* Robots */}
+      {/* Robots Control */}
       <meta
         name="robots"
         content={
@@ -177,7 +198,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
         }
       />
 
-      {/* Open Graph */}
+      {/* Open Graph (Facebook/LinkedIn/Discord) */}
       <meta property="og:site_name" content="DJ Zen Eyer" />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={finalTitle} />
@@ -189,7 +210,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta property="og:locale" content="en_US" />
       <meta property="og:locale:alternate" content="pt_BR" />
 
-      {/* Twitter */}
+      {/* Twitter Cards */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
@@ -197,15 +218,15 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta name="twitter:site" content="@djzeneyer" />
       <meta name="twitter:creator" content="@djzeneyer" />
 
-      {/* Hreflang */}
+      {/* Hreflang (Internacionalização) */}
       {hrefLang.map(({ lang, url: hrefUrl }) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
-      {/* JSON-LD */}
+      {/* JSON-LD (Schema.org) com Sanitização de Segurança */}
       {finalSchema && (
         <script type="application/ld+json">
-          {JSON.stringify(finalSchema)}
+          {JSON.stringify(finalSchema).replace(/</g, '\\u003c')}
         </script>
       )}
     </Helmet>
