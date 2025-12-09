@@ -11,7 +11,7 @@ import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 
 export interface PreloadItem {
   href: string;
-  as: 'image' | 'script' | 'style' | 'font' | 'fetch';
+  as: 'script' | 'style' | 'font' | 'fetch'; // ❌ removido 'image' para evitar warnings
   media?: string;
   type?: string;
   crossOrigin?: string;
@@ -44,7 +44,7 @@ interface HeadlessSEOProps {
   noindex?: boolean;
   keywords?: string;
   isHomepage?: boolean;
-  preload?: PreloadItem[]; // ✅ Suporte a LCP Optimization
+  preload?: PreloadItem[]; // ✅ Suporte a LCP Optimization (sem imagens)
 }
 
 // ============================================================================
@@ -91,13 +91,11 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
   // --- Lógica de Fallback de Dados ---
   
-  // Título
   const finalTitle =
     data?.title ||
     title ||
     'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
 
-  // Descrição
   const metaDescPlugin = data?.meta.find(m => m.name === 'description')?.content;
   const finalDescription =
     metaDescPlugin || description || ARTIST.site.defaultDescription;
@@ -107,7 +105,6 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ? `${finalDescription.substring(0, 157)}...`
       : finalDescription;
 
-  // URL e Imagem
   const ogUrlMeta = data?.meta.find(m => m.property === 'og:url')?.content;
   const finalUrlRaw = ogUrlMeta || url || baseUrl;
   const finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
@@ -122,7 +119,6 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   let finalSchema: any = data?.jsonld || schema;
   
   if (!finalSchema && isHomepage) {
-    // Default Homepage Schema
     finalSchema = {
       '@context': 'https://schema.org',
       '@graph': [
@@ -152,7 +148,6 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ],
     };
   } else if (!finalSchema) {
-    // Default Internal Page Schema
     finalSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -164,7 +159,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
   return (
     <Helmet>
-      {/* 1. Preload Links (Prioridade Alta para Performance) */}
+      {/* 1. Preload Links (somente fontes, CSS, scripts críticos) */}
       {preload.map((item, index) => (
         <link
           key={`preload-${index}`}
@@ -198,7 +193,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
         }
       />
 
-      {/* Open Graph (Facebook/LinkedIn/Discord) */}
+      {/* Open Graph */}
       <meta property="og:site_name" content="DJ Zen Eyer" />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={finalTitle} />
@@ -218,12 +213,12 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta name="twitter:site" content="@djzeneyer" />
       <meta name="twitter:creator" content="@djzeneyer" />
 
-      {/* Hreflang (Internacionalização) */}
+      {/* Hreflang */}
       {hrefLang.map(({ lang, url: hrefUrl }) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
-      {/* JSON-LD (Schema.org) com Sanitização de Segurança */}
+      {/* JSON-LD seguro */}
       {finalSchema && (
         <script type="application/ld+json">
           {JSON.stringify(finalSchema).replace(/</g, '\\u003c')}
