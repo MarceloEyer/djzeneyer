@@ -182,3 +182,32 @@ add_action('after_switch_theme', function() {
     // Log
     error_log('[DJ Zen] Database indexes created');
 }, 10);
+
+/**
+ * LIMPEZA DE TRANSIENTS EXPIRADOS
+ * Roda 1x por dia via WP Cron
+ */
+add_action('wp_scheduled_delete', function() {
+    global $wpdb;
+    
+    // Deleta transients expirados
+    $deleted = $wpdb->query("
+        DELETE FROM {$wpdb->options}
+        WHERE option_name LIKE '_transient_timeout_%'
+        AND option_value < UNIX_TIMESTAMP()
+    ");
+    
+    // Deleta os valores orfãos
+    $wpdb->query("
+        DELETE FROM {$wpdb->options}
+        WHERE option_name LIKE '_transient_%'
+        AND option_name NOT LIKE '_transient_timeout_%'
+        AND option_name NOT IN (
+            SELECT REPLACE(option_name, '_transient_timeout_', '_transient_')
+            FROM {$wpdb->options}
+            WHERE option_name LIKE '_transient_timeout_%'
+        )
+    ");
+    
+    error_log("[DJ Zen] Cleaned {$deleted} expired transients");
+});
