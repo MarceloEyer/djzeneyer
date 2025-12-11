@@ -163,8 +163,12 @@ add_filter('heartbeat_settings', function($settings) {
 });
 
 /**
- * 6. ADMIN BAR: REMOVER CSS/JS NO FRONTEND
+ * 6. ADMIN BAR: DESABILITAR COMPLETAMENTE NO FRONTEND
  */
+add_action('after_setup_theme', function() {
+    show_admin_bar(false);
+});
+
 add_action('wp_footer', function(){
     if (!is_admin()) {
         wp_dequeue_script('admin-bar');
@@ -173,6 +177,11 @@ add_action('wp_footer', function(){
         wp_deregister_style('admin-bar');
     }
 }, 9999);
+
+// Remove a margem superior que a admin bar adiciona
+add_action('get_header', function() {
+    remove_action('wp_head', '_admin_bar_bump_cb');
+});
 
 /**
  * 7. WOOCOMMERCE: REMOVER GALLERY NOSCRIPT

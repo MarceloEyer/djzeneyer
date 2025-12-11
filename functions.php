@@ -7,6 +7,12 @@
 
 if (!defined('ABSPATH')) exit;
 
+/**
+ * DESABILITA ADMIN BAR NO FRONTEND
+ * A admin bar aparece sem estilo e quebra o layout headless
+ */
+add_filter('show_admin_bar', '__return_false');
+
 /* ==========================================
  * CARREGAMENTO DE MÓDULOS (INC)
  * ========================================== */

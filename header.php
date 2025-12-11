@@ -27,21 +27,41 @@ $theme_uri = get_template_directory_uri();
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap">
 
     <style>
-        /* 1. Reset e Fundo Escuro */
-        body { 
-            background-color: #0A0E27; 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
-            color: white; 
-            overflow-x: hidden; 
+        /* 0. ESCONDE ADMIN BAR (aparece sem estilo e quebra o layout) */
+        #wpadminbar {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
         }
-        
+
+        html {
+            margin-top: 0 !important;
+        }
+
+        /* 1. Reset e Fundo Escuro */
+        body {
+            background-color: #0A0E27;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
         /* 2. Centralizar o conteúdo de fallback */
-        #root { min-height: 100vh; display: flex; flex-direction: column; }
-        
-        .ssr-content { 
-            max-width: 1200px; 
-            margin: 0 auto; 
+        #root {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ssr-content {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 40px 20px;
             text-align: center;
         }
@@ -50,7 +70,7 @@ $theme_uri = get_template_directory_uri();
             font-family: 'Orbitron', sans-serif;
             margin-bottom: 1rem;
         }
-        
+
         /* 3. Estilo dos Links (Botões bonitos em vez de texto azul) */
         .ssr-links {
             display: flex;
@@ -59,7 +79,7 @@ $theme_uri = get_template_directory_uri();
             margin-top: 30px;
             flex-wrap: wrap;
         }
-        
+
         .ssr-links a {
             color: rgba(255,255,255,0.8);
             text-decoration: none;
@@ -77,9 +97,17 @@ $theme_uri = get_template_directory_uri();
             color: white;
         }
 
-        /* 🚨 O TRUQUE: Esconde o PHP assim que o React avisa que carregou */
-        body.react-loaded .ssr-content { 
-            display: none !important; 
+        /* 4. Esconde o PHP assim que o React avisa que carregou */
+        body.react-loaded .ssr-content {
+            display: none !important;
+        }
+
+        /* 5. Esconde elementos do WordPress que aparecem sem estilo */
+        .wp-block-post-title,
+        .wp-block-post-content,
+        .entry-content,
+        .entry-title {
+            display: none !important;
         }
     </style>
 

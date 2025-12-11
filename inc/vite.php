@@ -53,7 +53,18 @@ add_action('wp_enqueue_scripts', function () {
         return;
     }
 
-    // A. Carrega CSS do Build - Deletado para carregar apenas no main.tsx
+    // A. Carrega CSS do Build (CRÍTICO para produção)
+    if (isset($entry['css']) && is_array($entry['css'])) {
+        foreach ($entry['css'] as $index => $css_file) {
+            wp_enqueue_style(
+                'djzeneyer-react-css-' . $index,
+                DIST_URI . '/' . $css_file,
+                [],
+                null,
+                'all'
+            );
+        }
+    }
 
     // B. Carrega JS Principal
     if (isset($entry['file'])) {
