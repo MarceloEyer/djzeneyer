@@ -154,13 +154,14 @@ function djz_get_gamipress_handler($request) {
     
     $query = new WP_Query([
         'post_type'      => $achievement_slug,
-        'posts_per_page' => 50, // Limite razoável
+        'posts_per_page' => 20, // Limite razoável
         'post_status'    => 'publish',
         'orderby'        => 'menu_order',
         'order'          => 'ASC',
         'no_found_rows'  => true, // Performance boost
         'update_post_meta_cache' => false,
         'update_post_term_cache' => false,
+                                      'fields' => 'ids',
     ]);
     
     if ($query->have_posts()) {
