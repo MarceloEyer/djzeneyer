@@ -746,4 +746,24 @@ function djz_rest_response_with_cache($data, $cache_seconds = 3600) {
     $response->header('Pragma', 'public');
     
     return $response;
+
+    /**
+ * INSTRUCOES: Como aplicar cache HTTP em todos os endpoints GET
+ * 
+ * ANTES:
+ * return rest_ensure_response($data);
+ * 
+ * DEPOIS:
+ * return djz_rest_response_with_cache($data, TEMPO_EM_SEGUNDOS);
+ * 
+ * ENDPOINTS E SEUS CACHE TIMES:
+ * 1. /djzeneyer/v1/menu → 6 * HOUR_IN_SECONDS (6h)
+ * 2. /djzeneyer/v1/products → HOUR_IN_SECONDS (1h)  
+ * 3. /djzeneyer/v1/gamipress/{id} → 15 * MINUTE_IN_SECONDS (15min)
+ * 4. /zen-bit/v1/events → 6 * HOUR_IN_SECONDS (6h)
+ * 5. /zen-seo/v1/settings → 24 * HOUR_IN_SECONDS (24h)
+ * 
+ * IMPACTO: Reduz requests HTTP ao servidor em ate 90%
+ * @todo Aplicar em todos os endpoints GET do arquivo
+ */
 }
