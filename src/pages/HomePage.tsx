@@ -165,10 +165,6 @@ const HomePage: React.FC = () => {
         isHomepage={true}
         hrefLang={getHrefLangUrls(currentPath, currentUrl)}
         schema={schemaData}
-        preload={[
-          { href: '/images/hero-background-mobile.webp', as: 'image', media: '(max-width: 768px)' },
-          { href: '/images/hero-background.webp', as: 'image', media: '(min-width: 769px)' }
-        ]}
       />
 
       {/* HERO SECTION */}
@@ -220,18 +216,18 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
-              <a 
-                href={ARTIST.social.soundcloud.url} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={ARTIST.social.soundcloud.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
                 aria-label="Listen to DJ Zen Eyer on SoundCloud"
               >
                 <PlayCircle size={22} />
                 <span>{isPortuguese ? 'Ouvir no SoundCloud' : 'Listen on SoundCloud'}</span>
               </a>
-              <Link 
-                to="/work-with-me" 
+              <Link
+                to={isPortuguese ? '/pt/contrate' : '/work-with-me'}
                 className="btn btn-outline btn-lg flex items-center gap-2 backdrop-blur-sm"
                 aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
@@ -261,18 +257,12 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
             <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
-              <h2 className="text-3xl font-bold mb-6 text-white font-display">Quem é DJ Zen Eyer?</h2>
+              <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home_bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-white/90">
-                <p>
-                  <strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é uma referência global no <strong>Brazilian Zouk</strong>. Bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships, ele transforma pistas em experiências imersivas há mais de uma década.
-                </p>
+                <p dangerouslySetInnerHTML={{ __html: t('home_bio_intro') }} />
               </div>
-              <p className="text-lg leading-relaxed text-white/80 mb-6">
-                Conhecido pelo estilo "cremoso" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>"Zen… Zen… Zen… Eyer… Eyer…"</em> já é um clássico nos festivais.
-              </p>
-              <p className="text-lg leading-relaxed text-white/80">
-                Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o "flow" na dança. Explore a aba <strong>Music</strong> ou <strong>Events</strong>.
-              </p>
+              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: t('home_bio_style') }} />
+              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: t('home_bio_mensa') }} />
             </motion.article>
           </motion.div>
         </div>
@@ -339,7 +329,7 @@ const HomePage: React.FC = () => {
                 <Download size={20} className="text-primary" /> {isPortuguese ? 'Imprensa & Mídia' : 'Press & Media'}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Acesse fotos, bio e assets.' : 'Access photos, bio and assets.'}</p>
-              <Link to="/work-with-me" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {isPortuguese ? 'BAIXAR PRESS KIT' : 'DOWNLOAD PRESS KIT'} →
               </Link>
             </motion.div>
@@ -348,7 +338,7 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} className="text-green-500" /> {isPortuguese ? 'Contratantes' : 'Bookers'}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Leve o "Zen Experience" para o seu evento.' : 'Bring the "Zen Experience" to your event.'}</p>
-              <Link to="/work-with-me" className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
+              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {isPortuguese ? 'ORÇAMENTO' : 'REQUEST BOOKING'} →
               </Link>
             </motion.div>
@@ -376,7 +366,7 @@ const HomePage: React.FC = () => {
         
         <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
           <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
-            {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">Zen Tribe</span>
+            {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Zen Tribe</span>
           </motion.h2>
           <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
             {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
