@@ -12,7 +12,7 @@ class Zen_BIT_API {
     }
     
     private static function get_cache_time() {
-        return (int) get_option('zen_bit_cache_time', 21600); // 6 horas
+        return (int) get_option('zen_bit_cache_time', 80000); // 24 horas
     }
     
     public static function get_events($limit = 50) {
