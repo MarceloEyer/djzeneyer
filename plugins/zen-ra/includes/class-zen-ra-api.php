@@ -23,8 +23,8 @@ class Zen_RA_API {
             );
         }
         
-        // Allow if viewing own profile or is admin
-        return ($current_user == $user_id || current_user_can('manage_options'));
+        // Allow if viewing own profile or is admin (strict comparison prevents type juggling)
+        return ($current_user === (int)$user_id || current_user_can('manage_options'));
     }
     
     /**

@@ -21,9 +21,33 @@ class Zen_BIT_Admin {
     }
     
     public function register_settings() {
-        register_setting('zen_bit_settings', 'zen_bit_artist_id');
-        register_setting('zen_bit_settings', 'zen_bit_api_key');
-        register_setting('zen_bit_settings', 'zen_bit_cache_time');
+        register_setting('zen_bit_settings', 'zen_bit_artist_id', array(
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => '15619775'
+        ));
+        register_setting('zen_bit_settings', 'zen_bit_api_key', array(
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => ''
+        ));
+        register_setting('zen_bit_settings', 'zen_bit_cache_time', array(
+            'type' => 'integer',
+            'sanitize_callback' => array($this, 'sanitize_cache_time'),
+            'default' => 3600
+        ));
+    }
+
+    /**
+     * Sanitize cache time value
+     *
+     * @param mixed $value
+     * @return int
+     */
+    public function sanitize_cache_time($value) {
+        $value = absint($value);
+        // Minimum 5 minutes, maximum 24 hours
+        return max(300, min(86400, $value));
     }
     
     public function render_settings_page() {
@@ -132,8 +156,9 @@ class Zen_BIT_Admin {
         }
         
         Zen_BIT_API::clear_cache();
-        
-        wp_redirect(add_query_arg(
+
+        // Use wp_safe_redirect instead of wp_redirect to prevent open redirect vulnerabilities
+        wp_safe_redirect(add_query_arg(
             array('page' => 'zen-bit-settings', 'cache_cleared' => '1'),
             admin_url('options-general.php')
         ));

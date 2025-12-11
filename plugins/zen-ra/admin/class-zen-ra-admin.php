@@ -24,12 +24,48 @@ class Zen_RA_Admin {
     }
     
     public function register_settings() {
-        register_setting('zen_ra_settings', 'zen_ra_cache_time');
-        register_setting('zen_ra_settings', 'zen_ra_orders_limit');
-        register_setting('zen_ra_settings', 'zen_ra_achievements_limit');
-        register_setting('zen_ra_settings', 'zen_ra_total_limit');
-        register_setting('zen_ra_settings', 'zen_ra_order_xp');
-        register_setting('zen_ra_settings', 'zen_ra_achievement_xp');
+        register_setting('zen_ra_settings', 'zen_ra_cache_time', array(
+            'type' => 'integer',
+            'sanitize_callback' => array($this, 'sanitize_cache_time'),
+            'default' => 3600
+        ));
+        register_setting('zen_ra_settings', 'zen_ra_orders_limit', array(
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 10
+        ));
+        register_setting('zen_ra_settings', 'zen_ra_achievements_limit', array(
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 10
+        ));
+        register_setting('zen_ra_settings', 'zen_ra_total_limit', array(
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 20
+        ));
+        register_setting('zen_ra_settings', 'zen_ra_order_xp', array(
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 50
+        ));
+        register_setting('zen_ra_settings', 'zen_ra_achievement_xp', array(
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 100
+        ));
+    }
+
+    /**
+     * Sanitize cache time value
+     *
+     * @param mixed $value
+     * @return int
+     */
+    public function sanitize_cache_time($value) {
+        $value = absint($value);
+        // Minimum 5 minutes, maximum 24 hours
+        return max(300, min(86400, $value));
     }
     
     public function render_settings_page() {

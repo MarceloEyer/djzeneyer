@@ -39,15 +39,23 @@ class Zen_RA {
     }
     
     private function init_hooks() {
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('rest_api_init', array($this, 'register_rest_routes'));
-        
+
         // Clear cache on new activity
         add_action('woocommerce_new_order', array('Zen_RA_API', 'clear_cache_on_order'), 10, 1);
         add_action('woocommerce_order_status_changed', array('Zen_RA_API', 'clear_cache_on_order_status'), 10, 1);
         add_action('gamipress_award_achievement', array('Zen_RA_API', 'clear_cache_on_achievement'), 10, 2);
         add_action('gamipress_update_user_points', array('Zen_RA_API', 'clear_cache_on_points'), 10, 1);
-        
+
         register_activation_hook(__FILE__, array($this, 'activate'));
+    }
+
+    /**
+     * Load plugin text domain for translations
+     */
+    public function load_textdomain() {
+        load_plugin_textdomain('zen-ra', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
     
     public function register_rest_routes() {

@@ -232,14 +232,15 @@ class Password_Auth {
     }
     
     /**
-     * Validate password strength
+     * Validate password strength with complexity requirements
      *
      * @param string $password
      * @return bool|WP_Error
      */
     private static function validate_password_strength($password) {
         $min_length = apply_filters('zeneyer_auth_min_password_length', 8);
-        
+
+        // Length check
         if (strlen($password) < $min_length) {
             return new WP_Error(
                 'weak_password',
@@ -250,7 +251,28 @@ class Password_Auth {
                 ['status' => 400]
             );
         }
-        
+
+        // Complexity requirements (can be disabled via filter)
+        $require_complexity = apply_filters('zeneyer_auth_require_password_complexity', true);
+
+        if ($require_complexity) {
+            $has_lowercase = preg_match('/[a-z]/', $password);
+            $has_uppercase = preg_match('/[A-Z]/', $password);
+            $has_number = preg_match('/[0-9]/', $password);
+            $has_special = preg_match('/[^a-zA-Z0-9]/', $password);
+
+            $complexity_count = $has_lowercase + $has_uppercase + $has_number + $has_special;
+
+            // Require at least 3 out of 4 complexity types
+            if ($complexity_count < 3) {
+                return new WP_Error(
+                    'weak_password',
+                    __('Password must contain at least 3 of the following: lowercase letters, uppercase letters, numbers, special characters', 'zeneyer-auth'),
+                    ['status' => 400]
+                );
+            }
+        }
+
         return true;
     }
     

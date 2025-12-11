@@ -95,8 +95,9 @@ class Google_Provider {
             );
         }
         
-        // Verify email is verified
-        if (empty($body['email_verified']) || $body['email_verified'] !== 'true') {
+        // Verify email is verified (Google returns boolean true or string 'true')
+        $email_verified = $body['email_verified'] ?? false;
+        if (!$email_verified || ($email_verified !== true && $email_verified !== 'true')) {
             return new WP_Error(
                 'google_email_not_verified',
                 __('Google email not verified', 'zeneyer-auth'),

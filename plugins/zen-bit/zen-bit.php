@@ -38,9 +38,17 @@ class Zen_BIT {
     }
     
     private function init_hooks() {
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
         add_action('rest_api_init', array($this, 'register_rest_routes'));
         register_activation_hook(__FILE__, array($this, 'activate'));
+    }
+
+    /**
+     * Load plugin text domain for translations
+     */
+    public function load_textdomain() {
+        load_plugin_textdomain('zen-bit', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
     
     public function enqueue_public_assets() {

@@ -220,7 +220,8 @@ class Zen_SEO_Meta_Tags {
             // Homepage or other pages
             $data['title'] = get_bloginfo('name');
             $data['description'] = get_bloginfo('description');
-            $data['canonical'] = home_url($_SERVER['REQUEST_URI'] ?? '/');
+            $request_uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw($_SERVER['REQUEST_URI']) : '/';
+            $data['canonical'] = esc_url(home_url($request_uri));
             $data['image'] = $settings['default_image'] ?? '';
             
             // Translations for homepage
