@@ -159,3 +159,26 @@ add_filter('script_loader_tag', function($tag, $handle) {
     // Aplica defer. Isso faz o download em paralelo e executa só no final.
     return str_replace(' src', ' defer src', $tag);
 }, 10, 2);
+
+/**
+ * OTIMIZAÇÃO DE BANCO - Índices para Transients
+ * Roda apenas 1x na ativação do tema
+ */
+add_action('after_switch_theme', function() {
+    global $wpdb;
+    
+    // Índice para transients (acelera get_transient)
+    $wpdb->query("
+        CREATE INDEX IF NOT EXISTS idx_option_name_transient 
+        ON {$wpdb->options} (option_name(191))
+    ");
+    
+    // Índice para autoload (acelera wp_load_alloptions)
+    $wpdb->query("
+        CREATE INDEX IF NOT EXISTS idx_autoload 
+        ON {$wpdb->options} (autoload)
+    ");
+    
+    // Log
+    error_log('[DJ Zen] Database indexes created');
+}, 10);
