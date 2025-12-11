@@ -15,9 +15,9 @@ class Zen_SEO_Cache {
     /**
      * Cache durations
      */
-    const SITEMAP_DURATION = 2 * DAY_IN_SECONDS;
-    const SCHEMA_DURATION = DAY_IN_SECONDS;
-    const META_DURATION = 12 * HOUR_IN_SECONDS;
+    const SITEMAP_DURATION = 7 * DAY_IN_SECONDS;
+    const SCHEMA_DURATION = 3 * DAY_IN_SECONDS;
+    const META_DURATION = 24 * HOUR_IN_SECONDS;
     
     /**
      * Get cached data
