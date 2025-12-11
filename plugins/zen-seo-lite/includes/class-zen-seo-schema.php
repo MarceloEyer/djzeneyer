@@ -76,11 +76,10 @@ class Zen_SEO_Schema {
                     }
                     break;
             }
-                        $schema['@graph'][] = $this->generate_breadcrumb_schema($post);
         }
         
-        // Cache for 24 hours
-        Zen_SEO_Cache::set($cache_key, $schema, Zen_SEO_Cache::SCHEMA_DURATION);
+        // Cache for 3 days (shared hosting optimization)
+        Zen_SEO_Cache::set($cache_key, $schema, 3 * DAY_IN_SECONDS);
         
         return apply_filters('zen_seo_schema', $schema);
     }
@@ -98,11 +97,15 @@ class Zen_SEO_Schema {
             '@id' => home_url('/#artist'),
             'name' => $name,
             'url' => home_url('/'),
-            'image' => $settings['default_image'] ?? '',
             'jobTitle' => ['DJ', 'Music Producer', 'Remixer'],
             'knowsAbout' => ['Brazilian Zouk', 'Zouk', 'Kizomba', 'Music Production', 'DJing'],
             'gender' => 'Male',
         ];
+        
+        // Image
+        if (!empty($settings['default_image'])) {
+            $person['image'] = esc_url($settings['default_image']);
+        }
         
         // Nationality
         $person['nationality'] = [
@@ -135,12 +138,12 @@ class Zen_SEO_Schema {
             ];
         }
         
-        // Tax ID (CNPJ)
+        // Tax ID (CNPJ) - Only if set
         if (!empty($settings['cnpj'])) {
             $person['taxID'] = sanitize_text_field($settings['cnpj']);
         }
         
-        // Contact point
+        // Contact point - Only if email is set
         if (!empty($settings['booking_email'])) {
             $person['contactPoint'] = [
                 '@type' => 'ContactPoint',
@@ -384,29 +387,5 @@ class Zen_SEO_Schema {
         }
         
         return array_values(array_filter($urls));
-
-            /**
-     * Generate Breadcrumb Schema
-     * Google loves breadcrumb schema for better SERP display
-     */
-    private function generate_breadcrumb_schema($post) {
-        return [
-            '@type' => 'BreadcrumbList',
-            'itemListElement' => [
-                [
-                    '@type' => 'ListItem',
-                    'position' => 1,
-                    'name' => 'Home',
-                    'item' => home_url('/')
-                ],
-                [
-                    '@type' => 'ListItem',
-                    'position' => 2,
-                    'name' => get_the_title($post),
-                    'item' => get_permalink($post)
-                ]
-            ]
-        ];
-    }
     }
 }
