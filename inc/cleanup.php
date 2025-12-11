@@ -221,16 +221,6 @@ add_filter('litespeed_optm_html_head', function($content) {
     return $content;
 }, 999);
 
-/**
- * 12. SEO KILL SWITCH (HEADLESS MODE)
- * Impede que plugins legados ou WP injetem Schema/Meta duplicado.
- * O React (Helmet) é o único responsável pelo SEO visual.
- */
-add_filter( 'wpseo_json_ld_output', '__return_false' ); // Yoast
-add_filter( 'rank_math/json_ld', '__return_false' ); // RankMath
-remove_action('wp_head', 'wp_generator');
-remove_action('wp_head', 'rel_canonical'); // Deixa o React decidir o canonical
-
 /* ==========================================
  * 🎯 RESUMO - ARQUIVOS DO PAGESPEED RESOLVIDOS:
  * ==========================================

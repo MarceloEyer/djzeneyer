@@ -1,21 +1,7 @@
 // src/components/HeadlessSEO.tsx
-// VERSÃO DEFINITIVA: CENTRAL DE COMANDO SEO (PRELOAD + SCHEMA + METAS)
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
-
-// ============================================================================
-// 1. INTERFACES E TIPOS
-// ============================================================================
-
-export interface PreloadItem {
-  href: string;
-  as: 'script' | 'style' | 'font' | 'fetch'; // ❌ removido 'image' para evitar warnings
-  media?: string;
-  type?: string;
-  crossOrigin?: string;
-}
 
 interface ZenSeoData {
   title: string;
@@ -44,13 +30,9 @@ interface HeadlessSEOProps {
   noindex?: boolean;
   keywords?: string;
   isHomepage?: boolean;
-  preload?: PreloadItem[]; // ✅ Suporte a LCP Optimization (sem imagens)
 }
 
-// ============================================================================
-// 2. HELPER FUNCTIONS
-// ============================================================================
-
+// Garante que a URL é absoluta baseada no baseUrl
 const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   if (!u) return baseUrl;
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
@@ -69,10 +51,6 @@ export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   ];
 };
 
-// ============================================================================
-// 3. COMPONENTE PRINCIPAL
-// ============================================================================
-
 export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   data,
   title,
@@ -85,17 +63,16 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   noindex = false,
   keywords,
   isHomepage = false,
-  preload = [],
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
 
-  // --- Lógica de Fallback de Dados ---
-  
+  // Título
   const finalTitle =
     data?.title ||
     title ||
     'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
 
+  // Descrição (API → prop → fallback artistData)
   const metaDescPlugin = data?.meta.find(m => m.name === 'description')?.content;
   const finalDescription =
     metaDescPlugin || description || ARTIST.site.defaultDescription;
@@ -105,6 +82,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ? `${finalDescription.substring(0, 157)}...`
       : finalDescription;
 
+  // URL e imagem absolutas
   const ogUrlMeta = data?.meta.find(m => m.property === 'og:url')?.content;
   const finalUrlRaw = ogUrlMeta || url || baseUrl;
   const finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
@@ -115,11 +93,11 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
     baseUrl
   );
 
-  // Schema.org Construction
-  let finalSchema: any = data?.jsonld || schema;
-  
-  if (!finalSchema && isHomepage) {
-    finalSchema = {
+  // Schema.org JSON-LD
+  let finalSchema: any;
+
+  if (isHomepage) {
+    finalSchema = data?.jsonld || schema || {
       '@context': 'https://schema.org',
       '@graph': [
         {
@@ -134,6 +112,15 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
         {
           ...ARTIST_SCHEMA_BASE,
           '@id': `${baseUrl}/#artist`,
+          nationality: { '@type': 'Country', name: 'Brazil' },
+          birthDate: ARTIST.identity.birthDate,
+          knowsAbout: [
+            'Brazilian Zouk',
+            'Music Production',
+            'DJing',
+            'Remixing',
+            'Kizomba',
+          ],
         },
         {
           '@type': 'WebPage',
@@ -147,43 +134,55 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
         },
       ],
     };
-  } else if (!finalSchema) {
-    finalSchema = {
+  } else {
+    finalSchema = data?.jsonld || schema || {
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: finalTitle,
-      description: truncatedDesc,
-      url: finalUrl,
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          '@id': `${baseUrl}/#website`,
+          url: baseUrl,
+          name: 'DJ Zen Eyer - Official Website',
+        },
+        {
+          '@type': 'WebPage',
+          '@id': `${finalUrl}#webpage`,
+          url: finalUrl,
+          name: finalTitle,
+          description: truncatedDesc,
+          isPartOf: { '@id': `${baseUrl}/#website` },
+          about: { '@id': `${baseUrl}/#artist` },
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: baseUrl,
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: finalTitle,
+                item: finalUrl,
+              },
+            ],
+          },
+        },
+      ],
     };
   }
 
   return (
     <Helmet>
-      {/* 1. Preload Links (somente fontes, CSS, scripts críticos) */}
-      {preload.map((item, index) => (
-        <link
-          key={`preload-${index}`}
-          rel="preload"
-          href={item.href}
-          as={item.as}
-          media={item.media}
-          type={item.type}
-          crossOrigin={item.crossOrigin}
-        />
-      ))}
-
-      {/* 2. Meta Tags Básicas */}
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="theme-color" content="#000000" />
-
-      {/* 3. SEO Meta Data */}
+      {/* Básico */}
       <title>{finalTitle}</title>
       <meta name="description" content={truncatedDesc} />
       <link rel="canonical" href={finalUrl} />
       {keywords && <meta name="keywords" content={keywords} />}
 
-      {/* Robots Control */}
+      {/* Robots */}
       <meta
         name="robots"
         content={
@@ -205,7 +204,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta property="og:locale" content="en_US" />
       <meta property="og:locale:alternate" content="pt_BR" />
 
-      {/* Twitter Cards */}
+      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
@@ -218,12 +217,10 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
         <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
-      {/* JSON-LD seguro */}
-      {finalSchema && (
-        <script type="application/ld+json">
-          {JSON.stringify(finalSchema).replace(/</g, '\\u003c')}
-        </script>
-      )}
+      {/* JSON-LD */}
+      <script type="application/ld+json">
+        {JSON.stringify(finalSchema)}
+      </script>
     </Helmet>
   );
 };
