@@ -76,6 +76,7 @@ class Zen_SEO_Schema {
                     }
                     break;
             }
+                        $schema['@graph'][] = $this->generate_breadcrumb_schema($post);
         }
         
         // Cache for 24 hours
@@ -383,5 +384,29 @@ class Zen_SEO_Schema {
         }
         
         return array_values(array_filter($urls));
+
+            /**
+     * Generate Breadcrumb Schema
+     * Google loves breadcrumb schema for better SERP display
+     */
+    private function generate_breadcrumb_schema($post) {
+        return [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => home_url('/')
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => get_the_title($post),
+                    'item' => get_permalink($post)
+                ]
+            ]
+        ];
+    }
     }
 }
