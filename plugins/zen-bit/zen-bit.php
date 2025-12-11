@@ -52,8 +52,15 @@ class Zen_BIT {
     }
     
     public function enqueue_public_assets() {
-        // wp_enqueue_style('zen-bit-public', ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css', array(), ZEN_BIT_VERSION);
-        wp_enqueue_script('zen-bit-public', ZEN_BIT_PLUGIN_URL . 'public/js/zen-bit-public.js', array('jquery'), ZEN_BIT_VERSION, true);
+        // Só carrega CSS se shortcode estiver na página
+        if (has_shortcode(get_the_content(), 'zen_bit_events')) {
+            wp_enqueue_style(
+                'zen-bit-public',
+                ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
+                [],
+                ZEN_BIT_VERSION
+            );
+        }        wp_enqueue_script('zen-bit-public', ZEN_BIT_PLUGIN_URL . 'public/js/zen-bit-public.js', array('jquery'), ZEN_BIT_VERSION, true);
     }
     
     public function register_rest_routes() {
