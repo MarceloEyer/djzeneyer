@@ -1,6 +1,6 @@
 <?php
 /**
- * Footer Template - DJ Zen Eyer Theme
+ * Footer Template - Zen Eyer Theme
  * Encerra a estrutura HTML e gerencia a transição visual para o React.
  */
 ?>
