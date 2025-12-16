@@ -1,5 +1,5 @@
 // src/components/EventsList.tsx
-// VERSÃO DEFINITIVA: ACESSIBILIDADE + SCHEMA HÍBRIDO + SEGURANÇA
+// ARQUITETURA DEFINITIVA: JSON-LD SEGURO + FALLBACKS PARA SEO (GSC GREEN)
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -70,7 +70,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     fetchEvents();
   }, [limit]);
 
-  // --- Helpers ---
+  // --- Helpers & Formatters ---
   const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) => {
     return date.toLocaleDateString(currentLocale, options);
   };
@@ -79,19 +79,41 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     return date.toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
   };
 
+  /**
+   * DATA NORMALIZATION FOR SEO
+   * Garante que nenhum campo obrigatório do Schema.org fique vazio (undefined/null),
+   * resolvendo os avisos amarelos e erros vermelhos do Google Search Console.
+   */
   const getCompleteEventData = (event: BandsintownEvent) => {
     const eventDate = new Date(event.datetime);
-    const endDate = new Date(eventDate.getTime() + (4 * 60 * 60 * 1000)); // +4h default
+    // Fallback: Se não tiver data final, assume 4 horas de duração
+    const endDate = new Date(eventDate.getTime() + (4 * 60 * 60 * 1000));
     
+    // Garantia de Localização
+    const venueName = event.venue?.name || 'Local a definir';
+    const city = event.venue?.city || 'City';
+    const country = event.venue?.country || 'BR';
+    const region = event.venue?.region || '';
+
+    // Lógica de Moeda (Simples)
+    const currency = (country === 'Brazil' || country === 'BR' || country === 'Brasil') ? 'BRL' : 'USD';
+
     return {
+      // SEO: Imagem é recomendada/obrigatória para Rich Cards
       image: event.image || 'https://djzeneyer.com/images/event-default.jpg',
-      description: event.description || `DJ Zen Eyer live at ${event.venue.name} in ${event.venue.city}, ${event.venue.country}`,
+      
+      // SEO: Descrição é recomendada. Geramos uma automática se faltar.
+      description: event.description || `DJ Zen Eyer performing live Brazilian Zouk set at ${venueName} in ${city}, ${country}.`,
+      
       endDate: endDate.toISOString(),
-      locationName: event.venue.name || 'Venue',
-      city: event.venue.city || 'Unknown',
-      country: event.venue.country || 'BR',
+      locationName: venueName,
+      city: city,
+      region: region,
+      country: country,
+      
+      // SEO: Offers é recomendado
       price: '0',
-      priceCurrency: 'BRL'
+      priceCurrency: currency
     };
   };
 
@@ -101,9 +123,11 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
 
     const renderEventJsonLd = (event: BandsintownEvent) => {
       const completeData = getCompleteEventData(event);
+      const ticketUrl = event.offers?.[0]?.url || event.url || 'https://djzeneyer.com/events';
+
       return {
         '@type': 'MusicEvent',
-        name: event.title,
+        name: event.title || 'DJ Zen Eyer Live',
         description: completeData.description,
         startDate: event.datetime,
         endDate: completeData.endDate,
@@ -116,24 +140,29 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           address: {
             '@type': 'PostalAddress',
             addressLocality: completeData.city,
-            addressRegion: event.venue.region || '',
+            addressRegion: completeData.region,
             addressCountry: completeData.country
           }
         },
         performer: {
           '@type': 'MusicGroup',
-          name: 'Zen Eyer',
+          name: 'DJ Zen Eyer',
           genre: 'Brazilian Zouk',
-          url: 'https://djzeneyer.com'
+          url: 'https://djzeneyer.com',
+          sameAs: [
+             'https://www.instagram.com/djzeneyer/',
+             'https://soundcloud.com/djzeneyer',
+             'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw'
+          ]
         },
         organizer: {
           '@type': 'Organization',
-          name: completeData.locationName,
-          url: event.url
+          name: completeData.locationName, // Usa o local como organizador se não houver outro
+          url: ticketUrl
         },
         offers: {
           '@type': 'Offer',
-          url: event.offers?.[0]?.url || event.url,
+          url: ticketUrl,
           availability: 'https://schema.org/InStock',
           price: completeData.price,
           priceCurrency: completeData.priceCurrency,
@@ -147,9 +176,10 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
       '@type': 'EventSeries',
       name: 'Zen Eyer World Tour',
       url: `https://djzeneyer.com/${i18n.language}/events`,
+      description: 'Official tour dates for DJ Zen Eyer, two-time world champion Brazilian Zouk DJ',
       performer: {
         '@type': 'MusicGroup',
-        name: 'Zen Eyer',
+        name: 'DJ Zen Eyer',
         url: 'https://djzeneyer.com'
       },
       subEvent: events.map(renderEventJsonLd)
@@ -161,7 +191,6 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     return (
       <div className="flex justify-center items-center py-12" role="status">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" aria-hidden="true"></div>
-        {/* ✅ A11y Improvement */}
         <span className="sr-only">{t('events.loading', 'Loading events...')}</span>
       </div>
     );
@@ -195,7 +224,6 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' });
           const formattedTime = formatTime(eventDate);
           
-          // ✅ A11y Dynamic Label
           const ariaLabel = t('events.ticketAriaLabel', 
             'View tickets for {{title}} at {{location}}', 
             { title: event.title, location: eventLocation }
@@ -210,14 +238,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className="card hover:border-primary/50 transition-all duration-300 group"
-                itemScope
-                itemType="https://schema.org/MusicEvent"
               >
-                <meta itemProp="eventStatus" content="https://schema.org/EventScheduled" />
-                <meta itemProp="name" content={event.title} />
-                <meta itemProp="startDate" content={event.datetime} />
-                <meta itemProp="endDate" content={completeData.endDate} />
-
                 <div className="flex items-start gap-4 p-4">
                   <time dateTime={event.datetime} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10">
                     <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
@@ -226,10 +247,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">{event.title}</h3>
                     <div className="space-y-1 text-sm text-white/70">
-                      <div className="flex items-center gap-2" itemProp="location" itemScope itemType="https://schema.org/Place">
+                      <div className="flex items-center gap-2">
                          <MapPin size={14} className="flex-shrink-0" />
-                         <span className="truncate" itemProp="name">{completeData.locationName}</span>
-                         <meta itemProp="address" content={eventLocation} />
+                         <span className="truncate">{completeData.locationName}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="flex-shrink-0" />
@@ -262,32 +282,29 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden"
-              itemScope
-              itemType="https://schema.org/MusicEvent"
             >
-              <meta itemProp="eventStatus" content="https://schema.org/EventScheduled" />
-              <meta itemProp="name" content={event.title} />
-              <meta itemProp="endDate" content={completeData.endDate} />
-
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
-                <time itemProp="startDate" dateTime={event.datetime} className="relative z-10 text-center">
+                {/* Imagem de Fundo Opcional se existir, senão usa o padrão visual */}
+                {event.image ? (
+                   <img src={event.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500" />
+                ) : null}
+                
+                <time dateTime={event.datetime} className="relative z-10 text-center drop-shadow-lg">
                   <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
-                  <div className="text-xl uppercase text-white/80 font-semibold">{formatDate(eventDate, { month: 'short' })}</div>
-                  <div className="text-sm text-white/60">{eventDate.getFullYear()}</div>
+                  <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' })}</div>
+                  <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
                 </time>
               </div>
 
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white">{event.title}</h3>
                 <div className="space-y-2 mb-4 text-sm text-white/70">
-                  <div className="flex items-start gap-2" itemProp="location" itemScope itemType="https://schema.org/Place">
+                  <div className="flex items-start gap-2">
                     <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
                     <div>
-                      <div className="font-semibold text-white" itemProp="name">{completeData.locationName}</div>
-                      <div itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-                        <span itemProp="addressLocality">{completeData.city}</span>, <span itemProp="addressCountry">{completeData.country}</span>
-                      </div>
+                      <div className="font-semibold text-white">{completeData.locationName}</div>
+                      <div>{completeData.city}, {completeData.country}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
