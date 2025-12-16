@@ -89,8 +89,8 @@ const HomePage: React.FC = () => {
         "@type": "WebSite",
         "@id": `${ARTIST.site.baseUrl}/#website`,
         "url": ARTIST.site.baseUrl,
-        "name": "DJ Zen Eyer - Official Website",
-        "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
+        "name": "Zen Eyer - Official Website",
+        "description": "Official website of Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
         "potentialAction": { 
