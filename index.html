@@ -1,70 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>DJ Zen Eyer | React Development Env</title>
+    <meta name="description" content="Ambiente de desenvolvimento local. Em produção, o WordPress gerencia estas meta tags." />
 
-  <title>DJ Zen Eyer | Brazilian Zouk World Champion & Producer</title>
-  <meta name="description" content="Site oficial do DJ Zen Eyer. Bicampeão mundial, produtor musical e referência internacional em Brazilian Zouk. Confira a agenda, sets e biografia." />
-  <meta name="keywords" content="Brazilian Zouk, DJ Zouk, Zouk Brasileiro, Zen Eyer, Produção Musical, DJ Internacional" />
-  <meta name="author" content="DJ Zen Eyer" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <meta name="theme-color" content="#0A0E27" />
 
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="DJ Zen Eyer | Brazilian Zouk Official" />
-  <meta property="og:description" content="Experiências imersivas em Zouk Brasileiro. Ouça os sets e veja a agenda oficial." />
-  <meta property="og:image" content="https://seudominio.com/images/hero-background.webp" /> <meta property="og:url" content="https://seudominio.com/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "MusicGroup",
-      "name": "DJ Zen Eyer",
-      "url": "https://seudominio.com",
-      "genre": "Brazilian Zouk",
-      "description": "2x World Champion Brazilian Zouk DJ & Producer.",
-      "sameAs": [
-        "https://instagram.com/seu_instagram",
-        "https://soundcloud.com/seu_soundcloud",
-        "https://spotify.com/seu_perfil"
-      ]
-    }
-  </script>
-
-  <meta name="theme-color" content="#FF6B6B" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="manifest" href="/site.webmanifest" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <link rel="preload" as="image" href="/images/hero-background.webp" type="image/webp" fetchpriority="high" />
-
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+    <link rel="preload" as="image" href="/images/hero-background.webp" type="image/webp" fetchpriority="high" />
+  </head>
   
-  <noscript>
-    <div style="text-align: center; padding: 50px; font-family: 'Inter', sans-serif; color: #333;">
-      <h1>DJ Zen Eyer - Brazilian Zouk Specialist</h1>
-      <p>Você precisa ativar o JavaScript para vivenciar a experiência imersiva completa.</p>
-      <hr style="width: 50%; margin: 20px auto;">
-      <article>
-        <h2>Sobre o Artista</h2>
-        <p>DJ Zen Eyer é uma autoridade global em <strong>Brazilian Zouk</strong>. Bicampeão mundial, ele combina técnica refinada com produção musical de ponta para criar sets inesquecíveis.</p>
-        <p>Navegue pelo site para encontrar:</p>
-        <ul>
-            <li>Agenda de Shows Internacionais</li>
-            <li>Biografia Completa</li>
-            <li>Sets e Produções Oficiais</li>
-            <li>Contato para Booking</li>
-        </ul>
-      </article>
-    </div>
-  </noscript>
-</body>
+  <body>
+    <div id="root"></div>
+
+    <script>
+      if (window.location.hostname === 'localhost') {
+        window.wpData = {
+          siteUrl: 'http://localhost:5173',
+          themeUrl: 'http://localhost:5173',
+          nonce: 'dev-nonce',
+          isUserLoggedIn: false
+        };
+      }
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <noscript>
+      <div style="background:#0A0E27; color:white; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:sans-serif;">
+        <h1>DJ Zen Eyer</h1>
+        <p>JavaScript is required to experience the Zen.</p>
+      </div>
+    </noscript>
+  </body>
 </html>
