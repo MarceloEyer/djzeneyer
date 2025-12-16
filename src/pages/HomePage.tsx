@@ -43,7 +43,7 @@ const ITEM_VARIANTS: Variants = {
 };
 
 // ============================================================================
-// 2. SUB-COMPONENTES MEMOIZADOS
+// 2. SUB-COMPONENTES MEMOIZADOS (Performance de Renderização)
 // ============================================================================
 
 const StatCard = React.memo(({ value, label, icon: Icon }: any) => (
@@ -81,6 +81,7 @@ const HomePage: React.FC = () => {
   const currentUrl = ARTIST.site.baseUrl;
 
   // 1. SCHEMA OTIMIZADO (Memoizado)
+  // Constrói um grafo de conhecimento completo para o Google
   const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -126,6 +127,7 @@ const HomePage: React.FC = () => {
             "skills": "Audio Engineering, Remixing, Mastering" 
           },
         ],
+        // Destaque para festivais fixos (Social Proof no Schema)
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
@@ -156,7 +158,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      {/* 2. SEO & PRELOAD (Centralizado) */}
+      {/* 2. SEO & PRELOAD (Centralizado e Robusto) */}
       <HeadlessSEO
         title="DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
         description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
@@ -180,7 +182,7 @@ const HomePage: React.FC = () => {
                 className="w-full h-full object-cover object-center opacity-40"
                 width="1920"
                 height="1080"
-                loading="eager"
+                loading="eager" // LCP Critical
                 fetchPriority="high"
                 decoding="async"
               />
@@ -275,9 +277,14 @@ const HomePage: React.FC = () => {
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
               {isPortuguese ? 'Próximos Shows' : 'Upcoming Shows'}
             </motion.h2>
+            
+            {/* INTEGRAÇÃO COM EVENTS LIST (GOLD MASTER)
+                Aqui puxamos os eventos da API com Schema JSON-LD automático.
+            */}
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
               <EventsList limit={3} showTitle={false} variant="compact" />
             </motion.div>
+
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
               <Link to="/events" className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
