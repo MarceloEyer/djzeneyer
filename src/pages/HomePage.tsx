@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
         "@type": "WebPage",
         "@id": `${ARTIST.site.baseUrl}/#webpage`,
         "url": ARTIST.site.baseUrl,
-        "name": "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
+        "name": "Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
         "description": "Two-time world champion DJ specializing in Brazilian Zouk. Book for international festivals and exclusive events.",
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "primaryImageOfPage": {
@@ -160,8 +160,8 @@ const HomePage: React.FC = () => {
     <>
       {/* 2. SEO & PRELOAD (Centralizado e Robusto) */}
       <HeadlessSEO
-        title="DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
-        description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
+        title="Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
+        description={`Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
         url={currentUrl}
         image={`${currentUrl}/images/zen-eyer-og-image.jpg`}
         isHomepage={true}
@@ -178,7 +178,7 @@ const HomePage: React.FC = () => {
               <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
               <img
                 src="/images/hero-background.webp"
-                alt="DJ Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
+                alt="Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
                 className="w-full h-full object-cover object-center opacity-40"
                 width="1920"
                 height="1080"
@@ -202,7 +202,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white mb-4 tracking-tight">
-              DJ Zen Eyer
+              Zen Eyer
             </motion.h1>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
@@ -223,7 +223,7 @@ const HomePage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
-                aria-label="Listen to DJ Zen Eyer on SoundCloud"
+                aria-label="Listen to Zen Eyer on SoundCloud"
               >
                 <PlayCircle size={22} />
                 <span>{isPortuguese ? 'Ouvir no SoundCloud' : 'Listen on SoundCloud'}</span>
