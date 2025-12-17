@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-// VERSÃO FINAL: GOLD MASTER (SEO GOD MODE + LCP INSTANTÂNEO + UX REFINADA)
+// VERSÃO FINAL: GOLD MASTER (SEO GOD MODE + LCP INSTANTÂNEO + AZUL PADRÃO)
 // Arquitetura: React/Vite + Framer Motion + Headless SEO
 
 import React, { useMemo } from 'react';
@@ -81,7 +81,6 @@ const HomePage: React.FC = () => {
   const currentUrl = ARTIST.site.baseUrl;
 
   // 1. SCHEMA OTIMIZADO (Memoizado)
-  // Constrói um grafo de conhecimento completo para o Google
   const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -89,8 +88,8 @@ const HomePage: React.FC = () => {
         "@type": "WebSite",
         "@id": `${ARTIST.site.baseUrl}/#website`,
         "url": ARTIST.site.baseUrl,
-        "name": "Zen Eyer - Official Website",
-        "description": "Official website of Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
+        "name": "DJ Zen Eyer - Official Website",
+        "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
         "potentialAction": { 
@@ -127,7 +126,6 @@ const HomePage: React.FC = () => {
             "skills": "Audio Engineering, Remixing, Mastering" 
           },
         ],
-        // Destaque para festivais fixos (Social Proof no Schema)
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
@@ -139,7 +137,7 @@ const HomePage: React.FC = () => {
         "@type": "WebPage",
         "@id": `${ARTIST.site.baseUrl}/#webpage`,
         "url": ARTIST.site.baseUrl,
-        "name": "Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
+        "name": "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
         "description": "Two-time world champion DJ specializing in Brazilian Zouk. Book for international festivals and exclusive events.",
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "primaryImageOfPage": {
@@ -158,10 +156,10 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      {/* 2. SEO & PRELOAD (Centralizado e Robusto) */}
+      {/* 2. SEO & PRELOAD */}
       <HeadlessSEO
-        title="Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
-        description={`Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
+        title="DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
+        description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
         url={currentUrl}
         image={`${currentUrl}/images/zen-eyer-og-image.jpg`}
         isHomepage={true}
@@ -178,11 +176,11 @@ const HomePage: React.FC = () => {
               <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
               <img
                 src="/images/hero-background.webp"
-                alt="Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
+                alt="DJ Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
                 className="w-full h-full object-cover object-center opacity-40"
                 width="1920"
                 height="1080"
-                loading="eager" // LCP Critical
+                loading="eager"
                 fetchPriority="high"
                 decoding="async"
               />
@@ -202,7 +200,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white mb-4 tracking-tight">
-              Zen Eyer
+              DJ Zen Eyer
             </motion.h1>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
@@ -223,7 +221,7 @@ const HomePage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
-                aria-label="Listen to Zen Eyer on SoundCloud"
+                aria-label="Listen to DJ Zen Eyer on SoundCloud"
               >
                 <PlayCircle size={22} />
                 <span>{isPortuguese ? 'Ouvir no SoundCloud' : 'Listen on SoundCloud'}</span>
@@ -278,9 +276,6 @@ const HomePage: React.FC = () => {
               {isPortuguese ? 'Próximos Shows' : 'Upcoming Shows'}
             </motion.h2>
             
-            {/* INTEGRAÇÃO COM EVENTS LIST (GOLD MASTER)
-                Aqui puxamos os eventos da API com Schema JSON-LD automático.
-            */}
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
               <EventsList limit={3} showTitle={false} variant="compact" />
             </motion.div>
@@ -367,13 +362,13 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* FINAL CTA - ZEN TRIBE */}
+      {/* FINAL CTA - ZEN TRIBE (CORRIGIDO: Azul Elétrico) */}
       <section className="py-24 relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
         
         <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
           <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
-            {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Zen Tribe</span>
+            {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-primary">Zen Tribe</span>
           </motion.h2>
           <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
             {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
