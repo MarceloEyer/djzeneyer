@@ -1,192 +1,211 @@
-// src/components/common/UserMenu.tsx
-// v3.0 - FIX FINAL: Dropdown agora fecha ao clicar nas opções
-
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, 
-  Settings, 
-  LogOut, 
-  ShoppingBag, 
-  Award,
-  ChevronDown 
-} from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Menu, X, LogIn } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
+import UserMenu from './UserMenu';
+import { useMenu } from '../../hooks/useMenu';
+import routeMapData from '../../data/routeMap.json';
+import { normalizePath, tryDynamicMapping } from '../../utils/routeUtils';
 
-interface UserMenuProps {
-  orientation?: 'horizontal' | 'vertical';
-}
+type Lang = 'pt' | 'en';
 
-const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
-  const { user, logout } = useUser();
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+// Função de segurança para garantir que o redirecionamento seja sempre interno (Corrige Open Redirect - Snyk)
+const sanitizePath = (path: string) => {
+  // Remove qualquer coisa que pareça um protocolo (http:) ou domínio
+  // Garante que começa com / e não é // (protocol relative)
+  const cleanPath = path.replace(/^(?:https?:\/\/[^\/]+)?/, '');
+  return cleanPath.startsWith('/') && !cleanPath.startsWith('//') 
+    ? cleanPath 
+    : '/';
+};
+
+// Componente seletor de idioma PT/EN
+const LanguageSelector: React.FC = () => {
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // --- LÓGICA DE FECHAMENTO (O FIX CRÍTICO) ---
-  useEffect(() => {
-    // Fecha ao clicar fora
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
+  const currentLang = i18n.language && i18n.language.startsWith('pt') ? 'pt' : 'en';
+  const routeMap: Record<string, { pt: string; en: string }> = routeMapData as any;
 
-    // Fecha ao apertar ESC
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
+  // Função para trocar idioma e navegar para rota equivalente
+  const changeLanguage = (newLang: Lang) => {
+    if (newLang === currentLang) return;
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscKey);
+    const rawPath = normalizePath(location.pathname);
+    const search = location.search || '';
+    const hash = location.hash || '';
+
+
+    // Tenta mapeamento direto das rotas (ex: /pt -> /)
+    const mapping = routeMap[rawPath];
+    if (mapping) {
+      const dest = mapping[newLang];
+      // Aplica sanitização antes de navegar
+      navigate(sanitizePath(dest) + search + hash);
+      return;
     }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [isOpen]);
+    // Tenta mapeamento dinâmico para rotas parametrizadas
+    const dyn = tryDynamicMapping(rawPath, newLang);
+    if (dyn) {
+      // Aplica sanitização antes de navegar
+      navigate(sanitizePath(dyn) + search + hash);
+      return;
+    }
 
-  const handleLogout = async () => {
-    setIsOpen(false); // Fecha o menu
-    await logout();
-    navigate('/');
+    // Fallback: adiciona ou remove /pt do caminho
+    if (newLang === 'pt') {
+      const newPath = rawPath === '/' ? '/pt' : `/pt${rawPath}`;
+      navigate(sanitizePath(newPath) + search + hash);
+      return;
+    } else {
+      const withoutPt = rawPath.startsWith('/pt') ? rawPath.replace(/^\/pt/, '') || '/' : rawPath;
+      navigate(sanitizePath(withoutPt) + search + hash);
+      return;
+    }
   };
 
-  // Helper para fechar o menu ao navegar
-  const handleLinkClick = () => {
-    setIsOpen(false);
-  };
+  const isPtActive = currentLang === 'pt';
 
-  if (!user?.isLoggedIn) return null;
-
-  // --- VERSÃO MOBILE (VERTICAL - Dentro do Menu Hambúrguer) ---
-  if (orientation === 'vertical') {
-    return (
-      <div className="flex flex-col gap-2 w-full pt-2 border-t border-white/10 mt-2">
-        <div className="flex items-center gap-3 px-2 py-2 mb-2">
-           {user.avatar ? (
-             <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-primary" />
-           ) : (
-             <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary"/></div>
-           )}
-           <div>
-             <div className="font-bold text-sm text-white">{user.name}</div>
-             <div className="text-xs text-white/50">{user.email}</div>
-           </div>
-        </div>
-        
-        <Link to="/dashboard" onClick={handleLinkClick} className="btn btn-primary w-full flex items-center justify-center gap-2">
-          <User size={18} /> <span>Dashboard</span>
-        </Link>
-        <button onClick={handleLogout} className="btn btn-outline w-full flex items-center justify-center gap-2 text-red-400 hover:bg-red-950/30 border-red-500/30">
-          <LogOut size={18} /> <span>Sign Out</span>
-        </button>
-      </div>
-    );
-  }
-
-  // --- VERSÃO DESKTOP (DROPDOWN - O do seu print) ---
   return (
-    <div className="relative" ref={menuRef}>
-      {/* Botão que abre o menu (Trigger) */}
+    <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-2 py-1.5 rounded-full border transition-all duration-200 ${isOpen ? 'bg-white/10 border-primary/50' : 'border-transparent hover:bg-white/5'}`}
-        aria-expanded={isOpen}
-        aria-label="Menu de usuário"
+        onClick={() => changeLanguage('pt')}
+        className={`text-sm font-bold transition-colors ${isPtActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+        aria-pressed={isPtActive}
       >
-        {user.avatar ? (
-          <img 
-            src={user.avatar} 
-            alt={user.name} 
-            className="w-8 h-8 rounded-full object-cover border border-primary/50"
-          />
-        ) : (
-          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center border border-primary/20">
-            <User className="text-primary" size={16} />
-          </div>
-        )}
-        <span className="hidden lg:block font-semibold text-sm max-w-[100px] truncate">{user.name}</span>
-        <ChevronDown 
-          size={14} 
-          className={`text-white/70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-        />
+        PT
       </button>
-
-      {/* O Menu Dropdown (A caixa preta do print) */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute right-0 top-full mt-2 w-64 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100]"
-          >
-            {/* Cabeçalho com Email (Igual ao print) */}
-            <div className="px-5 py-4 bg-white/5 border-b border-white/5">
-              <p className="text-xs text-white/50 font-mono truncate">{user.email}</p>
-            </div>
-
-            {/* Links de Navegação */}
-            <div className="py-2">
-              <Link 
-                to="/dashboard" 
-                onClick={handleLinkClick} // ✅ Garante o fechamento
-                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
-              >
-                <User size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium">Dashboard</span>
-              </Link>
-
-              <Link 
-                to="/my-account" 
-                onClick={handleLinkClick} // ✅ Garante o fechamento
-                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
-              >
-                <Settings size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium">My Account</span>
-              </Link>
-
-              <Link 
-                to="/my-account?tab=orders" 
-                onClick={handleLinkClick} // ✅ Garante o fechamento
-                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
-              >
-                <ShoppingBag size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium">My Orders</span>
-              </Link>
-
-              <Link 
-                to="/my-account?tab=achievements" 
-                onClick={handleLinkClick} // ✅ Garante o fechamento
-                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
-              >
-                <Award size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium">Achievements</span>
-              </Link>
-            </div>
-
-            {/* Botão Sair (Igual ao print) */}
-            <div className="border-t border-white/10 p-2 bg-white/5">
-              <button 
-                onClick={handleLogout} 
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-semibold"
-              >
-                <LogOut size={16} />
-                <span>Sign Out</span>
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <span className="text-white/20">|</span>
+      <button
+        onClick={() => changeLanguage('en')}
+        className={`text-sm font-bold transition-colors ${!isPtActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+        aria-pressed={!isPtActive}
+      >
+        EN
+      </button>
     </div>
   );
 };
 
-export default UserMenu;
+interface NavbarProps {
+  onLoginClick: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
+  const { t, i18n } = useTranslation();
+  const { lang } = useParams<{ lang?: string }>();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useUser();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const menuItems = useMenu() || [];
+
+  // Fecha menu mobile ao trocar de página
+  useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
+
+  // Detecta scroll para mudar estilo do header
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
+  const handleLoginButtonClick = useCallback(() => onLoginClick(), [onLoginClick]);
+
+  // Renderiza links do menu com NavLink para estilo ativo
+  const renderNavLinks = (isMobile = false) => (
+    menuItems.map((item) => {
+      const finalToPath = item.url;
+      return (
+        <NavLink
+          key={item.ID}
+          to={finalToPath}
+          end // FIX: Força match exato da rota, evitando dupla linha azul em PT
+          target={item.target || '_self'}
+          className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}
+        >
+          {item.title}
+        </NavLink>
+      );
+    })
+  );
+
+  // Link home preservando idioma atual
+  const homeLink = useMemo(() => {
+    const currentLang = i18n.language && i18n.language.startsWith('pt') ? 'pt' : 'en';
+    return currentLang === 'pt' ? '/pt' : '/';
+  }, [i18n.language]);
+
+  return (
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to={homeLink} className="flex items-center">
+            <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
+          </Link>
+
+          {/* Menu Desktop */}
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8" aria-label={t('main_navigation')}>
+            {renderNavLinks()}
+          </nav>
+
+          {/* Seletor de idioma e Login/User menu - Desktop */}
+          <div className="hidden md:flex items-center">
+            <LanguageSelector />
+            {user?.isLoggedIn ? (
+              <UserMenu />
+            ) : (
+              // Removido aria-label redundante (texto visível "Sign In" já é suficiente)
+              <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2">
+                <LogIn size={18} />
+                <span>{t('sign_in')}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Botão hamburger - Mobile */}
+          <button className="md:hidden text-white" onClick={toggleMenu} aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}>
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Menu Mobile */}
+      <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex flex-col space-y-4" aria-label={t('mobile_navigation')}>
+            {renderNavLinks(true)}
+          </nav>
+
+          {/* Login/User menu e seletor de idioma - Mobile */}
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+            <div className="flex-grow pr-4">
+              {user?.isLoggedIn ? (
+                <UserMenu orientation="vertical" />
+              ) : (
+                // Removido aria-label redundante (texto visível "Join the Tribe" já é suficiente)
+                <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2">
+                  <LogIn size={18} />
+                  <span>{t('join_the_tribe')}</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex-shrink-0">
+              <LanguageSelector />
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+});
+
+export default Navbar;
