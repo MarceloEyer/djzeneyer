@@ -1,250 +1,192 @@
-// src/components/Layout/Navbar.tsx
-// VERSÃO FUSION: Lógica Avançada de Rotas + UX Premium (Motion & Backdrop)
+// src/components/common/UserMenu.tsx
+// v3.0 - FIX FINAL: Dropdown agora fecha ao clicar nas opções
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Menu, X, LogIn } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion'; // ✅ Adicionado para UX
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  User, 
+  Settings, 
+  LogOut, 
+  ShoppingBag, 
+  Award,
+  ChevronDown 
+} from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
-import UserMenu from '../common/UserMenu'; // Certifique-se do caminho correto
-import { useMenu } from '../../hooks/useMenu';
-import routeMapData from '../../data/routeMap.json';
-import { normalizePath, tryDynamicMapping } from '../../utils/routeUtils';
 
-type Lang = 'pt' | 'en';
+interface UserMenuProps {
+  orientation?: 'horizontal' | 'vertical';
+}
 
-// --- SECURITY UTILS ---
-const sanitizePath = (path: string) => {
-  const cleanPath = path.replace(/^(?:https?:\/\/[^\/]+)?/, '');
-  return cleanPath.startsWith('/') && !cleanPath.startsWith('//') ? cleanPath : '/';
-};
-
-// --- LANGUAGE SELECTOR ---
-const LanguageSelector: React.FC = () => {
-  const { i18n } = useTranslation();
+const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
+  const { user, logout } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const currentLang = i18n.language && i18n.language.startsWith('pt') ? 'pt' : 'en';
-  const routeMap: Record<string, { pt: string; en: string }> = routeMapData as any;
+  // --- LÓGICA DE FECHAMENTO (O FIX CRÍTICO) ---
+  useEffect(() => {
+    // Fecha ao clicar fora
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
 
-  const changeLanguage = (newLang: Lang) => {
-    if (newLang === currentLang) return;
+    // Fecha ao apertar ESC
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
 
-    const rawPath = normalizePath(location.pathname);
-    const search = location.search || '';
-    const hash = location.hash || '';
-
-    // 1. Mapeamento Direto
-    const mapping = routeMap[rawPath];
-    if (mapping) {
-      const dest = mapping[newLang];
-      navigate(sanitizePath(dest) + search + hash);
-      return;
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscKey);
     }
 
-    // 2. Mapeamento Dinâmico
-    const dyn = tryDynamicMapping(rawPath, newLang);
-    if (dyn) {
-      navigate(sanitizePath(dyn) + search + hash);
-      return;
-    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isOpen]);
 
-    // 3. Fallback Padrão
-    if (newLang === 'pt') {
-      const newPath = rawPath === '/' ? '/pt' : `/pt${rawPath}`;
-      navigate(sanitizePath(newPath) + search + hash);
-    } else {
-      const withoutPt = rawPath.startsWith('/pt') ? rawPath.replace(/^\/pt/, '') || '/' : rawPath;
-      navigate(sanitizePath(withoutPt) + search + hash);
-    }
+  const handleLogout = async () => {
+    setIsOpen(false); // Fecha o menu
+    await logout();
+    navigate('/');
   };
 
-  const isPtActive = currentLang === 'pt';
+  // Helper para fechar o menu ao navegar
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
 
+  if (!user?.isLoggedIn) return null;
+
+  // --- VERSÃO MOBILE (VERTICAL - Dentro do Menu Hambúrguer) ---
+  if (orientation === 'vertical') {
+    return (
+      <div className="flex flex-col gap-2 w-full pt-2 border-t border-white/10 mt-2">
+        <div className="flex items-center gap-3 px-2 py-2 mb-2">
+           {user.avatar ? (
+             <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-primary" />
+           ) : (
+             <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary"/></div>
+           )}
+           <div>
+             <div className="font-bold text-sm text-white">{user.name}</div>
+             <div className="text-xs text-white/50">{user.email}</div>
+           </div>
+        </div>
+        
+        <Link to="/dashboard" onClick={handleLinkClick} className="btn btn-primary w-full flex items-center justify-center gap-2">
+          <User size={18} /> <span>Dashboard</span>
+        </Link>
+        <button onClick={handleLogout} className="btn btn-outline w-full flex items-center justify-center gap-2 text-red-400 hover:bg-red-950/30 border-red-500/30">
+          <LogOut size={18} /> <span>Sign Out</span>
+        </button>
+      </div>
+    );
+  }
+
+  // --- VERSÃO DESKTOP (DROPDOWN - O do seu print) ---
   return (
-    <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
+    <div className="relative" ref={menuRef}>
+      {/* Botão que abre o menu (Trigger) */}
       <button
-        onClick={() => changeLanguage('pt')}
-        className={`text-sm font-bold transition-colors ${isPtActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-2 px-2 py-1.5 rounded-full border transition-all duration-200 ${isOpen ? 'bg-white/10 border-primary/50' : 'border-transparent hover:bg-white/5'}`}
+        aria-expanded={isOpen}
+        aria-label="Menu de usuário"
       >
-        PT
+        {user.avatar ? (
+          <img 
+            src={user.avatar} 
+            alt={user.name} 
+            className="w-8 h-8 rounded-full object-cover border border-primary/50"
+          />
+        ) : (
+          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center border border-primary/20">
+            <User className="text-primary" size={16} />
+          </div>
+        )}
+        <span className="hidden lg:block font-semibold text-sm max-w-[100px] truncate">{user.name}</span>
+        <ChevronDown 
+          size={14} 
+          className={`text-white/70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
       </button>
-      <span className="text-white/20">|</span>
-      <button
-        onClick={() => changeLanguage('en')}
-        className={`text-sm font-bold transition-colors ${!isPtActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-      >
-        EN
-      </button>
+
+      {/* O Menu Dropdown (A caixa preta do print) */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute right-0 top-full mt-2 w-64 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100]"
+          >
+            {/* Cabeçalho com Email (Igual ao print) */}
+            <div className="px-5 py-4 bg-white/5 border-b border-white/5">
+              <p className="text-xs text-white/50 font-mono truncate">{user.email}</p>
+            </div>
+
+            {/* Links de Navegação */}
+            <div className="py-2">
+              <Link 
+                to="/dashboard" 
+                onClick={handleLinkClick} // ✅ Garante o fechamento
+                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
+              >
+                <User size={18} className="text-white/60 group-hover:text-primary transition-colors" />
+                <span className="text-sm font-medium">Dashboard</span>
+              </Link>
+
+              <Link 
+                to="/my-account" 
+                onClick={handleLinkClick} // ✅ Garante o fechamento
+                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
+              >
+                <Settings size={18} className="text-white/60 group-hover:text-primary transition-colors" />
+                <span className="text-sm font-medium">My Account</span>
+              </Link>
+
+              <Link 
+                to="/my-account?tab=orders" 
+                onClick={handleLinkClick} // ✅ Garante o fechamento
+                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
+              >
+                <ShoppingBag size={18} className="text-white/60 group-hover:text-primary transition-colors" />
+                <span className="text-sm font-medium">My Orders</span>
+              </Link>
+
+              <Link 
+                to="/my-account?tab=achievements" 
+                onClick={handleLinkClick} // ✅ Garante o fechamento
+                className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group"
+              >
+                <Award size={18} className="text-white/60 group-hover:text-primary transition-colors" />
+                <span className="text-sm font-medium">Achievements</span>
+              </Link>
+            </div>
+
+            {/* Botão Sair (Igual ao print) */}
+            <div className="border-t border-white/10 p-2 bg-white/5">
+              <button 
+                onClick={handleLogout} 
+                className="w-full flex items-center gap-2 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-semibold"
+              >
+                <LogOut size={16} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-// --- MAIN COMPONENT ---
-interface NavbarProps {
-  onLoginClick: () => void;
-}
-
-const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
-  const { t, i18n } = useTranslation();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useUser();
-  const location = useLocation();
-  
-  const menuItems = useMenu() || [];
-
-  // ✅ FIX 1: Bloqueia scroll quando menu abre
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [isMenuOpen]);
-
-  // ✅ FIX 2: Fecha menu ao mudar de rota ou apertar ESC
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsMenuOpen(false);
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, []);
-
-  // Detecta scroll
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
-  const handleLoginButtonClick = useCallback(() => {
-    setIsMenuOpen(false); // Garante que fecha o menu ao clicar em login
-    onLoginClick();
-  }, [onLoginClick]);
-
-  // Link home inteligente
-  const homeLink = useMemo(() => {
-    const currentLang = i18n.language && i18n.language.startsWith('pt') ? 'pt' : 'en';
-    return currentLang === 'pt' ? '/pt' : '/';
-  }, [i18n.language]);
-
-  const renderNavLinks = (isMobile = false) => (
-    menuItems.map((item) => (
-      <NavLink
-        key={item.ID}
-        to={item.url}
-        end
-        target={item.target || '_self'}
-        className={({ isActive }) => 
-          isMobile 
-            ? `text-lg py-3 block border-b border-white/5 ${isActive ? 'text-primary font-bold' : 'text-white/80'}`
-            : `nav-link ${isActive ? 'text-primary' : 'text-white/80 hover:text-white'}`
-        }
-        onClick={() => setIsMenuOpen(false)} // Fecha ao clicar no link
-      >
-        {item.title}
-      </NavLink>
-    ))
-  );
-
-  return (
-    <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-background/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10' : 'bg-transparent py-5'}`}>
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo */}
-            <Link to={homeLink} className="flex items-center z-50" onClick={() => setIsMenuOpen(false)}>
-              <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
-              {renderNavLinks()}
-            </nav>
-
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center">
-              <LanguageSelector />
-              {user?.isLoggedIn ? (
-                <UserMenu />
-              ) : (
-                <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2 btn-sm">
-                  <LogIn size={16} />
-                  <span>{t('sign_in')}</span>
-                </button>
-              )}
-            </div>
-
-            {/* Mobile Toggle */}
-            <button className="md:hidden text-white p-2 z-50" onClick={toggleMenu} aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}>
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* MOBILE MENU (Com Framer Motion & Backdrop) */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            {/* Backdrop Invisível (Clica fora para fechar) */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
-            />
-
-            {/* Drawer Content */}
-            <motion.div
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -50, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-[80px] left-0 right-0 bg-surface border-b border-white/10 z-40 md:hidden overflow-y-auto max-h-[80vh] shadow-2xl rounded-b-2xl"
-            >
-              <div className="container mx-auto px-6 py-6 flex flex-col">
-                <nav className="flex flex-col space-y-2" aria-label={t('mobile_navigation')}>
-                  {renderNavLinks(true)}
-                </nav>
-
-                <div className="mt-6 pt-6 border-t border-white/10 flex flex-col gap-4">
-                  {/* Mobile User/Login */}
-                  {user?.isLoggedIn ? (
-                    <div className="w-full">
-                      <UserMenu orientation="vertical" />
-                    </div>
-                  ) : (
-                    <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2 py-3">
-                      <LogIn size={18} />
-                      <span>{t('join_the_tribe')}</span>
-                    </button>
-                  )}
-
-                  {/* Mobile Language */}
-                  <div className="flex justify-center pt-2">
-                    <LanguageSelector />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
-  );
-});
-
-export default Navbar;
+export default UserMenu;
