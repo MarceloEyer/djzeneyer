@@ -1,211 +1,321 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+// src/components/Layout/Navbar.tsx
+// FUSION MASTER: Lógica Avançada (Rotas/Segurança) + UX Premium (Animação/Backdrop) + Visual Colorido
+
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, LogIn } from 'lucide-react';
+import { 
+  Menu, X, LogIn, 
+  Home, Calendar, ShoppingBag, Users, Music, Briefcase, Info, ChevronRight 
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../contexts/UserContext';
-import UserMenu from './UserMenu';
+import UserMenu from '../common/UserMenu';
 import { useMenu } from '../../hooks/useMenu';
 import routeMapData from '../../data/routeMap.json';
 import { normalizePath, tryDynamicMapping } from '../../utils/routeUtils';
 
-type Lang = 'pt' | 'en';
+// ============================================================================
+// SECURITY: Path Sanitization (Previne Open Redirect + Path Traversal)
+// ============================================================================
+const SAFE_PATH_REGEX = /^\/[a-zA-Z0-9\-_\/]*$/;
+const ALLOWED_PROTOCOLS = ['http:', 'https:'];
 
-// Função de segurança para garantir que o redirecionamento seja sempre interno (Corrige Open Redirect - Snyk)
-const sanitizePath = (path: string) => {
-  // Remove qualquer coisa que pareça um protocolo (http:) ou domínio
-  // Garante que começa com / e não é // (protocol relative)
-  const cleanPath = path.replace(/^(?:https?:\/\/[^\/]+)?/, '');
-  return cleanPath.startsWith('/') && !cleanPath.startsWith('//') 
-    ? cleanPath 
-    : '/';
+function sanitizePath(path: string): string {
+  if (!path || typeof path !== 'string') return '/';
+  
+  const trimmed = path.trim();
+  
+  try {
+    const url = new URL(trimmed, window.location.origin);
+    if (!ALLOWED_PROTOCOLS.includes(url.protocol)) return '/';
+    if (url.origin !== window.location.origin) return '/';
+  } catch { }
+  
+  if (trimmed.startsWith('//')) return '/';
+  if (trimmed.includes('..') || trimmed.includes('./')) return '/';
+  if (!SAFE_PATH_REGEX.test(trimmed)) return '/';
+  
+  const normalized = trimmed.replace(/\/+/g, '/');
+  return normalized || '/';
+}
+
+function sanitizeHTML(str: string): string {
+  if (!str) return '';
+  const temp = document.createElement('div');
+  temp.textContent = str; 
+  return temp.innerHTML;
+}
+
+// ============================================================================
+// VISUAL HELPER: Cores e Ícones para o Menu Mobile
+// ============================================================================
+const getLinkVisuals = (url: string) => {
+  const path = url.toLowerCase();
+  if (path.includes('event')) return { icon: <Calendar size={20} />, color: 'text-orange-400', bg: 'bg-orange-500/10' };
+  if (path.includes('shop') || path.includes('loja')) return { icon: <ShoppingBag size={20} />, color: 'text-emerald-400', bg: 'bg-emerald-500/10' };
+  if (path.includes('tribe') || path.includes('tribo')) return { icon: <Users size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
+  if (path.includes('music') || path.includes('música')) return { icon: <Music size={20} />, color: 'text-purple-400', bg: 'bg-purple-500/10' };
+  if (path.includes('work') || path.includes('trabalhe')) return { icon: <Briefcase size={20} />, color: 'text-blue-400', bg: 'bg-blue-500/10' };
+  if (path.includes('about') || path.includes('sobre')) return { icon: <Info size={20} />, color: 'text-pink-400', bg: 'bg-pink-500/10' };
+  return { icon: <Home size={20} />, color: 'text-white/70', bg: 'bg-white/5' };
 };
 
-// Componente seletor de idioma PT/EN
-const LanguageSelector: React.FC = () => {
+// ============================================================================
+// COMPONENT: Language Selector
+// ============================================================================
+const LanguageSelector: React.FC = React.memo(() => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const currentLang = i18n.language && i18n.language.startsWith('pt') ? 'pt' : 'en';
+  
+  const currentLang = useMemo(() => 
+    i18n.language?.startsWith('pt') ? 'pt' : 'en',
+    [i18n.language]
+  );
+  
   const routeMap: Record<string, { pt: string; en: string }> = routeMapData as any;
 
-  // Função para trocar idioma e navegar para rota equivalente
-  const changeLanguage = (newLang: Lang) => {
+  const changeLanguage = useCallback((newLang: 'pt' | 'en') => {
     if (newLang === currentLang) return;
-
+    
     const rawPath = normalizePath(location.pathname);
     const search = location.search || '';
     const hash = location.hash || '';
 
-
-    // Tenta mapeamento direto das rotas (ex: /pt -> /)
+    // Tenta mapeamento
     const mapping = routeMap[rawPath];
     if (mapping) {
-      const dest = mapping[newLang];
-      // Aplica sanitização antes de navegar
-      navigate(sanitizePath(dest) + search + hash);
+      navigate(sanitizePath(mapping[newLang]) + search + hash);
       return;
     }
 
-    // Tenta mapeamento dinâmico para rotas parametrizadas
+    // Tenta dinâmico
     const dyn = tryDynamicMapping(rawPath, newLang);
     if (dyn) {
-      // Aplica sanitização antes de navegar
       navigate(sanitizePath(dyn) + search + hash);
       return;
     }
-
-    // Fallback: adiciona ou remove /pt do caminho
+    
+    // Fallback
     if (newLang === 'pt') {
       const newPath = rawPath === '/' ? '/pt' : `/pt${rawPath}`;
       navigate(sanitizePath(newPath) + search + hash);
-      return;
     } else {
-      const withoutPt = rawPath.startsWith('/pt') ? rawPath.replace(/^\/pt/, '') || '/' : rawPath;
+      const withoutPt = rawPath.startsWith('/pt') 
+        ? rawPath.replace(/^\/pt/, '') || '/' 
+        : rawPath;
       navigate(sanitizePath(withoutPt) + search + hash);
-      return;
     }
-  };
-
-  const isPtActive = currentLang === 'pt';
-
+  }, [currentLang, location, navigate]);
+  
   return (
-    <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
-      <button
-        onClick={() => changeLanguage('pt')}
-        className={`text-sm font-bold transition-colors ${isPtActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-        aria-pressed={isPtActive}
-      >
-        PT
-      </button>
-      <span className="text-white/20">|</span>
-      <button
-        onClick={() => changeLanguage('en')}
-        className={`text-sm font-bold transition-colors ${!isPtActive ? 'text-primary' : 'text-white/60 hover:text-white'}`}
-        aria-pressed={!isPtActive}
-      >
-        EN
-      </button>
+    <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2" role="group" aria-label="Language selector">
+      <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>PT</button>
+      <span className="text-white/20" aria-hidden="true">|</span>
+      <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>EN</button>
     </div>
   );
-};
+});
 
+LanguageSelector.displayName = 'LanguageSelector';
+
+// ============================================================================
+// COMPONENT: Navbar (Main)
+// ============================================================================
 interface NavbarProps {
   onLoginClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const { t, i18n } = useTranslation();
-  const { lang } = useParams<{ lang?: string }>();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUser();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const menuItems = useMenu() || [];
-
-  // Fecha menu mobile ao trocar de página
-  useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
-
-  // Detecta scroll para mudar estilo do header
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  
+  const menuItems = useMenu();
+  
+  // 1. Scroll Lock
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    if (isMenuOpen) { document.body.style.overflow = 'hidden'; } 
+    else { document.body.style.overflow = 'unset'; }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isMenuOpen]);
+
+  // 2. Fecha menu ao mudar de rota
+  useEffect(() => { setIsMenuOpen(false); }, [location.pathname]);
+  
+  // 3. Detecta scroll
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
+  
+  // 4. Fecha com ESC
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsMenuOpen(false); };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, []);
+  
   const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
-  const handleLoginButtonClick = useCallback(() => onLoginClick(), [onLoginClick]);
+  const handleLoginButtonClick = useCallback(() => { setIsMenuOpen(false); onLoginClick(); }, [onLoginClick]);
+  
+  const homeLink = useMemo(() => i18n.language?.startsWith('pt') ? '/pt' : '/', [i18n.language]);
 
-  // Renderiza links do menu com NavLink para estilo ativo
-  const renderNavLinks = (isMobile = false) => (
-    menuItems.map((item) => {
-      const finalToPath = item.url;
+  // Renderiza Links
+  const renderNavLinks = useCallback((isMobile = false) => {
+    if (!menuItems || menuItems.length === 0) return null;
+    
+    return menuItems.map((item) => {
+      const safeUrl = sanitizePath(item.url || '/');
+      const safeTitle = sanitizeHTML(item.title || '');
+      const isExternal = item.target === '_blank';
+      const visuals = getLinkVisuals(safeUrl); // Pega cor/ícone
+      
       return (
         <NavLink
           key={item.ID}
-          to={finalToPath}
-          end // FIX: Força match exato da rota, evitando dupla linha azul em PT
+          to={safeUrl}
+          end
           target={item.target || '_self'}
-          className={isMobile ? "nav-link text-lg block py-2 text-center" : "nav-link"}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
+          onClick={() => setIsMenuOpen(false)}
+          className={({ isActive }) => 
+            isMobile 
+              ? `group flex items-center justify-between p-3 rounded-xl transition-all duration-300 border border-transparent ${
+                  isActive ? `${visuals.bg} border-white/5` : 'hover:bg-white/5'
+                }`
+              : `nav-link ${isActive ? 'text-primary font-medium' : 'text-white/80 hover:text-white'}`
+          }
         >
-          {item.title}
+          {({ isActive }) => (
+            <>
+              <div className="flex items-center gap-3">
+                {/* Ícone Colorido (Só no Mobile) */}
+                {isMobile && (
+                  <div className={`p-2 rounded-lg ${isActive ? visuals.color : 'text-white/50 group-hover:text-white'} ${isActive ? 'bg-black/20' : 'bg-white/5'}`}>
+                    {visuals.icon}
+                  </div>
+                )}
+                <span 
+                  className={`${isMobile ? 'text-base font-medium' : ''} ${isActive ? (isMobile ? 'text-white' : '') : 'text-white/80 group-hover:text-white'}`}
+                  dangerouslySetInnerHTML={{ __html: safeTitle }}
+                />
+              </div>
+              {/* Seta (Só no Mobile) */}
+              {isMobile && (
+                <ChevronRight size={16} className={`transition-transform ${isActive ? 'text-primary translate-x-1' : 'text-white/20'}`} />
+              )}
+            </>
+          )}
         </NavLink>
       );
-    })
-  );
-
-  // Link home preservando idioma atual
-  const homeLink = useMemo(() => {
-    const currentLang = i18n.language && i18n.language.startsWith('pt') ? 'pt' : 'en';
-    return currentLang === 'pt' ? '/pt' : '/';
-  }, [i18n.language]);
-
+    });
+  }, [menuItems]);
+  
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-background/95 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to={homeLink} className="flex items-center">
-            <span className="text-xl font-display font-bold tracking-wide"><span className="text-primary">DJ</span> Zen Eyer</span>
-          </Link>
-
-          {/* Menu Desktop */}
-          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8" aria-label={t('main_navigation')}>
-            {renderNavLinks()}
-          </nav>
-
-          {/* Seletor de idioma e Login/User menu - Desktop */}
-          <div className="hidden md:flex items-center">
-            <LanguageSelector />
-            {user?.isLoggedIn ? (
-              <UserMenu />
-            ) : (
-              // Removido aria-label redundante (texto visível "Sign In" já é suficiente)
-              <button onClick={handleLoginButtonClick} className="btn btn-primary flex items-center space-x-2">
-                <LogIn size={18} />
-                <span>{t('sign_in')}</span>
-              </button>
-            )}
-          </div>
-
-          {/* Botão hamburger - Mobile */}
-          <button className="md:hidden text-white" onClick={toggleMenu} aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Menu Mobile */}
-      <div className={`md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden ${isMenuOpen ? 'max-h-screen border-t border-white/10' : 'max-h-0'}`}>
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex flex-col space-y-4" aria-label={t('mobile_navigation')}>
-            {renderNavLinks(true)}
-          </nav>
-
-          {/* Login/User menu e seletor de idioma - Mobile */}
-          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            <div className="flex-grow pr-4">
+    <>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-[#0a0a0a]/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10' : 'bg-transparent py-5'}`} role="banner">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex items-center justify-between h-14">
+            
+            <Link to={homeLink} className="flex items-center z-50 group" onClick={() => setIsMenuOpen(false)} aria-label="Home">
+              <span className="text-xl font-display font-bold tracking-wide group-hover:scale-105 transition-transform">
+                <span className="text-primary">DJ</span> Zen Eyer
+              </span>
+            </Link>
+            
+            <nav className="hidden md:flex items-center space-x-6 lg:space-x-8" aria-label="Main navigation">
+              {renderNavLinks(false)}
+            </nav>
+            
+            <div className="hidden md:flex items-center gap-4">
+              <LanguageSelector />
               {user?.isLoggedIn ? (
-                <UserMenu orientation="vertical" />
+                <UserMenu />
               ) : (
-                // Removido aria-label redundante (texto visível "Join the Tribe" já é suficiente)
-                <button onClick={handleLoginButtonClick} className="w-full btn btn-primary flex items-center justify-center space-x-2">
-                  <LogIn size={18} />
-                  <span>{t('join_the_tribe')}</span>
+                <button onClick={handleLoginButtonClick} className="btn btn-primary btn-sm flex items-center gap-2 shadow-lg shadow-primary/20">
+                  <LogIn size={16} />
+                  <span>{t('sign_in')}</span>
                 </button>
               )}
             </div>
-
-            <div className="flex-shrink-0">
-              <LanguageSelector />
-            </div>
+            
+            <button 
+              className="md:hidden text-white p-2 z-50 active:scale-90 transition-transform" 
+              onClick={toggleMenu} 
+              aria-label={isMenuOpen ? t('close_menu') : t('open_menu')}
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+      
+      {/* MOBILE MENU (Drawer com Framer Motion) */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden"
+            />
+            
+            <motion.div
+              ref={mobileMenuRef}
+              initial={{ y: "-100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-100%" }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-white/10 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="pt-24 pb-8 px-4 flex flex-col">
+                <nav className="flex flex-col space-y-2 mb-6" aria-label="Mobile navigation">
+                  {renderNavLinks(true)}
+                </nav>
+                
+                <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
+                  {user?.isLoggedIn ? (
+                    <div className="w-full">
+                      <UserMenu orientation="vertical" />
+                    </div>
+                  ) : (
+                    <button onClick={handleLoginButtonClick} className="w-full btn btn-primary py-3 flex items-center justify-center space-x-2 shadow-lg shadow-primary/20">
+                      <LogIn size={18} />
+                      <span className="font-bold">{t('join_the_tribe')}</span>
+                    </button>
+                  )}
+                  
+                  <div className="flex justify-center pt-2 pb-4">
+                    <LanguageSelector />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 });
+
+Navbar.displayName = 'Navbar';
 
 export default Navbar;
