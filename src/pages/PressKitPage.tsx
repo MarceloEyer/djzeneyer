@@ -1,6 +1,6 @@
 // src/pages/PressKitPage.tsx
 // ============================================================================
-// PRESS KIT PAGE - VERSÃO FINAL (VISUAL RICO + TÉCNICA I18N/SEO)
+// PRESS KIT PAGE - ATUALIZADO (Links Corrigidos)
 // ============================================================================
 
 import React, { memo } from 'react';
@@ -30,7 +30,16 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// 1. CONTEÚDO BILÍNGUE (VISUAL RICO + TRADUÇÃO)
+// 1. CONFIGURAÇÃO DE LINKS (Centralizado para facilitar ajustes)
+// ============================================================================
+const PRESS_LINKS = {
+  photos: "https://photos.djzeneyer.com", // ✅ Seu subdomínio personalizado
+  epk: "/media/dj-zen-eyer-epk.pdf",     // 📁 Coloque este arquivo em public/media/
+  logos: "/media/dj-zen-eyer-logos.zip"   // 📁 Coloque este arquivo em public/media/
+};
+
+// ============================================================================
+// 2. CONTEÚDO BILÍNGUE
 // ============================================================================
 
 const CONTENT_PT = {
@@ -79,9 +88,9 @@ const CONTENT_PT = {
     title: "Material para Imprensa",
     subtitle: "Tudo que você precisa para divulgação e marketing",
     items: [
-      { title: "Fotos para Imprensa", desc: "Fotos em alta resolução (300dpi)", path: "/media/dj-zen-eyer-photos.zip", icon: <ImageIcon size={32} /> },
-      { title: "Biografia Completa", desc: "PDF com Bio e Rider Técnico", path: "/media/dj-zen-eyer-epk.pdf", icon: <FileText size={32} /> },
-      { title: "Logos e Branding", desc: "Logos oficiais em PNG/SVG", path: "/media/dj-zen-eyer-logos.zip", icon: <Music2 size={32} /> }
+      { title: "Fotos para Imprensa", desc: "Galeria oficial em alta resolução", path: PRESS_LINKS.photos, icon: <ImageIcon size={32} />, isExternal: true },
+      { title: "Biografia Completa", desc: "PDF com Bio e Rider Técnico", path: PRESS_LINKS.epk, icon: <FileText size={32} />, isExternal: false },
+      { title: "Logos e Branding", desc: "Logos oficiais em PNG/SVG", path: PRESS_LINKS.logos, icon: <Music2 size={32} />, isExternal: false }
     ]
   },
   gallery: {
@@ -148,9 +157,9 @@ const CONTENT_EN = {
     title: "Press Materials",
     subtitle: "Everything you need for promotion and marketing",
     items: [
-      { title: "Press Photos", desc: "High-res photos (300dpi)", path: "/media/dj-zen-eyer-photos.zip", icon: <ImageIcon size={32} /> },
-      { title: "Full Biography", desc: "PDF with Bio and Tech Rider", path: "/media/dj-zen-eyer-epk.pdf", icon: <FileText size={32} /> },
-      { title: "Logos & Branding", desc: "Official logos in PNG/SVG", path: "/media/dj-zen-eyer-logos.zip", icon: <Music2 size={32} /> }
+      { title: "Press Photos", desc: "High-res photos gallery", path: PRESS_LINKS.photos, icon: <ImageIcon size={32} />, isExternal: true },
+      { title: "Full Biography", desc: "PDF with Bio and Tech Rider", path: PRESS_LINKS.epk, icon: <FileText size={32} />, isExternal: false },
+      { title: "Logos & Branding", desc: "Official logos in PNG/SVG", path: PRESS_LINKS.logos, icon: <Music2 size={32} />, isExternal: false }
     ]
   },
   gallery: {
@@ -189,7 +198,7 @@ const WHATSAPP_CONFIG = {
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_CONFIG.number}?text=${encodeURIComponent(WHATSAPP_CONFIG.message)}`;
 
 // ============================================================================
-// 2. COMPONENTES AUXILIARES (MEMOIZADOS)
+// 3. COMPONENTES AUXILIARES
 // ============================================================================
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string; }>(({ icon, number, label, color }) => (
@@ -207,13 +216,13 @@ const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; co
 ));
 StatCard.displayName = 'StatCard';
 
-const MediaKitCard = memo<{ icon: React.ReactNode; title: string; description: string; path: string; }>(({ icon, title, description, path }) => (
+const MediaKitCard = memo<{ icon: React.ReactNode; title: string; description: string; path: string; isExternal?: boolean }>(({ icon, title, description, path, isExternal }) => (
   <motion.a
     href={path}
-    download
+    download={!isExternal} // Só tenta baixar se não for link externo
     target="_blank"
     rel="noopener noreferrer"
-    className="group bg-surface/50 p-8 rounded-2xl backdrop-blur-sm border border-white/10 transition-all hover:border-primary hover:bg-surface/80"
+    className="group bg-surface/50 p-8 rounded-2xl backdrop-blur-sm border border-white/10 transition-all hover:border-primary hover:bg-surface/80 flex flex-col h-full"
     whileHover={{ y: -8 }}
     transition={{ type: 'spring', stiffness: 300 }}
   >
@@ -221,29 +230,26 @@ const MediaKitCard = memo<{ icon: React.ReactNode; title: string; description: s
       {icon}
     </div>
     <h3 className="font-bold text-xl text-white mb-2">{title}</h3>
-    <p className="text-white/70 mb-4">{description}</p>
-    <div className="flex items-center justify-center gap-2 text-primary font-semibold">
-      <Download size={20} />
-      <span>Download</span>
+    <p className="text-white/70 mb-4 flex-grow">{description}</p>
+    <div className="flex items-center justify-center gap-2 text-primary font-semibold mt-auto">
+      {isExternal ? <ExternalLink size={20} /> : <Download size={20} />}
+      <span>{isExternal ? "Acessar" : "Download"}</span>
     </div>
   </motion.a>
 ));
 MediaKitCard.displayName = 'MediaKitCard';
 
 // ============================================================================
-// 3. COMPONENTE PRINCIPAL
+// 4. COMPONENTE PRINCIPAL
 // ============================================================================
 const PressKitPage: React.FC = () => {
   const { i18n } = useTranslation();
-  // Força PT se a url for /pt, senão EN (Fallback para i18n seguro)
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
   const content = lang === 'pt' ? CONTENT_PT : CONTENT_EN;
 
-  // URL Canonical
   const currentPath = '/press-kit';
   const currentUrl = 'https://djzeneyer.com' + currentPath;
 
-  // Schema Dinâmico
   const PERSON_SCHEMA = {
     "@type": "Person",
     "@id": "https://djzeneyer.com/#artist",
@@ -277,7 +283,6 @@ const PressKitPage: React.FC = () => {
         
         {/* Hero Section */}
         <div className="relative pt-24 pb-16 overflow-hidden">
-          {/* Efeitos de Fundo */}
           <div className="absolute inset-0 pointer-events-none opacity-30">
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -303,7 +308,6 @@ const PressKitPage: React.FC = () => {
               </p>
             </motion.div>
             
-            {/* Stats Grid */}
             <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-20" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.8 }}>
               {content.stats.map((stat, index) => (
                 <StatCard key={index} {...stat} />
@@ -405,7 +409,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="text-center mt-8">
-                <a href="https://photos.app.goo.gl/bDdjActE3wrd6fx78" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg inline-flex items-center gap-2">
+                <a href={PRESS_LINKS.photos} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg inline-flex items-center gap-2">
                   <ImageIcon size={20} />
                   {content.gallery.cta}
                 </a>
