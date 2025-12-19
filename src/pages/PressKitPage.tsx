@@ -258,7 +258,7 @@ const PressKitPage: React.FC = () => {
     "jobTitle": lang === 'pt' ? "DJ e Produtor Musical" : "DJ & Music Producer",
     "description": content.seo.description,
     "url": "https://djzeneyer.com",
-    "image": "https://djzeneyer.com/images/zen-eyer-presskit-photo.jpg",
+    "image": "https://djzeneyer.com/wp-content/uploads/2025/12/ZenEyer-2026.png",
     "sameAs": RELEVANT_LINKS.map(l => l.url),
     "memberOf": { "@type": "Organization", "name": "Mensa International" },
     "award": [
@@ -325,7 +325,7 @@ const PressKitPage: React.FC = () => {
                 <motion.div className="relative" whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 300 }}>
                   <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 shadow-2xl">
                     <img
-                      src="https://djzeneyer.com/images/zen-eyer-presskit-photo.jpg"
+                      src="https://djzeneyer.com/wp-content/uploads/2025/12/ZenEyer-2026.png"
                       alt="Zen Eyer - Press Photo"
                       className="w-full h-full object-cover"
                       loading="lazy"
