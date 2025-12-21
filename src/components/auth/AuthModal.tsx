@@ -1,5 +1,5 @@
 // src/components/auth/AuthModal.tsx
-// VERSÃO DEFINITIVA: UX PREMIUM + SEGURANÇA + VISIBILIDADE SENHA
+// VERSÃO DEFINITIVA: SEGURANÇA MÁXIMA (Turnstile + Honeypot) + UX PREMIUM
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { Turnstile } from '@marsidev/react-turnstile'; // Biblioteca do Cloudflare
 import { useUser } from '../../contexts/UserContext';
 
 interface AuthModalProps {
@@ -24,6 +25,7 @@ interface FormErrors {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // ATENÇÃO: Verifique se o seu useUser() já aceita o 4º argumento (token) no register
   const { login, register, googleLogin, googleClientId } = useUser();
   
   // Estados do Formulário
@@ -32,6 +34,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   
+  // Estados de Segurança
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [honeypot, setHoneypot] = useState(''); // Campo armadilha para bots
+
   // Estados de UX
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,19 +56,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       errors.email = 'Email inválido';
     }
 
-    // Validação de Senha (Mais robusta no registro)
+    // Validação de Senha
     if (!password) {
       errors.password = 'Senha é obrigatória';
     } else {
       if (password.length < 6) {
         errors.password = 'Mínimo de 6 caracteres';
-      } else if (mode === 'register') {
-        // Opcional: Exigir letras e números apenas no registro
-        const hasLetter = /[a-zA-Z]/.test(password);
-        const hasNumber = /[0-9]/.test(password);
-        if (!hasLetter || !hasNumber) {
-          errors.password = 'A senha deve conter letras e números';
-        }
       }
     }
 
@@ -80,20 +79,38 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     e.preventDefault();
     setError('');
 
+    // 1. Verificação Honeypot (Se preenchido, é bot)
+    if (honeypot) {
+      // Fingimos sucesso para enganar o bot
+      onClose();
+      return;
+    }
+
     if (!validateForm()) return;
+
+    // 2. Verificação Turnstile (Apenas no Registro)
+    if (mode === 'register' && !turnstileToken) {
+      setError('Por favor, aguarde a verificação de segurança.');
+      return;
+    }
 
     setLoading(true);
     try {
       if (mode === 'login') {
         await login(email, password);
       } else {
-        await register(username.trim(), email, password);
+        // Envia o token do Cloudflare junto com os dados
+        // Certifique-se que sua função register no UserContext aceita esse argumento
+        await register(username.trim(), email, password, turnstileToken);
       }
+      
       if (onSuccess) onSuccess();
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro:', err);
+      // Se der erro, reseta o token para forçar nova verificação
+      setTurnstileToken(''); 
       setError(err.message || 'Erro ao autenticar. Verifique suas credenciais.');
     } finally {
       setLoading(false);
@@ -126,6 +143,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
     setFormErrors({});
+    setTurnstileToken(''); // Reseta token ao trocar de modo
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -136,7 +154,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
   const handleForgotPassword = () => {
     onClose();
-    navigate('/reset-password'); // Certifique-se de criar essa rota depois
+    navigate('/reset-password');
   };
 
   if (!isOpen) return null;
@@ -240,6 +258,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               {/* Formulário */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 
+                {/* --- CAMPO ARMADILHA (HONEYPOT) - Invisível --- */}
+                <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} aria-hidden="true">
+                  <label htmlFor="user_website_trap">Se você é humano, não preencha este campo</label>
+                  <input
+                    type="text"
+                    id="user_website_trap"
+                    name="user_website_trap"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
                 {/* Campo Nome (Apenas Registro) */}
                 {mode === 'register' && (
                   <div>
@@ -326,6 +358,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   </div>
                   {formErrors.password && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.password}</p>}
                 </div>
+
+                {/* CLOUDFLARE TURNSTILE (Apenas no Registro) */}
+                {mode === 'register' && (
+                  <div className="flex justify-center py-2">
+                    <Turnstile 
+                      siteKey="0x4AAAAAACH0H9pwZy0XoXHR" 
+                      onSuccess={(token) => setTurnstileToken(token)}
+                      options={{ theme: 'dark' }}
+                    />
+                  </div>
+                )}
 
                 {/* Botão Submit */}
                 <button
