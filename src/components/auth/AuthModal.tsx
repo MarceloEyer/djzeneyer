@@ -363,7 +363,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 {mode === 'register' && (
                   <div className="flex justify-center py-2">
                     <Turnstile 
-                      siteKey="0x4AAAAAACH0H9pwZy0XoXHR" 
+                      siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                       onSuccess={(token) => setTurnstileToken(token)}
                       options={{ theme: 'dark' }}
                     />
