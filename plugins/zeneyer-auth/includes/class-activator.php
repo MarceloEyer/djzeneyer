@@ -1,12 +1,25 @@
 <?php
+/**
+ * Fired during plugin activation
+ *
+ * @package ZenEyer_Auth_Pro
+ */
+
 namespace ZenEyer\Auth;
 
 class Activator {
     
     public static function activate() {
+        // 1. Verifica se o ambiente está seguro antes de ativar
         self::check_requirements();
+        
+        // 2. Gera segredos JWT se necessário
         self::generate_secret_key();
+        
+        // 3. Define opções padrão
         self::set_default_options();
+        
+        // 4. Limpa regras de URL para garantir que a API funcione
         flush_rewrite_rules();
     }
     
@@ -17,17 +30,29 @@ class Activator {
     private static function check_requirements() {
         $errors = [];
         
+        // Checagem de PHP
         if (version_compare(PHP_VERSION, '7.4', '<')) {
             $errors[] = 'PHP 7.4 or higher is required. Current version: ' . PHP_VERSION;
         }
         
+        // Checagem de OpenSSL (Vital para segurança)
         if (!extension_loaded('openssl')) {
-            $errors[] = 'OpenSSL PHP extension is required';
+            $errors[] = 'OpenSSL PHP extension is required for secure authentication.';
+        }
+        
+        // --- TRAVA DE SEGURANÇA (NOVO) ---
+        // Verifica se as chaves do Cloudflare estão no wp-config.php
+        // Isso impede que o plugin rode sem a proteção anti-bot configurada.
+        if ( ! defined('ZEN_TURNSTILE_SITE_KEY') || ! defined('ZEN_TURNSTILE_SECRET_KEY') ) {
+            $errors[] = '<b>ERRO CRÍTICO DE SEGURANÇA:</b> As chaves do Cloudflare Turnstile não foram encontradas no <code>wp-config.php</code>.<br><br>' .
+                        'Adicione as seguintes linhas no seu arquivo <code>wp-config.php</code> antes de ativar:<br>' .
+                        '<code>define( "ZEN_TURNSTILE_SITE_KEY", "sua-site-key-aqui" );</code><br>' .
+                        '<code>define( "ZEN_TURNSTILE_SECRET_KEY", "sua-secret-key-aqui" );</code>';
         }
         
         if (!empty($errors)) {
             wp_die(
-                '<h3>ZenEyer Auth Pro - Requirements Not Met</h3><ul><li>' . implode('</li><li>', $errors) . '</li></ul>',
+                '<div class="error"><p><strong>❌ ZenEyer Auth Pro - Falha na Ativação</strong></p><ul><li>' . implode('</li><li style="margin-top:10px;">', $errors) . '</li></ul></div>',
                 'Plugin Activation Error',
                 ['back_link' => true]
             );
