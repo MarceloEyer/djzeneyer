@@ -7,20 +7,24 @@ ExpiresByType application/pdf A31557600
 ExpiresByType image/x-icon A31557600
 ExpiresByType image/vnd.microsoft.icon A31557600
 ExpiresByType image/svg+xml A31557600
+
 ExpiresByType image/jpg A31557600
 ExpiresByType image/jpeg A31557600
 ExpiresByType image/png A31557600
 ExpiresByType image/gif A31557600
 ExpiresByType image/webp A31557600
 ExpiresByType image/avif A31557600
+
 ExpiresByType video/ogg A31557600
 ExpiresByType audio/ogg A31557600
 ExpiresByType video/mp4 A31557600
 ExpiresByType video/webm A31557600
+
 ExpiresByType text/css A31557600
 ExpiresByType text/javascript A31557600
 ExpiresByType application/javascript A31557600
 ExpiresByType application/x-javascript A31557600
+
 ExpiresByType application/x-font-ttf A31557600
 ExpiresByType application/x-font-woff A31557600
 ExpiresByType application/font-woff A31557600
@@ -30,13 +34,15 @@ ExpiresByType font/ttf A31557600
 ExpiresByType font/otf A31557600
 ExpiresByType font/woff A31557600
 ExpiresByType font/woff2 A31557600
+
 </IfModule>
 ### marker BROWSER CACHE end ###
+
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
 # END NON_LSCACHE
 
 # ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v8.0 (REVERTED & STABLE)
+# DJ ZEN EYER - PRODUCTION .htaccess v9.0 (SECURITY & TURNSTILE FIX)
 # ==============================================================================
 
 # ==============================================================================
@@ -50,35 +56,42 @@ CacheLookup on
 RewriteRule .* - [E=Cache-Control:no-autoflush]
 RewriteRule litespeed/debug/.*\.log$ - [F,L]
 RewriteRule \.litespeed_conf\.dat - [F,L]
+
 ### marker ASYNC start ###
 RewriteCond %{REQUEST_URI} /wp-admin/admin-ajax\.php
 RewriteCond %{QUERY_STRING} action=async_litespeed
 RewriteRule .* - [E=noabort:1]
 ### marker ASYNC end ###
+
 ### marker MOBILE start ###
 RewriteCond %{HTTP_USER_AGENT} Mobile|Android|Silk/|Kindle|BlackBerry|Opera\ Mini|Opera\ Mobi [NC]
 RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+ismobile]
 ### marker MOBILE end ###
+
 ### marker NOCACHE COOKIES start ###
 RewriteCond %{HTTP_COOKIE} wordpress_logged_in_|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|wordpress_logged_in_\*|woocommerce_\*
 RewriteRule .* - [E=Cache-Control:no-cache]
 ### marker NOCACHE COOKIES end ###
+
 ### marker NOCACHE USER AGENTS start ###
 RewriteCond %{HTTP_USER_AGENT} /wp\-json/\*|/feed/\*|/comments/feed/\*|/api/\* [NC]
 RewriteRule .* - [E=Cache-Control:no-cache]
 ### marker NOCACHE USER AGENTS end ###
+
 ### marker WEBP start ###
 RewriteCond %{HTTP_ACCEPT} image/webp [OR]
 RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
 RewriteCond %{HTTP_USER_AGENT} Firefox/([6-9][0-9]|[1-9][0-9]{2,})
 RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+webp]
 ### marker WEBP end ###
+
 ### marker DROPQS start ###
 CacheKeyModify -qs:fbclid
 CacheKeyModify -qs:gclid
 CacheKeyModify -qs:utm*
 CacheKeyModify -qs:_ga
 ### marker DROPQS end ###
+
 </IfModule>
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
 # END LSCACHE
@@ -102,7 +115,7 @@ CacheKeyModify -qs:_ga
 </IfModule>
 
 # ==============================================================================
-# 3. SECURITY HEADERS
+# 3. SECURITY HEADERS (UPDATED FOR CLOUDFLARE TURNSTILE)
 # ==============================================================================
 <IfModule mod_headers.c>
   Header unset Server
@@ -114,8 +127,10 @@ CacheKeyModify -qs:_ga
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
   Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+
+  # CORREÇÃO CRÍTICA: Adicionado 'challenges.cloudflare.com' e 'unsafe-eval'
   <If "%{REQUEST_URI} !~ m#^/wp-admin|^/wp-login\.php|^/wp-json#">
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' https: data: blob:; connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com; frame-src 'self' https://accounts.google.com https://widget.bandsintown.com; object-src 'none'; base-uri 'self';"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' https: data: blob:; connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com https://challenges.cloudflare.com; frame-src 'self' https://accounts.google.com https://widget.bandsintown.com https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';"
   </If>
 </IfModule>
 
@@ -187,5 +202,4 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
-
 # END WordPress
