@@ -3,7 +3,7 @@
  * Plugin Name:       ZenEyer Auth Pro
  * Plugin URI:        https://djzeneyer.com
  * Description:       Enterprise-grade JWT Authentication for Headless WordPress + React. Secure, fast, and production-ready. Includes Anti-Bot Security Shield.
- * Version:           2.1.0
+ * Version:           2.1.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            DJ Zen Eyer
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('ZENEYER_AUTH_VERSION', '2.1.0');
+define('ZENEYER_AUTH_VERSION', '2.1.1');
 define('ZENEYER_AUTH_PATH', plugin_dir_path(__FILE__));
 define('ZENEYER_AUTH_URL', plugin_dir_url(__FILE__));
 define('ZENEYER_AUTH_BASENAME', plugin_basename(__FILE__));
@@ -118,11 +118,27 @@ final class ZenEyer_Auth_Pro {
         });
 
         // 3. Remove rota nativa de criação de usuários da REST API (wp/v2/users)
-        // Isso obriga bots a usarem nossa rota customizada (que tem Turnstile)
+        // CORREÇÃO DO BUG: Verifica tipos antes de dar unset para evitar erro de string offset
         add_filter('rest_endpoints', function($endpoints) {
             if (isset($endpoints['/wp/v2/users'])) {
-                unset($endpoints['/wp/v2/users'][0]['methods']['POST']);
-                unset($endpoints['/wp/v2/users'][0]['methods']['KP_POST']);
+                foreach ($endpoints['/wp/v2/users'] as $index => $endpoint) {
+                    if (isset($endpoint['methods'])) {
+                        $methods = $endpoint['methods'];
+                        
+                        // Normaliza para array se for string (ex: 'GET, POST')
+                        if (is_string($methods)) {
+                            $methods = array_map('trim', explode(',', $methods));
+                        }
+                        
+                        // Garante que é array
+                        $methods = (array) $methods;
+
+                        // Se POST (criação) estiver permitido, removemos o endpoint inteiro por segurança
+                        if (in_array('POST', $methods) || array_key_exists('POST', $methods)) {
+                            unset($endpoints['/wp/v2/users'][$index]);
+                        }
+                    }
+                }
             }
             return $endpoints;
         });
