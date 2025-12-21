@@ -64,9 +64,45 @@ class Password_Auth {
      * @param string $email
      * @param string $password
      * @param string $name
+     * @param string $turnstileToken (Opcional, mas recomendado passar via array de args se possível, ou capturar globalmente)
      * @return \WP_User|WP_Error
      */
     public static function register($email, $password, $name = '') {
+        // --- BLOQUEIO DE BOTS (CLOUDFLARE TURNSTILE) ---
+        // Captura o corpo da requisição JSON atual para pegar o token
+        $request_body = file_get_contents('php://input');
+        $params = json_decode($request_body, true);
+        
+        // 1. Pega o token enviado pelo React
+        $token = isset($params['turnstileToken']) ? $params['turnstileToken'] : '';
+        
+        // 2. Sua Chave Secreta (Secret Key) do Cloudflare
+        $secret_key = '0x4AAAAAACH0H9nOph1Dr2Fmc-543_bvG9k'; 
+        
+        // Só valida se estivermos num contexto de API REST (evita bloquear admins criando user no painel)
+        if ( defined('REST_REQUEST') && REST_REQUEST ) {
+            if ( empty( $token ) ) {
+                return new WP_Error( 'missing_captcha', 'Verificação de segurança obrigatória.', [ 'status' => 403 ] );
+            }
+            
+            // 3. Pergunta pro Cloudflare se o token é válido
+            $response = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                'body' => [
+                    'secret'   => $secret_key,
+                    'response' => $token,
+                    'remoteip' => $_SERVER['REMOTE_ADDR']
+                ]
+            ]);
+            
+            $result = json_decode( wp_remote_retrieve_body( $response ) );
+            
+            // 4. Se o Cloudflare disser que é falso, BLOQUEIA o cadastro.
+            if ( ! $result->success ) {
+                return new WP_Error( 'invalid_captcha', 'Falha na verificação de segurança. Tente novamente.', [ 'status' => 403 ] );
+            }
+        }
+        // --- FIM DO BLOQUEIO ---
+
         $email = sanitize_email($email);
         $password = trim($password);
         $name = sanitize_text_field($name);
