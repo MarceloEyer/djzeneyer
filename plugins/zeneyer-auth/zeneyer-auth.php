@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       ZenEyer Auth Pro
  * Plugin URI:        https://djzeneyer.com
- * Description:       Enterprise-grade JWT Authentication for Headless WordPress + React. Secure, fast, and production-ready.
- * Version:           2.0.0
+ * Description:       Enterprise-grade JWT Authentication for Headless WordPress + React. Secure, fast, and production-ready. Includes Anti-Bot Security Shield.
+ * Version:           2.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            DJ Zen Eyer
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('ZENEYER_AUTH_VERSION', '2.0.0');
+define('ZENEYER_AUTH_VERSION', '2.1.0');
 define('ZENEYER_AUTH_PATH', plugin_dir_path(__FILE__));
 define('ZENEYER_AUTH_URL', plugin_dir_url(__FILE__));
 define('ZENEYER_AUTH_BASENAME', plugin_basename(__FILE__));
@@ -47,6 +47,7 @@ final class ZenEyer_Auth_Pro {
     private function __construct() {
         $this->load_dependencies();
         $this->init_hooks();
+        $this->init_security_shield(); // 🛡️ Inicializa a proteção Anti-Bot
     }
     
     /**
@@ -101,6 +102,52 @@ final class ZenEyer_Auth_Pro {
         
         // Load text domain
         add_action('init', [$this, 'load_textdomain']);
+    }
+
+    /**
+     * 🛡️ SECURITY SHIELD: BLINDAGEM ANTI-BOT
+     * Bloqueia rotas nativas e força validação do Turnstile
+     */
+    private function init_security_shield() {
+        // 1. Desativa XML-RPC (Porta de ataque força bruta)
+        add_filter('xmlrpc_enabled', '__return_false');
+
+        // 2. Bloqueia tentativas de registro pelo wp-login.php padrão
+        add_action('login_form_register', function() {
+            wp_die('O registro padrão está desativado por segurança. Use o site oficial.', 'Acesso Negado', ['response' => 403]);
+        });
+
+        // 3. Remove rota nativa de criação de usuários da REST API (wp/v2/users)
+        // Isso obriga bots a usarem nossa rota customizada (que tem Turnstile)
+        add_filter('rest_endpoints', function($endpoints) {
+            if (isset($endpoints['/wp/v2/users'])) {
+                unset($endpoints['/wp/v2/users'][0]['methods']['POST']);
+                unset($endpoints['/wp/v2/users'][0]['methods']['KP_POST']);
+            }
+            return $endpoints;
+        });
+
+        // 4. A GUILHOTINA: Mata usuários criados sem validação
+        add_action('user_register', function($user_id) {
+            // Se for admin criando usuário pelo painel, permite.
+            if (is_admin() && current_user_can('create_users')) {
+                return;
+            }
+
+            // Verifica se o cadastro passou pela nossa validação Turnstile
+            // A constante ZEN_AUTH_VALIDATED é definida no class-password-auth.php após sucesso do Cloudflare
+            if (!defined('ZEN_AUTH_VALIDATED')) {
+                
+                // Loga a tentativa de intrusão
+                error_log("🚨 [ZenEyer Security] INTRUSO DETECTADO: Usuário ID $user_id tentou cadastro sem passar pelo Turnstile. Removendo...");
+                
+                // Deleta o usuário intruso imediatamente
+                wp_delete_user($user_id);
+                
+                // Mata a requisição com erro
+                wp_die('Registro não autorizado: Falha na verificação de segurança.', 403);
+            }
+        }, 999); // Prioridade alta para rodar por último e garantir o bloqueio
     }
     
     /**
