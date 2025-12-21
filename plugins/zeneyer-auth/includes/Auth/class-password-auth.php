@@ -3,7 +3,7 @@
  * Password Authentication Provider
  *
  * @package ZenEyer_Auth_Pro
- * @since 2.0.0
+ * @since 2.1.0
  */
 
 namespace ZenEyer\Auth\Auth;
@@ -59,33 +59,37 @@ class Password_Auth {
     }
     
     /**
-     * Register new user
+     * Register new user with Turnstile Security
      *
      * @param string $email
      * @param string $password
      * @param string $name
-     * @param string $turnstileToken (Opcional, mas recomendado passar via array de args se possível, ou capturar globalmente)
      * @return \WP_User|WP_Error
      */
     public static function register($email, $password, $name = '') {
-        // --- BLOQUEIO DE BOTS (CLOUDFLARE TURNSTILE) ---
-        // Captura o corpo da requisição JSON atual para pegar o token
-        $request_body = file_get_contents('php://input');
-        $params = json_decode($request_body, true);
+        // --- 1. SEGURANÇA ANTI-BOT (TURNSTILE) ---
         
-        // 1. Pega o token enviado pelo React
-        $token = isset($params['turnstileToken']) ? $params['turnstileToken'] : '';
-        
-        // 2. Sua Chave Secreta (Secret Key) do Cloudflare
-        $secret_key = '0x4AAAAAACH0H9nOph1Dr2Fmc-543_bvG9k'; 
-        
-        // Só valida se estivermos num contexto de API REST (evita bloquear admins criando user no painel)
+        // Apenas valida se for uma requisição via API REST (protege contra bots, mas libera admins no painel)
         if ( defined('REST_REQUEST') && REST_REQUEST ) {
+            
+            // Pega o corpo da requisição JSON
+            $request_body = file_get_contents('php://input');
+            $params = json_decode($request_body, true);
+            $token = isset($params['turnstileToken']) ? $params['turnstileToken'] : '';
+            
+            // Pega a chave secreta do wp-config.php (Segurança Máxima)
+            $secret_key = defined('ZEN_TURNSTILE_SECRET_KEY') ? ZEN_TURNSTILE_SECRET_KEY : '';
+            
+            // Se a chave não estiver no config, erro crítico de servidor
+            if ( empty($secret_key) ) {
+                return new WP_Error('config_error', 'Erro de configuração de segurança no servidor (Chave ausente).', ['status' => 500]);
+            }
+
             if ( empty( $token ) ) {
                 return new WP_Error( 'missing_captcha', 'Verificação de segurança obrigatória.', [ 'status' => 403 ] );
             }
             
-            // 3. Pergunta pro Cloudflare se o token é válido
+            // Valida com o Cloudflare
             $response = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
                 'body' => [
                     'secret'   => $secret_key,
@@ -94,14 +98,22 @@ class Password_Auth {
                 ]
             ]);
             
+            if ( is_wp_error( $response ) ) {
+                return new WP_Error( 'captcha_error', 'Erro ao conectar com servidor de validação.', [ 'status' => 500 ] );
+            }
+            
             $result = json_decode( wp_remote_retrieve_body( $response ) );
             
-            // 4. Se o Cloudflare disser que é falso, BLOQUEIA o cadastro.
             if ( ! $result->success ) {
                 return new WP_Error( 'invalid_captcha', 'Falha na verificação de segurança. Tente novamente.', [ 'status' => 403 ] );
             }
+
+            // ✅ SALVA-VIDAS: Define que este cadastro é legítimo para a "Guilhotina" não deletar
+            if ( ! defined('ZEN_AUTH_VALIDATED') ) {
+                define('ZEN_AUTH_VALIDATED', true);
+            }
         }
-        // --- FIM DO BLOQUEIO ---
+        // --- FIM DA SEGURANÇA ---
 
         $email = sanitize_email($email);
         $password = trim($password);
