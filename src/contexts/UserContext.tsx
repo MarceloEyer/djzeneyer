@@ -1,4 +1,4 @@
-// src/contexts/UserContext.tsx - VERSÃO COM DEBUG DETALHADO
+// src/contexts/UserContext.tsx - VERSÃO ATUALIZADA COM TURNSTILE
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 interface WordPressUser {
@@ -21,7 +21,8 @@ interface UserContextType {
   error: string | null;
   
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  // ATUALIZADO: Agora aceita o token do Cloudflare (opcional)
+  register: (name: string, email: string, password: string, turnstileToken?: string) => Promise<void>;
   googleLogin: (idToken: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
@@ -167,18 +168,24 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // ========================================================================
-  // REGISTRO
+  // REGISTRO (ATUALIZADO)
   // ========================================================================
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string, password: string, turnstileToken?: string) => {
     setLoading(true);
     setError(null);
     try {
-      console.log('[UserContext] 📝 Tentando registro:', { name, email });
+      console.log('[UserContext] 📝 Tentando registro:', { name, email, hasToken: !!turnstileToken });
       
       const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name })
+        // Enviando o token junto com os dados
+        body: JSON.stringify({ 
+            email, 
+            password, 
+            name,
+            turnstileToken: turnstileToken || '' // Garante que envia string vazia se undefined
+        })
       });
 
       const responseText = await res.text();
