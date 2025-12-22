@@ -1,6 +1,8 @@
 // src/hooks/useGamiPress.ts
+// v3.0 - GOLD MASTER: Standardized Data Structure for Dashboard Compatibility
+
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext';
 
 /* =========================
  * INTERFACES
@@ -51,186 +53,107 @@ interface GamiPressStats {
   currentRankIndex: number;
 }
 
-interface GamiPressData {
+export interface GamiPressData {
   // Basic info
   points: number;
   level: number;
   rank: string;
   rankId: number;
   
+  // Progress info (Adicionado para compatibilidade)
+  nextLevelPoints: number;
+  progressToNextLevel: number;
+
   // Detailed data
   pointsBreakdown: PointsBreakdown[];
   earnedAchievements: Achievement[];
   allRanks: Rank[];
-  allAchievements: Achievement[];
+  allAchievements: Achievement[]; // Alterado de achievements para allAchievements para clareza
+  achievements?: Achievement[]; // Alias para compatibilidade
   stats: GamiPressStats;
-  
-  // Loading states
-  loading: boolean;
-  error: string | null;
-  success: boolean;
 }
 
-/* =========================
- * DEFAULT STATE
- * ========================= */
-
-const defaultState: GamiPressData = {
-  points: 0,
-  level: 1,
-  rank: 'Novice',
-  rankId: 0,
-  pointsBreakdown: [],
-  earnedAchievements: [],
-  allRanks: [],
-  allAchievements: [],
-  stats: {
-    totalAchievements: 0,
-    earnedAchievements: 0,
-    totalRanks: 0,
-    currentRankIndex: 0,
-  },
-  loading: false,
-  error: null,
-  success: false,
-};
+interface GamiPressHookResponse {
+    data: GamiPressData | null;
+    loading: boolean;
+    error: string | null;
+}
 
 /* =========================
  * HOOK
  * ========================= */
 
-export const useGamiPress = (): GamiPressData => {
-  const { user, isAuthenticated } = useAuth();
-  const [data, setData] = useState<GamiPressData>({
-    ...defaultState,
-    loading: true,
-  });
+export const useGamiPress = (): GamiPressHookResponse => {
+  const { user } = useUser();
+  const [data, setData] = useState<GamiPressData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Reset se não estiver autenticado
-    if (!isAuthenticated || !user?.id) {
-      console.log('[useGamiPress] ⚠️ Usuário não autenticado');
-      setData({
-        ...defaultState,
-        loading: false,
-        error: 'Usuário não autenticado',
-      });
+    // 1. Validação de Segurança
+    if (!user?.id) {
+      setLoading(false);
       return;
     }
 
     const fetchGamiPressData = async () => {
       try {
-        console.log('[useGamiPress] 🎮 Buscando dados para user_id:', user.id);
+        setLoading(true);
+        // Endpoint que busca os dados do GamiPress no WordPress
+        const endpoint = `https://djzeneyer.com/wp-json/djzeneyer/v1/gamipress/${user.id}`;
         
-        const endpoint = `/wp-json/djzeneyer/v1/gamipress/${user.id}`;
-        console.log('[useGamiPress] 📡 Endpoint:', endpoint);
-        
-        const response = await fetch(endpoint, {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(user.token && { 'Authorization': `Bearer ${user.token}` }),
-          },
-        });
-
-        console.log('[useGamiPress] 📊 Response status:', response.status);
+        const response = await fetch(endpoint);
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error('[useGamiPress] ❌ Erro na resposta:', errorText);
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
+          throw new Error(`HTTP Error: ${response.status}`);
         }
 
         const result = await response.json();
-        console.log('[useGamiPress] ✅ Dados recebidos:', result);
 
         if (!result.success) {
-          console.warn('[useGamiPress] ⚠️ GamiPress não está ativo:', result.message);
+            // Se falhar mas não for erro HTTP (ex: usuário não encontrado no gamipress)
+            console.warn('[GamiPress] API retornou false:', result);
         }
 
-        // Extrair dados da resposta
-        const gamificationData = result.data || {};
+        const rawData = result.data || {};
 
-        setData({
-          points: gamificationData.points || 0,
-          level: gamificationData.level || 1,
-          rank: gamificationData.rank || 'Novice',
-          rankId: gamificationData.rankId || 0,
-          pointsBreakdown: gamificationData.pointsBreakdown || [],
-          earnedAchievements: gamificationData.earnedAchievements || [],
-          allRanks: gamificationData.allRanks || [],
-          allAchievements: gamificationData.allAchievements || [],
-          stats: gamificationData.stats || defaultState.stats,
-          loading: false,
-          error: null,
-          success: result.success || false,
-        });
+        // 2. Normalização dos Dados (Garante que nada quebre o Dashboard)
+        const safeData: GamiPressData = {
+          points: Number(rawData.points) || 0,
+          level: Number(rawData.level) || 1,
+          rank: rawData.rank || 'Zen Novice',
+          rankId: Number(rawData.rankId) || 0,
+          
+          // Lógica de Progresso (Se o backend não mandar, calculamos fake ou 0)
+          nextLevelPoints: Number(rawData.next_level_points) || 100, 
+          progressToNextLevel: Number(rawData.progress) || 0,
 
-      } catch (error) {
-        console.error('[useGamiPress] ❌ Erro ao buscar dados:', error);
-        
-        setData({
-          ...defaultState,
-          loading: false,
-          error: error instanceof Error ? error.message : 'Erro desconhecido',
-        });
+          pointsBreakdown: rawData.pointsBreakdown || [],
+          earnedAchievements: rawData.earnedAchievements || [],
+          allRanks: rawData.allRanks || [],
+          allAchievements: rawData.allAchievements || [],
+          achievements: rawData.allAchievements || [], // Alias importante
+          
+          stats: rawData.stats || {
+            totalAchievements: 0,
+            earnedAchievements: 0,
+            totalRanks: 0,
+            currentRankIndex: 0,
+          },
+        };
+
+        setData(safeData);
+      } catch (err) {
+        console.error('[useGamiPress] Erro:', err);
+        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Buscar dados imediatamente
     fetchGamiPressData();
+  }, [user?.id]);
 
-    // Opcional: Atualizar a cada 30 segundos
-    // const interval = setInterval(fetchGamiPressData, 30000);
-    // return () => clearInterval(interval);
-
-  }, [user?.id, user?.token, isAuthenticated]);
-
-  return data;
-};
-
-/* =========================
- * HELPER FUNCTIONS
- * ========================= */
-
-// Calcular progresso até próximo rank
-const getNextRankProgress = (data: GamiPressData): {
-  current: Rank | null;
-  next: Rank | null;
-  progress: number;
-} => {
-  const currentIndex = data.stats.currentRankIndex;
-  const current = data.allRanks[currentIndex] || null;
-  const next = data.allRanks[currentIndex + 1] || null;
-  
-  if (!next) {
-    return { current, next: null, progress: 100 };
-  }
-  
-  // Calcular progresso baseado em requisitos
-  // Isso pode ser customizado baseado nos seus requisitos
-  const progress = Math.min(100, (data.points / 1000) * 100);
-  
-  return { current, next, progress };
-};
-
-// Filtrar achievements por tipo
-const filterAchievementsByType = (
-  achievements: Achievement[],
-  type: string
-): Achievement[] => {
-  return achievements.filter(ach => ach.type === type);
-};
-
-// Pegar achievements pendentes
-const getPendingAchievements = (data: GamiPressData): Achievement[] => {
-  return data.allAchievements.filter(ach => !ach.earned);
-};
-
-// Calcular completion percentage
-const getCompletionPercentage = (data: GamiPressData): number => {
-  if (data.stats.totalAchievements === 0) return 0;
-  return Math.round(
-    (data.stats.earnedAchievements / data.stats.totalAchievements) * 100
-  );
+  // Retorna no formato { data, loading, error }
+  return { data, loading, error };
 };
