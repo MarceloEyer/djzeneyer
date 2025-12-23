@@ -126,11 +126,21 @@ const HomePage: React.FC = () => {
             "skills": "Audio Engineering, Remixing, Mastering" 
           },
         ],
+        // ✅ CORRIGIDO: Schema Completo com Datas
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
-          "location": { "@type": "Place", "address": { "@type": "Country", "name": f.country } },
-          "eventStatus": "https://schema.org/EventScheduled"
+          "startDate": f.date, // Agora usa a data real vinda do artistData
+          "location": { 
+            "@type": "Place", 
+            "name": f.country, // Usa o País como nome do local (fallback seguro)
+            "address": { 
+               "@type": "PostalAddress", 
+               "addressCountry": f.country 
+            } 
+          },
+          "eventStatus": "https://schema.org/EventScheduled",
+          "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
         })),
       },
       {
