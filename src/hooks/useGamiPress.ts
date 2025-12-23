@@ -1,82 +1,38 @@
 // src/hooks/useGamiPress.ts
-// v3.0 - GOLD MASTER: Standardized Data Structure for Dashboard Compatibility
+// v4.0 - PLATINUM MASTER: Integrated with Zen-RA v2.0 Unified API
 
-import { useState, useEffect } from 'react';
-import { useUser } from '../contexts/UserContext';
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './useAuth'; // Ajuste o import conforme seu projeto (useAuth ou useUser)
 
 /* =========================
- * INTERFACES
+ * INTERFACES (Alinhadas com o Dashboard)
  * ========================= */
 
-interface PointsBreakdown {
-  slug: string;
-  name: string;
-  singular: string;
-  points: number;
+export interface RankData {
+  current: string;
+  icon: string;
+  next_milestone: number;
+  progress_percent: number;
 }
 
-interface Requirement {
-  id: number;
-  title: string;
-  type: string;
-  count: number;
-}
-
-interface Rank {
-  id: number;
-  title: string;
-  description: string;
-  excerpt: string;
-  image: string;
-  current: boolean;
-  requirements: Requirement[];
-}
-
-interface Achievement {
-  id: number;
-  type: string;
-  typeName?: string;
-  title: string;
-  description: string;
-  excerpt: string;
-  image: string;
-  earned: boolean;
-  earnedDate: string | null;
-  points: number;
-  requirements: Requirement[];
-}
-
-interface GamiPressStats {
-  totalAchievements: number;
-  earnedAchievements: number;
-  totalRanks: number;
-  currentRankIndex: number;
+export interface PlayerStats {
+  xp: number;
+  level: number;
+  rank: RankData;
 }
 
 export interface GamiPressData {
-  // Basic info
-  points: number;
-  level: number;
-  rank: string;
-  rankId: number;
-  
-  // Progress info (Adicionado para compatibilidade)
-  nextLevelPoints: number;
-  progressToNextLevel: number;
-
-  // Detailed data
-  pointsBreakdown: PointsBreakdown[];
-  earnedAchievements: Achievement[];
-  allRanks: Rank[];
-  allAchievements: Achievement[]; // Alterado de achievements para allAchievements para clareza
-  achievements?: Achievement[]; // Alias para compatibilidade
-  stats: GamiPressStats;
+  stats: PlayerStats;
+  // Campos de compatibilidade para não quebrar componentes antigos, se houver
+  points?: number; 
+  level?: number;
 }
 
 interface GamiPressHookResponse {
-    data: GamiPressData | null;
-    loading: boolean;
-    error: string | null;
+  data: GamiPressData | null;
+  loading: boolean;
+  error: string | null;
+  refresh: () => void;
 }
 
 /* =========================
@@ -84,76 +40,80 @@ interface GamiPressHookResponse {
  * ========================= */
 
 export const useGamiPress = (): GamiPressHookResponse => {
-  const { user } = useUser();
+  const { user } = useAuth(); // Ou useUser() dependendo do seu contexto
   const [data, setData] = useState<GamiPressData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchGamiPressData = useCallback(async () => {
     // 1. Validação de Segurança
     if (!user?.id) {
       setLoading(false);
       return;
     }
 
-    const fetchGamiPressData = async () => {
-      try {
-        setLoading(true);
-        // Endpoint que busca os dados do GamiPress no WordPress
-        const endpoint = `https://djzeneyer.com/wp-json/djzeneyer/v1/gamipress/${user.id}`;
-        
-        const response = await fetch(endpoint);
+    try {
+      setLoading(true);
+      setError(null);
 
-        if (!response.ok) {
-          throw new Error(`HTTP Error: ${response.status}`);
-        }
+      // 2. URL da API Unificada (Zen-RA)
+      // Tenta pegar do ambiente ou usa fallback seguro
+      const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
+      const endpoint = `${wpRestUrl}/zen-ra/v1/gamipress/${user.id}`;
+      
+      const response = await fetch(endpoint);
 
-        const result = await response.json();
-
-        if (!result.success) {
-            // Se falhar mas não for erro HTTP (ex: usuário não encontrado no gamipress)
-            console.warn('[GamiPress] API retornou false:', result);
-        }
-
-        const rawData = result.data || {};
-
-        // 2. Normalização dos Dados (Garante que nada quebre o Dashboard)
-        const safeData: GamiPressData = {
-          points: Number(rawData.points) || 0,
-          level: Number(rawData.level) || 1,
-          rank: rawData.rank || 'Zen Novice',
-          rankId: Number(rawData.rankId) || 0,
-          
-          // Lógica de Progresso (Se o backend não mandar, calculamos fake ou 0)
-          nextLevelPoints: Number(rawData.next_level_points) || 100, 
-          progressToNextLevel: Number(rawData.progress) || 0,
-
-          pointsBreakdown: rawData.pointsBreakdown || [],
-          earnedAchievements: rawData.earnedAchievements || [],
-          allRanks: rawData.allRanks || [],
-          allAchievements: rawData.allAchievements || [],
-          achievements: rawData.allAchievements || [], // Alias importante
-          
-          stats: rawData.stats || {
-            totalAchievements: 0,
-            earnedAchievements: 0,
-            totalRanks: 0,
-            currentRankIndex: 0,
-          },
-        };
-
-        setData(safeData);
-      } catch (err) {
-        console.error('[useGamiPress] Erro:', err);
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
       }
-    };
 
-    fetchGamiPressData();
+      const result = await response.json();
+
+      if (!result.success) {
+        console.warn('[Zen-RA] API retornou false:', result);
+      }
+
+      // 3. Normalização dos Dados
+      // A API retorna { stats: { xp, level, rank: {...} } }
+      // Mapeamos direto para o formato esperado pelo Dashboard
+      const rawStats = result.stats || {};
+      
+      const safeData: GamiPressData = {
+        stats: {
+          xp: Number(rawStats.xp) || 0,
+          level: Number(rawStats.level) || 1,
+          rank: {
+            current: rawStats.rank?.current || 'Novice',
+            icon: rawStats.rank?.icon || '',
+            next_milestone: Number(rawStats.rank?.next_milestone) || 100,
+            progress_percent: Number(rawStats.rank?.progress_percent) || 0,
+          }
+        },
+        // Compatibilidade retroativa (atalhos)
+        points: Number(rawStats.xp) || 0,
+        level: Number(rawStats.level) || 1,
+      };
+
+      setData(safeData);
+    } catch (err) {
+      console.error('[useGamiPress] Erro:', err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
 
-  // Retorna no formato { data, loading, error }
-  return { data, loading, error };
+  // Carrega ao montar
+  useEffect(() => {
+    fetchGamiPressData();
+  }, [fetchGamiPressData]);
+
+  // Polling: Atualiza a cada 60s para manter o XP vivo
+  useEffect(() => {
+    if (!user?.id) return;
+    const interval = setInterval(fetchGamiPressData, 60000);
+    return () => clearInterval(interval);
+  }, [user?.id, fetchGamiPressData]);
+
+  return { data, loading, error, refresh: fetchGamiPressData };
 };
