@@ -1,6 +1,5 @@
 // src/pages/HomePage.tsx
-// VERSÃO FINAL: GOLD MASTER (SEO GOD MODE + LCP INSTANTÂNEO + AZUL PADRÃO)
-// Arquitetura: React/Vite + Framer Motion + Headless SEO
+// VERSÃO FINAL: DIAMOND MASTER (Interfaces Fortes + SEO Seguro)
 
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -15,7 +14,29 @@ import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 
 // ============================================================================
-// 1. DADOS E CONSTANTES (Estáticos para Performance)
+// 1. INTERFACES (Type Safety - Zero Bugs)
+// ============================================================================
+
+interface StatCardProps {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+}
+
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  variants: Variants;
+}
+
+interface FestivalBadgeProps {
+  name: string;
+  flag: string;
+}
+
+// ============================================================================
+// 2. DADOS E CONSTANTES
 // ============================================================================
 
 const FEATURES_DATA = [
@@ -43,10 +64,10 @@ const ITEM_VARIANTS: Variants = {
 };
 
 // ============================================================================
-// 2. SUB-COMPONENTES MEMOIZADOS (Performance de Renderização)
+// 3. SUB-COMPONENTES MEMOIZADOS
 // ============================================================================
 
-const StatCard = React.memo(({ value, label, icon: Icon }: any) => (
+const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
   <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
     <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
     <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
@@ -54,7 +75,7 @@ const StatCard = React.memo(({ value, label, icon: Icon }: any) => (
   </motion.div>
 ));
 
-const FeatureCard = React.memo(({ icon, title, description, variants }: any) => (
+const FeatureCard = React.memo(({ icon, title, description, variants }: FeatureCardProps) => (
   <motion.article className="card p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
@@ -62,7 +83,7 @@ const FeatureCard = React.memo(({ icon, title, description, variants }: any) => 
   </motion.article>
 ));
 
-const FestivalBadge = React.memo(({ name, flag }: any) => (
+const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-white/80 hover:bg-white/10 transition-colors cursor-default">
     <span role="img" aria-label={`Flag of ${name}`}>{flag}</span>
     <span>{name}</span>
@@ -70,7 +91,7 @@ const FestivalBadge = React.memo(({ name, flag }: any) => (
 ));
 
 // ============================================================================
-// 3. PAGE COMPONENT
+// 4. PAGE COMPONENT
 // ============================================================================
 
 const HomePage: React.FC = () => {
@@ -80,7 +101,7 @@ const HomePage: React.FC = () => {
   const currentPath = '/';
   const currentUrl = ARTIST.site.baseUrl;
 
-  // 1. SCHEMA OTIMIZADO (Memoizado)
+  // Schema Otimizado (Mantendo as datas para autoridade máxima)
   const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -126,14 +147,13 @@ const HomePage: React.FC = () => {
             "skills": "Audio Engineering, Remixing, Mastering" 
           },
         ],
-        // ✅ CORRIGIDO: Schema Completo com Datas
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
-          "startDate": f.date, // Agora usa a data real vinda do artistData
+          "startDate": f.date, // Essencial para o Google não gerar erro
           "location": { 
             "@type": "Place", 
-            "name": f.country, // Usa o País como nome do local (fallback seguro)
+            "name": f.country,
             "address": { 
                "@type": "PostalAddress", 
                "addressCountry": f.country 
@@ -166,7 +186,6 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      {/* 2. SEO & PRELOAD */}
       <HeadlessSEO
         title="DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
         description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
@@ -201,7 +220,6 @@ const HomePage: React.FC = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <motion.div className="max-w-4xl mx-auto" initial="hidden" animate="visible" variants={CONTAINER_VARIANTS}>
-            {/* Badge de Autoridade */}
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
                 <Trophy size={16} />
@@ -254,7 +272,6 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Scroll Indicator */}
         <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
           <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2" />
@@ -372,7 +389,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* FINAL CTA - ZEN TRIBE (CORRIGIDO: Azul Elétrico) */}
+      {/* FINAL CTA - ZEN TRIBE */}
       <section className="py-24 relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
         
