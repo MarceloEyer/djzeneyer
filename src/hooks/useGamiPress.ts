@@ -1,8 +1,9 @@
 // src/hooks/useGamiPress.ts
-// v4.0 - PLATINUM MASTER: Integrated with Zen-RA v2.0 Unified API
+// v4.1 - FIX: Corrected Import (UserContext)
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from './useAuth'; // Ajuste o import conforme seu projeto (useAuth ou useUser)
+// CORREÇÃO: Importando do local correto que seu projeto usa
+import { useUser } from '../contexts/UserContext';
 
 /* =========================
  * INTERFACES (Alinhadas com o Dashboard)
@@ -23,7 +24,7 @@ export interface PlayerStats {
 
 export interface GamiPressData {
   stats: PlayerStats;
-  // Campos de compatibilidade para não quebrar componentes antigos, se houver
+  // Campos de compatibilidade
   points?: number; 
   level?: number;
 }
@@ -40,7 +41,9 @@ interface GamiPressHookResponse {
  * ========================= */
 
 export const useGamiPress = (): GamiPressHookResponse => {
-  const { user } = useAuth(); // Ou useUser() dependendo do seu contexto
+  // CORREÇÃO: Usando o hook useUser() do seu contexto
+  const { user } = useUser();
+  
   const [data, setData] = useState<GamiPressData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +60,6 @@ export const useGamiPress = (): GamiPressHookResponse => {
       setError(null);
 
       // 2. URL da API Unificada (Zen-RA)
-      // Tenta pegar do ambiente ou usa fallback seguro
       const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
       const endpoint = `${wpRestUrl}/zen-ra/v1/gamipress/${user.id}`;
       
@@ -74,8 +76,6 @@ export const useGamiPress = (): GamiPressHookResponse => {
       }
 
       // 3. Normalização dos Dados
-      // A API retorna { stats: { xp, level, rank: {...} } }
-      // Mapeamos direto para o formato esperado pelo Dashboard
       const rawStats = result.stats || {};
       
       const safeData: GamiPressData = {
@@ -89,7 +89,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
             progress_percent: Number(rawStats.rank?.progress_percent) || 0,
           }
         },
-        // Compatibilidade retroativa (atalhos)
+        // Compatibilidade retroativa
         points: Number(rawStats.xp) || 0,
         level: Number(rawStats.level) || 1,
       };
@@ -108,7 +108,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
     fetchGamiPressData();
   }, [fetchGamiPressData]);
 
-  // Polling: Atualiza a cada 60s para manter o XP vivo
+  // Polling: Atualiza a cada 60s
   useEffect(() => {
     if (!user?.id) return;
     const interval = setInterval(fetchGamiPressData, 60000);
