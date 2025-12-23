@@ -1,12 +1,12 @@
 // src/hooks/useGamiPress.ts
-// v4.1 - FIX: Corrected Import (UserContext)
+// v4.1 - FIX: Corrected Import (UserContext) & Data Structure
 
 import { useState, useEffect, useCallback } from 'react';
 // CORREÇÃO: Importando do local correto que seu projeto usa
 import { useUser } from '../contexts/UserContext';
 
 /* =========================
- * INTERFACES (Alinhadas com o Dashboard)
+ * INTERFACES (Alinhadas com o Dashboard e Zen-RA v2.1)
  * ========================= */
 
 export interface RankData {
@@ -24,7 +24,7 @@ export interface PlayerStats {
 
 export interface GamiPressData {
   stats: PlayerStats;
-  // Campos de compatibilidade
+  // Campos de compatibilidade para evitar quebras em componentes antigos
   points?: number; 
   level?: number;
 }
@@ -60,6 +60,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
       setError(null);
 
       // 2. URL da API Unificada (Zen-RA)
+      // Tenta pegar do ambiente (wpData) ou usa a URL de produção fixa
       const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
       const endpoint = `${wpRestUrl}/zen-ra/v1/gamipress/${user.id}`;
       
@@ -76,6 +77,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
       }
 
       // 3. Normalização dos Dados
+      // A API Zen-RA retorna { success: true, stats: { ... } }
       const rawStats = result.stats || {};
       
       const safeData: GamiPressData = {
@@ -89,7 +91,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
             progress_percent: Number(rawStats.rank?.progress_percent) || 0,
           }
         },
-        // Compatibilidade retroativa
+        // Compatibilidade retroativa (atalhos para componentes antigos)
         points: Number(rawStats.xp) || 0,
         level: Number(rawStats.level) || 1,
       };
@@ -108,7 +110,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
     fetchGamiPressData();
   }, [fetchGamiPressData]);
 
-  // Polling: Atualiza a cada 60s
+  // Polling: Atualiza a cada 60s para manter o XP atualizado
   useEffect(() => {
     if (!user?.id) return;
     const interval = setInterval(fetchGamiPressData, 60000);
