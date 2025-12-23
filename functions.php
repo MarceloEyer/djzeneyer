@@ -1,5 +1,41 @@
-// ... (seu código atual)
+<?php
+/**
+ * DJ Zen Eyer Theme Functions
+ * v13.3.0 - Modular Architecture (Zero Logic Here)
+ * Headless Architecture + Zen SEO Plugin
+ */
 
+if (!defined('ABSPATH')) exit;
+
+/**
+ * DESABILITA ADMIN BAR NO FRONTEND
+ * A admin bar aparece sem estilo e quebra o layout headless
+ */
+add_filter('show_admin_bar', '__return_false');
+
+/* ==========================================
+ * CARREGAMENTO DE MÓDULOS (INC)
+ * ========================================== */
+
+// 1. Configurações Básicas e Segurança
+require_once get_theme_file_path('/inc/setup.php');
+
+// 2. Limpeza de Headless (Remove Emojis, Feeds, Scripts WP Core)
+require_once get_theme_file_path('/inc/cleanup.php');
+
+// 3. Integração Vite (Carrega o React e CSS gerados no build)
+require_once get_theme_file_path('/inc/vite.php');
+
+// 4. Roteamento SPA (Redireciona rotas virtuais para o index.html)
+require_once get_theme_file_path('/inc/spa.php');
+
+// 5. API REST Endpoints (Menu, Auth, Gamificação, Media Fix)
+require_once get_theme_file_path('/inc/api.php');
+
+// 6. Custom Post Types & Taxonomias (Flyers e Músicas)
+require_once get_theme_file_path('/inc/cpt.php');
+
+// 7. Gerenciador de Links de Música (Campos para Drive/SoundCloud)
 require_once get_theme_file_path('/inc/metaboxes.php');
 
 /**
@@ -19,12 +55,13 @@ function zen_add_title_support() {
 add_action('after_setup_theme', 'zen_add_title_support');
 
 // 2. Força a barra "/" no final das URLs (Canonical Trailing Slash)
+// Isso evita duplicação de conteúdo e loops de redirecionamento
 function zen_fix_canonical_slash($url) {
     if (is_string($url) && substr($url, -1) !== '/' && !preg_match('/\.[a-z0-9]{2,4}$/i', $url)) {
         return $url . '/';
     }
     return $url;
 }
-add_filter('wpseo_canonical', 'zen_fix_canonical_slash');
-add_filter('rank_math/frontend/canonical', 'zen_fix_canonical_slash');
-add_filter('get_canonical_url', 'zen_fix_canonical_slash');
+add_filter('wpseo_canonical', 'zen_fix_canonical_slash'); // Yoast
+add_filter('rank_math/frontend/canonical', 'zen_fix_canonical_slash'); // RankMath
+add_filter('get_canonical_url', 'zen_fix_canonical_slash'); // WordPress Core
