@@ -162,7 +162,7 @@ class Zen_SEO_Admin {
         $social_platforms = [
             'beatport', 'spotify', 'apple_music', 'shazam', 'soundcloud',
             'mixcloud', 'bandcamp', 'songkick', 'bandsintown',
-            'instagram', 'youtube', 'facebook', 'ranker_list'
+            'instagram', 'youtube', 'facebook'
         ];
         
         foreach ($social_platforms as $platform) {
