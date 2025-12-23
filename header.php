@@ -111,7 +111,36 @@ $theme_uri = get_template_directory_uri();
         }
     </style>
 
-    <?php wp_head(); ?>
+    <?php 
+    /* * wp_head() é CRÍTICO. 
+     * Ele carrega os estilos, scripts e as meta tags geradas pelo plugin Zen SEO Lite.
+     * NÃO REMOVA.
+     */
+    wp_head(); 
+    ?>
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
+    
+    <div id="root">
+        <?php 
+        /* * CONTEÚDO SSR (Server-Side Rendering) FAKE
+         * Isso é o que o Google vê antes do Javascript rodar.
+         * Garante que o site tenha H1, Texto e Links indexáveis.
+         */
+        ?>
+        <div class="ssr-content">
+            <h1><?php bloginfo('name'); ?></h1>
+            <p><?php bloginfo('description'); ?></p>
+            
+            <div class="ssr-links">
+                <a href="/events">Events</a>
+                <a href="/music">Music</a>
+                <a href="/shop">Shop</a>
+                <a href="/zentribe">Zen Tribe</a>
+            </div>
+        </div>
+        
+        ```
+
+**Importante:** Note que eu adicionei o fechamento da tag `div#root` e o conteúdo SSR (que faltava no seu snippet). Isso é essencial para o site não ficar com uma tela preta vazia caso o JS demore a carregar.
