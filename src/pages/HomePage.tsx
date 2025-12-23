@@ -1,7 +1,7 @@
 // src/pages/HomePage.tsx
-// VERSÃO FINAL: DIAMOND MASTER (Interfaces Fortes + SEO Seguro)
+// VERSÃO FINAL: DIAMOND MASTER (Integrated with Zen SEO Plugin v8.0.0)
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 
 // ============================================================================
-// 1. INTERFACES (Type Safety - Zero Bugs)
+// 1. INTERFACES (Type Safety)
 // ============================================================================
 
 interface StatCardProps {
@@ -33,6 +33,13 @@ interface FeatureCardProps {
 interface FestivalBadgeProps {
   name: string;
   flag: string;
+}
+
+// Interface para as configurações vindas do Plugin WP
+interface ZenGlobalSettings {
+  real_name?: string;
+  default_og_image?: string;
+  [key: string]: any;
 }
 
 // ============================================================================
@@ -96,12 +103,30 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 
 const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const isPortuguese = i18n.language?.startsWith('pt');
+  const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
   
+  const isPortuguese = i18n.language?.startsWith('pt');
   const currentPath = '/';
   const currentUrl = ARTIST.site.baseUrl;
 
-  // Schema Otimizado (Mantendo as datas para autoridade máxima)
+  // --- FETCH PLUGIN SETTINGS (Integration) ---
+  useEffect(() => {
+    // Tenta pegar a URL da API do ambiente ou usa fallback
+    const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
+    
+    fetch(`${wpRestUrl}/zen-seo/v1/settings`)
+      .then(res => res.json())
+      .then(response => {
+        if (response.success) {
+          setSeoSettings(response.data);
+        }
+      })
+      .catch(err => console.error('Zen SEO Plugin not reachable:', err));
+  }, []);
+
+  // --- SCHEMA STATIC DATA (Rich Snippets) ---
+  // Mantemos este Schema "Hardcoded" pois ele contém dados complexos (Awards, Events)
+  // que são específicos da Home e difíceis de gerenciar via configurações globais simples.
   const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -109,7 +134,7 @@ const HomePage: React.FC = () => {
         "@type": "WebSite",
         "@id": `${ARTIST.site.baseUrl}/#website`,
         "url": ARTIST.site.baseUrl,
-        "name": "DJ Zen Eyer - Official Website",
+        "name": seoSettings?.real_name || "DJ Zen Eyer - Official Website",
         "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
@@ -122,6 +147,7 @@ const HomePage: React.FC = () => {
       {
         ...ARTIST_SCHEMA_BASE,
         "@id": `${ARTIST.site.baseUrl}/#artist`,
+        "name": seoSettings?.real_name || "DJ Zen Eyer",
         "nationality": { "@type": "Country", "name": "Brazil" },
         "birthDate": ARTIST.identity.birthDate,
         "jobTitle": "DJ & Music Producer",
@@ -150,7 +176,7 @@ const HomePage: React.FC = () => {
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
-          "startDate": f.date, // Essencial para o Google não gerar erro
+          "startDate": f.date,
           "location": { 
             "@type": "Place", 
             "name": f.country,
@@ -172,7 +198,7 @@ const HomePage: React.FC = () => {
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "primaryImageOfPage": {
           "@type": "ImageObject",
-          "url": `${ARTIST.site.baseUrl}/images/hero-background.webp`,
+          "url": seoSettings?.default_og_image || `${ARTIST.site.baseUrl}/images/hero-background.webp`,
           "width": 1920,
           "height": 1080
         },
@@ -182,18 +208,31 @@ const HomePage: React.FC = () => {
         }
       }
     ],
-  }), [isPortuguese, currentUrl]);
+  }), [isPortuguese, currentUrl, seoSettings]);
 
   return (
     <>
       <HeadlessSEO
-        title="DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
+        // Tenta usar dados do Plugin WP, fallback para strings hardcoded
+        title={seoSettings?.real_name 
+          ? `${seoSettings.real_name} | 2× World Champion` 
+          : "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"}
+        
         description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
+        
         url={currentUrl}
-        image={`${currentUrl}/images/zen-eyer-og-image.jpg`}
+        
+        // Imagem vinda do painel WP ou fallback local
+        image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.jpg`}
+        
         isHomepage={true}
         hrefLang={getHrefLangUrls(currentPath, currentUrl)}
         schema={schemaData}
+        
+        // Otimização LCP: Carrega a fonte crítica do título
+        preload={[
+           { href: '/fonts/Orbitron-Variable.ttf', as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' }
+        ]}
       />
 
       {/* HERO SECTION */}
