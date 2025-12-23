@@ -377,7 +377,7 @@ class Zen_SEO_Schema {
         $platforms = [
             'musicbrainz', 'wikidata', 'beatport', 'spotify', 'apple_music',
             'shazam', 'soundcloud', 'mixcloud', 'bandcamp', 'songkick',
-            'bandsintown', 'instagram', 'youtube', 'facebook', 'ranker_list'
+            'bandsintown', 'instagram', 'youtube', 'facebook'
         ];
         
         foreach ($platforms as $platform) {
