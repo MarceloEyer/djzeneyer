@@ -2,7 +2,7 @@
 /**
  * Header Template - DJ Zen Eyer Theme
  * Configura o cabeçalho HTML, preloads e estilos críticos para a transição do React.
- * Versão Definitiva: SEO White Hat + Performance Otimizada
+ * Versão Definitiva: SEO White Hat + Performance Otimizada + Links Corrigidos
  */
 $theme_uri = get_template_directory_uri();
 ?>
@@ -72,7 +72,7 @@ $theme_uri = get_template_directory_uri();
             margin-bottom: 1rem;
         }
 
-        /* Estilo para texto extra de SEO (se usado) */
+        /* Estilo para texto extra de SEO */
         .seo-text {
             text-align: left;
             margin-top: 40px;
@@ -139,11 +139,11 @@ $theme_uri = get_template_directory_uri();
             <p>Official website of DJ Zen Eyer. Experience the "cremosidade" in Brazilian Zouk, check upcoming tour dates, events, and exclusive remixes.</p>
             
             <div class="ssr-links">
-                <a href="/events">Events & Tour Dates</a>
-                <a href="/music">Music & Remixes</a>
-                <a href="/shop">Shop</a>
-                <a href="/zentribe">Zen Tribe Community</a>
-                <a href="/work-with-me">Bookings</a>
+                <a href="/events/">Events & Tour Dates</a>
+                <a href="/music/">Music & Remixes</a>
+                <a href="/shop/">Shop</a>
+                <a href="/zentribe/">Zen Tribe Community</a>
+                <a href="/work-with-me/">Bookings</a>
             </div>
 
             <div class="seo-text">
