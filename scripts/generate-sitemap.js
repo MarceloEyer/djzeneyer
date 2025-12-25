@@ -1,44 +1,52 @@
 // scripts/generate-sitemap.js
-// Gera sitemap estático baseado no routeMap.json para evitar Soft 404
-// Salva diretamente em /public para ser copiado no build final.
+// v3.0 - SITEMAP INDEX MASTER (FINAL)
+// Gera: 
+// 1. sitemap-pages.xml (Rotas estáticas do React)
+// 2. sitemap.xml (Índice que aponta para Pages + WP Dynamic)
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Configuração de Caminhos (Relativos à pasta scripts/)
+// Configuração
 const BASE_URL = 'https://djzeneyer.com';
 const ROUTE_MAP_PATH = '../src/data/routeMap.json'; 
-const OUTPUT_PATH = '../public/sitemap-static.xml'; 
+const PUBLIC_DIR = '../public';
 
-// Helpers para ler o arquivo JSON (compatível com "type": "module")
+// Nomes dos Arquivos (Devem bater com o deploy.yml e plugin WP)
+const PAGES_SITEMAP = 'sitemap-pages.xml';
+const INDEX_SITEMAP = 'sitemap.xml';
+const WP_DYNAMIC_SITEMAP = 'sitemap-dynamic.xml'; // Gerado pelo WordPress
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 try {
-  console.log('🗺️  Iniciando geração do Sitemap Estático...');
+  console.log('🗺️  Iniciando geração da Estrutura de Sitemaps...');
 
-  // 1. Ler o RouteMap
+  // --- 1. GERAR SITEMAP DE PÁGINAS (ESTÁTICO) ---
   const routeMapPath = path.resolve(__dirname, ROUTE_MAP_PATH);
+  
+  if (!fs.existsSync(routeMapPath)) {
+    throw new Error(`RouteMap não encontrado em: ${routeMapPath}`);
+  }
+
   const routeMapRaw = fs.readFileSync(routeMapPath, 'utf-8');
   const routeMap = JSON.parse(routeMapRaw);
-
-  let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
-
   const date = new Date().toISOString();
 
-  // 2. Iterar sobre as rotas
+  let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
+
   Object.keys(routeMap).forEach(key => {
-    // Ignora rotas dinâmicas (com ":")
-    if (key.includes(':')) return;
+    if (key.includes(':')) return; // Pula rotas dinâmicas
 
     const routeData = routeMap[key];
     
-    // Rota em Inglês (Padrão)
+    // Rota EN (Padrão)
     if (routeData.en) {
       const urlEn = routeData.en === '/' ? BASE_URL : `${BASE_URL}${routeData.en}`;
-      xmlContent += `
+      pagesXml += `
   <url>
     <loc>${urlEn}</loc>
     <lastmod>${date}</lastmod>
@@ -49,10 +57,10 @@ try {
   </url>`;
     }
 
-    // Rota em Português (apenas se for diferente da EN para evitar duplicação na home se houver)
+    // Rota PT (se diferente)
     if (routeData.pt && routeData.pt !== routeData.en) {
       const urlPt = `${BASE_URL}${routeData.pt}`;
-      xmlContent += `
+      pagesXml += `
   <url>
     <loc>${urlPt}</loc>
     <lastmod>${date}</lastmod>
@@ -64,15 +72,33 @@ try {
     }
   });
 
-  xmlContent += `
-</urlset>`;
+  pagesXml += `\n</urlset>`;
+  
+  const pagesPath = path.resolve(__dirname, PUBLIC_DIR, PAGES_SITEMAP);
+  fs.writeFileSync(pagesPath, pagesXml);
+  console.log(`✅ ${PAGES_SITEMAP} gerado com sucesso.`);
 
-  // 3. Salvar o arquivo na pasta PUBLIC
-  const outputPath = path.resolve(__dirname, OUTPUT_PATH);
-  fs.writeFileSync(outputPath, xmlContent);
-  console.log(`✅ Sitemap estático gerado com sucesso em: ${outputPath}`);
+
+  // --- 2. GERAR SITEMAP INDEX (O MESTRE) ---
+  // Aponta para o sitemap de páginas (acima) e para o dinâmico (do WordPress)
+  
+  let indexXml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${BASE_URL}/${PAGES_SITEMAP}</loc>
+    <lastmod>${date}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${BASE_URL}/${WP_DYNAMIC_SITEMAP}</loc>
+    <lastmod>${date}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+
+  const indexPath = path.resolve(__dirname, PUBLIC_DIR, INDEX_SITEMAP);
+  fs.writeFileSync(indexPath, indexXml);
+  console.log(`✅ ${INDEX_SITEMAP} (Index) gerado com sucesso.`);
 
 } catch (error) {
-  console.error('❌ Erro fatal ao gerar sitemap:', error);
+  console.error('❌ Erro fatal ao gerar sitemaps:', error);
   process.exit(1);
 }
