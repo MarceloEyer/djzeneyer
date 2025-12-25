@@ -15,7 +15,7 @@ if (have_posts()) {
     $ssr_desc = get_the_excerpt() ?: wp_trim_words(get_the_content(), 25);
 }
 
-// 1. Carrega o cabeçalho! (HTML head, meta tags, estilos)
+// 1. Carrega o cabeçalho (HTML head, meta tags, estilos)
 get_header(); 
 ?>
 
