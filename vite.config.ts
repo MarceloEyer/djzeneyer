@@ -2,52 +2,60 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig({
-  plugins: [
-    react(),
-  ],
+export default defineConfig(({ command }) => {
+  // Verifica se estamos construindo para produção
+  const isProduction = command === 'build';
 
-  server: {
-    port: 5173,
-    host: true, // Permite acesso externo (útil no Bolt.new)
-  },
+  return {
+    plugins: [react()],
 
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true, // Limpa a pasta dist antes de cada build
-    manifest: true,   // Gera manifest para cache
-    target: 'es2020', // Navegadores modernos (código menor)
-    minify: 'esbuild', // Minificação rápida e eficiente
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console.log em produção
-        drop_debugger: true, // Remove debugger em produção
+    // 👇 A CORREÇÃO DEFINITIVA (O "Pulo do Gato")
+    // Em produção, aponta para a pasta exata do tema no WordPress.
+    // Em desenvolvimento (localhost), mantém na raiz para não quebrar seu teste local.
+    base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
+
+    server: {
+      port: 5173,
+      host: true,
+    },
+
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
       },
     },
-    sourcemap: false, // Desabilita sourcemaps em produção
-    rollupOptions: {
-      output: {
-        assetFileNames: 'assets/[name]-[hash].[ext]', // Nomes com hash para cache
-        chunkFileNames: 'assets/[name]-[hash].js',    // Nomes com hash para cache
-        entryFileNames: 'assets/[name]-[hash].js',    // Nomes com hash para cache
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'], // Agrupa bibliotecas principais
-          i18n: ['i18next', 'react-i18next'],                  // Agrupa i18n
-          motion: ['framer-motion'],                          // Agrupa framer-motion
+
+    build: {
+      // Gera o manifesto para o PHP ler (CRÍTICO)
+      manifest: true,
+      
+      outDir: 'dist',
+      emptyOutDir: true,
+      target: 'es2020',
+      minify: 'esbuild',
+      sourcemap: false, // Desligado para performance máxima em produção
+      
+      rollupOptions: {
+        output: {
+          // Nomes padronizados para evitar cache antigo
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          
+          // Separação inteligente de código
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            i18n: ['i18next', 'react-i18next'],
+            motion: ['framer-motion'],
+          },
         },
       },
+      chunkSizeWarningLimit: 600,
     },
-    chunkSizeWarningLimit: 500, // Avisa se chunks > 500KB
-  },
 
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'], // Pré-carrega dependências críticas
-    exclude: ['lucide-react'], // Evita pré-carregar lucide-react (pode causar problemas)
-  },
-
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'), // Permite imports como @/components/Button
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom'],
+      exclude: ['lucide-react'],
     },
-  },
+  };
 });

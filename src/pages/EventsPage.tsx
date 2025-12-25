@@ -1,379 +1,431 @@
-// src/pages/EventsPage.tsx - VERSÃO FINAL 100% TRADUZIDA
-
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+// src/pages/EventsPage.tsx
+import type { FC } from 'react';
+import { useEffect, useState, memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
-import { 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  Users, 
+import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { ARTIST, getWhatsAppUrl } from '../data/artistData';
+import type { Event, Testimonial, FlyerData } from '../types';
+import { EventsList } from '../components/EventsList';
+import {
+  Calendar as CalendarIcon,
+  MapPin,
   Ticket,
-  Bell,
-  Share2,
-  Download,
-  Filter,
-  Grid,
-  List,
+  Star,
   Plus,
+  Globe,
+  Download,
+  Briefcase,
+  Lock,
+  Plane,
+  ExternalLink,
+  Trophy,
+  Users,
   Music2,
-  Award,
-  TrendingUp,
-  Gift
+  Quote,
+  ChevronRight,
+  Sparkles,
+  Phone,
+  X
 } from 'lucide-react';
 
-// --- Subcomponente Achievement Item ---
-const AchievementItem: React.FC<{ 
-  icon: React.ReactNode; 
-  bgColor: string;
-  iconColor: string;
-  title: string; 
-  description: string;
-}> = ({ icon, bgColor, iconColor, title, description }) => (
-  <div className="flex items-start group transition-all duration-300 hover:bg-white/5 p-4 rounded-lg">
-    <div className={`w-12 h-12 rounded-full ${bgColor} flex items-center justify-center mr-4 flex-shrink-0`}>
-      <span className={iconColor}>{icon}</span>
-    </div>
-    <div>
-      <h3 className="text-xl font-semibold mb-1">{title}</h3>
-      <p className="text-white/70">{description}</p>
-    </div>
-  </div>
-);
-
-// Mock upcoming events
-const featuredEvents = [
+const FEATURED_EVENTS: Event[] = [
   {
-    id: 1,
-    title: 'Summer Vibes Festival',
-    date: '2025-11-15',
-    time: '20:00',
-    location: 'Copacabana Beach, Rio de Janeiro',
-    type: 'Festival',
-    image: 'https://placehold.co/600x400/0D96FF/FFFFFF?text=Summer+Vibes&font=orbitron',
-    price: 'R$ 150',
-    attendees: 1250,
-    status: 'Available'
+    id: 'mentoria-dj',
+    title: 'Mentoria DJ: Musicalidade & Carreira',
+    date: '2025-11-20',
+    time: 'Online',
+    location: 'Zoom (Ao Vivo)',
+    type: 'Education',
+    image: '/images/events/mentoria-dj.jpg',
+    price: 'Lista de Espera',
+    link: '/work-with-me',
+    isExternal: false,
+    status: 'Vagas Limitadas',
+    description: 'Aprenda os segredos da cremosidade diretamente com o bicampeão mundial.'
   },
   {
-    id: 2,
-    title: 'Zouk Nights - São Paulo',
-    date: '2025-10-25',
+    id: 'zouk-experience',
+    title: 'Zouk Experience Rio',
+    date: '2025-12-10',
     time: '22:00',
-    location: 'Club Aurora, São Paulo',
-    type: 'Workshop',
-    image: 'https://placehold.co/600x400/9D4EDD/FFFFFF?text=Zouk+Nights&font=orbitron',
-    price: 'R$ 80',
-    attendees: 320,
-    status: 'Available'
-  },
-  {
-    id: 3,
-    title: 'Private Livestream Set',
-    date: '2025-10-30',
-    time: '19:00',
-    location: 'Online - Exclusive for Zen Tribe',
-    type: 'Livestream',
-    image: 'https://placehold.co/600x400/EC4899/FFFFFF?text=Livestream&font=orbitron',
-    price: 'Free',
-    attendees: 850,
-    status: 'Members Only'
+    location: 'Rio de Janeiro, Brasil',
+    type: 'Festa Exclusiva',
+    image: '/images/events/zouk-experience.jpg',
+    price: 'R$ 80,00',
+    link: '/shop/zouk-experience-rj',
+    isExternal: false,
+    status: 'Últimos Ingressos',
+    description: 'Uma noite de Zouk Brasileiro com sets exclusivos e a energia única do Rio.'
   }
 ];
 
-const EventsPage: React.FC = () => {
-  const { t } = useTranslation();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+const ORGANIZER_TESTIMONIALS: Testimonial[] = [
+  {
+    name: 'Maria Silva',
+    role: 'Organizadora',
+    event: 'Rio Zouk Congress',
+    country: '🇧🇷',
+    quote: 'Zen Eyer entende a pista como ninguém. Seus sets cremosos mantêm os dançarinos conectados por horas.',
+    avatar: ''
+  },
+  {
+    name: 'Thomas van der Berg',
+    role: 'Founder',
+    event: 'Dutch Zouk',
+    country: '🇳🇱',
+    quote: 'Professional, punctual, and his music selection is always perfect for our European audience.',
+    avatar: ''
+  },
+  {
+    name: 'Anna Kowalska',
+    role: 'Event Director',
+    event: 'Prague Zouk Congress',
+    country: '🇨🇿',
+    quote: 'We rebook Zen every year. The energy he brings to our main party is unmatched.',
+    avatar: ''
+  }
+];
 
-  const achievements = [
-    { 
-      id: 'xp', 
-      icon: <TrendingUp size={24} />, 
-      bgColor: 'bg-primary/20',
-      iconColor: 'text-primary',
-      titleKey: 'events_achievement_xp_title', 
-      descKey: 'events_achievement_xp_desc' 
-    },
-    { 
-      id: 'badges', 
-      icon: <Award size={24} />, 
-      bgColor: 'bg-secondary/20',
-      iconColor: 'text-secondary',
-      titleKey: 'events_achievement_badges_title', 
-      descKey: 'events_achievement_badges_desc' 
-    },
-    { 
-      id: 'rewards', 
-      icon: <Gift size={24} />, 
-      bgColor: 'bg-accent/20',
-      iconColor: 'text-accent',
-      titleKey: 'events_achievement_rewards_title', 
-      descKey: 'events_achievement_rewards_desc' 
-    },
-    { 
-      id: 'streaks', 
-      icon: <Clock size={24} />, 
-      bgColor: 'bg-success/20',
-      iconColor: 'text-success',
-      titleKey: 'events_achievement_streaks_title', 
-      descKey: 'events_achievement_streaks_desc' 
-    },
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Available': return 'text-success';
-      case 'Limited': return 'text-warning';
-      case 'Members Only': return 'text-accent';
-      default: return 'text-white/60';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'Available': return t('event_badge_available');
-      case 'Members Only': return t('event_badge_members_only');
-      default: return status;
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Festival': return 'bg-primary/20 text-primary border-primary/30';
-      case 'Workshop': return 'bg-secondary/20 text-secondary border-secondary/30';
-      case 'Livestream': return 'bg-accent/20 text-accent border-accent/30';
-      case 'Show': return 'bg-success/20 text-success border-success/30';
-      default: return 'bg-white/20 text-white border-white/30';
-    }
-  };
-
-  const FeaturedEventCard = ({ event, index }: { event: typeof featuredEvents[0]; index: number }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className="card overflow-hidden group cursor-pointer"
-    >
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={event.image} 
-          alt={event.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        
-        <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getTypeColor(event.type)}`}>
-            {event.type}
-          </span>
+const HeroStats = memo(() => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.4 }}
+    className="flex flex-wrap justify-center gap-6 md:gap-10 mt-10"
+  >
+    {[
+      { icon: <Globe size={20} />, value: ARTIST.stats.countriesPlayed, label: 'Países' },
+      { icon: <Music2 size={20} />, value: `${ARTIST.stats.eventsPlayed}+`, label: 'Eventos' },
+      { icon: <Trophy size={20} />, value: ARTIST.titles.year, label: 'Bicampeão' },
+      { icon: <Users size={20} />, value: ARTIST.stats.yearsActive, label: 'Anos de Carreira' }
+    ].map((stat, i) => (
+      <div key={i} className="text-center">
+        <div className="flex items-center justify-center gap-2 text-primary mb-1">
+          {stat.icon}
+          <span className="text-2xl md:text-3xl font-black">{stat.value}</span>
         </div>
+        <span className="text-xs text-white/50 uppercase tracking-wider">{stat.label}</span>
+      </div>
+    ))}
+  </motion.div>
+));
+HeroStats.displayName = 'HeroStats';
 
-        <div className="absolute top-4 right-4">
-          <span className={`px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-xs font-bold ${getStatusColor(event.status)}`}>
-            {getStatusLabel(event.status)}
-          </span>
+const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
+  <motion.div
+    whileHover={{ y: -5 }}
+    className="card group overflow-hidden border border-white/10 hover:border-primary/50 transition-all bg-surface/30"
+  >
+    <div className="relative h-48 overflow-hidden">
+      <img
+        src={event.image}
+        alt={event.title}
+        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        loading="lazy"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = `https://placehold.co/600x400/0D96FF/FFFFFF?text=${encodeURIComponent(event.title)}`;
+        }}
+      />
+      <div className="absolute top-4 left-4">
+        <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/80 backdrop-blur-md text-white border border-white/10">{event.type}</span>
+      </div>
+      <div className="absolute bottom-4 right-4">
+        <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-background font-display">{event.status}</span>
+      </div>
+    </div>
+
+    <div className="p-6">
+      <h3 className="text-xl font-bold mb-2 text-white group-hover:text-primary transition-colors">{event.title}</h3>
+      <p className="text-sm text-white/60 mb-4 line-clamp-2">{event.description}</p>
+      <div className="space-y-2 mb-6">
+        <div className="flex items-center gap-3 text-white/60 text-sm">
+          <CalendarIcon size={16} className="text-primary" />
+          <span>{new Date(event.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+          {event.time !== 'Online' && <span>• {event.time}</span>}
+        </div>
+        <div className="flex items-center gap-3 text-white/60 text-sm">
+          <MapPin size={16} className="text-secondary" />
+          <span>{event.location}</span>
         </div>
       </div>
-
-      <div className="p-6">
-        <h3 className="text-xl font-bold mb-3 line-clamp-1">{event.title}</h3>
-
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2 text-white/70">
-            <Calendar size={16} className="text-primary" />
-            <span className="text-sm">
-              {new Date(event.date).toLocaleDateString('pt-BR', { 
-                weekday: 'long', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 text-white/70">
-            <Clock size={16} className="text-secondary" />
-            <span className="text-sm">{event.time}</span>
-          </div>
-
-          <div className="flex items-center gap-2 text-white/70">
-            <MapPin size={16} className="text-accent" />
-            <span className="text-sm line-clamp-1">{event.location}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-4 border-t border-white/10">
-          <span className="text-2xl font-black text-primary">{event.price}</span>
-          <button className="btn btn-primary btn-sm flex items-center gap-2">
-            <Ticket size={16} />
-            {t('event_get_ticket')}
-          </button>
-        </div>
+      <div className="flex items-center justify-between pt-4 border-t border-white/5">
+        <span className="text-lg font-bold text-primary">{event.price}</span>
+        <a href={event.link} className="btn btn-primary btn-sm flex items-center gap-2"><Ticket size={16} /> Saiba Mais</a>
       </div>
-    </motion.div>
-  );
+    </div>
+  </motion.div>
+));
+FeaturedEventCard.displayName = 'FeaturedEventCard';
+
+const FestivalBadge = memo<{ festival: typeof ARTIST.festivals[0]; index: number }>(({ festival, index }) => (
+  <motion.a
+    href={festival.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.05 }}
+    whileHover={{ scale: 1.05, y: -3 }}
+    className="group relative px-6 py-4 rounded-2xl border border-white/10 bg-surface/30 hover:bg-surface/60 hover:border-primary/30 transition-all"
+  >
+    <div className="flex items-center gap-3">
+      <span className="text-2xl">{festival.flag}</span>
+      <div>
+        <div className="font-bold text-white group-hover:text-primary transition-colors">{festival.name}</div>
+        <div className="text-xs text-white/50">{festival.country}{festival.upcoming && <span className="ml-2 text-green-400">• 2026</span>}</div>
+      </div>
+      <ExternalLink size={14} className="ml-auto text-white/20 group-hover:text-primary/60 transition-colors" />
+    </div>
+  </motion.a>
+));
+FestivalBadge.displayName = 'FestivalBadge';
+
+const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ testimonial, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1 }}
+    className="card p-6 bg-surface/50 border border-white/10 hover:border-primary/30 transition-all"
+  >
+    <Quote size={24} className="text-primary/30 mb-4" />
+    <p className="text-white/80 italic mb-6 leading-relaxed">"{testimonial.quote}"</p>
+    <div className="flex items-center gap-3">
+      <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+        {testimonial.avatar ? <img src={testimonial.avatar} alt={testimonial.name} className="w-full h-full object-cover" /> : <span className="text-lg font-bold text-primary">{testimonial.name.charAt(0)}</span>}
+      </div>
+      <div>
+        <div className="font-bold text-white">{testimonial.name} {testimonial.country}</div>
+        <div className="text-sm text-white/50">{testimonial.role}, {testimonial.event}</div>
+      </div>
+    </div>
+  </motion.div>
+));
+TestimonialCard.displayName = 'TestimonialCard';
+
+const FlyerGallery: React.FC = () => {
+  const [flyers, setFlyers] = useState<FlyerData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedFlyer, setSelectedFlyer] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`${ARTIST.site.baseUrl}/wp-json/wp/v2/flyers?_embed&per_page=8`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Não foi possível carregar os flyers.');
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFlyers(data);
+        }
+      })
+      .catch((err) => {
+        console.error('Erro ao carregar flyers:', err);
+        setError(err.message);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-black/40 border-t border-white/5">
+        <div className="flex justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      </section>
+    );
+  }
+  
+  if (error || flyers.length === 0) return null;
 
   return (
     <>
-      <Helmet>
-        <title>{t('events_page_title')}</title>
-        <meta name="description" content={t('events_page_meta_desc')} />
-      </Helmet>
+      <section className="py-20 bg-black/40 border-t border-white/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-black font-display text-white mb-2">Memórias & Flyers</h2>
+            <p className="text-white/40 text-sm">Histórico visual de {ARTIST.stats.countriesPlayed} países</p>
+          </div>
 
-      <div className="min-h-screen pt-24 pb-16">
-        {/* Header */}
-        <div className="bg-surface py-16">
-          <div className="container mx-auto px-4">
-            <motion.div 
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="inline-block mb-4">
-                <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
-                  <Music2 className="inline-block mr-2" size={16} />
-                  {t('events_header_badge')}
-                </div>
-              </div>
-
-              <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
-                {t('events_header_title')}
-              </h1>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {flyers.map((flyer, index) => {
+              const media = flyer._embedded?.['wp:featuredmedia']?.[0];
+              const fullImageUrl = media?.source_url;
+              const thumbUrl = media?.media_details?.sizes?.medium_large?.source_url || fullImageUrl;
               
-              <p className="text-xl text-white/70 max-w-3xl mx-auto">
-                {t('events_header_subtitle')}
-              </p>
-            </motion.div>
+              if (!thumbUrl) {
+                return (
+                  <div
+                    key={flyer.id}
+                    className="aspect-[3/4] rounded-xl bg-surface/20 border border-white/5 flex items-center justify-center"
+                  >
+                    <Music2 size={32} className="text-white/10" />
+                  </div>
+                );
+              }
+
+              return (
+                <motion.div
+                  key={flyer.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => setSelectedFlyer(fullImageUrl || thumbUrl)}
+                  className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 cursor-pointer"
+                >
+                  <img
+                    src={thumbUrl}
+                    alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                    <span className="text-sm font-bold text-white line-clamp-2">{flyer.title.rendered}</span>
+                  </div>
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-black/50 p-1 rounded-full text-white/80"><Plus size={16} /></div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
+      </section>
 
-        {/* Featured Events */}
-        <section className="py-16 bg-background">
-          <div className="container mx-auto px-4">
+      <AnimatePresence>
+        {selectedFlyer && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedFlyer(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm cursor-pointer"
+          >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="mb-12"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-5xl max-h-[90vh] w-full flex justify-center"
+              onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-3xl font-black font-display mb-8 text-center">
-                {t('events_featured_title')}
-              </h2>
+              <img
+                src={selectedFlyer}
+                alt="Flyer Full View"
+                className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10"
+              />
+              <button
+                onClick={() => setSelectedFlyer(null)}
+                className="absolute -top-12 right-0 md:-right-12 text-white/70 hover:text-white transition-colors p-2"
+                aria-label="Fechar visualização"
+              >
+                <X size={32} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {featuredEvents.map((event, index) => (
-                  <FeaturedEventCard key={event.id} event={event} index={index} />
-                ))}
+const EventsPage: React.FC = () => {
+  const { t } = useTranslation();
+  const currentPath = '/events';
+  
+  return (
+    <>
+      <HeadlessSEO 
+        title={`Agenda & Tour - ${ARTIST.identity.stageName} | ${ARTIST.titles.primary}`}
+        description={`Agenda oficial de ${ARTIST.identity.stageName}. ${ARTIST.stats.eventsPlayed}+ eventos em ${ARTIST.stats.countriesPlayed} países. Booking para 2026 aberto.`}
+        url={`${ARTIST.site.baseUrl}${currentPath}`}
+        image={`${ARTIST.site.baseUrl}/images/events-og.jpg`}
+        hrefLang={getHrefLangUrls(currentPath, ARTIST.site.baseUrl)}
+      />
+
+      <div className="min-h-screen pt-24 pb-16 bg-background">
+        <section className="relative py-20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+              <div className="flex flex-wrap justify-center gap-3 mb-8">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 text-red-400 font-bold text-xs tracking-wider uppercase border border-red-500/20"><Lock size={12} /> 2025 Sold Out</span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-400 font-bold text-xs tracking-wider uppercase border border-green-500/20"><Plane size={12} /> Booking 2026 Open</span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 text-yellow-400 font-bold text-xs tracking-wider uppercase border border-yellow-500/20"><Trophy size={12} /> {ARTIST.titles.primary}</span>
+              </div>
+              <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">World Tour <span className="text-primary">&</span> Events</h1>
+              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-4">{ARTIST.stats.yearsActive} anos levando a <span className="text-primary font-semibold">{ARTIST.philosophy.style}</span> para os maiores palcos do mundo</p>
+              <HeroStats />
+              <div className="flex flex-wrap justify-center gap-4 mt-10">
+                <a href={getWhatsAppUrl("Olá! Gostaria de contratar DJ Zen Eyer para meu evento.")} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg flex items-center gap-2"><Phone size={20} /> Contratar para Evento</a>
+                <a href="/work-with-me" className="btn btn-outline btn-lg flex items-center gap-2"><Briefcase size={20} /> Press Kit & Rider</a>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* Google Calendar Section */}
-        <section className="py-16 bg-surface">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="card p-8"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-black font-display flex items-center gap-3">
-                  <Calendar className="text-primary" size={32} />
-                  {t('events_calendar_title')}
-                </h2>
-                
-                <div className="flex gap-3">
-                  <button className="btn btn-outline btn-sm flex items-center gap-2">
-                    <Download size={16} />
-                    {t('events_calendar_export')}
-                  </button>
-                  <button className="btn btn-primary btn-sm flex items-center gap-2">
-                    <Plus size={16} />
-                    {t('events_calendar_add')}
-                  </button>
-                </div>
-              </div>
-
-              <div className="relative w-full rounded-lg overflow-hidden shadow-lg bg-white/5">
-                <div className="relative pb-[75%] md:pb-[56.25%] h-0">
-                  <iframe 
-                    src="https://calendar.google.com/calendar/embed?src=eyer.marcelo%40gmail.com&ctz=America%2FSao_Paulo" 
-                    className="absolute top-0 left-0 w-full h-full"
-                    style={{ border: 0 }}
-                    frameBorder="0" 
-                    scrolling="no"
-                    title={t('events_calendar_iframe_title')}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6 text-center text-sm text-white/60">
-                <p>{t('events_calendar_note')}</p>
-              </div>
+        <section className="py-20 container mx-auto px-4">
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h2 className="text-2xl font-bold flex items-center gap-3 text-white"><Star className="text-yellow-500 fill-yellow-500" size={24} /> Eventos em Destaque</h2>
+              <p className="text-white/50 text-sm mt-1">Experiências exclusivas com {ARTIST.identity.shortName}</p>
+            </div>
+            <a href="/shop" className="text-primary text-sm hover:underline flex items-center gap-1">Ver todos <ChevronRight size={16} /></a>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {FEATURED_EVENTS.map((event) => (<FeaturedEventCard key={event.id} event={event} />))}
+            <motion.div whileHover={{ scale: 1.02 }} className="card p-8 flex flex-col justify-center items-center text-center border border-dashed border-white/20 bg-gradient-to-b from-surface/50 to-transparent">
+              <Sparkles size={48} className="text-primary/40 mb-6" />
+              <h3 className="text-2xl font-black font-display mb-4 text-white">Seu Evento Aqui</h3>
+              <p className="text-white/60 mb-6 text-sm leading-relaxed">Organizadores de festivais: garanta a {ARTIST.philosophy.style} no seu próximo evento.</p>
+              <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg w-full">Solicitar Orçamento</a>
             </motion.div>
           </div>
         </section>
 
-        {/* Achievement System */}
-        <section className="py-16 bg-background">
+        <section className="py-20 bg-surface/30 border-y border-white/5">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-              <motion.div 
-                className="lg:w-1/2"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-4xl font-black font-display mb-6">
-                  {t('events_achievement_section_title')}
-                </h2>
-                <p className="text-xl text-white/70 mb-8">
-                  {t('events_achievement_section_subtitle')}
-                </p>
-                
-                <div className="space-y-4">
-                  {achievements.map(achievement => (
-                    <AchievementItem
-                      key={achievement.id}
-                      icon={achievement.icon}
-                      bgColor={achievement.bgColor}
-                      iconColor={achievement.iconColor}
-                      title={t(achievement.titleKey as any)}
-                      description={t(achievement.descKey as any)}
-                    />
-                  ))}
-                </div>
-              </motion.div>
+            <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
+              <div>
+                <h2 className="text-3xl font-black font-display mb-2 text-white">Agenda Global</h2>
+                <p className="text-white/50 max-w-md">Datas confirmadas oficialmente via Bandsintown. Atualizado em tempo real.</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a href="https://www.bandsintown.com/a/15552355" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm flex items-center gap-2"><ExternalLink size={14} /> Bandsintown</a>
+                <a href="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2"><Download size={14} /> Press Kit</a>
+              </div>
+            </div>
+            
+            <EventsList limit={15} showTitle={false} variant="compact" />
+          </div>
+        </section>
 
-              <motion.div
-                className="lg:w-1/2"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-8 border border-primary/30">
-                  <div className="text-center">
-                    <div className="text-6xl mb-6">🎉</div>
-                    <h3 className="text-2xl font-black mb-4">
-                      {t('events_cta_title')}
-                    </h3>
-                    <p className="text-white/70 mb-6">
-                      {t('events_cta_subtitle')}
-                    </p>
-                    <button className="btn btn-primary btn-lg flex items-center gap-2 mx-auto">
-                      <Bell size={20} />
-                      {t('events_cta_button')}
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
+        <section className="py-20 container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black font-display mb-4 text-white">O Que Dizem os Organizadores</h2>
+            <p className="text-white/50 max-w-xl mx-auto">Feedback de quem já contratou {ARTIST.identity.shortName} para seus eventos</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {ORGANIZER_TESTIMONIALS.map((testimonial, index) => (<TestimonialCard key={index} testimonial={testimonial} index={index} />))}
+          </div>
+        </section>
+
+        <FlyerGallery />
+
+        <section className="py-20 border-t border-white/5">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-4"><Globe size={20} className="text-primary" /><span className="text-sm font-bold uppercase tracking-wider text-white/60">Palcos Internacionais</span></div>
+              <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+                {ARTIST.festivals.map((festival, index) => (<FestivalBadge key={index} festival={festival} index={index} />))}
+              </div>
             </div>
           </div>
         </section>

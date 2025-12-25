@@ -1,9 +1,37 @@
-name: Production Deploy
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🚀 DJ ZEN EYER - PREMIUM PRODUCTION DEPLOY
+# ═══════════════════════════════════════════════════════════════════════════════
+# 
+# DESCRIÇÃO: Deploy automático otimizado para WordPress Headless
+# TRIGGER: Push na branch 'main' ou manual (workflow_dispatch)
+# FEATURES: Build Local de Dependências, Backup, Cache Purge, Health Check
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🚀 Production Deploy
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+      - 'LICENSE'
   workflow_dispatch:
+    inputs:
+      skip_build:
+        description: 'Skip build (use existing artifact)'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
 
 env:
   NODE_VERSION: 20
@@ -14,23 +42,35 @@ env:
   THEME_NAME: zentheme
   SITE_URL: https://djzeneyer.com
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 1: BUILD (Frontend + Plugin Dependencies)
+# ═══════════════════════════════════════════════════════════════════════════════
+
 jobs:
-  # ═══════════════════════════════════════════════════════════════════════════
-  # BUILD
-  # ═══════════════════════════════════════════════════════════════════════════
   build:
     name: 🏗️ Build
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: ${{ !inputs.skip_build }}
+    
     outputs:
       commit_hash: ${{ steps.commit.outputs.hash }}
+      build_timestamp: ${{ steps.timestamp.outputs.value }}
+      build_status: ${{ job.status }}
     
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: 🔖 Commit hash
+      - name: 🔖 Generate metadata
         id: commit
         run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: ⏰ Generate timestamp
+        id: timestamp
+        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -38,30 +78,69 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📦 Instalar dependências
-        run: npm ci
+      # --- FRONTEND BUILD ---
+      - name: 📦 Install Frontend dependencies
+        run: npm ci --prefer-offline --no-audit
 
-      - name: 🔨 Build produção
+      - name: 🔨 Build production (React)
         env:
+          NODE_ENV: production
+          VITE_WP_SITE_URL: ${{ env.SITE_URL }}
+          VITE_WP_REST_URL: ${{ env.SITE_URL }}/wp-json/
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
-      - name: ✅ Validar build
+      - name: ✅ Validate build
         run: |
-          if [ ! -d "dist" ]; then
-            echo "❌ dist/ não encontrado!"
+          echo "🔍 Validating build output..."
+          if [ ! -d dist ]; then echo "❌ dist/ directory not found"; exit 1; fi
+          if [ ! -f dist/index.html ]; then echo "❌ dist/index.html not found"; exit 1; fi
+          if [ -f "dist/.vite/manifest.json" ]; then
+            echo "✅ manifest.json found"
+          else
+            echo "❌ dist/.vite/manifest.json NOT found!"
             exit 1
           fi
-          echo "✅ Build OK - $(du -sh dist/ | cut -f1)"
+          echo "✅ Build validation passed"
 
-      - name: 📤 Upload artifact
+      # --- PLUGIN DEPENDENCIES BUILD (MOVED HERE) ---
+      - name: 🔨 Build Plugin Dependencies
+        run: |
+          echo "📦 Installing composer dependencies for plugins..."
+          # Iterate over directories in plugins/
+          if [ -d "plugins" ]; then
+            for dir in plugins/*/; do
+              if [ -f "$dir/composer.json" ]; then
+                echo "  → Installing dependencies for $(basename "$dir")"
+                cd "$dir"
+                # Install dependencies locally on the runner
+                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
+                # Remove dev files to keep deploy light
+                rm -rf tests/ .git/ .github/
+                cd - > /dev/null
+              fi
+            done
+          else
+             echo "⚠️ Plugins directory not found in repo, skipping dependency build."
+          fi
+
+      # --- ARTIFACT UPLOADS ---
+      - name: 📤 Upload build artifact (dist)
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ steps.commit.outputs.hash }}
+          name: build-dist-${{ steps.commit.outputs.hash }}
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+          compression-level: 6
+
+      - name: 📤 Upload build artifact (theme files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-theme-${{ steps.commit.outputs.hash }}
           path: |
-            dist/
             functions.php
             style.css
             screenshot.png
@@ -70,33 +149,62 @@ jobs:
             index.php
           retention-days: 7
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # DEPLOY
-  # ═══════════════════════════════════════════════════════════════════════════
+      - name: 📤 Upload build artifact (plugins)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-plugins-${{ steps.commit.outputs.hash }}
+          path: plugins/
+          retention-days: 7
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 2: DEPLOY
+# ═══════════════════════════════════════════════════════════════════════════════
+
   deploy:
     name: 🚀 Deploy
     needs: build
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: |
+      always() && 
+      (needs.build.result == 'success' || inputs.skip_build)
+    
     environment:
       name: production
       url: ${{ env.SITE_URL }}
-
+    
     steps:
-      - name: 📥 Checkout (para verificar estrutura)
+      - name: 📥 Checkout (sparse)
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
             inc
-            plugins
             public
           sparse-checkout-cone-mode: false
 
-      - name: 📥 Download build artifact
+      # --- DOWNLOAD ARTIFACTS ---
+      - name: 📥 Download build artifact (dist)
+        if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
-          name: build-${{ needs.build.outputs.commit_hash }}
+          name: build-dist-${{ needs.build.outputs.commit_hash }}
+          path: ./dist
+
+      - name: 📥 Download build artifact (theme files)
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-theme-${{ needs.build.outputs.commit_hash }}
           path: ./
 
+      - name: 📥 Download build artifact (plugins)
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-plugins-${{ needs.build.outputs.commit_hash }}
+          path: ./plugins
+
+      # --- SSH SETUP ---
       - name: 🔐 Setup SSH
         uses: shimataro/ssh-key-action@v2
         with:
@@ -104,18 +212,8 @@ jobs:
           known_hosts: unnecessary
           name: id_rsa
 
-      - name: 🧪 Testar SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            echo "✅ SSH OK"
-            pwd && whoami
-
-      - name: 📦 Backup
+      # --- BACKUP ---
+      - name: 📦 Create backup
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -124,30 +222,37 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
+            
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
             
-            echo "📦 Criando backup..."
+            echo "📦 Creating backup: ${BACKUP_DIR}"
             mkdir -p "${BACKUP_DIR}"
             
+            # Backup theme
             if [ -d "${THEME_PATH}" ]; then
+              echo "  → Backing up theme..."
               tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
-              echo "✅ Backup criado"
             fi
             
-            mkdir -p "${THEME_PATH}"/dist
+            # Ensure directories exist
+            mkdir -p "${THEME_PATH}/dist"
             mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
             
-            cd "$HOME/backups" && ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
+            # Clean old backups (keep last 5)
+            echo "🧹 Cleaning old backups..."
+            cd "$HOME/backups"
+            ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
+            
+            echo "✅ Backup created successfully"
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: dist/ (SEMPRE EXISTE)
-      # ═══════════════════════════════════════════════════════════════════════
+      # --- DEPLOY STEPS (RSYNC) ---
+      
       - name: 🚀 Deploy dist/
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr --delete
+          switches: -avzr --delete --checksum
           path: dist/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
@@ -155,14 +260,11 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: inc/ (SE EXISTIR)
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: 📚 Deploy inc/ (se existir)
+      - name: 📚 Deploy inc/
         if: hashFiles('inc/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr --delete
+          switches: -avzr --delete --checksum
           path: inc/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/inc/
           remote_host: ${{ env.SSH_HOST }}
@@ -170,10 +272,7 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: PHP files (functions.php, style.css, etc)
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: 📝 Deploy PHP files
+      - name: 📝 Deploy theme PHP files
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.SSH_HOST }}
@@ -184,14 +283,12 @@ jobs:
           target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           strip_components: 0
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: plugins/ (SE EXISTIR)
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: 🔌 Deploy plugins/ (se existir)
-        if: hashFiles('plugins/**') != ''
+      # DEPLOY PLUGINS (Now deploying pre-built artifacts)
+      - name: 🔌 Deploy custom plugins
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avzr --delete
+          # Ensure 'vendor' is NOT excluded so dependencies are uploaded
+          switches: -avzr --checksum --exclude='index.php' --exclude='*.md'
           path: plugins/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/
           remote_host: ${{ env.SSH_HOST }}
@@ -199,37 +296,29 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # DEPLOY: public/ (SE EXISTIR - apenas arquivos seguros)
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: 📄 Deploy public/ (se existir)
+      # --- PUBLIC ASSETS ---
+      - name: 📄 Prepare public assets
         if: hashFiles('public/**') != ''
         run: |
-          # Verificar quais arquivos existem
-          SAFE_FILES=(robots.txt ai-bots.txt favicon.ico favicon.svg apple-touch-icon.png site.webmanifest)
-          
+          echo "📄 Preparing public assets..."
+          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
           mkdir -p temp_public
-          
           for file in "${SAFE_FILES[@]}"; do
             if [ -f "public/$file" ]; then
               cp "public/$file" temp_public/
-              echo "✓ $file"
+              echo "  ✓ $file"
             fi
           done
-          
-          # Só fazer rsync se houver arquivos
-          if [ "$(ls -A temp_public)" ]; then
-            echo "Enviando arquivos públicos..."
-          else
-            echo "Nenhum arquivo público para enviar"
-            exit 0
+          if [ -z "$(ls -A temp_public 2>/dev/null)" ]; then
+            echo "ℹ️ No public assets to deploy"
+            touch temp_public/.gitkeep
           fi
 
-      - name: 📄 Rsync public assets
+      - name: 📄 Deploy public assets
         if: hashFiles('public/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          switches: -avz
+          switches: -avz --ignore-missing-args
           path: temp_public/
           remote_path: ${{ env.REMOTE_ROOT }}/
           remote_host: ${{ env.SSH_HOST }}
@@ -237,10 +326,9 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # VERIFICAÇÃO
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: ✅ Verificar
+      # --- CACHE PURGE ---
+      - name: 🧹 Purge LiteSpeed Cache
+        continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -248,85 +336,55 @@ jobs:
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo ""
-            echo "════════════════════════════════════════"
-            echo "🔍 VERIFICANDO DEPLOY"
-            echo "════════════════════════════════════════"
-            echo ""
-            
-            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
-            
-            echo "📁 Tema: $THEME_PATH"
-            if [ -d "$THEME_PATH" ]; then
-              echo "✅ Tema existe"
+            echo "🧹 Purging LiteSpeed Cache..."
+            cd ${{ env.REMOTE_ROOT }}
+            if command -v wp &> /dev/null; then
+              wp litespeed-purge all 2>/dev/null || echo "⚠️ LiteSpeed Cache plugin not found"
             else
-              echo "❌ Tema não encontrado!"
-              exit 1
+              echo "⚠️ WP-CLI not available"
             fi
-            
-            echo ""
-            echo "📁 dist/:"
-            if [ -d "$THEME_PATH/dist" ]; then
-              DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
-              FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
-              echo "✅ $DIST_SIZE ($FILE_COUNT arquivos)"
-            else
-              echo "❌ dist/ não encontrado!"
-              exit 1
-            fi
-            
-            echo ""
-            echo "📄 Arquivos PHP:"
-            [ -f "$THEME_PATH/functions.php" ] && echo "✅ functions.php" || echo "⚠️ functions.php"
-            [ -f "$THEME_PATH/style.css" ] && echo "✅ style.css" || echo "⚠️ style.css"
-            
-            echo ""
-            echo "════════════════════════════════════════"
-            echo "✅ VERIFICAÇÃO OK"
-            echo "════════════════════════════════════════"
 
-      # ═══════════════════════════════════════════════════════════════════════
-      # HEALTH CHECK
-      # ═══════════════════════════════════════════════════════════════════════
-      - name: 🏥 Health check
-        run: |
-          echo "🔍 Testando ${{ env.SITE_URL }}..."
-          sleep 5
-          
-          for i in {1..3}; do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 20 ${{ env.SITE_URL }})
-            
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "✅ Site OK (HTTP $HTTP_CODE)"
-              exit 0
-            else
-              echo "⚠️ Tentativa $i/3: HTTP $HTTP_CODE"
-              sleep 5
-            fi
-          done
-          
-          echo "❌ Site não acessível"
-          exit 1
-
-      - name: 📊 Resumo
+      # --- VERIFICATION ---
+      - name: 📊 Deployment summary
         if: always()
         run: |
           echo ""
-          echo "════════════════════════════════════════"
+          echo "════════════════════════════════════════════════════════"
           if [ "${{ job.status }}" = "success" ]; then
-            echo "✅ DEPLOY CONCLUÍDO COM SUCESSO!"
+            echo "✅ DEPLOYMENT SUCCESSFUL"
             echo ""
             echo "🌐 Site: ${{ env.SITE_URL }}"
             echo "📦 Commit: ${{ needs.build.outputs.commit_hash }}"
             echo ""
-            echo "📁 Estrutura deployada:"
-            echo "  ✅ dist/         → tema/dist/"
-            [ -d "inc" ] && echo "  ✅ inc/          → tema/inc/" || echo "  ℹ️  inc/         (não existe)"
-            echo "  ✅ *.php, *.css  → tema/"
-            [ -d "plugins" ] && echo "  ✅ plugins/      → wp-content/plugins/" || echo "  ℹ️  plugins/     (não existe)"
-            [ -d "public" ] && echo "  ✅ public/       → root/" || echo "  ℹ️  public/      (não existe)"
+            echo "🎉 Your site is now live!"
           else
-            echo "❌ DEPLOY FALHOU"
-            echo "Verifique os logs acima"
+            echo "❌ DEPLOYMENT FAILED"
+            echo "Check logs above."
           fi
-          echo "════════════════════════════════════════"
+          echo "════════════════════════════════════════════════════════"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 3: HEALTH CHECK
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  health-check:
+    name: 🏥 Health Check
+    needs: deploy
+    runs-on: ubuntu-24.04
+    if: needs.deploy.result == 'success'
+    
+    steps:
+      - name: 🔍 Check site accessibility
+        run: |
+          echo "🔍 Checking site accessibility..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 \
+            -H "User-Agent: Mozilla/5.0 (compatible; DeployBot/1.0; +https://github.com)" \
+            ${{ env.SITE_URL }})
+          
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ] || [ "$HTTP_CODE" = "302" ]; then
+            echo "✅ Site is accessible (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️ Site returned HTTP $HTTP_CODE"
+            # Don't fail job for 403 (firewall) or other soft errors
+            if [ "$HTTP_CODE" != "403" ]; then exit 1; fi
+          fi

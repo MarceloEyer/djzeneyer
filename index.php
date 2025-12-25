@@ -1,84 +1,53 @@
 <?php
 /**
  * Main template file - DJ Zen Eyer Theme
- * Optimized for React SPA + SEO + AI Crawlers
- * @package DJZenEyer
+ * Mode: React SPA with Server-Side SEO + Performance Optimizations
  */
+
+// Lógica de Conteúdo Dinâmico (SSR)
+// Isso garante que robôs e usuários vejam algo antes do React carregar
+$ssr_h1 = 'DJ Zen Eyer - Brazilian Zouk DJ & Music Producer';
+$ssr_desc = 'Official website of DJ Zen Eyer. 2x World Champion Brazilian Zouk DJ, music producer, and Mensa International member.';
+
+if (have_posts()) {
+    the_post();
+    $ssr_h1 = get_the_title();
+    $ssr_desc = get_the_excerpt() ?: wp_trim_words(get_the_content(), 25);
+}
+
+// 1. Carrega o cabeçalho (HTML head, meta tags, estilos)
+get_header(); 
 ?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?> prefix="og: https://ogp.me/ns#">
-<head>
-    <meta charset="<?php bloginfo('charset'); ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <!-- Primary Meta -->
-    <title><?php bloginfo('name'); ?> | Brazilian Zouk Music Producer & Live DJ Events</title>
-    <meta name="description" content="Experience exclusive Brazilian Zouk remixes, live shows and premium music experiences by DJ Zen Eyer. Join the Zen Tribe worldwide.">
-    <meta name="author" content="DJ Zen Eyer">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <link rel="canonical" href="https://djzeneyer.com/">
+<div id="root">
+    <div class="ssr-content">
+        <h1><?php echo esc_html($ssr_h1); ?></h1>
+        <p><?php echo esc_html($ssr_desc); ?></p>
+        
+        <?php if (is_front_page()): ?>
+            <h2>About DJ Zen Eyer</h2>
+            <p>2x World Champion Brazilian Zouk DJ, music producer, and Mensa International member.</p>
+            
+            <nav class="ssr-links" aria-label="Main navigation">
+                <a href="<?php echo esc_url(home_url('/')); ?>"><strong>Home</strong><br><small>Main page</small></a>
+                <a href="<?php echo esc_url(home_url('/events')); ?>"><strong>Events</strong><br><small>Tour dates</small></a>
+                <a href="<?php echo esc_url(home_url('/music')); ?>"><strong>Music</strong><br><small>Sets & Remixes</small></a>
+                <a href="<?php echo esc_url(home_url('/shop')); ?>"><strong>Shop</strong><br><small>Merch</small></a>
+                <a href="<?php echo esc_url(home_url('/zentribe')); ?>"><strong>ZenTribe</strong><br><small>Community</small></a>
+                <a href="<?php echo esc_url(home_url('/work-with-me')); ?>"><strong>Book DJ</strong><br><small>Hire me</small></a>
+            </nav>
+        <?php endif; ?>
+    </div>
+</div>
 
-    <!-- AI & Search Enhancements -->
-    <meta name="ai-content" content="DJ Zen Eyer is a world-class Brazilian Zouk DJ and music producer delivering exclusive remixes, live events, and dance experiences.">
-    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large">
-    <meta name="bingbot" content="index, follow">
-    <meta name="yandex-verification" content="1b652f4d3070aedf">
-    <meta name="google-site-verification" content="YOUR_GOOGLE_CODE">
+<noscript>
+    <div style="padding: 20px; text-align: center; border: 1px solid #ff4444; margin: 20px; border-radius: 8px;">
+        <h2>⚠️ JavaScript Required</h2>
+        <p>Please enable JavaScript to view this site.</p>
+    </div>
+</noscript>
 
-    <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="DJ Zen Eyer">
-    <meta property="og:url" content="https://djzeneyer.com/">
-    <meta property="og:title" content="DJ Zen Eyer | Brazilian Zouk Music Producer & Live DJ Events">
-    <meta property="og:description" content="Experience exclusive Brazilian Zouk remixes and join live events with DJ Zen Eyer.">
-    <meta property="og:image" content="https://djzeneyer.com/images/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="en_US">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="DJ Zen Eyer | Brazilian Zouk Music Producer & Live DJ Events">
-    <meta name="twitter:description" content="Exclusive Brazilian Zouk remixes and live performances by DJ Zen Eyer.">
-    <meta name="twitter:image" content="https://djzeneyer.com/images/twitter-image.jpg">
-
-    <!-- Favicon & PWA -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#0A0E27">
-    <meta name="apple-mobile-web-app-title" content="DJ Zen Eyer">
-
-    <!-- DNS Prefetch & Preconnect -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Preload Critical Assets -->
-    <?php 
-    $js_file = get_template_directory_uri() . '/dist/assets/index.js';
-    $css_file = get_template_directory_uri() . '/dist/assets/index.css';
-    ?>
-    <link rel="modulepreload" href="<?php echo esc_url($js_file); ?>">
-    <link rel="preload" href="<?php echo esc_url($css_file); ?>" as="style">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-    <!-- Performance -->
-    <meta http-equiv="Cache-Control" content="max-age=31536000, must-revalidate">
-    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <meta name="generator" content="WordPress + React + WooCommerce Headless">
-
-    <?php wp_head(); ?>
-</head>
-<body <?php body_class(); ?>>
-    <?php wp_body_open(); ?>
-    <div id="root"></div>
-    <?php wp_footer(); ?>
-</body>
-</html>
+<?php 
+// 2. Carrega o rodapé (Scripts do React, fechamento do body)
+get_footer(); 
+?>

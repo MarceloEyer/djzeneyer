@@ -1,643 +1,449 @@
 // src/pages/HomePage.tsx
-// ============================================================================
-// HOMEPAGE OTIMIZADA PARA SEO, PERFORMANCE E INDEXAÇÃO POR IA
-// ============================================================================
-// 
-// OTIMIZAÇÕES IMPLEMENTADAS:
-// ✅ Schema.org expandido com dados estruturados ricos para Google e IAs
-// ✅ Semantic HTML com hierarquia H1-H6 otimizada
-// ✅ Core Web Vitals: LCP, FID, CLS otimizados
-// ✅ Lazy loading de imagens e componentes pesados
-// ✅ Preconnect para recursos externos críticos
-// ✅ OpenGraph e Twitter Cards completos
-// ✅ FAQ Schema para rich snippets
-// ✅ Performance hints (preload, prefetch)
-// ✅ Acessibilidade WCAG 2.1 AAA
-//
-// MANTIDO INTACTO:
-// ✅ Design visual 100% preservado
-// ✅ Classes Tailwind e estilos
-// ✅ Animações Framer Motion
-// ✅ Estrutura de componentes
-// ============================================================================
+// VERSÃO FINAL: DIAMOND MASTER (Integrated with Zen SEO Plugin v8.0.0)
 
-import React, { lazy, Suspense } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useTranslation, Trans } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
-import { PlayCircle, Calendar, Users, Music, Award } from 'lucide-react';
-import { useMusicPlayer } from '../contexts/MusicPlayerContext';
+import { motion, Variants } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import {
+  PlayCircle, Calendar, Users, Music, Award, Trophy,
+  Globe, Mail, ExternalLink, Sparkles, Download
+} from 'lucide-react';
+import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { EventsList } from '../components/EventsList';
 
 // ============================================================================
-// LAZY LOADING DE COMPONENTES NÃO CRÍTICOS
-// ============================================================================
-// Componentes abaixo da dobra podem ser carregados sob demanda
-// Melhora o FCP (First Contentful Paint) e LCP (Largest Contentful Paint)
+// 1. INTERFACES (Type Safety)
 // ============================================================================
 
-const FeatureCard: React.FC<{ 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
-  variants: any; 
-}> = ({ icon, title, description, variants }) => (
-  <motion.div 
-    className="card p-8 text-center" 
-    variants={variants}
-    // ✅ Acessibilidade: role e aria-label para screen readers
-    role="article"
-    aria-label={title}
-  >
-    <div 
-      className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4"
-      aria-hidden="true" // Ícone decorativo, esconde de screen readers
-    >
-      {icon}
-    </div>
+interface StatCardProps {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+}
+
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  variants: Variants;
+}
+
+interface FestivalBadgeProps {
+  name: string;
+  flag: string;
+}
+
+// Interface para as configurações vindas do Plugin WP
+interface ZenGlobalSettings {
+  real_name?: string;
+  default_og_image?: string;
+  [key: string]: any;
+}
+
+// ============================================================================
+// 2. DADOS E CONSTANTES
+// ============================================================================
+
+const FEATURES_DATA = [
+  { id: 'music', icon: <Music size={32} />, titleKey: 'home_feat_exclusive_title', descKey: 'home_feat_exclusive_desc' },
+  { id: 'achievements', icon: <Award size={32} />, titleKey: 'home_feat_achievements_title', descKey: 'home_feat_achievements_desc' },
+  { id: 'community', icon: <Users size={32} />, titleKey: 'home_feat_community_title', descKey: 'home_feat_community_desc' },
+];
+
+const FESTIVALS_HIGHLIGHT = ARTIST.festivals.slice(0, 6);
+
+const STATS = [
+  { value: '2×', label: 'World Champion', icon: Trophy },
+  { value: `${ARTIST.stats.countriesPlayed}+`, label: 'Countries', icon: Globe },
+  { value: `${ARTIST.stats.yearsActive}+`, label: 'Years Active', icon: Sparkles },
+];
+
+const CONTAINER_VARIANTS: Variants = { 
+  hidden: { opacity: 0 }, 
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } } 
+};
+
+const ITEM_VARIANTS: Variants = { 
+  hidden: { y: 20, opacity: 0 }, 
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } } 
+};
+
+// ============================================================================
+// 3. SUB-COMPONENTES MEMOIZADOS
+// ============================================================================
+
+const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
+  <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
+    <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
+    <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
+    <div className="text-sm text-white/70 uppercase tracking-wider">{label}</div>
+  </motion.div>
+));
+
+const FeatureCard = React.memo(({ icon, title, description, variants }: FeatureCardProps) => (
+  <motion.article className="card p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
+    <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-white/70">{description}</p>
-  </motion.div>
-);
+  </motion.article>
+));
+
+const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
+  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-white/80 hover:bg-white/10 transition-colors cursor-default">
+    <span role="img" aria-label={`Flag of ${name}`}>{flag}</span>
+    <span>{name}</span>
+  </span>
+));
+
+// ============================================================================
+// 4. PAGE COMPONENT
+// ============================================================================
 
 const HomePage: React.FC = () => {
-  const { playTrack, queue } = useMusicPlayer();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
+  
+  const isPortuguese = i18n.language?.startsWith('pt');
+  const currentPath = '/';
+  const currentUrl = ARTIST.site.baseUrl;
 
-  // ============================================================================
-  // DADOS ESTRUTURADOS PARA FEATURES
-  // ============================================================================
-  const features = [
-    { 
-      id: 'music', 
-      icon: <Music size={32} aria-hidden="true" />, 
-      titleKey: 'home_feat_exclusive_title', 
-      descKey: 'home_feat_exclusive_desc' 
-    },
-    { 
-      id: 'achievements', 
-      icon: <Award size={32} aria-hidden="true" />, 
-      titleKey: 'home_feat_achievements_title', 
-      descKey: 'home_feat_achievements_desc' 
-    },
-    { 
-      id: 'community', 
-      icon: <Users size={32} aria-hidden="true" />, 
-      titleKey: 'home_feat_community_title', 
-      descKey: 'home_feat_community_desc' 
-    },
-  ];
+  // --- FETCH PLUGIN SETTINGS (Integration) ---
+  useEffect(() => {
+    // Tenta pegar a URL da API do ambiente ou usa fallback
+    const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
+    
+    fetch(`${wpRestUrl}/zen-seo/v1/settings`)
+      .then(res => res.json())
+      .then(response => {
+        if (response.success) {
+          setSeoSettings(response.data);
+        }
+      })
+      .catch(err => console.error('Zen SEO Plugin not reachable:', err));
+  }, []);
 
-  const handlePlayFeatured = () => {
-    if (queue && queue.length > 0) {
-      playTrack(queue[0]);
-    }
-  };
-
-  // ============================================================================
-  // VARIANTES DE ANIMAÇÃO (MANTIDAS INTACTAS)
-  // ============================================================================
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { 
-        staggerChildren: 0.15, 
-        delayChildren: 0.2 
-      } 
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1, 
-      transition: { 
-        duration: 0.6, 
-        ease: 'easeOut' 
-      } 
-    },
-  };
-
-  // ============================================================================
-  // DADOS ESTRUTURADOS PARA FAQ SCHEMA
-  // ============================================================================
-  const faqSchema = {
+  // --- SCHEMA STATIC DATA (Rich Snippets) ---
+  // Mantemos este Schema "Hardcoded" pois ele contém dados complexos (Awards, Events)
+  // que são específicos da Home e difíceis de gerenciar via configurações globais simples.
+  const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
+    "@graph": [
       {
-        "@type": "Question",
-        "name": "Who is DJ Zen Eyer?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "DJ Zen Eyer is the 2022 World Champion Brazilian Zouk DJ, winning both Best Performance and Best Remix categories. He is a certified Jack and Jill DJ by the Brazilian Zouk Council and performs internationally at major festivals across Europe, USA, and South America."
+        "@type": "WebSite",
+        "@id": `${ARTIST.site.baseUrl}/#website`,
+        "url": ARTIST.site.baseUrl,
+        "name": seoSettings?.real_name || "DJ Zen Eyer - Official Website",
+        "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
+        "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
+        "inLanguage": ["en", "pt-BR"],
+        "potentialAction": { 
+          "@type": "SearchAction",
+          "target": `${ARTIST.site.baseUrl}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string"
         }
       },
       {
-        "@type": "Question",
-        "name": "What is Brazilian Zouk music?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Brazilian Zouk is a dance music genre that evolved from the Caribbean Zouk. DJ Zen Eyer specializes in modern Brazilian Zouk with electronic elements, creating music specifically designed for social dancing and competitions."
-        }
+        ...ARTIST_SCHEMA_BASE,
+        "@id": `${ARTIST.site.baseUrl}/#artist`,
+        "name": seoSettings?.real_name || "DJ Zen Eyer",
+        "nationality": { "@type": "Country", "name": "Brazil" },
+        "birthDate": ARTIST.identity.birthDate,
+        "jobTitle": "DJ & Music Producer",
+        "knowsAbout": ["Brazilian Zouk", "Music Production", "DJing", "Remixing", "Kizomba"],
+        "homeLocation": {
+          "@type": "Place",
+          "address": { "@type": "PostalAddress", "addressLocality": "São Paulo", "addressRegion": "SP", "addressCountry": "BR" }
+        },
+        "award": [
+          { "@type": "Award", "name": "Best Remix", "description": "Brazilian Zouk World Championships", "dateAwarded": "2022" },
+          { "@type": "Award", "name": "Best DJ Performance", "description": "Brazilian Zouk World Championships", "dateAwarded": "2022" }
+        ],
+        "hasOccupation": [
+          { 
+            "@type": "Occupation", 
+            "name": "DJ", 
+            "skills": "Audio Mixing, Playlist Curation, Live Performance", 
+            "occupationalCategory": "27-2099.00" 
+          },
+          { 
+            "@type": "Occupation", 
+            "name": "Music Producer", 
+            "skills": "Audio Engineering, Remixing, Mastering" 
+          },
+        ],
+        "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
+          "@type": "MusicEvent",
+          "name": f.name,
+          "startDate": f.date,
+          "location": { 
+            "@type": "Place", 
+            "name": f.country,
+            "address": { 
+               "@type": "PostalAddress", 
+               "addressCountry": f.country 
+            } 
+          },
+          "eventStatus": "https://schema.org/EventScheduled",
+          "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
+        })),
       },
       {
-        "@type": "Question",
-        "name": "Where can I listen to DJ Zen Eyer's music?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "DJ Zen Eyer's music is available on SoundCloud, YouTube, Mixcloud, and Spotify. He has over 500,000 streams across all platforms with original productions and bootleg remixes."
+        "@type": "WebPage",
+        "@id": `${ARTIST.site.baseUrl}/#webpage`,
+        "url": ARTIST.site.baseUrl,
+        "name": "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
+        "description": "Two-time world champion DJ specializing in Brazilian Zouk. Book for international festivals and exclusive events.",
+        "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": seoSettings?.default_og_image || `${ARTIST.site.baseUrl}/images/hero-background.webp`,
+          "width": 1920,
+          "height": 1080
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": ARTIST.site.baseUrl }]
         }
       }
-    ]
-  };
+    ],
+  }), [isPortuguese, currentUrl, seoSettings]);
 
   return (
     <>
-      <Helmet>
-        {/* ====================================================================== */}
-        {/* META TAGS OTIMIZADAS PARA SEO E REDES SOCIAIS */}
-        {/* ====================================================================== */}
+      <HeadlessSEO
+        // Tenta usar dados do Plugin WP, fallback para strings hardcoded
+        title={seoSettings?.real_name 
+          ? `${seoSettings.real_name} | 2× World Champion` 
+          : "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"}
         
-        {/* Title tag otimizado (50-60 caracteres ideal) */}
-        <title>{t('home_page_title')} | World Champion Brazilian Zouk DJ 2022</title>
+        description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
         
-        {/* Meta description otimizada (150-160 caracteres) */}
-        <meta 
-          name="description" 
-          content="DJ Zen Eyer - 2022 World Champion Brazilian Zouk DJ. Certified Jack & Jill DJ. 500K+ streams. Book now for international events. Official music on SoundCloud, Spotify & YouTube." 
-        />
+        url={currentUrl}
         
-        {/* Keywords relevantes para SEO */}
-        <meta 
-          name="keywords" 
-          content="DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music, Jack and Jill DJ, Brazilian Zouk Council, Zouk Festivals, Dance Music DJ, Electronic Zouk, Zouk Bootlegs, Zouk Remixes" 
-        />
+        // Imagem vinda do painel WP ou fallback local
+        image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.jpg`}
         
-        {/* ====================================================================== */}
-        {/* OPEN GRAPH (FACEBOOK, LINKEDIN, WHATSAPP) */}
-        {/* ====================================================================== */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://djzeneyer.com" />
-        <meta property="og:title" content="DJ Zen Eyer - 2022 World Champion Brazilian Zouk DJ" />
-        <meta property="og:description" content="World Champion Brazilian Zouk DJ 2022. Certified Jack & Jill DJ performing at international festivals. 500K+ streams worldwide." />
-        <meta property="og:image" content="https://djzeneyer.com/images/zen-eyer-og-image.jpg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="DJ Zen Eyer performing at Brazilian Zouk festival" />
-        <meta property="og:locale" content="en_US" />
-        <meta property="og:locale:alternate" content="pt_BR" />
-        <meta property="og:site_name" content="DJ Zen Eyer Official" />
+        isHomepage={true}
+        hrefLang={getHrefLangUrls(currentPath, currentUrl)}
+        schema={schemaData}
         
-        {/* ====================================================================== */}
-        {/* TWITTER CARDS */}
-        {/* ====================================================================== */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@djzeneyer" />
-        <meta name="twitter:creator" content="@djzeneyer" />
-        <meta name="twitter:title" content="DJ Zen Eyer - 2022 World Champion Brazilian Zouk DJ" />
-        <meta name="twitter:description" content="World Champion Brazilian Zouk DJ. Certified Jack & Jill DJ. Book now for international events." />
-        <meta name="twitter:image" content="https://djzeneyer.com/images/zen-eyer-twitter-card.jpg" />
-        <meta name="twitter:image:alt" content="DJ Zen Eyer - World Champion Brazilian Zouk DJ" />
-        
-        {/* ====================================================================== */}
-        {/* CANONICAL URL E HREFLANG */}
-        {/* ====================================================================== */}
-        <link rel="canonical" href="https://djzeneyer.com" />
-        <link rel="alternate" hrefLang="en" href="https://djzeneyer.com" />
-        <link rel="alternate" hrefLang="pt-BR" href="https://djzeneyer.com/pt" />
-        <link rel="alternate" hrefLang="x-default" href="https://djzeneyer.com" />
-        
-        {/* ====================================================================== */}
-        {/* PERFORMANCE HINTS - PRECONNECT E DNS-PREFETCH */}
-        {/* ====================================================================== */}
-        {/* Conecta antecipadamente com domínios externos críticos */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-        <link rel="dns-prefetch" href="https://soundcloud.com" />
-        <link rel="dns-prefetch" href="https://youtube.com" />
-        
-        {/* ====================================================================== */}
-        {/* PRELOAD DE RECURSOS CRÍTICOS */}
-        {/* ====================================================================== */}
-        {/* Hero background image - LCP optimization */}
-        <link 
-          rel="preload" 
-          as="image" 
-          href="/images/hero-background.webp" 
-          type="image/webp"
-          fetchPriority="high"
-        />
-        
-        {/* ====================================================================== */}
-        {/* ROBOTS E INDEXAÇÃO */}
-        {/* ====================================================================== */}
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-        <meta name="googlebot" content="index, follow" />
-        <meta name="bingbot" content="index, follow" />
-        
-        {/* ====================================================================== */}
-        {/* SCHEMA.ORG - MUSICGROUP (OTIMIZADO PARA IAs) */}
-        {/* ====================================================================== */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "MusicGroup",
-            "@id": "https://djzeneyer.com/#musicgroup",
-            "name": "DJ Zen Eyer",
-            "alternateName": ["Zen Eyer", "DJ Zen", "Zeneyer", "DJ Zen Eyer Brazilian Zouk"],
-            
-            "description": "DJ Zen Eyer is the 2022 World Champion Brazilian Zouk DJ, winning both Best Performance and Best Remix categories at the Brazilian Zouk DJ Championship. Certified by the Brazilian Zouk Council as an official Jack and Jill DJ, he specializes in bootleg remixes and original productions. With over 500,000 streams across platforms and performances at major international festivals in Europe, USA, and South America, DJ Zen Eyer is recognized as one of the top Brazilian Zouk DJs globally. His unique style blends traditional Brazilian Zouk with modern electronic elements.",
-            
-            "genre": ["Brazilian Zouk", "Electronic Dance Music", "Zouk Music", "Latin Electronic", "Dance Music"],
-            
-            "url": "https://djzeneyer.com",
-            "image": {
-              "@type": "ImageObject",
-              "url": "https://djzeneyer.com/images/zen-eyer-profile.jpg",
-              "width": 1200,
-              "height": 630,
-              "caption": "DJ Zen Eyer - 2022 World Champion Brazilian Zouk DJ"
-            },
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://djzeneyer.com/images/zen-eyer-logo.png",
-              "width": 512,
-              "height": 512
-            },
-            
-            // Links externos (Entity Linking para Knowledge Graphs)
-            "sameAs": [
-              "https://www.wikidata.org/wiki/Q136551855",
-              "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
-              "https://www.discogs.com/artist/16872046",
-              "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
-              "https://instagram.com/djzeneyer",
-              "https://soundcloud.com/djzeneyer",
-              "https://youtube.com/@djzeneyer",
-              "https://mixcloud.com/djzeneyer",
-              "https://tiktok.com/@djzeneyer",
-              "https://facebook.com/djzeneyer",
-              "https://x.com/djzeneyer"
-            ],
-            
-            "member": {
-              "@type": "Person",
-              "@id": "https://djzeneyer.com/#person",
-              "name": "Zen Eyer",
-              "givenName": "Zen",
-              "familyName": "Eyer",
-              "jobTitle": "Professional DJ and Music Producer",
-              "description": "2022 World Champion Brazilian Zouk DJ in both Best Performance and Best Remix categories. Certified Jack and Jill DJ by the Brazilian Zouk Council. International touring artist with over 10 years of experience in Brazilian Zouk music.",
-              
-              "knowsAbout": [
-                "Brazilian Zouk Music Production",
-                "DJ Performance and Mixing",
-                "Electronic Music Production",
-                "Dance Music Composition",
-                "Bootleg and Remix Production",
-                "Jack and Jill Competition DJing",
-                "Music for Social Dancing",
-                "Brazilian Zouk Dance Culture",
-                "International Festival Performance",
-                "Music Theory and Arrangement",
-                "Digital Audio Workstations",
-                "Sound Design and Mastering"
-              ],
-              
-              "award": [
-                "2022 World Champion Brazilian Zouk DJ - Best Performance",
-                "2022 World Champion Brazilian Zouk DJ - Best Remix",
-                "Brazilian Zouk Council Certified Jack and Jill DJ"
-              ],
-              
-              "hasCredential": [
-                {
-                  "@type": "EducationalOccupationalCredential",
-                  "credentialCategory": "professional certification",
-                  "name": "Brazilian Zouk Council - Certified Jack and Jill DJ",
-                  "description": "Official certification to DJ Jack and Jill competitions",
-                  "recognizedBy": {
-                    "@type": "Organization",
-                    "name": "Brazilian Zouk Council"
-                  }
-                }
-              ],
-              
-              "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "BR"
-              },
-              
-              "nationality": {
-                "@type": "Country",
-                "name": "Brazil"
-              }
-            },
-            
-            "foundingDate": "2014",
-            "foundingLocation": {
-              "@type": "Place",
-              "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "Brazil"
-              }
-            },
-            
-            // Prêmios estruturados
-            "award": [
-              {
-                "@type": "Award",
-                "name": "World Champion Brazilian Zouk DJ - Best Performance",
-                "dateAwarded": "2022",
-                "description": "First place in DJ Performance category at the Brazilian Zouk DJ Championship 2022",
-                "awarder": {
-                  "@type": "Organization",
-                  "name": "Brazilian Zouk DJ Championship"
-                }
-              },
-              {
-                "@type": "Award",
-                "name": "World Champion Brazilian Zouk DJ - Best Remix",
-                "dateAwarded": "2022",
-                "description": "First place in Best Remix category at the Brazilian Zouk DJ Championship 2022",
-                "awarder": {
-                  "@type": "Organization",
-                  "name": "Brazilian Zouk DJ Championship"
-                }
-              }
-            ],
-            
-            // Estatísticas de interação
-            "interactionStatistic": [
-              {
-                "@type": "InteractionCounter",
-                "interactionType": "https://schema.org/ListenAction",
-                "userInteractionCount": 500000,
-                "description": "Total streams across SoundCloud, YouTube, Mixcloud"
-              },
-              {
-                "@type": "InteractionCounter",
-                "interactionType": "https://schema.org/FollowAction",
-                "userInteractionCount": 50000,
-                "description": "Total social media followers"
-              }
-            ],
-            
-            // Avaliação agregada
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "5.0",
-              "reviewCount": "87",
-              "bestRating": "5",
-              "worstRating": "1"
-            },
-            
-            // Ofertas (para booking)
-            "makesOffer": {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "DJ Services for Brazilian Zouk Events",
-                "description": "Professional DJ services for Brazilian Zouk festivals, congresses, socials, and private events"
-              },
-              "areaServed": ["Europe", "North America", "South America"],
-              "availableChannel": {
-                "@type": "ServiceChannel",
-                "serviceUrl": "https://djzeneyer.com/work-with-me"
-              }
-            }
-          })}
-        </script>
+        // Otimização LCP: Carrega a fonte crítica do título
+        preload={[
+           { href: '/fonts/Orbitron-Variable.ttf', as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' }
+        ]}
+      />
 
-        {/* ====================================================================== */}
-        {/* BREADCRUMB LIST SCHEMA */}
-        {/* ====================================================================== */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://djzeneyer.com"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Music",
-                "item": "https://djzeneyer.com/music"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": "Events",
-                "item": "https://djzeneyer.com/events"
-              },
-              {
-                "@type": "ListItem",
-                "position": 4,
-                "name": "Work With Me",
-                "item": "https://djzeneyer.com/work-with-me"
-              }
-            ]
-          })}
-        </script>
-
-        {/* ====================================================================== */}
-        {/* FAQ SCHEMA - RICH SNIPPETS */}
-        {/* ====================================================================== */}
-        <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
-        </script>
-
-        {/* ====================================================================== */}
-        {/* WEBSITE SCHEMA */}
-        {/* ====================================================================== */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "@id": "https://djzeneyer.com/#website",
-            "url": "https://djzeneyer.com",
-            "name": "DJ Zen Eyer Official Website",
-            "description": "Official website of DJ Zen Eyer - 2022 World Champion Brazilian Zouk DJ",
-            "publisher": {
-              "@id": "https://djzeneyer.com/#musicgroup"
-            },
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": "https://djzeneyer.com/search?q={search_term_string}"
-              },
-              "query-input": "required name=search_term_string"
-            },
-            "inLanguage": ["en", "pt-BR"]
-          })}
-        </script>
-      </Helmet>
-
-      {/* ====================================================================== */}
-      {/* HERO SECTION - OTIMIZADO PARA LCP */}
-      {/* ====================================================================== */}
-      <section 
-        className="relative h-screen flex items-center justify-center text-center overflow-hidden"
-        aria-label="Hero section - DJ Zen Eyer introduction"
-      >
-        {/* Background otimizado */}
+      {/* HERO SECTION */}
+      <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-20 pb-12" aria-label="Introduction">
         <div className="absolute inset-0 z-0 bg-black">
-          <motion.div 
-            className="w-full h-full bg-cover bg-center bg-no-repeat opacity-50"
-            style={{ backgroundImage: "url('/images/hero-background.webp')" }}
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 10, ease: "linear" }}
-            // ✅ Acessibilidade: imagem de fundo decorativa
-            role="img"
-            aria-label="DJ Zen Eyer performing at Brazilian Zouk festival"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+          <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
+            <picture>
+              <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.webp" />
+              <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
+              <img
+                src="/images/hero-background.webp"
+                alt="DJ Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
+                className="w-full h-full object-cover object-center opacity-40"
+                width="1920"
+                height="1080"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </picture>
+          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div 
-            className="max-w-4xl mx-auto" 
-            initial={{ opacity: 0, y: 30 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ duration: 0.8 }}
-          >
-            {/* ✅ H1 OTIMIZADO - Apenas UMA H1 por página */}
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white [text-shadow:_2px_2px_10px_rgba(0,0,0,0.7)]">
-              <Trans i18nKey="home_headline">
-                Experience the <span className="text-primary">Zen</span> in Brazilian Zouk
-              </Trans>
-            </h1>
-            
-            {/* ✅ Subtítulo com contexto semântico */}
-            <p className="text-xl md:text-2xl mt-6 max-w-2xl mx-auto text-white/90 [text-shadow:_1px_1px_5px_rgba(0,0,0,0.8)]">
-              {t('home_subheadline')}
-            </p>
-            
-            {/* Call-to-actions otimizadas */}
-            <div className="mt-10 flex flex-wrap gap-4 justify-center">
-              <button 
-                onClick={handlePlayFeatured} 
-                className="btn btn-primary btn-lg flex items-center gap-2" 
-                disabled={!queue || queue.length === 0}
-                aria-label="Play featured Brazilian Zouk mix"
+          <motion.div className="max-w-4xl mx-auto" initial="hidden" animate="visible" variants={CONTAINER_VARIANTS}>
+            <motion.div variants={ITEM_VARIANTS} className="mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
+                <Trophy size={16} />
+                <span className="font-semibold">2× World Champion - Zouk World Championships</span>
+              </div>
+            </motion.div>
+
+            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white mb-4 tracking-tight">
+              DJ Zen Eyer
+            </motion.h1>
+
+            <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
+              {isPortuguese ? 'Bicampeão Mundial de Zouk Brasileiro' : '2× World Champion Brazilian Zouk DJ & Producer'}
+            </motion.p>
+
+            <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
+              "{ARTIST.philosophy.slogan}" ™
+            </motion.p>
+
+            <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
+              {STATS.map(stat => <StatCard key={stat.label} {...stat} />)}
+            </motion.div>
+
+            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
+              <a
+                href={ARTIST.social.soundcloud.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary btn-lg flex items-center gap-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
+                aria-label="Listen to DJ Zen Eyer on SoundCloud"
               >
-                <PlayCircle size={22} aria-hidden="true" />
-                <span>{t('play_featured_mix')}</span>
-              </button>
-              <Link 
-                to="/events" 
-                className="btn btn-outline btn-lg flex items-center gap-2"
-                aria-label="View upcoming Brazilian Zouk events and festivals"
+                <PlayCircle size={22} />
+                <span>{isPortuguese ? 'Ouvir no SoundCloud' : 'Listen on SoundCloud'}</span>
+              </a>
+              <Link
+                to={isPortuguese ? '/pt/contrate' : '/work-with-me'}
+                className="btn btn-outline btn-lg flex items-center gap-2 backdrop-blur-sm"
+                aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
-                <Calendar size={22} aria-hidden="true" />
-                <span>{t('upcoming_events')}</span>
+                <Mail size={22} />
+                <span>{isPortuguese ? 'Contrate / Press Kit' : 'Booking / Press Kit'}</span>
               </Link>
-            </div>
+            </motion.div>
+
+            <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
+              {isPortuguese
+                ? 'Sets completos e remixes exclusivos. Para agenda, vá para Events. Para bookings, acesse Work With Me.'
+                : 'Full sets and exclusive remixes. Check Events for schedule. Head to Work With Me for bookings.'}
+            </motion.p>
+          </motion.div>
+        </div>
+
+        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
+            <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2" />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* BIO SECTION */}
+      <section className="py-20 bg-surface" id="about">
+        <div className="container mx-auto px-4">
+          <motion.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
+            <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
+              <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home_bio_title')}</h2>
+              <div className="text-xl leading-relaxed mb-6 text-white/90">
+                <p dangerouslySetInnerHTML={{ __html: t('home_bio_intro') }} />
+              </div>
+              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: t('home_bio_style') }} />
+              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: t('home_bio_mensa') }} />
+            </motion.article>
           </motion.div>
         </div>
       </section>
 
-      {/* ====================================================================== */}
-      {/* FEATURES SECTION */}
-      {/* ====================================================================== */}
-      <section 
-        className="py-24 bg-surface"
-        aria-labelledby="features-heading"
-      >
+      {/* UPCOMING EVENTS PREVIEW */}
+      <section className="py-16 bg-background border-y border-white/5">
         <div className="container mx-auto px-4">
-          <motion.div 
-            className="text-center mb-16"
-            initial="hidden" 
-            whileInView="visible" 
-            viewport={{ once: true, amount: 0.5 }} 
-            variants={itemVariants}
-          >
-            {/* ✅ H2 com ID para acessibilidade */}
-            <h2 
-              id="features-heading"
-              className="text-3xl md:text-4xl font-bold font-display"
-            >
-              {t('home_features_title')}
-            </h2>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto mt-4">
-              {t('home_features_subtitle')}
-            </p>
-          </motion.div>
+          <motion.div className="max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
+            <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
+              {isPortuguese ? 'Próximos Shows' : 'Upcoming Shows'}
+            </motion.h2>
+            
+            <motion.div variants={ITEM_VARIANTS} className="mb-8">
+              <EventsList limit={3} showTitle={false} variant="compact" />
+            </motion.div>
 
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" 
-            variants={containerVariants} 
-            initial="hidden" 
-            whileInView="visible" 
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {features.map(feature => (
-              <FeatureCard
-                key={feature.id}
-                icon={feature.icon}
-                title={t(feature.titleKey as any)}
-                description={t(feature.descKey as any)}
-                variants={itemVariants}
-              />
+            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
+              <Link to="/events" className="btn btn-primary btn-lg flex items-center gap-2">
+                <Calendar size={20} />
+                <span>{isPortuguese ? 'Agenda completa' : 'Full schedule'}</span>
+              </Link>
+              <a href={ARTIST.social.bandsintown?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow DJ Zen Eyer on Bandsintown">
+                <ExternalLink size={18} />
+                <span>Bandsintown</span>
+              </a>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FEATURES GRID */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+            {FEATURES_DATA.map(feature => (
+              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as any)} description={t(feature.descKey as any)} variants={ITEM_VARIANTS} />
             ))}
           </motion.div>
         </div>
       </section>
-      
-      {/* ====================================================================== */}
-      {/* CTA SECTION - CALL TO ACTION FINAL */}
-      {/* ====================================================================== */}
-      <section 
-        className="py-28 bg-background"
-        aria-labelledby="cta-heading"
-      >
-        <motion.div 
-          className="container mx-auto px-4 text-center" 
-          initial="hidden" 
-          whileInView="visible" 
-          viewport={{ once: true, amount: 0.5 }} 
-          variants={itemVariants}
-        >
-          {/* ✅ H2 para hierarquia semântica */}
-          <h2 
-            id="cta-heading"
-            className="text-4xl md:text-5xl font-bold mb-6 font-display"
-          >
-            <Trans i18nKey="home_cta_title">
-              Ready to Join the <span className="text-primary">Zen Tribe</span>?
-            </Trans>
-          </h2>
-          <p className="text-xl text-white/80 max-w-3xl mx-auto mb-10">
-            {t('home_cta_subtitle')}
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link 
-              to="/zentribe" 
-              className="btn btn-primary btn-lg"
-              aria-label="Join the Zen Tribe community"
-            >
-              {t('join_now_button')}
-            </Link>
-            <Link 
-              to="/music" 
-              className="btn btn-outline btn-lg"
-              aria-label="Explore DJ Zen Eyer's music collection"
-            >
-              {t('explore_music_button')}
-            </Link>
+
+      {/* FESTIVALS / SOCIAL PROOF */}
+      <section className="py-20 bg-surface">
+        <div className="container mx-auto px-4">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS} className="text-center">
+            <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-2 font-display">
+              {isPortuguese ? 'Presença Internacional' : 'International Presence'}
+            </motion.h2>
+            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
+              {FESTIVALS_HIGHLIGHT.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
+                <span>+{isPortuguese ? 'muitos outros' : 'many more'}</span>
+              </span>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* PRESS & BOOKING */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
+              <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
+                <Download size={20} className="text-primary" /> {isPortuguese ? 'Imprensa & Mídia' : 'Press & Media'}
+              </h3>
+              <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Acesse fotos, bio e assets.' : 'Access photos, bio and assets.'}</p>
+              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+                {isPortuguese ? 'BAIXAR PRESS KIT' : 'DOWNLOAD PRESS KIT'} →
+              </Link>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
+              <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
+                <Calendar size={20} className="text-green-500" /> {isPortuguese ? 'Contratantes' : 'Bookers'}
+              </h3>
+              <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Leve o "Zen Experience" para o seu evento.' : 'Bring the "Zen Experience" to your event.'}</p>
+              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
+                {isPortuguese ? 'ORÇAMENTO' : 'REQUEST BOOKING'} →
+              </Link>
+            </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* AUTHORITY LINKS */}
+      <section className="py-12 bg-background border-t border-white/5">
+        <div className="container mx-auto px-4 text-center">
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+             <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{isPortuguese ? 'Perfis Verificados' : 'Verified Profiles'}</p>
+             <div className="flex flex-wrap justify-center gap-6 text-sm">
+               <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
+               <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
+               <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
+             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FINAL CTA - ZEN TRIBE */}
+      <section className="py-24 relative overflow-hidden bg-background">
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
+        
+        <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
+          <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
+            {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-primary">Zen Tribe</span>
+          </motion.h2>
+          <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
+            {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
+          </motion.p>
+          <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
+            <Link to="/zentribe" className="btn btn-primary btn-lg min-w-[200px]">
+              {isPortuguese ? 'Entrar na Tribo' : 'Join the Tribe'}
+            </Link>
+          </motion.div>
         </motion.div>
       </section>
     </>
