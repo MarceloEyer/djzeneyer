@@ -4,7 +4,7 @@
   "version": "1.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run gen:sitemap && vite", 
     "gen:sitemap": "node scripts/generate-sitemap.js",
     "build": "npm run gen:sitemap && tsc && vite build",
     "build:client": "npm run gen:sitemap && vite build",
