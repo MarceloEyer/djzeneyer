@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm run gen:sitemap && vite",
     "gen:sitemap": "node scripts/generate-sitemap.js",
+    "generate-sitemaps": "node scripts/generate-sitemap.js",
     "build": "npm run gen:sitemap && tsc && vite build",
     "build:client": "npm run gen:sitemap && vite build",
     "build:ssg": "npm run build:client && node scripts/prerender.mjs",
