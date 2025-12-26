@@ -1,71 +1,54 @@
 // src/hooks/useMenu.ts
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { getSiteUrl } from "../config/api";
+import { useMenuQuery } from "./useQueries";
 
-export interface MenuItem {
+interface MenuItem {
   ID: number;
   title: string;
   url: string;
   target: string;
 }
 
-const getWpConfig = () => {
-    if (window.wpData?.restUrl) return window.wpData;
-    // Fallback para ambiente de desenvolvimento
-    if (import.meta.env.VITE_WP_REST_URL) {
-      return {
-        siteUrl: import.meta.env.VITE_WP_SITE_URL || '',
-        restUrl: import.meta.env.VITE_WP_REST_URL || '',
-        nonce: 'dev-nonce'
-      };
-    }
-    return { siteUrl: '', restUrl: '', nonce: '' };
-};
-
-export function useMenu() {
-  const { i18n } = useTranslation(); // Obter o hook de tradução
-  const [items, setItems] = useState<MenuItem[]>([]);
-  const config = getWpConfig();
-
-  useEffect(() => {
-    if (!config.restUrl) return;
-
-    const controller = new AbortController();
-    // Usar o idioma atual do i18n para buscar o menu
-    const langToFetch = i18n.language.startsWith('pt') ? 'pt' : 'en';
-    console.log("useMenu - Buscando menu para idioma:", langToFetch); // Log de depuração
-
-    fetch(`${config.restUrl}djzeneyer/v1/menu?lang=${langToFetch}`, { signal: controller.signal })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log("useMenu - Dados recebidos:", data); // Log de depuração
-        if (Array.isArray(data)) {
-          const formattedData = data.map((item: any) => ({
-            ...item,
-            // Usando a lógica mais segura para formatar a URL
-            url: item.url.replace(config.siteUrl, '') || '/',
-          }));
-          setItems(formattedData);
-        } else {
-          setItems([]);
-        }
-      })
-      .catch(err => {
-        if (err.name !== 'AbortError') {
-          console.error("Falha ao buscar menu:", err);
-          setItems([]);
-        }
-      });
-
-    return () => {
-      controller.abort();
-    };
-  }, [i18n.language, config.restUrl, config.siteUrl]); // Adicionamos i18n.language como dependência
-
-  return items;
+/**
+ * Hook para buscar menu de navegação com cache automático
+ * 
+ * PERFORMANCE:
+ * - Cache de 5 minutos (React Query)
+ * - Não refaz request ao trocar de página
+ * - Atualiza automaticamente ao trocar idioma
+ * 
+ * ANTES: Fetch manual em cada render
+ * DEPOIS: Cache automático + deduplicação
+ */
+export function useMenu(): MenuItem[] {
+  const { i18n } = useTranslation();
+  const langToFetch = i18n.language.startsWith('pt') ? 'pt' : 'en';
+  
+  // React Query: cache automático + deduplicação
+  const { data, isLoading, error } = useMenuQuery(langToFetch);
+  
+  // Log apenas em desenvolvimento
+  if (import.meta.env.DEV) {
+    console.log("useMenu - Idioma:", langToFetch, "| Loading:", isLoading, "| Cached:", !!data);
+  }
+  
+  // Formata URLs (remove siteUrl para paths relativos)
+  const formattedItems = useMemo(() => {
+    if (!data) return [];
+    
+    const siteUrl = getSiteUrl();
+    return data.map((item) => ({
+      ...item,
+      url: (item.url || '').replace(siteUrl, '') || '/',
+    }));
+  }, [data]);
+  
+  // Log de erro
+  if (error) {
+    console.error("Falha ao buscar menu:", error);
+  }
+  
+  return formattedItems;
 }

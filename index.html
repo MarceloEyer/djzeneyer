@@ -1,61 +1,46 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0A0E27" />
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>DJ Zen Eyer | React Development Env</title>
+    <meta name="description" content="Ambiente de desenvolvimento local." />
 
-  <!-- ✅ FAVICONS (Otimizado para todos os navegadores) -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="DJ Zen Eyer" />
-<link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <meta name="theme-color" content="#0A0E27" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    
+    </head>
   
-  <!-- SEO Meta Tags -->
-  <title>DJ Zen Eyer | Brazilian Zouk Music Producer & Live DJ Events</title>
-  <meta name="description" content="Experience exclusive Brazilian Zouk remixes by DJ Zen Eyer. Join the Zen Tribe for live events, private mixes, and connect with fellow Zouk enthusiasts worldwide." />
-  <meta name="keywords" content="DJ Zen Eyer, Brazilian Zouk, Zouk music, DJ events, music producer, Zen Tribe, dance music, Latin music" />
-  <meta name="author" content="DJ Zen Eyer" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <link rel="canonical" href="https://djzeneyer.com" />
+  <body>
+    <div id="root"></div>
 
-  <!-- Search Engine Verification -->
-  <meta name="yandex-verification" content="1b652f4d3070aedf" />
-  <meta name="google-site-verification" content="YOUR_GOOGLE_CODE" />
+    <script>
+      // Mock de dados para o ambiente local funcionar igual ao WordPress
+      if (window.location.hostname === 'localhost') {
+        window.wpData = {
+          siteUrl: 'http://localhost:5173',
+          themeUrl: 'http://localhost:5173',
+          nonce: 'dev-nonce',
+          isUserLoggedIn: false
+        };
+      }
+    </script>
 
-  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://djzeneyer.com/" />
-  <meta property="og:title" content="DJ Zen Eyer | Brazilian Zouk Music Producer & Live DJ Events" />
-  <meta property="og:description" content="Experience exclusive Brazilian Zouk remixes and join live events with DJ Zen Eyer." />
-  <meta property="og:image" content="https://djzeneyer.com/images/og-image.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:locale" content="en_US" />
-  <meta property="og:site_name" content="DJ Zen Eyer" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="https://djzeneyer.com/" />
-  <meta name="twitter:title" content="DJ Zen Eyer | Brazilian Zouk Music Producer & Live DJ Events" />
-  <meta name="twitter:description" content="Experience exclusive Brazilian Zouk remixes and join live events with DJ Zen Eyer." />
-  <meta name="twitter:image" content="https://djzeneyer.com/images/twitter-image.jpg" />
-
-  <!-- Performance Optimization -->
-  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-  <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" href="/images/hero-background.webp" as="image" />
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <noscript>
+      <div style="background:#0A0E27; color:white; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:sans-serif;">
+        <h1>DJ Zen Eyer</h1>
+        <p>JavaScript is required to experience the Zen.</p>
+      </div>
+    </noscript>
+  </body>
 </html>

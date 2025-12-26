@@ -1,14 +1,90 @@
-// src/pages/ZenTribePage.tsx - 100% TRADUZIDO PT/EN
+// src/pages/ZenTribePage.tsx
+// ============================================================================
+// ZEN TRIBE PAGE - VERSÃO REFATORADA (HEADLESS SEO)
+// ============================================================================
+// OTIMIZAÇÕES:
+// ✅ HeadlessSEO implementado com hrefLang SSOT
+// ✅ Constantes movidas para fora do componente
+// ✅ BenefitCard, MembershipCard, AchievementCard memoizados
+// ✅ Schema Organization otimizado
+// ✅ Performance maximizada (sem re-renders desnecessários)
+// ============================================================================
 
-import React, { lazy, Suspense, memo } from 'react';
+import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
-import { Helmet } from 'react-helmet-async';
 
-// Componente memoizado para cards de benefícios
-const BenefitCard = memo(({ icon, title, description, color }) => (
+// ============================================================================
+// CONSTANTES DE DADOS (FORA DO COMPONENTE)
+// ============================================================================
+
+/**
+ * Schema.org Organization (Tribo Zen)
+ */
+const ORGANIZATION_SCHEMA = {
+  "@type": "Organization",
+  "@id": "https://djzeneyer.com/zentribe#organization",
+  "name": "Zen Tribe - Comunidade Global de Zouk Brasileiro",
+  "alternateName": "Tribo Zen",
+  "url": "https://djzeneyer.com/zentribe",
+  "founder": {
+    "@id": "https://djzeneyer.com/#artist"
+  },
+  "description": "Comunidade exclusiva para amantes do Zouk Brasileiro, oferecendo acesso antecipado a músicas, eventos VIP e sistema de recompensas gamificado.",
+  "areaServed": {
+    "@type": "Place",
+    "name": "Worldwide"
+  },
+  "slogan": "Conectando almas através do Zouk Brasileiro",
+  "knowsAbout": ["Brazilian Zouk Community", "DJ Zen Eyer Music", "Zouk Dance Culture"],
+  "memberOf": {
+    "@type": "Organization",
+    "name": "International Brazilian Zouk Community"
+  }
+};
+
+/**
+ * Animation variants
+ */
+const CONTAINER_VARIANTS = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+/**
+ * Dados de Achievements (sistema de gamificação)
+ */
+const ACHIEVEMENTS_DATA = [
+  { emoji: '🎧', titleKey: 'zenTribe.achievements.firstTrack.title', descKey: 'zenTribe.achievements.firstTrack.desc', unlocked: true },
+  { emoji: '🚀', titleKey: 'zenTribe.achievements.firstEvent.title', descKey: 'zenTribe.achievements.firstEvent.desc', unlocked: true },
+  { emoji: '🔍', titleKey: 'zenTribe.achievements.collector.title', descKey: 'zenTribe.achievements.collector.desc', unlocked: false },
+  { emoji: '🦋', titleKey: 'zenTribe.achievements.marketer.title', descKey: 'zenTribe.achievements.marketer.desc', unlocked: false },
+  { emoji: '🎪', titleKey: 'zenTribe.achievements.legend.title', descKey: 'zenTribe.achievements.legend.desc', unlocked: false },
+  { emoji: '⏱️', titleKey: 'zenTribe.achievements.streak.title', descKey: 'zenTribe.achievements.streak.desc', unlocked: false },
+];
+
+// ============================================================================
+// COMPONENTES AUXILIARES (MEMOIZADOS)
+// ============================================================================
+
+/**
+ * BenefitCard - Card de benefícios
+ */
+const BenefitCard = memo<{ 
+  icon: React.ReactNode; 
+  title: string; 
+  description: string; 
+  color: string;
+}>(({ icon, title, description, color }) => (
   <motion.div 
     className="card p-6 glow transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
     variants={{
@@ -27,9 +103,16 @@ const BenefitCard = memo(({ icon, title, description, color }) => (
     <p className="text-white/70">{description}</p>
   </motion.div>
 ));
+BenefitCard.displayName = 'BenefitCard';
 
-// Componente memoizado para cards de membership
-const MembershipCard = memo(({ tier, user, t }) => (
+/**
+ * MembershipCard - Card de tier de membership
+ */
+const MembershipCard = memo<{ 
+  tier: any; 
+  user: any; 
+  t: any;
+}>(({ tier, user, t }) => (
   <motion.div 
     className={`card overflow-hidden relative transition-all duration-300 hover:shadow-lg ${
       tier.popular ? 'border-2 border-secondary' : ''
@@ -54,7 +137,7 @@ const MembershipCard = memo(({ tier, user, t }) => (
     </div>
     <div className="p-6">
       <ul className="space-y-3 mb-6">
-        {tier.features.map((feature, i) => (
+        {tier.features.map((feature: string, i: number) => (
           <li key={i} className="flex items-start">
             <div className={`text-${tier.color} mr-2 mt-1`} aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -74,9 +157,18 @@ const MembershipCard = memo(({ tier, user, t }) => (
     </div>
   </motion.div>
 ));
+MembershipCard.displayName = 'MembershipCard';
 
-// Achievement Card Component
-const AchievementCard = memo(({ emoji, title, description, unlocked, t }) => (
+/**
+ * AchievementCard - Card de conquista
+ */
+const AchievementCard = memo<{ 
+  emoji: string; 
+  title: string; 
+  description: string; 
+  unlocked: boolean; 
+  t: any;
+}>(({ emoji, title, description, unlocked, t }) => (
   <div className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 ${unlocked ? 'hover:bg-surface/70' : 'opacity-60'}`}>
     <div className="text-4xl mb-3">{emoji}</div>
     <h4 className="font-display text-lg mb-1">{title}</h4>
@@ -91,24 +183,16 @@ const AchievementCard = memo(({ emoji, title, description, unlocked, t }) => (
     )}
   </div>
 ));
+AchievementCard.displayName = 'AchievementCard';
 
-const ZenTribePage = () => {
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
+const ZenTribePage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUser();
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  // Tribe membership tiers - TRADUZIDOS
+  // Membership tiers (com tradução)
   const membershipTiers = [
     {
       name: t('zenTribe.tiers.novice.name'),
@@ -154,63 +238,71 @@ const ZenTribePage = () => {
     },
   ];
 
-  // Achievement data - TRADUZIDOS
-  const achievements = [
-    { emoji: '🎧', title: t('zenTribe.achievements.firstTrack.title'), description: t('zenTribe.achievements.firstTrack.desc'), unlocked: true },
-    { emoji: '🚀', title: t('zenTribe.achievements.firstEvent.title'), description: t('zenTribe.achievements.firstEvent.desc'), unlocked: true },
-    { emoji: '🔍', title: t('zenTribe.achievements.collector.title'), description: t('zenTribe.achievements.collector.desc'), unlocked: false },
-    { emoji: '🦋', title: t('zenTribe.achievements.marketer.title'), description: t('zenTribe.achievements.marketer.desc'), unlocked: false },
-    { emoji: '🎪', title: t('zenTribe.achievements.legend.title'), description: t('zenTribe.achievements.legend.desc'), unlocked: false },
-    { emoji: '⏱️', title: t('zenTribe.achievements.streak.title'), description: t('zenTribe.achievements.streak.desc'), unlocked: false },
-  ];
-
-  // Scroll to section function
-  const scrollToSection = (id) => {
+  // Scroll to section
+  const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  // URLs para hrefLang (SSOT)
+  const currentPath = '/zentribe';
+  const currentUrl = 'https://djzeneyer.com' + currentPath;
+
   return (
     <>
-      <Helmet>
-        <title>{t('tribe_page_title')}</title>
-        <meta name="description" content={t('tribe_page_meta_desc')} />
-      </Helmet>
+      {/* ====================================================================== */}
+      {/* HEADLESS SEO (PADRÃO SSOT CORRETO) */}
+      {/* ====================================================================== */}
+      <HeadlessSEO
+        title={t('tribe_page_title')}
+        description={t('tribe_page_meta_desc')}
+        url={currentUrl}
+        image="https://djzeneyer.com/images/zen-tribe-og.jpg"
+        ogType="website"
+        schema={ORGANIZATION_SCHEMA}
+        hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
+        keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, DJ Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
+      />
 
+      {/* ====================================================================== */}
+      {/* CONTEÚDO DA PÁGINA */}
+      {/* ====================================================================== */}
       <div className="pt-24 min-h-screen">
+        
         {/* Page Header */}
         <div className="bg-surface py-12 md:py-16" id="tribe-intro">
           <div className="container mx-auto px-4">
-            <motion.div 
+            <motion.div
               className="text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Badge */}
               <div className="inline-block mb-4">
                 <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
                   {t('zenTribe.badge')}
                 </div>
               </div>
-
+              
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
                 {t('zenTribe.welcome')} <span className="text-primary">{t('zenTribe.tribe')}</span>
               </h1>
+              
               <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
                 {t('zenTribe.subtitle')}
               </p>
+              
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <button 
+                <button
                   className="btn btn-primary transition-all duration-300 hover:scale-105"
                   onClick={() => scrollToSection('membership-tiers')}
                   aria-label="View membership options"
                 >
                   {t('zenTribe.viewMemberships')}
                 </button>
-                <button 
+                <button
                   className="btn btn-outline transition-all duration-300 hover:scale-105"
                   onClick={() => scrollToSection('tribe-benefits')}
                   aria-label="Learn more about tribe benefits"
@@ -225,7 +317,7 @@ const ZenTribePage = () => {
         {/* Tribe Benefits */}
         <section className="py-16 bg-background" id="tribe-benefits">
           <div className="container mx-auto px-4">
-            <motion.h2 
+            <motion.h2
               className="text-2xl md:text-3xl font-bold mb-12 text-center font-display"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -234,34 +326,34 @@ const ZenTribePage = () => {
               {t('zenTribe.whyJoin')}
             </motion.h2>
 
-            <motion.div 
+            <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
-              variants={containerVariants}
+              variants={CONTAINER_VARIANTS}
               initial="hidden"
               animate="visible"
             >
-              <BenefitCard 
+              <BenefitCard
                 icon={<Award className="text-primary" size={24} aria-hidden="true" />}
                 title={t('zenTribe.benefits.exclusiveMusic.title')}
                 description={t('zenTribe.benefits.exclusiveMusic.desc')}
                 color="primary"
               />
 
-              <BenefitCard 
+              <BenefitCard
                 icon={<Star className="text-secondary" size={24} aria-hidden="true" />}
                 title={t('zenTribe.benefits.earlyAccess.title')}
                 description={t('zenTribe.benefits.earlyAccess.desc')}
                 color="secondary"
               />
 
-              <BenefitCard 
+              <BenefitCard
                 icon={<TrendingUp className="text-accent" size={24} aria-hidden="true" />}
                 title={t('zenTribe.benefits.vipStatus.title')}
                 description={t('zenTribe.benefits.vipStatus.desc')}
                 color="accent"
               />
 
-              <BenefitCard 
+              <BenefitCard
                 icon={<Users className="text-success" size={24} aria-hidden="true" />}
                 title={t('zenTribe.benefits.community.title')}
                 description={t('zenTribe.benefits.community.desc')}
@@ -295,7 +387,7 @@ const ZenTribePage = () => {
         <section className="py-16 bg-background" id="achievement-system">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
-              <motion.div 
+              <motion.div
                 className="lg:w-1/2"
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -307,7 +399,7 @@ const ZenTribePage = () => {
                 <p className="text-lg text-white/70 mb-8">
                   {t('zenTribe.levelUpDesc')}
                 </p>
-
+                
                 <div className="space-y-8">
                   <div className="flex items-start">
                     <TrendingUp className="text-primary mr-4 mt-1" size={24} />
@@ -316,7 +408,6 @@ const ZenTribePage = () => {
                       <p className="text-white/70">{t('zenTribe.xpDesc')}</p>
                     </div>
                   </div>
-
                   <div className="flex items-start">
                     <Award className="text-secondary mr-4 mt-1" size={24} />
                     <div>
@@ -324,7 +415,6 @@ const ZenTribePage = () => {
                       <p className="text-white/70">{t('zenTribe.badgesDesc')}</p>
                     </div>
                   </div>
-
                   <div className="flex items-start">
                     <Gift className="text-accent mr-4 mt-1" size={24} />
                     <div>
@@ -332,7 +422,6 @@ const ZenTribePage = () => {
                       <p className="text-white/70">{t('zenTribe.rewardsDesc')}</p>
                     </div>
                   </div>
-
                   <div className="flex items-start">
                     <Clock className="text-success mr-4 mt-1" size={24} />
                     <div>
@@ -343,7 +432,7 @@ const ZenTribePage = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="lg:w-1/2 bg-surface rounded-xl p-8"
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -355,18 +444,18 @@ const ZenTribePage = () => {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {achievements.map((achievement, index) => (
+                  {ACHIEVEMENTS_DATA.map((achievement, index) => (
                     <AchievementCard
                       key={index}
                       emoji={achievement.emoji}
-                      title={achievement.title}
-                      description={achievement.description}
+                      title={t(achievement.titleKey as any)}
+                      description={t(achievement.descKey as any)}
                       unlocked={achievement.unlocked}
                       t={t}
                     />
                   ))}
                 </div>
-
+                
                 <div className="mt-8">
                   <div className="flex justify-between items-center mb-2">
                     <h4 className="text-xl font-display">{t('zenTribe.currentLevel')}</h4>

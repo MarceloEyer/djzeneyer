@@ -1,0 +1,194 @@
+/* Zen BIT Events Styles */
+
+.zen-bit-events-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.zen-bit-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.zen-bit-event-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.zen-bit-event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.zen-bit-event-date {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px;
+    text-align: center;
+    min-width: 80px;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+.zen-bit-date-day {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    color: #667eea;
+}
+
+.zen-bit-date-month {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #764ba2;
+    margin-top: 4px;
+}
+
+.zen-bit-event-content {
+    padding: 100px 24px 24px;
+    color: white;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.zen-bit-event-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 16px;
+    color: white;
+    line-height: 1.3;
+}
+
+.zen-bit-event-venue,
+.zen-bit-event-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    opacity: 0.95;
+}
+
+.zen-bit-venue-icon,
+.zen-bit-time-icon {
+    font-size: 18px;
+}
+
+.zen-bit-venue-name {
+    font-weight: 600;
+}
+
+.zen-bit-venue-location {
+    opacity: 0.85;
+    font-size: 14px;
+}
+
+.zen-bit-event-tickets,
+.zen-bit-event-info {
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+.zen-bit-ticket-button,
+.zen-bit-info-button {
+    display: inline-block;
+    background: white;
+    color: #667eea;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.zen-bit-ticket-button:hover,
+.zen-bit-info-button:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    color: #764ba2;
+}
+
+.zen-bit-no-events {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    color: white;
+}
+
+.zen-bit-no-events p {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .zen-bit-events-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .zen-bit-event-title {
+        font-size: 20px;
+    }
+    
+    .zen-bit-event-date {
+        top: 12px;
+        left: 12px;
+        min-width: 70px;
+        padding: 10px;
+    }
+    
+    .zen-bit-date-day {
+        font-size: 28px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .zen-bit-event-card {
+        background: linear-gradient(135deg, #4c5fd5 0%, #5a3a7a 100%);
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.zen-bit-event-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.zen-bit-event-card:nth-child(1) { animation-delay: 0.1s; }
+.zen-bit-event-card:nth-child(2) { animation-delay: 0.2s; }
+.zen-bit-event-card:nth-child(3) { animation-delay: 0.3s; }
+.zen-bit-event-card:nth-child(4) { animation-delay: 0.4s; }
+.zen-bit-event-card:nth-child(5) { animation-delay: 0.5s; }
+.zen-bit-event-card:nth-child(6) { animation-delay: 0.6s; }

@@ -10,51 +10,195 @@ permissions:
   id-token: write  # necessário para SSH com chave privada
 
 jobs:
-  # --- ETAPA 1: BUILD ---
   build:
-    name: 📦 Build do Projeto
-    runs-on: ubuntu-latest
+    name: 🏗️ Build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: ${{ !inputs.skip_build }}
+    
+    outputs:
+      commit_hash: ${{ steps.commit.outputs.hash }}
+      build_timestamp: ${{ steps.timestamp.outputs.value }}
+      build_status: ${{ job.status }}
+    
     steps:
       - name: 📂 Checkout do Repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: 🟢 Configurar Node.js
+      - name: 🔖 Generate metadata
+        id: commit
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: ⏰ Generate timestamp
+        id: timestamp
+        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📥 Instalar Dependências
-        run: npm ci
+      # --- FRONTEND BUILD ---
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
 
-      - name: 🏗️ Compilar o Projeto (Build)
-        run: npm run build
+      - name: 🗺️ Generate sitemaps
+        run: |
+          echo "🗺️ Generating sitemaps..."
+          npm run generate-sitemaps
+          
+          # Validar que os sitemaps foram gerados
+          if [ ! -f "public/sitemap.xml" ]; then
+            echo "❌ sitemap.xml not generated!"
+            exit 1
+          fi
+          if [ ! -f "public/sitemap-pages.xml" ]; then
+            echo "❌ sitemap-pages.xml not generated!"
+            exit 1
+          fi
+          
+          echo "✅ Sitemaps generated successfully:"
+          ls -lh public/sitemap*.xml
+
+      - name: 🔨 Build production
         env:
           VITE_WP_SITE_URL: ${{ secrets.VITE_WP_SITE_URL }}
           VITE_WP_REST_URL: ${{ secrets.VITE_WP_REST_URL }}
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
           VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        run: npm run build
+
+      - name: ✅ Validate build
+        run: |
+          echo "🔍 Validating build output..."
+          
+          # Verificar estrutura básica
+          if [ ! -d dist ]; then echo "❌ dist/ not found"; exit 1; fi
+          if [ ! -f dist/index.html ]; then echo "❌ dist/index.html not found"; exit 1; fi
+          
+          # Verificar manifest
+          if [ ! -f "dist/.vite/manifest.json" ]; then
+            echo "❌ Vite manifest not found!"
+            exit 1
+          fi
+          
+          # Verificar assets
+          JS_COUNT=$(find dist/assets -name "*.js" 2>/dev/null | wc -l)
+          CSS_COUNT=$(find dist/assets -name "*.css" 2>/dev/null | wc -l)
+          
+          echo "📊 Build stats:"
+          echo "  - JavaScript files: $JS_COUNT"
+          echo "  - CSS files: $CSS_COUNT"
+          echo "  - Total size: $(du -sh dist/ | cut -f1)"
+          
+          if [ "$JS_COUNT" -eq 0 ] || [ "$CSS_COUNT" -eq 0 ]; then
+            echo "⚠️ Warning: Missing JS or CSS files!"
+          fi
+          
+          echo "✅ Build validation passed"
+
+      # --- PLUGIN DEPENDENCIES ---
+      - name: 🔨 Build plugin dependencies
+        run: |
+          echo "📦 Installing Composer dependencies for plugins..."
+          
+          if [ ! -d "plugins" ]; then
+            echo "ℹ️ No plugins directory found"
+            exit 0
+          fi
+          
+          for dir in plugins/*/; do
+            if [ -f "$dir/composer.json" ]; then
+              PLUGIN_NAME=$(basename "$dir")
+              echo "  → Building $PLUGIN_NAME"
+              
+              cd "$dir"
+              composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
+              
+              # Remover arquivos desnecessários
+              rm -rf tests/ .git/ .github/ .gitignore
+              
+              cd - > /dev/null
+            fi
+          done
+          
+          echo "✅ Plugin dependencies built"
 
       - name: 📤 Upload do Artefato (dist/)
         uses: actions/upload-artifact@v4
         with:
-          name: dist-folder
-          path: ./dist
+          name: build-dist-${{ steps.commit.outputs.hash }}
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+          compression-level: 6
+
+      - name: 📤 Upload theme files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-theme-${{ steps.commit.outputs.hash }}
+          path: |
+            functions.php
+            style.css
+            screenshot.png
+            header.php
+            footer.php
+            index.php
+          retention-days: 7
+
+      - name: 📤 Upload plugins
+        if: hashFiles('plugins/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-plugins-${{ steps.commit.outputs.hash }}
+          path: plugins/
+          retention-days: 7
+
+      - name: 📤 Upload sitemaps
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-sitemaps-${{ steps.commit.outputs.hash }}
+          path: |
+            public/sitemap.xml
+            public/sitemap-pages.xml
+          retention-days: 7
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 2: DEPLOY
+# ═══════════════════════════════════════════════════════════════════════════════
 
   # --- ETAPA 2: DEPLOY VIA SSH ---
   deploy:
     name: 🚚 Deploy via SSH para Hostinger
     runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: |
+      always() && 
+      (needs.build.result == 'success' || inputs.skip_build)
+    
+    environment:
+      name: production
+      url: ${{ env.SITE_URL }}
+    
     steps:
-      - name: 📂 Checkout do Repositório
+      - name: 📥 Checkout (sparse)
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            inc
+            public
+          sparse-checkout-cone-mode: false
 
       - name: 📥 Download do Artefato (dist/)
         uses: actions/download-artifact@v4
         with:
-          name: dist-folder
+          name: build-dist-${{ needs.build.outputs.commit_hash }}
           path: ./dist
 
       # ✅ STEP 1: Deploy dos arquivos públicos (public/) → raiz do site

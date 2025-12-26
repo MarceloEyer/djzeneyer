@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/UserContext';
 
-export interface Event {
+interface Event {
   id: number;
   title: string;
   date: string;
@@ -12,7 +12,7 @@ export interface Event {
   url: string;
 }
 
-export interface UserEventsData {
+interface UserEventsData {
   total: number;
   events: Event[];
   loading: boolean;

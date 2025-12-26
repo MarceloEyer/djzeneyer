@@ -1,84 +1,39 @@
-// src/App.tsx - VERSÃO FINAL 100% CORRIGIDA
-
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
-
-import FAQPage from './pages/FAQPage';
-import AboutPage from './pages/AboutPage';
-import MainLayout from './layouts/MainLayout';
-import LanguageWrapper from './components/common/LanguageWrapper';
-import HomePage from './pages/HomePage';
-import EventsPage from './pages/EventsPage';
-import MusicPage from './pages/MusicPage';
-import ZenTribePage from './pages/ZenTribePage';
-import PressKitPage from './pages/PressKitPage';
-import ShopPage from './pages/ShopPage';
-import DashboardPage from './pages/DashboardPage';
-import MyAccountPage from './pages/MyAccountPage';
-import NotFoundPage from './pages/NotFoundPage';
-
+import { QueryClientProvider } from '@tanstack/react-query';
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { MusicPlayerProvider } from './contexts/MusicPlayerContext';
+import LanguageWrapper from './components/common/LanguageWrapper';
+import AppRoutes from './components/AppRoutes'; // Importamos a lógica isolada
+import { queryClient } from './config/queryClient';
 import './i18n';
 
 function App() {
   return (
-    <HelmetProvider>
-      <UserProvider>
-        <CartProvider>
-          <MusicPlayerProvider>
-            <AnimatePresence mode="wait">
-              <LanguageWrapper>
-                <Routes>
-                  {/* English routes (root) */}
-                  <Route path="/" element={<MainLayout />}>
-                    <Route index element={<HomePage />} />
-                    <Route path="about" element={<AboutPage />} />
-                    <Route path="events" element={<EventsPage />} />
-                    <Route path="events/:id" element={<EventsPage />} />
-                    <Route path="music" element={<MusicPage />} />
-                    <Route path="music/:slug" element={<MusicPage />} />
-                    <Route path="tribe" element={<ZenTribePage />} />
-                    <Route path="zen-tribe" element={<ZenTribePage />} />
-                    <Route path="zentribe" element={<ZenTribePage />} />
-                    <Route path="work-with-me" element={<PressKitPage />} />
-                    <Route path="shop" element={<ShopPage />} />
-                    <Route path="shop/*" element={<ShopPage />} />
-                    <Route path="dashboard" element={<DashboardPage />} />
-                    <Route path="my-account" element={<MyAccountPage />} />
-                    <Route path="faq" element={<FAQPage />} />
-                  </Route>
-
-                  {/* Portuguese routes under /pt */}
-                  <Route path="/pt" element={<MainLayout />}>
-                    <Route index element={<HomePage />} />
-                    <Route path="sobre" element={<AboutPage />} />
-                    <Route path="eventos" element={<EventsPage />} />
-                    <Route path="eventos/:id" element={<EventsPage />} />
-                    <Route path="musica" element={<MusicPage />} />
-                    <Route path="musica/:slug" element={<MusicPage />} />
-                    <Route path="tribo" element={<ZenTribePage />} />
-                    <Route path="tribo-zen" element={<ZenTribePage />} />
-                    <Route path="contrate" element={<PressKitPage />} />
-                    <Route path="loja" element={<ShopPage />} />
-                    <Route path="loja/*" element={<ShopPage />} />
-                    <Route path="painel" element={<DashboardPage />} />
-                    <Route path="minha-conta" element={<MyAccountPage />} />
-                    <Route path="faq" element={<FAQPage />} />
-                  </Route>
-
-                  {/* Fallback 404 */}
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </LanguageWrapper>
-            </AnimatePresence>
-          </MusicPlayerProvider>
-        </CartProvider>
-      </UserProvider>
-    </HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
+        <UserProvider>
+          <CartProvider>
+            <MusicPlayerProvider>
+              <AnimatePresence mode="wait">
+                <LanguageWrapper>
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center bg-background">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                    </div>
+                  }>
+                    {/* Toda a lógica de rotas está encapsulada aqui */}
+                    <AppRoutes />
+                  </Suspense>
+                </LanguageWrapper>
+              </AnimatePresence>
+            </MusicPlayerProvider>
+          </CartProvider>
+        </UserProvider>
+      </HelmetProvider>
+    </QueryClientProvider>
   );
 }
 
