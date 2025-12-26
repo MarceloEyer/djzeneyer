@@ -224,7 +224,6 @@ function zen_add_title_support() {
     add_theme_support('title-tag');
 }
 
-add_action('after_setup_theme', 'zen_add_title_support');
 
 /**
  * 2. Força a barra "/" no final das URLs (Canonical Trailing Slash)
