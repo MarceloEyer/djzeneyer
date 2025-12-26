@@ -211,3 +211,31 @@ add_action('wp_scheduled_delete', function() {
     
     error_log("[DJ Zen] Cleaned {$deleted} expired transients");
 });
+
+/**
+ * 🔗 FIX: CANONICAL URL & TITLE TAG SUPPORT
+ * Fornece suporte para canonical URL (Campos para Drive/SoundCloud)
+ */
+
+/**
+ * 1. Garante suporte a tag de titulo (caso o plugin Zen não esteja fazendo)
+ */
+function zen_add_title_support() {
+    add_theme_support('title-tag');
+}
+
+add_action('after_setup_theme', 'zen_add_title_support');
+
+/**
+ * 2. Força a barra "/" no final das URLs (Canonical Trailing Slash)
+ * Isso evita duplicação de conteúdo e loops de redirecionamento
+ */
+function zen_fix_canonical_slash($url) {
+    if (is_string($url) && substr($url, -1) !== '/' && !preg_match('/\.[a-z]{2,4}$/i', $url)) {
+        return $url . '/';
+    }
+    return $url;
+}
+
+add_filter('wpseo_canonical', 'zen_fix_canonical_slash'); // Yoast
+add_filter('rank_math/canonical', 'zen_fix_canonical_slash'); // RankMath
