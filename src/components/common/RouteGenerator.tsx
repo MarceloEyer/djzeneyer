@@ -49,7 +49,7 @@ export const RouteGenerator: React.FC<RouteGeneratorProps> = ({ language }) => {
 
   return (
     <Route path={basePath} element={<MainLayout />}>
-      {ROUTES_CONFIG.map((routeConfig, index) => {
+      {ROUTES_CONFIG.flatMap((routeConfig, index) => {
         const Component = routeConfig.component;
         const paths = getLocalizedPaths(routeConfig, language);
 
