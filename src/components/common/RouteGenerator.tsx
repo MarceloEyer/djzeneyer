@@ -54,7 +54,7 @@ export const RouteGenerator: React.FC<RouteGeneratorProps> = ({ language }) => {
         const paths = getLocalizedPaths(routeConfig, language);
 
         // Para cada path (pode ter múltiplos aliases)
-        return paths.map((path, pathIndex) => {
+        return paths.flatMap((path, pathIndex) => {
           const key = `${language}-${index}-${pathIndex}`;
 
           // Index route (/)
@@ -64,12 +64,10 @@ export const RouteGenerator: React.FC<RouteGeneratorProps> = ({ language }) => {
 
           // Route com wildcard (ex: shop/*)
           if (routeConfig.hasWildcard) {
-            return (
-              <Fragment key={key}>
-                <Route path={path} element={<Component />} />
-                <Route path={`${path}/*`} element={<Component />} />
-              </Fragment>
-            );
+            return [
+              <Route key={`${key}-main`} path={path} element={<Component />} />,
+              <Route key={`${key}-wildcard`} path={`${path}/*`} element={<Component />} />
+            ];
           }
 
           // Route normal

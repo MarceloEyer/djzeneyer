@@ -32,8 +32,15 @@ export default defineConfig(({ command }) => {
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
-      minify: 'esbuild',
+      minify: 'terser',
       sourcemap: false, // Desligado para performance máxima em produção
+      
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
       
       rollupOptions: {
         output: {
