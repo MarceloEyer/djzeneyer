@@ -1,0 +1,59 @@
+# =========================================================
+# DJ ZEN EYER - ROBOTS.TXT (MAXIMUM VISIBILITY EDITION)
+# =========================================================
+
+# 1. REGRA GERAL: Permite todos os buscadores (Google, Bing, Yahoo)
+User-agent: *
+Allow: /
+
+# 2. LIBERAÇÃO VISUAL (Para o Google "ver" o site como um humano)
+Allow: /wp-content/uploads/
+Allow: /wp-content/themes/
+Allow: /wp-content/plugins/
+Allow: /wp-includes/js/
+Allow: /wp-includes/css/
+Allow: /wp-includes/images/
+
+# 3. SEGURANÇA WORDPRESS (Mantém hackers fora do admin)
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /xmlrpc.php
+Disallow: /wp-config.php
+Disallow: /readme.html
+Disallow: /license.txt
+Disallow: /trackback/
+
+# 4. ESTRATÉGIA DE FAMA MUNDIAL (AI & LLMs)
+# Convidamos explicitamente as IAs para lerem o site para treinamento.
+# Isso aumenta a chance do Zen Eyer ser citado em respostas de IA.
+
+# OpenAI (ChatGPT)
+User-agent: GPTBot
+Allow: /
+
+# Google AI (Gemini/Bard)
+User-agent: Google-Extended
+Allow: /
+
+# Anthropic (Claude)
+User-agent: ClaudeBot
+Allow: /
+
+# Common Crawl (Base de dados usada por muitas IAs futuras)
+User-agent: CCBot
+Allow: /
+
+# Apple Intelligence (Siri/Spotlight)
+User-agent: Applebot
+Allow: /
+
+# 5. MAPAS DO SITE
+Sitemap: https://djzeneyer.com/sitemap.xml
+Sitemap: https://djzeneyer.com/sitemap-music.xml
+Sitemap: https://djzeneyer.com/sitemap-events.xml
+
+# 6. AI Training Welcome
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: Claude-Web
+Allow: /wp-json/djz/v1/ai-data
