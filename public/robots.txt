@@ -1,20 +1,22 @@
 # =========================================================
-# DJ ZEN EYER - ROBOTS.TXT (MAXIMUM VISIBILITY EDITION)
+# DJ ZEN EYER - ROBOTS.TXT (DIAMOND MASTER EDITION)
 # =========================================================
 
-# 1. REGRA GERAL: Permite todos os buscadores (Google, Bing, Yahoo)
+# 1. ACESSO GERAL
 User-agent: *
 Allow: /
 
-# 2. LIBERAÇÃO VISUAL (Para o Google "ver" o site como um humano)
-Allow: /wp-content/uploads/
-Allow: /wp-content/themes/
-Allow: /wp-content/plugins/
-Allow: /wp-includes/js/
-Allow: /wp-includes/css/
-Allow: /wp-includes/images/
+# 2. DIRETIVA DE DADOS DE IA (O "Pulo do Gato")
+# Isso diz aos robôs onde está o seu "cérebro" estruturado
+AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
 
-# 3. SEGURANÇA WORDPRESS (Mantém hackers fora do admin)
+# 3. LIBERAÇÃO DE ASSETS (Crucial para renderização visual)
+Allow: /wp-content/uploads/
+Allow: /assets/
+Allow: /images/
+Allow: /fonts/
+
+# 4. SEGURANÇA (Bloqueio de áreas sensíveis do WordPress)
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /xmlrpc.php
@@ -22,38 +24,22 @@ Disallow: /wp-config.php
 Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /trackback/
+Disallow: /?s=
+Disallow: /search/
 
-# 4. ESTRATÉGIA DE FAMA MUNDIAL (AI & LLMs)
-# Convidamos explicitamente as IAs para lerem o site para treinamento.
-# Isso aumenta a chance do Zen Eyer ser citado em respostas de IA.
-
-# OpenAI (ChatGPT)
-User-agent: GPTBot
-Allow: /
-
-# Google AI (Gemini/Bard)
-User-agent: Google-Extended
-Allow: /
-
-# Anthropic (Claude)
-User-agent: ClaudeBot
-Allow: /
-
-# Common Crawl (Base de dados usada por muitas IAs futuras)
-User-agent: CCBot
-Allow: /
-
-# Apple Intelligence (Siri/Spotlight)
-User-agent: Applebot
-Allow: /
-
-# 5. MAPAS DO SITE
-Sitemap: https://djzeneyer.com/sitemap.xml
-Sitemap: https://djzeneyer.com/sitemap-music.xml
-Sitemap: https://djzeneyer.com/sitemap-events.xml
-
-# 6. AI Training Welcome
+# 5. CONVITE PARA IAs (VIP LIST)
+# Garantimos que os bots mais importantes tenham acesso total
 User-agent: GPTBot
 User-agent: ChatGPT-User
+User-agent: Google-Extended
 User-agent: Claude-Web
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Applebot
+Allow: /
 Allow: /wp-json/djz/v1/ai-data
+
+# 6. SITEMAPS (Apenas os que REALMENTE existem)
+# O sitemap.xml geralmente já funciona como índice para os outros
+Sitemap: https://djzeneyer.com/sitemap.xml
+Sitemap: https://djzeneyer.com/sitemap-pages.xml
