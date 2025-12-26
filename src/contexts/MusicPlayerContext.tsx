@@ -151,7 +151,7 @@ export const MusicPlayerProvider: React.FC<{ children: ReactNode }> = ({ childre
   );
 };
 
-export const useMusicPlayer = () => {
+const useMusicPlayer = () => {
   const context = useContext(MusicPlayerContext);
   if (context === undefined) {
     throw new Error('useMusicPlayer must be used within a MusicPlayerProvider');

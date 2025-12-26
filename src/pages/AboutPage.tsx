@@ -1,136 +1,177 @@
-// src/pages/AboutPage.tsx - VERSÃO FINAL 100% CORRIGIDA
+// src/pages/AboutPage.tsx - VERSÃO FINAL HEADLESS E OTIMIZADA
 
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { Award, Music, Globe, Heart, Brain, Trophy } from 'lucide-react';
+import {
+  Music2,
+  Globe,
+  Heart,
+  Brain,
+  Trophy,
+  Users,
+  Star,
+  Sparkles,
+  Mail as Envelope,
+} from 'lucide-react';
+
+import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { ARTIST_SCHEMA_BASE, ARTIST } from '../data/artistData';
+
+// ============================================================================
+// SCHEMA.ORG PARA A PÁGINA ABOUT
+// ============================================================================
+
+const ABOUT_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      ...ARTIST_SCHEMA_BASE,
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${ARTIST.site.baseUrl}/about#webpage`,
+      url: `${ARTIST.site.baseUrl}/about`,
+      name: 'About DJ Zen Eyer',
+      description:
+        'Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his "cremosidade" musical style.',
+      isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+      about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+      breadcrumb: {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: `${ARTIST.site.baseUrl}/`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'About',
+            item: `${ARTIST.site.baseUrl}/about`,
+          },
+        ],
+      },
+    },
+  ],
+};
+
+// ============================================================================
+// DADOS DE CONTEÚDO
+// ============================================================================
+
+const MILESTONES = [
+  {
+    year: '2005-2010',
+    title: 'Primeiros Passos',
+    description:
+      'Descobriu a paixão pela música aos 15 anos, influenciado pela cultura brasileira e ritmos caribenhos. Começou a explorar equipamentos de DJ e produção musical em Niterói, RJ.',
+    icon: <Heart className="w-8 h-8 text-white" />,
+    color: 'bg-gradient-to-br from-red-500 to-pink-600',
+  },
+  {
+    year: '2012',
+    title: 'Encontro com o Zouk',
+    description:
+      "Teve seu primeiro contato com o Zouk Brasileiro em uma festa local. Foi amor à primeira vista: 'Era como se a música falasse diretamente à minha alma', lembra Zen Eyer.",
+    icon: <Music2 className="w-8 h-8 text-white" />,
+    color: 'bg-gradient-to-br from-purple-500 to-indigo-600',
+  },
+  {
+    year: '2015-2019',
+    title: 'Dedicação Total',
+    description:
+      'Deixou seu emprego corporativo para se dedicar 100% à música. Passou anos estudando técnicas de DJ, produção musical e a psicologia por trás das pistas de dança.',
+    icon: <Brain className="w-8 h-8 text-white" />,
+    color: 'bg-gradient-to-br from-blue-500 to-cyan-600',
+  },
+  {
+    year: '2022',
+    title: 'Consagração Mundial',
+    description:
+      'Conquistou o bicampeonato mundial de Zouk Brasileiro, provando que sua abordagem emocional e técnica era única. "Foi a realização de um sonho de infância", conta.',
+    icon: <Trophy className="w-8 h-8 text-white" />,
+    color: 'bg-gradient-to-br from-yellow-500 to-amber-600',
+  },
+];
+
+const ACHIEVEMENTS_DATA = [
+  {
+    label: 'Anos de paixão',
+    value: '15+',
+    icon: <Heart className="w-8 h-8 mx-auto mb-4 text-primary" />,
+  },
+  {
+    label: 'Eventos íntimos',
+    value: '200+',
+    icon: <Users className="w-8 h-8 mx-auto mb-4 text-primary" />,
+  },
+  {
+    label: 'Histórias compartilhadas',
+    value: '10K+',
+    icon: <Globe className="w-8 h-8 mx-auto mb-4 text-primary" />,
+  },
+  {
+    label: 'Sorrisos criados',
+    value: '∞',
+    icon: <Star className="w-8 h-8 mx-auto mb-4 text-primary" />,
+  },
+];
+
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
 
 const AboutPage: React.FC = () => {
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "DJ Zen Eyer",
-    "alternateName": ["Marcelo Fernandes", "Marcelo Eyer Fernandes", "Zen Eyer"],
-    "jobTitle": "Brazilian Zouk DJ and Music Producer",
-    "description": "Two-time world champion Brazilian Zouk DJ, music producer, and Mensa International member. Specializes exclusively in Brazilian Zouk music, creating remixes and original tracks for the dance community. Performed at 100+ international events across 11 countries with 500K+ global streams.",
-    "url": "https://djzeneyer.com",
-    "sameAs": [
-      "https://www.wikidata.org/wiki/Q136551855",
-      "https://instagram.com/djzeneyer",
-      "https://soundcloud.com/djzeneyer",
-      "https://youtube.com/@djzeneyer",
-      "https://facebook.com/djzeneyer",
-      "https://www.mixcloud.com/zen-eyer/",
-      "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
-      "https://www.tiktok.com/@djzeneyer",
-      "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154",
-      "https://www.songkick.com/artists/8815204"
-    ],
-    "image": "https://djzeneyer.com/wp-content/uploads/2024/dj-zen-eyer-profile.jpg",
-    "alumniOf": {
-      "@type": "Organization",
-      "name": "Mensa International",
-      "url": "https://www.mensa.org"
-    },
-    "award": [
-      {
-        "@type": "Award",
-        "name": "World Champion - Best Zouk Remix",
-        "description": "World Championship in Best Zouk Remix category",
-        "datePublished": "2022"
-      },
-      {
-        "@type": "Award",
-        "name": "World Champion - Performance Art",
-        "description": "World Championship in Performance Art category",
-        "datePublished": "2022"
-      }
-    ],
-    "knowsAbout": [
-      "Brazilian Zouk Music",
-      "DJing",
-      "Music Production",
-      "Audio Mixing",
-      "Dance Music",
-      "Event Performance"
-    ],
-    "performerIn": {
-      "@type": "MusicEvent",
-      "name": "International Brazilian Zouk Events",
-      "location": {
-        "@type": "Place",
-        "name": "11+ countries worldwide"
-      }
-    }
-  };
-
-  const milestones = [
-    {
-      year: "2022",
-      title: "Double World Champion",
-      description: "Won two world championships in Best Zouk Remix and Performance Art categories at the Brazilian Zouk World Championship.",
-      icon: Trophy,
-      color: "from-yellow-400 to-orange-500"
-    },
-    {
-      year: "2020-2025",
-      title: "International DJ Career",
-      description: "Performed at 100+ events across 11 countries, including Brazil, USA, Netherlands, Australia, Czech Republic, and Germany.",
-      icon: Globe,
-      color: "from-blue-400 to-cyan-500"
-    },
-    {
-      year: "2015-Present",
-      title: "Brazilian Zouk Specialist",
-      description: "Dedicated exclusively to Brazilian Zouk music, creating unique remixes and original tracks that blend emotion, sensuality, and connection.",
-      icon: Music,
-      color: "from-purple-400 to-pink-500"
-    },
-    {
-      year: "2023",
-      title: "Mensa International Member",
-      description: "Accepted into Mensa International, combining analytical thinking with artistic creativity in music production.",
-      icon: Brain,
-      color: "from-green-400 to-emerald-500"
-    }
-  ];
-
-  const achievements = [
-    { label: "Countries", value: "11+", icon: Globe },
-    { label: "Events", value: "100+", icon: Award },
-    { label: "Streams", value: "500K+", icon: Music },
-    { label: "Years", value: "10+", icon: Heart }
-  ];
+  const currentPath = '/about';
+  const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
 
   return (
     <>
-      <Helmet>
-        <title>About DJ Zen Eyer - Brazilian Zouk World Champion & Mensa Member</title>
-        <meta name="description" content="DJ Zen Eyer is a two-time world champion Brazilian Zouk DJ and music producer, Mensa International member, with 100+ international performances across 11 countries and 500K+ streams." />
-        <meta name="keywords" content="DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Mensa DJ, Zouk Music Producer, International DJ, Dance Music" />
-        <link rel="canonical" href="https://djzeneyer.com/about" />
-        <script type="application/ld+json">
-          {JSON.stringify(schemaData)}
-        </script>
-      </Helmet>
+      {/* SEO centralizado */}
+      <HeadlessSEO
+        title="About DJ Zen Eyer | Brazilian Zouk DJ & Producer"
+        description="Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his signature cremosidade style."
+        url={currentUrl}
+        image={`${ARTIST.site.baseUrl}/images/zen-eyer-about-emotional.jpg`}
+        type="profile"
+        schema={ABOUT_SCHEMA}
+        hrefLang={getHrefLangUrls(currentPath, ARTIST.site.baseUrl)}
+      />
 
-      <div className="min-h-screen bg-gradient-to-b from-background via-surface to-background">
+      {/* Layout visual */}
+      <div className="min-h-screen bg-gradient-to-br from-background via-surface/20 to-background text-white">
         {/* Hero Section */}
         <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 blur-3xl" />
-          
-          <div className="container-custom relative z-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-surface/10 to-accent/10 blur-3xl" />
+          <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-center max-w-4xl mx-auto"
+              className="text-center"
             >
-              <h1 className="text-5xl md:text-7xl font-display font-bold mb-6">
-                About <span className="text-gradient">DJ Zen Eyer</span>
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="inline-block mb-4"
+              >
+                <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
+                  <Sparkles className="inline-block mr-2" size={16} />
+                  MINHA HISTÓRIA
+                </div>
+              </motion.div>
+              <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
+                A{' '}
+                <span className="text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text">
+                  Jornada
+                </span>
               </h1>
-              <p className="text-xl md:text-2xl text-white/80 leading-relaxed">
-                Two-time world champion Brazilian Zouk DJ, music producer, and Mensa International member
+              <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                Da paixão pela música à conexão com milhares de almas através do
+                Zouk Brasileiro
               </p>
             </motion.div>
           </div>
@@ -138,18 +179,18 @@ const AboutPage: React.FC = () => {
 
         {/* Stats Section */}
         <section className="py-16 px-4">
-          <div className="container-custom">
+          <div className="container mx-auto max-w-6xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {achievements.map((item, index) => (
+              {ACHIEVEMENTS_DATA.map((item, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="card p-6 text-center hover:scale-105 transition-transform"
+                  className="bg-surface/50 p-6 rounded-2xl border border-white/10 hover:border-primary/50 transition-all"
                 >
-                  <item.icon className="w-8 h-8 mx-auto mb-4 text-primary" />
+                  {item.icon}
                   <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">
                     {item.value}
                   </div>
@@ -162,7 +203,7 @@ const AboutPage: React.FC = () => {
 
         {/* Story Section */}
         <section className="py-20 px-4">
-          <div className="container-custom max-w-4xl">
+          <div className="container mx-auto max-w-4xl">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -170,27 +211,55 @@ const AboutPage: React.FC = () => {
               className="space-y-6 text-lg text-white/80 leading-relaxed"
             >
               <p>
-                DJ Zen Eyer (Marcelo Eyer Fernandes) is one of the leading Brazilian Zouk DJs in the world, specializing exclusively in Brazilian Zouk music. Based in Niterói, Brazil, Zen Eyer has dedicated over a decade to perfecting the art of DJing and music production for the Brazilian Zouk dance community.
-              </p>
-              
-              <p>
-                In 2022, DJ Zen Eyer achieved the pinnacle of his career by winning two world championships at the Brazilian Zouk World Championship: <strong>Best Zouk Remix</strong> and <strong>Performance Art</strong>. These accolades highlight his unique ability to blend emotion, sensuality, and musical sophistication — the signature "cremosidade" (creaminess) that has become his trademark.
-              </p>
-
-              <p>
-                As a <strong>Mensa International member</strong>, DJ Zen Eyer brings an analytical and intellectual approach to music production, combining high-level cognitive abilities with artistic creativity. This unique blend allows him to craft sets that not only move the body but also touch the soul.
+                Tudo começou em <strong>Niterói, RJ</strong>, onde um jovem
+                Marcelo Eyer Fernandes descobriu que a música poderia ser mais do
+                que som: poderia ser <strong>emoção pura</strong>. Aos 15 anos,
+                enquanto seus amigos ouviam rock e pop, ele se perdia nos ritmos
+                caribenhos e brasileiros que encontrava em velhas fitas cassete de
+                seu pai.
               </p>
 
               <p>
-                His music is known for creating immersive soundscapes that emphasize connection between dance partners. DJ Zen Eyer's approach focuses on romantic, intense, and emotionally rich tracks that help dancers feel deeply connected to the music and each other.
+                O encontro com o <strong>Zouk Brasileiro</strong> foi um divisor
+                de águas. 'Lembro como se fosse hoje', conta Zen Eyer. 'Era 2012,
+                uma festa pequena em Copacabana. Quando ouvi aquele som suave mas
+                pulsante, senti que tinha encontrado minha linguagem.' Aquela
+                noite mudou tudo: ele vendeu seu primeiro equipamento de DJ com o
+                dinheiro que juntou trabalhando em um bar.
               </p>
 
               <p>
-                With performances in over <strong>100 international events</strong> across <strong>11 countries</strong> including Brazil, United States, Netherlands, Australia, Czech Republic, and Germany, DJ Zen Eyer has established himself as a global ambassador for Brazilian Zouk music. His tracks have accumulated over <strong>500,000 streams</strong> on platforms like SoundCloud, Spotify, and YouTube.
+                Os anos seguintes foram de <strong>dedicação obsessiva</strong>.
+                Enquanto trabalhava durante o dia, passava noites estudando
+                técnicas de mixagem, teoria musical e, acima de tudo,{' '}
+                <strong>como fazer as pessoas sentirem</strong> através da música.
+                'Não queria ser apenas mais um DJ. Queria criar momentos onde as
+                pessoas se esquecessem de tudo e apenas sentissem', explica.
               </p>
 
               <p>
-                Beyond DJing, Zen Eyer is also the creator of <strong>reZENha</strong>, a transformative Brazilian Zouk party experience that combines music, dance, and community in unique ways.
+                A consagração veio em <strong>2022</strong>, quando se tornou{' '}
+                <strong>bicampeão mundial</strong> de Zouk Brasileiro. Mas o que
+                mais o orgulha não são os troféus, e sim as{' '}
+                <strong>histórias que coleciona</strong>: o casal que se
+                reconectou em um de seus sets, a jovem que superou a timidez
+                dançando ao som de suas músicas, os amigos que se abraçaram
+                chorando em meio à pista.
+              </p>
+
+              <p>
+                Hoje, Zen Eyer é conhecido por sua <strong>'cremosidade'</strong>{' '}
+                - um estilo que une técnica impecável com uma sensibilidade rara.
+                'Cada set que faço é como uma conversa íntima com quem está
+                dançando. Quero que saiam da pista sentindo que viveram algo
+                único', confessa.
+              </p>
+
+              <p className="text-primary font-semibold">
+                Sua missão vai além da música: 'Quero que as pessoas lembre que
+                são capazes de sentir profundamente, de se conectar, de serem
+                vulneráveis. O Zouk Brasileiro é apenas a trilha sonora para
+                isso.'
               </p>
             </motion.div>
           </div>
@@ -198,18 +267,19 @@ const AboutPage: React.FC = () => {
 
         {/* Timeline Section */}
         <section className="py-20 px-4 bg-surface/30">
-          <div className="container-custom max-w-5xl">
+          <div className="container mx-auto max-w-5xl">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="text-4xl md:text-5xl font-display font-bold text-center mb-16"
             >
-              Career <span className="text-gradient">Milestones</span>
+              Momentos que{' '}
+              <span className="text-gradient">Mudaram Tudo</span>
             </motion.h2>
 
             <div className="space-y-12">
-              {milestones.map((milestone, index) => (
+              {MILESTONES.map((milestone, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
@@ -220,13 +290,21 @@ const AboutPage: React.FC = () => {
                 >
                   <div className="card p-6 md:p-8 hover:border-primary/50 transition-all">
                     <div className="flex items-start gap-6">
-                      <div className={`flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br ${milestone.color} flex items-center justify-center`}>
-                        <milestone.icon className="w-8 h-8 text-white" />
+                      <div
+                        className={`flex-shrink-0 w-16 h-16 rounded-full ${milestone.color} flex items-center justify-center`}
+                      >
+                        {milestone.icon}
                       </div>
                       <div className="flex-1">
-                        <div className="text-primary font-bold mb-2">{milestone.year}</div>
-                        <h3 className="text-2xl font-display font-bold mb-3">{milestone.title}</h3>
-                        <p className="text-white/70 leading-relaxed">{milestone.description}</p>
+                        <div className="text-primary font-bold mb-2">
+                          {milestone.year}
+                        </div>
+                        <h3 className="text-2xl font-display font-bold mb-3">
+                          {milestone.title}
+                        </h3>
+                        <p className="text-white/70 leading-relaxed">
+                          {milestone.description}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -238,21 +316,56 @@ const AboutPage: React.FC = () => {
 
         {/* Philosophy Section */}
         <section className="py-20 px-4">
-          <div className="container-custom max-w-4xl">
+          <div className="container mx-auto max-w-4xl">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="card p-8 md:p-12 text-center"
+              className="card p-8 md:p-12 text-center bg-surface/50 rounded-2xl border border-white/10"
             >
               <Heart className="w-16 h-16 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-                The <span className="text-gradient">Philosophy</span>
+                Minha <span className="text-gradient">Filosofia</span>
               </h2>
-              <p className="text-lg text-white/80 leading-relaxed">
-                "Music is not just about rhythm and melody — it's about creating moments where people connect deeply with themselves, their partners, and the present moment. Brazilian Zouk is the language of emotion, and as a DJ, I'm the translator helping dancers express what words cannot."
+              <p className="text-lg text-white/80 leading-relaxed italic">
+                "A música é minha forma de criar um espaço seguro onde as pessoas
+                podem ser quem realmente são. Não toca só os ouvidos - toca a
+                alma. Cada batida, cada transição, cada silêncio é pensado para
+                que alguém na pista sinta: 'Isso é sobre mim. Isso é para mim.'"
               </p>
-              <div className="mt-8 text-white/60">— DJ Zen Eyer</div>
+              <div className="mt-8 text-white/60 font-semibold">— Zen Eyer</div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-10 md:p-12 border border-primary/30 text-center"
+            >
+              <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
+                Vamos <span className="text-gradient">Conversar?</span>
+              </h2>
+              <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+                Se você se identificou com essa história ou quer saber mais sobre
+                a filosofia por trás da minha música, adoro conhecer pessoas que
+                também acreditam no poder da conexão através da arte.
+              </p>
+              <motion.a
+                href="/contact"
+                className="btn btn-primary btn-lg inline-flex items-center gap-3"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Envelope className="w-5 h-5" />
+                Compartilhe Sua História
+              </motion.a>
             </motion.div>
           </div>
         </section>

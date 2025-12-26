@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface MenuItem {
+interface MenuItem {
   ID: number;
   title: string;
   url: string;
@@ -48,7 +48,7 @@ export function useMenu() {
           const formattedData = data.map((item: any) => ({
             ...item,
             // Usando a lógica mais segura para formatar a URL
-            url: item.url.replace(config.siteUrl, '') || '/',
+            url: (item.url || '').replace(config.siteUrl, '') || '/',
           }));
           setItems(formattedData);
         } else {

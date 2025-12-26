@@ -1,9 +1,10 @@
-// src/components/common/Footer.tsx - VERSÃO FINAL CORRETA!
+// src/components/common/Footer.tsx - VERSÃO OTIMIZADA BRAD PARSCALE
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
+import { ARTIST, getWhatsAppUrl } from '../../data/artistData';
 
 declare global {
   interface Window {
@@ -40,9 +41,7 @@ const Footer: React.FC = () => {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
 
-  const whatsappNumber = "+5521987413091";
-  const whatsappMessage = "Hello DJ Zen Eyer!";
-  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = getWhatsAppUrl('Hello DJ Zen Eyer!');
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +89,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           
-          {/* Logo and About */}
+          {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
@@ -104,16 +103,16 @@ const Footer: React.FC = () => {
               {t('footer_bio')}
             </p>
             <div className="flex space-x-4">
-              <a href="https://instagram.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
+              <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
                 <Instagram size={22} />
               </a>
-              <a href="https://soundcloud.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
+              <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
                 <Music2 size={22} />
               </a>
-              <a href="https://youtube.com/@djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
+              <a href={ARTIST.social.youtube.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
                 <Youtube size={22} />
               </a>
-              <a href="https://facebook.com/djzeneyer" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
+              <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
                 <FacebookIcon size={22} />
               </a>
               <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp">
@@ -122,31 +121,31 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* 2. Quick Links (Foco Comercial / Produto) */}
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/" className="text-white/70 hover:text-primary transition-colors">{t('footer_home')}</Link></li>
-              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
+              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to="/zentribe" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><a href="mailto:booking@djzeneyer.com" className="text-white/70 hover:text-primary transition-colors">{t('footer_contact_text')}</a></li>
-            </ul>
-          </div>
-
-          {/* Discover More */}
-          <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
-            <ul className="space-y-2.5">
-              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
-              <li><Link to="/my-philosophy" className="text-white/70 hover:text-primary transition-colors">{t('footer_music_philosophy')}</Link></li>
-              <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_press_kit_booking')}</Link></li>
-              <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/shop" className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
               <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* 3. Discover More (Institucional / Autoridade / SEO) */}
+          <div>
+            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
+            <ul className="space-y-2.5">
+              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
+              <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
+              <li><Link to="/media" className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
+              <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/conduct" className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
+            </ul>
+          </div>
+
+          {/* 4. Newsletter */}
           <div className="lg:col-span-1">
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
@@ -162,6 +161,7 @@ const Footer: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('footer_email_placeholder')}
+                  autoComplete="email"
                   className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
                   required
                   disabled={isSubmitting}
@@ -184,9 +184,24 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar - UMA ÚNICA LINHA TRADUZIDA! */}
+        {/* Bottom Bar (Dados Semânticos para Bots) */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
           <p>{t('footer_copyright', { year: currentYear })}</p>
+          <div className="mt-4 space-y-1">
+            <p><strong>{t('footer_legal_name', 'Razão Social')}:</strong> Marcelo Eyer Fernandes</p>
+            <p><strong>CNPJ:</strong> 44.063.765/0001-46</p>
+            <p><strong>ISNI:</strong> 0000 0005 2893 1015</p>
+            <p><strong>{t('footer_location', 'Localização')}:</strong> São Paulo, SP - Brasil</p>
+            <p className="mt-2 text-xs">
+              <a href="https://www.wikidata.org/wiki/Q136551855" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                Wikidata
+              </a>
+              {' • '}
+              <a href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                MusicBrainz
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

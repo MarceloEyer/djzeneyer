@@ -1,3 +1,92 @@
 {
-  "template": "bolt-vite-react-ts"
-} 
+  "projectName": "DJ Zen Eyer - Brazilian Zouk",
+  "version": "2.0.0",
+  "architecture": "headless-wordpress-react",
+  "stack": {
+    "frontend": {
+      "framework": "React 18.3",
+      "bundler": "Vite 5.4",
+      "language": "TypeScript",
+      "styling": "Tailwind CSS",
+      "animations": "Framer Motion",
+      "i18n": "react-i18next",
+      "routing": "react-router-dom"
+    },
+    "backend": {
+      "cms": "WordPress 6.x (Headless)",
+      "ecommerce": "WooCommerce",
+      "gamification": "GamiPress",
+      "multilingual": "Polylang",
+      "newsletter": "MailPoet"
+    },
+    "infrastructure": {
+      "hosting": "LiteSpeed Server",
+      "cdn": "Cloudflare",
+      "cache": "LiteSpeed Cache",
+      "ssl": "Cloudflare SSL"
+    }
+  },
+  "features": {
+    "ssg": {
+      "enabled": true,
+      "routes": 16,
+      "languages": ["en", "pt"],
+      "script": "scripts/prerender.mjs"
+    },
+    "seo": {
+      "staticHtml": true,
+      "hreflang": true,
+      "canonical": true,
+      "openGraph": true,
+      "schema": true,
+      "sitemap": "dynamic"
+    },
+    "performance": {
+      "lazyLoading": true,
+      "codeSplitting": true,
+      "imageOptimization": true,
+      "preloadHero": true,
+      "targetLCP": "< 1.8s",
+      "targetCLS": "< 0.05"
+    },
+    "security": {
+      "cors": true,
+      "csp": true,
+      "hsts": true,
+      "xssProtection": true,
+      "httpsOnly": true
+    }
+  },
+  "endpoints": {
+    "production": "https://djzeneyer.com",
+    "apiBase": "https://djzeneyer.com/wp-json/djzeneyer/v1",
+    "wpRest": "https://djzeneyer.com/wp-json/wp/v2"
+  },
+  "buildConfig": {
+    "command": "npm run build",
+    "outputDir": "dist",
+    "assetsDir": "assets",
+    "prerender": true,
+    "minify": true,
+    "sourcemap": false
+  },
+  "deployment": {
+    "platform": "LiteSpeed + Cloudflare",
+    "strategy": "Static Site Generation (SSG)",
+    "cicd": "GitHub Actions (optional)",
+    "rollback": "Git-based"
+  },
+  "maintenance": {
+    "phpFiles": "/inc/*.php",
+    "reactComponents": "/src/components/**/*.tsx",
+    "pages": "/src/pages/**/*.tsx",
+    "translations": "/src/locales/{en,pt}/translation.json",
+    "styles": "/src/index.css"
+  },
+  "notes": {
+    "wpIntegration": "WordPress serves ONLY as headless CMS/API. No theme rendering.",
+    "frontendDeployment": "Build React app and upload /dist folder to server root.",
+    "languageStrategy": "Client-side detection + URL-based routing (/pt prefix).",
+    "cacheStrategy": "Static HTML for SEO + React hydration for interactivity."
+  }
+}

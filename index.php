@@ -1,34 +1,53 @@
 <?php
 /**
  * Main template file - DJ Zen Eyer Theme
- * Optimized for React SPA + SEO
+ * Mode: React SPA with Server-Side SEO + Performance Optimizations
  */
+
+// Lógica de Conteúdo Dinâmico (SSR)
+// Isso garante que robôs e usuários vejam algo antes do React carregar
+$ssr_h1 = 'DJ Zen Eyer - Brazilian Zouk DJ & Music Producer';
+$ssr_desc = 'Official website of DJ Zen Eyer. 2x World Champion Brazilian Zouk DJ, music producer, and Mensa International member.';
+
+if (have_posts()) {
+    the_post();
+    $ssr_h1 = get_the_title();
+    $ssr_desc = get_the_excerpt() ?: wp_trim_words(get_the_content(), 25);
+}
+
+// 1. Carrega o cabeçalho (HTML head, meta tags, estilos)
+get_header(); 
 ?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-    <meta charset="<?php bloginfo('charset'); ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- DNS Prefetch & Preconnect -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Preload Critical Assets -->
-    <?php 
-    $js_file = get_template_directory_uri() . '/dist/assets/index.js';
-    $css_file = get_template_directory_uri() . '/dist/assets/index.css';
-    ?>
-    <link rel="modulepreload" href="<?php echo esc_url($js_file); ?>">
-    <link rel="preload" href="<?php echo esc_url($css_file); ?>" as="style">
-    
-    <?php wp_head(); ?>
-</head>
-<body <?php body_class(); ?>>
-    <?php wp_body_open(); ?>
-    <div id="root"></div>
-    <?php wp_footer(); ?>
-</body>
-</html>
+
+<div id="root">
+    <div class="ssr-content">
+        <h1><?php echo esc_html($ssr_h1); ?></h1>
+        <p><?php echo esc_html($ssr_desc); ?></p>
+        
+        <?php if (is_front_page()): ?>
+            <h2>About DJ Zen Eyer</h2>
+            <p>2x World Champion Brazilian Zouk DJ, music producer, and Mensa International member.</p>
+            
+            <nav class="ssr-links" aria-label="Main navigation">
+                <a href="<?php echo esc_url(home_url('/')); ?>"><strong>Home</strong><br><small>Main page</small></a>
+                <a href="<?php echo esc_url(home_url('/events')); ?>"><strong>Events</strong><br><small>Tour dates</small></a>
+                <a href="<?php echo esc_url(home_url('/music')); ?>"><strong>Music</strong><br><small>Sets & Remixes</small></a>
+                <a href="<?php echo esc_url(home_url('/shop')); ?>"><strong>Shop</strong><br><small>Merch</small></a>
+                <a href="<?php echo esc_url(home_url('/zentribe')); ?>"><strong>ZenTribe</strong><br><small>Community</small></a>
+                <a href="<?php echo esc_url(home_url('/work-with-me')); ?>"><strong>Book DJ</strong><br><small>Hire me</small></a>
+            </nav>
+        <?php endif; ?>
+    </div>
+</div>
+
+<noscript>
+    <div style="padding: 20px; text-align: center; border: 1px solid #ff4444; margin: 20px; border-radius: 8px;">
+        <h2>⚠️ JavaScript Required</h2>
+        <p>Please enable JavaScript to view this site.</p>
+    </div>
+</noscript>
+
+<?php 
+// 2. Carrega o rodapé (Scripts do React, fechamento do body)
+get_footer(); 
+?>
