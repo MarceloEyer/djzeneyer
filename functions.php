@@ -19,6 +19,7 @@ require_once get_theme_file_path('/inc/spa.php');        // SPA routing
 require_once get_theme_file_path('/inc/api.php');        // REST endpoints
 require_once get_theme_file_path('/inc/cpt.php');        // Custom post types
 require_once get_theme_file_path('/inc/metaboxes.php');  // Admin metaboxes
+require_once get_theme_file_path('/inc/ai-llm.php');     // AI LLM
 
 /**
  * Disable admin bar on frontend
