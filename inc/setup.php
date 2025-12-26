@@ -220,10 +220,6 @@ add_action('wp_scheduled_delete', function() {
 /**
  * 1. Garante suporte a tag de titulo (caso o plugin Zen não esteja fazendo)
  */
-function zen_add_title_support() {
-    add_theme_support('title-tag');
-}
-
 
 /**
  * 2. Força a barra "/" no final das URLs (Canonical Trailing Slash)
