@@ -1,9 +1,9 @@
 <?php
 /**
- * Sitemap generator
+ * Sitemap generator (CLEAN VERSION)
  *
  * @package Zen_SEO_Lite_Pro
- * @since 8.0.0
+ * @since 8.1.0 - Optimized for Headless Hybrid Strategy
  */
 
 if (!defined('ABSPATH')) {
@@ -34,9 +34,10 @@ class Zen_SEO_Sitemap {
     
     /**
      * Register rewrite rules for sitemap
+     * Changed to sitemap-dynamic.xml to avoid conflict with physical files
      */
     public static function register_rewrite_rules() {
-        add_rewrite_rule('sitemap\.xml$', 'index.php?zen_sitemap=1', 'top');
+        add_rewrite_rule('sitemap-dynamic\.xml$', 'index.php?zen_sitemap=1', 'top');
     }
     
     /**
@@ -81,56 +82,12 @@ class Zen_SEO_Sitemap {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
         
-        // Add React routes
-        $xml .= $this->generate_react_routes();
+        // REMOVED: generate_react_routes() - Now handled by React Build
         
-        // Add WordPress posts
+        // Add WordPress posts (Dynamic Content: Products, Events, Blog)
         $xml .= $this->generate_post_urls();
         
         $xml .= '</urlset>';
-        
-        return $xml;
-    }
-    
-    /**
-     * Generate React route URLs
-     */
-    private function generate_react_routes() {
-        $settings = Zen_SEO_Helpers::get_global_settings();
-        $routes_raw = $settings['react_routes'] ?? '';
-        
-        if (empty($routes_raw)) {
-            return '';
-        }
-        
-        $xml = '';
-        $routes = array_filter(array_map('trim', explode("\n", $routes_raw)));
-        
-        foreach ($routes as $line) {
-            $parts = array_map('trim', explode(',', $line));
-            
-            if (empty($parts[0])) {
-                continue;
-            }
-            
-            $url_en = home_url($parts[0]);
-            $url_pt = isset($parts[1]) ? home_url($parts[1]) : null;
-            
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . esc_url($url_en) . '</loc>' . "\n";
-            $xml .= '    <changefreq>weekly</changefreq>' . "\n";
-            $xml .= '    <priority>0.8</priority>' . "\n";
-            
-            // Hreflang
-            $xml .= '    <xhtml:link rel="alternate" hreflang="en" href="' . esc_url($url_en) . '"/>' . "\n";
-            $xml .= '    <xhtml:link rel="alternate" hreflang="x-default" href="' . esc_url($url_en) . '"/>' . "\n";
-            
-            if ($url_pt) {
-                $xml .= '    <xhtml:link rel="alternate" hreflang="pt-BR" href="' . esc_url($url_pt) . '"/>' . "\n";
-            }
-            
-            $xml .= '  </url>' . "\n";
-        }
         
         return $xml;
     }
@@ -146,7 +103,7 @@ class Zen_SEO_Sitemap {
         $args = [
             'post_type' => $post_types,
             'post_status' => 'publish',
-            'posts_per_page' => 500, // Reasonable limit
+            'posts_per_page' => 1000, // Increased limit for full catalog
             'orderby' => 'modified',
             'order' => 'DESC',
             'no_found_rows' => true,
@@ -215,9 +172,9 @@ class Zen_SEO_Sitemap {
         $priorities = [
             'page' => '0.8',
             'post' => '0.6',
-            'product' => '0.7',
-            'flyers' => '0.6',
-            'remixes' => '0.7',
+            'product' => '0.9', // High priority for products
+            'flyers' => '0.7',
+            'remixes' => '0.8',
         ];
         
         return $priorities[$post_type] ?? '0.5';
@@ -231,17 +188,19 @@ class Zen_SEO_Sitemap {
             return "User-agent: *\nDisallow: /\n";
         }
         
-        $sitemap_url = home_url('/sitemap.xml');
+        // Points to the Sitemap Index (which you should create in React public folder)
+        // OR lists both individual sitemaps if no index exists.
         
         $rules = "User-agent: *\n";
         $rules .= "Allow: /\n";
         $rules .= "Disallow: /wp-admin/\n";
         $rules .= "Disallow: /wp-includes/\n";
-        $rules .= "Disallow: /wp-content/plugins/\n";
-        $rules .= "Disallow: /wp-content/themes/\n";
         $rules .= "Allow: /wp-content/uploads/\n";
         $rules .= "\n";
-        $rules .= "Sitemap: " . $sitemap_url . "\n";
+        
+        // Aponta para os dois sitemaps (Estratégia Híbrida)
+        $rules .= "Sitemap: " . home_url('/sitemap-static.xml') . "\n";
+        $rules .= "Sitemap: " . home_url('/sitemap-dynamic.xml') . "\n";
         
         return $rules;
     }
@@ -250,11 +209,9 @@ class Zen_SEO_Sitemap {
      * Clear cache when post is saved
      */
     public function clear_cache_on_save($post_id) {
-        // Don't clear for autosaves or revisions
         if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id)) {
             return;
         }
-        
         Zen_SEO_Cache::clear_sitemap();
     }
     

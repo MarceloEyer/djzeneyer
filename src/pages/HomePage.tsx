@@ -1,8 +1,7 @@
 // src/pages/HomePage.tsx
-// VERSÃO FINAL: GOLD MASTER (SEO GOD MODE + LCP INSTANTÂNEO + AZUL PADRÃO)
-// Arquitetura: React/Vite + Framer Motion + Headless SEO
+// VERSÃO FINAL: DIAMOND MASTER (Integrated with Zen SEO Plugin v8.0.0)
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +14,36 @@ import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 
 // ============================================================================
-// 1. DADOS E CONSTANTES (Estáticos para Performance)
+// 1. INTERFACES (Type Safety)
+// ============================================================================
+
+interface StatCardProps {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+}
+
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  variants: Variants;
+}
+
+interface FestivalBadgeProps {
+  name: string;
+  flag: string;
+}
+
+// Interface para as configurações vindas do Plugin WP
+interface ZenGlobalSettings {
+  real_name?: string;
+  default_og_image?: string;
+  [key: string]: any;
+}
+
+// ============================================================================
+// 2. DADOS E CONSTANTES
 // ============================================================================
 
 const FEATURES_DATA = [
@@ -43,10 +71,10 @@ const ITEM_VARIANTS: Variants = {
 };
 
 // ============================================================================
-// 2. SUB-COMPONENTES MEMOIZADOS (Performance de Renderização)
+// 3. SUB-COMPONENTES MEMOIZADOS
 // ============================================================================
 
-const StatCard = React.memo(({ value, label, icon: Icon }: any) => (
+const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
   <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
     <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
     <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
@@ -54,7 +82,7 @@ const StatCard = React.memo(({ value, label, icon: Icon }: any) => (
   </motion.div>
 ));
 
-const FeatureCard = React.memo(({ icon, title, description, variants }: any) => (
+const FeatureCard = React.memo(({ icon, title, description, variants }: FeatureCardProps) => (
   <motion.article className="card p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
@@ -62,7 +90,7 @@ const FeatureCard = React.memo(({ icon, title, description, variants }: any) => 
   </motion.article>
 ));
 
-const FestivalBadge = React.memo(({ name, flag }: any) => (
+const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-white/80 hover:bg-white/10 transition-colors cursor-default">
     <span role="img" aria-label={`Flag of ${name}`}>{flag}</span>
     <span>{name}</span>
@@ -70,17 +98,35 @@ const FestivalBadge = React.memo(({ name, flag }: any) => (
 ));
 
 // ============================================================================
-// 3. PAGE COMPONENT
+// 4. PAGE COMPONENT
 // ============================================================================
 
 const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const isPortuguese = i18n.language?.startsWith('pt');
+  const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
   
+  const isPortuguese = i18n.language?.startsWith('pt');
   const currentPath = '/';
   const currentUrl = ARTIST.site.baseUrl;
 
-  // 1. SCHEMA OTIMIZADO (Memoizado)
+  // --- FETCH PLUGIN SETTINGS (Integration) ---
+  useEffect(() => {
+    // Tenta pegar a URL da API do ambiente ou usa fallback
+    const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
+    
+    fetch(`${wpRestUrl}/zen-seo/v1/settings`)
+      .then(res => res.json())
+      .then(response => {
+        if (response.success) {
+          setSeoSettings(response.data);
+        }
+      })
+      .catch(err => console.error('Zen SEO Plugin not reachable:', err));
+  }, []);
+
+  // --- SCHEMA STATIC DATA (Rich Snippets) ---
+  // Mantemos este Schema "Hardcoded" pois ele contém dados complexos (Awards, Events)
+  // que são específicos da Home e difíceis de gerenciar via configurações globais simples.
   const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -88,7 +134,7 @@ const HomePage: React.FC = () => {
         "@type": "WebSite",
         "@id": `${ARTIST.site.baseUrl}/#website`,
         "url": ARTIST.site.baseUrl,
-        "name": "DJ Zen Eyer - Official Website",
+        "name": seoSettings?.real_name || "DJ Zen Eyer - Official Website",
         "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
@@ -101,6 +147,7 @@ const HomePage: React.FC = () => {
       {
         ...ARTIST_SCHEMA_BASE,
         "@id": `${ARTIST.site.baseUrl}/#artist`,
+        "name": seoSettings?.real_name || "DJ Zen Eyer",
         "nationality": { "@type": "Country", "name": "Brazil" },
         "birthDate": ARTIST.identity.birthDate,
         "jobTitle": "DJ & Music Producer",
@@ -129,8 +176,17 @@ const HomePage: React.FC = () => {
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
-          "location": { "@type": "Place", "address": { "@type": "Country", "name": f.country } },
-          "eventStatus": "https://schema.org/EventScheduled"
+          "startDate": f.date,
+          "location": { 
+            "@type": "Place", 
+            "name": f.country,
+            "address": { 
+               "@type": "PostalAddress", 
+               "addressCountry": f.country 
+            } 
+          },
+          "eventStatus": "https://schema.org/EventScheduled",
+          "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
         })),
       },
       {
@@ -142,7 +198,7 @@ const HomePage: React.FC = () => {
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "primaryImageOfPage": {
           "@type": "ImageObject",
-          "url": `${ARTIST.site.baseUrl}/images/hero-background.webp`,
+          "url": seoSettings?.default_og_image || `${ARTIST.site.baseUrl}/images/hero-background.webp`,
           "width": 1920,
           "height": 1080
         },
@@ -152,19 +208,31 @@ const HomePage: React.FC = () => {
         }
       }
     ],
-  }), [isPortuguese, currentUrl]);
+  }), [isPortuguese, currentUrl, seoSettings]);
 
   return (
     <>
-      {/* 2. SEO & PRELOAD */}
       <HeadlessSEO
-        title="DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"
+        // Tenta usar dados do Plugin WP, fallback para strings hardcoded
+        title={seoSettings?.real_name 
+          ? `${seoSettings.real_name} | 2× World Champion` 
+          : "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"}
+        
         description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
+        
         url={currentUrl}
-        image={`${currentUrl}/images/zen-eyer-og-image.jpg`}
+        
+        // Imagem vinda do painel WP ou fallback local
+        image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.jpg`}
+        
         isHomepage={true}
         hrefLang={getHrefLangUrls(currentPath, currentUrl)}
         schema={schemaData}
+        
+        // Otimização LCP: Carrega a fonte crítica do título
+        preload={[
+           { href: '/fonts/Orbitron-Variable.ttf', as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' }
+        ]}
       />
 
       {/* HERO SECTION */}
@@ -191,7 +259,6 @@ const HomePage: React.FC = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <motion.div className="max-w-4xl mx-auto" initial="hidden" animate="visible" variants={CONTAINER_VARIANTS}>
-            {/* Badge de Autoridade */}
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
                 <Trophy size={16} />
@@ -244,7 +311,6 @@ const HomePage: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Scroll Indicator */}
         <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
           <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2" />
@@ -362,7 +428,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* FINAL CTA - ZEN TRIBE (CORRIGIDO: Azul Elétrico) */}
+      {/* FINAL CTA - ZEN TRIBE */}
       <section className="py-24 relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
         

@@ -1,5 +1,5 @@
 // src/pages/DashboardPage.tsx
-// v15.0 - PERFECT: Memoized, No SEO Conflicts, Optimal Performance
+// v17.0 - REAL ACTIVITY MASTER: Custom API Integration (Zen-RA)
 
 import { useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -7,13 +7,32 @@ import { useUser } from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { 
   Award, Music, Calendar, Clock, Zap, Users, Trophy, 
-  Target, Gift, Heart, Loader2, TrendingUp, Star 
+  Target, Gift, Loader2, TrendingUp, Star 
 } from 'lucide-react';
 import GamificationWidget from '../components/Gamification/GamificationWidget';
 import { useGamiPress } from '../hooks/useGamiPress';
 import { useUserTracks } from '../hooks/useUserTracks';
 import { useUserEvents } from '../hooks/useUserEvents';
 import { useUserStreak } from '../hooks/useUserStreak';
+import { useRecentActivity, ZenActivity } from '../hooks/useRecentActivity'; // ✅ Novo Hook Importado
+
+// --- HELPER: Formatação de Tempo (Ex: "2 hours ago") ---
+function getTimeAgo(timestamp: number): string {
+  // Multiplicamos por 1000 porque PHP usa Segundos e JS usa Milissegundos
+  const seconds = Math.floor((new Date().getTime() - timestamp * 1000) / 1000);
+  
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + " years ago";
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + " months ago";
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + " days ago";
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + " hours ago";
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + " minutes ago";
+  return Math.floor(seconds) + " seconds ago";
+}
 
 interface SafeAchievement {
   id?: number;
@@ -24,24 +43,17 @@ interface SafeAchievement {
   earned: boolean;
 }
 
-interface ActivityItem {
-  icon: React.ReactNode;
-  action: string;
-  item: string;
-  xp: number;
-  time: string;
-}
-
 const DashboardPage = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   
+  // Hooks de Dados Reais
   const gamipress = useGamiPress();
   const tracks = useUserTracks();
   const events = useUserEvents();
   const streak = useUserStreak();
+  const activity = useRecentActivity(); // ✅ Hook da sua API Customizada
 
-  // ✅ FIX 1: Set page title via document.title (no SEO component conflicts)
   useEffect(() => {
     if (user?.name) {
       document.title = `Dashboard - ${user.name} | DJ Zen Eyer`;
@@ -64,57 +76,25 @@ const DashboardPage = () => {
     eventsAttended: events.data?.total ?? 0,
     streakDays: streak.data?.streak ?? 0,
     streakFire: streak.data?.fire ?? false,
-    tribeFriends: 12
+    tribeFriends: 0 
   }), [gamipress.data, tracks.data, events.data, streak.data]);
 
   const safeAchievements = useMemo<SafeAchievement[]>(() => {
     const raw = gamipress.data?.achievements;
     if (Array.isArray(raw) && raw.length > 0) {
-      return raw.slice(0, 6).map((ach: any) => ({
+      return raw.map((ach: any) => ({
         id: ach?.id,
         title: ach?.title || 'Achievement',
         description: ach?.description || 'Achievement unlocked!',
         image: ach?.image || '',
         emoji: ach?.image ? '' : '🏆',
-        earned: !!ach?.earned
+        earned: true
       }));
     }
-    return [
-      { emoji: '🎧', title: 'First Beat', description: 'Welcome to the Zen Tribe', earned: true },
-      { emoji: '🚀', title: 'Early Adopter', description: 'Joined during launch', earned: true },
-      { emoji: '🔥', title: '7-Day Streak', description: 'Maintained activity streak', earned: false },
-      { emoji: '🔍', title: 'Music Explorer', description: 'Listened to 10 tracks', earned: false },
-      { emoji: '🦋', title: 'Social Butterfly', description: 'Connected with 5 members', earned: false },
-      { emoji: '🎪', title: 'Event Regular', description: 'Attended 3 events', earned: false },
-    ];
+    return [];
   }, [gamipress.data?.achievements]);
 
-  // ✅ FIX 2: Memoize activity to prevent recreating React elements
-  const recentActivity = useMemo<ActivityItem[]>(() => [
-    { 
-      icon: <Music className="text-primary" size={20} />, 
-      action: 'Downloaded', 
-      item: 'Zouk Nights Remix', 
-      xp: 10, 
-      time: '2 hours ago' 
-    },
-    { 
-      icon: <Heart className="text-accent" size={20} />, 
-      action: 'Favorited', 
-      item: 'Electric Dreams', 
-      xp: 5, 
-      time: '5 hours ago' 
-    },
-    { 
-      icon: <Calendar className="text-success" size={20} />, 
-      action: 'RSVP\'d to', 
-      item: 'Summer Vibes Festival', 
-      xp: 25, 
-      time: '1 day ago' 
-    },
-  ], []);
-
-  const unlockedCount = useMemo(() => safeAchievements.filter(a => a.earned).length, [safeAchievements]);
+  const unlockedCount = safeAchievements.length;
 
   const containerVariants = { 
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }, 
@@ -146,12 +126,11 @@ const DashboardPage = () => {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-12">
           <div className="bg-gradient-to-r from-primary/20 via-accent/20 to-success/20 rounded-2xl p-6 md:p-8 border border-primary/30 backdrop-blur-sm">
             <div className="flex items-center gap-6 flex-wrap">
-              
               <div className="relative">
                 <img 
                   src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`} 
                   alt={user.name}
-                  className="w-24 h-24 rounded-full border-4 border-primary shadow-xl"
+                  className="w-24 h-24 rounded-full border-4 border-primary shadow-xl object-cover"
                 />
                 <motion.div 
                   initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3, type: 'spring' }}
@@ -169,7 +148,6 @@ const DashboardPage = () => {
                   <Trophy className="text-warning" size={20} />
                   {userStats.rank} • Level {userStats.level}
                 </p>
-                
                 <div className="space-y-2" role="progressbar" aria-valuenow={userStats.progress} aria-valuemin={0} aria-valuemax={100}>
                   <div className="flex justify-between text-sm">
                     <span className="text-white/80 flex items-center gap-1"><TrendingUp size={16} /> Progress to Level {userStats.level + 1}</span>
@@ -216,24 +194,68 @@ const DashboardPage = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* RECENT ACTIVITY */}
+          
+          {/* ✅ REAL ACTIVITY FEED */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="lg:col-span-2">
-            <div className="card p-6 h-full">
+            <div className="card p-6 h-full min-h-[400px]">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl md:text-2xl font-bold font-display flex items-center gap-2"><Clock className="text-primary" size={24} /> Recent Activity</h2>
+                <h2 className="text-xl md:text-2xl font-bold font-display flex items-center gap-2">
+                  <Clock className="text-primary" size={24} /> Recent Activity
+                </h2>
                 <button onClick={() => navigate('/my-account')} className="text-primary hover:underline text-sm transition-all hover:scale-105">View All →</button>
               </div>
+              
               <div className="space-y-4">
-                {recentActivity.map((act, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="flex items-center gap-4 p-4 bg-surface/50 rounded-lg hover:bg-surface/80 transition-all cursor-pointer border border-transparent hover:border-primary/30">
-                    <div className="w-10 h-10 rounded-full bg-background/50 flex items-center justify-center flex-shrink-0">{act.icon}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold truncate">{act.action} <span className="text-primary">{act.item}</span></div>
-                      <div className="text-sm text-white/60 flex items-center gap-1"><Clock size={12} /> {act.time}</div>
+                {activity.loading ? (
+                   // Loading State
+                   <div className="flex flex-col gap-4">
+                     {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />)}
+                   </div>
+                ) : activity.data.length > 0 ? (
+                  // ✅ Renderização da Atividade Real
+                  activity.data.map((act: ZenActivity, i) => {
+                    // Mapeamento de Estilo baseado no Tipo
+                    const isLoot = act.type === 'loot';
+                    const icon = isLoot ? <Gift size={20} /> : <Trophy size={20} />;
+                    const colorClass = isLoot ? 'text-purple-400 bg-purple-500/10' : 'text-yellow-400 bg-yellow-500/10';
+                    const actionLabel = isLoot ? 'Looted' : 'Unlocked';
+
+                    return (
+                      <motion.div key={act.id || i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} 
+                        className="flex items-center gap-4 p-4 bg-surface/50 rounded-lg hover:bg-surface/80 transition-all cursor-pointer border border-transparent hover:border-primary/30 group"
+                      >
+                        {/* Ícone */}
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 border border-white/5 group-hover:scale-110 transition-transform ${colorClass}`}>
+                          {icon}
+                        </div>
+                        
+                        {/* Texto */}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold truncate text-white/90">
+                            <span className="opacity-70 text-xs uppercase tracking-wider block mb-0.5">{actionLabel}</span>
+                            {act.description}
+                          </div>
+                          <div className="text-sm text-white/50 flex items-center gap-1 mt-1">
+                            <Clock size={12} /> {getTimeAgo(act.timestamp)}
+                          </div>
+                        </div>
+                        
+                        {/* XP Badge */}
+                        <div className="text-success font-bold text-sm flex-shrink-0 flex items-center gap-1 bg-success/10 px-3 py-1 rounded-full border border-success/20">
+                          <Star size={14} className="fill-success" /> +{act.xp} XP
+                        </div>
+                      </motion.div>
+                    );
+                  })
+                ) : (
+                  // Empty State
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Clock className="text-white/20" size={32} />
                     </div>
-                    <div className="text-success font-bold text-sm flex-shrink-0 flex items-center gap-1"><Star size={16} className="fill-success" /> +{act.xp} XP</div>
-                  </motion.div>
-                ))}
+                    <p className="text-white/50">No recent activity yet.</p>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -258,23 +280,36 @@ const DashboardPage = () => {
           </motion.div>
         </div>
 
-        {/* ACHIEVEMENTS */}
+        {/* ACHIEVEMENTS REAIS */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }} className="mt-12">
           <div className="card p-6 md:p-8">
             <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
               <h2 className="text-xl md:text-2xl font-bold font-display flex items-center gap-2"><Award className="text-primary" size={28} /> Your Achievements</h2>
-              <div className="text-white/70 flex items-center gap-2"><Trophy className="text-warning" size={20} /> <span className="text-primary font-bold text-xl">{unlockedCount}</span> <span>of {safeAchievements.length} unlocked</span></div>
+              <div className="text-white/70 flex items-center gap-2"><Trophy className="text-warning" size={20} /> <span className="text-primary font-bold text-xl">{unlockedCount}</span> <span>Unlocked</span></div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {safeAchievements.map((achievement, i) => (
-                <motion.div key={achievement.id || i} whileHover={{ scale: achievement.earned ? 1.1 : 1 }} className={`bg-surface/50 rounded-lg p-4 text-center transition-all border ${achievement.earned ? 'hover:bg-surface/70 cursor-pointer border-primary/30 hover:border-primary' : 'opacity-40 grayscale border-transparent'}`}>
-                  <div className="text-4xl md:text-5xl mb-3">{achievement.image ? <img src={achievement.image} alt={achievement.title} className="w-16 h-16 mx-auto object-contain" /> : (achievement.emoji || '🏆')}</div>
-                  <div className="font-bold text-sm mb-1 line-clamp-1">{achievement.title}</div>
-                  <div className="text-xs text-white/60 line-clamp-2 min-h-[2rem]">{achievement.description}</div>
-                  {achievement.earned && <div className="mt-2 text-xs text-success flex items-center justify-center gap-1">Unlocked</div>}
-                </motion.div>
-              ))}
-            </div>
+            
+            {safeAchievements.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {safeAchievements.map((achievement, i) => (
+                  <motion.div key={achievement.id || i} whileHover={{ scale: 1.05 }} className="bg-surface/50 rounded-lg p-4 text-center transition-all border border-primary/30 hover:bg-surface/70 hover:border-primary cursor-pointer shadow-lg hover:shadow-primary/20">
+                    <div className="text-4xl md:text-5xl mb-3 h-16 w-16 mx-auto flex items-center justify-center">
+                        {achievement.image ? <img src={achievement.image} alt={achievement.title} className="w-full h-full object-contain drop-shadow-md" /> : (achievement.emoji || '🏆')}
+                    </div>
+                    <div className="font-bold text-sm mb-1 line-clamp-1">{achievement.title}</div>
+                    <div className="text-xs text-white/60 line-clamp-2 min-h-[2rem]">{achievement.description}</div>
+                    <div className="mt-2 text-xs text-success flex items-center justify-center gap-1 font-bold">Unlocked <Award size={10} /></div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              // EMPTY STATE
+              <div className="text-center py-12 border border-dashed border-white/10 rounded-xl bg-white/5">
+                <Trophy className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">Start Your Journey</h3>
+                <p className="text-white/60 mb-6 max-w-md mx-auto">Complete tasks like listening to tracks, attending events, or visiting the shop to unlock your first achievements!</p>
+                <button onClick={() => navigate('/music')} className="btn btn-primary">Start Listening</button>
+              </div>
+            )}
           </div>
         </motion.div>
 

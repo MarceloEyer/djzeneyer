@@ -3,7 +3,7 @@
  * Plugin Name:       ZenEyer Auth Pro
  * Plugin URI:        https://djzeneyer.com
  * Description:       Enterprise-grade JWT Authentication for Headless WordPress + React. Secure, fast, and production-ready. Includes Anti-Bot Security Shield.
- * Version:           2.1.3
+ * Version:           2.1.4
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            DJ Zen Eyer
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('ZENEYER_AUTH_VERSION', '2.1.3');
+define('ZENEYER_AUTH_VERSION', '2.1.4');
 define('ZENEYER_AUTH_PATH', plugin_dir_path(__FILE__));
 define('ZENEYER_AUTH_URL', plugin_dir_url(__FILE__));
 define('ZENEYER_AUTH_BASENAME', plugin_basename(__FILE__));
@@ -48,7 +48,7 @@ final class ZenEyer_Auth_Pro {
         $this->load_dependencies();
         $this->init_hooks();
         $this->init_security_shield(); // 🛡️ Inicializa a proteção Anti-Bot
-        $this->override_security_headers(); // 🚀 Força permissão para Cloudflare/React
+        $this->override_security_headers(); // 🚀 Força permissão para Cloudflare/React (Corrige erro CSP)
     }
     
     /**
@@ -87,7 +87,7 @@ final class ZenEyer_Auth_Pro {
     /**
      * 🚀 OVERRIDE SECURITY HEADERS
      * Remove bloqueios impostos por plugins de pagamento (PagBank) ou Cache.
-     * Libera 'unsafe-eval' e Cloudflare.
+     * Libera 'unsafe-eval' e Cloudflare (Turnstile + Analytics).
      */
     private function override_security_headers() {
         add_action('send_headers', function() {
@@ -98,10 +98,11 @@ final class ZenEyer_Auth_Pro {
             header_remove('X-Content-Security-Policy');
             header_remove('X-WebKit-CSP');
 
-            // 2. Define a regra permissiva (Padrão Ouro para React + Cloudflare)
+            // 2. Define a regra permissiva (Padrão Ouro v2.1.4)
+            // ADICIONADO: https://static.cloudflareinsights.com em script-src e connect-src
             $csp = "default-src 'self' https: data:; " .
-                   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://accounts.google.com https://apis.google.com https://gsi.client-url.com https://www.googletagmanager.com; " .
-                   "connect-src 'self' https://djzeneyer.com https://challenges.cloudflare.com https://accounts.google.com https://www.googleapis.com https://cloudflareinsights.com; " .
+                   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://apis.google.com https://gsi.client-url.com https://www.googletagmanager.com; " .
+                   "connect-src 'self' https://djzeneyer.com https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://www.googleapis.com https://cloudflareinsights.com; " .
                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " .
                    "font-src 'self' https://fonts.gstatic.com data:; " .
                    "img-src 'self' https: data: blob:; " .
@@ -113,28 +114,35 @@ final class ZenEyer_Auth_Pro {
     }
 
     private function init_security_shield() {
+        // 1. Desativa XML-RPC
         add_filter('xmlrpc_enabled', '__return_false');
         
+        // 2. Mata registro padrão
         add_action('login_form_register', function() {
             wp_die('O registro padrão está desativado. Use o site oficial.', 'Acesso Negado', ['response' => 403]);
         });
 
+        // 3. Remove rota nativa com SEGURANÇA DE TIPOS
         add_filter('rest_endpoints', function($endpoints) {
             if ( isset( $endpoints['/wp/v2/users'] ) ) {
                 foreach ( $endpoints['/wp/v2/users'] as $key => $route ) {
                     if ( ! isset( $route['methods'] ) ) continue;
+
                     $should_remove = false;
+
                     if ( is_string( $route['methods'] ) ) {
                         if ( strpos( $route['methods'], 'POST' ) !== false ) $should_remove = true;
                     } elseif ( is_array( $route['methods'] ) ) {
                         if ( isset( $route['methods']['POST'] ) || in_array( 'POST', $route['methods'] ) ) $should_remove = true;
                     }
+
                     if ( $should_remove ) unset( $endpoints['/wp/v2/users'][$key] );
                 }
             }
             return $endpoints;
         });
 
+        // 4. A Guilhotina
         add_action('user_register', function($user_id) {
             if (is_admin() && current_user_can('create_users')) return;
             if (!defined('ZEN_AUTH_VALIDATED')) {

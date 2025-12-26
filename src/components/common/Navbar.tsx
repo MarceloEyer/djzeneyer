@@ -1,5 +1,5 @@
 // src/components/Layout/Navbar.tsx
-// FUSION MASTER: Lógica Avançada (Rotas/Segurança) + UX Premium (Animação/Backdrop) + Visual Colorido
+// FUSION MASTER: Lógica Avançada + UX Premium + Hover Underline Effect
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -183,7 +183,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
       const safeUrl = sanitizePath(item.url || '/');
       const safeTitle = sanitizeHTML(item.title || '');
       const isExternal = item.target === '_blank';
-      const visuals = getLinkVisuals(safeUrl); // Pega cor/ícone
+      const visuals = getLinkVisuals(safeUrl);
       
       return (
         <NavLink
@@ -198,7 +198,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
               ? `group flex items-center justify-between p-3 rounded-xl transition-all duration-300 border border-transparent ${
                   isActive ? `${visuals.bg} border-white/5` : 'hover:bg-white/5'
                 }`
-              : `nav-link ${isActive ? 'text-primary font-medium' : 'text-white/80 hover:text-white'}`
+              // ✨ DESKTOP: Adicionado 'relative group' para o efeito de sublinhado
+              : `relative group nav-link py-2 ${isActive ? 'text-primary font-medium' : 'text-white/80 hover:text-white'}`
           }
         >
           {({ isActive }) => (
@@ -210,11 +211,21 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                     {visuals.icon}
                   </div>
                 )}
+                
                 <span 
                   className={`${isMobile ? 'text-base font-medium' : ''} ${isActive ? (isMobile ? 'text-white' : '') : 'text-white/80 group-hover:text-white'}`}
                   dangerouslySetInnerHTML={{ __html: safeTitle }}
                 />
               </div>
+
+              {/* ✨ DESKTOP HOVER EFFECT: Linha Azul Elétrico */}
+              {!isMobile && (
+                <span 
+                  className={`absolute -bottom-0.5 left-0 h-[2px] bg-primary transition-all duration-300 ease-out 
+                    ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} 
+                />
+              )}
+
               {/* Seta (Só no Mobile) */}
               {isMobile && (
                 <ChevronRight size={16} className={`transition-transform ${isActive ? 'text-primary translate-x-1' : 'text-white/20'}`} />

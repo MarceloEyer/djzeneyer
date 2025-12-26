@@ -17,7 +17,7 @@ export const ARTIST = {
     shortName: 'Zen Eyer',
     fullName: 'Marcelo Eyer Fernandes',
     displayTitle: 'Zen Eyer',
-    birthDate: '1985-08-20', // Wikidata + MusicBrainz [attached_file:1][web:44]
+    birthDate: '1985-08-20', // Wikidata + MusicBrainz
     nationality: 'Brazilian',
   },
 
@@ -52,48 +52,56 @@ export const ARTIST = {
   },
 
   // 🌎 Festivais de Destaque
+  // Datas adicionadas baseadas nos anos informados e calendário típico dos eventos
   festivals: [
     {
       name: 'One Zouk Congress',
       country: 'Australia',
       flag: '🇦🇺',
       url: 'https://www.onezoukcongress.com/',
+      date: '2022-05-19', // Edição de 2022 (Maio)
     },
     {
       name: 'Dutch Zouk',
       country: 'Netherlands',
       flag: '🇳🇱',
       url: 'https://www.dutchzouk.nl/',
+      date: '2025-10-15', // Edição de 2025 (Outubro)
     },
     {
       name: 'Prague Zouk Congress',
       country: 'Czech Republic',
       flag: '🇨🇿',
       url: 'https://www.praguezoukcongress.com/',
+      date: '2017-07-27', // Edição de 2017 (Julho/Agosto)
     },
     {
       name: 'LA Zouk Marathon',
       country: 'United States',
       flag: '🇺🇸',
       url: 'https://www.lazoukmarathon.com/',
+      date: '2024-06-07', // Edição de 2024 (Junho)
     },
     {
       name: 'Zurich Zouk Congress',
       country: 'Switzerland',
       flag: '🇨🇭',
       url: 'https://www.zurichzoukcongress.com/',
+      date: '2023-09-22', // Data estimada baseada no calendário anual (Setembro)
     },
     {
       name: 'Rio Zouk Congress',
       country: 'Brazil',
       flag: '🇧🇷',
       url: 'https://www.riozoukcongress.com/',
+      date: '2025-01-10', // Edição de 2025 (Janeiro)
     },
     {
       name: 'IZC Brazil',
       country: 'Brazil',
       flag: '🇧🇷',
       url: 'https://www.instagram.com/izcbrazil/',
+      date: '2024-01-20', // Data estimada (Geralmente segue a temporada de Janeiro/Fev)
     },
     {
       name: 'Polish Zouk Festival - Katowice',
@@ -101,15 +109,16 @@ export const ARTIST = {
       flag: '🇵🇱',
       url: 'https://www.polishzoukfestival.pl/',
       upcoming: true,
+      date: '2025-11-20', // Data estimada para edição futura
     },
   ] as Festival[],
 
   // 🔗 Identificadores de Autoridade
   identifiers: {
     wikidata: 'Q136551855',
-    wikidataUrl: 'https://www.wikidata.org/wiki/Q136551855', // [attached_file:1]
+    wikidataUrl: 'https://www.wikidata.org/wiki/Q136551855',
     musicbrainz: '13afa63c-8164-4697-9cad-c5100062a154',
-    musicbrainzUrl: 'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154', // [web:44]
+    musicbrainzUrl: 'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
     isni: '0000000528931015',
     discogs: '16872046',
     discogsUrl: 'https://www.discogs.com/artist/16872046',
@@ -123,14 +132,14 @@ export const ARTIST = {
     instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
     facebook: { handle: 'djzeneyer', url: 'https://facebook.com/djzeneyer' },
     youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
-    soundcloud: { handle: 'djzeneyer', url: 'https://soundcloud.com/djzeneyer' }, // [web:36]
+    soundcloud: { handle: 'djzeneyer', url: 'https://soundcloud.com/djzeneyer' },
     spotify: {
       id: '68SHKGndTlq3USQ2LZmyLw',
-      url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw', // [web:39]
+      url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
     },
     appleMusic: { url: 'https://music.apple.com/us/artist/zen-eyer/1439280950' },
     bandsintown: { url: 'https://www.bandsintown.com/a/15552355-dj-zen-eyer' },
-    mixcloud: { url: 'https://www.mixcloud.com/zeneyer' }, // citado na release [web:42]
+    mixcloud: { url: 'https://www.mixcloud.com/zeneyer' },
   } as Record<string, SocialLink>,
 
   // 📍 Contato
@@ -144,7 +153,7 @@ export const ARTIST = {
       city: 'Niterói',
       state: 'RJ',
       country: 'Brazil',
-      areaDetail: 'Born in Rio de Janeiro, based in Niterói', // alinhado ao MusicBrainz [web:44]
+      areaDetail: 'Born in Rio de Janeiro, based in Niterói',
     },
   },
 
@@ -155,14 +164,14 @@ export const ARTIST = {
     styleDefinition:
       'Smooth, continuous Brazilian Zouk musical flow with long, seamless transitions that preserve emotional tension on the dance floor.',
     mission:
-      'Bring the soul and passion of Brazilian Zouk to dancers around the world through immersive DJ sets and creative remixes.', // coerente com release [web:42]
+      'Bring the soul and passion of Brazilian Zouk to dancers around the world through immersive DJ sets and creative remixes.',
   },
 
   // 🌐 Site / Navegação
   site: {
     baseUrl: 'https://djzeneyer.com',
     defaultDescription:
-      'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at Ilha do Zouk DJ Championship.', // resume Wikidata + press [attached_file:1][web:42]
+      'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at Ilha do Zouk DJ Championship.',
     pages: {
       home: '/',
       about: '/about',

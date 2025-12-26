@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>DJ Zen Eyer | React Development Env</title>
-    <meta name="description" content="Ambiente de desenvolvimento local. Em produção, o WordPress gerencia estas meta tags." />
+    <meta name="description" content="Ambiente de desenvolvimento local." />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
@@ -24,6 +24,7 @@
     <div id="root"></div>
 
     <script>
+      // Mock de dados para o ambiente local funcionar igual ao WordPress
       if (window.location.hostname === 'localhost') {
         window.wpData = {
           siteUrl: 'http://localhost:5173',

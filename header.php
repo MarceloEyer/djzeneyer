@@ -2,6 +2,7 @@
 /**
  * Header Template - DJ Zen Eyer Theme
  * Configura o cabeçalho HTML, preloads e estilos críticos para a transição do React.
+ * Versão Definitiva: SEO White Hat + Performance Otimizada + Links Corrigidos
  */
 $theme_uri = get_template_directory_uri();
 ?>
@@ -71,6 +72,15 @@ $theme_uri = get_template_directory_uri();
             margin-bottom: 1rem;
         }
 
+        /* Estilo para texto extra de SEO */
+        .seo-text {
+            text-align: left;
+            margin-top: 40px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
         /* 3. Estilo dos Links (Botões bonitos em vez de texto azul) */
         .ssr-links {
             display: flex;
@@ -111,7 +121,34 @@ $theme_uri = get_template_directory_uri();
         }
     </style>
 
-    <?php wp_head(); ?>
+    <?php 
+    /* * wp_head() é CRÍTICO. 
+     * Ele carrega os estilos, scripts e as meta tags geradas pelo plugin Zen SEO Lite.
+     * NÃO REMOVA.
+     */
+    wp_head(); 
+    ?>
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
+    
+    <div id="root">
+        <div class="ssr-content">
+            <h1>Zen Eyer | 2x World Champion - Brazilian Zouk DJ & Producer</h1>
+            
+            <p>Official website of DJ Zen Eyer. Experience the "cremosidade" in Brazilian Zouk, check upcoming tour dates, events, and exclusive remixes.</p>
+            
+            <div class="ssr-links">
+                <a href="/events/">Events & Tour Dates</a>
+                <a href="/music/">Music & Remixes</a>
+                <a href="/shop/">Shop</a>
+                <a href="/zentribe/">Zen Tribe Community</a>
+                <a href="/work-with-me/">Bookings</a>
+            </div>
+
+            <div class="seo-text">
+                <p>Welcome to the official world of DJ Zen Eyer. From Zouk Congresses to intimate marathons, find the best energy for your dance.</p>
+            </div>
+        </div>
+        
+        ```
