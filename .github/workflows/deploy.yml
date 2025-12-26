@@ -1,10 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - PREMIUM PRODUCTION DEPLOY
+# 🚀 DJ ZEN EYER - ENTERPRISE PRODUCTION DEPLOY
 # ═══════════════════════════════════════════════════════════════════════════════
 # 
-# DESCRIÇÃO: Deploy automático otimizado para WordPress Headless
-# TRIGGER: Push na branch 'main' ou manual (workflow_dispatch)
-# FEATURES: Build Local de Dependências, Backup, Cache Purge, Health Check
+# FEATURES: Smart Cache Cleaning, Root Sitemaps, Plugin Dependencies
+# AUTHOR: DJ Zen Eyer | VERSION: 4.0 Diamond
 # ═══════════════════════════════════════════════════════════════════════════════
 
 name: 🚀 Production Deploy
@@ -43,7 +42,7 @@ env:
   SITE_URL: https://djzeneyer.com
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# JOB 1: BUILD (Frontend + Plugin Dependencies)
+# JOB 1: BUILD
 # ═══════════════════════════════════════════════════════════════════════════════
 
 jobs:
@@ -79,10 +78,28 @@ jobs:
           cache: 'npm'
 
       # --- FRONTEND BUILD ---
-      - name: 📦 Install Frontend dependencies
+      - name: 📦 Install dependencies
         run: npm ci --prefer-offline --no-audit
 
-      - name: 🔨 Build production (React)
+      - name: 🗺️ Generate sitemaps
+        run: |
+          echo "🗺️ Generating sitemaps..."
+          npm run generate-sitemaps
+          
+          # Validar que os sitemaps foram gerados
+          if [ ! -f "public/sitemap.xml" ]; then
+            echo "❌ sitemap.xml not generated!"
+            exit 1
+          fi
+          if [ ! -f "public/sitemap-pages.xml" ]; then
+            echo "❌ sitemap-pages.xml not generated!"
+            exit 1
+          fi
+          
+          echo "✅ Sitemaps generated successfully:"
+          ls -lh public/sitemap*.xml
+
+      - name: 🔨 Build production
         env:
           NODE_ENV: production
           VITE_WP_SITE_URL: ${{ env.SITE_URL }}
@@ -95,39 +112,61 @@ jobs:
       - name: ✅ Validate build
         run: |
           echo "🔍 Validating build output..."
-          if [ ! -d dist ]; then echo "❌ dist/ directory not found"; exit 1; fi
+          
+          # Verificar estrutura básica
+          if [ ! -d dist ]; then echo "❌ dist/ not found"; exit 1; fi
           if [ ! -f dist/index.html ]; then echo "❌ dist/index.html not found"; exit 1; fi
-          if [ -f "dist/.vite/manifest.json" ]; then
-            echo "✅ manifest.json found"
-          else
-            echo "❌ dist/.vite/manifest.json NOT found!"
+          
+          # Verificar manifest
+          if [ ! -f "dist/.vite/manifest.json" ]; then
+            echo "❌ Vite manifest not found!"
             exit 1
           fi
+          
+          # Verificar assets
+          JS_COUNT=$(find dist/assets -name "*.js" 2>/dev/null | wc -l)
+          CSS_COUNT=$(find dist/assets -name "*.css" 2>/dev/null | wc -l)
+          
+          echo "📊 Build stats:"
+          echo "  - JavaScript files: $JS_COUNT"
+          echo "  - CSS files: $CSS_COUNT"
+          echo "  - Total size: $(du -sh dist/ | cut -f1)"
+          
+          if [ "$JS_COUNT" -eq 0 ] || [ "$CSS_COUNT" -eq 0 ]; then
+            echo "⚠️ Warning: Missing JS or CSS files!"
+          fi
+          
           echo "✅ Build validation passed"
 
-      # --- PLUGIN DEPENDENCIES BUILD (MOVED HERE) ---
-      - name: 🔨 Build Plugin Dependencies
+      # --- PLUGIN DEPENDENCIES ---
+      - name: 🔨 Build plugin dependencies
         run: |
-          echo "📦 Installing composer dependencies for plugins..."
-          # Iterate over directories in plugins/
-          if [ -d "plugins" ]; then
-            for dir in plugins/*/; do
-              if [ -f "$dir/composer.json" ]; then
-                echo "  → Installing dependencies for $(basename "$dir")"
-                cd "$dir"
-                # Install dependencies locally on the runner
-                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
-                # Remove dev files to keep deploy light
-                rm -rf tests/ .git/ .github/
-                cd - > /dev/null
-              fi
-            done
-          else
-             echo "⚠️ Plugins directory not found in repo, skipping dependency build."
+          echo "📦 Installing Composer dependencies for plugins..."
+          
+          if [ ! -d "plugins" ]; then
+            echo "ℹ️ No plugins directory found"
+            exit 0
           fi
+          
+          for dir in plugins/*/; do
+            if [ -f "$dir/composer.json" ]; then
+              PLUGIN_NAME=$(basename "$dir")
+              echo "  → Building $PLUGIN_NAME"
+              
+              cd "$dir"
+              composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
+              
+              # Remover arquivos desnecessários
+              rm -rf tests/ .git/ .github/ .gitignore
+              
+              cd - > /dev/null
+            fi
+          done
+          
+          echo "✅ Plugin dependencies built"
 
-      # --- ARTIFACT UPLOADS ---
-      - name: 📤 Upload build artifact (dist)
+      # --- ARTIFACTS ---
+      - name: 📤 Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-dist-${{ steps.commit.outputs.hash }}
@@ -136,7 +175,7 @@ jobs:
           retention-days: 7
           compression-level: 6
 
-      - name: 📤 Upload build artifact (theme files)
+      - name: 📤 Upload theme files
         uses: actions/upload-artifact@v4
         with:
           name: build-theme-${{ steps.commit.outputs.hash }}
@@ -149,11 +188,21 @@ jobs:
             index.php
           retention-days: 7
 
-      - name: 📤 Upload build artifact (plugins)
+      - name: 📤 Upload plugins
+        if: hashFiles('plugins/**') != ''
         uses: actions/upload-artifact@v4
         with:
           name: build-plugins-${{ steps.commit.outputs.hash }}
           path: plugins/
+          retention-days: 7
+
+      - name: 📤 Upload sitemaps
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-sitemaps-${{ steps.commit.outputs.hash }}
+          path: |
+            public/sitemap.xml
+            public/sitemap-pages.xml
           retention-days: 7
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -183,26 +232,33 @@ jobs:
           sparse-checkout-cone-mode: false
 
       # --- DOWNLOAD ARTIFACTS ---
-      - name: 📥 Download build artifact (dist)
+      - name: 📥 Download dist
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-dist-${{ needs.build.outputs.commit_hash }}
           path: ./dist
 
-      - name: 📥 Download build artifact (theme files)
+      - name: 📥 Download theme files
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-theme-${{ needs.build.outputs.commit_hash }}
           path: ./
 
-      - name: 📥 Download build artifact (plugins)
+      - name: 📥 Download plugins
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-plugins-${{ needs.build.outputs.commit_hash }}
           path: ./plugins
+
+      - name: 📥 Download sitemaps
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
+          path: ./sitemaps-deploy
 
       # --- SSH SETUP ---
       - name: 🔐 Setup SSH
@@ -212,8 +268,8 @@ jobs:
           known_hosts: unnecessary
           name: id_rsa
 
-      # --- BACKUP ---
-      - name: 📦 Create backup
+      # --- BACKUP & CLEANUP ---
+      - name: 📦 Backup & Clean dist folder
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -227,27 +283,35 @@ jobs:
             BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
             
-            echo "📦 Creating backup: ${BACKUP_DIR}"
+            echo "════════════════════════════════════════"
+            echo "📦 BACKUP & CLEANUP"
+            echo "════════════════════════════════════════"
+            
+            # Criar backup
             mkdir -p "${BACKUP_DIR}"
             
-            # Backup theme
-            if [ -d "${THEME_PATH}" ]; then
-              echo "  → Backing up theme..."
-              tar -czf "${BACKUP_DIR}/theme_backup.tar.gz" -C "${THEME_PATH}" . 2>/dev/null || true
+            if [ -d "${THEME_PATH}/dist" ]; then
+              echo "📦 Backing up dist folder..."
+              tar -czf "${BACKUP_DIR}/dist_backup.tar.gz" -C "${THEME_PATH}" dist/ 2>/dev/null || true
+              
+              # LIMPAR dist/ para evitar acúmulo de arquivos com hashes antigos
+              echo "🧹 Cleaning dist folder (removing old hashed files)..."
+              rm -rf "${THEME_PATH}/dist"/*
+              echo "✅ Dist folder cleaned"
             fi
             
-            # Ensure directories exist
+            # Garantir diretórios
             mkdir -p "${THEME_PATH}/dist"
             mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
             
-            # Clean old backups (keep last 5)
-            echo "🧹 Cleaning old backups..."
+            # Limpar backups antigos
+            echo "🧹 Cleaning old backups (keeping last 5)..."
             cd "$HOME/backups"
             ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
             
-            echo "✅ Backup created successfully"
+            echo "✅ Backup & cleanup completed"
 
-      # --- DEPLOY STEPS (RSYNC) ---
+      # --- DEPLOY STEPS ---
       
       - name: 🚀 Deploy dist/
         uses: burnett01/rsync-deployments@5.2.1
@@ -283,18 +347,55 @@ jobs:
           target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           strip_components: 0
 
-      # DEPLOY PLUGINS (Now deploying pre-built artifacts)
-      - name: 🔌 Deploy custom plugins
+      - name: 🔌 Deploy plugins
+        if: hashFiles('plugins/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
-          # Ensure 'vendor' is NOT excluded so dependencies are uploaded
-          switches: -avzr --checksum --exclude='index.php' --exclude='*.md'
+          switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
           path: plugins/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # --- SITEMAPS (CRITICAL FIX) ---
+      - name: 🗺️ Deploy sitemaps to ROOT
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "sitemaps-deploy/sitemap.xml,sitemaps-deploy/sitemap-pages.xml"
+          target: ${{ env.REMOTE_ROOT }}/
+          strip_components: 1
+
+      - name: ✅ Verify sitemaps
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "🔍 Verifying sitemaps in ROOT..."
+            
+            if [ -f "${{ env.REMOTE_ROOT }}/sitemap.xml" ]; then
+              echo "✅ sitemap.xml found in ROOT"
+              ls -lh "${{ env.REMOTE_ROOT }}/sitemap.xml"
+            else
+              echo "❌ sitemap.xml NOT found in ROOT!"
+              exit 1
+            fi
+            
+            if [ -f "${{ env.REMOTE_ROOT }}/sitemap-pages.xml" ]; then
+              echo "✅ sitemap-pages.xml found in ROOT"
+              ls -lh "${{ env.REMOTE_ROOT }}/sitemap-pages.xml"
+            else
+              echo "❌ sitemap-pages.xml NOT found in ROOT!"
+              exit 1
+            fi
 
       # --- PUBLIC ASSETS ---
       - name: 📄 Prepare public assets
@@ -303,12 +404,14 @@ jobs:
           echo "📄 Preparing public assets..."
           SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
           mkdir -p temp_public
+          
           for file in "${SAFE_FILES[@]}"; do
             if [ -f "public/$file" ]; then
               cp "public/$file" temp_public/
               echo "  ✓ $file"
             fi
           done
+          
           if [ -z "$(ls -A temp_public 2>/dev/null)" ]; then
             echo "ℹ️ No public assets to deploy"
             touch temp_public/.gitkeep
@@ -327,7 +430,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # --- CACHE PURGE ---
-      - name: 🧹 Purge LiteSpeed Cache
+      - name: 🧹 Purge caches (LiteSpeed + OPcache)
         continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -336,16 +439,108 @@ jobs:
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "🧹 Purging LiteSpeed Cache..."
+            echo "════════════════════════════════════════"
+            echo "🧹 CACHE PURGE"
+            echo "════════════════════════════════════════"
+            
             cd ${{ env.REMOTE_ROOT }}
+            
+            # LiteSpeed Cache
+            echo "🔥 Purging LiteSpeed Cache..."
             if command -v wp &> /dev/null; then
-              wp litespeed-purge all 2>/dev/null || echo "⚠️ LiteSpeed Cache plugin not found"
+              wp litespeed-purge all 2>/dev/null && echo "  ✅ LiteSpeed cache cleared" || echo "  ⚠️ LiteSpeed plugin not found"
             else
-              echo "⚠️ WP-CLI not available"
+              echo "  ⚠️ WP-CLI not available"
             fi
+            
+            # PHP OPcache (CRÍTICO - previne erros de função duplicada)
+            echo ""
+            echo "🔥 Purging PHP OPcache..."
+            
+            # Método 1: Via PHP CLI
+            if php -r "opcache_reset();" 2>/dev/null; then
+              echo "  ✅ OPcache cleared via CLI"
+            else
+              echo "  ℹ️ OPcache CLI reset not available"
+            fi
+            
+            # Método 2: Limpar cache files do PHP
+            rm -rf /tmp/php_* /var/tmp/php_* 2>/dev/null || true
+            
+            # Método 3: Trigger via web request (fallback)
+            curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null 2>/dev/null || true
+            
+            echo "  ✅ OPcache purge completed"
+            echo ""
+            echo "════════════════════════════════════════"
 
-      # --- VERIFICATION ---
-      - name: 📊 Deployment summary
+      # --- FINAL VERIFICATION ---
+      - name: 📊 Final verification
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo ""
+            echo "════════════════════════════════════════"
+            echo "📊 DEPLOYMENT VERIFICATION"
+            echo "════════════════════════════════════════"
+            
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            
+            # Theme
+            echo ""
+            echo "🎨 Theme:"
+            if [ -d "$THEME_PATH/dist" ]; then
+              DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
+              FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
+              echo "  ✅ dist/ exists ($DIST_SIZE, $FILE_COUNT files)"
+            else
+              echo "  ❌ dist/ NOT FOUND!"
+              exit 1
+            fi
+            
+            [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ⚠️ functions.php missing"
+            
+            # Sitemaps
+            echo ""
+            echo "🗺️ Sitemaps (ROOT):"
+            if [ -f "${{ env.REMOTE_ROOT }}/sitemap.xml" ]; then
+              SIZE=$(stat -f%z "${{ env.REMOTE_ROOT }}/sitemap.xml" 2>/dev/null || stat -c%s "${{ env.REMOTE_ROOT }}/sitemap.xml")
+              echo "  ✅ sitemap.xml ($SIZE bytes)"
+            else
+              echo "  ❌ sitemap.xml MISSING!"
+              exit 1
+            fi
+            
+            [ -f "${{ env.REMOTE_ROOT }}/sitemap-pages.xml" ] && \
+              echo "  ✅ sitemap-pages.xml" || \
+              echo "  ⚠️ sitemap-pages.xml missing"
+            
+            # Plugins
+            echo ""
+            echo "🔌 Plugins:"
+            PLUGIN_COUNT=$(find "${{ env.REMOTE_ROOT }}/wp-content/plugins" -mindepth 1 -maxdepth 1 -type d | wc -l)
+            echo "  Total: $PLUGIN_COUNT plugins"
+            
+            # PHP Syntax Check
+            echo ""
+            echo "🔍 PHP Syntax:"
+            PHP_ERRORS=$(find "$THEME_PATH" -name "*.php" -exec php -l {} \; 2>&1 | grep -i "parse error" || true)
+            if [ -z "$PHP_ERRORS" ]; then
+              echo "  ✅ No PHP syntax errors"
+            else
+              echo "  ❌ PHP ERRORS FOUND:"
+              echo "$PHP_ERRORS"
+              exit 1
+            fi
+            
+            echo ""
+            echo "════════════════════════════════════════"
+
+      - name: 📊 Deploy summary
         if: always()
         run: |
           echo ""
@@ -355,11 +550,12 @@ jobs:
             echo ""
             echo "🌐 Site: ${{ env.SITE_URL }}"
             echo "📦 Commit: ${{ needs.build.outputs.commit_hash }}"
+            echo "🗺️ Sitemap: ${{ env.SITE_URL }}/sitemap.xml"
             echo ""
             echo "🎉 Your site is now live!"
           else
             echo "❌ DEPLOYMENT FAILED"
-            echo "Check logs above."
+            echo "Check logs above for details"
           fi
           echo "════════════════════════════════════════════════════════"
 
@@ -374,17 +570,55 @@ jobs:
     if: needs.deploy.result == 'success'
     
     steps:
-      - name: 🔍 Check site accessibility
+      - name: 🔍 Check site
         run: |
-          echo "🔍 Checking site accessibility..."
+          echo "🔍 Checking site..."
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 \
-            -H "User-Agent: Mozilla/5.0 (compatible; DeployBot/1.0; +https://github.com)" \
+            -H "User-Agent: Mozilla/5.0 (compatible; DeployBot/1.0)" \
             ${{ env.SITE_URL }})
           
           if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ] || [ "$HTTP_CODE" = "302" ]; then
-            echo "✅ Site is accessible (HTTP $HTTP_CODE)"
+            echo "✅ Site accessible (HTTP $HTTP_CODE)"
           else
             echo "⚠️ Site returned HTTP $HTTP_CODE"
-            # Don't fail job for 403 (firewall) or other soft errors
-            if [ "$HTTP_CODE" != "403" ]; then exit 1; fi
+            [ "$HTTP_CODE" != "403" ] && exit 1
           fi
+
+      - name: 🗺️ Check sitemap
+        run: |
+          echo "🗺️ Checking sitemap..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 \
+            ${{ env.SITE_URL }}/sitemap.xml)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Sitemap accessible (HTTP $HTTP_CODE)"
+            
+            # Validate XML structure
+            CONTENT=$(curl -s -L --max-time 30 ${{ env.SITE_URL }}/sitemap.xml)
+            if echo "$CONTENT" | grep -q "<sitemapindex"; then
+              echo "✅ Valid sitemap index structure"
+            else
+              echo "⚠️ Unexpected sitemap format"
+            fi
+          else
+            echo "⚠️ Sitemap returned HTTP $HTTP_CODE"
+          fi
+
+      - name: 🔌 Check REST API
+        run: |
+          echo "🔌 Checking WordPress REST API..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 \
+            ${{ env.SITE_URL }}/wp-json/)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ REST API accessible (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️ REST API returned HTTP $HTTP_CODE"
+          fi
+
+      - name: 🎉 Success
+        run: |
+          echo ""
+          echo "🎉 Deploy & Health Check COMPLETE!"
+          echo "🌐 ${{ env.SITE_URL }}"
+          echo "🗺️ ${{ env.SITE_URL }}/sitemap.xml"
