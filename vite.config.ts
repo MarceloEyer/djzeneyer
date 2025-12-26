@@ -33,13 +33,23 @@ export default defineConfig(({ command }) => {
       emptyOutDir: true,
       target: 'es2020',
       minify: 'terser',
-      sourcemap: false, // Desligado para performance máxima em produção
+      sourcemap: false,
       
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug'],
         },
+        mangle: {
+          safari10: true,
+        },
+        format: {
+          comments: false,
+        },
+        // CRÍTICO: Desabilita otimizações que usam eval
+        ecma: 2020,
+        safari10: true,
       },
       
       rollupOptions: {
