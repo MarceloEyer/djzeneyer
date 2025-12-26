@@ -1,16 +1,12 @@
 /**
  * Routes Configuration - Centralized Route Management
- * 
- * PRINCÍPIOS:
+ * * PRINCÍPIOS:
  * - DRY (Don't Repeat Yourself): Uma única definição para todas as rotas
  * - KISS (Keep It Simple): Configuração declarativa e fácil de entender
  * - Escalável: Adicionar novos idiomas é trivial
- * 
- * BENEFÍCIOS:
- * - Reduz código de 80+ linhas para ~30 linhas
- * - Facilita adição de novos idiomas (ES, FR, etc.)
- * - Manutenção centralizada
- * - Type-safe com TypeScript
+ * * ATUALIZAÇÃO v2.0:
+ * - Adicionada rota de News (Notícias)
+ * - Adicionada rota de Videos
  */
 
 import { lazy, ComponentType } from 'react';
@@ -50,23 +46,13 @@ const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
 const FAQPage = lazy(() => import('../pages/FAQPage'));
 const PhilosophyPage = lazy(() => import('../pages/PhilosophyPage'));
+const NewsPage = lazy(() => import('../pages/NewsPage')); // ✨ Nova página
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 // ============================================================================
 // ROUTES CONFIGURATION
 // ============================================================================
 
-/**
- * Configuração centralizada de todas as rotas
- * 
- * ESTRUTURA:
- * - component: Componente React da página
- * - paths: Objeto com caminhos por idioma
- * - isIndex: true para rota raiz (/)
- * - hasWildcard: true para rotas com subrotas (ex: /shop/*)
- * 
- * NOTA: Rotas com parâmetros dinâmicos (:id, :slug) são definidas separadamente
- */
 export const ROUTES_CONFIG: RouteConfig[] = [
   // Home (Index)
   {
@@ -99,6 +85,16 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     component: MusicPage,
     paths: { en: 'music/:slug', pt: 'musica/:slug' },
+  },
+
+  // News / Blog (✨ NOVO)
+  {
+    component: NewsPage,
+    paths: { en: 'news', pt: 'noticias' },
+  },
+  {
+    component: NewsPage, // Idealmente seria NewsDetailPage, mas NewsPage pode tratar o slug
+    paths: { en: 'news/:slug', pt: 'noticias/:slug' },
   },
 
   // Zen Tribe (múltiplos aliases)
@@ -159,9 +155,6 @@ export const NOT_FOUND_COMPONENT = NotFoundPage;
 
 /**
  * Obtém o caminho localizado para uma rota
- * @param routeConfig - Configuração da rota
- * @param lang - Idioma desejado
- * @returns Array de caminhos (pode ter múltiplos aliases)
  */
 export const getLocalizedPaths = (routeConfig: RouteConfig, lang: Language): string[] => {
   const paths = routeConfig.paths[lang];
@@ -170,8 +163,6 @@ export const getLocalizedPaths = (routeConfig: RouteConfig, lang: Language): str
 
 /**
  * Obtém o prefixo de idioma para a rota base
- * @param lang - Idioma
- * @returns Prefixo (ex: '/pt' para português, '/' para inglês)
  */
 export const getLanguagePrefix = (lang: Language): string => {
   return lang === 'pt' ? '/pt' : '/';
@@ -179,9 +170,6 @@ export const getLanguagePrefix = (lang: Language): string => {
 
 /**
  * Constrói o caminho completo da rota
- * @param path - Caminho relativo
- * @param lang - Idioma
- * @returns Caminho completo (ex: '/pt/sobre' ou '/about')
  */
 export const buildFullPath = (path: string, lang: Language): string => {
   const prefix = getLanguagePrefix(lang);
@@ -191,8 +179,6 @@ export const buildFullPath = (path: string, lang: Language): string => {
 
 /**
  * Obtém todas as rotas configuradas para um idioma
- * @param lang - Idioma
- * @returns Array de objetos com component e path
  */
 export const getRoutesForLanguage = (lang: Language) => {
   return ROUTES_CONFIG.flatMap(route => {
@@ -207,28 +193,7 @@ export const getRoutesForLanguage = (lang: Language) => {
 };
 
 /**
- * Obtém o mapeamento reverso (path -> component) para um idioma
- * Útil para navegação programática
- */
-export const getPathToComponentMap = (lang: Language): Map<string, ComponentType> => {
-  const map = new Map<string, ComponentType>();
-  
-  ROUTES_CONFIG.forEach(route => {
-    const paths = getLocalizedPaths(route, lang);
-    paths.forEach(path => {
-      const fullPath = buildFullPath(path, lang);
-      map.set(fullPath, route.component);
-    });
-  });
-  
-  return map;
-};
-
-/**
  * Encontra a rota correspondente a um caminho
- * @param path - Caminho a buscar
- * @param lang - Idioma
- * @returns Configuração da rota ou undefined
  */
 export const findRouteByPath = (path: string, lang: Language): RouteConfig | undefined => {
   return ROUTES_CONFIG.find(route => {
