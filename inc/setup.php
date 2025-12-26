@@ -44,29 +44,33 @@ add_action('after_setup_theme', function () {
 });
 
 /**
- * Security Headers (Including CSP Fix)
+ * Security Headers (CORREÇÃO CRÍTICA PARA HOSTINGER)
+ * Priority 999 garante que rode depois de plugins de segurança
  */
 add_action('send_headers', function() {
     if (is_admin() || headers_sent()) return;
     
-    // Remove headers inseguros
+    // 1. Limpeza de headers antigos/inseguros
     header_remove('X-Powered-By');
+    header_remove("Content-Security-Policy");
+    header_remove("X-Content-Security-Policy");
+    header_remove("X-WebKit-CSP");
     
-    // Headers de Segurança Padrão
+    // 2. Headers de Segurança Padrão
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
-    // CSP: Permite 'unsafe-eval' necessário para Google/React/Captcha
-    // Removemos qualquer CSP antigo para evitar conflitos
-    header_remove("Content-Security-Policy");
-    header("Content-Security-Policy: default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';");
+    // 3. CSP Permissivo para Produção
+    // 'blob:' adicionado para workers/media
+    // 'unsafe-eval' liberado para resolver o erro vermelho
+    header("Content-Security-Policy: default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';");
     
-    // HSTS (Apenas em SSL)
+    // 4. HSTS (Apenas em SSL)
     if (is_ssl()) {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
-});
+}, 999);
 
 /**
  * CORS for REST API
