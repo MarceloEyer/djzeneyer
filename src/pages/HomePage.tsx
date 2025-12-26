@@ -125,8 +125,6 @@ const HomePage: React.FC = () => {
   }, []);
 
   // --- SCHEMA STATIC DATA (Rich Snippets) ---
-  // Mantemos este Schema "Hardcoded" pois ele contém dados complexos (Awards, Events)
-  // que são específicos da Home e difíceis de gerenciar via configurações globais simples.
   const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
@@ -229,10 +227,7 @@ const HomePage: React.FC = () => {
         hrefLang={getHrefLangUrls(currentPath, currentUrl)}
         schema={schemaData}
         
-        // Otimização LCP: Carrega a fonte crítica do título
-        preload={[
-           { href: '/fonts/Orbitron-Variable.ttf', as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' }
-        ]}
+        // CORREÇÃO: Removido o bloco 'preload' para evitar duplicidade de carregamento
       />
 
       {/* HERO SECTION */}
