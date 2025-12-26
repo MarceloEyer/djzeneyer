@@ -1,7 +1,7 @@
 <?php
 /**
  * Core Setup & Security
- * Theme support, CORS, performance tuning
+ * Theme support, CORS, performance tuning, and Security Headers
  */
 
 if (!defined('ABSPATH')) exit;
@@ -44,16 +44,25 @@ add_action('after_setup_theme', function () {
 });
 
 /**
- * Security Headers
+ * Security Headers (Including CSP Fix)
  */
 add_action('send_headers', function() {
     if (is_admin() || headers_sent()) return;
     
+    // Remove headers inseguros
     header_remove('X-Powered-By');
+    
+    // Headers de Segurança Padrão
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
+    // CSP: Permite 'unsafe-eval' necessário para Google/React/Captcha
+    // Removemos qualquer CSP antigo para evitar conflitos
+    header_remove("Content-Security-Policy");
+    header("Content-Security-Policy: default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';");
+    
+    // HSTS (Apenas em SSL)
     if (is_ssl()) {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
