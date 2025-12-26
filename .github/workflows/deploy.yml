@@ -3,7 +3,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # 
 # FEATURES: Smart Cache Cleaning, Root Sitemaps, Plugin Dependencies
-# AUTHOR: DJ Zen Eyer | VERSION: 4.0 Diamond
+# AUTHOR: DJ Zen Eyer | VERSION: 4.1 Diamond (Health Check Fix)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 name: 🚀 Production Deploy
@@ -570,50 +570,54 @@ jobs:
     if: needs.deploy.result == 'success'
     
     steps:
-      - name: 🔍 Check site
+      - name: 🔍 Check sitemap.xml (Server Status)
         run: |
-          echo "🔍 Checking site..."
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 \
-            -H "User-Agent: Mozilla/5.0 (compatible; DeployBot/1.0)" \
-            ${{ env.SITE_URL }})
+          echo "🔍 Checking site availability via sitemap.xml..."
+          # Usamos um User-Agent de navegador normal para evitar bloqueio
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
           
-          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ] || [ "$HTTP_CODE" = "302" ]; then
-            echo "✅ Site accessible (HTTP $HTTP_CODE)"
-          else
-            echo "⚠️ Site returned HTTP $HTTP_CODE"
-            [ "$HTTP_CODE" != "403" ] && exit 1
-          fi
-
-      - name: 🗺️ Check sitemap
-        run: |
-          echo "🗺️ Checking sitemap..."
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 \
-            ${{ env.SITE_URL }}/sitemap.xml)
+          # Tentamos acessar o sitemap.xml
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" ${{ env.SITE_URL }}/sitemap.xml)
           
           if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ Sitemap accessible (HTTP $HTTP_CODE)"
+            echo "✅ Site is UP! (sitemap.xml found with HTTP 200)"
             
-            # Validate XML structure
-            CONTENT=$(curl -s -L --max-time 30 ${{ env.SITE_URL }}/sitemap.xml)
-            if echo "$CONTENT" | grep -q "<sitemapindex"; then
-              echo "✅ Valid sitemap index structure"
+            # Validação extra: O arquivo XML é válido?
+            CONTENT=$(curl -s -L --max-time 30 -H "User-Agent: $UA" ${{ env.SITE_URL }}/sitemap.xml)
+            if echo "$CONTENT" | grep -q "<sitemapindex" || echo "$CONTENT" | grep -q "<urlset"; then
+               echo "✅ Sitemap content looks valid."
             else
-              echo "⚠️ Unexpected sitemap format"
+               echo "⚠️ Sitemap content format is unexpected, but file exists."
             fi
+            
           else
             echo "⚠️ Sitemap returned HTTP $HTTP_CODE"
+            
+            # Se deu 403, é firewall. O site está "no ar", só bloqueou o script.
+            if [ "$HTTP_CODE" = "403" ]; then
+               echo "ℹ️ Site is protected by Firewall (403), but responding. Marking as SUCCESS."
+               exit 0
+            else
+               echo "❌ Site seems DOWN or sitemap missing."
+               exit 1
+            fi
           fi
 
       - name: 🔌 Check REST API
         run: |
           echo "🔌 Checking WordPress REST API..."
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 \
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" \
             ${{ env.SITE_URL }}/wp-json/)
           
           if [ "$HTTP_CODE" = "200" ]; then
             echo "✅ REST API accessible (HTTP $HTTP_CODE)"
           else
             echo "⚠️ REST API returned HTTP $HTTP_CODE"
+            if [ "$HTTP_CODE" != "403" ]; then
+               echo "ℹ️ API check failed, but site might still be up."
+            fi
           fi
 
       - name: 🎉 Success
