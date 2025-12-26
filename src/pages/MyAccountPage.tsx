@@ -1,27 +1,13 @@
 // src/pages/MyAccountPage.tsx
+// REFATORADO: Componentes extraídos para melhor organização (SRP)
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
-import { 
-  User, 
-  Settings, 
-  ShoppingBag, 
-  Award, 
-  Music, 
-  Calendar,
-  Edit3,
-  LogOut,
-  TrendingUp,
-  Star,
-  AlertCircle,
-  Headphones,
-  Lock,
-  Bell,
-  Shield
-} from 'lucide-react';
+import { User, Settings, ShoppingBag, Award, Music, LogOut } from 'lucide-react';
+import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
 
 // Interfaces
 interface Order {
@@ -185,31 +171,6 @@ const MyAccountPage: React.FC = () => {
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
-  // Funções auxiliares para orders
-  const getOrderStatusClass = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-success/20 text-success';
-      case 'processing':
-        return 'bg-warning/20 text-warning';
-      case 'failed':
-        return 'bg-error/20 text-error';
-      default:
-        return 'bg-white/20 text-white/70';
-    }
-  };
-
-  const getOrderStatusText = (status: string) => {
-    const statusMap: Record<string, string> = {
-      'completed': 'Completed',
-      'processing': 'Processing',
-      'failed': 'Failed',
-      'cancelled': 'Cancelled',
-      'pending': 'Pending',
-    };
-    return statusMap[status] || status.charAt(0).toUpperCase() + status.slice(1);
-  };
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
@@ -224,137 +185,15 @@ const MyAccountPage: React.FC = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-surface/50 rounded-lg p-6 border border-white/10 hover:border-primary/50 transition-colors">
-                <div className="flex items-center gap-3 mb-2">
-                  <TrendingUp className="text-primary" size={24} />
-                  <h3 className="font-semibold">Zen Level</h3>
-                </div>
-                <p className="text-3xl font-black text-primary">Level {userStats.level}</p>
-                <p className="text-sm text-white/60">{userStats.rank}</p>
-              </div>
-              
-              <div className="bg-surface/50 rounded-lg p-6 border border-white/10 hover:border-secondary/50 transition-colors">
-                <div className="flex items-center gap-3 mb-2">
-                  <Star className="text-secondary" size={24} />
-                  <h3 className="font-semibold">Total XP</h3>
-                </div>
-                <p className="text-3xl font-black text-secondary">{userStats.xp.toLocaleString()}</p>
-                <p className="text-sm text-white/60">
-                  {userStats.xpToNext > 0 ? `${userStats.xpToNext} to next rank` : 'Max rank!'}
-                </p>
-              </div>
-              
-              <div className="bg-surface/50 rounded-lg p-6 border border-white/10 hover:border-accent/50 transition-colors">
-                <div className="flex items-center gap-3 mb-2">
-                  <Award className="text-accent" size={24} />
-                  <h3 className="font-semibold">Achievements</h3>
-                </div>
-                <p className="text-3xl font-black text-accent">{userStats.totalAchievements}</p>
-                <p className="text-sm text-white/60">
-                  {userStats.recentAchievements > 0 
-                    ? `${userStats.recentAchievements} unlocked recently`
-                    : 'Keep exploring!'
-                  }
-                </p>
-              </div>
-            </div>
+            <UserStatsCards stats={userStats} />
 
             {/* Recent Activity */}
-            <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-              <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
-              <div className="space-y-3">
-                {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
-                  user.gamipress_achievements.slice(-3).reverse().map((achievement: any) => (
-                    <div key={achievement.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                      <Award className="text-secondary flex-shrink-0" size={20} />
-                      <div className="flex-1">
-                        <p className="font-medium">{achievement.title}</p>
-                        <p className="text-sm text-white/60">Recently achieved</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                      <Music className="text-primary" size={20} />
-                      <div>
-                        <p className="font-medium">Welcome to Zen Tribe!</p>
-                        <p className="text-sm text-white/60">Your journey begins now</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                      <Calendar className="text-accent" size={20} />
-                      <div>
-                        <p className="font-medium">Account created</p>
-                        <p className="text-sm text-white/60">Start exploring!</p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
+            <RecentActivity achievements={user.gamipress_achievements} />
           </div>
         );
 
       case 'orders':
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Order History</h2>
-              <Link to="/shop" className="btn btn-primary">
-                Continue Shopping
-              </Link>
-            </div>
-
-            {loadingOrders ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-                <p>Loading orders...</p>
-              </div>
-            ) : orders.length > 0 ? (
-              <div className="space-y-4">
-                {orders.map((order) => (
-                  <div key={order.id} className="bg-surface/50 rounded-lg p-6 border border-white/10 hover:border-primary/30 transition-colors">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="font-semibold text-lg">Order #{order.id}</h3>
-                        <p className="text-sm text-white/60">
-                          {new Date(order.date_created).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold">R$ {order.total}</p>
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getOrderStatusClass(order.status)}`}>
-                          {getOrderStatusText(order.status)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {order.line_items.map((item, index) => (
-                        <div key={index} className="flex justify-between text-sm border-t border-white/5 pt-2">
-                          <span className="text-white/80">{item.name} x{item.quantity}</span>
-                          <span className="font-semibold">R$ {item.total}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20">
-                <ShoppingBag className="mx-auto mb-4 text-white/30" size={64} />
-                <h3 className="text-2xl font-semibold mb-3">No orders yet</h3>
-                <p className="text-white/60 mb-8 max-w-md mx-auto">
-                  Start exploring our exclusive content and merchandise!
-                </p>
-                <Link to="/shop" className="btn btn-primary btn-lg">
-                  Browse Shop
-                </Link>
-              </div>
-            )}
-          </div>
-        );
+        return <OrdersList orders={orders} loading={loadingOrders} />;
 
       case 'achievements':
         return (

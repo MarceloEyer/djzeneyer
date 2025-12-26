@@ -1,6 +1,7 @@
 // src/contexts/CartContext.tsx
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { useUser } from './UserContext';
+import { buildApiUrl } from '../config/api';
 
 // Interface para os dados do carrinho que virão da API
 interface CartData {
@@ -25,8 +26,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getCart = useCallback(async () => {
     setLoading(true);
-    const wpRestUrl = window.wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json/';
-    const apiUrl = `${wpRestUrl}wc/store/v1/cart`;
+    const apiUrl = buildApiUrl('wc/store/v1/cart');
 
     try {
       const response = await fetch(apiUrl, {

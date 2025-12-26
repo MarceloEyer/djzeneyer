@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { Download, Music2, Clock, Filter, ExternalLink, Youtube, Cloud } from 'lucide-react';
+import { useTracksQuery } from '../hooks/useQueries';
 
 interface MusicTrack {
   id: number;
@@ -24,25 +25,17 @@ const MusicPage: React.FC = () => {
   const { t } = useTranslation();
   const currentPath = '/music';
   
-  const [tracks, setTracks] = useState<MusicTrack[]>([]);
+  // React Query: cache automático + deduplicação
+  const { data: tracks = [], isLoading: loading, error } = useTracksQuery();
+  
   const [filteredTracks, setFilteredTracks] = useState<MusicTrack[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    const baseUrl = window.wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json/';
-    fetch(`${baseUrl}wp/v2/remixes?_embed&per_page=100`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setTracks(data);
-          setFilteredTracks(data);
-        }
-        setLoading(false);
-      })
-      .catch(console.error);
-  }, []);
+  
+  // Log de erro
+  if (error) {
+    console.error('Error fetching tracks:', error);
+  }
 
   const allTags = ['Todos', ...Array.from(new Set(tracks.flatMap(t => t.tag_names || [])))].filter(Boolean);
 

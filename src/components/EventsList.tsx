@@ -1,10 +1,11 @@
 // src/components/EventsList.tsx
-// ARQUITETURA DEFINITIVA: VISUAL LIMPO + JSON-LD ROBUSTO (GSC GREEN)
+// ARQUITETURA DEFINITIVA: VISUAL LIMPO + JSON-LD ROBUSTO + REACT QUERY CACHE
 
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
+import { useEventsQuery } from '../hooks/useQueries';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -38,38 +39,15 @@ interface EventsListProps {
 
 export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
   const { t, i18n } = useTranslation();
-  const [events, setEvents] = useState<BandsintownEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
-  // --- Data Fetching ---
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        // Busca a URL da API do objeto global wpData ou variáveis de ambiente
-        const wpRestUrl = ((window as any).wpData?.restUrl || import.meta.env.VITE_WP_REST_URL || 'https://djzeneyer.com/wp-json').replace(/\/$/, '');
-        const response = await fetch(`${wpRestUrl}/zen-bit/v1/events?limit=${limit}`);
-        
-        if (!response.ok) throw new Error(`API Status: ${response.status}`);
-        
-        const data = await response.json();
-        
-        if (data.success && Array.isArray(data.events)) {
-          setEvents(data.events);
-        } else {
-          setEvents([]);
-        }
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, [limit]);
+  // React Query: cache automático + deduplicação
+  const { data: events = [], isLoading: loading, error } = useEventsQuery(limit);
+  
+  // Log de erro
+  if (error) {
+    console.error('Error fetching events:', error);
+  }
 
   // --- Helpers & Formatters ---
   const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) => {

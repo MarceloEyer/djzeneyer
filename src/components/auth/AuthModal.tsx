@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { Turnstile } from '@marsidev/react-turnstile'; // Biblioteca do Cloudflare
+import { Turnstile } from '@marsidev/react-turnstile';
 import { useUser } from '../../contexts/UserContext';
+import { getTurnstileSiteKey } from '../../config/api';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -363,7 +364,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 {mode === 'register' && (
                   <div className="flex justify-center py-2">
                     <Turnstile 
-                      siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                      siteKey={getTurnstileSiteKey()}
                       onSuccess={(token) => setTurnstileToken(token)}
                       options={{ theme: 'dark' }}
                     />
