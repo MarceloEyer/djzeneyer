@@ -1,3 +1,4 @@
+// ESLint configuration updated for modern JavaScript standards
 import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -10,8 +11,7 @@ export default tseslint.config(
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+ecmaVersion: 2024, // Updated to support latest ES2024 features      globals: globals.browser,
     },
     plugins: {
       'react-hooks': reactHooks,
