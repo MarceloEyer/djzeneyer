@@ -1,7 +1,9 @@
+// src/hooks/useQueries.ts
+// v4.0 - FIX: Added X-WP-Nonce for Cart and Gamipress Auth
+
 /**
  * Custom React Query Hooks
- * 
- * Hooks otimizados com cache automático para todas as APIs do projeto.
+ * * Hooks otimizados com cache automático para todas as APIs do projeto.
  * Substitui fetches manuais por queries com cache inteligente.
  */
 
@@ -57,18 +59,9 @@ interface MusicTrack {
 }
 
 // ============================================================================
-// MENU QUERY
+// MENU QUERY (Público)
 // ============================================================================
 
-/**
- * Hook para buscar menu de navegação com cache
- * 
- * CACHE: 5 minutos
- * BENEFÍCIOS:
- * - Menu carrega instantaneamente após primeira visita
- * - Não refaz request ao trocar de página
- * - Atualiza automaticamente ao trocar idioma
- */
 export const useMenuQuery = (lang: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.menu.list(lang),
@@ -84,24 +77,14 @@ export const useMenuQuery = (lang: string) => {
       return Array.isArray(data) ? data : [];
     },
     staleTime: STALE_TIME.MENU,
-    // Retry menos agressivo para menu (não é crítico)
     retry: 1,
   });
 };
 
 // ============================================================================
-// EVENTS QUERY
+// EVENTS QUERY (Público)
 // ============================================================================
 
-/**
- * Hook para buscar eventos com cache
- * 
- * CACHE: 2 minutos
- * BENEFÍCIOS:
- * - Eventos carregam instantaneamente
- * - Reduz chamadas à API do Bandsintown
- * - Atualiza automaticamente a cada 2 minutos
- */
 export const useEventsQuery = (limit: number = 10) => {
   return useQuery({
     queryKey: QUERY_KEYS.events.list(limit),
@@ -122,24 +105,14 @@ export const useEventsQuery = (limit: number = 10) => {
       return [];
     },
     staleTime: STALE_TIME.EVENTS,
-    // Retry mais agressivo para eventos (dados importantes)
     retry: 2,
   });
 };
 
 // ============================================================================
-// TRACKS/MUSIC QUERY
+// TRACKS/MUSIC QUERY (Público)
 // ============================================================================
 
-/**
- * Hook para buscar músicas/remixes com cache
- * 
- * CACHE: 5 minutos
- * BENEFÍCIOS:
- * - Catálogo carrega instantaneamente
- * - Não refaz request ao filtrar (filtragem client-side)
- * - Reduz carga no WordPress
- */
 export const useTracksQuery = () => {
   return useQuery({
     queryKey: QUERY_KEYS.tracks.list(),
@@ -158,24 +131,14 @@ export const useTracksQuery = () => {
       return Array.isArray(data) ? data : [];
     },
     staleTime: STALE_TIME.TRACKS,
-    // Cache mais longo para músicas (dados estáveis)
-    gcTime: 15 * 60 * 1000, // 15 minutos
+    gcTime: 15 * 60 * 1000,
   });
 };
 
 // ============================================================================
-// PRODUCTS QUERY (Shop)
+// PRODUCTS QUERY (Público)
 // ============================================================================
 
-/**
- * Hook para buscar produtos com cache
- * 
- * CACHE: 3 minutos
- * BENEFÍCIOS:
- * - Loja carrega instantaneamente
- * - Reduz chamadas ao WooCommerce
- * - Atualiza preços automaticamente
- */
 export const useProductsQuery = (lang?: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.products.list(lang),
@@ -197,26 +160,24 @@ export const useProductsQuery = (lang?: string) => {
 };
 
 // ============================================================================
-// CART QUERY
+// CART QUERY (Privado - Requer Auth/Nonce)
 // ============================================================================
 
-/**
- * Hook para buscar carrinho com cache
- * 
- * CACHE: 30 segundos (curto, pois muda frequentemente)
- * BENEFÍCIOS:
- * - Carrinho sincronizado entre páginas
- * - Reduz chamadas ao WooCommerce
- * - Atualiza automaticamente
- */
 export const useCartQuery = () => {
   return useQuery({
     queryKey: QUERY_KEYS.cart.current,
     queryFn: async () => {
       const apiUrl = buildApiUrl('wc/store/v1/cart');
+      
+      // Pega o Nonce
+      const nonce = (window as any).wpData?.nonce || '';
+
       const response = await fetch(apiUrl, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': nonce // <--- VACINA APLICADA
+        },
         credentials: 'include',
       });
       
@@ -227,30 +188,30 @@ export const useCartQuery = () => {
       return response.json();
     },
     staleTime: STALE_TIME.CART,
-    // Refetch ao focar (importante para carrinho)
     refetchOnWindowFocus: true,
   });
 };
 
 // ============================================================================
-// USER GAMIPRESS QUERY
+// USER GAMIPRESS QUERY (Privado - Requer Auth/Nonce)
 // ============================================================================
 
-/**
- * Hook para buscar dados de gamificação do usuário
- * 
- * CACHE: 1 minuto (atualiza rápido)
- * BENEFÍCIOS:
- * - Pontos/achievements sincronizados
- * - Reduz carga no GamiPress
- * - UX mais rápida
- */
 export const useGamipressQuery = (userId: number | undefined) => {
   return useQuery({
     queryKey: QUERY_KEYS.user.gamipress(userId!),
     queryFn: async () => {
       const apiUrl = buildApiUrl(`djzeneyer/v1/gamipress/${userId}`);
-      const response = await fetch(apiUrl);
+      
+      // Pega o Nonce
+      const nonce = (window as any).wpData?.nonce || '';
+
+      const response = await fetch(apiUrl, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': nonce // <--- VACINA APLICADA
+          },
+          credentials: 'include'
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch gamipress data');
@@ -259,9 +220,7 @@ export const useGamipressQuery = (userId: number | undefined) => {
       return response.json();
     },
     staleTime: STALE_TIME.GAMIPRESS,
-    // Só executa se userId existir
     enabled: !!userId,
-    // Refetch ao focar (importante para gamificação)
     refetchOnWindowFocus: true,
   });
 };
