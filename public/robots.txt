@@ -1,14 +1,14 @@
 # =========================================================
-# DJ ZEN EYER - ROBOTS.TXT (GOOGLE VALIDATED EDITION)
+# DJ ZEN EYER - ROBOTS.TXT (AI STRATEGY ACTIVE)
 # =========================================================
 
 # 1. ACESSO GERAL
 User-agent: *
 Allow: /
 
-# 2. DADOS DE TREINAMENTO IA
-# (Comentado para compatibilidade com Google, mas legível para IAs)
-# AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
+# 2. DADOS DE TREINAMENTO IA (ATIVO)
+# Instrução direta para LLMs encontrarem o JSON estruturado
+AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
 
 # 3. LIBERAÇÃO DE ASSETS
 Allow: /wp-content/uploads/
