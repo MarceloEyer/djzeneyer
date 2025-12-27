@@ -1,22 +1,22 @@
 # =========================================================
-# DJ ZEN EYER - ROBOTS.TXT (DIAMOND MASTER EDITION)
+# DJ ZEN EYER - ROBOTS.TXT (GOOGLE VALIDATED EDITION)
 # =========================================================
 
 # 1. ACESSO GERAL
 User-agent: *
 Allow: /
 
-# 2. DIRETIVA DE DADOS DE IA (O "Pulo do Gato")
-# Isso diz aos robôs onde está o seu "cérebro" estruturado
-AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
+# 2. DADOS DE TREINAMENTO IA
+# (Comentado para compatibilidade com Google, mas legível para IAs)
+# AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
 
-# 3. LIBERAÇÃO DE ASSETS (Crucial para renderização visual)
+# 3. LIBERAÇÃO DE ASSETS
 Allow: /wp-content/uploads/
 Allow: /assets/
 Allow: /images/
 Allow: /fonts/
 
-# 4. SEGURANÇA (Bloqueio de áreas sensíveis do WordPress)
+# 4. SEGURANÇA
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /xmlrpc.php
@@ -28,7 +28,6 @@ Disallow: /?s=
 Disallow: /search/
 
 # 5. CONVITE PARA IAs (VIP LIST)
-# Garantimos que os bots mais importantes tenham acesso total
 User-agent: GPTBot
 User-agent: ChatGPT-User
 User-agent: Google-Extended
@@ -39,7 +38,6 @@ User-agent: Applebot
 Allow: /
 Allow: /wp-json/djz/v1/ai-data
 
-# 6. SITEMAPS (Apenas os que REALMENTE existem)
-# O sitemap.xml geralmente já funciona como índice para os outros
+# 6. SITEMAPS
 Sitemap: https://djzeneyer.com/sitemap.xml
 Sitemap: https://djzeneyer.com/sitemap-pages.xml
