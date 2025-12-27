@@ -9,6 +9,7 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     plugins: [react()],
+    publicDir: false
 
     // ========================================================================
     // A CORREÇÃO CRÍTICA (PULO DO GATO) 🐈
