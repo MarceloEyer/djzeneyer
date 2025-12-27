@@ -1,0 +1,25 @@
+# CODEOWNERS file for djzeneyer project
+# Defines code ownership for automated PR assignments and reviews
+
+# Default owner for everything in the repo
+* @MarceloEyer
+
+# Frontend (React/TypeScript)
+src/** @MarceloEyer
+
+# Build and config files
+vite.config.ts @MarceloEyer
+eslint.config.js @MarceloEyer
+tsconfig*.json @MarceloEyer
+
+# Backend (WordPress)
+inc/** @MarceloEyer
+plugins/** @MarceloEyer
+*.php @MarceloEyer
+
+# CI/CD and deployment
+.github/workflows/** @MarceloEyer
+
+# Documentation
+docs/** @MarceloEyer
+*.md @MarceloEyer
