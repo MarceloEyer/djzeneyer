@@ -2,19 +2,20 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig(({ command }) => {
-// Verify we are building for production  const isProduction = command === 'build';
+// https://vitejs.dev/config/
+export default defineConfig(({ command, mode }) => {
+  // Verifica se estamos rodando o build de produção
+  const isProduction = command === 'build' || mode === 'production';
 
   return {
     plugins: [react()],
 
-// CRITICAL FIX: 'Pulo do Gato' (workaround fix)    // Em produção, aponta para a pasta exata do tema no WordPress.
-// In production, point to exact theme path for strict compliance    base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
-
-    server: {
-      port: 5173,
-      host: true,
-    },
+    // ========================================================================
+    // A CORREÇÃO CRÍTICA (PULO DO GATO) 🐈
+    // ========================================================================
+    // Isso diz ao navegador: "Não procure em /assets. Procure DENTRO do tema".
+    // Se o nome da pasta do seu tema na Hostinger for diferente de 'zentheme', ajuste aqui.
+    base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
     resolve: {
       alias: {
@@ -22,41 +23,36 @@ export default defineConfig(({ command }) => {
       },
     },
 
+    server: {
+      port: 5173,
+      host: true, // Necessário para funcionar em containers/bolt
+    },
+
     build: {
-      // Gera o manifesto para o PHP ler (CRÍTICO)
+      // Gera o manifest.json para o inc/vite.php ler
       manifest: true,
       
       outDir: 'dist',
-      emptyOutDir: true,
+      emptyOutDir: true, // Limpa a pasta dist antes de gerar novos
       target: 'es2020',
       minify: 'terser',
-      sourcemap: false,
+      sourcemap: false, // Desliga sourcemaps em produção para economizar espaço
       
       terserOptions: {
         compress: {
-          drop_console: true,
+          drop_console: true, // Remove console.log em produção
           drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug'],
         },
-        mangle: {
-          safari10: true,
-        },
-        format: {
-          comments: false,
-        },
-        // CRÍTICO: Desabilita otimizações que usam eval
-        ecma: 2020,
-        safari10: true,
       },
       
       rollupOptions: {
         output: {
-          // Nomes padronizados para evitar cache antigo
+          // Nomes padronizados para cache busting
           assetFileNames: 'assets/[name]-[hash].[ext]',
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
           
-          // Separação inteligente de código
+          // Separa bibliotecas grandes em arquivos menores
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             i18n: ['i18next', 'react-i18next'],
@@ -64,12 +60,7 @@ export default defineConfig(({ command }) => {
           },
         },
       },
-      chunkSizeWarningLimit: 600,
-    },
-
-    optimizeDeps: {
-      include: ['react', 'react-dom', 'react-router-dom'],
-      exclude: ['lucide-react'],
+      chunkSizeWarningLimit: 1000,
     },
   };
 });
