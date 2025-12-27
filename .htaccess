@@ -42,7 +42,7 @@ ExpiresByType font/woff2 A31557600
 # END NON_LSCACHE
 
 # ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v10.0 (FINAL GOLD STANDARD)
+# DJ ZEN EYER - PRODUCTION .htaccess v11.1 (FINAL - CSP BLINDADO)
 # ==============================================================================
 
 # ==============================================================================
@@ -115,7 +115,7 @@ CacheKeyModify -qs:_ga
 </IfModule>
 
 # ==============================================================================
-# 3. SECURITY HEADERS (CORRIGIDO PARA CLOUDFLARE E EVAL)
+# 3. SECURITY HEADERS (UPDATED v11.1 - CSP + EVAL + BLOB FIX)
 # ==============================================================================
 <IfModule mod_headers.c>
   Header unset Server
@@ -128,10 +128,14 @@ CacheKeyModify -qs:_ga
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
   Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
 
-  # CORREÇÃO: Adicionado 'unsafe-eval' e 'challenges.cloudflare.com' nas regras abaixo
-  <If "%{REQUEST_URI} !~ m#^/wp-admin|^/wp-login\.php|^/wp-json#">
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' https: data: blob:; connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com https://challenges.cloudflare.com; frame-src 'self' https://accounts.google.com https://widget.bandsintown.com https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';"
-  </If>
+  # Limpeza de regras antigas para evitar conflitos
+  Header unset Content-Security-Policy
+  Header always unset Content-Security-Policy
+
+  # REGRA DEFINITIVA:
+  # - script-src: permite 'unsafe-eval' (essencial) e 'blob:' (novo para React/Vite)
+  # - connect-src: todas as APIs necessárias
+  Header always set Content-Security-Policy "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://gsi.client-url.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' https: data: blob: filesystem:; connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://challenges.cloudflare.com; frame-src 'self' https://accounts.google.com https://widget.bandsintown.com https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';"
 </IfModule>
 
 # ==============================================================================
@@ -187,9 +191,12 @@ CacheKeyModify -qs:_ga
 Options -Indexes
 
 # ==============================================================================
-# 8. ROTEAMENTO PADRÃO DO WORDPRESS (RESTAURADO)
+# 8. ROTEAMENTO PADRÃO DO WORDPRESS
 # ==============================================================================
 # BEGIN WordPress
+# As diretrizes (linhas) entre "BEGIN WordPress" e "END WordPress" são
+# geradas dinamicamente e só devem ser modificadas através de filtros do WordPress.
+# Quaisquer alterações nas diretivas entre esses marcadores serão sobrescritas.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -199,4 +206,5 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
+
 # END WordPress
