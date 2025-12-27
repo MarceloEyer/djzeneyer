@@ -3,16 +3,13 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig(({ command }) => {
-  // Verifica se estamos construindo para produção
-  const isProduction = command === 'build';
+// Verify we are building for production  const isProduction = command === 'build';
 
   return {
     plugins: [react()],
 
-    // 👇 A CORREÇÃO DEFINITIVA (O "Pulo do Gato")
-    // Em produção, aponta para a pasta exata do tema no WordPress.
-    // Em desenvolvimento (localhost), mantém na raiz para não quebrar seu teste local.
-    base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
+// CRITICAL FIX: 'Pulo do Gato' (workaround fix)    // Em produção, aponta para a pasta exata do tema no WordPress.
+// In production, point to exact theme path for strict compliance    base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
     server: {
       port: 5173,
