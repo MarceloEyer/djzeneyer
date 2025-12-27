@@ -2,7 +2,7 @@
 /**
  * Core Setup & Security
  * Theme support, CORS, performance tuning, and Security Headers
- * @version 2.0.1 (Diamond Performance Edition - CSP Fix)
+ * @version 2.0.2 (Diamond Performance Edition - PHP Headers Disabled)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -45,10 +45,11 @@ add_action('after_setup_theme', function () {
 });
 
 /**
- * Security Headers (CORREÇÃO CRÍTICA PARA HOSTINGER + REACT)
- * Sincronizado com o plugin ZenEyer Auth Pro para evitar conflitos.
+ * Security Headers (DESATIVADO PARA EVITAR CONFLITO)
+ * 🚨 O controle de segurança agora é feito exclusivamente pelo .htaccess
+ * Isso impede que o PHP sobrescreva a permissão do 'eval' ou gere duplicidade.
  */
-add_action('send_headers', function() {
+/* add_action('send_headers', function() {
     if (is_admin() || headers_sent()) return;
     
     // 1. Limpeza de headers antigos/inseguros
@@ -63,23 +64,16 @@ add_action('send_headers', function() {
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
     // 3. CSP Permissivo "Padrão Ouro" (Igual ao Plugin)
-    // Libera explicitamente script-src com unsafe-eval
-    $csp = "default-src 'self' https: data:; " .
-           "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://apis.google.com https://gsi.client-url.com https://www.googletagmanager.com; " .
-           "connect-src 'self' https://djzeneyer.com https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://www.googleapis.com https://cloudflareinsights.com; " .
-           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " .
-           "font-src 'self' https://fonts.gstatic.com data:; " .
-           "img-src 'self' https: data: blob:; " .
-           "frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com; " .
-           "object-src 'none'; base-uri 'self';";
-
-    header("Content-Security-Policy: " . $csp);
+    // DESATIVADO AQUI - JÁ ESTÁ NO .HTACCESS
+    // $csp = "default-src 'self' https: data:; ...";
+    // header("Content-Security-Policy: " . $csp);
     
     // 4. HSTS (Apenas em SSL)
     if (is_ssl()) {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
 }, 999);
+*/
 
 /**
  * CORS for REST API
