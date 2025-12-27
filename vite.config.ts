@@ -10,10 +10,10 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [react()],
 
-    // 👇 Desativa cópia da pasta public (evita duplicação)
-    publicDir: false, // <--- A VÍRGULA MÁGICA TÁ AQUI
+    // 👇 Desativa cópia da pasta public para dentro da dist (evita duplicação)
+    publicDir: false,
 
-    // 👇 Caminho base para o tema
+    // 👇 Caminho base correto para o tema
     base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
     resolve: {
@@ -32,13 +32,19 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
-      minify: 'terser',
+      
+      // ✅ AQUI ESTÁ A CORREÇÃO DO EVAL/CSP
+      // Usamos 'terser' em vez de 'esbuild' para máxima compatibilidade e segurança
+      minify: 'terser', 
       sourcemap: false,
       
       terserOptions: {
         compress: {
-          drop_console: true,
+          drop_console: true, // Limpa console.log em produção
           drop_debugger: true,
+        },
+        format: {
+          comments: false, // Remove comentários para diminuir o arquivo
         },
       },
       
