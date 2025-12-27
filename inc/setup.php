@@ -2,7 +2,7 @@
 /**
  * Core Setup & Security
  * Theme support, CORS, performance tuning, and Security Headers
- * @version 2.0.0 (Diamond Performance Edition)
+ * @version 2.0.1 (Diamond Performance Edition - CSP Fix)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -45,8 +45,8 @@ add_action('after_setup_theme', function () {
 });
 
 /**
- * Security Headers (CORREÇÃO CRÍTICA PARA HOSTINGER)
- * Priority 999 garante que rode depois de plugins de segurança
+ * Security Headers (CORREÇÃO CRÍTICA PARA HOSTINGER + REACT)
+ * Sincronizado com o plugin ZenEyer Auth Pro para evitar conflitos.
  */
 add_action('send_headers', function() {
     if (is_admin() || headers_sent()) return;
@@ -62,10 +62,18 @@ add_action('send_headers', function() {
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
-    // 3. CSP Permissivo para Produção
-    // 'blob:' necessário para workers/media
-    // 'unsafe-eval' e 'unsafe-inline' liberados para React/Vite/Google
-    header("Content-Security-Policy: default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';");
+    // 3. CSP Permissivo "Padrão Ouro" (Igual ao Plugin)
+    // Libera explicitamente script-src com unsafe-eval
+    $csp = "default-src 'self' https: data:; " .
+           "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://apis.google.com https://gsi.client-url.com https://www.googletagmanager.com; " .
+           "connect-src 'self' https://djzeneyer.com https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://www.googleapis.com https://cloudflareinsights.com; " .
+           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " .
+           "font-src 'self' https://fonts.gstatic.com data:; " .
+           "img-src 'self' https: data: blob:; " .
+           "frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com; " .
+           "object-src 'none'; base-uri 'self';";
+
+    header("Content-Security-Policy: " . $csp);
     
     // 4. HSTS (Apenas em SSL)
     if (is_ssl()) {
