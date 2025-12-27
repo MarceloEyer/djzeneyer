@@ -2,18 +2,12 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
-  // Verifica se estamos rodando o build de produção
   const isProduction = command === 'build' || mode === 'production';
 
   return {
     plugins: [react()],
-
-    // 👇 A vírgula mágica que faltava antes está aqui:
-    publicDir: false, 
-
-    // 👇 Caminho base para o tema
+    publicDir: false,
     base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
     resolve: {
@@ -22,28 +16,26 @@ export default defineConfig(({ command, mode }) => {
       },
     },
 
-    server: {
-      port: 5173,
-      host: true,
-    },
-
     build: {
       manifest: true,
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
       
-      // ✅ AQUI TÁ A MÁGICA DO TERSER (Segurança + Leveza)
-      minify: 'terser', 
-      sourcemap: false,
+      // 🔒 AQUI É O PULO DO GATO ANTI-EVAL
+      minify: 'terser', // O Terser não usa eval por padrão
+      sourcemap: false, // Desliga os mapas (eles usam eval!)
       
       terserOptions: {
         compress: {
-          drop_console: true, // Tchau console.log
+          drop_console: true,
           drop_debugger: true,
+          // Força o Terser a não usar truques inseguros
+          evaluate: false, 
+          unsafe: false,
         },
-        format: {
-          comments: false, 
+        output: {
+          comments: false,
         },
       },
       
@@ -52,7 +44,6 @@ export default defineConfig(({ command, mode }) => {
           assetFileNames: 'assets/[name]-[hash].[ext]',
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
-          
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             i18n: ['i18next', 'react-i18next'],
@@ -60,7 +51,6 @@ export default defineConfig(({ command, mode }) => {
           },
         },
       },
-      chunkSizeWarningLimit: 1000,
     },
   };
 });
