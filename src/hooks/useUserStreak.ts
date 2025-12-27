@@ -1,20 +1,18 @@
 // src/hooks/useUserStreak.ts
-// v3.0 - GOLD MASTER: Real API + Standardized Structure for Dashboard
+// v4.3 - FIX: Added X-WP-Nonce for Authentication
 
 import { useState, useEffect } from 'react';
-import { useUser } from '../contexts/UserContext'; // Padronizado para useUser
+import { useUser } from '../contexts/UserContext'; 
 
 interface StreakData {
   streak: number;
   lastLogin: string | null;
-  fire: boolean; // Adicionado para o efeito visual de "Fogo" no Dashboard
+  fire: boolean;
 }
 
-// O Dashboard espera { data, loading }, então o hook não retorna a interface direta
 export const useUserStreak = () => {
   const { user } = useUser();
   
-  // Estado separado para Dados e Loading (Padrão Ouro)
   const [data, setData] = useState<StreakData>({ 
     streak: 0, 
     lastLogin: null,
@@ -33,18 +31,19 @@ export const useUserStreak = () => {
       try {
         console.log('[useUserStreak] 🔥 Buscando streak para user_id:', user.id);
         
-        // Sua API Real
+        // 1. Pega o Nonce
+        const nonce = (window as any).wpData?.nonce || '';
         const endpoint = `/wp-json/djzeneyer/v1/streak/${user.id}`;
         
         const response = await fetch(endpoint, {
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            // Adicione autenticação se necessário (ex: X-WP-Nonce ou Bearer)
+            'X-WP-Nonce': nonce // <--- A CORREÇÃO
           },
         });
 
         if (!response.ok) {
-          // Se a API falhar (404/500), não quebra o app, apenas loga
           console.warn(`[useUserStreak] API retornou ${response.status}. Usando fallback.`);
           throw new Error(`HTTP ${response.status}`);
         }
@@ -55,13 +54,11 @@ export const useUserStreak = () => {
         setData({
           streak: streakValue,
           lastLogin: result.last_login || null,
-          // Lógica visual: Se streak > 3 dias, ativa o ícone de fogo 🔥
           fire: streakValue >= 3 
         });
 
       } catch (error) {
         console.error('[useUserStreak] Erro (usando dados seguros):', error);
-        // Fallback seguro para não quebrar a UI
         setData({ streak: 0, lastLogin: null, fire: false });
       } finally {
         setLoading(false);
@@ -70,12 +67,10 @@ export const useUserStreak = () => {
 
     fetchStreak();
 
-    // Atualiza a cada 5 minutos (polling)
     const interval = setInterval(fetchStreak, 300000);
     return () => clearInterval(interval);
 
   }, [user?.id]);
 
-  // Retorno Padronizado: { data, loading }
   return { data, loading };
 };
