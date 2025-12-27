@@ -9,13 +9,11 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     plugins: [react()],
-    publicDir: false
 
-    // ========================================================================
-    // A CORREÇÃO CRÍTICA (PULO DO GATO) 🐈
-    // ========================================================================
-    // Isso diz ao navegador: "Não procure em /assets. Procure DENTRO do tema".
-    // Se o nome da pasta do seu tema na Hostinger for diferente de 'zentheme', ajuste aqui.
+    // 👇 Desativa cópia da pasta public (evita duplicação)
+    publicDir: false, // <--- A VÍRGULA MÁGICA TÁ AQUI
+
+    // 👇 Caminho base para o tema
     base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
     resolve: {
@@ -26,34 +24,30 @@ export default defineConfig(({ command, mode }) => {
 
     server: {
       port: 5173,
-      host: true, // Necessário para funcionar em containers/bolt
+      host: true,
     },
 
     build: {
-      // Gera o manifest.json para o inc/vite.php ler
       manifest: true,
-      
       outDir: 'dist',
-      emptyOutDir: true, // Limpa a pasta dist antes de gerar novos
+      emptyOutDir: true,
       target: 'es2020',
       minify: 'terser',
-      sourcemap: false, // Desliga sourcemaps em produção para economizar espaço
+      sourcemap: false,
       
       terserOptions: {
         compress: {
-          drop_console: true, // Remove console.log em produção
+          drop_console: true,
           drop_debugger: true,
         },
       },
       
       rollupOptions: {
         output: {
-          // Nomes padronizados para cache busting
           assetFileNames: 'assets/[name]-[hash].[ext]',
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
           
-          // Separa bibliotecas grandes em arquivos menores
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             i18n: ['i18next', 'react-i18next'],
