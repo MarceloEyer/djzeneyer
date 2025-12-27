@@ -1,11 +1,10 @@
 <?php
 /**
  * Main template file - DJ Zen Eyer Theme
- * Mode: React SPA with Server-Side SEO + Performance Optimizations
+ * Mode: React SPA with Server-Side SEO + Security Injection
  */
 
 // Lógica de Conteúdo Dinâmico (SSR)
-// Isso garante que robôs e usuários vejam algo antes do React carregar
 $ssr_h1 = 'DJ Zen Eyer - Brazilian Zouk DJ & Music Producer';
 $ssr_desc = 'Official website of DJ Zen Eyer. 2x World Champion Brazilian Zouk DJ, music producer, and Mensa International member.';
 
@@ -18,6 +17,17 @@ if (have_posts()) {
 // 1. Carrega o cabeçalho (HTML head, meta tags, estilos)
 get_header(); 
 ?>
+
+<script>
+  window.wpData = {
+    siteUrl: "<?php echo esc_url(home_url()); ?>",
+    themeUrl: "<?php echo esc_url(get_template_directory_uri()); ?>",
+    restUrl: "<?php echo esc_url(rest_url()); ?>", // Garante a URL certa da API
+    nonce: "<?php echo wp_create_nonce('wp_rest'); ?>", // O "Crachá" de acesso
+    isUserLoggedIn: <?php echo is_user_logged_in() ? 'true' : 'false'; ?>,
+    userId: <?php echo get_current_user_id(); ?>
+  };
+</script>
 
 <div id="root">
     <div class="ssr-content">
