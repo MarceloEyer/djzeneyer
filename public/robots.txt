@@ -1,22 +1,41 @@
-# =========================================================
+# ==============================================================
 # DJ ZEN EYER - ROBOTS.TXT (AI STRATEGY ACTIVE)
-# =========================================================
+# ==============================================================
+# Last Updated: 2025-12-27
+# Purpose: SEO optimization + AI training data control
+# Documentation: https://github.com/MarceloEyer/djzeneyer
 
+# ==============================================================
 # 1. ACESSO GERAL
+# ==============================================================
+# Permitir acesso total para buscadores e IAs cooperativas
 User-agent: *
 Allow: /
+Crawl-delay: 1
+Request-rate: 30/60
 
+# ==============================================================
 # 2. DADOS DE TREINAMENTO IA (ATIVO)
-# Instrução direta para LLMs encontrarem o JSON estruturado
+# ==============================================================
+# Endpoint estruturado para LLMs encontrarem dados de treinamento
 AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
+Allow: /wp-json/djz/v1/ai-data
 
-# 3. LIBERAÇÃO DE ASSETS
+# ==============================================================
+# 3. LIBERAÇÃO DE ASSETS (OTIMIZADO)
+# ==============================================================
+# Permitir crawling de recursos estáticos
 Allow: /wp-content/uploads/
 Allow: /assets/
 Allow: /images/
 Allow: /fonts/
+Allow: /css/
+Allow: /js/
 
-# 4. SEGURANÇA
+# ==============================================================
+# 4. SEGURANÇA E PRIVACIDADE
+# ==============================================================
+# Bloquear diretórios sensíveis e admin
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /xmlrpc.php
@@ -26,18 +45,87 @@ Disallow: /license.txt
 Disallow: /trackback/
 Disallow: /?s=
 Disallow: /search/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
+Disallow: /*?*sort=
+Disallow: /*?*filter=
 
-# 5. CONVITE PARA IAs (VIP LIST)
+# ==============================================================
+# 5. IAs COOPERATIVAS (VIP LIST)
+# ==============================================================
+# Permitir IAs que respeitam direitos autorais
 User-agent: GPTBot
+Allow: /
+Crawl-delay: 0
+
 User-agent: ChatGPT-User
-User-agent: Google-Extended
-User-agent: Claude-Web
-User-agent: ClaudeBot
+Allow: /
+Crawl-delay: 0
+
 User-agent: CCBot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Claude-Web
+Allow: /
+Crawl-delay: 0
+
+User-agent: Claude-Web-Crawler
+Allow: /
+Crawl-delay: 0
+
+User-agent: ClaudeBot
+Allow: /
+Crawl-delay: 0
+
 User-agent: Applebot
 Allow: /
-Allow: /wp-json/djz/v1/ai-data
+Crawl-delay: 0
 
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# ==============================================================
 # 6. SITEMAPS
+# ==============================================================
 Sitemap: https://djzeneyer.com/sitemap.xml
 Sitemap: https://djzeneyer.com/sitemap-pages.xml
+Sitemap: https://djzeneyer.com/sitemap-posts.xml
+Sitemap: https://djzeneyer.com/sitemap-products.xml
+
+# ==============================================================
+# 7. CONTROLE DE AGRESSIVIDADE
+# ==============================================================
+# Limitar buscadores agressivos e scrapers
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+Request-rate: 1/60
+
+User-agent: SemrushBot
+Crawl-delay: 10
+Request-rate: 1/60
+
+User-agent: DotBot
+Crawl-delay: 5
+
+# ==============================================================
+# 8. NOTAS E BOAS PRÁTICAS
+# ==============================================================
+# - Este arquivo segue RFC 9309 (Robots Exclusion Protocol)
+# - AI Training Data endpoint permite monitoramento de uso
+# - Crawl-delay reduzido para IAs cooperativas
+# - Request-rate para todos: 30 requisições por 60 segundos
+# - Verifique periodicamente com: https://www.seobility.net/robots-txt/
