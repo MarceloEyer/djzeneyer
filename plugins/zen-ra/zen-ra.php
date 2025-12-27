@@ -3,7 +3,7 @@
  * Plugin Name: Zen-RA (Zen Recent Activity & Gamification)
  * Plugin URI: https://djzeneyer.com
  * Description: Sistema completo de Gamificação (API + Configurações). Gerencia Histórico, XP, Ranks e Streaks.
- * Version: 2.1.0
+ * Version: 2.1.0-COMPATIBILITY
  * Author: DJ Zen Eyer
  * License: GPL v2 or later
  * Text Domain: zen-ra
@@ -26,7 +26,12 @@ class Zen_RA {
 
     private function __construct() {
         // API & Hooks
-        add_action('rest_api_init', [$this, 'register_endpoints']);
+        
+        // 🚨 MUDANÇA CRÍTICA AQUI EMBAIXO:
+        // Comentei a linha da API para não dar conflito (Erro 401) com o api-dashboard.php
+        // O plugin continua calculando pontos, mas quem entrega os dados pro React é o outro arquivo.
+        // add_action('rest_api_init', [$this, 'register_endpoints']);
+
         add_action('gamipress_award_points', [$this, 'clear_user_cache_hook'], 10, 2);
         add_action('gamipress_award_achievement', [$this, 'clear_user_cache_hook'], 10, 2);
         add_action('woocommerce_order_status_completed', [$this, 'clear_order_cache_hook'], 10, 1);
@@ -91,16 +96,16 @@ class Zen_RA {
                 <?php submit_button(); ?>
             </form>
             <div class="card">
-                <h3>🛠️ Diagnóstico Rápido</h3>
-                <p><strong>Endpoint XP:</strong> <code>/wp-json/zen-ra/v1/gamipress/{id}</code></p>
-                <p><strong>Endpoint Feed:</strong> <code>/wp-json/zen-ra/v1/activity/{id}</code></p>
+                <h3>🛠️ Status do Plugin</h3>
+                <p><strong>Cálculos de Pontos:</strong> ✅ Ativos</p>
+                <p><strong>API REST:</strong> ⏸️ Pausada (Gerenciada pelo tema)</p>
             </div>
         </div>
         <?php
     }
 
     // =========================================================================
-    // 2. REGISTRO DE ROTAS
+    // 2. REGISTRO DE ROTAS (Desativado temporariamente)
     // =========================================================================
     public function register_endpoints() {
         // Player Stats (XP, Level, Rank)
