@@ -1,4 +1,5 @@
 // src/hooks/useUserTracks.ts
+// v4.2 - FIX: Added X-WP-Nonce to prevent 401 Unauthorized
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/UserContext';
@@ -43,11 +44,16 @@ export const useUserTracks = (): UserTracksData => {
       try {
         console.log('[useUserTracks] 🎵 Buscando tracks para user_id:', user.id);
         
+        // 1. Pega o Nonce global (O Crachá de Segurança)
+        const nonce = (window as any).wpData?.nonce || '';
+        
         const endpoint = `/wp-json/djzeneyer/v1/tracks/${user.id}`;
+        
         const response = await fetch(endpoint, {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            'X-WP-Nonce': nonce // <--- AQUI ESTÁ A CORREÇÃO DO 401
           },
         });
 
@@ -60,7 +66,7 @@ export const useUserTracks = (): UserTracksData => {
 
         setData({
           total: result.total || 0,
-          tracks: result.tracks || [],
+          tracks: result.tracks || [], // O PHP retorna [] vazio se não tiver, então aqui não quebra
           loading: false,
           error: null,
         });
