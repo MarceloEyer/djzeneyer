@@ -85,4 +85,3 @@ $theme_uri = get_template_directory_uri();
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
-    ```
