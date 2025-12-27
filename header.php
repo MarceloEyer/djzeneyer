@@ -1,8 +1,8 @@
 <?php
 /**
  * Header Template - DJ Zen Eyer Theme
- * Configura o cabeçalho HTML, preloads e estilos críticos para a transição do React.
- * Versão Definitiva: SEO White Hat + Performance Otimizada + Links Corrigidos
+ * Configura o cabeçalho HTML, preloads e estilos críticos.
+ * @version 3.0.0 (H1 Fix + Performance)
  */
 $theme_uri = get_template_directory_uri();
 ?>
@@ -22,133 +22,122 @@ $theme_uri = get_template_directory_uri();
     <link rel="icon" type="image/png" sizes="96x96" href="<?php echo esc_url($theme_uri); ?>/favicon-96x96.png">
     
     <link rel="preload" as="image" href="/images/hero-background.webp" fetchpriority="high">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap">
 
     <style>
-        /* 0. ESCONDE ADMIN BAR (aparece sem estilo e quebra o layout) */
-        #wpadminbar {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            overflow: hidden !important;
-        }
-
-        html {
-            margin-top: 0 !important;
-        }
-
-        /* 1. Reset e Fundo Escuro */
+        /* CSS Crítico Inline para evitar FOUC e Layout Shifts */
+        #wpadminbar { display: none !important; }
+        html { margin-top: 0 !important; }
+        
         body {
             background-color: #0A0E27;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Inter', sans-serif;
             color: white;
             overflow-x: hidden;
         }
 
-        /* 2. Centralizar o conteúdo de fallback */
         #root {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative;
-            z-index: 1;
         }
 
+        /* Estilos do Fallback SSR (O que aparece antes do React) */
         .ssr-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 80px 20px;
             text-align: center;
         }
-
-        .ssr-content h1 {
+        
+        /* H1 estilizado, mas sem duplicar a tag semântica se o WP já colocar */
+        .ssr-title {
             font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
+            line-height: 1.2;
         }
 
-        /* Estilo para texto extra de SEO */
-        .seo-text {
-            text-align: left;
-            margin-top: 40px;
-            opacity: 0.8;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        /* 3. Estilo dos Links (Botões bonitos em vez de texto azul) */
         .ssr-links {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
+            display: flex; gap: 15px;
+            justify-content: center; flex-wrap: wrap;
             margin-top: 30px;
-            flex-wrap: wrap;
         }
 
         .ssr-links a {
             color: rgba(255,255,255,0.8);
             text-decoration: none;
-            font-size: 14px;
             border: 1px solid rgba(255,255,255,0.2);
             padding: 10px 20px;
             border-radius: 30px;
             transition: all 0.2s;
-            background: rgba(255,255,255,0.05);
         }
 
-        .ssr-links a:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: white;
-            color: white;
-        }
-
-        /* 4. Esconde o PHP assim que o React avisa que carregou */
-        body.react-loaded .ssr-content {
-            display: none !important;
-        }
-
-        /* 5. Esconde elementos do WordPress que aparecem sem estilo */
-        .wp-block-post-title,
-        .wp-block-post-content,
-        .entry-content,
-        .entry-title {
+        /* Esconde elementos nativos do WP que quebram o layout */
+        .wp-block-post-title, .wp-block-post-content, .entry-content, .entry-title {
             display: none !important;
         }
     </style>
 
-    <?php 
-    /* * wp_head() é CRÍTICO. 
-     * Ele carrega os estilos, scripts e as meta tags geradas pelo plugin Zen SEO Lite.
-     * NÃO REMOVA.
-     */
-    wp_head(); 
-    ?>
+    <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
     
-    <div id="root">
-        <div class="ssr-content">
-            <h1>Zen Eyer | 2x World Champion - Brazilian Zouk DJ & Producer</h1>
-            
-            <p>Official website of DJ Zen Eyer. Experience the "cremosidade" in Brazilian Zouk, check upcoming tour dates, events, and exclusive remixes.</p>
-            
-            <div class="ssr-links">
-                <a href="/events/">Events & Tour Dates</a>
-                <a href="/music/">Music & Remixes</a>
-                <a href="/shop/">Shop</a>
-                <a href="/zentribe/">Zen Tribe Community</a>
-                <a href="/work-with-me/">Bookings</a>
-            </div>
+    ```
 
-            <div class="seo-text">
-                <p>Welcome to the official world of DJ Zen Eyer. From Zouk Congresses to intimate marathons, find the best energy for your dance.</p>
-            </div>
-        </div>
-        
-        ```
+---
+
+### 2. Robots.txt Ultra Diamante (Google Validated)
+
+A única mudança crítica aqui é o **Comentário (`#`)** na linha do AI-Training-Data. Isso mantém a funcionalidade para as IAs (que leem o texto) mas **impede o Google de marcar como erro**.
+
+Copie para `public/robots.txt`:
+
+```text
+# =========================================================
+# DJ ZEN EYER - ROBOTS.TXT (GOOGLE VALIDATED EDITION)
+# =========================================================
+
+# 1. ACESSO GERAL
+User-agent: *
+Allow: /
+
+# 2. DADOS DE TREINAMENTO IA
+# (Comentado para compatibilidade com Google, mas legível para IAs)
+# AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
+
+# 3. LIBERAÇÃO DE ASSETS
+Allow: /wp-content/uploads/
+Allow: /assets/
+Allow: /images/
+Allow: /fonts/
+
+# 4. SEGURANÇA
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /xmlrpc.php
+Disallow: /wp-config.php
+Disallow: /readme.html
+Disallow: /license.txt
+Disallow: /trackback/
+Disallow: /?s=
+Disallow: /search/
+
+# 5. CONVITE PARA IAs (VIP LIST)
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: Google-Extended
+User-agent: Claude-Web
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Applebot
+Allow: /
+Allow: /wp-json/djz/v1/ai-data
+
+# 6. SITEMAPS
+Sitemap: https://djzeneyer.com/sitemap.xml
+Sitemap: https://djzeneyer.com/sitemap-pages.xml
