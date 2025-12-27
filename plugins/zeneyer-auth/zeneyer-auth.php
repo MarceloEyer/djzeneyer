@@ -85,21 +85,21 @@ final class ZenEyer_Auth_Pro {
     }
 
     /**
-     * 🚀 OVERRIDE SECURITY HEADERS
-     * Remove bloqueios impostos por plugins de pagamento (PagBank) ou Cache.
+     * 🚀 OVERRIDE SECURITY HEADERS (CORREÇÃO DO ERRO CSP)
+     * Remove bloqueios impostos por plugins de pagamento ou Cache.
      * Libera 'unsafe-eval' e Cloudflare (Turnstile + Analytics).
      */
     private function override_security_headers() {
         add_action('send_headers', function() {
             if (headers_sent()) return;
 
-            // 1. Remove regras restritivas de outros plugins
+            // 1. Remove regras restritivas antigas (Limpa a mesa)
             header_remove('Content-Security-Policy');
             header_remove('X-Content-Security-Policy');
             header_remove('X-WebKit-CSP');
 
-            // 2. Define a regra permissiva (Padrão Ouro v2.1.4)
-            // ADICIONADO: https://static.cloudflareinsights.com em script-src e connect-src
+            // 2. Define a regra permissiva que LIBERA O EVAL
+            // O segredo está em 'unsafe-eval' dentro de script-src
             $csp = "default-src 'self' https: data:; " .
                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://apis.google.com https://gsi.client-url.com https://www.googletagmanager.com; " .
                    "connect-src 'self' https://djzeneyer.com https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://www.googleapis.com https://cloudflareinsights.com; " .
@@ -110,7 +110,7 @@ final class ZenEyer_Auth_Pro {
                    "object-src 'none'; base-uri 'self';";
 
             header("Content-Security-Policy: " . $csp);
-        }, 9999); // Prioridade 9999 = Roda por último e vence a briga
+        }, 9999); // Prioridade 9999 garante que essa regra ganhe de qualquer outra
     }
 
     private function init_security_shield() {
