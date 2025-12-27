@@ -1,4 +1,5 @@
 // src/hooks/useUserEvents.ts
+// v4.3 - FIX: Added X-WP-Nonce for Authentication
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/UserContext';
@@ -43,11 +44,16 @@ export const useUserEvents = (): UserEventsData => {
       try {
         console.log('[useUserEvents] 📅 Buscando events para user_id:', user.id);
         
+        // 1. Pega o Nonce (Crachá de Segurança)
+        const nonce = (window as any).wpData?.nonce || '';
+        
         const endpoint = `/wp-json/djzeneyer/v1/events/${user.id}`;
+        
         const response = await fetch(endpoint, {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
+            'X-WP-Nonce': nonce // <--- A CORREÇÃO
           },
         });
 
