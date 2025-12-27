@@ -2,11 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import { UserProvider } from './contexts/UserContext'; 
 import './index.css';
 import './i18n';
 
-// Definição global da interface (Assumindo que está em um global.d.ts ou similar)
+// Definição global da interface
 declare global {
   interface Window {
     wpData?: {
@@ -32,10 +31,10 @@ if (window.wpData) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    {/* O BrowserRouter é essencial aqui para o useRoutes funcionar lá dentro */}
     <BrowserRouter>
-      <UserProvider>
-        <App />
-      </UserProvider>
+      {/* Removemos o UserProvider daqui pois ele já está dentro do App.tsx */}
+      <App />
     </BrowserRouter>
   </React.StrictMode>
 );
