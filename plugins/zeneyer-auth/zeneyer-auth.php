@@ -3,7 +3,7 @@
  * Plugin Name:       ZenEyer Auth Pro
  * Plugin URI:        https://djzeneyer.com
  * Description:       Enterprise-grade JWT Authentication for Headless WordPress + React. Secure, fast, and production-ready. Includes Anti-Bot Security Shield.
- * Version:           2.1.4
+ * Version:           2.1.5
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            DJ Zen Eyer
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('ZENEYER_AUTH_VERSION', '2.1.4');
+define('ZENEYER_AUTH_VERSION', '2.1.5'); // Bumped version
 define('ZENEYER_AUTH_PATH', plugin_dir_path(__FILE__));
 define('ZENEYER_AUTH_URL', plugin_dir_url(__FILE__));
 define('ZENEYER_AUTH_BASENAME', plugin_basename(__FILE__));
@@ -48,7 +48,7 @@ final class ZenEyer_Auth_Pro {
         $this->load_dependencies();
         $this->init_hooks();
         $this->init_security_shield(); // 🛡️ Inicializa a proteção Anti-Bot
-        $this->override_security_headers(); // 🚀 Força permissão para Cloudflare/React (Corrige erro CSP)
+        $this->override_security_headers(); // 🚀 (Agora Silenciado)
     }
     
     /**
@@ -85,32 +85,14 @@ final class ZenEyer_Auth_Pro {
     }
 
     /**
-     * 🚀 OVERRIDE SECURITY HEADERS (CORREÇÃO DO ERRO CSP)
-     * Remove bloqueios impostos por plugins de pagamento ou Cache.
-     * Libera 'unsafe-eval' e Cloudflare (Turnstile + Analytics).
+     * 🚀 OVERRIDE SECURITY HEADERS
+     * 🚨 SILENCIADO: O controle de segurança agora é feito exclusivamente pelo .htaccess v11.1
+     * Isso impede conflitos, duplicidade de headers e garante que o 'eval' funcione.
      */
     private function override_security_headers() {
-        add_action('send_headers', function() {
-            if (headers_sent()) return;
-
-            // 1. Remove regras restritivas antigas (Limpa a mesa)
-            header_remove('Content-Security-Policy');
-            header_remove('X-Content-Security-Policy');
-            header_remove('X-WebKit-CSP');
-
-            // 2. Define a regra permissiva que LIBERA O EVAL
-            // O segredo está em 'unsafe-eval' dentro de script-src
-            $csp = "default-src 'self' https: data:; " .
-                   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://apis.google.com https://gsi.client-url.com https://www.googletagmanager.com; " .
-                   "connect-src 'self' https://djzeneyer.com https://challenges.cloudflare.com https://static.cloudflareinsights.com https://accounts.google.com https://www.googleapis.com https://cloudflareinsights.com; " .
-                   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " .
-                   "font-src 'self' https://fonts.gstatic.com data:; " .
-                   "img-src 'self' https: data: blob:; " .
-                   "frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com; " .
-                   "object-src 'none'; base-uri 'self';";
-
-            header("Content-Security-Policy: " . $csp);
-        }, 9999); // Prioridade 9999 garante que essa regra ganhe de qualquer outra
+        // Função esvaziada propositalmente.
+        // Deixamos o servidor (LiteSpeed/Apache) mandar na segurança.
+        return;
     }
 
     private function init_security_shield() {
