@@ -2,6 +2,7 @@
 /**
  * Core Setup & Security
  * Theme support, CORS, performance tuning, and Security Headers
+ * @version 2.0.0 (Diamond Performance Edition)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -62,8 +63,8 @@ add_action('send_headers', function() {
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
     // 3. CSP Permissivo para Produção
-    // 'blob:' adicionado para workers/media
-    // 'unsafe-eval' liberado para resolver o erro vermelho
+    // 'blob:' necessário para workers/media
+    // 'unsafe-eval' e 'unsafe-inline' liberados para React/Vite/Google
     header("Content-Security-Policy: default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';");
     
     // 4. HSTS (Apenas em SSL)
@@ -107,17 +108,41 @@ add_filter('woocommerce_cookie_duration', function($duration) {
 });
 
 /**
- * Performance: Defer Scripts
+ * Performance: Defer Critical Scripts (Resolve Render Blocking)
+ * Adiciona 'defer' aos scripts do Vite e Webfontloader
  */
 add_filter('script_loader_tag', function($tag, $handle) {
-    if (is_admin() || strpos($tag, 'defer') || strpos($tag, 'async')) {
-        return $tag;
+    if (is_admin()) return $tag;
+
+    // Lista de scripts que devem carregar sem travar a página
+    $defer_scripts = ['vite', 'index', 'webfontloader', 'react'];
+
+    foreach ($defer_scripts as $script_name) {
+        if (strpos($handle, $script_name) !== false) {
+            return str_replace(' src', ' defer src', $tag);
+        }
     }
-    return str_replace(' src', ' defer src', $tag);
+    
+    return $tag;
 }, 10, 2);
 
 /**
- * Performance: Remove Query Strings
+ * Performance: Async CSS Loading (Resolve CSS Render Blocking)
+ * Carrega o CSS como 'print' e troca para 'all' depois
+ */
+add_filter('style_loader_tag', function($html, $handle) {
+    if (is_admin()) return $html;
+
+    // Aplica apenas ao CSS principal do tema/vite
+    if (strpos($handle, 'index') !== false || strpos($handle, 'style') !== false) {
+        return str_replace("media='all'", "media='print' onload=\"this.media='all'\"", $html);
+    }
+    
+    return $html;
+}, 10, 2);
+
+/**
+ * Performance: Remove Query Strings (Limpeza de URL)
  */
 add_filter('style_loader_src', 'djz_remove_query_strings', 10);
 add_filter('script_loader_src', 'djz_remove_query_strings', 10);
@@ -130,8 +155,8 @@ function djz_remove_query_strings($src) {
  * Performance: DNS Prefetch
  */
 add_action('wp_head', function() {
-    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">';
-    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">';
+    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . "\n";
+    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . "\n";
 }, 0);
 
 /**
@@ -140,21 +165,7 @@ add_action('wp_head', function() {
 add_filter('wp_lazy_loading_enabled', '__return_true');
 
 /**
- * Performance: Limit Revisions
- */
-if (!defined('WP_POST_REVISIONS')) {
-    define('WP_POST_REVISIONS', 3);
-}
-
-/**
- * Performance: Memory Limit
- */
-if (!defined('WP_MEMORY_LIMIT')) {
-    define('WP_MEMORY_LIMIT', '256M');
-}
-
-/**
- * Performance: Fetchpriority on First Image
+ * Performance: Fetchpriority on First Image (LCP Optimizer)
  */
 add_filter('wp_get_attachment_image_attributes', function($attr, $attachment) {
     static $first = true;
@@ -168,48 +179,21 @@ add_filter('wp_get_attachment_image_attributes', function($attr, $attachment) {
 }, 10, 2);
 
 /**
- * Database: Create Indexes (runs once)
+ * Database: Cleanup & Indexes
  */
 add_action('after_switch_theme', function() {
     global $wpdb;
-    
-    $wpdb->query("
-        CREATE INDEX IF NOT EXISTS idx_option_name_transient 
-        ON {$wpdb->options} (option_name(191))
-    ");
-    
-    $wpdb->query("
-        CREATE INDEX IF NOT EXISTS idx_autoload 
-        ON {$wpdb->options} (autoload)
-    ");
+    $wpdb->query("CREATE INDEX IF NOT EXISTS idx_autoload ON {$wpdb->options} (autoload)");
 });
 
-/**
- * Database: Clean Expired Transients Daily
- */
+// Limpeza diária de transients expirados
 add_action('wp_scheduled_delete', function() {
     global $wpdb;
-    
-    $wpdb->query("
-        DELETE FROM {$wpdb->options}
-        WHERE option_name LIKE '_transient_timeout_%'
-        AND option_value < UNIX_TIMESTAMP()
-    ");
-    
-    $wpdb->query("
-        DELETE FROM {$wpdb->options}
-        WHERE option_name LIKE '_transient_%'
-        AND option_name NOT LIKE '_transient_timeout_%'
-        AND option_name NOT IN (
-            SELECT REPLACE(option_name, '_transient_timeout_', '_transient_')
-            FROM {$wpdb->options}
-            WHERE option_name LIKE '_transient_timeout_%'
-        )
-    ");
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_%' AND option_value < UNIX_TIMESTAMP()");
 });
 
 /**
- * SEO: Canonical URL with Trailing Slash
+ * SEO: Canonical URL Fix
  */
 add_filter('wpseo_canonical', 'djz_fix_canonical_slash');
 add_filter('rank_math/frontend/canonical', 'djz_fix_canonical_slash');
