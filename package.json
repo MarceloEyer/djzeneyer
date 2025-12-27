@@ -64,10 +64,17 @@
     "last 2 versions",
     "not dead",
     "not op_mini all"
-  ]
-}
-"lint-staged": {
-  "src/**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-  "*.{json,md,yml,yaml}": ["prettier --write"],
-  "*.php": ["prettier --write"]
+  ],
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.php": [
+      "prettier --write"
+    ]
+  }
 }
