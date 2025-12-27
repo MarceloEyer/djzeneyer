@@ -6,7 +6,7 @@
 # Documentation: https://github.com/MarceloEyer/djzeneyer
 
 # ==============================================================
-# 1. ACESSO GERAL
+# 1. ACESSO GERAL 
 # ==============================================================
 # Permitir acesso total para buscadores e IAs cooperativas
 User-agent: *
