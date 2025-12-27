@@ -1,12 +1,11 @@
 // src/hooks/useGamiPress.ts
-// v4.1 - FIX: Corrected Import (UserContext) & Data Structure
+// v4.2 - FIX: Added X-WP-Nonce & Credentials to prevent 401 Unauthorized
 
 import { useState, useEffect, useCallback } from 'react';
-// CORREÇÃO: Importando do local correto que seu projeto usa
 import { useUser } from '../contexts/UserContext';
 
 /* =========================
- * INTERFACES (Alinhadas com o Dashboard e Zen-RA v2.1)
+ * INTERFACES
  * ========================= */
 
 export interface RankData {
@@ -24,7 +23,6 @@ export interface PlayerStats {
 
 export interface GamiPressData {
   stats: PlayerStats;
-  // Campos de compatibilidade para evitar quebras em componentes antigos
   points?: number; 
   level?: number;
 }
@@ -41,7 +39,6 @@ interface GamiPressHookResponse {
  * ========================= */
 
 export const useGamiPress = (): GamiPressHookResponse => {
-  // CORREÇÃO: Usando o hook useUser() do seu contexto
   const { user } = useUser();
   
   const [data, setData] = useState<GamiPressData | null>(null);
@@ -59,12 +56,23 @@ export const useGamiPress = (): GamiPressHookResponse => {
       setLoading(true);
       setError(null);
 
-      // 2. URL da API Unificada (Zen-RA)
-      // Tenta pegar do ambiente (wpData) ou usa a URL de produção fixa
-      const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
+      // 2. URL e Auth
+      const wpData = (window as any).wpData || {};
+      const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
+      const nonce = wpData.nonce || ''; // <--- Pega o Nonce
+      
       const endpoint = `${wpRestUrl}/zen-ra/v1/gamipress/${user.id}`;
       
-      const response = await fetch(endpoint);
+      // Corrigindo URL duplicada se houver (ex: wp-json//zen-ra)
+      const cleanEndpoint = endpoint.replace('wp-json//', 'wp-json/');
+
+      const response = await fetch(cleanEndpoint, {
+        credentials: 'include', // Necessário para cookies de sessão
+        headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': nonce // <--- AQUI ESTÁ A CORREÇÃO DO 401
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
@@ -73,11 +81,11 @@ export const useGamiPress = (): GamiPressHookResponse => {
       const result = await response.json();
 
       if (!result.success) {
+        // Se a API retornar sucesso false mas HTTP 200 (comum em WP)
         console.warn('[Zen-RA] API retornou false:', result);
       }
 
       // 3. Normalização dos Dados
-      // A API Zen-RA retorna { success: true, stats: { ... } }
       const rawStats = result.stats || {};
       
       const safeData: GamiPressData = {
@@ -91,7 +99,6 @@ export const useGamiPress = (): GamiPressHookResponse => {
             progress_percent: Number(rawStats.rank?.progress_percent) || 0,
           }
         },
-        // Compatibilidade retroativa (atalhos para componentes antigos)
         points: Number(rawStats.xp) || 0,
         level: Number(rawStats.level) || 1,
       };
@@ -110,7 +117,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
     fetchGamiPressData();
   }, [fetchGamiPressData]);
 
-  // Polling: Atualiza a cada 60s para manter o XP atualizado
+  // Polling: Atualiza a cada 60s
   useEffect(() => {
     if (!user?.id) return;
     const interval = setInterval(fetchGamiPressData, 60000);
