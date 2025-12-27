@@ -1,5 +1,5 @@
 // src/hooks/useRecentActivity.ts
-// Hook para conectar com o plugin Zen-RA (WordPress)
+// v4.0 - FIX: Added X-WP-Nonce for Dashboard Auth
 
 import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
@@ -28,13 +28,31 @@ export const useRecentActivity = () => {
 
   useEffect(() => {
     // Só busca se tiver usuário logado e ID válido
-    if (!user?.id) return;
+    if (!user?.id) {
+        setLoading(false);
+        return;
+    }
 
     const fetchActivity = async () => {
       try {
         setLoading(true);
-        // Usa o endpoint REST API do seu plugin
-        const response = await fetch(`https://djzeneyer.com/wp-json/zen-ra/v1/activity/${user.id}`);
+        
+        // 1. Pega o Nonce e URL base do ambiente
+        const wpData = (window as any).wpData || {};
+        const restUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json/';
+        const nonce = wpData.nonce || '';
+
+        // Limpa URL duplicada se houver
+        const baseUrl = restUrl.replace(/\/$/, '');
+        const endpoint = `${baseUrl}/zen-ra/v1/activity/${user.id}`;
+
+        const response = await fetch(endpoint, {
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-WP-Nonce': nonce // <--- A CORREÇÃO CRÍTICA DO 401
+            }
+        });
         
         if (!response.ok) throw new Error('Falha ao buscar atividades');
         
