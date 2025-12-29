@@ -1,0 +1,55 @@
+# CodeRabbit Configuration for djzeneyer WordPress Headless Theme & Plugins
+# DJ Zen Eyer - Theme + WordPress Plugins + Zouk Brasileiro Brand
+
+review:
+  request_review: author
+  auto_approve: false
+  auto_review: true
+  comment_mode: each_line
+  summarize: true
+  chat_mode: enabled
+
+languages:
+  typescript:
+    rules:
+      - unused-imports
+      - performance
+      - security
+  javascript:
+    rules:
+      - unused-imports
+      - performance
+      - security
+  php:
+    rules:
+      - security
+      - best-practices
+  json:
+    rules:
+      - format-consistency
+
+instructions: |
+  Este eh um projeto de tema WordPress headless + alguns plugins WordPress + arquivos de configuracao (sitemap, robots.txt).
+  
+  **Stack**: React + Vite (TypeScript) + WordPress REST API
+  
+  **Prioridades de review**:
+  1. **Seguranca**: Nada de chaves/tokens expostos no codigo, seguranca da API REST do WordPress.
+  2. **Performance de Bundle**: Imports desnecessarios, tree-shaking, tamanho do bundle Vite.
+  3. **Boas praticas React**: Hooks corretos, evitar re-renders desnecessarios, componentizacao.
+  4. **SEO**: Verifique sitemaps, robots.txt, metatags, estrutura de URLs.
+  5. **Compatibilidade**: As mudancas quebram o deploy ou o fluxo do WordPress headless?
+  
+  Nao sugerir mudancas que:
+  - Quebrem o deploy atual.
+  - Mudem o arquitetura do tema sem necessidade.
+  - Sejam muito complexas para um nao-programador manter.
+  
+  Responda sempre em portugues ao fazer comentarios nas PRs.
+
+ignore:
+  - "*.lock"
+  - ".env"
+  - "node_modules/"
+  - "dist/"
+  - ".git/"
