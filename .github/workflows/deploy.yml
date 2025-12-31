@@ -1,6 +1,717 @@
-# New deploy workflow
-# This is the new deploy.yml file
-name: New Deploy
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🚀 DJ ZEN EYER - ENTERPRISE PRODUCTION DEPLOY (COM PRERENDER)
+# ═══════════════════════════════════════════════════════════════════════════════
+# 
+# FEATURES: Smart Cache Cleaning, Root Sitemaps, Plugin Dependencies, SSG Prerender
+# AUTHOR: DJ Zen Eyer | VERSION: 4.2 Diamond (Prerender Fix)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🚀 Production Deploy
+
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+      - 'LICENSE'
+  workflow_dispatch:
+    inputs:
+      skip_build:
+        description: 'Skip build (use existing artifact)'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  NODE_VERSION: 20
+  SSH_HOST: 147.79.84.222
+  SSH_PORT: 65002
+  SSH_USER: u790739895
+  REMOTE_ROOT: /home/u790739895/domains/djzeneyer.com/public_html
+  THEME_NAME: zentheme
+  SITE_URL: https://djzeneyer.com
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 1: BUILD
+# ═══════════════════════════════════════════════════════════════════════════════
+
+jobs:
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    if: ${{ !inputs.skip_build }}
+    
+    outputs:
+      commit_hash: ${{ steps.commit.outputs.hash }}
+      build_timestamp: ${{ steps.timestamp.outputs.value }}
+      build_status: ${{ job.status }}
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔖 Generate metadata
+        id: commit
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: ⏰ Generate timestamp
+        id: timestamp
+        run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # --- FRONTEND BUILD ---
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🗺️ Generate sitemaps
+        run: |
+          echo "🗺️ Generating sitemaps..."
+          npm run generate-sitemaps
+          
+          # Validar que os sitemaps foram gerados
+          if [ ! -f "public/sitemap.xml" ]; then
+            echo "❌ sitemap.xml not generated!"
+            exit 1
+          fi
+          if [ ! -f "public/sitemap-pages.xml" ]; then
+            echo "❌ sitemap-pages.xml not generated!"
+            exit 1
+          fi
+          
+          echo "✅ Sitemaps generated successfully:"
+          ls -lh public/sitemap*.xml
+
+      - name: 🔨 Build production
+        env:
+          NODE_ENV: production
+          VITE_WP_SITE_URL: ${{ env.SITE_URL }}
+          VITE_WP_REST_URL: ${{ env.SITE_URL }}/wp-json/
+          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
+          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        run: npm run build
+
+      # ⭐ NOVO: PRERENDER SSG
+      - name: 🎨 Prerender pages (SSG)
+        run: |
+          echo "🎨 Starting prerender process..."
+          
+          # Garantir que Puppeteer está instalado
+          if ! npm list puppeteer >/dev/null 2>&1; then
+            echo "📦 Installing Puppeteer..."
+            npm install puppeteer
+          fi
+          
+          # Executar prerender
+          node scripts/prerender.js
+          
+          echo ""
+          echo "📊 Validating prerendered files:"
+          
+          # Validar arquivos críticos
+          ROUTES=("/" "/events" "/music" "/about" "/zentribe" "/shop")
+          FAILED=0
+          
+          for route in "${ROUTES[@]}"; do
+            if [ "$route" = "/" ]; then
+              FILE="dist/index.html"
+            else
+              FILE="dist${route}/index.html"
+            fi
+            
+            if [ ! -f "$FILE" ]; then
+              echo "  ❌ $route - FILE NOT FOUND"
+              FAILED=1
+              continue
+            fi
+            
+            SIZE=$(wc -c < "$FILE")
+            
+            # Verificar tamanho mínimo (8KB)
+            if [ $SIZE -lt 8000 ]; then
+              echo "  ❌ $route - TOO SMALL ($SIZE bytes)"
+              FAILED=1
+              continue
+            fi
+            
+            # Verificar se tem H1
+            if ! grep -q "<h1" "$FILE"; then
+              echo "  ❌ $route - NO <h1> TAG"
+              FAILED=1
+              continue
+            fi
+            
+            echo "  ✅ $route - ${SIZE} bytes"
+          done
+          
+          if [ $FAILED -eq 1 ]; then
+            echo ""
+            echo "❌ Prerender validation FAILED"
+            exit 1
+          fi
+          
+          echo ""
+          echo "✅ All prerendered pages validated successfully!"
+
+      - name: ✅ Validate build
+        run: |
+          echo "🔍 Validating build output..."
+          
+          # Verificar estrutura básica
+          if [ ! -d dist ]; then echo "❌ dist/ not found"; exit 1; fi
+          if [ ! -f dist/index.html ]; then echo "❌ dist/index.html not found"; exit 1; fi
+          
+          # Verificar manifest
+          if [ ! -f "dist/.vite/manifest.json" ]; then
+            echo "❌ Vite manifest not found!"
+            exit 1
+          fi
+          
+          # Verificar assets
+          JS_COUNT=$(find dist/assets -name "*.js" 2>/dev/null | wc -l)
+          CSS_COUNT=$(find dist/assets -name "*.css" 2>/dev/null | wc -l)
+          
+          echo "📊 Build stats:"
+          echo "  - JavaScript files: $JS_COUNT"
+          echo "  - CSS files: $CSS_COUNT"
+          echo "  - Total size: $(du -sh dist/ | cut -f1)"
+          
+          if [ "$JS_COUNT" -eq 0 ] || [ "$CSS_COUNT" -eq 0 ]; then
+            echo "⚠️ Warning: Missing JS or CSS files!"
+          fi
+          
+          echo "✅ Build validation passed"
+
+      # --- PLUGIN DEPENDENCIES ---
+      - name: 🔨 Build plugin dependencies
+        run: |
+          echo "📦 Installing Composer dependencies for plugins..."
+          
+          if [ ! -d "plugins" ]; then
+            echo "ℹ️ No plugins directory found"
+            exit 0
+          fi
+          
+          for dir in plugins/*/; do
+            if [ -f "$dir/composer.json" ]; then
+              PLUGIN_NAME=$(basename "$dir")
+              echo "  → Building $PLUGIN_NAME"
+              
+              cd "$dir"
+              composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
+              
+              # Remover arquivos desnecessários
+              rm -rf tests/ .git/ .github/ .gitignore
+              
+              cd - > /dev/null
+            fi
+          done
+          
+          echo "✅ Plugin dependencies built"
+
+      # --- ARTIFACTS ---
+      - name: 📤 Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-dist-${{ steps.commit.outputs.hash }}
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+          compression-level: 6
+
+      - name: 📤 Upload theme files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-theme-${{ steps.commit.outputs.hash }}
+          path: |
+            functions.php
+            style.css
+            screenshot.png
+            header.php
+            footer.php
+            index.php
+          retention-days: 7
+
+      - name: 📤 Upload plugins
+        if: hashFiles('plugins/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-plugins-${{ steps.commit.outputs.hash }}
+          path: plugins/
+          retention-days: 7
+
+      - name: 📤 Upload sitemaps
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-sitemaps-${{ steps.commit.outputs.hash }}
+          path: |
+            public/sitemap.xml
+            public/sitemap-pages.xml
+          retention-days: 7
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 2: DEPLOY
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  deploy:
+    name: 🚀 Deploy
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: |
+      always() && 
+      (needs.build.result == 'success' || inputs.skip_build)
+    
+    environment:
+      name: production
+      url: ${{ env.SITE_URL }}
+    
+    steps:
+      - name: 📥 Checkout (sparse)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            inc
+            public
+          sparse-checkout-cone-mode: false
+
+      # --- DOWNLOAD ARTIFACTS ---
+      - name: 📥 Download dist
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dist-${{ needs.build.outputs.commit_hash }}
+          path: ./dist
+
+      - name: 📥 Download theme files
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-theme-${{ needs.build.outputs.commit_hash }}
+          path: ./
+
+      - name: 📥 Download plugins
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-plugins-${{ needs.build.outputs.commit_hash }}
+          path: ./plugins
+
+      - name: 📥 Download sitemaps
+        if: ${{ !inputs.skip_build }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
+          path: ./sitemaps-deploy
+
+      # --- SSH SETUP ---
+      - name: 🔐 Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          name: id_rsa
+
+      # --- BACKUP & CLEANUP ---
+      - name: 📦 Backup & Clean dist folder
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            
+            echo "════════════════════════════════════════"
+            echo "📦 BACKUP & CLEANUP"
+            echo "════════════════════════════════════════"
+            
+            # Criar backup
+            mkdir -p "${BACKUP_DIR}"
+            
+            if [ -d "${THEME_PATH}/dist" ]; then
+              echo "📦 Backing up dist folder..."
+              tar -czf "${BACKUP_DIR}/dist_backup.tar.gz" -C "${THEME_PATH}" dist/ 2>/dev/null || true
+              
+              # LIMPAR dist/ para evitar acúmulo de arquivos com hashes antigos
+              echo "🧹 Cleaning dist folder (removing old hashed files)..."
+              rm -rf "${THEME_PATH}/dist"/*
+              echo "✅ Dist folder cleaned"
+            fi
+            
+            # Garantir diretórios
+            mkdir -p "${THEME_PATH}/dist"
+            mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
+            
+            # Limpar backups antigos
+            echo "🧹 Cleaning old backups (keeping last 5)..."
+            cd "$HOME/backups"
+            ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
+            
+            echo "✅ Backup & cleanup completed"
+
+      # --- DEPLOY STEPS ---
+      
+      - name: 🚀 Deploy dist/
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avzr --delete --checksum
+          path: dist/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📚 Deploy inc/
+        if: hashFiles('inc/**') != ''
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avzr --delete --checksum
+          path: inc/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/inc/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📝 Deploy theme PHP files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "functions.php,style.css,screenshot.png,header.php,footer.php,index.php"
+          target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
+          strip_components: 0
+
+      - name: 🔌 Deploy plugins
+        if: hashFiles('plugins/**') != ''
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
+          path: plugins/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # --- SITEMAPS (CRITICAL FIX) ---
+      - name: 🗺️ Deploy sitemaps to ROOT
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "sitemaps-deploy/sitemap.xml,sitemaps-deploy/sitemap-pages.xml"
+          target: ${{ env.REMOTE_ROOT }}/
+          strip_components: 1
+
+      - name: ✅ Verify sitemaps
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "🔍 Verifying sitemaps in ROOT..."
+            
+            if [ -f "${{ env.REMOTE_ROOT }}/sitemap.xml" ]; then
+              echo "✅ sitemap.xml found in ROOT"
+              ls -lh "${{ env.REMOTE_ROOT }}/sitemap.xml"
+            else
+              echo "❌ sitemap.xml NOT found in ROOT!"
+              exit 1
+            fi
+            
+            if [ -f "${{ env.REMOTE_ROOT }}/sitemap-pages.xml" ]; then
+              echo "✅ sitemap-pages.xml found in ROOT"
+              ls -lh "${{ env.REMOTE_ROOT }}/sitemap-pages.xml"
+            else
+              echo "❌ sitemap-pages.xml NOT found in ROOT!"
+              exit 1
+            fi
+
+      # --- PUBLIC ASSETS ---
+      - name: 📄 Prepare public assets
+        if: hashFiles('public/**') != ''
+        run: |
+          echo "📄 Preparing public assets..."
+          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
+          mkdir -p temp_public
+          
+          for file in "${SAFE_FILES[@]}"; do
+            if [ -f "public/$file" ]; then
+              cp "public/$file" temp_public/
+              echo "  ✓ $file"
+            fi
+          done
+          
+          if [ -z "$(ls -A temp_public 2>/dev/null)" ]; then
+            echo "ℹ️ No public assets to deploy"
+            touch temp_public/.gitkeep
+          fi
+
+      - name: 📄 Deploy public assets
+        if: hashFiles('public/**') != ''
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avz --ignore-missing-args
+          path: temp_public/
+          remote_path: ${{ env.REMOTE_ROOT }}/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # --- CACHE PURGE ---
+      - name: 🧹 Purge caches (LiteSpeed + OPcache)
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "════════════════════════════════════════"
+            echo "🧹 CACHE PURGE"
+            echo "════════════════════════════════════════"
+            
+            cd ${{ env.REMOTE_ROOT }}
+            
+            # LiteSpeed Cache
+            echo "🔥 Purging LiteSpeed Cache..."
+            if command -v wp &> /dev/null; then
+              wp litespeed-purge all 2>/dev/null && echo "  ✅ LiteSpeed cache cleared" || echo "  ⚠️ LiteSpeed plugin not found"
+            else
+              echo "  ⚠️ WP-CLI not available"
+            fi
+            
+            # PHP OPcache (CRÍTICO - previne erros de função duplicada)
+            echo ""
+            echo "🔥 Purging PHP OPcache..."
+            
+            # Método 1: Via PHP CLI
+            if php -r "opcache_reset();" 2>/dev/null; then
+              echo "  ✅ OPcache cleared via CLI"
+            else
+              echo "  ℹ️ OPcache CLI reset not available"
+            fi
+            
+            # Método 2: Limpar cache files do PHP
+            rm -rf /tmp/php_* /var/tmp/php_* 2>/dev/null || true
+            
+            # Método 3: Trigger via web request (fallback)
+            curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null 2>/dev/null || true
+            
+            echo "  ✅ OPcache purge completed"
+            echo ""
+            echo "════════════════════════════════════════"
+
+      # --- FINAL VERIFICATION ---
+      - name: 📊 Final verification
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo ""
+            echo "════════════════════════════════════════"
+            echo "📊 DEPLOYMENT VERIFICATION"
+            echo "════════════════════════════════════════"
+            
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            
+            # Theme
+            echo ""
+            echo "🎨 Theme:"
+            if [ -d "$THEME_PATH/dist" ]; then
+              DIST_SIZE=$(du -sh "$THEME_PATH/dist" | cut -f1)
+              FILE_COUNT=$(find "$THEME_PATH/dist" -type f | wc -l)
+              echo "  ✅ dist/ exists ($DIST_SIZE, $FILE_COUNT files)"
+            else
+              echo "  ❌ dist/ NOT FOUND!"
+              exit 1
+            fi
+            
+            [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ⚠️ functions.php missing"
+            
+            # Prerendered pages
+            echo ""
+            echo "🎨 Prerendered pages:"
+            for route in "/" "/events" "/music"; do
+              if [ "$route" = "/" ]; then
+                FILE="$THEME_PATH/dist/index.html"
+              else
+                FILE="$THEME_PATH/dist${route}/index.html"
+              fi
+              
+              if [ -f "$FILE" ]; then
+                SIZE=$(wc -c < "$FILE")
+                echo "  ✅ $route (${SIZE} bytes)"
+              else
+                echo "  ❌ $route MISSING!"
+              fi
+            done
+            
+            # Sitemaps
+            echo ""
+            echo "🗺️ Sitemaps (ROOT):"
+            if [ -f "${{ env.REMOTE_ROOT }}/sitemap.xml" ]; then
+              SIZE=$(stat -f%z "${{ env.REMOTE_ROOT }}/sitemap.xml" 2>/dev/null || stat -c%s "${{ env.REMOTE_ROOT }}/sitemap.xml")
+              echo "  ✅ sitemap.xml ($SIZE bytes)"
+            else
+              echo "  ❌ sitemap.xml MISSING!"
+              exit 1
+            fi
+            
+            [ -f "${{ env.REMOTE_ROOT }}/sitemap-pages.xml" ] && \
+              echo "  ✅ sitemap-pages.xml" || \
+              echo "  ⚠️ sitemap-pages.xml missing"
+            
+            # Plugins
+            echo ""
+            echo "🔌 Plugins:"
+            PLUGIN_COUNT=$(find "${{ env.REMOTE_ROOT }}/wp-content/plugins" -mindepth 1 -maxdepth 1 -type d | wc -l)
+            echo "  Total: $PLUGIN_COUNT plugins"
+            
+            # PHP Syntax Check
+            echo ""
+            echo "🔍 PHP Syntax:"
+            PHP_ERRORS=$(find "$THEME_PATH" -name "*.php" -exec php -l {} \; 2>&1 | grep -i "parse error" || true)
+            if [ -z "$PHP_ERRORS" ]; then
+              echo "  ✅ No PHP syntax errors"
+            else
+              echo "  ❌ PHP ERRORS FOUND:"
+              echo "$PHP_ERRORS"
+              exit 1
+            fi
+            
+            echo ""
+            echo "════════════════════════════════════════"
+
+      - name: 📊 Deploy summary
+        if: always()
+        run: |
+          echo ""
+          echo "════════════════════════════════════════════════════════"
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ DEPLOYMENT SUCCESSFUL"
+            echo ""
+            echo "🌐 Site: ${{ env.SITE_URL }}"
+            echo "📦 Commit: ${{ needs.build.outputs.commit_hash }}"
+            echo "🗺️ Sitemap: ${{ env.SITE_URL }}/sitemap.xml"
+            echo ""
+            echo "🎉 Your site is now live!"
+          else
+            echo "❌ DEPLOYMENT FAILED"
+            echo "Check logs above for details"
+          fi
+          echo "════════════════════════════════════════════════════════"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# JOB 3: HEALTH CHECK
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  health-check:
+    name: 🏥 Health Check
+    needs: deploy
+    runs-on: ubuntu-24.04
+    if: needs.deploy.result == 'success'
+    
+    steps:
+      - name: 🔍 Check sitemap.xml (Server Status)
+        run: |
+          echo "🔍 Checking site availability via sitemap.xml..."
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" ${{ env.SITE_URL }}/sitemap.xml)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Site is UP! (sitemap.xml found with HTTP 200)"
+            
+            CONTENT=$(curl -s -L --max-time 30 -H "User-Agent: $UA" ${{ env.SITE_URL }}/sitemap.xml)
+            if echo "$CONTENT" | grep -q "<sitemapindex" || echo "$CONTENT" | grep -q "<urlset"; then
+               echo "✅ Sitemap content looks valid."
+            else
+               echo "⚠️ Sitemap content format is unexpected, but file exists."
+            fi
+            
+          else
+            echo "⚠️ Sitemap returned HTTP $HTTP_CODE"
+            
+            if [ "$HTTP_CODE" = "403" ]; then
+               echo "ℹ️ Site is protected by Firewall (403), but responding. Marking as SUCCESS."
+               exit 0
+            else
+               echo "❌ Site seems DOWN or sitemap missing."
+               exit 1
+            fi
+          fi
+
+      - name: 🔌 Check REST API
+        run: |
+          echo "🔌 Checking WordPress REST API..."
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" \
+            ${{ env.SITE_URL }}/wp-json/)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ REST API accessible (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️ REST API returned HTTP $HTTP_CODE"
+            if [ "$HTTP_CODE" != "403" ]; then
+               echo "ℹ️ API check failed, but site might still be up."
+            fi
+          fi
+
+      - name: 🔍 Check prerendered content
+        run: |
+          echo "🔍 Checking if /events has prerendered HTML..."
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          
+          CONTENT=$(curl -s -L --max-time 30 -H "User-Agent: $UA" ${{ env.SITE_URL }}/events)
+          
+          if echo "$CONTENT" | grep -q "<h1"; then
+            echo "✅ /events has <h1> tag (SSG working!)"
+          else
+            echo "⚠️ /events missing <h1> - may need cache clear"
+          fi
+
+      - name: 🎉 Success
+        run: |
+          echo ""
+          echo "🎉 Deploy & Health Check COMPLETE!"
+          echo "🌐 ${{ env.SITE_URL }}"
+          echo "🗺️ ${{ env.SITE_URL }}/sitemap.xml"
