@@ -8,31 +8,6 @@ Criei a estrutura base do plugin melhorado. Devido ao limite de tokens, aqui est
 
 ## ✅ **O Que Foi Criado**
 
-### Estrutura de Pastas
-```
-zeneyer-auth/
-├── zeneyer-auth.php              # ✅ Arquivo principal (CRIADO)
-├── includes/
-│   ├── Core/
-│   │   ├── class-jwt-manager.php      # ⏳ PRECISA CRIAR
-│   │   ├── class-cors-handler.php     # ⏳ PRECISA CRIAR
-│   │   └── class-rate-limiter.php     # ⏳ PRECISA CRIAR
-│   ├── Auth/
-│   │   ├── class-google-provider.php  # ⏳ PRECISA CRIAR
-│   │   └── class-password-auth.php    # ⏳ PRECISA CRIAR
-│   ├── API/
-│   │   └── class-rest-routes.php      # ⏳ PRECISA CRIAR
-│   ├── Admin/
-│   │   └── class-settings-page.php    # ⏳ PRECISA CRIAR
-│   ├── class-activator.php            # ⏳ PRECISA CRIAR
-│   └── class-logger.php               # ⏳ PRECISA CRIAR
-├── composer.json                      # ⏳ PRECISA CRIAR
-├── README.md                          # ⏳ PRECISA CRIAR
-└── uninstall.php                      # ⏳ PRECISA CRIAR
-```
-
----
-
 ## 🐛 **Bugs Corrigidos (vs v1.1.0)**
 
 ### Críticos
