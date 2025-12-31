@@ -1,4 +1,4 @@
-// src/components/common/Footer.tsx - VERSÃO OTIMIZADA BRAD PARSCALE
+// src/components/common/Footer.tsx - VERSÃO FINAL SEO (Link Juice Flow)
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -91,14 +91,16 @@ const Footer: React.FC = () => {
           
           {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
+            {/* CORREÇÃO SEO: Logo agora é um Link para a Home (Evita Dead-end) */}
+            <Link to="/" className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
               </div>
               <span className="text-xl font-display font-bold tracking-wide">
                 <span className="text-primary">DJ</span> Zen Eyer
               </span>
-            </div>
+            </Link>
+
             <p className="text-white/70 mb-4 text-sm leading-relaxed">
               {t('footer_bio')}
             </p>
@@ -187,6 +189,14 @@ const Footer: React.FC = () => {
         {/* Bottom Bar (Dados Semânticos para Bots) */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
           <p>{t('footer_copyright', { year: currentYear })}</p>
+          
+          {/* CORREÇÃO SEO: Links Legais para evitar 'Orphan Pages' */}
+          <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
+             <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+             <span>•</span>
+             <Link to="/terms" className="hover:text-primary transition-colors">Terms of Use</Link>
+          </div>
+
           <div className="mt-4 space-y-1">
             <p><strong>{t('footer_legal_name', 'Razão Social')}:</strong> Marcelo Eyer Fernandes</p>
             <p><strong>CNPJ:</strong> 44.063.765/0001-46</p>
