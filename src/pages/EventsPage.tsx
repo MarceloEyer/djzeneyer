@@ -29,6 +29,20 @@ import {
   X
 } from 'lucide-react';
 
+// --- SEGURANÇA: Função para higienizar URLs (Corrige Snyk XSS Score 617) ---
+const sanitizeUrl = (url: string | undefined): string => {
+  if (!url) return '';
+  try {
+    const parsed = new URL(url);
+    // Só aceita imagens servidas via HTTP ou HTTPS (bloqueia javascript: etc)
+    return ['http:', 'https:'].includes(parsed.protocol) ? url : '';
+  } catch (e) {
+    // Se for um caminho relativo (ex: /images/...), permite
+    if (url.startsWith('/')) return url;
+    return '';
+  }
+};
+
 const FEATURED_EVENTS: Event[] = [
   {
     id: 'mentoria-dj',
@@ -119,7 +133,7 @@ const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
   >
     <div className="relative h-48 overflow-hidden">
       <img
-        src={event.image}
+        src={sanitizeUrl(event.image)}
         alt={event.title}
         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         loading="lazy"
@@ -194,7 +208,7 @@ const TestimonialCard = memo<{ testimonial: Testimonial; index: number }>(({ tes
     <p className="text-white/80 italic mb-6 leading-relaxed">"{testimonial.quote}"</p>
     <div className="flex items-center gap-3">
       <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
-        {testimonial.avatar ? <img src={testimonial.avatar} alt={testimonial.name} className="w-full h-full object-cover" /> : <span className="text-lg font-bold text-primary">{testimonial.name.charAt(0)}</span>}
+        {testimonial.avatar ? <img src={sanitizeUrl(testimonial.avatar)} alt={testimonial.name} className="w-full h-full object-cover" /> : <span className="text-lg font-bold text-primary">{testimonial.name.charAt(0)}</span>}
       </div>
       <div>
         <div className="font-bold text-white">{testimonial.name} {testimonial.country}</div>
@@ -278,7 +292,7 @@ const FlyerGallery: React.FC = () => {
                   className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 cursor-pointer"
                 >
                   <img
-                    src={thumbUrl}
+                    src={sanitizeUrl(thumbUrl)}
                     alt={`${flyer.title.rendered} - ${ARTIST.identity.stageName}`}
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                     loading="lazy"
@@ -317,7 +331,7 @@ const FlyerGallery: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={selectedFlyer}
+                src={sanitizeUrl(selectedFlyer)}
                 alt="Flyer Full View"
                 className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl border border-white/10"
               />
@@ -360,7 +374,10 @@ const EventsPage: React.FC = () => {
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-400 font-bold text-xs tracking-wider uppercase border border-green-500/20"><Plane size={12} /> Booking 2026 Open</span>
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 text-yellow-400 font-bold text-xs tracking-wider uppercase border border-yellow-500/20"><Trophy size={12} /> {ARTIST.titles.primary}</span>
               </div>
+              
+              {/* O H1 já estava aqui! Com o Puppeteer rodando, o Google agora vai ver ele. */}
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white">World Tour <span className="text-primary">&</span> Events</h1>
+              
               <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-4">{ARTIST.stats.yearsActive} anos levando a <span className="text-primary font-semibold">{ARTIST.philosophy.style}</span> para os maiores palcos do mundo</p>
               <HeroStats />
               <div className="flex flex-wrap justify-center gap-4 mt-10">
