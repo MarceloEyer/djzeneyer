@@ -1,5 +1,5 @@
 // scripts/prerender.js
-// v12.0 - SAFE DEPLOY EDITION (Não bloqueia o build em caso de erro parcial)
+// v13.0 - MULTILINGUAL FIX (Inclui rotas PT para resolver erros 5xx)
 
 import fs from 'fs';
 import path from 'path';
@@ -16,8 +16,9 @@ const DIST_PATH = path.resolve(
 );
 const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
 
-// DEIXEI APENAS AS ROTAS QUE JÁ SABEMOS QUE FUNCIONAM
+// CONFIGURAÇÃO DAS ROTAS (EN + PT)
 const ROUTES = [
+  // --- INGLÊS (Main) ---
   { path: '/', minSize: 3000, waitFor: 'header, h1, footer' },
   { path: '/events', minSize: 3000, waitFor: 'h1, footer' }, 
   { path: '/music', minSize: 3000, waitFor: 'h1, footer' },
@@ -25,13 +26,22 @@ const ROUTES = [
   { path: '/zentribe', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/work-with-me', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/faq', minSize: 3000, waitFor: 'h1, footer' },
+
+  // --- PORTUGUÊS (Adicionado para corrigir erros 5xx/No Outgoing Links) ---
+  { path: '/pt', minSize: 3000, waitFor: 'header, h1, footer' },
+  { path: '/pt/eventos', minSize: 3000, waitFor: 'h1, footer' }, 
+  { path: '/pt/musica', minSize: 3000, waitFor: 'h1, footer' },
+  { path: '/pt/sobre', minSize: 3000, waitFor: 'h1, footer' }, // Confirme se a URL é 'sobre' ou 'minha-filosofia'
+  { path: '/pt/tribo-zen', minSize: 3000, waitFor: 'h1, footer' },
+  { path: '/pt/trabalhe-comigo', minSize: 3000, waitFor: 'h1, footer' },
+  { path: '/pt/faq', minSize: 3000, waitFor: 'h1, footer' },
   
-  // Rotas Temporariamente Desativadas (Descomente quando tiver conteúdo real)
+  // Rotas que apareceram no Ahrefs (Orphan/Errors)
+  { path: '/pt/minha-filosofia', minSize: 3000, waitFor: 'h1, footer' },
+
+  // Rotas Temporariamente Desativadas (Loja/Admin)
   // { path: '/shop', minSize: 3000, waitFor: 'h1, .product, footer' },
-  // { path: '/media', minSize: 3000, waitFor: 'h1, footer' },
-  // { path: '/conduct', minSize: 3000, waitFor: 'h1, footer' },
-  // { path: '/privacy-policy', minSize: 3000, waitFor: 'h1, footer' },
-  // { path: '/terms', minSize: 3000, waitFor: 'h1, footer' }
+  // { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .product, footer' },
 ];
 
 function validateHTML(content, route) {
@@ -91,7 +101,6 @@ async function prerenderRoute(page, route, retries = 2) {
       const url = `${BASE_URL}${route.path}`;
       console.log(`\n🚏 ROTA: ${route.path}`);
 
-      // Navegação rápida (domcontentloaded)
       const response = await page.goto(url, {
         waitUntil: 'domcontentloaded', 
         timeout: 30000
@@ -132,12 +141,12 @@ async function prerenderRoute(page, route, retries = 2) {
 
 async function prerender() {
   console.log('\n╔═══════════════════════════════════════════════════════╗');
-  console.log('║   🏗️  PRERENDER v12.0 - SAFE DEPLOY EDITION         ║');
+  console.log('║   🏗️  PRERENDER v13.0 - MULTILINGUAL EDITION        ║');
   console.log('╚═══════════════════════════════════════════════════════╝\n');
 
   if (!fs.existsSync(DIST_PATH)) {
     console.error('❌ ERRO: dist/ não encontrado!');
-    process.exit(1); // Aqui ainda falha pois sem dist não tem site
+    process.exit(1);
   }
 
   const app = express();
@@ -179,7 +188,6 @@ async function prerender() {
       };
     });
 
-    // Bloqueia trackers para velocidade
     await page.setRequestInterception(true);
     page.on('request', (req) => {
       const url = req.url().toLowerCase();
@@ -211,7 +219,6 @@ async function prerender() {
   console.log('\n' + '═'.repeat(60));
   if (results.failed.length > 0) {
     console.warn(`⚠️  Atenção: ${results.failed.length} rotas falharam, mas o deploy continuará.`);
-    // AQUI É A MUDANÇA MÁGICA: Exit 0 mesmo com falhas parciais
     process.exit(0); 
   } else {
     console.log(`🎉 Sucesso total!`);
