@@ -1,5 +1,5 @@
 // src/components/HeadlessSEO.tsx
-// VERSÃO DEFINITIVA: INTEGRADA AO ZEN SEO PLUGIN V8.0.0
+// VERSÃO 8.1.0 - CANONICAL TRAILING SLASH FIX
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -17,7 +17,6 @@ export interface PreloadItem {
   crossOrigin?: string;
 }
 
-// Interface que espelha exatamente o retorno do campo 'zen_seo' da sua API WP
 interface ZenSeoPluginData {
   title?: string;
   desc?: string;
@@ -35,8 +34,8 @@ interface HrefLang {
 }
 
 interface HeadlessSEOProps {
-  data?: ZenSeoPluginData; // Conectado ao plugin
-  schema?: object;         // Conectado ao campo 'zen_schema'
+  data?: ZenSeoPluginData;
+  schema?: object;
   title?: string;
   description?: string;
   url?: string;
@@ -63,11 +62,11 @@ const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
 
 export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '') || '/';
-  const suffix = cleanPath === '/' ? '' : `/${cleanPath}`;
+  const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`; // Adicionei barra no final aqui também
   return [
-    { lang: 'en', url: `${baseUrl}${suffix}` },
+    { lang: 'en', url: `${baseUrl}${suffix === '/' ? '' : suffix}` }, // Ajuste fino para home
     { lang: 'pt-BR', url: `${baseUrl}/pt${suffix}` },
-    { lang: 'x-default', url: `${baseUrl}${suffix}` },
+    { lang: 'x-default', url: `${baseUrl}${suffix === '/' ? '' : suffix}` },
   ];
 };
 
@@ -76,8 +75,8 @@ export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
 // ============================================================================
 
 export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
-  data, // Vindo de apiData.zen_seo
-  schema, // Vindo de apiData.zen_schema
+  data,
+  schema,
   title,
   description,
   url,
@@ -91,15 +90,15 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
 
-  // --- Lógica de Fallback de Dados (Integrada ao Plugin) ---
+  // --- Lógica de Fallback de Dados ---
   
-  // 1. Título: Plugin > Prop Local > Padrão
+  // 1. Título
   const finalTitle =
     data?.title ||
     title ||
     'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
 
-  // 2. Descrição: Plugin > Prop Local > Padrão
+  // 2. Descrição
   const finalDescription =
     data?.desc || 
     description || 
@@ -110,23 +109,28 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ? `${finalDescription.substring(0, 157)}...`
       : finalDescription;
 
-  // 3. URL: Canonical Plugin > Prop Local > Base
+  // 3. URL (Canonical) - AQUI ESTÁ A CORREÇÃO CRÍTICA
   const finalUrlRaw = data?.canonical || url || baseUrl;
-  const finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
+  let finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
 
-  // 4. Imagem: Plugin > Prop Local > Padrão Global
+  // 🔥 FIX: FORÇAR BARRA NO FINAL (TRAILING SLASH)
+  // O WordPress redireciona /events para /events/, então o React deve declarar /events/ como oficial.
+  if (!finalUrl.endsWith('/') && !finalUrl.includes('?')) {
+    finalUrl = `${finalUrl}/`;
+  }
+
+  // 4. Imagem
   const finalImage = ensureAbsoluteUrl(
     data?.image || image || `${baseUrl}/images/zen-eyer-og-image.jpg`,
     baseUrl
   );
 
-  // 5. NoIndex: Plugin || Prop Local
+  // 5. NoIndex
   const shouldNoIndex = data?.noindex || noindex;
 
-  // --- Schema.org Construction ---
+  // --- Schema.org ---
   let finalSchema: any = schema;
   
-  // Se não veio schema do WP (fallback local)
   if (!finalSchema && isHomepage) {
     finalSchema = {
       '@context': 'https://schema.org',
@@ -157,7 +161,6 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ],
     };
   } else if (!finalSchema) {
-    // Fallback genérico simples
     finalSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -190,7 +193,10 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       {/* 3. SEO Meta Data */}
       <title>{finalTitle}</title>
       <meta name="description" content={truncatedDesc} />
+      
+      {/* ✅ Canonical URL com barra no final */}
       <link rel="canonical" href={finalUrl} />
+      
       {keywords && <meta name="keywords" content={keywords} />}
 
       {/* Robots Control */}
