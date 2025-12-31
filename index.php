@@ -1,40 +1,59 @@
 <?php
 /**
  * Front to the WordPress application.
- *
  * @package zentheme
  */
 
-// 1. Descobrir qual rota o usuário está acessando
+// --- INÍCIO DO DEBUG ---
+$debug_output = [];
+$debug_output[] = "";
+
+// 1. Limpar a URL
 $request_uri = strtok($_SERVER['REQUEST_URI'], '?');
+$debug_output[] = "";
+$debug_output[] = "";
 
-// 2. Definir onde os arquivos estáticos vivem
-$dist_path = get_template_directory() . '/dist';
-$static_file = null;
+// 2. Definir caminhos
+$theme_dir = get_template_directory();
+$dist_path = $theme_dir . '/dist';
 
-// 3. Mapear a rota para o arquivo físico
+// 3. Montar caminho do arquivo esperado
+$target_file = '';
 if ($request_uri === '/' || $request_uri === '') {
-    $static_file = $dist_path . '/index.html';
+    $target_file = $dist_path . '/index.html';
 } else {
-    // Remove barra final se tiver, para evitar /events//index.html
-    $clean_uri = rtrim($request_uri, '/');
-    $static_file = $dist_path . $clean_uri . '/index.html';
+    // Garante que não duplica barras e remove barra final
+    $clean_path = rtrim($request_uri, '/');
+    $target_file = $dist_path . $clean_path . '/index.html';
 }
 
-// 4. O PULO DO GATO: Se o arquivo estático existe, entregue ELE!
-if ($static_file && file_exists($static_file)) {
-    // Mantém os headers de cache corretos
+$debug_output[] = "";
+
+// 4. Verificar existência
+if (file_exists($target_file)) {
+    $debug_output[] = "";
+    
+    // Imprime o debug antes do conteúdo (vai aparecer no topo do código fonte)
+    foreach ($debug_output as $line) { echo $line . "\n"; }
+    
     header('Content-Type: text/html; charset=UTF-8');
-    readfile($static_file);
-    exit; // Encerra o PHP aqui. Não carrega mais nada.
+    readfile($target_file);
+    exit;
+} else {
+    $debug_output[] = "";
+    $debug_output[] = "";
 }
 
-// 5. Fallback: Se não achou estático, carrega o index.html padrão (React Shell)
-// Isso acontece em páginas que não pré-renderizamos (ex: /shop, admin, etc)
+// 5. Fallback para React Padrão
 $fallback_file = $dist_path . '/index.html';
+$debug_output[] = "";
+
+foreach ($debug_output as $line) { echo $line . "\n"; }
+
 if (file_exists($fallback_file)) {
     readfile($fallback_file);
 } else {
-    echo "Erro crítico: O Frontend não foi compilado. Verifique a pasta dist.";
+    echo "<h1>CRITICAL ERROR: dist/index.html not found.</h1>";
+    echo "<p>Path tried: " . $fallback_file . "</p>";
 }
 ?>
