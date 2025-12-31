@@ -1,5 +1,5 @@
 // scripts/prerender.js
-// v5.0 - PATH FIX (Corrige o erro 404 dos scripts no build)
+// v6.0 - REAL DATA INJECTION (Conecta na API Real durante o build)
 
 import fs from 'fs';
 import path from 'path';
@@ -9,14 +9,13 @@ import express from 'express';
 import { createServer } from 'http';
 
 // Configurações
-const PORT = 4173;
+const PORT = 5173; // Porta padrão do Vite (ajuda no CORS)
 const BASE_URL = `http://localhost:${PORT}`;
 const DIST_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
 
-// O caminho exato onde o WP procura os assets (conforme visto no seu HTML)
+// Caminho dos assets do WP
 const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
 
-// Rotas para pré-renderizar
 const ROUTES = [
   '/', 
   '/events', 
@@ -33,23 +32,17 @@ const ROUTES = [
 ];
 
 async function prerender() {
-  console.log('🏗️  Iniciando Pré-renderização (Path Fix Mode)...');
+  console.log('🏗️  Iniciando Pré-renderização (Real Data Mode)...');
 
   const app = express();
-
-  // --- CORREÇÃO CRÍTICA AQUI ---
-  // Ensina o servidor a entregar os arquivos quando o navegador pedir o caminho longo do WP
+  // Serve os assets tanto no caminho WP quanto na raiz
   app.use(PUBLIC_PATH, express.static(DIST_PATH));
-  
-  // Também serve na raiz por garantia (para favicon, etc)
   app.use(express.static(DIST_PATH));
-
-  // Fallback para SPA (qualquer outra rota serve o index.html)
   app.use('*', (req, res) => res.sendFile(path.join(DIST_PATH, 'index.html')));
   
   const server = createServer(app);
   await new Promise((resolve) => server.listen(PORT, resolve));
-  console.log(`📡 Servidor de Build rodando em ${BASE_URL}`);
+  console.log(`📡 Servidor rodando em ${BASE_URL}`);
 
   const browser = await puppeteer.launch({
     headless: "new",
@@ -57,11 +50,34 @@ async function prerender() {
   });
   const page = await browser.newPage();
 
-  // Otimização: Ignora recursos pesados desnecessários para o SEO
+  // --- O PULO DO GATO ---
+  // Injeta a configuração apontando para o SITE REAL.
+  // Isso permite que o build busque os eventos de verdade no banco de dados.
+  await page.evaluateOnNewDocument(() => {
+    window.wpData = {
+      siteUrl: 'https://djzeneyer.com',
+      restUrl: 'https://djzeneyer.com/wp-json/',
+      themeUrl: 'https://djzeneyer.com/wp-content/themes/zentheme',
+      nonce: '', // APIs públicas (GET) geralmente não exigem nonce
+      isUserLoggedIn: false
+    };
+  });
+
+  // Mostra erros do console do navegador no terminal (DEBUG)
+  page.on('console', msg => {
+    const type = msg.type();
+    if (type === 'error') console.log(`[Browser Error] ${msg.text()}`);
+  });
+  
+  page.on('pageerror', err => {
+    console.log(`[Page Crash] ${err.toString()}`);
+  });
+
+  // Otimização de rede
   await page.setRequestInterception(true);
   page.on('request', (req) => {
-    const resourceType = req.resourceType();
-    if (resourceType === 'image' || resourceType === 'font') {
+    const type = req.resourceType();
+    if (type === 'image' || type === 'font' || type === 'media') {
       req.abort();
     } else {
       req.continue();
@@ -71,45 +87,40 @@ async function prerender() {
   for (const route of ROUTES) {
     try {
       const url = `${BASE_URL}${route}`;
-      // console.log(`📸 Processando: ${route}`);
-
-      // Navega e espera a rede ficar ociosa
+      // Aumentei o timeout para 60s caso a API demore
       await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
 
-      // Espera o conteúdo REAL aparecer (H1 ou Footer)
+      // Espera o conteúdo REAL aparecer
       try {
-        await page.waitForSelector('h1, footer', { timeout: 15000 });
+        await page.waitForSelector('h1', { timeout: 15000 });
       } catch (e) {
-        console.warn(`⚠️ Timeout esperando seletor em ${route}. O React pode ter falhado se os scripts não carregaram.`);
+        console.warn(`⚠️ Timeout esperando H1 em ${route}.`);
       }
 
       const content = await page.content();
 
-      // Verificação de Segurança
+      // Validação final
       if (content.includes('React Development Env') && !content.includes('footer')) {
-        console.error(`❌ ERRO: ${route} gerou HTML vazio. Verifique os caminhos dos assets!`);
+        console.error(`❌ FALHA: ${route} ficou vazio! Verifique os logs de [Browser Error] acima.`);
       } else {
-        console.log(`✅ ${route} renderizado com sucesso!`);
+        console.log(`✅ ${route} gerado com sucesso!`);
       }
 
       const routePath = route === '/' ? '/index.html' : `${route}/index.html`;
       const filePath = path.join(DIST_PATH, routePath);
       const dir = path.dirname(filePath);
       
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(filePath, content);
 
     } catch (err) {
-      console.error(`❌ Falha em ${route}:`, err.message);
+      console.error(`❌ Erro fatal em ${route}:`, err.message);
     }
   }
 
   await browser.close();
   server.close();
-  console.log('🎉 Pré-renderização concluída.');
+  console.log('🎉 Fim do processo.');
   process.exit(0);
 }
 
