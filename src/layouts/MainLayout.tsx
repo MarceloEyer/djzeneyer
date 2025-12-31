@@ -1,11 +1,11 @@
-// src/layouts/MainLayout.tsx - VERSÃO CORRIGIDA
+// src/layouts/MainLayout.tsx - VERSÃO FINAL (SEO FIX)
 
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import AuthModal from '../components/auth/AuthModal'; // <-- GARANTE A IMPORTAÇÃO PADRÃO
+import AuthModal from '../components/auth/AuthModal';
 import { siteConfig } from '../config/siteConfig';
 
 const MainLayout: React.FC = () => {
@@ -20,19 +20,34 @@ const MainLayout: React.FC = () => {
   const closeModal = () => setIsAuthModalOpen(false);
   const toggleAuthMode = () => setAuthMode(prev => (prev === 'login' ? 'register' : 'login'));
 
-  // ... (o resto do seu código JSX e Helmet continua o mesmo)
-  const canonicalUrl = `${siteConfig.siteUrl}${location.pathname}`.replace(/\/$/, '');
-  const title = siteConfig.defaultTitle;
-  const description = siteConfig.defaultDescription;
+  // --- SEO FIX: TRAILING SLASH (Barra no Final) ---
+  // O WordPress força a barra no final. O React precisa acompanhar.
+  const siteUrl = siteConfig.siteUrl;
+  
+  // Se não tiver barra no final, adiciona.
+  const pathname = location.pathname.endsWith('/') 
+    ? location.pathname 
+    : `${location.pathname}/`;
+    
+  const canonicalUrl = `${siteUrl}${pathname}`;
+
   return (
     <>
-      <Helmet>{/* ... */}</Helmet>
+      <Helmet>
+        {/* Fallback padrão caso a página não tenha SEO específico */}
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
+
       <div className="flex flex-col min-h-screen bg-background text-white">
         <Navbar onLoginClick={() => openModal('login')} />
+        
         <main className="flex-grow pt-20">
           <Outlet />
         </main>
+        
         <Footer />
+        
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={closeModal}
