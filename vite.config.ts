@@ -1,12 +1,30 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import viteCompression from 'vite-plugin-compression';
 import path from 'path';
 
 export default defineConfig(({ command, mode }) => {
   const isProduction = command === 'build' || mode === 'production';
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      // Gzip compression para melhorar performance e SEO
+      isProduction && viteCompression({
+        algorithm: 'gzip',
+        ext: '.gz',
+        threshold: 1024, // Só comprime arquivos > 1KB
+        deleteOriginFile: false,
+      }),
+      // Brotli compression (melhor que gzip, suportado por browsers modernos)
+      isProduction && viteCompression({
+        algorithm: 'brotliCompress',
+        ext: '.br',
+        threshold: 1024,
+        deleteOriginFile: false,
+      }),
+    ].filter(Boolean),
+    
     publicDir: false,
     base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
