@@ -3,11 +3,13 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
-import { User, Settings, ShoppingBag, Award, Music, LogOut } from 'lucide-react';
-import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
+import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones } from 'lucide-react';
+import { UserStatsCards } from '../components/account/UserStatsCards'; // Importação corrigida
+import { OrdersList } from '../components/account/OrdersList'; // Importação corrigida
+import { RecentActivity } from '../components/account/RecentActivity'; // Importação corrigida
 
 // Interfaces
 interface Order {
@@ -104,7 +106,7 @@ const MyAccountPage: React.FC = () => {
       return;
     }
     
-    const wpData = window.wpData || { restUrl: '', nonce: '' };
+    const wpData = (window as any).wpData || { restUrl: '', nonce: '' };
     if (!wpData.restUrl) {
       console.error('[MyAccountPage] WordPress data not available');
       setLoadingOrders(false);
