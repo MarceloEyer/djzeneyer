@@ -7,24 +7,20 @@ ExpiresByType application/pdf A31557600
 ExpiresByType image/x-icon A31557600
 ExpiresByType image/vnd.microsoft.icon A31557600
 ExpiresByType image/svg+xml A31557600
-
 ExpiresByType image/jpg A31557600
 ExpiresByType image/jpeg A31557600
 ExpiresByType image/png A31557600
 ExpiresByType image/gif A31557600
 ExpiresByType image/webp A31557600
 ExpiresByType image/avif A31557600
-
 ExpiresByType video/ogg A31557600
 ExpiresByType audio/ogg A31557600
 ExpiresByType video/mp4 A31557600
 ExpiresByType video/webm A31557600
-
 ExpiresByType text/css A31557600
 ExpiresByType text/javascript A31557600
 ExpiresByType application/javascript A31557600
 ExpiresByType application/x-javascript A31557600
-
 ExpiresByType application/x-font-ttf A31557600
 ExpiresByType application/x-font-woff A31557600
 ExpiresByType application/font-woff A31557600
@@ -34,15 +30,13 @@ ExpiresByType font/ttf A31557600
 ExpiresByType font/otf A31557600
 ExpiresByType font/woff A31557600
 ExpiresByType font/woff2 A31557600
-
 </IfModule>
 ### marker BROWSER CACHE end ###
-
 ## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
 # END NON_LSCACHE
 
 # ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v12.0 (FINAL - SEO PRE-RENDER + CSP)
+# DJ ZEN EYER - PRODUCTION .htaccess v13.0 (CLEAN - PHP ROUTING ONLY)
 # ==============================================================================
 
 # ==============================================================================
@@ -115,7 +109,7 @@ CacheKeyModify -qs:_ga
 </IfModule>
 
 # ==============================================================================
-# 3. SECURITY HEADERS (UPDATED v11.1 - CSP + EVAL + BLOB FIX)
+# 3. SECURITY HEADERS
 # ==============================================================================
 <IfModule mod_headers.c>
   Header unset Server
@@ -128,11 +122,8 @@ CacheKeyModify -qs:_ga
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
   Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
 
-  # Limpeza de regras antigas para evitar conflitos
   Header unset Content-Security-Policy
   Header always unset Content-Security-Policy
-
-  # REGRA DEFINITIVA:
   Header always set Content-Security-Policy "default-src 'self' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://gsi.client-url.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com; font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:; img-src 'self' https: data: blob: filesystem:; connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://challenges.cloudflare.com; frame-src 'self' https://accounts.google.com https://widget.bandsintown.com https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';"
 </IfModule>
 
@@ -163,7 +154,7 @@ CacheKeyModify -qs:_ga
 </IfModule>
 
 # ==============================================================================
-# 6. CACHE CONTROL
+# 6. CACHE CONTROL (ASSETS)
 # ==============================================================================
 <IfModule mod_headers.c>
     <If "%{REQUEST_URI} =~ m#^/wp-json/#">
@@ -189,27 +180,12 @@ CacheKeyModify -qs:_ga
 Options -Indexes
 
 # ==============================================================================
-# 8. SEO PRERENDER (PUPPETEER STATIC FILES) - A MÁGICA ACONTECE AQUI!
-# ==============================================================================
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteBase /
-
-# Regra 1: Home (Raiz) -> entrega o dist/index.html se existir
-RewriteCond %{REQUEST_URI} ^/$
-RewriteCond %{DOCUMENT_ROOT}/wp-content/themes/zentheme/dist/index.html -f
-RewriteRule ^$ wp-content/themes/zentheme/dist/index.html [L]
-
-# Regra 2: Páginas internas (ex: /events) -> entrega dist/events/index.html
-# Isso garante que o Google receba o HTML com o H1!
-RewriteCond %{DOCUMENT_ROOT}/wp-content/themes/zentheme/dist/$1/index.html -f
-RewriteRule ^(.*)/?$ wp-content/themes/zentheme/dist/$1/index.html [L]
-</IfModule>
-
-# ==============================================================================
-# 9. ROTEAMENTO PADRÃO DO WORDPRESS (FALLBACK)
+# 8. ROTEAMENTO PADRÃO DO WORDPRESS
 # ==============================================================================
 # BEGIN WordPress
+# As diretrizes (linhas) entre "BEGIN WordPress" e "END WordPress" são
+# geradas dinamicamente e só devem ser modificadas através de filtros do WordPress.
+# Quaisquer alterações nas diretivas entre esses marcadores serão sobrescritas.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -219,4 +195,5 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
+
 # END WordPress
