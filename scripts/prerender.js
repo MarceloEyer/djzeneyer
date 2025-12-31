@@ -1,5 +1,5 @@
 // scripts/prerender.js
-// v13.0 - MULTILINGUAL FIX (Inclui rotas PT para resolver erros 5xx)
+// v14.0 - SHOP UNLOCKED & API SAFE
 
 import fs from 'fs';
 import path from 'path';
@@ -16,9 +16,9 @@ const DIST_PATH = path.resolve(
 );
 const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
 
-// CONFIGURAÇÃO DAS ROTAS (EN + PT)
+// CONFIGURAÇÃO DAS ROTAS
 const ROUTES = [
-  // --- INGLÊS (Main) ---
+  // --- PÁGINAS RÁPIDAS (Estáticas) ---
   { path: '/', minSize: 3000, waitFor: 'header, h1, footer' },
   { path: '/events', minSize: 3000, waitFor: 'h1, footer' }, 
   { path: '/music', minSize: 3000, waitFor: 'h1, footer' },
@@ -27,21 +27,20 @@ const ROUTES = [
   { path: '/work-with-me', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/faq', minSize: 3000, waitFor: 'h1, footer' },
 
-  // --- PORTUGUÊS (Adicionado para corrigir erros 5xx/No Outgoing Links) ---
+  // --- PORTUGUÊS ---
   { path: '/pt', minSize: 3000, waitFor: 'header, h1, footer' },
   { path: '/pt/eventos', minSize: 3000, waitFor: 'h1, footer' }, 
   { path: '/pt/musica', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/pt/sobre', minSize: 3000, waitFor: 'h1, footer' }, // Confirme se a URL é 'sobre' ou 'minha-filosofia'
+  { path: '/pt/sobre', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/pt/tribo-zen', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/pt/trabalhe-comigo', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/pt/faq', minSize: 3000, waitFor: 'h1, footer' },
-  
-  // Rotas que apareceram no Ahrefs (Orphan/Errors)
-  { path: '/pt/minha-filosofia', minSize: 3000, waitFor: 'h1, footer' },
 
-  // Rotas Temporariamente Desativadas (Loja/Admin)
-  // { path: '/shop', minSize: 3000, waitFor: 'h1, .product, footer' },
-  // { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .product, footer' },
+  // --- LOJA (Agora Ativada!) ---
+  // Aumentei a espera para garantir que os cards carreguem
+  // .card é a classe que usamos no ShopPage.tsx para os produtos
+  { path: '/shop', minSize: 3000, waitFor: 'h1, .card, footer' },
+  { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .card, footer' },
 ];
 
 function validateHTML(content, route) {
@@ -57,6 +56,14 @@ function validateHTML(content, route) {
   if (content.includes('React Development')) {
     errors.push('Contains development environment message');
   }
+  
+  // Validação específica para Shop: deve ter produtos
+  if (route.path.includes('shop') || route.path.includes('loja')) {
+    if (!content.includes('R$') && !content.includes('price')) {
+      warnings.push('Shop page might be missing prices/products');
+    }
+  }
+
   const size = Buffer.byteLength(content, 'utf8');
   if (size < route.minSize) {
     warnings.push(`HTML size (${size} bytes) below expected minimum`);
@@ -80,18 +87,26 @@ async function waitForElement(page, selector, timeout = 10000) {
 async function waitForContent(page, route) {
   const selectors = route.waitFor.split(',').map(s => s.trim());
   const found = [];
+  
+  // Para a loja, damos mais tempo (15s) para a API responder
+  const elementTimeout = (route.path.includes('shop') || route.path.includes('loja')) ? 15000 : 8000;
+
   for (const selector of selectors) {
-    const success = await waitForElement(page, selector, 8000);
+    const success = await waitForElement(page, selector, elementTimeout);
     if (success) found.push(selector);
   }
+  
   const hasFooter = found.some(s => s.includes('footer'));
-  const hasContent = found.some(s => s !== 'footer');
+  // Se achou H1 OU algum card de produto, consideramos sucesso
+  const hasContent = found.some(s => s.includes('h1') || s.includes('card') || s.includes('product'));
   
   if (!hasFooter || !hasContent) {
     console.warn(`⚠️  Incompleto: Encontrado=[${found.join(', ')}]`);
     return false;
   }
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Espera extra para garantir que imagens e preços renderizem
+  await new Promise(resolve => setTimeout(resolve, 2000));
   return true;
 }
 
@@ -101,9 +116,10 @@ async function prerenderRoute(page, route, retries = 2) {
       const url = `${BASE_URL}${route.path}`;
       console.log(`\n🚏 ROTA: ${route.path}`);
 
+      // Timeout geral maior (45s) para aguentar a API da loja
       const response = await page.goto(url, {
         waitUntil: 'domcontentloaded', 
-        timeout: 30000
+        timeout: 45000 
       });
 
       if (!response || !response.ok()) {
@@ -111,13 +127,17 @@ async function prerenderRoute(page, route, retries = 2) {
       }
 
       const loaded = await waitForContent(page, route);
-      if (!loaded) throw new Error('Conteúdo visual incompleto');
+      if (!loaded) throw new Error('Conteúdo visual incompleto (Timeout)');
 
       const content = await page.content();
       const validation = validateHTML(content, route);
       
       if (validation.errors.length > 0) {
         throw new Error(`Validação: ${validation.errors.join(', ')}`);
+      }
+      
+      if (validation.warnings.length > 0) {
+        console.warn(`   ⚠️ Avisos: ${validation.warnings.join(', ')}`);
       }
 
       const routePath = route.path === '/' ? '/index.html' : `${route.path}/index.html`;
@@ -141,7 +161,7 @@ async function prerenderRoute(page, route, retries = 2) {
 
 async function prerender() {
   console.log('\n╔═══════════════════════════════════════════════════════╗');
-  console.log('║   🏗️  PRERENDER v13.0 - MULTILINGUAL EDITION        ║');
+  console.log('║   🏗️  PRERENDER v14.0 - SHOP UNLOCKED & API SAFE    ║');
   console.log('╚═══════════════════════════════════════════════════════╝\n');
 
   if (!fs.existsSync(DIST_PATH)) {
@@ -178,6 +198,7 @@ async function prerender() {
     const page = await browser.newPage();
     await page.setCacheEnabled(false);
 
+    // Injeta os dados base para o React saber onde buscar a API
     await page.evaluateOnNewDocument(() => {
       window.wpData = {
         siteUrl: 'https://djzeneyer.com',
@@ -188,14 +209,25 @@ async function prerender() {
       };
     });
 
+    // INTERCEPTAÇÃO DE REDE INTELIGENTE
     await page.setRequestInterception(true);
     page.on('request', (req) => {
       const url = req.url().toLowerCase();
       const type = req.resourceType();
+      
+      // Lista explícita do que BLOQUEAR (Economia de recursos)
+      const blockTypes = ['image', 'media', 'font', 'stylesheet']; // Stylesheet opcional, às vezes quebra layout visual check
+      const blockUrls = ['google-analytics', 'facebook', 'googletagmanager', 'doubleclick'];
+
+      // NUNCA bloquear 'fetch' ou 'xhr' (são as APIs!)
+      if (type === 'xhr' || type === 'fetch' || type === 'document' || type === 'script') {
+        req.continue();
+        return;
+      }
+
       if (
-        type === 'image' || type === 'media' || type === 'font' ||
-        url.includes('google-analytics') || url.includes('facebook') ||
-        url.includes('googletagmanager')
+        blockTypes.includes(type) || 
+        blockUrls.some(u => url.includes(u))
       ) {
         req.abort();
       } else {
@@ -218,10 +250,12 @@ async function prerender() {
 
   console.log('\n' + '═'.repeat(60));
   if (results.failed.length > 0) {
-    console.warn(`⚠️  Atenção: ${results.failed.length} rotas falharam, mas o deploy continuará.`);
+    console.warn(`⚠️  Atenção: ${results.failed.length} rotas falharam.`);
+    console.warn(`❌ Falhas: ${results.failed.join(', ')}`);
+    // Continua o deploy mesmo com falhas para não derrubar o site
     process.exit(0); 
   } else {
-    console.log(`🎉 Sucesso total!`);
+    console.log(`🎉 Sucesso total! Todas as páginas geradas.`);
     process.exit(0);
   }
 }
