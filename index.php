@@ -1,59 +1,32 @@
 <?php
 /**
- * Front to the WordPress application.
+ * DJ Zen Eyer - Hybrid Router (Static First, React Fallback)
  * @package zentheme
  */
 
-// --- INÍCIO DO DEBUG ---
-$debug_output = [];
-$debug_output[] = "";
+// 1. Define a pasta onde está o build do Vite
+$dist_path = get_template_directory() . '/dist';
 
-// 1. Limpar a URL
+// 2. Limpa a URL (remove ?query=params) para achar o arquivo
 $request_uri = strtok($_SERVER['REQUEST_URI'], '?');
-$debug_output[] = "";
-$debug_output[] = "";
 
-// 2. Definir caminhos
-$theme_dir = get_template_directory();
-$dist_path = $theme_dir . '/dist';
-
-// 3. Montar caminho do arquivo esperado
-$target_file = '';
+// 3. Monta o caminho do arquivo estático esperado
 if ($request_uri === '/' || $request_uri === '') {
-    $target_file = $dist_path . '/index.html';
+    // Home
+    $static_file = $dist_path . '/index.html';
 } else {
-    // Garante que não duplica barras e remove barra final
-    $clean_path = rtrim($request_uri, '/');
-    $target_file = $dist_path . $clean_path . '/index.html';
+    // Rotas internas (ex: /events -> dist/events/index.html)
+    $static_file = $dist_path . rtrim($request_uri, '/') . '/index.html';
 }
 
-$debug_output[] = "";
-
-// 4. Verificar existência
-if (file_exists($target_file)) {
-    $debug_output[] = "";
-    
-    // Imprime o debug antes do conteúdo (vai aparecer no topo do código fonte)
-    foreach ($debug_output as $line) { echo $line . "\n"; }
-    
+// 4. ESTRATÉGIA DE OURO: Se o arquivo estático existe, entrega ele.
+if (file_exists($static_file) && !is_dir($static_file)) {
     header('Content-Type: text/html; charset=UTF-8');
-    readfile($target_file);
+    // Cache headers opcionais podem ser adicionados aqui se necessário
+    readfile($static_file);
     exit;
-} else {
-    $debug_output[] = "";
-    $debug_output[] = "";
 }
 
-// 5. Fallback para React Padrão
-$fallback_file = $dist_path . '/index.html';
-$debug_output[] = "";
-
-foreach ($debug_output as $line) { echo $line . "\n"; }
-
-if (file_exists($fallback_file)) {
-    readfile($fallback_file);
-} else {
-    echo "<h1>CRITICAL ERROR: dist/index.html not found.</h1>";
-    echo "<p>Path tried: " . $fallback_file . "</p>";
-}
-?>
+// 5. FALLBACK: Se não tem estático, carrega o App React padrão (Client-Side Rendering)
+// Isso garante que páginas como /admin, /shop (se não gerada) ou 404 funcionem.
+require($dist_path . '/index.html');
