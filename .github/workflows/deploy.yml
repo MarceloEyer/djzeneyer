@@ -1,0 +1,6 @@
+# New deploy workflow
+# This is the new deploy.yml file
+name: New Deploy
+on:
+  push:
+    branches: [main]
