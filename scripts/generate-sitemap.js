@@ -1,7 +1,7 @@
 // scripts/generate-sitemap.js
-// v3.0 - SITEMAP INDEX MASTER (FINAL)
+// v3.1 - SITEMAP INDEX MASTER (CORRIGIDO PARA SEO)
 // Gera: 
-// 1. sitemap-pages.xml (Rotas estáticas do React)
+// 1. sitemap-pages.xml (Rotas estáticas do React - FILTRADAS)
 // 2. sitemap.xml (Índice que aponta para Pages + WP Dynamic)
 
 import fs from 'fs';
@@ -13,10 +13,26 @@ const BASE_URL = 'https://djzeneyer.com';
 const ROUTE_MAP_PATH = '../src/data/routeMap.json'; 
 const PUBLIC_DIR = '../public';
 
-// Nomes dos Arquivos (Devem bater com o deploy.yml e plugin WP)
+// Nomes dos Arquivos
 const PAGES_SITEMAP = 'sitemap-pages.xml';
 const INDEX_SITEMAP = 'sitemap.xml';
 const WP_DYNAMIC_SITEMAP = 'sitemap-dynamic.xml'; // Gerado pelo WordPress
+
+// 🚫 LISTA NEGRA: Rotas que o Google NÃO deve indexar
+// (Isso resolve os erros de "3XX Redirect" e "Páginas privadas")
+const EXCLUDED_ROUTES = [
+  '/dashboard',
+  '/my-account',
+  '/minha-conta', // Versão PT
+  '/painel',      // Versão PT
+  '/login',
+  '/register',
+  '/reset-password',
+  '/cart',
+  '/checkout',
+  '/404',
+  '/thank-you'
+];
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,10 +54,24 @@ try {
   let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
 
+  let count = 0;
+
   Object.keys(routeMap).forEach(key => {
-    if (key.includes(':')) return; // Pula rotas dinâmicas
+    // 1. Pula rotas dinâmicas (com :)
+    if (key.includes(':')) return; 
 
     const routeData = routeMap[key];
+    
+    // 2. FILTRO DE SEGURANÇA (Novo!)
+    // Se a rota estiver na lista negra (EN ou PT), pula ela.
+    const isExcluded = EXCLUDED_ROUTES.some(badRoute => 
+      routeData.en.includes(badRoute) || (routeData.pt && routeData.pt.includes(badRoute))
+    );
+
+    if (isExcluded) {
+      // console.log(`🙈 Ignorando rota privada: ${routeData.en}`); // Descomente para debug
+      return; 
+    }
     
     // Rota EN (Padrão)
     if (routeData.en) {
@@ -55,6 +85,7 @@ try {
     <xhtml:link rel="alternate" hreflang="pt" href="${BASE_URL}${routeData.pt}" />
     <xhtml:link rel="alternate" hreflang="en" href="${urlEn}" />
   </url>`;
+      count++;
     }
 
     // Rota PT (se diferente)
@@ -69,6 +100,7 @@ try {
     <xhtml:link rel="alternate" hreflang="en" href="${routeData.en === '/' ? BASE_URL : BASE_URL + routeData.en}" />
     <xhtml:link rel="alternate" hreflang="pt" href="${urlPt}" />
   </url>`;
+      count++;
     }
   });
 
@@ -76,11 +108,10 @@ try {
   
   const pagesPath = path.resolve(__dirname, PUBLIC_DIR, PAGES_SITEMAP);
   fs.writeFileSync(pagesPath, pagesXml);
-  console.log(`✅ ${PAGES_SITEMAP} gerado com sucesso.`);
+  console.log(`✅ ${PAGES_SITEMAP} gerado com sucesso (${count} URLs válidas).`);
 
 
   // --- 2. GERAR SITEMAP INDEX (O MESTRE) ---
-  // Aponta para o sitemap de páginas (acima) e para o dinâmico (do WordPress)
   
   let indexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
