@@ -1,204 +1,118 @@
-/**
- * Pre-render Script - Static Site Generation
- * Generates static HTML for React routes using Puppeteer
- *
- * @version 2.0.0 - Puppeteer Migration (Security Fix)
- */
+// scripts/prerender.js
+// v4.0 - FORCE WAIT (Corrige o problema do HTML vazio)
 
-import { createServer } from 'http';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import fs from 'fs';
+import path from 'path';
 import { fileURLToPath } from 'url';
+import puppeteer from 'puppeteer';
+import express from 'express';
+import { createServer } from 'http';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Configuration
-const DIST_PATH = join(__dirname, '../dist');
-const PORT = 3333;
+// Configurações
+const PORT = 4173; // Porta temporária para o render
 const BASE_URL = `http://localhost:${PORT}`;
+const DIST_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
 
-// Routes to pre-render (EN + PT)
+// Rotas para pré-renderizar (Baseado no seu Sitemap e Menu)
 const ROUTES = [
-  // English routes
-  '/',
-  '/about',
-  '/events',
-  '/music',
-  '/news',
-  '/tribe',
+  '/', 
+  '/events', 
+  '/music', 
+  '/about', 
+  '/zentribe', 
+  '/shop', 
   '/work-with-me',
-  '/shop',
-  '/dashboard',
-  '/my-account',
+  '/media',
   '/faq',
-  '/my-philosophy',
-
-  // Portuguese routes
-  '/pt',
-  '/pt/sobre',
-  '/pt/eventos',
-  '/pt/musica',
-  '/pt/noticias',
-  '/pt/tribo',
-  '/pt/contrate',
-  '/pt/loja',
-  '/pt/painel',
-  '/pt/minha-conta',
-  '/pt/faq',
-  '/pt/minha-filosofia',
+  '/conduct',
+  '/privacy-policy',
+  '/terms'
 ];
 
-/**
- * Simple HTTP server to serve dist folder
- */
-function createStaticServer() {
-  const indexHtml = readFileSync(join(DIST_PATH, 'index.html'), 'utf-8');
+async function prerender() {
+  console.log('🏗️  Iniciando Pré-renderização (Force Wait Mode)...');
 
-  return createServer((req, res) => {
-    let filePath = join(DIST_PATH, req.url === '/' ? 'index.html' : req.url);
+  // 1. Iniciar servidor estático temporário para ler a pasta dist
+  const app = express();
+  app.use(express.static(DIST_PATH));
+  // Fallback para SPA (necessário para o router funcionar)
+  app.use('*', (req, res) => res.sendFile(path.join(DIST_PATH, 'index.html')));
+  
+  const server = createServer(app);
+  await new Promise((resolve) => server.listen(PORT, resolve));
+  console.log(`📡 Servidor de Build rodando em ${BASE_URL}`);
 
-    // Serve static files (CSS, JS, images)
-    if (existsSync(filePath) && !filePath.endsWith('/')) {
-      const content = readFileSync(filePath);
-
-      // Set correct Content-Type
-      let contentType = 'text/html';
-      if (filePath.endsWith('.js')) contentType = 'application/javascript';
-      else if (filePath.endsWith('.css')) contentType = 'text/css';
-      else if (filePath.endsWith('.json')) contentType = 'application/json';
-      else if (filePath.endsWith('.png')) contentType = 'image/png';
-      else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
-      else if (filePath.endsWith('.svg')) contentType = 'image/svg+xml';
-      else if (filePath.endsWith('.webp')) contentType = 'image/webp';
-
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content);
-    } else {
-      // SPA fallback - serve index.html for all routes
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(indexHtml);
-    }
+  // 2. Iniciar Puppeteer
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ['--no-sandbox', '--disable-setuid-sandbox'] // Necessário para rodar no CI/Build
   });
-}
-
-/**
- * Pre-render a single route
- */
-async function prerenderRoute(browser, route) {
   const page = await browser.newPage();
 
-  try {
-    console.log(`  → Rendering: ${route}`);
-
-    // Navigate to route
-    await page.goto(`${BASE_URL}${route}`, {
-      waitUntil: 'networkidle0',
-      timeout: 30000,
-    });
-
-    // Wait for React to hydrate
-    await page.waitForSelector('#root', { timeout: 5000 });
-
-    // Get rendered HTML
-    const html = await page.content();
-
-    // Save to file
-    const outputPath = route === '/'
-      ? join(DIST_PATH, 'index.html')
-      : join(DIST_PATH, route, 'index.html');
-
-    const outputDir = dirname(outputPath);
-    if (!existsSync(outputDir)) {
-      mkdirSync(outputDir, { recursive: true });
+  // Otimização: Ignora imagens e fontes para carregar mais rápido
+  await page.setRequestInterception(true);
+  page.on('request', (req) => {
+    if (['image', 'stylesheet', 'font'].includes(req.resourceType())) {
+      req.abort();
+    } else {
+      req.continue();
     }
+  });
 
-    writeFileSync(outputPath, html, 'utf-8');
-    console.log(`  ✓ Saved: ${outputPath}`);
+  // 3. Loop pelas rotas
+  for (const route of ROUTES) {
+    try {
+      const url = `${BASE_URL}${route}`;
+      // console.log(`📸 Renderizando: ${route}...`); // Comentei para limpar o log
 
-  } catch (error) {
-    console.warn(`  ⚠ Failed to render ${route}: ${error.message}`);
-  } finally {
-    await page.close();
+      // Aumenta o timeout para garantir
+      await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+
+      // --- O PULO DO GATO (CORREÇÃO) ---
+      // Espera explicitamente pelo conteúdo aparecer!
+      // Espera aparecer um H1 OU o texto do footer OU qualquer div com conteúdo
+      try {
+        await page.waitForSelector('h1, .container, footer', { timeout: 10000 });
+      } catch (e) {
+        console.warn(`⚠️ Aviso: Timeout esperando seletor em ${route}. O React pode estar lento.`);
+      }
+
+      // Pequena pausa extra de segurança para animações terminarem
+      await new Promise(r => setTimeout(r, 1000));
+
+      // Pega o HTML final
+      const content = await page.content();
+
+      // Verifica se pegou o conteúdo certo (Debug de Segurança)
+      if (content.includes('React Development Env')) {
+        console.error(`❌ ERRO CRÍTICO em ${route}: Capturei o HTML vazio! O H1 não carregou.`);
+      } else {
+        console.log(`✅ ${route} renderizado com sucesso (HTML Rico detectado).`);
+      }
+
+      // Caminho para salvar
+      const routePath = route === '/' ? '/index.html' : `${route}/index.html`;
+      const filePath = path.join(DIST_PATH, routePath);
+
+      // Garante que a pasta existe
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      // Salva o arquivo
+      fs.writeFileSync(filePath, content);
+
+    } catch (err) {
+      console.error(`❌ Falha ao renderizar ${route}:`, err.message);
+    }
   }
+
+  // 4. Limpeza
+  await browser.close();
+  server.close();
+  console.log('🎉 Pré-renderização concluída! Arquivos salvos em /dist');
+  process.exit(0);
 }
 
-/**
- * Main pre-render function
- */
-async function prerender() {
-  console.log('\n🚀 Starting Static Site Generation...\n');
-
-  // Check if dist folder exists
-  if (!existsSync(DIST_PATH)) {
-    console.error('❌ Error: dist/ folder not found. Run `npm run build` first.');
-    process.exit(1);
-  }
-
-  let server = null;
-  let browser = null;
-
-  try {
-    // Start static server
-    server = createStaticServer();
-    await new Promise((resolve) => {
-      server.listen(PORT, () => {
-        console.log(`📡 Server running at ${BASE_URL}\n`);
-        resolve();
-      });
-    });
-
-    // Launch Puppeteer
-    // CRITICAL: Use --no-sandbox for Linux/GitHub Actions compatibility
-    const puppeteer = await import('puppeteer');
-
-    browser = await puppeteer.default.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--disable-gpu',
-      ],
-    });
-
-    console.log('🎭 Puppeteer initialized\n');
-
-    // Pre-render all routes
-    for (const route of ROUTES) {
-      await prerenderRoute(browser, route);
-    }
-
-    console.log('\n✅ Pre-rendering completed successfully!\n');
-
-  } catch (error) {
-    console.error('\n❌ Pre-rendering failed:', error.message);
-
-    // CRITICAL: Don't fail the build in Bolt/preview environments
-    if (error.message.includes('Failed to launch') ||
-        error.message.includes('ECONNREFUSED') ||
-        error.message.includes('Could not find')) {
-      console.warn('\n⚠️  Skipping prerender in this environment (Bolt/Sandbox detected)');
-      console.log('    Static HTML generation will be skipped, but build continues.\n');
-      process.exit(0); // Exit gracefully
-    }
-
-    // For real errors, exit with error code
-    process.exit(1);
-
-  } finally {
-    // Cleanup
-    if (browser) {
-      await browser.close();
-      console.log('🎭 Puppeteer closed');
-    }
-    if (server) {
-      server.close();
-      console.log('📡 Server stopped\n');
-    }
-  }
-}
-
-// Run
 prerender();
