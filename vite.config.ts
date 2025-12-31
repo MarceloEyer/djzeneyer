@@ -9,18 +9,11 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       react(),
-      // Gzip compression para melhorar performance e SEO
+      // Gzip compression (suportado pelo servidor Hostinger)
       isProduction && viteCompression({
         algorithm: 'gzip',
         ext: '.gz',
         threshold: 1024, // Só comprime arquivos > 1KB
-        deleteOriginFile: false,
-      }),
-      // Brotli compression (melhor que gzip, suportado por browsers modernos)
-      isProduction && viteCompression({
-        algorithm: 'brotliCompress',
-        ext: '.br',
-        threshold: 1024,
         deleteOriginFile: false,
       }),
     ].filter(Boolean),
