@@ -1,42 +1,40 @@
 <?php
 /**
- * Smart Router v2 (Pathfix - Direct Access)
- * Versão enxuta e robusta usando __DIR__
+ * Front to the WordPress application.
+ *
+ * @package zentheme
  */
 
-if (!defined('ABSPATH')) exit;
+// 1. Descobrir qual rota o usuário está acessando
+$request_uri = strtok($_SERVER['REQUEST_URI'], '?');
 
-// 1. Pega a URL (ex: /events)
-$request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// 2. Definir onde os arquivos estáticos vivem
+$dist_path = get_template_directory() . '/dist';
+$static_file = null;
 
-// 2. Define a raiz usando a localização real deste arquivo
-$theme_root = __DIR__; 
-
-// 3. Monta o caminho do arquivo estático
-if ($request_uri === '/' || $request_uri === '/index.php') {
-    $path_to_check = $theme_root . '/dist/index.html';
+// 3. Mapear a rota para o arquivo físico
+if ($request_uri === '/' || $request_uri === '') {
+    $static_file = $dist_path . '/index.html';
 } else {
+    // Remove barra final se tiver, para evitar /events//index.html
     $clean_uri = rtrim($request_uri, '/');
-    $path_to_check = $theme_root . '/dist' . $clean_uri . '/index.html';
+    $static_file = $dist_path . $clean_uri . '/index.html';
 }
 
-// 4. VERIFICAÇÃO E ENTREGA
-if (file_exists($path_to_check)) {
-    // ACHO! Entrega o arquivo pronto com H1 e SEO.
-    header('Content-Type: text/html; charset=utf-8');
-    readfile($path_to_check);
-    exit;
+// 4. O PULO DO GATO: Se o arquivo estático existe, entregue ELE!
+if ($static_file && file_exists($static_file)) {
+    // Mantém os headers de cache corretos
+    header('Content-Type: text/html; charset=UTF-8');
+    readfile($static_file);
+    exit; // Encerra o PHP aqui. Não carrega mais nada.
 }
 
-// 5. Fallback (Se não achou, entrega o app React vazio)
-$app_shell = $theme_root . '/dist/index.html';
-
-if (file_exists($app_shell)) {
-    readfile($app_shell);
+// 5. Fallback: Se não achou estático, carrega o index.html padrão (React Shell)
+// Isso acontece em páginas que não pré-renderizamos (ex: /shop, admin, etc)
+$fallback_file = $dist_path . '/index.html';
+if (file_exists($fallback_file)) {
+    readfile($fallback_file);
 } else {
-    // Último recurso se tudo falhar
-    get_header();
-    echo '<div id="root"></div>'; 
-    get_footer();
+    echo "Erro crítico: O Frontend não foi compilado. Verifique a pasta dist.";
 }
 ?>
