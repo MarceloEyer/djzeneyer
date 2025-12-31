@@ -1,5 +1,5 @@
 // scripts/prerender.js
-// v9.0 - CORSS-ORIGIN BYPASS (Ignora bloqueios de segurança para baixar dados)
+// v10.0 - TURBO EDITION (DomContentLoaded + Resource Blocking)
 
 import fs from 'fs';
 import path from 'path';
@@ -18,7 +18,7 @@ const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
 
 const ROUTES = [
   { path: '/', minSize: 3000, waitFor: 'header, h1, footer' },
-  { path: '/events', minSize: 3000, waitFor: 'h1, footer' }, // Reduzi minSize para garantir
+  { path: '/events', minSize: 3000, waitFor: 'h1, footer' }, 
   { path: '/music', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/about', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/zentribe', minSize: 3000, waitFor: 'h1, footer' },
@@ -51,50 +51,38 @@ function validateHTML(content, route) {
     errors.push('Contains development environment message');
   }
 
-  // WARNING: Tamanho mínimo
   const size = Buffer.byteLength(content, 'utf8');
   if (size < route.minSize) {
-    warnings.push(`HTML size (${size} bytes) below expected minimum (${route.minSize} bytes)`);
+    warnings.push(`HTML size (${size} bytes) below expected minimum`);
   }
 
   return { errors, warnings, size };
 }
 
 // Espera elemento com retry
-async function waitForElement(page, selector, timeout = 20000) {
+async function waitForElement(page, selector, timeout = 15000) {
   const start = Date.now();
-  
   while (Date.now() - start < timeout) {
     try {
-      await page.waitForSelector(selector, { timeout: 2000 });
+      await page.waitForSelector(selector, { timeout: 1000 });
       return true;
     } catch (e) {
-      // Retry
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Retry rápido
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
   }
-  
   return false;
 }
 
 // Espera conteúdo carregar
 async function waitForContent(page, route) {
-  console.log(`⏳ Esperando conteúdo carregar em ${route.path}...`);
-  
   // Tenta esperar por múltiplos seletores
   const selectors = route.waitFor.split(',').map(s => s.trim());
   const found = [];
-  const missing = [];
   
   for (const selector of selectors) {
-    const success = await waitForElement(page, selector, 15000);
-    if (success) {
-      found.push(selector);
-      // console.log(`   ✓ ${selector}`);
-    } else {
-      missing.push(selector);
-      console.log(`   ✗ ${selector} (timeout)`);
-    }
+    const success = await waitForElement(page, selector, 10000); // 10s max por seletor
+    if (success) found.push(selector);
   }
   
   // Pelo menos h1 E footer devem existir
@@ -102,12 +90,12 @@ async function waitForContent(page, route) {
   const hasFooter = found.some(s => s.includes('footer'));
   
   if (!hasH1 || !hasFooter) {
-    console.warn(`⚠️ Conteúdo crítico incompleto: h1=${hasH1}, footer=${hasFooter}`);
+    console.warn(`⚠️  Incompleto: h1=${hasH1}, footer=${hasFooter}`);
     return false;
   }
   
-  // Extra: espera um pouco para garantir que APIs terminaram
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  // Espera extra para renderização final (importante para SEO)
+  await new Promise(resolve => setTimeout(resolve, 1000));
   
   return true;
 }
@@ -116,109 +104,70 @@ async function prerenderRoute(page, route, retries = 2) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const url = `${BASE_URL}${route.path}`;
-      console.log(`\n🚏 ROTA: ${route.path} (Tentativa ${attempt}/${retries})`);
+      console.log(`\n🚏 ROTA: ${route.path}`);
 
-      // Navega
+      // MUDANÇA CRÍTICA: domcontentloaded é muito mais rápido e não trava com trackers
       const response = await page.goto(url, {
-        waitUntil: 'networkidle0',
-        timeout: 60000
+        waitUntil: 'domcontentloaded', 
+        timeout: 30000
       });
 
       if (!response || !response.ok()) {
-        throw new Error(`HTTP ${response?.status()} - ${response?.statusText()}`);
+        throw new Error(`HTTP ${response?.status()}`);
       }
 
-      // Espera conteúdo
+      // Espera conteúdo real
       const loaded = await waitForContent(page, route);
-      if (!loaded) {
-        throw new Error('Conteúdo crítico não carregou no tempo esperado');
-      }
+      if (!loaded) throw new Error('Conteúdo não carregou');
 
-      // Pega HTML
       const content = await page.content();
-
-      // Valida
       const validation = validateHTML(content, route);
       
-      console.log(`   Tamanho: ${validation.size.toLocaleString()} bytes`);
-      
       if (validation.errors.length > 0) {
-        console.log(`   ❌ Erros: ${validation.errors.join(', ')}`);
-        throw new Error('Validação falhou');
-      }
-      
-      if (validation.warnings.length > 0) {
-        console.log(`   ⚠️  Avisos: ${validation.warnings.join(', ')}`);
+        throw new Error(`Validação: ${validation.errors.join(', ')}`);
       }
 
-      // Salva arquivo
       const routePath = route.path === '/' ? '/index.html' : `${route.path}/index.html`;
       const filePath = path.join(DIST_PATH, routePath);
       const dir = path.dirname(filePath);
       
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(filePath, content);
-      console.log(`✅ Sucesso!`);
       
+      console.log(`✅ Sucesso (${validation.size} bytes)`);
       return true;
 
     } catch (err) {
-      console.error(`❌ Erro: ${err.message}`);
-      
-      if (attempt < retries) {
-        console.log(`🔄 Tentando novamente...`);
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      } else {
-        return false;
-      }
+      console.error(`   Retrying... (${err.message})`);
+      if (attempt === retries) return false;
     }
   }
-  
   return false;
 }
 
 async function prerender() {
   console.log('\n╔═══════════════════════════════════════════════════════╗');
-  console.log('║   🏗️  PRERENDER v9.0 - CORS BYPASS EDITION          ║');
+  console.log('║   🏗️  PRERENDER v10.0 - TURBO EDITION               ║');
   console.log('╚═══════════════════════════════════════════════════════╝\n');
 
-  // Valida dist/
   if (!fs.existsSync(DIST_PATH)) {
-    console.error('❌ ERRO: dist/ não encontrado! Execute npm run build primeiro.');
+    console.error('❌ ERRO: dist/ não encontrado!');
     process.exit(1);
   }
 
-  // Sobe servidor
   const app = express();
   app.use(PUBLIC_PATH, express.static(DIST_PATH));
   app.use(express.static(DIST_PATH));
-  app.use('*', (req, res) => {
-    const indexPath = path.join(DIST_PATH, 'index.html');
-    if (!fs.existsSync(indexPath)) {
-      return res.status(500).send('index.html não encontrado');
-    }
-    res.sendFile(indexPath);
-  });
+  app.use('*', (req, res) => res.sendFile(path.join(DIST_PATH, 'index.html')));
 
   const server = createServer(app);
-  await new Promise((resolve, reject) => {
-    server.listen(PORT, (err) => {
-      if (err) reject(err);
-      else {
-        console.log(`📡 Servidor rodando em ${BASE_URL}\n`);
-        resolve();
-      }
-    });
-  });
+  await new Promise((resolve) => server.listen(PORT, resolve));
+  console.log(`📡 Servidor: ${BASE_URL}`);
 
   let browser;
   const results = { success: [], failed: [] };
 
   try {
-    // Lança Puppeteer COM AS FLAGS MÁGICAS PARA IGNORAR CORS
     browser = await puppeteer.launch({
       headless: 'new',
       args: [
@@ -227,7 +176,6 @@ async function prerender() {
         '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
         '--disable-gpu',
-        // --- AS LINHAS ABAIXO CORRIGEM O ERRO ---
         '--disable-web-security', 
         '--disable-features=IsolateOrigins,site-per-process'
       ]
@@ -246,26 +194,32 @@ async function prerender() {
       };
     });
 
-    // Otimiza rede
+    // Bloqueia Trackers e Recursos Pesados para Acelerar
     await page.setRequestInterception(true);
     page.on('request', (req) => {
+      const url = req.url().toLowerCase();
       const type = req.resourceType();
-      if (type === 'image' || type === 'font' || type === 'media') {
+      
+      // Lista de bloqueio
+      if (
+        type === 'image' || 
+        type === 'media' || 
+        type === 'font' ||
+        url.includes('google-analytics') ||
+        url.includes('facebook') ||
+        url.includes('doubleclick') ||
+        url.includes('googletagmanager')
+      ) {
         req.abort();
       } else {
         req.continue();
       }
     });
 
-    // Processa cada rota
     for (const route of ROUTES) {
       const success = await prerenderRoute(page, route, 2);
-      
-      if (success) {
-        results.success.push(route.path);
-      } else {
-        results.failed.push(route.path);
-      }
+      if (success) results.success.push(route.path);
+      else results.failed.push(route.path);
     }
 
   } catch (err) {
@@ -275,17 +229,12 @@ async function prerender() {
     server.close();
   }
 
-  // Relatório final
   console.log('\n' + '═'.repeat(60));
-  console.log(`✅ Sucesso: ${results.success.length}/${ROUTES.length}`);
-  
   if (results.failed.length > 0) {
-    console.log(`❌ Falhas: ${results.failed.length}`);
-    results.failed.forEach(r => console.log(`   ✗ ${r}`));
-    console.error('❌ Build FALHOU - Algumas rotas falharam no download de dados.');
+    console.log(`❌ Falhas: ${results.failed.join(', ')}`);
     process.exit(1);
   } else {
-    console.log('🎉 Build COMPLETO - Tudo verde!');
+    console.log(`🎉 TUDO PRONTO! ${results.success.length} páginas geradas.`);
     process.exit(0);
   }
 }
