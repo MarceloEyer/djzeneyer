@@ -1,5 +1,5 @@
 // src/components/HeadlessSEO.tsx
-// VERSÃO 8.1.0 - CANONICAL TRAILING SLASH FIX
+// VERSÃO 8.2.0 - HREFLANG TRAILING SLASH FIX
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -60,13 +60,18 @@ const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   return `${cleanBase}/${cleanPath}`;
 };
 
+// 🔥 FIX CRÍTICO: Função atualizada para garantir barra no final nos Hreflangs
 export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
-  const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '') || '/';
-  const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`; // Adicionei barra no final aqui também
+  // Remove /pt, barras iniciais e barras finais para limpar
+  const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '').replace(/\/$/, '') || '/';
+  
+  // Se for Home (/), suffix é vazio. Se for interna, adiciona barra antes e DEPOIS.
+  const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`; 
+
   return [
-    { lang: 'en', url: `${baseUrl}${suffix === '/' ? '' : suffix}` }, // Ajuste fino para home
+    { lang: 'en', url: `${baseUrl}${suffix}` },
     { lang: 'pt-BR', url: `${baseUrl}/pt${suffix}` },
-    { lang: 'x-default', url: `${baseUrl}${suffix === '/' ? '' : suffix}` },
+    { lang: 'x-default', url: `${baseUrl}${suffix}` },
   ];
 };
 
@@ -109,12 +114,11 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ? `${finalDescription.substring(0, 157)}...`
       : finalDescription;
 
-  // 3. URL (Canonical) - AQUI ESTÁ A CORREÇÃO CRÍTICA
+  // 3. URL (Canonical)
   const finalUrlRaw = data?.canonical || url || baseUrl;
   let finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
 
-  // 🔥 FIX: FORÇAR BARRA NO FINAL (TRAILING SLASH)
-  // O WordPress redireciona /events para /events/, então o React deve declarar /events/ como oficial.
+  // 🔥 FIX: FORÇAR BARRA NO FINAL (TRAILING SLASH) NO CANONICAL
   if (!finalUrl.endsWith('/') && !finalUrl.includes('?')) {
     finalUrl = `${finalUrl}/`;
   }
