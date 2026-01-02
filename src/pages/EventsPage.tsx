@@ -1,4 +1,6 @@
 // src/pages/EventsPage.tsx
+// VERSÃO FINAL: SEGURA (XSS FIX) + SEO OTIMIZADO
+
 import type { FC } from 'react';
 import { useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
