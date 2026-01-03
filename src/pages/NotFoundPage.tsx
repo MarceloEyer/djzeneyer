@@ -48,8 +48,8 @@ const NotFoundPage: React.FC = () => {
               </div>
             </Link>
             
-            <Link 
-              to="/music"
+            <Link
+              to="/music/"
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -57,9 +57,9 @@ const NotFoundPage: React.FC = () => {
                 <span>Music</span>
               </div>
             </Link>
-            
-            <Link 
-              to="/events"
+
+            <Link
+              to="/events/"
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -67,9 +67,9 @@ const NotFoundPage: React.FC = () => {
                 <span>Events</span>
               </div>
             </Link>
-            
-            <Link 
-              to="/tribe"
+
+            <Link
+              to="/tribe/"
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">

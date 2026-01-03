@@ -127,10 +127,10 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/events" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
-              <li><Link to="/music" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
-              <li><Link to="/zentribe" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><Link to="/shop" className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
+              <li><Link to="/events/" className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
+              <li><Link to="/music/" className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
+              <li><Link to="/zentribe/" className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
+              <li><Link to="/shop/" className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
               <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
             </ul>
           </div>
@@ -139,11 +139,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
-              <li><Link to="/work-with-me" className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
-              <li><Link to="/media" className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
-              <li><Link to="/faq" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to="/conduct" className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
+              <li><Link to="/about/" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
+              <li><Link to="/work-with-me/" className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
+              <li><Link to="/media/" className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
+              <li><Link to="/faq/" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/conduct/" className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
             </ul>
           </div>
 
@@ -192,9 +192,9 @@ const Footer: React.FC = () => {
           
           {/* CORREÇÃO SEO: Links Legais para evitar 'Orphan Pages' */}
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
-             <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+             <Link to="/privacy-policy/" className="hover:text-primary transition-colors">Privacy Policy</Link>
              <span>•</span>
-             <Link to="/terms" className="hover:text-primary transition-colors">Terms of Use</Link>
+             <Link to="/terms/" className="hover:text-primary transition-colors">Terms of Use</Link>
           </div>
 
           <div className="mt-4 space-y-1">

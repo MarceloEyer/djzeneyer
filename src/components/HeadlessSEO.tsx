@@ -52,6 +52,34 @@ interface HeadlessSEOProps {
 // 2. HELPER FUNCTIONS
 // ============================================================================
 
+/**
+ * Garante que URLs internas sempre terminem com trailing slash (/)
+ * CRITÉRIO: Adiciona / no final, EXCETO se houver query string (?), hash (#), ou extensão de arquivo
+ */
+export const ensureTrailingSlash = (url: string): string => {
+  if (!url) return '/';
+
+  // Se já termina com /, retorna como está
+  if (url.endsWith('/')) return url;
+
+  // Se tem query string ou hash, adiciona / antes deles
+  const hasQuery = url.includes('?');
+  const hasHash = url.includes('#');
+
+  if (hasQuery || hasHash) {
+    // Separa a URL da query/hash
+    const [basePath, ...rest] = url.split(/(\?|#)/);
+    // Adiciona / no basePath, depois reconstrói
+    return `${basePath}/${rest.join('')}`;
+  }
+
+  // Se tem extensão de arquivo (.pdf, .jpg, etc), não adiciona /
+  if (/\.[a-z0-9]{2,4}$/i.test(url)) return url;
+
+  // Caso padrão: adiciona / no final
+  return `${url}/`;
+};
+
 const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   if (!u) return baseUrl;
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
@@ -60,18 +88,24 @@ const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   return `${cleanBase}/${cleanPath}`;
 };
 
-// 🔥 FIX CRÍTICO: Função atualizada para garantir barra no final nos Hreflangs
+/**
+ * Gera URLs hreflang com trailing slash garantido
+ */
 export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
   // Remove /pt, barras iniciais e barras finais para limpar
   const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '').replace(/\/$/, '') || '/';
-  
+
   // Se for Home (/), suffix é vazio. Se for interna, adiciona barra antes e DEPOIS.
-  const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`; 
+  const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`;
+
+  // Garante trailing slash nas URLs finais
+  const enUrl = ensureTrailingSlash(`${baseUrl}${suffix}`);
+  const ptUrl = ensureTrailingSlash(`${baseUrl}/pt${suffix}`);
 
   return [
-    { lang: 'en', url: `${baseUrl}${suffix}` },
-    { lang: 'pt-BR', url: `${baseUrl}/pt${suffix}` },
-    { lang: 'x-default', url: `${baseUrl}${suffix}` },
+    { lang: 'en', url: enUrl },
+    { lang: 'pt-BR', url: ptUrl },
+    { lang: 'x-default', url: enUrl },
   ];
 };
 
@@ -114,14 +148,10 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ? `${finalDescription.substring(0, 157)}...`
       : finalDescription;
 
-  // 3. URL (Canonical)
+  // 3. URL (Canonical) - com trailing slash garantido
   const finalUrlRaw = data?.canonical || url || baseUrl;
-  let finalUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
-
-  // 🔥 FIX: FORÇAR BARRA NO FINAL (TRAILING SLASH) NO CANONICAL
-  if (!finalUrl.endsWith('/') && !finalUrl.includes('?')) {
-    finalUrl = `${finalUrl}/`;
-  }
+  const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
+  const finalUrl = ensureTrailingSlash(absoluteUrl);
 
   // 4. Imagem
   const finalImage = ensureAbsoluteUrl(

@@ -39,8 +39,8 @@ const GamificationWidget: React.FC = () => {
           <h3 className="text-2xl font-black text-primary mb-1">Zen Tribe</h3>
           <p className="text-sm text-white/60">Your Progress</p>
         </div>
-        <Link 
-          to="/my-account" 
+        <Link
+          to="/my-account/"
           className="px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-lg text-primary font-bold text-sm transition-all"
         >
           View All
@@ -141,8 +141,8 @@ const GamificationWidget: React.FC = () => {
       </div>
 
       {/* Quick Action */}
-      <Link 
-        to="/events" 
+      <Link
+        to="/events/"
         className="mt-4 w-full btn btn-primary flex items-center justify-center gap-2"
       >
         <TrendingUp size={18} />

@@ -240,7 +240,7 @@ const MyAccountPage: React.FC = () => {
                 <p className="text-white/60 mb-8 max-w-md mx-auto">
                   Start exploring and engaging to unlock your first achievements!
                 </p>
-                <Link to="/dashboard" className="btn btn-primary btn-lg">
+                <Link to="/dashboard/" className="btn btn-primary btn-lg">
                   Start Your Journey
                 </Link>
               </div>
@@ -290,7 +290,7 @@ const MyAccountPage: React.FC = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">My Music Collection</h2>
-              <Link to="/music" className="btn btn-primary">
+              <Link to="/music/" className="btn btn-primary">
                 Browse Music
               </Link>
             </div>
@@ -301,7 +301,7 @@ const MyAccountPage: React.FC = () => {
               <p className="text-white/60 mb-8 max-w-md mx-auto">
                 Access exclusive tracks, mixes, and playlists curated by DJ Zen Eyer
               </p>
-              <Link to="/music" className="btn btn-primary btn-lg">
+              <Link to="/music/" className="btn btn-primary btn-lg">
                 Explore Music
               </Link>
             </div>

@@ -342,7 +342,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-              <Link to="/events" className="btn btn-primary btn-lg flex items-center gap-2">
+              <Link to="/events/" className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
                 <span>{isPortuguese ? 'Agenda completa' : 'Full schedule'}</span>
               </Link>
@@ -435,7 +435,7 @@ const HomePage: React.FC = () => {
             {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-            <Link to="/zentribe" className="btn btn-primary btn-lg min-w-[200px]">
+            <Link to="/zentribe/" className="btn btn-primary btn-lg min-w-[200px]">
               {isPortuguese ? 'Entrar na Tribo' : 'Join the Tribe'}
             </Link>
           </motion.div>

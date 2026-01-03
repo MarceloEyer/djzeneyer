@@ -83,7 +83,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
            </div>
         </div>
         
-        <Link to="/dashboard" className="btn btn-primary w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
+        <Link to="/dashboard/" className="btn btn-primary w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
           <User size={18} /> <span>Dashboard</span>
         </Link>
         <button onClick={handleLogout} className="btn btn-outline w-full flex items-center justify-center gap-2 text-red-400 hover:bg-red-950/30 border border-red-500/30 py-2 rounded-lg mt-2 transition-colors">
@@ -142,22 +142,22 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
 
             {/* Links - Removemos os onClicks manuais pois o useEffect da Rota cuida disso agora */}
             <div className="py-2 flex flex-col">
-              <Link to="/dashboard" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to="/dashboard/" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <User size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">Dashboard</span>
               </Link>
 
-              <Link to="/my-account" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to="/my-account/" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <Settings size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">My Account</span>
               </Link>
 
-              <Link to="/my-account?tab=orders" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to="/my-account/?tab=orders" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <ShoppingBag size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">My Orders</span>
               </Link>
 
-              <Link to="/my-account?tab=achievements" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to="/my-account/?tab=achievements" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <Award size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">Achievements</span>
               </Link>

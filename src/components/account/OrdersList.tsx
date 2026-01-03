@@ -67,7 +67,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
         <p className="text-white/60 mb-8 max-w-md mx-auto">
           Start exploring our exclusive content and merchandise!
         </p>
-        <Link to="/shop" className="btn btn-primary">
+        <Link to="/shop/" className="btn btn-primary">
           Browse Shop
         </Link>
       </div>
@@ -78,7 +78,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Order History</h2>
-        <Link to="/shop" className="btn btn-primary">
+        <Link to="/shop/" className="btn btn-primary">
           Continue Shopping
         </Link>
       </div>
