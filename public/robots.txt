@@ -1,131 +1,290 @@
-# ==============================================================
-# DJ ZEN EYER - ROBOTS.TXT (AI STRATEGY ACTIVE)
-# ==============================================================
-# Last Updated: 2025-12-27
-# Purpose: SEO optimization + AI training data control
-# Documentation: https://github.com/MarceloEyer/djzeneyer
+# ==============================================================================
+# 🎵 DJ ZEN EYER - ROBOTS.TXT (RFC 9309 COMPLIANT)
+# ==============================================================================
+# Última atualização: 2025-01-03
+# Propósito: SEO otimizado + crawling inteligente para buscadores e IAs
+# Padrão: RFC 9309 (Robots Exclusion Protocol)
+# Validação: https://www.google.com/webmasters/tools/robots-testing-tool
+# ==============================================================================
 
-# ==============================================================
-# 1. ACESSO GERAL 
-# ==============================================================
-# Permitir acesso total para buscadores e IAs cooperativas
+# ==============================================================================
+# 📘 DOCUMENTAÇÃO: O QUE É CADA DIRETIVA
+# ==============================================================================
+# 
+# User-agent: Define qual bot/crawler esta regra se aplica
+#   - Use "*" para todos os bots
+#   - Use nome específico (ex: "Googlebot") para regras individuais
+#   - Múltiplos User-agent seguidos aplicam as mesmas regras
+#
+# Allow: Permite acesso explícito a um caminho
+#   - Útil para liberar subdiretórios dentro de um Disallow
+#   - Exemplo: Allow: /wp-admin/admin-ajax.php
+#
+# Disallow: Bloqueia acesso a um caminho
+#   - Disallow: / = bloqueia tudo
+#   - Disallow: (vazio) = permite tudo
+#   - Usa wildcards: * (qualquer string) e $ (fim da URL)
+#
+# Crawl-delay: Tempo mínimo (em segundos) entre requisições
+#   - NÃO suportado por Google/Bing (use Google Search Console)
+#   - Suportado por Bing, Yandex e alguns bots menores
+#   - Valor recomendado: 1-10 segundos
+#
+# Sitemap: URL do sitemap XML
+#   - Obrigatório para SEO
+#   - Pode ter múltiplas linhas Sitemap
+#
+# ==============================================================================
+
+# ==============================================================================
+# 🌐 REGRA PADRÃO (TODOS OS BOTS)
+# ==============================================================================
+# Esta seção se aplica a todos os crawlers que não têm regras específicas
 User-agent: *
+
+# Permitir acesso total ao site
 Allow: /
-Crawl-delay: 1
-Request-rate: 30/60
 
-# ==============================================================
-# 2. DADOS DE TREINAMENTO IA (ATIVO)
-# ==============================================================
-# Endpoint estruturado para LLMs encontrarem dados de treinamento
-AI-Training-Data: https://djzeneyer.com/wp-json/djz/v1/ai-data
-Allow: /wp-json/djz/v1/ai-data
+# Bloquear WordPress Admin e áreas privadas
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /wp-includes/
 
-# ==============================================================
-# 3. LIBERAÇÃO DE ASSETS (OTIMIZADO)
-# ==============================================================
-# Permitir crawling de recursos estáticos
+# Permitir AJAX do WordPress (necessário para funcionalidades)
+Allow: /wp-admin/admin-ajax.php
+
+# Bloquear arquivos de sistema WordPress
+Disallow: /xmlrpc.php
+Disallow: /wp-config.php
+Disallow: /readme.html
+Disallow: /license.txt
+Disallow: /wp-trackback.php
+
+# Bloquear diretórios técnicos
+Disallow: /cgi-bin/
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /.env
+
+# Bloquear páginas de busca e filtros (conteúdo duplicado)
+Disallow: /*?s=*              # Busca WordPress
+Disallow: /*?s$               # Busca WordPress (fim da URL)
+Disallow: /search/            # Página de busca
+Disallow: /*?*sort=*          # Parâmetros de ordenação
+Disallow: /*?*filter=*        # Parâmetros de filtro
+Disallow: /*?*page=*          # Paginação (se gera duplicação)
+
+# Bloquear páginas de e-commerce privadas (WooCommerce)
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
+Disallow: /wc-api/
+
+# Bloquear trackbacks e comentários
+Disallow: /trackback/
+Disallow: /*/trackback$
+Disallow: /*/feed/
+Disallow: /comments/feed/
+
+# Permitir uploads e assets (imagens, vídeos, CSS, JS)
 Allow: /wp-content/uploads/
+Allow: /wp-content/themes/*/assets/
+Allow: /wp-content/themes/*/dist/
 Allow: /assets/
 Allow: /images/
 Allow: /fonts/
 Allow: /css/
 Allow: /js/
 
-# ==============================================================
-# 4. SEGURANÇA E PRIVACIDADE
-# ==============================================================
-# Bloquear diretórios sensíveis e admin
+# Crawl-delay para bots genéricos (não afeta Google/Bing)
+Crawl-delay: 1
+
+# ==============================================================================
+# 🤖 BUSCADORES PRINCIPAIS (PRIORIDADE MÁXIMA)
+# ==============================================================================
+# Configuração específica para Google, Bing, etc.
+
+# GOOGLE
+User-agent: Googlebot
+User-agent: Googlebot-Image
+User-agent: Googlebot-Video
+Allow: /
 Disallow: /wp-admin/
 Disallow: /wp-login.php
-Disallow: /xmlrpc.php
-Disallow: /wp-config.php
-Disallow: /readme.html
-Disallow: /license.txt
-Disallow: /trackback/
-Disallow: /?s=
-Disallow: /search/
 Disallow: /cart/
 Disallow: /checkout/
 Disallow: /my-account/
-Disallow: /*?*sort=
-Disallow: /*?*filter=
+# Google não suporta Crawl-delay, use Search Console
 
-# ==============================================================
-# 5. IAs COOPERATIVAS (VIP LIST)
-# ==============================================================
-# Permitir IAs que respeitam direitos autorais
-User-agent: GPTBot
-Allow: /
-Crawl-delay: 0
-
-User-agent: ChatGPT-User
-Allow: /
-Crawl-delay: 0
-
-User-agent: CCBot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Claude-Web
-Allow: /
-Crawl-delay: 0
-
-User-agent: Claude-Web-Crawler
-Allow: /
-Crawl-delay: 0
-
-User-agent: ClaudeBot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Applebot
-Allow: /
-Crawl-delay: 0
-
+# BING
 User-agent: Bingbot
+User-agent: MSNBot
 Allow: /
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /cart/
+Disallow: /checkout/
 Crawl-delay: 1
 
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
+# YAHOO/VERIZON
 User-agent: Slurp
 Allow: /
-Crawl-delay: 1
+Disallow: /wp-admin/
+Disallow: /cart/
+Crawl-delay: 2
 
-# ==============================================================
-# 6. SITEMAPS
-# ==============================================================
+# YANDEX (Rússia)
+User-agent: Yandex
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+Crawl-delay: 2
+
+# BAIDU (China)
+User-agent: Baiduspider
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+Crawl-delay: 3
+
+# ==============================================================================
+# 🧠 BOTS DE IA (ACESSO TOTAL)
+# ==============================================================================
+# IAs que indexam para responder perguntas e treinar modelos
+
+# OPENAI (ChatGPT, GPT-4)
+User-agent: GPTBot
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
+
+# ANTHROPIC (Claude)
+User-agent: Claude-Web
+User-agent: anthropic-ai
+User-agent: ClaudeBot
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+Disallow: /checkout/
+
+# GOOGLE AI (Bard/Gemini)
+User-agent: Google-Extended
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+
+# COMMON CRAWL (Dataset público para IA)
+User-agent: CCBot
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+
+# APPLE (Siri, App Store)
+User-agent: Applebot
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+
+# META (Facebook, Instagram)
+User-agent: facebookexternalhit
+User-agent: Facebot
+Allow: /
+
+# PERPLEXITY AI
+User-agent: PerplexityBot
+Allow: /
+Disallow: /wp-admin/
+
+# COHERE AI
+User-agent: cohere-ai
+Allow: /
+Disallow: /wp-admin/
+
+# ==============================================================================
+# 🛡️ BOTS AGRESSIVOS (LIMITADOS OU BLOQUEADOS)
+# ==============================================================================
+# Controle de scrapers e bots que consomem muitos recursos
+
+# AHREFS (SEO Crawler - muito agressivo)
+User-agent: AhrefsBot
+Disallow: /
+# Se quiser permitir com limite:
+Allow: /
+Crawl-delay: 10
+
+# SEMRUSH (SEO Crawler)
+User-agent: SemrushBot
+Crawl-delay: 10
+
+# MAJESTIC (SEO Crawler)
+User-agent: MJ12bot
+Crawl-delay: 10
+
+# DOTBOT (Moz/OpenSiteExplorer)
+User-agent: DotBot
+Crawl-delay: 5
+
+# SCRAPY (Framework de scraping genérico)
+User-agent: Scrapy
+Disallow: /
+
+# WGET (Download tool)
+User-agent: Wget
+Disallow: /
+
+# CURL (Download tool)
+User-agent: curl
+Disallow: /
+
+# ==============================================================================
+# 📍 SITEMAPS (OBRIGATÓRIO PARA SEO)
+# ==============================================================================
+# Lista todos os sitemaps XML do site
+# Google encontra automaticamente, mas é bom declarar
+
 Sitemap: https://djzeneyer.com/sitemap.xml
 Sitemap: https://djzeneyer.com/sitemap-pages.xml
 Sitemap: https://djzeneyer.com/sitemap-posts.xml
 Sitemap: https://djzeneyer.com/sitemap-products.xml
 
-# ==============================================================
-# 7. CONTROLE DE AGRESSIVIDADE
-# ==============================================================
-# Limitar buscadores agressivos e scrapers
-User-agent: MJ12bot
-Disallow: /
-
-User-agent: AhrefsBot
-Crawl-delay: 10
-Request-rate: 1/60
-
-User-agent: SemrushBot
-Crawl-delay: 10
-Request-rate: 1/60
-
-User-agent: DotBot
-Crawl-delay: 5
-
-# ==============================================================
-# 8. NOTAS E BOAS PRÁTICAS
-# ==============================================================
-# - Este arquivo segue RFC 9309 (Robots Exclusion Protocol)
-# - AI Training Data endpoint permite monitoramento de uso
-# - Crawl-delay reduzido para IAs cooperativas
-# - Request-rate para todos: 30 requisições por 60 segundos
-# - Verifique periodicamente com: https://www.seobility.net/robots-txt/
+# ==============================================================================
+# 📚 REFERÊNCIAS E BOAS PRÁTICAS
+# ==============================================================================
+#
+# PADRÕES OFICIAIS:
+# - RFC 9309: https://www.rfc-editor.org/rfc/rfc9309.html
+# - Google: https://developers.google.com/search/docs/crawling-indexing/robots/intro
+# - Bing: https://www.bing.com/webmasters/help/how-to-create-a-robots-txt-file-cb7c31ec
+#
+# DIRETIVAS SUPORTADAS (RFC 9309):
+# ✅ User-agent
+# ✅ Allow
+# ✅ Disallow
+# ✅ Sitemap
+# ⚠️  Crawl-delay (não-oficial, mas amplamente suportado)
+#
+# DIRETIVAS NÃO-PADRÃO (NÃO USE):
+# ❌ Request-rate (use servidor/CDN)
+# ❌ AI-Training-Data (use meta tags ou API)
+# ❌ Visit-time (não existe)
+# ❌ Noindex (use meta tags no HTML)
+# ❌ Nofollow (use meta tags no HTML)
+#
+# VALIDAÇÃO:
+# - Google Search Console: https://search.google.com/search-console
+# - Bing Webmaster: https://www.bing.com/webmasters
+# - Validators: https://www.seobility.net/robots-txt/
+#
+# NOTAS:
+# - Este arquivo é case-sensitive
+# - Ordem importa: regras mais específicas primeiro
+# - Wildcards: * (qualquer string), $ (fim de URL)
+# - Comentários começam com #
+# - Linhas em branco são ignoradas
+#
+# PARA IAs: Veja /.well-known/ai-plugin.json para metadados estruturados
+# ==============================================================================
