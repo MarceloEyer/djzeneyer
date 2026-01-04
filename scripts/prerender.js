@@ -1,5 +1,5 @@
 // scripts/prerender.js
-// v14.0 - DADOS REAIS + API SAFE - Regra de Ouro para XHR/Fetch
+// v14.1 - DADOS REAIS + API SAFE + NOVAS PÁGINAS
 
 import fs from 'fs';
 import path from 'path';
@@ -16,7 +16,7 @@ const DIST_PATH = path.resolve(
 );
 const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
 
-// CONFIGURAÇÃO DAS ROTAS (EN + PT + SHOP)
+// CONFIGURAÇÃO DAS ROTAS (EN + PT + SHOP + NOVAS PÁGINAS)
 const ROUTES = [
   // --- INGLÊS (Main) ---
   { path: '/', minSize: 3000, waitFor: 'header, h1, footer' },
@@ -26,6 +26,12 @@ const ROUTES = [
   { path: '/zentribe', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/work-with-me', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/faq', minSize: 3000, waitFor: 'h1, footer' },
+  
+  // Novas Páginas (Jurídico & Mídia)
+  { path: '/media', minSize: 2000, waitFor: 'h1, footer' },
+  { path: '/privacy-policy', minSize: 2000, waitFor: 'h1, footer' },
+  { path: '/terms', minSize: 2000, waitFor: 'h1, footer' },
+  { path: '/conduct', minSize: 2000, waitFor: 'h1, footer' },
 
   // --- PORTUGUÊS ---
   { path: '/pt', minSize: 3000, waitFor: 'header, h1, footer' },
@@ -35,14 +41,21 @@ const ROUTES = [
   { path: '/pt/tribo-zen', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/pt/trabalhe-comigo', minSize: 3000, waitFor: 'h1, footer' },
   { path: '/pt/faq', minSize: 3000, waitFor: 'h1, footer' },
+  
+  // Novas Páginas PT
+  { path: '/pt/midia', minSize: 2000, waitFor: 'h1, footer' },
+  { path: '/pt/politica-de-privacidade', minSize: 2000, waitFor: 'h1, footer' },
+  { path: '/pt/termos', minSize: 2000, waitFor: 'h1, footer' },
+  { path: '/pt/conduta', minSize: 2000, waitFor: 'h1, footer' },
 
-  // --- LOJA (Agora Ativada com Dados Reais!) ---
-  // Esperamos por '.card' que é o elemento do produto carregado
+  // --- LOJA (Dados Reais) ---
   { path: '/shop', minSize: 3000, waitFor: 'h1, .card, footer' },
   { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .card, footer' },
 ];
 
-// ... (Funções auxiliares validateHTML, waitForElement, waitForContent mantidas iguais) ...
+// ... (Resto do código permanece IDÊNTICO ao v14.0 que você mandou) ...
+// Só vou repetir as funções abaixo para garantir que você tenha o arquivo funcional
+// Se quiser, pode apenas atualizar o array ROUTES acima no seu arquivo.
 
 function validateHTML(content, route) {
   const errors = [];
@@ -54,8 +67,7 @@ function validateHTML(content, route) {
   if (!/<footer/i.test(content) && !/footer/i.test(content)) {
     errors.push('Missing footer element');
   }
-  
-  // Validação específica para Loja (garantir que carregou produtos)
+   
   if (route.path.includes('shop') || route.path.includes('loja')) {
     if (!content.includes('price') && !content.includes('R$')) {
       warnings.push('Shop page might be missing products (API timeout?)');
@@ -84,8 +96,6 @@ async function waitForElement(page, selector, timeout = 10000) {
 
 async function waitForContent(page, route) {
   const selectors = route.waitFor.split(',').map(s => s.trim());
-  
-  // Timeout maior para a loja (15s) pois depende da API
   const elementTimeout = (route.path.includes('shop') || route.path.includes('loja')) ? 15000 : 8000;
   
   const found = [];
@@ -95,7 +105,6 @@ async function waitForContent(page, route) {
   }
   
   const hasFooter = found.some(s => s.includes('footer'));
-  // Sucesso se tiver Footer E (H1 ou Card de Produto)
   const hasContent = found.some(s => s.includes('h1') || s.includes('card'));
   
   if (!hasFooter || !hasContent) {
@@ -103,7 +112,6 @@ async function waitForContent(page, route) {
     return false;
   }
   
-  // Espera extra para renderizar imagens
   await new Promise(resolve => setTimeout(resolve, 2000));
   return true;
 }
@@ -114,7 +122,6 @@ async function prerenderRoute(page, route, retries = 2) {
       const url = `${BASE_URL}${route.path}`;
       console.log(`\n🚏 ROTA: ${route.path}`);
 
-      // Timeout de navegação maior (45s)
       const response = await page.goto(url, {
         waitUntil: 'domcontentloaded', 
         timeout: 45000
@@ -154,7 +161,7 @@ async function prerenderRoute(page, route, retries = 2) {
 
 async function prerender() {
   console.log('\n╔═══════════════════════════════════════════════════════╗');
-  console.log('║   🏗️  PRERENDER v14.0 - API SAFE (GOLDEN RULE)      ║');
+  console.log('║   🏗️  PRERENDER v14.1 - API SAFE + NEW PAGES          ║');
   console.log('╚═══════════════════════════════════════════════════════╝\n');
 
   if (!fs.existsSync(DIST_PATH)) {
@@ -182,7 +189,6 @@ async function prerender() {
 
     const page = await browser.newPage();
     
-    // Injeta dados base para o React saber onde buscar a API
     await page.evaluateOnNewDocument(() => {
       window.wpData = {
         siteUrl: 'https://djzeneyer.com',
@@ -193,19 +199,17 @@ async function prerender() {
       };
     });
 
-    // 🔥 A REGRA DE OURO (Interceptação Inteligente)
     await page.setRequestInterception(true);
     page.on('request', (req) => {
       const type = req.resourceType();
       const url = req.url().toLowerCase();
 
-      // 1. Permite APIs e Scripts essenciais (REGRA DE OURO)
+      // GOLDEN RULE: Permitir API calls
       if (['xhr', 'fetch', 'document', 'script'].includes(type)) {
         req.continue();
         return;
       }
 
-      // 2. Bloqueia trackers e mídias pesadas
       const blockTypes = ['image', 'media', 'font', 'stylesheet'];
       const blockUrls = ['google-analytics', 'facebook', 'googletagmanager'];
 
@@ -232,7 +236,6 @@ async function prerender() {
   console.log('\n' + '═'.repeat(60));
   if (results.failed.length > 0) {
     console.warn(`⚠️  ${results.failed.length} rotas falharam.`);
-    // Exit 0 para não quebrar o deploy se só a loja falhar
     process.exit(0); 
   } else {
     console.log(`🎉 Sucesso total!`);
