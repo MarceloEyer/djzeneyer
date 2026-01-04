@@ -46,7 +46,11 @@ const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
 const FAQPage = lazy(() => import('../pages/FAQPage'));
 const PhilosophyPage = lazy(() => import('../pages/PhilosophyPage'));
-const NewsPage = lazy(() => import('../pages/NewsPage')); // ✨ Nova página
+const NewsPage = lazy(() => import('../pages/NewsPage'));
+const MediaPage = lazy(() => import('../pages/MediaPage'));
+const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicyPage'));
+const TermsPage = lazy(() => import('../pages/TermsPage'));
+const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 // ============================================================================
@@ -141,6 +145,30 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     component: PhilosophyPage,
     paths: { en: 'my-philosophy', pt: 'minha-filosofia' },
+  },
+
+  // Media / Press
+  {
+    component: MediaPage,
+    paths: { en: 'media', pt: 'midia' },
+  },
+
+  // Privacy Policy
+  {
+    component: PrivacyPolicyPage,
+    paths: { en: 'privacy-policy', pt: 'politica-de-privacidade' },
+  },
+
+  // Terms of Use
+  {
+    component: TermsPage,
+    paths: { en: 'terms', pt: 'termos' },
+  },
+
+  // Code of Conduct
+  {
+    component: CodeOfConductPage,
+    paths: { en: 'conduct', pt: 'conduta' },
   },
 ];
 
