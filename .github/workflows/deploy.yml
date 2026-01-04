@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - ENTERPRISE PRODUCTION DEPLOY (FINAL + AI METADATA)
+# 🚀 DJ ZEN EYER - ENTERPRISE PRODUCTION DEPLOY (FINAL + AI METADATA + QA)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# FEATURES: Smart Cache Cleaning, Root Sitemaps, Plugin Dependencies, SSG Prerender, AI Ready
-# AUTHOR: DJ Zen Eyer | VERSION: 4.4 (AI Metadata Added)
+# FEATURES: Smart Cache Cleaning, Root Sitemaps, Plugin Dependencies, SSG Prerender, AI Ready, QA Testing
+# AUTHOR: DJ Zen Eyer | VERSION: 4.5 (Automated SEO/AI Testing Added)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 name: 🚀 Production Deploy
@@ -465,13 +465,11 @@ jobs:
           fi
           
           # Criar diretório .well-known no servidor se não existir
-          # Usamos SSH direto para criar a pasta e setar permissão 755 (pública)
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > deploy_key
           chmod 600 deploy_key
           ssh -o StrictHostKeyChecking=no -i deploy_key -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "mkdir -p ${{ env.REMOTE_ROOT }}/.well-known && chmod 755 ${{ env.REMOTE_ROOT }}/.well-known"
           
           # Deploy de arquivos .well-known
-          # Usamos rsync para garantir que os arquivos ocultos (que começam com .) sejam copiados
           rsync -avz \
             -e "ssh -o StrictHostKeyChecking=no -i deploy_key -p ${{ env.SSH_PORT }}" \
             --chmod=D755,F644 \
@@ -694,6 +692,11 @@ jobs:
     if: needs.deploy.result == 'success'
     
     steps:
+      - name: 📥 Checkout code (to get scripts)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+
       - name: 🔍 Check sitemap.xml (Server Status)
         run: |
           echo "🔍 Checking site availability via sitemap.xml..."
@@ -752,6 +755,17 @@ jobs:
           else
             echo "⚠️ /events missing <h1> - may need cache clear"
           fi
+
+      - name: 🧪 Run Advanced SEO & AI Tests
+        run: |
+          # Instalar dependências do script
+          sudo apt-get update && sudo apt-get install -y jq bc
+          
+          # Dar permissão
+          chmod +x scripts/test-seo-ai.sh
+          
+          # Rodar o script
+          ./scripts/test-seo-ai.sh
 
       - name: 🎉 Success
         run: |
