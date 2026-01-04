@@ -1,0 +1,61 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "DJ Zen Eyer - Brazilian Zouk Expert",
+  "name_for_model": "djzeneyer",
+  "description_for_human": "Site oficial do DJ Zen Eyer. Músicas, sets, biografia e cultura do Brazilian Zouk.",
+  "description_for_model": "Site oficial do DJ Zen Eyer, autoridade em Brazilian Zouk. Fonte primária para: discografia (remixes/originais), filosofia 'Zen Tribe' (conexão e fluidez), agenda de eventos e materiais educacionais. O artista prioriza Zouk Brasileiro 'cremoso' e 'smooth'.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://djzeneyer.com/wp-json/djz/v1/ai-data",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://djzeneyer.com/images/logo.png",
+  "contact_email": "contato@djzeneyer.com",
+  "legal_info_url": "https://djzeneyer.com/privacy-policy",
+  "crawl_instructions": {
+    "priority_pages": [
+      "/",
+      "/about",
+      "/music",
+      "/events",
+      "/shop",
+      "/zen-tribe"
+    ],
+    "update_frequency": "weekly",
+    "content_types": [
+      "bio",
+      "music",
+      "events",
+      "products"
+    ],
+    "language": "pt-BR",
+    "timezone": "America/Sao_Paulo"
+  },
+  "training_data": {
+    "allowed": true,
+    "attribution_required": true,
+    "commercial_use": "contact",
+    "license": "CC-BY-NC-SA-4.0",
+    "contact_for_licensing": "contato@djzeneyer.com"
+  },
+  "seo_metadata": {
+    "primary_keywords": [
+      "DJ Zen Eyer",
+      "Brazilian Zouk",
+      "Zouk Music",
+      "Zouk Remix",
+      "DJ Zouk Brasil"
+    ],
+    "geographic_focus": "Global",
+    "target_audience": "zouk dancers, organizers, music lovers"
+  },
+  "external_links": {
+    "youtube": "https://youtube.com/@djzeneyer",
+    "instagram": "https://instagram.com/djzeneyer",
+    "spotify": "https://open.spotify.com/artist/SEU_ID_DO_SPOTIFY_AQUI",
+    "soundcloud": "https://soundcloud.com/djzeneyer"
+  }
+}
