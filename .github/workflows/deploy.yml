@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🚀 DJ ZEN EYER - ENTERPRISE PRODUCTION DEPLOY (FINAL)
+# 🚀 DJ ZEN EYER - ENTERPRISE PRODUCTION DEPLOY (FINAL + AI METADATA)
 # ═══════════════════════════════════════════════════════════════════════════════
-# 
-# FEATURES: Smart Cache Cleaning, Root Sitemaps, Plugin Dependencies, SSG Prerender
-# AUTHOR: DJ Zen Eyer | VERSION: 4.3 (Shop Verification Removed)
+#
+# FEATURES: Smart Cache Cleaning, Root Sitemaps, Plugin Dependencies, SSG Prerender, AI Ready
+# AUTHOR: DJ Zen Eyer | VERSION: 4.4 (AI Metadata Added)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 name: 🚀 Production Deploy
@@ -421,6 +421,66 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      # --- PUBLIC ASSETS ---
+      - name: 📄 Prepare public assets
+        if: hashFiles('public/**') != ''
+        run: |
+          echo "📄 Preparing public assets..."
+          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
+          mkdir -p temp_public
+          
+          for file in "${SAFE_FILES[@]}"; do
+            if [ -f "public/$file" ]; then
+              cp "public/$file" temp_public/
+              echo "  ✓ $file"
+            fi
+          done
+          
+          if [ -z "$(ls -A temp_public 2>/dev/null)" ]; then
+            echo "ℹ️ No public assets to deploy"
+            touch temp_public/.gitkeep
+          fi
+
+      - name: 📄 Deploy public assets (SAFE)
+        if: hashFiles('public/**') != ''
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avz --ignore-missing-args
+          path: temp_public/
+          remote_path: ${{ env.REMOTE_ROOT }}/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # --- AI METADATA (.well-known) [NOVO BLOCO] ---
+      - name: 🤖 Deploy AI metadata and .well-known
+        run: |
+          echo "📤 Deploying .well-known directory..."
+          
+          # Verificar se .well-known existe
+          if [ ! -d "public/.well-known" ]; then
+            echo "⚠️  .well-known directory not found, skipping"
+            exit 0
+          fi
+          
+          # Criar diretório .well-known no servidor se não existir
+          # Usamos SSH direto para criar a pasta e setar permissão 755 (pública)
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > deploy_key
+          chmod 600 deploy_key
+          ssh -o StrictHostKeyChecking=no -i deploy_key -p ${{ env.SSH_PORT }} ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "mkdir -p ${{ env.REMOTE_ROOT }}/.well-known && chmod 755 ${{ env.REMOTE_ROOT }}/.well-known"
+          
+          # Deploy de arquivos .well-known
+          # Usamos rsync para garantir que os arquivos ocultos (que começam com .) sejam copiados
+          rsync -avz \
+            -e "ssh -o StrictHostKeyChecking=no -i deploy_key -p ${{ env.SSH_PORT }}" \
+            --chmod=D755,F644 \
+            public/.well-known/ \
+            ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.REMOTE_ROOT }}/.well-known/
+          
+          rm deploy_key
+          echo "✅ .well-known deployed"
+
       # --- SITEMAPS (CRITICAL FIX) ---
       - name: 🗺️ Deploy sitemaps to ROOT
         uses: appleboy/scp-action@v0.1.7
@@ -458,38 +518,6 @@ jobs:
               echo "❌ sitemap-pages.xml NOT found in ROOT!"
               exit 1
             fi
-
-      # --- PUBLIC ASSETS ---
-      - name: 📄 Prepare public assets
-        if: hashFiles('public/**') != ''
-        run: |
-          echo "📄 Preparing public assets..."
-          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
-          mkdir -p temp_public
-          
-          for file in "${SAFE_FILES[@]}"; do
-            if [ -f "public/$file" ]; then
-              cp "public/$file" temp_public/
-              echo "  ✓ $file"
-            fi
-          done
-          
-          if [ -z "$(ls -A temp_public 2>/dev/null)" ]; then
-            echo "ℹ️ No public assets to deploy"
-            touch temp_public/.gitkeep
-          fi
-
-      - name: 📄 Deploy public assets
-        if: hashFiles('public/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avz --ignore-missing-args
-          path: temp_public/
-          remote_path: ${{ env.REMOTE_ROOT }}/
-          remote_host: ${{ env.SSH_HOST }}
-          remote_user: ${{ env.SSH_USER }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # --- CACHE PURGE ---
       - name: 🧹 Purge caches (LiteSpeed + OPcache)
@@ -530,7 +558,7 @@ jobs:
             rm -rf /tmp/php_* /var/tmp/php_* 2>/dev/null || true
             
             # Método 3: Trigger via web request (fallback)
-            curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null 2>/dev/null || true
+            curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null || true
             
             echo "  ✅ OPcache purge completed"
             echo ""
@@ -566,7 +594,7 @@ jobs:
             
             [ -f "$THEME_PATH/functions.php" ] && echo "  ✅ functions.php" || echo "  ⚠️ functions.php missing"
             
-            # Prerendered pages (AQUI ESTÁ A CORREÇÃO: Removi /shop)
+            # Prerendered pages
             echo ""
             echo "🎨 Prerendered pages:"
             for route in "/" "/events" "/music"; do
@@ -599,6 +627,22 @@ jobs:
               echo "  ✅ sitemap-pages.xml" || \
               echo "  ⚠️ sitemap-pages.xml missing"
             
+            # AI Metadata [NOVA VERIFICAÇÃO]
+            echo ""
+            echo "🤖 AI Metadata:"
+            if [ -d "${{ env.REMOTE_ROOT }}/.well-known" ]; then
+              echo "  ✅ .well-known directory exists"
+              if [ -f "${{ env.REMOTE_ROOT }}/.well-known/ai-plugin.json" ]; then
+                echo "  ✅ ai-plugin.json exists"
+                SIZE=$(stat -f%z "${{ env.REMOTE_ROOT }}/.well-known/ai-plugin.json" 2>/dev/null || stat -c%s "${{ env.REMOTE_ROOT }}/.well-known/ai-plugin.json")
+                echo "     Size: ${SIZE} bytes"
+              else
+                echo "  ℹ️ ai-plugin.json not found"
+              fi
+            else
+              echo "  ℹ️ .well-known directory not found"
+            fi
+
             # Plugins
             echo ""
             echo "🔌 Plugins:"
@@ -631,6 +675,7 @@ jobs:
             echo "🌐 Site: ${{ env.SITE_URL }}"
             echo "📦 Commit: ${{ needs.build.outputs.commit_hash }}"
             echo "🗺️ Sitemap: ${{ env.SITE_URL }}/sitemap.xml"
+            echo "🤖 AI Plugin: ${{ env.SITE_URL }}/.well-known/ai-plugin.json"
             echo "🎉 Your site is now live!"
           else
             echo "❌ DEPLOYMENT FAILED"
