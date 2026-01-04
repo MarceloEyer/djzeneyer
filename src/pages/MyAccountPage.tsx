@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones } from 'lucide-react';
 import { UserStatsCards } from '../components/account/UserStatsCards'; // Importação corrigida
 import { OrdersList } from '../components/account/OrdersList'; // Importação corrigida
@@ -34,11 +35,13 @@ interface UserStats {
 }
 
 const MyAccountPage: React.FC = () => {
+  const { t } = useTranslation();
   const { user, loading, logout } = useUser();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [newsletterEnabled, setNewsletterEnabled] = useState(false);
 
   console.log('[MyAccountPage] User:', user);
 
@@ -370,6 +373,29 @@ const MyAccountPage: React.FC = () => {
                   <input id="notify-marketing" name="notify-marketing" type="checkbox" className="w-5 h-5" />
                   <span>Marketing emails</span>
                 </label>
+                <div className="pt-3 border-t border-white/10">
+                  <label htmlFor="notify-newsletter" className="flex items-center justify-between cursor-pointer">
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <input
+                          id="notify-newsletter"
+                          name="notify-newsletter"
+                          type="checkbox"
+                          className="w-5 h-5"
+                          checked={newsletterEnabled}
+                          onChange={(e) => setNewsletterEnabled(e.target.checked)}
+                        />
+                        <span className="font-semibold">{t('account_page.newsletter_toggle')}</span>
+                      </div>
+                      <p className="text-sm text-white/60 ml-8 mt-1">
+                        {t('account_page.newsletter_desc')}
+                      </p>
+                    </div>
+                    <span className={`text-xs px-3 py-1 rounded-full ${newsletterEnabled ? 'bg-success/20 text-success' : 'bg-white/10 text-white/60'}`}>
+                      {newsletterEnabled ? t('account_page.newsletter_enabled') : t('account_page.newsletter_disabled')}
+                    </span>
+                  </label>
+                </div>
               </div>
             </div>
 

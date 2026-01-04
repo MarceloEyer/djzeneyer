@@ -10,35 +10,35 @@ const MediaPage: React.FC = () => {
 
   const pressHighlights = [
     {
-      title: "2× World Champion Brazilian Zouk DJ",
-      description: "Marcelo Eyer, known as DJ Zen Eyer, is a two-time World Champion in Brazilian Zouk, bringing unique energy to dance floors worldwide.",
-      source: "Official Bio",
+      title: t('media_page.world_champion'),
+      description: t('media_page.world_champion_desc'),
+      source: t('media_page.source_official_bio'),
       year: "2023"
     },
     {
-      title: "International Performances",
-      description: "DJ Zen Eyer has performed at major festivals and events across Brazil, Europe, and the Americas, specializing in Brazilian Zouk music.",
-      source: "Performance History",
-      year: "2020-2024"
+      title: t('media_page.international_performances'),
+      description: t('media_page.international_performances_desc'),
+      source: t('media_page.source_performance_history'),
+      year: t('media_page.year_range')
     }
   ];
 
   const mediaAssets = [
     {
-      title: "High-Resolution Photos",
-      description: "Professional photos for press and promotional use",
+      title: t('media_page.high_res_photos'),
+      description: t('media_page.high_res_photos_desc'),
       icon: ImageIcon,
       available: false
     },
     {
-      title: "Official Biography",
-      description: "Complete artist bio in multiple languages",
+      title: t('media_page.official_bio'),
+      description: t('media_page.official_bio_desc'),
       icon: Newspaper,
       available: true
     },
     {
-      title: "Press Kit PDF",
-      description: "Downloadable press kit with full information",
+      title: t('media_page.press_kit_pdf'),
+      description: t('media_page.press_kit_pdf_desc'),
       icon: Download,
       available: false
     }
@@ -47,14 +47,13 @@ const MediaPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Media & Press Kit | DJ Zen Eyer</title>
-        <meta name="description" content="Official media resources, press kit, and biography for DJ Zen Eyer - 2× World Champion Brazilian Zouk DJ." />
+        <title>{t('media_page.title')} | DJ Zen Eyer</title>
+        <meta name="description" content={t('media_page.subtitle')} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4">
-          {/* Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,57 +61,55 @@ const MediaPage: React.FC = () => {
             className="text-center mb-16"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
-              Media & <span className="text-primary">Press Kit</span>
+              {t('media_page.title').split('&')[0]} & <span className="text-primary">{t('media_page.title').split('&')[1] || 'Press Kit'}</span>
             </h1>
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
-              Official media resources and press information for DJ Zen Eyer
+              {t('media_page.subtitle')}
             </p>
           </motion.div>
 
-          {/* Quick Facts */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="card mb-16 p-8"
           >
-            <h2 className="text-2xl font-display font-bold mb-6">Quick Facts</h2>
+            <h2 className="text-2xl font-display font-bold mb-6">{t('media_page.quick_facts')}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">Artist Name</h3>
+                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.artist_name')}</h3>
                 <p className="text-lg font-semibold">DJ Zen Eyer</p>
               </div>
               <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">Legal Name</h3>
+                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.legal_name')}</h3>
                 <p className="text-lg font-semibold">Marcelo Eyer Fernandes</p>
               </div>
               <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">Genre</h3>
+                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.genre')}</h3>
                 <p className="text-lg font-semibold">Brazilian Zouk</p>
               </div>
               <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">Location</h3>
+                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.location')}</h3>
                 <p className="text-lg font-semibold">São Paulo, Brazil</p>
               </div>
               <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">CNPJ</h3>
+                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.cnpj')}</h3>
                 <p className="text-lg font-semibold font-mono">44.063.765/0001-46</p>
               </div>
               <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">ISNI</h3>
+                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.isni')}</h3>
                 <p className="text-lg font-semibold font-mono">0000 0005 2893 1015</p>
               </div>
             </div>
           </motion.div>
 
-          {/* Press Highlights */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mb-16"
           >
-            <h2 className="text-3xl font-display font-bold mb-8">Press Highlights</h2>
+            <h2 className="text-3xl font-display font-bold mb-8">{t('media_page.press_highlights')}</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {pressHighlights.map((item, index) => (
                 <div key={index} className="card p-6 border-l-4 border-primary">
@@ -127,14 +124,13 @@ const MediaPage: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Media Assets */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mb-16"
           >
-            <h2 className="text-3xl font-display font-bold mb-8">Media Assets</h2>
+            <h2 className="text-3xl font-display font-bold mb-8">{t('media_page.media_assets')}</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {mediaAssets.map((asset, index) => (
                 <div key={index} className="card p-6 text-center">
@@ -148,44 +144,42 @@ const MediaPage: React.FC = () => {
                   {asset.available ? (
                     <button className="btn btn-primary btn-sm w-full">
                       <Download size={16} className="mr-2" />
-                      Download
+                      {t('media_page.download')}
                     </button>
                   ) : (
-                    <span className="text-xs text-white/40 uppercase tracking-wider">Coming Soon</span>
+                    <span className="text-xs text-white/40 uppercase tracking-wider">{t('media_page.coming_soon')}</span>
                   )}
                 </div>
               ))}
             </div>
           </motion.div>
 
-          {/* Contact for Press */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
             className="card p-8 text-center"
           >
-            <h2 className="text-3xl font-display font-bold mb-4">Press Inquiries</h2>
+            <h2 className="text-3xl font-display font-bold mb-4">{t('media_page.press_inquiries')}</h2>
             <p className="text-white/70 mb-6 max-w-2xl mx-auto">
-              For press inquiries, interviews, or media requests, please contact our press office:
+              {t('media_page.press_inquiries_desc')}
             </p>
             <a
               href={`mailto:${ARTIST.contact.email}`}
               className="btn btn-primary btn-lg inline-flex items-center gap-2"
             >
               <ExternalLink size={20} />
-              Contact Press Office
+              {t('media_page.contact_press_office')}
             </a>
           </motion.div>
 
-          {/* Social Proof */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             className="mt-16 text-center"
           >
-            <p className="text-white/50 mb-4">Verified Profiles</p>
+            <p className="text-white/50 mb-4">{t('media_page.verified_profiles')}</p>
             <div className="flex justify-center gap-6 flex-wrap">
               <a
                 href="https://www.wikidata.org/wiki/Q136551855"
