@@ -1,12 +1,12 @@
 // src/components/HeadlessSEO.tsx
-// VERSÃO 8.2.0 - HREFLANG TRAILING SLASH FIX
+// VERSÃO 8.3.0 - FIX: HTML LANG DYNAMIC & SOCIAL FALLBACK
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 
 // ============================================================================
-// 1. INTERFACES E TIPOS
+// 1. INTERFACES
 // ============================================================================
 
 export interface PreloadItem {
@@ -46,37 +46,25 @@ interface HeadlessSEOProps {
   keywords?: string;
   isHomepage?: boolean;
   preload?: PreloadItem[];
+  locale?: 'en_US' | 'pt_BR'; // NOVO: Controle explícito de locale
 }
 
 // ============================================================================
 // 2. HELPER FUNCTIONS
 // ============================================================================
 
-/**
- * Garante que URLs internas sempre terminem com trailing slash (/)
- * CRITÉRIO: Adiciona / no final, EXCETO se houver query string (?), hash (#), ou extensão de arquivo
- */
 export const ensureTrailingSlash = (url: string): string => {
   if (!url) return '/';
-
-  // Se já termina com /, retorna como está
   if (url.endsWith('/')) return url;
-
-  // Se tem query string ou hash, adiciona / antes deles
   const hasQuery = url.includes('?');
   const hasHash = url.includes('#');
 
   if (hasQuery || hasHash) {
-    // Separa a URL da query/hash
     const [basePath, ...rest] = url.split(/(\?|#)/);
-    // Adiciona / no basePath, depois reconstrói
     return `${basePath}/${rest.join('')}`;
   }
 
-  // Se tem extensão de arquivo (.pdf, .jpg, etc), não adiciona /
   if (/\.[a-z0-9]{2,4}$/i.test(url)) return url;
-
-  // Caso padrão: adiciona / no final
   return `${url}/`;
 };
 
@@ -88,17 +76,10 @@ const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   return `${cleanBase}/${cleanPath}`;
 };
 
-/**
- * Gera URLs hreflang com trailing slash garantido
- */
 export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
-  // Remove /pt, barras iniciais e barras finais para limpar
   const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '').replace(/\/$/, '') || '/';
-
-  // Se for Home (/), suffix é vazio. Se for interna, adiciona barra antes e DEPOIS.
   const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`;
-
-  // Garante trailing slash nas URLs finais
+  
   const enUrl = ensureTrailingSlash(`${baseUrl}${suffix}`);
   const ptUrl = ensureTrailingSlash(`${baseUrl}/pt${suffix}`);
 
@@ -126,45 +107,38 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   keywords,
   isHomepage = false,
   preload = [],
+  locale, // Recebe o locale
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
 
-  // --- Lógica de Fallback de Dados ---
+  // 1. Fallbacks
+  const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
+  const finalDescription = data?.desc || description || ARTIST.site.defaultDescription;
   
-  // 1. Título
-  const finalTitle =
-    data?.title ||
-    title ||
-    'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
-
-  // 2. Descrição
-  const finalDescription =
-    data?.desc || 
-    description || 
-    ARTIST.site.defaultDescription;
-
-  const truncatedDesc =
-    finalDescription.length > 160
+  const truncatedDesc = finalDescription.length > 160
       ? `${finalDescription.substring(0, 157)}...`
       : finalDescription;
 
-  // 3. URL (Canonical) - com trailing slash garantido
   const finalUrlRaw = data?.canonical || url || baseUrl;
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
   const finalUrl = ensureTrailingSlash(absoluteUrl);
 
-  // 4. Imagem
-  const finalImage = ensureAbsoluteUrl(
-    data?.image || image || `${baseUrl}/images/zen-eyer-og-image.jpg`,
-    baseUrl
-  );
+  // FIX: Imagem padrão robusta se nada for passado
+  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.jpg`; // Certifique-se que essa imagem existe na pasta public/images/
+  const finalImage = ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl);
 
-  // 5. NoIndex
   const shouldNoIndex = data?.noindex || noindex;
 
-  // --- Schema.org ---
+  // FIX: Determinação inteligente do idioma para a tag <html lang="">
+  // Se não foi passado via prop, tenta adivinhar pela URL
+  let currentLocale = locale;
+  if (!currentLocale) {
+    currentLocale = finalUrl.includes('/pt/') ? 'pt_BR' : 'en_US';
+  }
+  const htmlLangAttribute = currentLocale === 'pt_BR' ? 'pt-BR' : 'en';
+
+  // Schema Generation (Mantido igual)
   let finalSchema: any = schema;
-  
   if (!finalSchema && isHomepage) {
     finalSchema = {
       '@context': 'https://schema.org',
@@ -178,10 +152,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
           publisher: { '@id': `${baseUrl}/#artist` },
           inLanguage: ['en', 'pt-BR'],
         },
-        {
-          ...ARTIST_SCHEMA_BASE,
-          '@id': `${baseUrl}/#artist`,
-        },
+        { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` },
         {
           '@type': 'WebPage',
           '@id': `${baseUrl}/#webpage`,
@@ -190,7 +161,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
           isPartOf: { '@id': `${baseUrl}/#website` },
           about: { '@id': `${baseUrl}/#artist` },
           description: truncatedDesc,
-          inLanguage: 'en',
+          inLanguage: htmlLangAttribute,
         },
       ],
     };
@@ -206,56 +177,47 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
   return (
     <Helmet>
-      {/* 1. Preload Links */}
-      {preload.map((item, index) => (
-        <link
-          key={`preload-${index}`}
-          rel="preload"
-          href={item.href}
-          as={item.as}
-          media={item.media}
-          type={item.type}
-          crossOrigin={item.crossOrigin}
-        />
-      ))}
+      {/* 1. CRUCIAL: Define o lang na tag HTML raiz */}
+      <html lang={htmlLangAttribute} />
 
-      {/* 2. Meta Tags Básicas */}
       <meta charSet="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="theme-color" content="#000000" />
 
-      {/* 3. SEO Meta Data */}
+      {/* Preloads */}
+      {preload.map((item, index) => (
+        <link key={`preload-${index}`} rel="preload" {...item} />
+      ))}
+
+      {/* Basic SEO */}
       <title>{finalTitle}</title>
       <meta name="description" content={truncatedDesc} />
-      
-      {/* ✅ Canonical URL com barra no final */}
       <link rel="canonical" href={finalUrl} />
-      
       {keywords && <meta name="keywords" content={keywords} />}
 
-      {/* Robots Control */}
+      {/* Robots */}
       <meta
         name="robots"
-        content={
-          shouldNoIndex
-            ? 'noindex, nofollow'
-            : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
-        }
+        content={shouldNoIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
       />
 
-      {/* Open Graph */}
+      {/* Open Graph (Facebook/LinkedIn) */}
       <meta property="og:site_name" content="DJ Zen Eyer" />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={truncatedDesc} />
       <meta property="og:url" content={finalUrl} />
+      
+      {/* FIX: Garante que as imagens sempre apareçam */}
       <meta property="og:image" content={finalImage} />
+      <meta property="og:image:secure_url" content={finalImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:locale" content="en_US" />
-      <meta property="og:locale:alternate" content="pt_BR" />
+      
+      <meta property="og:locale" content={currentLocale} />
+      <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
 
-      {/* Twitter Cards */}
+      {/* Twitter Cards (X) - FIX: Adicionado summary_large_image explicitamente */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
@@ -263,12 +225,12 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta name="twitter:site" content="@djzeneyer" />
       <meta name="twitter:creator" content="@djzeneyer" />
 
-      {/* Hreflang */}
+      {/* Hreflang Tags */}
       {hrefLang.map(({ lang, url: hrefUrl }) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
-      {/* JSON-LD seguro */}
+      {/* Schema JSON-LD */}
       {finalSchema && (
         <script type="application/ld+json">
           {JSON.stringify(finalSchema).replace(/</g, '\\u003c')}
