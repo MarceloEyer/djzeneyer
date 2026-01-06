@@ -1,30 +1,58 @@
 {
-  "/": { "pt": "/pt", "en": "/" },
-  "/pt": { "pt": "/pt", "en": "/" },
-  "/home": { "pt": "/pt", "en": "/" },
-  "/about": { "pt": "/pt/sobre", "en": "/about" },
-  "/pt/sobre": { "pt": "/pt/sobre", "en": "/about" },
-  "/events": { "pt": "/pt/eventos", "en": "/events" },
-  "/pt/eventos": { "pt": "/pt/eventos", "en": "/events" },
-  "/events/:id": { "pt": "/pt/eventos/:id", "en": "/events/:id" },
-  "/music": { "pt": "/pt/musica", "en": "/music" },
-  "/pt/musica": { "pt": "/pt/musica", "en": "/music" },
-  "/music/:slug": { "pt": "/pt/musica/:slug", "en": "/music/:slug" },
-  "/tribe": { "pt": "/pt/tribo", "en": "/tribe" },
-  "/zen-tribe": { "pt": "/pt/tribo-zen", "en": "/zen-tribe" },
-  "/zentribe": { "pt": "/pt/tribo", "en": "/zentribe" },
-  "/pt/tribo": { "pt": "/pt/tribo", "en": "/tribe" },
-  "/pt/tribo-zen": { "pt": "/pt/tribo-zen", "en": "/zen-tribe" },
-  "/work-with-me": { "pt": "/pt/contrate", "en": "/work-with-me" },
-  "/pt/contrate": { "pt": "/pt/contrate", "en": "/work-with-me" },
-  "/shop": { "pt": "/pt/loja", "en": "/shop" },
-  "/pt/loja": { "pt": "/pt/loja", "en": "/shop" },
-  "/dashboard": { "pt": "/pt/painel", "en": "/dashboard" },
-  "/pt/painel": { "pt": "/pt/painel", "en": "/dashboard" },
-  "/my-account": { "pt": "/pt/minha-conta", "en": "/my-account" },
-  "/pt/minha-conta": { "pt": "/pt/minha-conta", "en": "/my-account" },
-  "/faq": { "pt": "/pt/faq", "en": "/faq" },
-  "/pt/faq": { "pt": "/pt/faq", "en": "/faq" },
-  "/my-philosophy": { "pt": "/pt/minha-filosofia", "en": "/my-philosophy" },
-  "/pt/minha-filosofia": { "pt": "/pt/minha-filosofia", "en": "/my-philosophy" }
+  "home": {
+    "en": "/",
+    "pt": "/"
+  },
+  "about": {
+    "en": "/about",
+    "pt": "/sobre"
+  },
+  "events": {
+    "en": "/events",
+    "pt": "/eventos"
+  },
+  "music": {
+    "en": "/music",
+    "pt": "/musica"
+  },
+  "news": {
+    "en": "/news",
+    "pt": "/noticias"
+  },
+  "zentribe": {
+    "en": "/zen-tribe",
+    "pt": "/tribo-zen"
+  },
+  "workWithMe": {
+    "en": "/work-with-me",
+    "pt": "/contrate"
+  },
+  "shop": {
+    "en": "/shop",
+    "pt": "/loja"
+  },
+  "media": {
+    "en": "/media",
+    "pt": "/midia"
+  },
+  "faq": {
+    "en": "/faq",
+    "pt": "/faq"
+  },
+  "philosophy": {
+    "en": "/my-philosophy",
+    "pt": "/minha-filosofia"
+  },
+  "privacy": {
+    "en": "/privacy-policy",
+    "pt": "/politica-de-privacidade"
+  },
+  "terms": {
+    "en": "/terms",
+    "pt": "/termos"
+  },
+  "conduct": {
+    "en": "/conduct",
+    "pt": "/conduta"
+  }
 }
