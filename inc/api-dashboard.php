@@ -103,16 +103,40 @@ class DJZ_Dashboard_API {
     }
 
     public function get_zen_gamipress($request) {
+        $user_id = get_current_user_id();
+        
+        // Check if GamiPress is active
+        if (!function_exists('gamipress_get_user_points')) {
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => 'GamiPress plugin is not active',
+            ], 500);
+        }
+        
+        // Get user points from GamiPress
+        $xp_points = gamipress_get_user_points($user_id, 'xp');
+        $user_level = gamipress_get_user_rank($user_id, 'level');
+        
+        // Get rank information
+        $rank_id = gamipress_get_user_rank($user_id);
+        $rank_title = get_the_title($rank_id);
+        
+        // Calculate progress to next rank
+        $current_points = $xp_points;
+        $next_rank_id = gamipress_get_user_next_rank($user_id);
+        $next_rank_threshold = get_post_meta($next_rank_id, '_gamipress_rank_points', true);
+        $progress_percent = !empty($next_rank_threshold) ? min(100, ($current_points / $next_rank_threshold) * 100) : 0;
+        
         return new WP_REST_Response([
             'success' => true,
             'stats' => [
-                'xp' => 100,
-                'level' => 1,
+                'xp' => (int) $xp_points,
+                'level' => (int) $user_level,
                 'rank' => [
-                    'current' => 'Iniciado',
-                    'icon' => '',
-                    'next_milestone' => 500,
-                    'progress_percent' => 20
+                    'current' => $rank_title,
+                    'icon' => get_the_post_thumbnail_url($rank_id) ?: '',
+                    'next_milestone' => (int) $next_rank_threshold,
+                    'progress_percent' => (int) $progress_percent
                 ]
             ]
         ], 200);
