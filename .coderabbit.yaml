@@ -1,19 +1,24 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 # Configuração CodeRabbit - DJ Zen Eyer (WordPress Headless + Plugins + React Vite)
-# Schema: https://coderabbit.ai/integrations/schema.v2.json
 
-lingua: pt-BR
-heranca: false
+language: pt-BR
 
-review:
-  perfil: assertivo
-  resumo_alto_nivel: true
-  status_revisao: true
-  fluxo_solicitar_mudancas: true
-  resumir_walkthrough: true
-  revisar_automaticamente:
-    habilitado: true
-    rascunhos: false
-  filtros_caminhos:
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary: true
+  review_status: true
+  poem: false
+  collapse_walkthrough: false
+  
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - develop
+  
+  path_filters:
     - "!**/node_modules/**"
     - "!**/dist/**"
     - "!**/public/**/*.xml"
@@ -21,11 +26,12 @@ review:
     - "!**/*.min.css"
     - "!**/.lock"
     - "!.env*"
-
-  instrucoes_por_caminho:
+    - "!**/vendor/**"
+  
+  path_instructions:
     # Frontend React + Vite (SPA)
-    - caminho: "src/**"
-      instrucoes: |
+    - path: "src/**"
+      instructions: |
         - Foque fortemente em tipos TypeScript, hooks React e gerenciamento de estado.
         - Verifique acessibilidade (ARIA, teclado, contraste de cores) em todos os componentes.
         - Valide uso de classes Tailwind para consistência e evite estilos duplicados.
@@ -33,24 +39,24 @@ review:
         - Prefira funções puras e testáveis; evite efeitos colaterais ocultos.
         - Cheque imports desnecessários e otimize tree-shaking do Vite.
 
-    - caminho: "src/pages/**"
-      instrucoes: |
+    - path: "src/pages/**"
+      instructions: |
         - Valide que roteamento funciona com backend WordPress headless (slugs, localizações).
         - Verifique que tags SEO (titles, meta, OpenGraph) são preenchidas a partir de dados headless.
         - Confirme uso correto de i18next para todas as strings visíveis ao usuário.
         - Teste padrões de renderização assíncrona e tratamento de erros.
 
     # Tema WordPress + funções PHP customizadas
-    - caminho: "inc/**"
-      instrucoes: |
+    - path: "inc/**"
+      instructions: |
         - Valide hooks e filtros WordPress seguindo boas práticas para setups headless.
         - Verifique endpoints REST contra SQL injection e XSS.
         - Garanta que lógica de negócios não depende de HTML tradicional de tema; foco em API/headless.
         - Sugira refatoração de funções muito grandes em funções menores e reutilizáveis.
         - Cheque sanitização/escaping de dados de usuário ou WordPress.
 
-    - caminho: "*.php"
-      instrucoes: |
+    - path: "*.php"
+      instructions: |
         - Verifique escaping/sanitização adequados para dados do WordPress ou entrada do usuário.
         - Evite funções descontinuadas ou APIs antigas de WordPress/PHP.
         - Valide que headers de segurança e configurações headless não são quebrados.
@@ -58,16 +64,16 @@ review:
         - Priorize performance em queries e caches quando aplicável.
 
     # Plugin de SEO Zen
-    - caminho: "plugins/zen-seo-lite/**"
-      instrucoes: |
+    - path: "plugins/zen-seo-lite/**"
+      instructions: |
         - Garanta que geração de sitemap, schema.org e metatags é compatível com ambiente headless.
         - Verifique impacto de performance e evite queries pesadas em geração de SEO.
         - Valide que não há duplicação de tags com frontend React.
         - Cheque que breadcrumbs e structured data funcionam com URLs dinâmicas.
 
     # Plugin de Autenticação
-    - caminho: "plugins/zeneyer-auth/**"
-      instrucoes: |
+    - path: "plugins/zeneyer-auth/**"
+      instructions: |
         - Cheque fluxos JWT + Google OAuth e armazenamento de tokens (cookies/headers) com foco em segurança.
         - Verifique proteção contra CSRF, XSS e session fixation.
         - Confirme que senhas nunca aparecem em logs ou responses.
@@ -75,86 +81,42 @@ review:
         - Sugira logs mínimos de auditoria para operações sensíveis de autenticação.
 
     # Plugin Bandsintown Integration
-    - caminho: "plugins/zen-bit/**"
-      instrucoes: |
+    - path: "plugins/zen-bit/**"
+      instructions: |
         - Verifique chamadas à API do Bandsintown (timeouts, tratamento de erro, retry logic).
         - Valide que dados recebidos são sanitizados antes de ir para frontend headless.
         - Cheque cache de dados de shows e sincronização com CMS.
         - Garanta que falhas de API não quebram o site (fallback gracioso).
 
     # Plugin de Recompensas (WooCommerce + GamiPress)
-    - caminho: "plugins/zen-ra/**"
-      instrucoes: |
+    - path: "plugins/zen-ra/**"
+      instructions: |
         - Garanta que dados de WooCommerce e GamiPress são acessados de forma performática.
         - Verifique que endpoints não expõem informações sensíveis de usuários.
         - Confirme que regras de gamificação funcionam corretamente com integrações.
         - Cheque sincronização de dados entre WooCommerce, GamiPress e frontend.
 
     # GitHub Actions e CI/CD
-    - caminho: ".github/workflows/**"
-      instrucoes: |
+    - path: ".github/workflows/**"
+      instructions: |
         - Valide que pipeline de deploy não expõe segredos (tokens, senhas, API keys).
         - Cheque se passos de build/test cobrem scripts React e verificações básicas de PHP.
         - Sugira melhorias em cache do build para Vite/Tailwind e dependências.
         - Confirme que variáveis de ambiente são tratadas com segurança.
 
     # Scripts de automação
-    - caminho: "scripts/**"
-      instrucoes: |
+    - path: "scripts/**"
+      instructions: |
         - Revise scripts de automação pensando em idempotência e segurança.
         - Garanta que chamadas remotas (APIs, SSH, rsync) tratam erros corretamente.
         - Verifique logs e outputs para dados sensíveis expostos.
 
     # Documentação
-    - caminho: "docs/**"
-      instrucoes: |
+    - path: "docs/**"
+      instructions: |
         - Foque em clareza, consistência de termos e passos verificáveis de setup.
         - Garanta que instruções para plugins WordPress, headless e CI refletem código atual.
         - Confirme que links e referências não estão quebrados.
 
-linguas:
-  typescript:
-    regras:
-      - imports-nao-utilizados
-      - performance
-      - seguranca
-  javascript:
-    regras:
-      - imports-nao-utilizados
-      - performance
-      - seguranca
-  php:
-    regras:
-      - seguranca
-      - boas-praticas
-  json:
-    regras:
-      - consistencia-formato
-
 chat:
-  habilitado: true
-  arte: false
-
-verificacoes_pre_merge:
-  - "Bloqueie merge se houver comentários CodeRabbit com severidade 'alta' não resolvidos."
-  - "Não permita merge se novo código PHP introduz outputs não escapados de dados controlados pelo usuário."
-  - "Bloqueie merge se sugestões críticas de segurança em plugins de autenticação não forem abordadas."
-
-mcp:
-  habilitado: true
-  servidores:
-    - nome: "docs-internas"
-      descricao: "Documentação interna: runbook WordPress/hosting, padrões de segurança, guia de plugins."
-    - nome: "refs-design"
-      descricao: "Referências de design: Figma, wireframes, brand guide DJ Zen Eyer."
-
-ignore:
-  - "*.lock"
-  - ".env"
-  - "node_modules/"
-  - "dist/"
-  - ".git/"
-  - "public/"
-  - "vendor/"
-  - ".DS_Store"
-  - "*.log"
+  auto_reply: true
