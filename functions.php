@@ -2,7 +2,7 @@
 /**
  * DJ Zen Eyer Theme
  * Headless WordPress + React Architecture
- * @version 15.0.1 (Final Deploy & Cache Busting)
+ * @version 15.0.2 (CSP Security Enabled)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -12,6 +12,7 @@ define('DJZ_VERSION', '15.0.1-DEPLOY-FINAL');
 
 // Module loader - A ORDEM DA ORGANIZAÇÃO
 require_once get_theme_file_path('/inc/setup.php');      // Core setup & security
+require_once get_theme_file_path('/inc/csp.php');        // ✅ CSP Nonce + Strict Policy (Proteção XSS)
 require_once get_theme_file_path('/inc/cleanup.php');    // Remove WP bloat
 require_once get_theme_file_path('/inc/vite.php');       // React integration (Loader Blindado)
 require_once get_theme_file_path('/inc/spa.php');        // SPA routing
