@@ -226,6 +226,7 @@ const HomePage: React.FC = () => {
         isHomepage={true}
         hrefLang={getHrefLangUrls(currentPath, currentUrl)}
         schema={schemaData}
+        keywords="DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
         
         // CORREÇÃO: Removido o bloco 'preload' para evitar duplicidade de carregamento
       />
