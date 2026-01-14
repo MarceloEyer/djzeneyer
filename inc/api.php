@@ -191,14 +191,7 @@ function djz_get_gamipress($request) {
         return rest_ensure_response($fallback);
     }
     
-    $points_type = 'zen-points';
-    if (function_exists('gamipress_get_points_types')) {
-        $points_types = gamipress_get_points_types();
-        if (!empty($points_types) && !isset($points_types[$points_type])) {
-            $points_type = array_key_first($points_types) ?: $points_type;
-        }
-    }
-
+    $points_type = djz_get_gamipress_points_type_slug();
     $points = (int)gamipress_get_user_points($user_id, $points_type);
     
     $ranks = [

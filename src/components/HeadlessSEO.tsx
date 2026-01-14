@@ -136,8 +136,10 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
     currentLocale = finalUrl.includes('/pt/') ? 'pt_BR' : 'en_US';
   }
   const htmlLangAttribute = currentLocale === 'pt_BR' ? 'pt-BR' : 'en';
-  const [authorFirstName = ARTIST.identity.stageName] = ARTIST.identity.fullName.split(' ');
-  const authorLastName = ARTIST.identity.fullName.split(' ').slice(1).join(' ') || ARTIST.identity.stageName;
+  const nameParts = ARTIST.identity.fullName.split(' ').filter(Boolean);
+  const authorFirstName = nameParts[0] || ARTIST.identity.stageName;
+  const authorLastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+  const isProfileType = type === 'profile';
 
   // Schema Generation (Mantido igual)
   let finalSchema: any = schema;
@@ -222,9 +224,13 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
-      <meta property="profile:first_name" content={authorFirstName} />
-      <meta property="profile:last_name" content={authorLastName} />
-      <meta property="profile:username" content="djzeneyer" />
+      {isProfileType && (
+        <>
+          <meta property="profile:first_name" content={authorFirstName} />
+          <meta property="profile:last_name" content={authorLastName} />
+          <meta property="profile:username" content="djzeneyer" />
+        </>
+      )}
 
       {/* Twitter Cards (X) - FIX: Adicionado summary_large_image explicitamente */}
       <meta name="twitter:card" content="summary_large_image" />
