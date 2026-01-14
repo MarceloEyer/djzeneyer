@@ -2,7 +2,7 @@
 /**
  * Vite Integration Module (Production Ready)
  * Carrega os scripts e estilos gerados pelo Vite (React)
- * @version 3.1.0 (Hash Fix + Robust Module)
+ * @version 3.2.0 (Hash Fix + CSP Nonce Support)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -14,20 +14,17 @@ class DJZ_Vite_Loader {
     private $dist_url;
 
     public function __construct() {
-        // Use priority 20 to ensure we run after standard enqueues
+        // Prioridade 20 para rodar depois dos enqueues padrões
         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets'], 20);
         add_filter('script_loader_tag', [$this, 'add_module_type'], 10, 3);
 
         $this->dist_path = get_theme_file_path('/dist');
         $this->dist_url  = get_template_directory_uri() . '/dist';
 
-        // Load manifest
         $this->load_manifest();
     }
 
     private function load_manifest() {
-        // Vite 5+ uses .vite/manifest.json usually, but sometimes root dist/manifest.json
-        // Check both locations
         $paths = [
             $this->dist_path . '/.vite/manifest.json',
             $this->dist_path . '/manifest.json'
@@ -51,10 +48,7 @@ class DJZ_Vite_Loader {
 
         if (empty($this->manifest)) return;
 
-        // Try to find the entry point. It's usually 'index.html' or 'src/main.tsx'
-        // depending on your vite.config.js input configuration.
         $entry = $this->manifest['index.html'] ?? $this->manifest['src/main.tsx'] ?? null;
-
         if (!$entry) return;
 
         // 1. JS
@@ -62,14 +56,14 @@ class DJZ_Vite_Loader {
             wp_enqueue_script('djz-react-main', $this->dist_url . '/' . $entry['file'], [], null, true);
         }
 
-        // 2. CSS - Fixed with MD5 hash for unique handles
+        // 2. CSS (Com Hash MD5)
         if (!empty($entry['css'])) {
             foreach ($entry['css'] as $css_file) {
                 wp_enqueue_style('djz-react-style-' . md5($css_file), $this->dist_url . '/' . $css_file, [], null);
             }
         }
 
-        // 3. Preloads (Optional but good for performance)
+        // 3. Preloads
         add_action('wp_head', function() use ($entry) {
             if (!empty($entry['file'])) {
                 echo '<link rel="modulepreload" href="' . esc_url($this->dist_url . '/' . $entry['file']) . '" />' . "\n";
@@ -84,10 +78,12 @@ class DJZ_Vite_Loader {
             }
         }, 1);
 
-        // 4. Global Variables (Replaces wp_localize_script for cleaner object injection)
+        // 4. Variáveis Globais (COM PROTEÇÃO CSP NONCE)
         add_action('wp_footer', function() {
+            // Pega o Nonce gerado pelo inc/csp.php
+            $nonce = !empty($GLOBALS['DJZ_CSP_NONCE']) ? $GLOBALS['DJZ_CSP_NONCE'] : '';
             ?>
-            <script>
+            <script<?php echo $nonce ? ' nonce="' . esc_attr($nonce) . '"' : ''; ?>>
                 window.wpData = {
                     rootUrl: "<?php echo esc_url(home_url('/')); ?>",
                     restUrl: "<?php echo esc_url(rest_url()); ?>",
@@ -101,21 +97,18 @@ class DJZ_Vite_Loader {
     }
 
     /**
-     * Robust Module Type Injection
-     * Preserves existing attributes (like nonce) and adds type="module" + crossorigin
+     * Injeção Robusta de Module + Crossorigin
      */
     public function add_module_type($tag, $handle, $src) {
         if ($handle === 'djz-react-main' || strpos($handle, 'vite') !== false) {
             $out = $tag;
 
-            // Inject type="module" if missing
             if (strpos($out, 'type=') === false) {
                 $out = preg_replace('/<script\b/i', '<script type="module"', $out, 1);
             } else {
                 $out = preg_replace('/type=("|\')text\/javascript("|\')/i', 'type="module"', $out);
             }
 
-            // Inject crossorigin if missing
             if (stripos($out, 'crossorigin') === false) {
                 $out = preg_replace('/<script\b/i', '<script crossorigin="anonymous"', $out, 1);
             }
