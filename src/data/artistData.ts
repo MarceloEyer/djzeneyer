@@ -218,6 +218,8 @@ export const ARTIST_SCHEMA_BASE = {
   alternateName: [ARTIST.identity.shortName, ARTIST.identity.fullName],
   jobTitle: 'Brazilian Zouk DJ and music producer',
   description: `${ARTIST.titles.primary}. Member of ${ARTIST.mensa.organization}. Known for the "${ARTIST.philosophy.style}" musical style.`,
+  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+  knowsAbout: ['Brazilian Zouk', 'DJing', 'Music Production', 'Remixing', 'Festival Performance'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.jpg`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],

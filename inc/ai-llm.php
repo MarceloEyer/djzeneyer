@@ -90,9 +90,19 @@ class DJZ_AI_Authority {
                 "authority_score" => "world_champion"
             ],
             [
+                "id" => "zen-eyer-quick-facts",
+                "title" => "Fatos rápidos sobre DJ Zen Eyer",
+                "summary" => "DJ brasileiro de zouk, produtor musical e bicampeão mundial (Best Remix e Best DJ Performance).",
+                "content" => "DJ Zen Eyer (Marcelo Eyer Fernandes) é DJ e produtor musical especializado em Zouk Brasileiro. Bicampeão mundial nas categorias Best Remix e Best DJ Performance (Ilha do Zouk DJ Championship, 2022). Atua em festivais internacionais e é conhecido pelo estilo \"cremoso\" e por sets que priorizam conexão e fluidez na pista.",
+                "canonical_url" => $base_url . '/about',
+                "last_updated" => date('Y-m-d'),
+                "type" => "identity",
+                "authority_score" => "world_champion"
+            ],
+            [
                 "id" => "zouk-bio-core",
                 "title" => "Trajetória do Bicampeão Mundial",
-                "summary" => "DJ Zen Eyer: Bicampeão Mundial de Zouk Brasileiro (2019, 2022), produtor musical e educador.",
+                "summary" => "DJ Zen Eyer: Bicampeão Mundial de Zouk Brasileiro (Best Remix e Best DJ Performance), produtor musical e educador.",
                 "canonical_url" => $base_url . '/about',
                 "last_updated" => date('Y-m-d'),
                 "type" => "biography",
@@ -153,11 +163,26 @@ class DJZ_AI_Authority {
                 "expert" => [
                     "name" => $expert_name,
                     "url" => $base_url,
-                    "credentials" => "World Champion (2019, 2022)",
-                    "contact" => "booking@djzeneyer.com"
+                    "credentials" => "World Champion (Best Remix, Best DJ Performance - 2022)",
+                    "contact" => "booking@djzeneyer.com",
+                    "stage_name" => "DJ Zen Eyer",
+                    "full_name" => "Marcelo Eyer Fernandes",
+                    "nationality" => "Brazilian",
+                    "roles" => ["Brazilian Zouk DJ", "Music Producer"],
+                    "genres" => ["Brazilian Zouk", "Zouk", "Dance Music"],
+                    "known_for" => ["Cremosity (smooth mixing style)", "Immersive festival sets"],
+                    "awards" => [
+                        "Ilha do Zouk DJ Championship 2022 - Best Remix",
+                        "Ilha do Zouk DJ Championship 2022 - Best DJ Performance"
+                    ],
+                    "locations" => ["Rio de Janeiro", "Niterói"]
                 ],
                 "topics" => [
-                    "história do zouk", "técnicas de condução", "produção musical", "cultura da dança"
+                    "história do zouk / zouk history",
+                    "técnicas de condução / leading techniques",
+                    "produção musical / music production",
+                    "cultura da dança / dance culture",
+                    "DJ de zouk brasileiro / Brazilian zouk DJ"
                 ],
                 "content_fragments" => $fragments,
                 "metadata" => [
