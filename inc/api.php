@@ -184,13 +184,22 @@ function djz_get_gamipress($request) {
                 'level' => 1,
                 'rank' => 'Zen Novice',
                 'achievements' => [],
+                'pointsType' => 'zen-points',
             ],
         ];
         set_transient($cache_key, $fallback, DJZ_CACHE_GAMIPRESS);
         return rest_ensure_response($fallback);
     }
     
-    $points = (int)gamipress_get_user_points($user_id, 'zen-points');
+    $points_type = 'zen-points';
+    if (function_exists('gamipress_get_points_types')) {
+        $points_types = gamipress_get_points_types();
+        if (!empty($points_types) && !isset($points_types[$points_type])) {
+            $points_type = array_key_first($points_types) ?: $points_type;
+        }
+    }
+
+    $points = (int)gamipress_get_user_points($user_id, $points_type);
     
     $ranks = [
         ['name' => 'Zen Novice', 'min' => 0, 'next' => 100],
@@ -213,11 +222,20 @@ function djz_get_gamipress($request) {
     }
     
     $current_min = $ranks[$level - 1]['min'];
-    $progress = min(100, round((($points - $current_min) / ($next - $current_min)) * 100));
+    $progress = ($next > $current_min)
+        ? min(100, round((($points - $current_min) / ($next - $current_min)) * 100))
+        : 0;
     
     $achievements = [];
+    $achievement_types = ['insigna'];
+    if (function_exists('gamipress_get_achievement_types')) {
+        $types = gamipress_get_achievement_types();
+        if (!empty($types)) {
+            $achievement_types = array_keys($types);
+        }
+    }
     $query = new WP_Query([
-        'post_type' => 'insigna',
+        'post_type' => $achievement_types,
         'posts_per_page' => 20,
         'post_status' => 'publish',
     ]);
@@ -248,6 +266,7 @@ function djz_get_gamipress($request) {
             'nextLevelPoints' => $next,
             'progressToNextLevel' => $progress,
             'achievements' => $achievements,
+            'pointsType' => $points_type,
         ],
     ];
     

@@ -142,7 +142,11 @@ class DJZ_AI_Authority {
                     "locations" => ["Rio de Janeiro", "Niterói"]
                 ],
                 "topics" => [
-                    "história do zouk", "técnicas de condução", "produção musical", "cultura da dança", "DJ de zouk brasileiro"
+                    "história do zouk",
+                    "técnicas de condução",
+                    "produção musical",
+                    "cultura da dança",
+                    "DJ de zouk brasileiro"
                 ],
                 "content_fragments" => $fragments,
                 "metadata" => [
