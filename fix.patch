@@ -1,0 +1,205 @@
+--- a/project/inc/spa.php
++++ b/project/inc/spa.php
+@@ -1,33 +1,49 @@
+ <?php
+ /**
+  * SPA Routing
+  * Makes React Router work with WordPress
+  */
+ 
+ if (!defined('ABSPATH')) exit;
+ 
+ /**
+- * Route all React paths through index.php
++ * Route all React paths through index.php
++ *
++ * Important:
++ * - We intentionally serve index.php for unknown front-end routes so React Router can handle them.
++ * - Avoid emitting an HTTP 404 status when we decided to serve the SPA, otherwise crawlers/CDNs treat the page as missing.
+  */
+ add_filter('template_include', function($template) {
+     if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
+         return $template;
+     }
+     
+-    if (is_404() && is_main_query()) {
+-        status_header(200);
+-        return get_theme_file_path('/index.php');
+-    }
++    // Only intercept main front-end 404s (i.e., unknown WP routes) and hand them to the SPA.
++    if (is_404() && is_main_query()) {
++        // Mark that we intentionally routed to the SPA so other hooks do not restore the 404 header.
++        $GLOBALS['DJZ_SPA_ROUTED'] = true;
++
++        status_header(200);
++        nocache_headers();
++
++        return get_theme_file_path('/index.php');
++    }
+     
+     return $template;
+ });
+ 
+ /**
+- * Fix real 404s
++ * "Real 404s" handling
++ *
++ * If WordPress is still returning a 404 AND we did NOT route to the SPA, then keep the 404 status.
++ * This prevents accidental 404 responses for SPA routes, while preserving proper 404s for genuine misses.
+  */
+ add_action('template_redirect', function() {
+-    if (is_404()) {
++    if (is_404() && empty($GLOBALS['DJZ_SPA_ROUTED'])) {
+         status_header(404);
+         nocache_headers();
+     }
+ }, 999);
+--- a/project/inc/vite.php
++++ b/project/inc/vite.php
+@@ -1,116 +1,136 @@
+ <?php
+ /**
+  * Vite Integration Module (Production Ready)
+  * Carrega os scripts e estilos gerados pelo Vite (React)
+  * @version 3.0.0 (Manifest Fix)
+  */
+ 
+ if (!defined('ABSPATH')) exit;
+ 
+ class DJZ_Vite_Loader {
+ 
+     private $manifest = [];
+     private $dist_path;
+     private $dist_url;
+ 
+     public function __construct() {
+         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets'], 20);
+         add_filter('script_loader_tag', [$this, 'add_module_type'], 10, 3);
+ 
+         // Caminhos do tema
+         $this->dist_path = get_theme_file_path('/dist');
+         $this->dist_url  = get_template_directory_uri() . '/dist';
+ 
+         // Carrega o manifest.json
+         $manifest_path = $this->dist_path . '/manifest.json';
+ 
+         if (file_exists($manifest_path)) {
+             $this->manifest = json_decode(file_get_contents($manifest_path), true);
+         }
+     }
+ 
+     /**
+      * Enfileira CSS e JS
+      */
+     public function enqueue_assets() {
+         // Em ambiente de desenvolvimento local (não deve acontecer em prod, mas por segurança)
+         if (defined('DJZ_IS_DEV') && DJZ_IS_DEV) {
+             wp_enqueue_script('vite-client', 'http://localhost:5173/@vite/client', [], null, true);
+             wp_enqueue_script('vite-main', 'http://localhost:5173/src/main.tsx', [], null, true);
+             return;
+         }
+ 
+         // 1. Verifica se o manifest foi carregado
+         if (empty($this->manifest)) {
+             return;
+         }
+ 
+         // 2. Localiza a entrada principal (ex: src/main.tsx)
+         $entry = $this->manifest['src/main.tsx'] ?? null;
+         if (!$entry) {
+             return;
+         }
+ 
+         // 2.1 Carrega o JS principal (module)
+         $js_file = $entry['file'] ?? null;
+         if ($js_file) {
+             wp_enqueue_script('djz-react-main', $this->dist_url . '/' . $js_file, [], null, true);
+         }
+ 
+         // 2. Carrega o CSS Principal
+         if (!empty($entry['css'])) {
+             foreach ($entry['css'] as $css_file) {
+-                wp_enqueue_style('djz-react-style', $this->dist_url . '/' . $css_file, [], null);
++                // Unique handle per CSS file to avoid overrides when Vite outputs multiple CSS chunks.
++                wp_enqueue_style('djz-react-style-' . md5($css_file), $this->dist_url . '/' . $css_file, [], null);
+             }
+         }
+ 
+         // 3. Passa variáveis globais para o React
+         add_action('wp_footer', function() {
+             ?>
+             <script>
+                 window.DJZ_CONFIG = {
+                     apiUrl: "<?php echo esc_url(rest_url('wp/v2/')); ?>",
+                     nonce: "<?php echo wp_create_nonce('wp_rest'); ?>",
+                     isLoggedIn: <?php echo is_user_logged_in() ? 'true' : 'false'; ?>,
+                 };
+             </script>
+             <?php
+         }, 1);
+     }
+ 
+     /**
+      * Adiciona type="module" e crossorigin para o React funcionar
+      */
+     public function add_module_type($tag, $handle, $src) {
+         if ($handle === 'djz-react-main' || strpos($handle, 'vite') !== false) {
+-            return '<script type="module" src="' . esc_url($src) . '"></script>';
++            // Preserve any attributes already present on the tag (e.g., nonce added by CSP plugins)
++            // while ensuring type="module" and crossorigin are set for modern React builds.
++            $out = $tag;
++
++            // If WordPress provided a bare tag without type, inject type="module".
++            if (strpos($out, 'type=') === false) {
++                $out = preg_replace('/<script\\b/i', '<script type="module"', $out, 1);
++            } else {
++                // Force module type for our handles.
++                $out = preg_replace('/type=("|\')text\\/javascript("|\')/i', 'type="module"', $out);
++            }
++
++            // Ensure crossorigin is present (helps with module scripts + some CSP setups).
++            if (stripos($out, 'crossorigin') === false) {
++                $out = preg_replace('/<script\\b/i', '<script crossorigin="anonymous"', $out, 1);
++            }
++
++            return $out;
+         }
+         return $tag;
+     }
+ }
+ 
+ new DJZ_Vite_Loader();
+--- a/project/.htaccess
++++ b/project/.htaccess
+@@ -128,21 +128,32 @@
+ # ==============================================================================
+ # 4. CORS
+ # ==============================================================================
+ <IfModule mod_headers.c>
+-    SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
+-    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
+-        Header always set Access-Control-Allow-Origin "*"
+-    </If>
+-    <Else>
+-        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+-    </Else>
++    # Only allow known origins; do not use "*" together with Allow-Credentials (invalid in browsers).
++    SetEnvIf Origin "^https?://(www\\.)?(djzeneyer\\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
++
++    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
++        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
++        Header always set Vary "Origin" env=ALLOWED_ORIGIN
++        Header always set Access-Control-Allow-Credentials "true" env=ALLOWED_ORIGIN
++    </If>
++    <Else>
++        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
++        Header always set Vary "Origin" env=ALLOWED_ORIGIN
++    </Else>
++
+     Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+     Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
+-    Header always set Access-Control-Allow-Credentials "true"
+     RewriteEngine On
+     RewriteCond %{REQUEST_METHOD} OPTIONS
+     RewriteRule ^(.*)$ $1 [R=204,L]
+ </IfModule>
