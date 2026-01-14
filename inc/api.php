@@ -184,40 +184,47 @@ function djz_get_gamipress($request) {
                 'level' => 1,
                 'rank' => 'Zen Novice',
                 'achievements' => [],
+                'pointsType' => 'zen-points',
             ],
         ];
         set_transient($cache_key, $fallback, DJZ_CACHE_GAMIPRESS);
         return rest_ensure_response($fallback);
     }
     
-    $points = (int)gamipress_get_user_points($user_id, 'zen-points');
+    $points_type = djz_get_gamipress_points_type_slug();
+    $points = (int)gamipress_get_user_points($user_id, $points_type);
     
-    $ranks = [
-        ['name' => 'Zen Novice', 'min' => 0, 'next' => 100],
-        ['name' => 'Zen Apprentice', 'min' => 100, 'next' => 500],
-        ['name' => 'Zen Voyager', 'min' => 500, 'next' => 1500],
-        ['name' => 'Zen Master', 'min' => 1500, 'next' => 4000],
-        ['name' => 'Zen Legend', 'min' => 4000, 'next' => 10000],
-    ];
+    $tiers_payload = djz_get_gamipress_rank_tiers();
+    $ranks = $tiers_payload['tiers'];
     
     $level = 1;
     $rank = $ranks[0]['name'];
     $next = $ranks[0]['next'];
     
     foreach ($ranks as $i => $tier) {
-        if ($points >= $tier['min']) {
-            $level = $i + 1;
-            $rank = $tier['name'];
-            $next = $tier['next'];
+        if ($points < $tier['min']) {
+            break;
         }
+        $level = $i + 1;
+        $rank = $tier['name'];
+        $next = $tier['next'];
     }
     
     $current_min = $ranks[$level - 1]['min'];
-    $progress = min(100, round((($points - $current_min) / ($next - $current_min)) * 100));
+    $progress = ($next > $current_min)
+        ? min(100, round((($points - $current_min) / ($next - $current_min)) * 100))
+        : 0;
     
     $achievements = [];
+    $achievement_types = ['insigna'];
+    if (function_exists('gamipress_get_achievement_types')) {
+        $types = gamipress_get_achievement_types();
+        if (!empty($types)) {
+            $achievement_types = array_keys($types);
+        }
+    }
     $query = new WP_Query([
-        'post_type' => 'insigna',
+        'post_type' => $achievement_types,
         'posts_per_page' => 20,
         'post_status' => 'publish',
     ]);
@@ -248,6 +255,7 @@ function djz_get_gamipress($request) {
             'nextLevelPoints' => $next,
             'progressToNextLevel' => $progress,
             'achievements' => $achievements,
+            'pointsType' => $points_type,
         ],
     ];
     

@@ -13,6 +13,106 @@ define('DJZ_CACHE_PRODUCTS', 30 * MINUTE_IN_SECONDS);
 define('DJZ_CACHE_GAMIPRESS', 15 * MINUTE_IN_SECONDS);
 
 /**
+ * GamiPress helper: resolve points type slug with fallback.
+ */
+function djz_get_gamipress_points_type_slug(): string {
+    $default = 'zen-points';
+    if (!function_exists('gamipress_get_points_types')) {
+        return $default;
+    }
+
+    $points_types = gamipress_get_points_types();
+    if (empty($points_types)) {
+        return $default;
+    }
+
+    if (isset($points_types[$default])) {
+        return $default;
+    }
+
+    $first = array_key_first($points_types);
+    return $first ?: $default;
+}
+
+/**
+ * GamiPress helper: resolve rank tiers with fallback.
+ *
+ * @return array{tiers: array<int, array{name: string, min: int, next: int}>, source: string}
+ */
+function djz_get_gamipress_rank_tiers(): array {
+    $fallback = [
+        ['name' => 'Zen Novice', 'min' => 0, 'next' => 100],
+        ['name' => 'Zen Apprentice', 'min' => 100, 'next' => 500],
+        ['name' => 'Zen Voyager', 'min' => 500, 'next' => 1500],
+        ['name' => 'Zen Master', 'min' => 1500, 'next' => 4000],
+        ['name' => 'Zen Legend', 'min' => 4000, 'next' => 10000],
+    ];
+
+    if (!function_exists('gamipress_get_rank_types')) {
+        return [
+            'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
+            'source' => 'fallback',
+        ];
+    }
+
+    $rank_types = gamipress_get_rank_types();
+    $rank_slug = !empty($rank_types) ? array_key_first($rank_types) : null;
+    if (!$rank_slug) {
+        return [
+            'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
+            'source' => 'fallback',
+        ];
+    }
+
+    $ranks = get_posts([
+        'post_type' => $rank_slug,
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'orderby' => 'menu_order',
+        'order' => 'ASC',
+    ]);
+
+    if (empty($ranks)) {
+        return [
+            'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
+            'source' => 'fallback',
+        ];
+    }
+
+    $tiers = [];
+    foreach ($ranks as $rank) {
+        $min_points = (int) get_post_meta($rank->ID, '_gamipress_points_required', true);
+        if ($min_points <= 0) {
+            $min_points = (int) get_post_meta($rank->ID, '_gamipress_points', true);
+        }
+
+        $tiers[] = [
+            'name' => $rank->post_title,
+            'min' => max(0, $min_points),
+            'next' => 0,
+        ];
+    }
+
+    usort($tiers, function($a, $b) {
+        return $a['min'] <=> $b['min'];
+    });
+
+    $count = count($tiers);
+    for ($i = 0; $i < $count; $i++) {
+        $next_min = $tiers[$i + 1]['min'] ?? 0;
+        if ($next_min <= $tiers[$i]['min']) {
+            $next_min = $tiers[$i]['min'] + 1000;
+        }
+        $tiers[$i]['next'] = $next_min;
+    }
+
+    return [
+        'tiers' => apply_filters('djz_gamipress_rank_tiers', $tiers),
+        'source' => 'gamipress',
+    ];
+}
+
+/**
  * Allowed origins for CORS
  */
 function djz_allowed_origins(): array {
