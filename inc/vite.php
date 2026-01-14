@@ -2,7 +2,7 @@
 /**
  * Vite Integration Module (Production Ready)
  * Carrega os scripts e estilos gerados pelo Vite (React)
- * @version 3.0.0 (Manifest Fix)
+ * @version 3.1.0 (Hash Fix + Robust Module)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -14,100 +14,113 @@ class DJZ_Vite_Loader {
     private $dist_url;
 
     public function __construct() {
-        // Define caminhos
-        $this->dist_path = get_template_directory() . '/dist';
-        $this->dist_url = get_template_directory_uri() . '/dist';
-
-        // Carrega o manifesto se existir (cache na memória)
-        $this->load_manifest();
-
-        // Ganchos
-        add_action('wp_enqueue_scripts', [$this, 'enqueue_assets'], 100);
+        // Use priority 20 to ensure we run after standard enqueues
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_assets'], 20);
         add_filter('script_loader_tag', [$this, 'add_module_type'], 10, 3);
+
+        $this->dist_path = get_theme_file_path('/dist');
+        $this->dist_url  = get_template_directory_uri() . '/dist';
+
+        // Load manifest
+        $this->load_manifest();
     }
 
-    /**
-     * Lê o arquivo manifest.json gerado pelo npm run build
-     */
     private function load_manifest() {
-        // Vite 5 gera o manifesto em dist/.vite/manifest.json
-        $manifest_path = $this->dist_path . '/.vite/manifest.json';
-        
-        // Fallback para Vite 4 ou configurações antigas
-        if (!file_exists($manifest_path)) {
-            $manifest_path = $this->dist_path . '/manifest.json';
-        }
+        // Vite 5+ uses .vite/manifest.json usually, but sometimes root dist/manifest.json
+        // Check both locations
+        $paths = [
+            $this->dist_path . '/.vite/manifest.json',
+            $this->dist_path . '/manifest.json'
+        ];
 
-        if (file_exists($manifest_path)) {
-            $this->manifest = json_decode(file_get_contents($manifest_path), true);
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                $this->manifest = json_decode(file_get_contents($path), true);
+                return;
+            }
         }
     }
 
-    /**
-     * Enfileira CSS e JS
-     */
     public function enqueue_assets() {
-        // Em ambiente de desenvolvimento local (não deve acontecer em prod, mas por segurança)
+        // Dev Mode
         if (defined('DJZ_IS_DEV') && DJZ_IS_DEV) {
             wp_enqueue_script('vite-client', 'http://localhost:5173/@vite/client', [], null, true);
             wp_enqueue_script('vite-main', 'http://localhost:5173/src/main.tsx', [], null, true);
             return;
         }
 
-        // Se não tiver manifesto, aborta
-        if (empty($this->manifest) || !isset($this->manifest['index.html'])) {
-            return;
-        }
+        if (empty($this->manifest)) return;
 
-        $entry = $this->manifest['index.html'];
+        // Try to find the entry point. It's usually 'index.html' or 'src/main.tsx'
+        // depending on your vite.config.js input configuration.
+        $entry = $this->manifest['index.html'] ?? $this->manifest['src/main.tsx'] ?? null;
 
-        // 1. Carrega o JavaScript Principal (main.tsx compilado)
+        if (!$entry) return;
+
+        // 1. JS
         if (!empty($entry['file'])) {
-            $js_url = $this->dist_url . '/' . $entry['file'];
-            // O 'ver' com time() força o navegador a baixar a versão nova se o cache estiver teimoso
-            wp_enqueue_script('djz-react-main', $js_url, [], null, true);
-            
-            // Injeta dados do WordPress para o React (Nonce, URLs, etc)
-            wp_localize_script('djz-react-main', 'wpData', [
-                'rootUrl' => home_url('/'),
-                'restUrl' => rest_url(), // Garante a URL correta da API
-                'nonce'   => wp_create_nonce('wp_rest'), // O CRACHÁ DE SEGURANÇA
-                'userId'  => get_current_user_id(),
-                'themeUrl'=> get_template_directory_uri()
-            ]);
+            wp_enqueue_script('djz-react-main', $this->dist_url . '/' . $entry['file'], [], null, true);
         }
 
-        // 2. Carrega o CSS Principal
+        // 2. CSS - Fixed with MD5 hash for unique handles
         if (!empty($entry['css'])) {
             foreach ($entry['css'] as $css_file) {
-                wp_enqueue_style('djz-react-style', $this->dist_url . '/' . $css_file, [], null);
+                wp_enqueue_style('djz-react-style-' . md5($css_file), $this->dist_url . '/' . $css_file, [], null);
             }
         }
-        
-        // 3. Carrega Preloads (Performance LCP)
+
+        // 3. Preloads (Optional but good for performance)
         add_action('wp_head', function() use ($entry) {
-            // Preload do script principal
             if (!empty($entry['file'])) {
                 echo '<link rel="modulepreload" href="' . esc_url($this->dist_url . '/' . $entry['file']) . '" />' . "\n";
             }
-            // Preload dos imports dinâmicos (chunks)
             if (!empty($entry['imports'])) {
                 foreach ($entry['imports'] as $import_key) {
                     if (isset($this->manifest[$import_key]['file'])) {
-                         $chunk_url = $this->dist_url . '/' . $this->manifest[$import_key]['file'];
-                         echo '<link rel="modulepreload" href="' . esc_url($chunk_url) . '" />' . "\n";
+                        $chunk_url = $this->dist_url . '/' . $this->manifest[$import_key]['file'];
+                        echo '<link rel="modulepreload" href="' . esc_url($chunk_url) . '" />' . "\n";
                     }
                 }
             }
         }, 1);
+
+        // 4. Global Variables (Replaces wp_localize_script for cleaner object injection)
+        add_action('wp_footer', function() {
+            ?>
+            <script>
+                window.wpData = {
+                    rootUrl: "<?php echo esc_url(home_url('/')); ?>",
+                    restUrl: "<?php echo esc_url(rest_url()); ?>",
+                    nonce: "<?php echo wp_create_nonce('wp_rest'); ?>",
+                    userId: <?php echo get_current_user_id(); ?>,
+                    themeUrl: "<?php echo esc_url(get_template_directory_uri()); ?>"
+                };
+            </script>
+            <?php
+        }, 1);
     }
 
     /**
-     * Adiciona type="module" e crossorigin para o React funcionar
+     * Robust Module Type Injection
+     * Preserves existing attributes (like nonce) and adds type="module" + crossorigin
      */
     public function add_module_type($tag, $handle, $src) {
         if ($handle === 'djz-react-main' || strpos($handle, 'vite') !== false) {
-            return '<script type="module" src="' . esc_url($src) . '"></script>';
+            $out = $tag;
+
+            // Inject type="module" if missing
+            if (strpos($out, 'type=') === false) {
+                $out = preg_replace('/<script\b/i', '<script type="module"', $out, 1);
+            } else {
+                $out = preg_replace('/type=("|\')text\/javascript("|\')/i', 'type="module"', $out);
+            }
+
+            // Inject crossorigin if missing
+            if (stripos($out, 'crossorigin') === false) {
+                $out = preg_replace('/<script\b/i', '<script crossorigin="anonymous"', $out, 1);
+            }
+
+            return $out;
         }
         return $tag;
     }
