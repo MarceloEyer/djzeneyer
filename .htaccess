@@ -36,7 +36,7 @@ ExpiresByType font/woff2 A31557600
 # END NON_LSCACHE
 
 # ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v13.0 (CLEAN - PHP ROUTING ONLY)
+# DJ ZEN EYER - PRODUCTION .htaccess v14.0 (CORS FIX + SECURITY)
 # ==============================================================================
 
 # ==============================================================================
@@ -128,19 +128,27 @@ CacheKeyModify -qs:_ga
 </IfModule>
 
 # ==============================================================================
-# 4. CORS
+# 4. CORS (FIXED FOR AUTHENTICATION)
 # ==============================================================================
 <IfModule mod_headers.c>
+    # Aceita apenas origens conhecidas (Produção e Localhost)
     SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
+
     <If "%{REQUEST_URI} =~ m#^/wp-json/#">
-        Header always set Access-Control-Allow-Origin "*"
+        # Para API: Retorna a origem exata (necessário para allow-credentials)
+        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+        Header always set Vary "Origin" env=ALLOWED_ORIGIN
+        Header always set Access-Control-Allow-Credentials "true" env=ALLOWED_ORIGIN
     </If>
     <Else>
+        # Para assets estáticos
         Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+        Header always set Vary "Origin" env=ALLOWED_ORIGIN
     </Else>
+
     Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
     Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
-    Header always set Access-Control-Allow-Credentials "true"
+    
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} OPTIONS
     RewriteRule ^(.*)$ $1 [R=204,L]
@@ -183,9 +191,6 @@ Options -Indexes
 # 8. ROTEAMENTO PADRÃO DO WORDPRESS
 # ==============================================================================
 # BEGIN WordPress
-# As diretrizes (linhas) entre "BEGIN WordPress" e "END WordPress" são
-# geradas dinamicamente e só devem ser modificadas através de filtros do WordPress.
-# Quaisquer alterações nas diretivas entre esses marcadores serão sobrescritas.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -195,5 +200,4 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
-
 # END WordPress
