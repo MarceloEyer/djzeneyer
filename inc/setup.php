@@ -2,7 +2,7 @@
 /**
  * Core Setup & Security
  * Theme support, CORS, performance tuning, and Security Headers
- * @version 2.0.2 (Diamond Performance Edition - PHP Headers Disabled)
+ * @version 2.1.0 (CSP Compatible - Async CSS Disabled)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -45,38 +45,8 @@ add_action('after_setup_theme', function () {
 });
 
 /**
- * Security Headers (DESATIVADO PARA EVITAR CONFLITO)
- * 🚨 O controle de segurança agora é feito exclusivamente pelo .htaccess
- * Isso impede que o PHP sobrescreva a permissão do 'eval' ou gere duplicidade.
- */
-/* add_action('send_headers', function() {
-    if (is_admin() || headers_sent()) return;
-    
-    // 1. Limpeza de headers antigos/inseguros
-    header_remove('X-Powered-By');
-    header_remove("Content-Security-Policy");
-    header_remove("X-Content-Security-Policy");
-    header_remove("X-WebKit-CSP");
-    
-    // 2. Headers de Segurança Padrão
-    header('X-Content-Type-Options: nosniff');
-    header('X-Frame-Options: SAMEORIGIN');
-    header('Referrer-Policy: strict-origin-when-cross-origin');
-    
-    // 3. CSP Permissivo "Padrão Ouro" (Igual ao Plugin)
-    // DESATIVADO AQUI - JÁ ESTÁ NO .HTACCESS
-    // $csp = "default-src 'self' https: data:; ...";
-    // header("Content-Security-Policy: " . $csp);
-    
-    // 4. HSTS (Apenas em SSL)
-    if (is_ssl()) {
-        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
-    }
-}, 999);
-*/
-
-/**
  * CORS for REST API
+ * (Mantido como fallback para o .htaccess)
  */
 add_action('rest_api_init', function() {
     add_filter('rest_pre_serve_request', function($served) {
@@ -129,19 +99,22 @@ add_filter('script_loader_tag', function($tag, $handle) {
 }, 10, 2);
 
 /**
- * Performance: Async CSS Loading (Resolve CSS Render Blocking)
- * Carrega o CSS como 'print' e troca para 'all' depois
+ * [DESATIVADO] Performance: Async CSS Loading
+ * MOTIVO: Conflito com CSP Strict (unsafe-inline).
+ * O truque onload="this.media='all'" é bloqueado pela política de segurança.
+ * O carregamento do CSS agora é gerido de forma padrão ou via Preload no vite.php.
  */
+/*
 add_filter('style_loader_tag', function($html, $handle) {
     if (is_admin()) return $html;
 
-    // Aplica apenas ao CSS principal do tema/vite
     if (strpos($handle, 'index') !== false || strpos($handle, 'style') !== false) {
         return str_replace("media='all'", "media='print' onload=\"this.media='all'\"", $html);
     }
     
     return $html;
 }, 10, 2);
+*/
 
 /**
  * Performance: Remove Query Strings (Limpeza de URL)
