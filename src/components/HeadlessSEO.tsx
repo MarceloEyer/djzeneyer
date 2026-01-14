@@ -138,7 +138,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   const htmlLangAttribute = currentLocale === 'pt_BR' ? 'pt-BR' : 'en';
   const nameParts = ARTIST.identity.fullName.split(' ').filter(Boolean);
   const authorFirstName = nameParts[0] || ARTIST.identity.stageName;
-  const authorLastName = nameParts.slice(1).join(' ') || ARTIST.identity.stageName;
+  const authorLastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
   const isProfileType = type === 'profile';
 
   // Schema Generation (Mantido igual)
