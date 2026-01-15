@@ -1,94 +1,96 @@
 // src/hooks/useUserTracks.ts
-// v4.2 - FIX: Added X-WP-Nonce to prevent 401 Unauthorized
+// v5.0 - Headless Facade Aligned (No Nonce / No Credentials)
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/UserContext';
+import { useState, useEffect, useCallback } from 'react';
+import { useUser } from '../contexts/UserContext';
 
-interface Track {
+/* =========================
+ * TYPES
+ * ========================= */
+
+export interface Track {
   id: number;
   title: string;
-  artist: string;
-  image: string;
-  date: string;
-  order_id: number;
+  image?: string;
+  date?: string;
 }
 
-interface UserTracksData {
-  total: number;
-  tracks: Track[];
+interface TracksResponse {
+  success?: boolean;
+  tracks?: Track[];
+  total?: number;
+}
+
+interface UseUserTracksResponse {
+  data: { total: number; tracks: Track[] };
   loading: boolean;
   error: string | null;
+  refresh: () => void;
 }
 
-export const useUserTracks = (): UserTracksData => {
-  const { user, isAuthenticated } = useAuth();
-  const [data, setData] = useState<UserTracksData>({
+/* =========================
+ * HOOK
+ * ========================= */
+
+export const useUserTracks = (): UseUserTracksResponse => {
+  const { user } = useUser();
+
+  const [data, setData] = useState<{ total: number; tracks: Track[] }>({
     total: 0,
     tracks: [],
-    loading: true,
-    error: null,
   });
 
-  useEffect(() => {
-    if (!isAuthenticated || !user?.id) {
-      console.log('[useUserTracks] Usuário não autenticado');
-      setData(prev => ({
-        ...prev,
-        loading: false,
-        error: 'Usuário não autenticado'
-      }));
-      return;
-    }
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-    const fetchTracks = async () => {
-      try {
-        console.log('[useUserTracks] 🎵 Buscando tracks para user_id:', user.id);
-        
-        // 1. Pega o Nonce global (O Crachá de Segurança)
-        const nonce = (window as any).wpData?.nonce || '';
-        
-        const endpoint = `/wp-json/djzeneyer/v1/tracks/${user.id}`;
-        
-        const response = await fetch(endpoint, {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- AQUI ESTÁ A CORREÇÃO DO 401
-          },
-        });
+  const fetchTracks = useCallback(async () => {
+    if (!user?.id) return;
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
+    try {
+      setLoading(true);
+      setError(null);
 
-        const result = await response.json();
-        console.log('[useUserTracks] ✅ Dados recebidos:', result);
+      const wpData = (window as any).wpData || {};
+      const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
 
-        setData({
-          total: result.total || 0,
-          tracks: result.tracks || [], // O PHP retorna [] vazio se não tiver, então aqui não quebra
-          loading: false,
-          error: null,
-        });
+      const endpoint = `${wpRestUrl}/djzeneyer/v1/tracks/${user.id}`;
 
-      } catch (error) {
-        console.error('[useUserTracks] ❌ Erro:', error);
-        setData({
-          total: 0,
-          tracks: [],
-          loading: false,
-          error: error instanceof Error ? error.message : 'Erro desconhecido',
-        });
+      const response = await fetch(endpoint);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
-    };
 
+      const result: TracksResponse = await response.json();
+
+      // Compatível com múltiplos formatos (antigo e novo)
+      const tracks = Array.isArray(result.tracks) ? result.tracks : [];
+      const total =
+        Number(result.total) ||
+        (Array.isArray(result.tracks) ? result.tracks.length : 0);
+
+      setData({ total, tracks });
+
+    } catch (err) {
+      console.error('[useUserTracks]', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      setData({ total: 0, tracks: [] });
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  // Load
+  useEffect(() => {
     fetchTracks();
+  }, [fetchTracks]);
 
-    // Atualizar a cada 60 segundos
+  // Polling padrão do dashboard
+  useEffect(() => {
+    if (!user?.id) return;
     const interval = setInterval(fetchTracks, 60000);
-
     return () => clearInterval(interval);
-  }, [user?.id, isAuthenticated]);
+  }, [user?.id, fetchTracks]);
 
-  return data;
+  return { data, loading, error, refresh: fetchTracks };
 };
