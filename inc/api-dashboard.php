@@ -1,7 +1,8 @@
 <?php
 /**
  * DJ Zen Eyer - Dashboard API (Headless Facade)
- * @version 3.0.0 (Final Architecture)
+ * Provides activity, tracks, events, and streak endpoints using Zen_RA plugin
+ * @version 4.0.0
  */
 
 if (!defined('ABSPATH')) {
@@ -34,11 +35,8 @@ class DJZ_Dashboard_API {
 
         $ns = 'djzeneyer/v1';
 
-        register_rest_route($ns, '/gamipress/(?P<id>\d+)', [
-            'methods' => 'GET',
-            'callback' => [$this, 'gamipress'],
-            'permission_callback' => '__return_true',
-        ]);
+        // Note: /gamipress endpoint is registered in inc/api.php
+        // These endpoints use Zen_RA plugin for activity tracking
 
         register_rest_route($ns, '/activity/(?P<id>\d+)', [
             'methods' => 'GET',
@@ -71,17 +69,6 @@ class DJZ_Dashboard_API {
 
     private function plugin(): ?Zen_RA {
         return class_exists('Zen_RA') ? Zen_RA::get_instance() : null;
-    }
-
-    public function gamipress($request) {
-        $plugin = $this->plugin();
-        if (!$plugin || !method_exists($plugin, 'get_player_stats')) {
-            return rest_ensure_response(['success' => false]);
-        }
-
-        return rest_ensure_response(
-            $plugin->get_player_stats(['id' => (int)$request['id']])
-        );
     }
 
     public function activity($request) {

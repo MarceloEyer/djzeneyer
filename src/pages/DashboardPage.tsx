@@ -67,32 +67,34 @@ const DashboardPage = () => {
   }, [user, navigate]);
 
   const userStats = useMemo(() => ({
-    level: gamipress.data?.level ?? 1,
-    currentXP: gamipress.data?.points ?? 0,
-    nextLevelXP: gamipress.data?.nextLevelPoints ?? 100,
-    progress: gamipress.data?.progressToNextLevel ?? 0,
-    rank: gamipress.data?.rank ?? 'Zen Novice',
+    level: gamipress.level,
+    currentXP: gamipress.points,
+    nextLevelXP: gamipress.nextLevelPoints,
+    progress: gamipress.progressToNextLevel,
+    rank: gamipress.rank,
     totalTracks: tracks.data?.total ?? 0,
     eventsAttended: events.data?.total ?? 0,
     streakDays: streak.data?.streak ?? 0,
     streakFire: streak.data?.fire ?? false,
     tribeFriends: 0 
-  }), [gamipress.data, tracks.data, events.data, streak.data]);
+  }), [gamipress, tracks.data, events.data, streak.data]);
 
   const safeAchievements = useMemo<SafeAchievement[]>(() => {
-    const raw = gamipress.data?.achievements;
+    const raw = gamipress.achievements;
     if (Array.isArray(raw) && raw.length > 0) {
-      return raw.map((ach: any) => ({
-        id: ach?.id,
-        title: ach?.title || 'Achievement',
-        description: ach?.description || 'Achievement unlocked!',
-        image: ach?.image || '',
-        emoji: ach?.image ? '' : '🏆',
-        earned: true
-      }));
+      return raw
+        .filter((ach: any) => ach?.earned)
+        .map((ach: any) => ({
+          id: ach?.id,
+          title: ach?.title || 'Achievement',
+          description: ach?.description || 'Achievement unlocked!',
+          image: ach?.image || '',
+          emoji: ach?.image ? '' : '🏆',
+          earned: true
+        }));
     }
     return [];
-  }, [gamipress.data?.achievements]);
+  }, [gamipress.achievements]);
 
   const unlockedCount = safeAchievements.length;
 
