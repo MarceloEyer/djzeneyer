@@ -34,6 +34,7 @@ class Zen_BIT {
     private function load_dependencies() {
         require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-api.php';
         require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-shortcode.php';
+        require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-sitemap.php'; // ✅ NEW (sitemap-events.xml)
         require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
     }
 
@@ -42,11 +43,18 @@ class Zen_BIT {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
 
         add_action('rest_api_init', array($this, 'register_rest_routes'));
+
         register_activation_hook(__FILE__, array($this, 'activate'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
         // ✅ Premium SEO: evento como “página” SSR via query var
         add_filter('query_vars', array($this, 'register_query_vars'));
         add_action('template_redirect', array($this, 'maybe_render_single_event_page'));
+
+        // ✅ Premium SEO: sitemap de eventos
+        if (class_exists('Zen_BIT_Sitemap')) {
+            new Zen_BIT_Sitemap();
+        }
     }
 
     /**
@@ -62,7 +70,7 @@ class Zen_BIT {
             wp_enqueue_style(
                 'zen-bit-public',
                 ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
-                [],
+                array(),
                 ZEN_BIT_VERSION
             );
         }
@@ -94,7 +102,16 @@ class Zen_BIT {
     }
 
     public function clear_cache_rest() {
-        Zen_BIT_API::clear_cache();
+        // Limpa cache do endpoint
+        if (class_exists('Zen_BIT_API')) {
+            Zen_BIT_API::clear_cache();
+        }
+
+        // Limpa cache do sitemap (se existir)
+        if (class_exists('Zen_BIT_Sitemap')) {
+            Zen_BIT_Sitemap::clear_cache();
+        }
+
         return rest_ensure_response(array(
             'success' => true,
             'message' => 'Cache cleared successfully'
@@ -111,6 +128,13 @@ class Zen_BIT {
         if (!get_option('zen_bit_cache_time')) {
             add_option('zen_bit_cache_time', '3600');
         }
+
+        // ✅ Importantíssimo: garante que /sitemap-events.xml funcione imediatamente
+        flush_rewrite_rules();
+    }
+
+    public function deactivate() {
+        flush_rewrite_rules();
     }
 
     // =========================================================================
@@ -126,6 +150,7 @@ class Zen_BIT {
         if (empty($url) || !is_string($url)) return '';
         $url = trim($url);
 
+        // Permite caminho relativo
         if (strpos($url, '/') === 0) return $url;
 
         $parsed = wp_parse_url($url);
@@ -365,18 +390,16 @@ class Zen_BIT {
         // Só renderiza dentro da “área events” (evita “página fantasma” em qualquer URL)
         $req_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
         if (strpos($req_uri, '/events') === false) {
-            // se quiser permitir em qualquer lugar, remova este bloco
             return;
         }
 
         // Puxa eventos e acha pelo ID
-        $events = class_exists('Zen_BIT_API') ? Zen_BIT_API::get_events(100) : array();
+        $events = class_exists('Zen_BIT_API') ? Zen_BIT_API::get_events(200) : array();
         $event = $this->find_event_by_id($event_id, $events);
 
         if (!$event) {
             status_header(404);
             nocache_headers();
-            // saída SSR mínima (evita indexar “vazio”)
             echo '<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"></head><body>Event not found.</body></html>';
             exit;
         }
@@ -386,18 +409,15 @@ class Zen_BIT {
         $img   = $this->build_event_image($event);
         $canonical = $this->get_internal_event_url_by_id($event_id);
 
-        // Ajusta title do WP (tema pega via wp_title geralmente)
         add_filter('pre_get_document_title', function() use ($title) {
             return $title . ' | DJ Zen Eyer';
         }, 999);
 
-        // Inject meta tags no wp_head
         add_action('wp_head', function() use ($title, $desc, $canonical, $img, $event, $event_id) {
             $this->output_meta_tags($title, $desc, $canonical, $img);
             echo $this->render_json_ld_single($event, $event_id);
         }, 1);
 
-        // Render SSR usando o tema (wp_head/wp_footer)
         status_header(200);
         nocache_headers();
 
@@ -416,6 +436,10 @@ class Zen_BIT {
             }
         }
 
+        $city = $venue['city'] ?? '';
+        $country = $venue['country'] ?? '';
+        $place = trim($city . (empty($country) ? '' : ', ' . $country));
+
         ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -424,9 +448,8 @@ class Zen_BIT {
   <?php wp_head(); ?>
 </head>
 <body <?php body_class('zen-bit-single-event'); ?>>
-<?php
-if (function_exists('wp_body_open')) wp_body_open();
-?>
+<?php if (function_exists('wp_body_open')) wp_body_open(); ?>
+
 <main class="zen-bit-single-wrap" style="padding:96px 16px 64px;max-width:1000px;margin:0 auto;">
     <header style="margin-bottom:24px;">
         <p style="opacity:.7;margin:0 0 8px;">
@@ -437,12 +460,7 @@ if (function_exists('wp_body_open')) wp_body_open();
             <?php if ($date_human): ?>
                 <strong><?php echo esc_html($date_human); ?></strong><?php if ($time_human) echo ' • ' . esc_html($time_human); ?>
             <?php endif; ?>
-            <?php
-            $city = $venue['city'] ?? '';
-            $country = $venue['country'] ?? '';
-            $place = trim($city . (empty($country) ? '' : ', ' . $country));
-            if ($place) echo ' • ' . esc_html($place);
-            ?>
+            <?php if (!empty($place)) echo ' • ' . esc_html($place); ?>
         </p>
     </header>
 
@@ -467,7 +485,7 @@ if (function_exists('wp_body_open')) wp_body_open();
 
             <div style="margin-bottom:12px;opacity:.9;">
                 <div style="font-weight:700;margin-bottom:4px;">Location</div>
-                <div><?php echo esc_html($place ?? ''); ?></div>
+                <div><?php echo esc_html($place); ?></div>
             </div>
 
             <?php if (!empty($tickets)): ?>
