@@ -1,5 +1,5 @@
 // src/hooks/useGamiPress.ts
-// v4.2 - FIX: Added X-WP-Nonce & Credentials to prevent 401 Unauthorized
+// v5.0 - Headless API Facade Aligned (No Auth / No Nonce)
 
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
@@ -23,8 +23,6 @@ export interface PlayerStats {
 
 export interface GamiPressData {
   stats: PlayerStats;
-  points?: number; 
-  level?: number;
 }
 
 interface GamiPressHookResponse {
@@ -40,84 +38,62 @@ interface GamiPressHookResponse {
 
 export const useGamiPress = (): GamiPressHookResponse => {
   const { user } = useUser();
-  
+
   const [data, setData] = useState<GamiPressData | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchGamiPressData = useCallback(async () => {
-    // 1. Validação de Segurança
-    if (!user?.id) {
-      setLoading(false);
-      return;
-    }
+    if (!user?.id) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      // 2. URL e Auth
       const wpData = (window as any).wpData || {};
       const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
-      const nonce = wpData.nonce || ''; // <--- Pega o Nonce
-      
-      const endpoint = `${wpRestUrl}/zen-ra/v1/gamipress/${user.id}`;
-      
-      // Corrigindo URL duplicada se houver (ex: wp-json//zen-ra)
-      const cleanEndpoint = endpoint.replace('wp-json//', 'wp-json/');
 
-      const response = await fetch(cleanEndpoint, {
-        credentials: 'include', // Necessário para cookies de sessão
-        headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- AQUI ESTÁ A CORREÇÃO DO 401
-        }
-      });
+      const endpoint = `${wpRestUrl}/djzeneyer/v1/gamipress/${user.id}`;
+
+      const response = await fetch(endpoint);
 
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+        throw new Error(`HTTP ${response.status}`);
       }
 
       const result = await response.json();
 
-      if (!result.success) {
-        // Se a API retornar sucesso false mas HTTP 200 (comum em WP)
-        console.warn('[Zen-RA] API retornou false:', result);
+      if (!result?.success) {
+        throw new Error('API returned success=false');
       }
 
-      // 3. Normalização dos Dados
-      const rawStats = result.stats || {};
-      
-      const safeData: GamiPressData = {
-        stats: {
-          xp: Number(rawStats.xp) || 0,
-          level: Number(rawStats.level) || 1,
-          rank: {
-            current: rawStats.rank?.current || 'Novice',
-            icon: rawStats.rank?.icon || '',
-            next_milestone: Number(rawStats.rank?.next_milestone) || 100,
-            progress_percent: Number(rawStats.rank?.progress_percent) || 0,
-          }
-        },
-        points: Number(rawStats.xp) || 0,
-        level: Number(rawStats.level) || 1,
-      };
+      const raw = result.stats || {};
 
-      setData(safeData);
+      setData({
+        stats: {
+          xp: Number(raw.xp) || 0,
+          level: Number(raw.level) || 1,
+          rank: {
+            current: raw.rank?.current || 'Zen Novice',
+            icon: raw.rank?.icon || '',
+            next_milestone: Number(raw.rank?.next_milestone) || 100,
+            progress_percent: Number(raw.rank?.progress_percent) || 0,
+          }
+        }
+      });
+
     } catch (err) {
-      console.error('[useGamiPress] Erro:', err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      console.error('[useGamiPress]', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
   }, [user?.id]);
 
-  // Carrega ao montar
   useEffect(() => {
     fetchGamiPressData();
   }, [fetchGamiPressData]);
 
-  // Polling: Atualiza a cada 60s
   useEffect(() => {
     if (!user?.id) return;
     const interval = setInterval(fetchGamiPressData, 60000);
