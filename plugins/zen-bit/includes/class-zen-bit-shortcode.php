@@ -3,11 +3,14 @@
  * Zen BIT - Shortcode Renderer (Premium SEO)
  * File: wp-content/plugins/zen-bit/includes/class-zen-bit-shortcode.php
  *
- * - Cards SSR com microdata
- * - Link interno de cada evento: /events/?bit_event=ID
- * - JSON-LD @graph para lista (somente eventos com startDate real)
+ * - Cards SSR com microdata (MusicEvent)
+ * - Link interno por evento: /events/?bit_event=ID
+ * - JSON-LD @graph opcional (evita duplicação com [zen_bit_events_schema])
  *
- * @version 2.1.0
+ * Shortcode:
+ * [zen_bit_events limit="15" jsonld="1"]
+ *
+ * @version 2.2.0
  */
 
 if (!defined('ABSPATH')) exit;
@@ -18,10 +21,15 @@ class Zen_BIT_Shortcode {
         add_shortcode('zen_bit_events', [$this, 'render_shortcode']);
     }
 
+    // -------------------------
+    // Sanitizers
+    // -------------------------
+
     private function sanitize_url($url) {
         if (empty($url) || !is_string($url)) return '';
         $url = trim($url);
 
+        // allow relative
         if (strpos($url, '/') === 0) return $url;
 
         $parsed = wp_parse_url($url);
@@ -32,6 +40,18 @@ class Zen_BIT_Shortcode {
 
         return esc_url_raw($url);
     }
+
+    private function sanitize_text($value, $max = 300) {
+        if (!is_string($value)) return '';
+        $value = wp_strip_all_tags($value);
+        $value = trim($value);
+        if ($max > 0 && strlen($value) > $max) $value = mb_substr($value, 0, $max);
+        return $value;
+    }
+
+    // -------------------------
+    // Internal Event URL
+    // -------------------------
 
     private function compute_internal_event_id($event) {
         if (!is_array($event)) return '';
@@ -46,13 +66,21 @@ class Zen_BIT_Shortcode {
         return add_query_arg(['bit_event' => $id], home_url('/events/'));
     }
 
+    // -------------------------
+    // Shortcode
+    // -------------------------
+
     public function render_shortcode($atts) {
         $atts = shortcode_atts([
-            'limit' => 15,
+            'limit'  => 15,
+            'jsonld' => 1,  // 1 = injeta JSON-LD do @graph no final; 0 = não injeta
         ], $atts, 'zen_bit_events');
 
         $limit = absint($atts['limit']);
         if ($limit <= 0) $limit = 15;
+        if ($limit > 100) $limit = 100;
+
+        $jsonld = (string)$atts['jsonld'] !== '0';
 
         if (!class_exists('Zen_BIT_API')) {
             return '<div class="zen-bit-error">Zen BIT API not available.</div>';
@@ -72,11 +100,21 @@ class Zen_BIT_Shortcode {
                     <?php echo $this->render_event_card($event); ?>
                 <?php endforeach; ?>
             </div>
-            <?php echo $this->render_json_ld_list($events); ?>
+
+            <?php
+            // JSON-LD opcional: use jsonld="0" se você já injeta via [zen_bit_events_schema]
+            if ($jsonld) {
+                echo $this->render_json_ld_list($events);
+            }
+            ?>
         </section>
         <?php
         return ob_get_clean();
     }
+
+    // -------------------------
+    // Card Renderer (Microdata)
+    // -------------------------
 
     private function render_event_card($event) {
         if (!is_array($event)) return '';
@@ -84,21 +122,22 @@ class Zen_BIT_Shortcode {
         $venue = is_array($event['venue'] ?? null) ? $event['venue'] : [];
 
         $event_title = !empty($event['title']) && is_string($event['title'])
-            ? $event['title']
-            : sprintf('DJ Zen Eyer at %s', $venue['name'] ?? 'Event');
+            ? $this->sanitize_text($event['title'], 180)
+            : $this->sanitize_text(sprintf('DJ Zen Eyer at %s', $venue['name'] ?? 'Event'), 180);
 
         $event_description = !empty($event['description']) && is_string($event['description'])
-            ? $event['description']
-            : sprintf('DJ Zen Eyer performing live at %s in %s.',
+            ? $this->sanitize_text($event['description'], 300)
+            : $this->sanitize_text(sprintf(
+                'DJ Zen Eyer performing live at %s in %s.',
                 $venue['name'] ?? 'venue',
                 $venue['city'] ?? 'city'
-            );
+            ), 300);
 
         $event_image = !empty($event['image']) && is_string($event['image'])
             ? $this->sanitize_url($event['image'])
-            : 'https://djzeneyer.com/images/event-default.jpg';
+            : home_url('/images/event-default.jpg');
 
-        $external_url = !empty($event['url']) && is_string($event['url'])
+        $external_url = (!empty($event['url']) && is_string($event['url']))
             ? $this->sanitize_url($event['url'])
             : '';
 
@@ -111,7 +150,7 @@ class Zen_BIT_Shortcode {
 
         $internal_url = $this->get_internal_event_url($event);
 
-        $datetime = !empty($event['datetime']) && is_string($event['datetime']) ? $event['datetime'] : '';
+        $datetime = (!empty($event['datetime']) && is_string($event['datetime'])) ? $event['datetime'] : '';
         $datetime_attr = '';
         $day = '--';
         $mon = '---';
@@ -127,6 +166,11 @@ class Zen_BIT_Shortcode {
             }
         }
 
+        $venue_name = !empty($venue['name']) ? $this->sanitize_text((string)$venue['name'], 120) : '';
+        $city = !empty($venue['city']) ? $this->sanitize_text((string)$venue['city'], 80) : '';
+        $country = !empty($venue['country']) ? $this->sanitize_text((string)$venue['country'], 80) : '';
+        $region = !empty($venue['region']) ? $this->sanitize_text((string)$venue['region'], 80) : '';
+
         ob_start();
         ?>
         <article class="zen-bit-event-card" itemscope itemtype="https://schema.org/MusicEvent">
@@ -134,7 +178,7 @@ class Zen_BIT_Shortcode {
             <meta itemprop="eventAttendanceMode" content="https://schema.org/OfflineEventAttendanceMode">
 
             <meta itemprop="name" content="<?php echo esc_attr($event_title); ?>">
-            <meta itemprop="description" content="<?php echo esc_attr(wp_strip_all_tags($event_description)); ?>">
+            <meta itemprop="description" content="<?php echo esc_attr($event_description); ?>">
             <meta itemprop="image" content="<?php echo esc_url($event_image); ?>">
             <meta itemprop="url" content="<?php echo esc_url($internal_url); ?>">
 
@@ -161,22 +205,20 @@ class Zen_BIT_Shortcode {
                     <h3 class="zen-bit-event-title"><?php echo esc_html($event_title); ?></h3>
 
                     <div class="zen-bit-event-venue" itemprop="location" itemscope itemtype="https://schema.org/Place">
-                        <meta itemprop="name" content="<?php echo esc_attr($venue['name'] ?? 'Venue'); ?>">
+                        <meta itemprop="name" content="<?php echo esc_attr($venue_name ?: 'Venue'); ?>">
 
                         <span class="zen-bit-venue-icon">📍</span>
-                        <span class="zen-bit-venue-name"><?php echo esc_html($venue['name'] ?? ''); ?></span>
+                        <span class="zen-bit-venue-name"><?php echo esc_html($venue_name); ?></span>
 
                         <div itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                            <meta itemprop="addressLocality" content="<?php echo esc_attr($venue['city'] ?? ''); ?>">
-                            <meta itemprop="addressRegion" content="<?php echo esc_attr($venue['region'] ?? ''); ?>">
-                            <meta itemprop="addressCountry" content="<?php echo esc_attr($venue['country'] ?? ''); ?>">
+                            <meta itemprop="addressLocality" content="<?php echo esc_attr($city); ?>">
+                            <meta itemprop="addressRegion" content="<?php echo esc_attr($region); ?>">
+                            <meta itemprop="addressCountry" content="<?php echo esc_attr($country); ?>">
 
                             <span class="zen-bit-venue-location">
                                 <?php
-                                $city = $venue['city'] ?? '';
-                                $country = $venue['country'] ?? '';
                                 echo esc_html($city);
-                                if (!empty($city) && !empty($country)) echo esc_html(', ');
+                                if (!empty($city) && !empty($country)) echo ', ';
                                 echo esc_html($country);
                                 ?>
                             </span>
@@ -195,6 +237,10 @@ class Zen_BIT_Shortcode {
                         <meta itemprop="genre" content="Brazilian Zouk">
                         <link itemprop="url" href="<?php echo esc_url(home_url('/')); ?>">
                     </div>
+
+                    <div itemprop="organizer" itemscope itemtype="https://schema.org/Organization">
+                        <meta itemprop="name" content="<?php echo esc_attr($venue_name ?: 'Event Organizer'); ?>">
+                    </div>
                 </div>
             </a>
 
@@ -202,6 +248,8 @@ class Zen_BIT_Shortcode {
                 <div class="zen-bit-event-tickets" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                     <meta itemprop="availability" content="https://schema.org/InStock">
                     <meta itemprop="url" content="<?php echo esc_url($ticket_url); ?>">
+                    <meta itemprop="price" content="0">
+                    <meta itemprop="priceCurrency" content="BRL">
 
                     <a href="<?php echo esc_url($ticket_url); ?>"
                        class="zen-bit-ticket-button"
@@ -216,13 +264,49 @@ class Zen_BIT_Shortcode {
         return ob_get_clean();
     }
 
+    // -------------------------
+    // JSON-LD List (@graph)
+    // -------------------------
+
     private function render_json_ld_list($events) {
         $graph = [];
 
-        foreach ((array) $events as $event) {
+        // Entities base (ajuda bots a conectar tudo)
+        $site = home_url('/');
+        $events_page = home_url('/events/');
+
+        $graph[] = [
+            '@type' => 'WebSite',
+            '@id'   => $site . '#website',
+            'url'   => $site,
+            'name'  => 'DJ Zen Eyer',
+        ];
+
+        $graph[] = [
+            '@type' => 'MusicGroup',
+            '@id'   => $site . '#djzeneyer',
+            'name'  => 'DJ Zen Eyer',
+            'genre' => 'Brazilian Zouk',
+            'url'   => $site,
+            'sameAs'=> [
+                'https://www.instagram.com/djzeneyer/',
+                'https://soundcloud.com/djzeneyer',
+                'https://www.bandsintown.com/a/15552355',
+            ],
+        ];
+
+        $graph[] = [
+            '@type' => 'CollectionPage',
+            '@id'   => $events_page . '#webpage',
+            'url'   => $events_page,
+            'name'  => 'World Tour & Events | DJ Zen Eyer',
+            'isPartOf' => ['@id' => $site . '#website'],
+        ];
+
+        foreach ((array)$events as $event) {
             if (!is_array($event)) continue;
 
-            $datetime = !empty($event['datetime']) && is_string($event['datetime']) ? $event['datetime'] : '';
+            $datetime = (!empty($event['datetime']) && is_string($event['datetime'])) ? $event['datetime'] : '';
             if (!$datetime) continue;
 
             $ts = strtotime($datetime);
@@ -231,21 +315,22 @@ class Zen_BIT_Shortcode {
             $venue = is_array($event['venue'] ?? null) ? $event['venue'] : [];
 
             $title = !empty($event['title']) && is_string($event['title'])
-                ? $event['title']
-                : sprintf('DJ Zen Eyer at %s', $venue['name'] ?? 'Event');
+                ? $this->sanitize_text($event['title'], 180)
+                : $this->sanitize_text(sprintf('DJ Zen Eyer at %s', $venue['name'] ?? 'Event'), 180);
 
             $desc = !empty($event['description']) && is_string($event['description'])
-                ? $event['description']
-                : sprintf('DJ Zen Eyer performing live at %s in %s.',
+                ? $this->sanitize_text($event['description'], 300)
+                : $this->sanitize_text(sprintf(
+                    'DJ Zen Eyer performing live at %s in %s.',
                     $venue['name'] ?? 'venue',
                     $venue['city'] ?? 'city'
-                );
+                ), 300);
 
             $img = !empty($event['image']) && is_string($event['image'])
                 ? $this->sanitize_url($event['image'])
-                : 'https://djzeneyer.com/images/event-default.jpg';
+                : home_url('/images/event-default.jpg');
 
-            $external = !empty($event['url']) && is_string($event['url']) ? $this->sanitize_url($event['url']) : '';
+            $external = (!empty($event['url']) && is_string($event['url'])) ? $this->sanitize_url($event['url']) : '';
             $internal = $this->get_internal_event_url($event);
 
             $tickets = '';
@@ -254,6 +339,11 @@ class Zen_BIT_Shortcode {
             } elseif ($external) {
                 $tickets = $external;
             }
+
+            $venue_name = !empty($venue['name']) ? $this->sanitize_text((string)$venue['name'], 120) : 'Venue';
+            $city = !empty($venue['city']) ? $this->sanitize_text((string)$venue['city'], 80) : '';
+            $region = !empty($venue['region']) ? $this->sanitize_text((string)$venue['region'], 80) : '';
+            $country = !empty($venue['country']) ? $this->sanitize_text((string)$venue['country'], 80) : '';
 
             $schema = [
                 '@type' => 'MusicEvent',
@@ -267,39 +357,40 @@ class Zen_BIT_Shortcode {
                 'image' => $img,
                 'location' => [
                     '@type' => 'Place',
-                    'name' => $venue['name'] ?? 'Venue',
+                    'name' => $venue_name,
                     'address' => [
                         '@type' => 'PostalAddress',
-                        'addressLocality' => $venue['city'] ?? '',
-                        'addressRegion'   => $venue['region'] ?? '',
-                        'addressCountry'  => $venue['country'] ?? '',
+                        'addressLocality' => $city,
+                        'addressRegion'   => $region,
+                        'addressCountry'  => $country,
                     ],
                 ],
                 'performer' => [
-                    '@type' => 'MusicGroup',
-                    'name' => 'DJ Zen Eyer',
-                    'genre' => 'Brazilian Zouk',
-                    'url' => home_url('/'),
+                    '@id' => $site . '#djzeneyer',
+                ],
+                'organizer' => [
+                    '@type' => 'Organization',
+                    'name' => $venue_name,
                 ],
             ];
 
             if (!empty($external)) $schema['sameAs'] = $external;
+
             if (!empty($tickets)) {
                 $schema['offers'] = [
                     '@type' => 'Offer',
                     'url' => $tickets,
                     'availability' => 'https://schema.org/InStock',
+                    'price' => '0',
+                    'priceCurrency' => 'BRL',
                 ];
             }
-
-            $schema = array_filter($schema, function($v) {
-                return !($v === '' || $v === null || $v === []);
-            });
 
             $graph[] = $schema;
         }
 
-        if (empty($graph)) return '';
+        // Se nenhum evento válido (sem startDate), não injeta JSON-LD
+        if (count($graph) <= 3) return '';
 
         $json_ld = [
             '@context' => 'https://schema.org',
