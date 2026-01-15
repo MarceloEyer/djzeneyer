@@ -129,6 +129,9 @@ class DJZ_Dashboard_API {
 
         $tiers_payload = djz_get_gamipress_rank_tiers();
         $tiers = $tiers_payload['tiers'];
+        		if (empty($tiers)) {
+                    			return new WP_REST_Response(['success' => false, 'message' => 'No tiers available'], 400);
+                    		}
         $tiers_source = $tiers_payload['source'];
         $level = 1;
         $rank_name = $tiers[0]['name'];
