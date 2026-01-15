@@ -79,7 +79,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
 
     return {
       // SEO: Imagem é recomendada/obrigatória para Rich Cards
-      image: event.image || 'https://djzeneyer.com/images/event-default.jpg',
+      image: event.image || '/images/event-default.svg',
       
       // SEO: Descrição é recomendada. Geramos uma automática se faltar.
       description: event.description || `DJ Zen Eyer performing live Brazilian Zouk set at ${venueName} in ${city}, ${country}.`,

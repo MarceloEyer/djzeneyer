@@ -236,10 +236,10 @@ const HomePage: React.FC = () => {
         <div className="absolute inset-0 z-0 bg-black">
           <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
             <picture>
-              <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.webp" />
-              <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
+              <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.svg" />
+              <source media="(min-width: 769px)" srcSet="/images/hero-background.svg" />
               <img
-                src="/images/hero-background.webp"
+                src="/images/hero-background.svg"
                 alt="DJ Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
                 className="w-full h-full object-cover object-center opacity-40"
                 width="1920"

@@ -396,7 +396,7 @@ const PressKitPage: React.FC = () => {
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <motion.div key={i} className="aspect-square rounded-xl overflow-hidden border-2 border-white/10 hover:border-primary/50 transition-all cursor-pointer" whileHover={{ scale: 1.05 }}>
                     <img
-                      src={`https://djzeneyer.com/images/press-photo-${i}.jpg`}
+                      src={`/images/press-photo-${i}.svg`}
                       alt={`Zen Eyer Press Photo ${i}`}
                       className="w-full h-full object-cover"
                       loading="lazy"
