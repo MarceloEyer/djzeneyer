@@ -220,6 +220,7 @@ export const ARTIST_SCHEMA_BASE = {
   description: `${ARTIST.titles.primary}. Member of ${ARTIST.mensa.organization}. Known for the "${ARTIST.philosophy.style}" musical style.`,
   genre: ['Brazilian Zouk', 'Zouk'],
   knowsAbout: ['Brazilian Zouk', 'DJing', 'Music Production', 'Remixing', 'Festival Performance'],
+  subject: 'Brazilian Zouk DJ & Music Producer',
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.jpg`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],
