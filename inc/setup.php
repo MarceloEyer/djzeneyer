@@ -114,28 +114,6 @@ function djz_get_gamipress_rank_tiers(): array {
 }
 
 /**
- * GamiPress helper: resolve points type slug with fallback.
- */
-function djz_get_gamipress_points_type_slug(): string {
-    $default = 'zen-points';
-    if (!function_exists('gamipress_get_points_types')) {
-        return $default;
-    }
-
-    $points_types = gamipress_get_points_types();
-    if (empty($points_types)) {
-        return $default;
-    }
-
-    if (isset($points_types[$default])) {
-        return $default;
-    }
-
-    $first = array_key_first($points_types);
-    return $first ?: $default;
-}
-
-/**
  * Allowed origins for CORS
  */
 function djz_allowed_origins(): array {
@@ -148,6 +126,14 @@ function djz_allowed_origins(): array {
 }
 
 /**
+ * Load Text Domain for Translations
+ * Must be loaded early to avoid WooCommerce warnings
+ */
+add_action('init', function() {
+    load_theme_textdomain('djzeneyer', get_template_directory() . '/languages');
+}, 0);
+
+/**
  * Theme Support
  */
 add_action('after_setup_theme', function () {
@@ -155,13 +141,13 @@ add_action('after_setup_theme', function () {
     add_theme_support('post-thumbnails');
     add_theme_support('woocommerce');
     add_theme_support('html5', [
-        'search-form', 
-        'comment-form', 
-        'comment-list', 
-        'gallery', 
+        'search-form',
+        'comment-form',
+        'comment-list',
+        'gallery',
         'caption'
     ]);
-    
+
     register_nav_menus([
         'primary_menu' => __('Menu Principal', 'djzeneyer')
     ]);
