@@ -114,6 +114,28 @@ function djz_get_gamipress_rank_tiers(): array {
 }
 
 /**
+ * GamiPress helper: resolve points type slug with fallback.
+ */
+function djz_get_gamipress_points_type_slug(): string {
+    $default = 'zen-points';
+    if (!function_exists('gamipress_get_points_types')) {
+        return $default;
+    }
+
+    $points_types = gamipress_get_points_types();
+    if (empty($points_types)) {
+        return $default;
+    }
+
+    if (isset($points_types[$default])) {
+        return $default;
+    }
+
+    $first = array_key_first($points_types);
+    return $first ?: $default;
+}
+
+/**
  * Allowed origins for CORS
  */
 function djz_allowed_origins(): array {
