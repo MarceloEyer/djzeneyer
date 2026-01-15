@@ -1,12 +1,33 @@
 <?php
 /**
  * DJ Zen Eyer - Dashboard API Endpoints (Universal Backend)
- * @version 2.1.1 (Parse Error Fixed + Safe Translations)
+ * @version 2.2.0 (Headless REST Auth Fix)
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
+
+/**
+ * --------------------------------------------------
+ * HEADLESS REST AUTH FIX
+ * Allow public GET requests for dashboard data
+ * --------------------------------------------------
+ */
+add_filter('rest_authentication_errors', function ($result) {
+
+    // Se já existe erro, respeita
+    if (!empty($result)) {
+        return $result;
+    }
+
+    // Libera APENAS GET (leitura)
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+        return null;
+    }
+
+    return $result;
+});
 
 class DJZ_Dashboard_API {
 
@@ -15,50 +36,44 @@ class DJZ_Dashboard_API {
     }
 
     public function register_routes() {
+
         $ns_theme = 'djzeneyer/v1';
         $ns_zenra = 'zen-ra/v1';
 
-        // --- ROTAS DO TEMA ---
-
-        // Tracks
         register_rest_route($ns_theme, '/tracks/(?P<id>\d+)', [
-            'methods' => 'GET',
+            'methods'  => 'GET',
             'callback' => [$this, 'get_user_tracks'],
             'permission_callback' => '__return_true',
         ]);
 
-        // Streak
         register_rest_route($ns_theme, '/streak/(?P<id>\d+)', [
-            'methods' => 'GET',
+            'methods'  => 'GET',
             'callback' => [$this, 'get_user_streak'],
             'permission_callback' => '__return_true',
         ]);
 
-        // Eventos
         register_rest_route($ns_theme, '/events/(?P<id>\d+)', [
-            'methods' => 'GET',
+            'methods'  => 'GET',
             'callback' => [$this, 'get_user_events'],
             'permission_callback' => '__return_true',
         ]);
 
-        // --- ROTAS DE COMPATIBILIDADE (zen-ra) ---
-
-        // Activity
         register_rest_route($ns_zenra, '/activity/(?P<id>\d+)', [
-            'methods' => 'GET',
+            'methods'  => 'GET',
             'callback' => [$this, 'get_zen_activity'],
             'permission_callback' => '__return_true',
         ]);
 
-        // Gamipress
         register_rest_route($ns_zenra, '/gamipress/(?P<id>\d+)', [
-            'methods' => 'GET',
+            'methods'  => 'GET',
             'callback' => [$this, 'get_zen_gamipress'],
             'permission_callback' => '__return_true',
         ]);
     }
 
-    // --- CALLBACKS ---
+    // --------------------------------------------------
+    // CALLBACKS
+    // --------------------------------------------------
 
     public function get_user_tracks($request) {
         return new WP_REST_Response([
@@ -69,20 +84,20 @@ class DJZ_Dashboard_API {
 
     public function get_user_streak($request) {
         $user_id = (int) $request['id'];
-        $points = get_user_meta($user_id, '_gamipress_points', true);
+        $points  = (int) get_user_meta($user_id, '_gamipress_points', true);
 
         return new WP_REST_Response([
             'current_streak' => 1,
-            'best_streak' => 1,
-            'last_login' => date('Y-m-d H:i:s'),
-            'points' => (int) $points,
+            'best_streak'    => 1,
+            'last_login'     => date('Y-m-d H:i:s'),
+            'points'         => $points,
         ], 200);
     }
 
     public function get_user_events($request) {
         return new WP_REST_Response([
             'upcoming' => [],
-            'past' => [],
+            'past'     => [],
         ], 200);
     }
 
@@ -91,39 +106,28 @@ class DJZ_Dashboard_API {
             'success' => true,
             'activities' => [
                 [
-                    'id' => 'welcome-1',
-                    'type' => 'achievement',
-                    'title' => __('Bem-vindo à Tribo!', 'djzeneyer'),
+                    'id'        => 'welcome-1',
+                    'type'      => 'achievement',
+                    'title'     => __('Bem-vindo à Tribo!', 'djzeneyer'),
                     'description' => __('Conexão com o servidor estabelecida.', 'djzeneyer'),
-                    'xp' => 100,
-                    'date' => date('Y-m-d'),
+                    'xp'        => 100,
+                    'date'      => date('Y-m-d'),
                     'timestamp' => time(),
-                    'meta' => [],
+                    'meta'      => [],
                 ],
             ],
         ], 200);
     }
 
     public function get_zen_gamipress($request) {
+
         $user_id = (int) $request['id'];
 
-        $default_response = [
-            'success' => false,
-            'stats' => [
-                'xp' => 0,
-                'level' => 1,
-                'rank' => [
-                    'current' => __('Zen Novice', 'djzeneyer'),
-                    'icon' => '',
-                    'next_milestone' => 100,
-                    'progress_percent' => 0,
-                ],
-            ],
-            'message' => __('GamiPress not active', 'djzeneyer'),
-        ];
-
         if (!function_exists('gamipress_get_user_points')) {
-            return new WP_REST_Response($default_response, 200);
+            return new WP_REST_Response([
+                'success' => false,
+                'message' => __('GamiPress not active', 'djzeneyer'),
+            ], 200);
         }
 
         $points_type = function_exists('djz_get_gamipress_points_type_slug')
@@ -132,21 +136,19 @@ class DJZ_Dashboard_API {
 
         $points = (int) gamipress_get_user_points($user_id, $points_type);
 
-        if (!function_exists('djz_get_gamipress_rank_tiers')) {
-            return new WP_REST_Response($default_response, 200);
-        }
+        $tiers_payload = function_exists('djz_get_gamipress_rank_tiers')
+            ? djz_get_gamipress_rank_tiers()
+            : ['tiers' => [], 'source' => 'fallback'];
 
-        $tiers_payload = djz_get_gamipress_rank_tiers();
-        $tiers = $tiers_payload['tiers'] ?? [];
+        $tiers = $tiers_payload['tiers'];
 
         if (empty($tiers)) {
             return new WP_REST_Response([
                 'success' => false,
                 'message' => __('No tiers available', 'djzeneyer'),
-            ], 400);
+            ], 200);
         }
 
-        $tiers_source = $tiers_payload['source'] ?? '';
         $level = 1;
         $rank_name = $tiers[0]['name'];
         $next = $tiers[0]['next'];
@@ -160,25 +162,6 @@ class DJZ_Dashboard_API {
             $next = $tier['next'];
         }
 
-        $rank_icon = '';
-
-        if (
-            $tiers_source === 'gamipress' &&
-            function_exists('gamipress_get_rank_types') &&
-            function_exists('gamipress_get_user_rank')
-        ) {
-            $rank_types = gamipress_get_rank_types();
-            $rank_slug = !empty($rank_types) ? array_key_first($rank_types) : null;
-
-            if ($rank_slug) {
-                $rank_post = gamipress_get_user_rank($user_id, $rank_slug);
-                if ($rank_post) {
-                    $rank_name = $rank_post->post_title;
-                    $rank_icon = get_the_post_thumbnail_url($rank_post->ID, 'thumbnail') ?: '';
-                }
-            }
-        }
-
         $current_min = $tiers[$level - 1]['min'];
         $progress = ($next > $current_min)
             ? min(100, round((($points - $current_min) / ($next - $current_min)) * 100))
@@ -187,12 +170,12 @@ class DJZ_Dashboard_API {
         return new WP_REST_Response([
             'success' => true,
             'stats' => [
-                'xp' => $points,
+                'xp'    => $points,
                 'level' => $level,
-                'rank' => [
+                'rank'  => [
                     'current' => $rank_name,
-                    'icon' => $rank_icon,
-                    'next_milestone' => $next,
+                    'icon'    => '',
+                    'next_milestone'   => $next,
                     'progress_percent' => $progress,
                 ],
             ],
