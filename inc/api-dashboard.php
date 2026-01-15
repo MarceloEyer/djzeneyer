@@ -111,13 +111,13 @@ class DJZ_Dashboard_API {
                 'xp' => 0,
                 'level' => 1,
                 'rank' => [
-                    'current' => 'Zen Novice',
+                    'current' => 'Zen __(  'Zen Novice',  'djzeneyer'  )',
                     'icon' => '',
                     'next_milestone' => 100,
                     'progress_percent' => 0,
                 ],
             ],
-            'message' => 'GamiPress not active',
+            'message' => 'GamiPress__(  'GamiPress not active',  'djzeneyer'  )not active',
         ];
 
         if (!function_exists('gamipress_get_user_points')) {
