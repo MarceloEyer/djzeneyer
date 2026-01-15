@@ -1,76 +1,91 @@
 // src/hooks/useUserStreak.ts
-// v4.3 - FIX: Added X-WP-Nonce for Authentication
+// v5.0 - Headless Facade Aligned (No Nonce / No Credentials)
 
-import { useState, useEffect } from 'react';
-import { useUser } from '../contexts/UserContext'; 
+import { useState, useEffect, useCallback } from 'react';
+import { useUser } from '../contexts/UserContext';
+
+/* =========================
+ * INTERFACES
+ * ========================= */
 
 interface StreakData {
   streak: number;
-  lastLogin: string | null;
   fire: boolean;
 }
 
-export const useUserStreak = () => {
+interface UseUserStreakResponse {
+  data: StreakData;
+  loading: boolean;
+  error: string | null;
+  refresh: () => void;
+}
+
+/* =========================
+ * HOOK
+ * ========================= */
+
+export const useUserStreak = (): UseUserStreakResponse => {
   const { user } = useUser();
-  
-  const [data, setData] = useState<StreakData>({ 
-    streak: 0, 
-    lastLogin: null,
-    fire: false 
+
+  const [data, setData] = useState<StreakData>({
+    streak: 0,
+    fire: false,
   });
-  const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    if (!user?.id) {
-      setLoading(false);
-      return;
-    }
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-    const fetchStreak = async () => {
+  const fetchStreak = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
       setLoading(true);
-      try {
-        console.log('[useUserStreak] 🔥 Buscando streak para user_id:', user.id);
-        
-        // 1. Pega o Nonce
-        const nonce = (window as any).wpData?.nonce || '';
-        const endpoint = `/wp-json/djzeneyer/v1/streak/${user.id}`;
-        
-        const response = await fetch(endpoint, {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- A CORREÇÃO
-          },
-        });
+      setError(null);
 
-        if (!response.ok) {
-          console.warn(`[useUserStreak] API retornou ${response.status}. Usando fallback.`);
-          throw new Error(`HTTP ${response.status}`);
-        }
+      const wpData = (window as any).wpData || {};
+      const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
 
-        const result = await response.json();
-        const streakValue = result.streak || 0;
+      const endpoint = `${wpRestUrl}/djzeneyer/v1/streak/${user.id}`;
 
-        setData({
-          streak: streakValue,
-          lastLogin: result.last_login || null,
-          fire: streakValue >= 3 
-        });
+      const response = await fetch(endpoint);
 
-      } catch (error) {
-        console.error('[useUserStreak] Erro (usando dados seguros):', error);
-        setData({ streak: 0, lastLogin: null, fire: false });
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
-    };
 
-    fetchStreak();
+      const result = await response.json();
 
-    const interval = setInterval(fetchStreak, 300000);
-    return () => clearInterval(interval);
+      if (!result?.success) {
+        throw new Error('API returned success=false');
+      }
 
+      const streakValue = Number(result.streak) || 0;
+
+      setData({
+        streak: streakValue,
+        fire: streakValue >= 3,
+      });
+
+    } catch (err) {
+      console.error('[useUserStreak]', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      setData({ streak: 0, fire: false });
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
 
-  return { data, loading };
+  // Load on mount / user change
+  useEffect(() => {
+    fetchStreak();
+  }, [fetchStreak]);
+
+  // Polling alinhado com os outros hooks
+  useEffect(() => {
+    if (!user?.id) return;
+    const interval = setInterval(fetchStreak, 60000);
+    return () => clearInterval(interval);
+  }, [user?.id, fetchStreak]);
+
+  return { data, loading, error, refresh: fetchStreak };
 };
