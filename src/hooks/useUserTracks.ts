@@ -1,12 +1,8 @@
 // src/hooks/useUserTracks.ts
-// v5.0 - Headless Facade Aligned (No Nonce / No Credentials)
+// v5.1 - Dashboard Compatible (No Nonce / No Credentials)
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
-
-/* =========================
- * TYPES
- * ========================= */
 
 export interface Track {
   id: number;
@@ -15,82 +11,60 @@ export interface Track {
   date?: string;
 }
 
+interface TracksPayload {
+  total: number;
+  tracks: Track[];
+}
+
 interface TracksResponse {
   success?: boolean;
-  tracks?: Track[];
   total?: number;
+  tracks?: Track[];
 }
 
-interface UseUserTracksResponse {
-  data: { total: number; tracks: Track[] };
-  loading: boolean;
-  error: string | null;
-  refresh: () => void;
-}
-
-/* =========================
- * HOOK
- * ========================= */
-
-export const useUserTracks = (): UseUserTracksResponse => {
+export const useUserTracks = () => {
   const { user } = useUser();
 
-  const [data, setData] = useState<{ total: number; tracks: Track[] }>({
-    total: 0,
-    tracks: [],
-  });
+  const [data, setData] = useState<TracksPayload>({ total: 0, tracks: [] });
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchTracks = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const wpData = (window as any).wpData || {};
-      const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
-
-      const endpoint = `${wpRestUrl}/djzeneyer/v1/tracks/${user.id}`;
-
-      const response = await fetch(endpoint);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const result: TracksResponse = await response.json();
-
-      // Compatível com múltiplos formatos (antigo e novo)
-      const tracks = Array.isArray(result.tracks) ? result.tracks : [];
-      const total =
-        Number(result.total) ||
-        (Array.isArray(result.tracks) ? result.tracks.length : 0);
-
-      setData({ total, tracks });
-
-    } catch (err) {
-      console.error('[useUserTracks]', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setData({ total: 0, tracks: [] });
-    } finally {
+  useEffect(() => {
+    if (!user?.id) {
       setLoading(false);
+      setData({ total: 0, tracks: [] });
+      return;
     }
-  }, [user?.id]);
 
-  // Load
-  useEffect(() => {
+    const fetchTracks = async () => {
+      try {
+        setLoading(true);
+
+        const wpData = (window as any).wpData || {};
+        const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
+        const endpoint = `${wpRestUrl}/djzeneyer/v1/tracks/${user.id}`;
+
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const json: TracksResponse = await res.json();
+
+        const tracks = Array.isArray(json.tracks) ? json.tracks : [];
+        const total = Number(json.total) || tracks.length;
+
+        setData({ total, tracks });
+      } catch (err) {
+        console.error('[useUserTracks]', err);
+        setData({ total: 0, tracks: [] });
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchTracks();
-  }, [fetchTracks]);
 
-  // Polling padrão do dashboard
-  useEffect(() => {
-    if (!user?.id) return;
     const interval = setInterval(fetchTracks, 60000);
     return () => clearInterval(interval);
-  }, [user?.id, fetchTracks]);
+  }, [user?.id]);
 
-  return { data, loading, error, refresh: fetchTracks };
+  return { data, loading };
 };
