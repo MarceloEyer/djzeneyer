@@ -3,7 +3,7 @@
  * Plugin Name: Zen BIT - Bandsintown Events
  * Plugin URI: https://djzeneyer.com
  * Description: Display Bandsintown events with beautiful design and SEO optimization for search engines and AI bots
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Zen Eyer
  * Author URI: https://djzeneyer.com
  * License: GPL v2 or later
@@ -12,9 +12,11 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('ZEN_BIT_VERSION', '1.1.1');
+define('ZEN_BIT_VERSION', '1.1.2');
 define('ZEN_BIT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZEN_BIT_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+if (!class_exists('Zen_BIT')) {
 
 class Zen_BIT {
     private static $instance = null;
@@ -32,14 +34,24 @@ class Zen_BIT {
     }
 
     private function load_dependencies() {
-        require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-api.php';
-        require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-shortcode.php';
-        require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
+        // Evita warnings/fatal em ambientes com includes duplicados/caches agressivos
+        if (!class_exists('Zen_BIT_API')) {
+            require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-api.php';
+        }
+
+        if (!class_exists('Zen_BIT_Shortcode')) {
+            require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-shortcode.php';
+        }
+
+        // Admin pode ser pesado; só carrega no wp-admin
+        if (is_admin()) {
+            require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
+        }
     }
 
     private function init_hooks() {
         /**
-         * FIX do aviso WP 6.7+: carregar textdomain no init (não cedo demais)
+         * WP 6.7+: textdomain deve carregar no init (não cedo demais)
          */
         add_action('init', array($this, 'load_textdomain'));
 
@@ -50,33 +62,42 @@ class Zen_BIT {
         // Shortcode que injeta o JSON-LD (pra SSR / páginas WP)
         add_shortcode('zen_bit_events_schema', array($this, 'shortcode_events_schema'));
 
+        // Hooks de ciclo de vida
         register_activation_hook(__FILE__, array($this, 'activate'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
     }
 
     public function load_textdomain() {
         load_plugin_textdomain('zen-bit', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
 
+    /**
+     * Só carrega CSS/JS quando a página contém o shortcode [zen_bit_events]
+     * (performance + menos ruído para crawlers)
+     */
     public function enqueue_public_assets() {
         if (is_admin()) return;
 
-        // CSS só quando tiver o shortcode (modo mais seguro: usa queried object id)
-        if (function_exists('has_shortcode') && is_singular()) {
-            $post_id = get_queried_object_id();
-            if ($post_id) {
-                $content = get_post_field('post_content', $post_id);
-                if (is_string($content) && has_shortcode($content, 'zen_bit_events')) {
-                    wp_enqueue_style(
-                        'zen-bit-public',
-                        ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
-                        array(),
-                        ZEN_BIT_VERSION
-                    );
-                }
-            }
-        }
+        if (!function_exists('has_shortcode') || !is_singular()) return;
 
-        // JS: se você realmente precisa. Se não usa, pode remover.
+        $post_id = get_queried_object_id();
+        if (!$post_id) return;
+
+        $content = get_post_field('post_content', $post_id);
+        if (!is_string($content) || $content === '') return;
+
+        $has_events = has_shortcode($content, 'zen_bit_events');
+        if (!$has_events) return;
+
+        // CSS
+        wp_enqueue_style(
+            'zen-bit-public',
+            ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
+            array(),
+            ZEN_BIT_VERSION
+        );
+
+        // JS (somente quando precisa)
         wp_enqueue_script(
             'zen-bit-public',
             ZEN_BIT_PLUGIN_URL . 'public/js/zen-bit-public.js',
@@ -87,7 +108,7 @@ class Zen_BIT {
     }
 
     public function register_rest_routes() {
-        // Eventos (JSON cru)
+        // Eventos (JSON normalizado)
         register_rest_route('zen-bit/v1', '/events', array(
             'methods' => 'GET',
             'callback' => array('Zen_BIT_API', 'get_events_rest'),
@@ -152,8 +173,22 @@ class Zen_BIT {
         if (!get_option('zen_bit_cache_time')) {
             add_option('zen_bit_cache_time', '86400'); // 24h
         }
+
+        // Opcional: limpa cache ao ativar (garante primeira carga “limpa”)
+        if (class_exists('Zen_BIT_API')) {
+            Zen_BIT_API::clear_cache();
+        }
+    }
+
+    public function deactivate() {
+        // Limpa transient para evitar resíduos após desativar
+        if (class_exists('Zen_BIT_API')) {
+            Zen_BIT_API::clear_cache();
+        }
     }
 }
+
+} // class_exists guard
 
 /**
  * Bootstrap: DEVE EXISTIR APENAS AQUI (arquivo principal).
