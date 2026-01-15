@@ -216,7 +216,7 @@ function djz_get_gamipress($request) {
         : 0;
     
     $achievements = [];
-    $achievement_types = ['insigna'];
+    $achievement_types = ['insignia'];
     if (function_exists('gamipress_get_achievement_types')) {
         $types = gamipress_get_achievement_types();
         if (!empty($types)) {
