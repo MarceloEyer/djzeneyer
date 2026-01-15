@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) exit;
 define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS);
 define('DJZ_CACHE_PRODUCTS', 30 * MINUTE_IN_SECONDS);
 define('DJZ_CACHE_GAMIPRESS', 15 * MINUTE_IN_SECONDS);
+define('DJZ_GAMIPRESS_DEFAULT_TIER_INCREMENT', 1000);
 
 /**
  * GamiPress helper: resolve points type slug with fallback.
@@ -101,7 +102,7 @@ function djz_get_gamipress_rank_tiers(): array {
     for ($i = 0; $i < $count; $i++) {
         $next_min = $tiers[$i + 1]['min'] ?? 0;
         if ($next_min <= $tiers[$i]['min']) {
-            $next_min = $tiers[$i]['min'] + 1000;
+            $next_min = $tiers[$i]['min'] + DJZ_GAMIPRESS_DEFAULT_TIER_INCREMENT;
         }
         $tiers[$i]['next'] = $next_min;
     }
