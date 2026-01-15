@@ -1,19 +1,19 @@
 // src/hooks/useRecentActivity.ts
-// v4.0 - FIX: Added X-WP-Nonce for Dashboard Auth
+// v5.0 - Headless Facade Aligned (No Nonce / No Credentials)
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
 
-// Interface baseada na documentação do seu plugin Zen-RA
+/* =========================
+ * INTERFACES
+ * ========================= */
+
 export interface ZenActivity {
   id: string;
   type: 'loot' | 'achievement';
-  title: string;
   description: string;
   xp: number;
-  date: string;
   timestamp: number;
-  meta: any;
 }
 
 interface ActivityResponse {
@@ -21,55 +21,70 @@ interface ActivityResponse {
   activities: ZenActivity[];
 }
 
-export const useRecentActivity = () => {
+interface UseRecentActivityResponse {
+  data: ZenActivity[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => void;
+}
+
+/* =========================
+ * HOOK
+ * ========================= */
+
+export const useRecentActivity = (): UseRecentActivityResponse => {
   const { user } = useUser();
+
   const [data, setData] = useState<ZenActivity[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Só busca se tiver usuário logado e ID válido
-    if (!user?.id) {
-        setLoading(false);
-        return;
-    }
+  const fetchActivity = useCallback(async () => {
+    if (!user?.id) return;
 
-    const fetchActivity = async () => {
-      try {
-        setLoading(true);
-        
-        // 1. Pega o Nonce e URL base do ambiente
-        const wpData = (window as any).wpData || {};
-        const restUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json/';
-        const nonce = wpData.nonce || '';
+    try {
+      setLoading(true);
+      setError(null);
 
-        // Limpa URL duplicada se houver
-        const baseUrl = restUrl.replace(/\/$/, '');
-        const endpoint = `${baseUrl}/zen-ra/v1/activity/${user.id}`;
+      const wpData = (window as any).wpData || {};
+      const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
 
-        const response = await fetch(endpoint, {
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-WP-Nonce': nonce // <--- A CORREÇÃO CRÍTICA DO 401
-            }
-        });
-        
-        if (!response.ok) throw new Error('Falha ao buscar atividades');
-        
-        const json: ActivityResponse = await response.json();
-        
-        if (json.success && Array.isArray(json.activities)) {
-          setData(json.activities);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar atividades Zen:', error);
-      } finally {
-        setLoading(false);
+      const endpoint = `${wpRestUrl}/djzeneyer/v1/activity/${user.id}`;
+
+      const response = await fetch(endpoint);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
-    };
 
-    fetchActivity();
+      const json: ActivityResponse = await response.json();
+
+      if (!json?.success || !Array.isArray(json.activities)) {
+        throw new Error('Invalid activity payload');
+      }
+
+      setData(json.activities);
+
+    } catch (err) {
+      console.error('[useRecentActivity]', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
 
-  return { data, loading };
+  // Load on mount / user change
+  useEffect(() => {
+    fetchActivity();
+  }, [fetchActivity]);
+
+  // Polling alinhado com cache do backend (10min → frontend 60s ok)
+  useEffect(() => {
+    if (!user?.id) return;
+    const interval = setInterval(fetchActivity, 60000);
+    return () => clearInterval(interval);
+  }, [user?.id, fetchActivity]);
+
+  return { data, loading, error, refresh: fetchActivity };
 };
