@@ -1,7 +1,7 @@
 <?php
 /**
- * DJ Zen Eyer - Dashboard API Endpoints (Universal Backend)
- * @version 2.2.0 (Headless REST Auth Fix)
+ * DJ Zen Eyer - Dashboard API (Headless Facade)
+ * @version 3.0.0 (Final Architecture)
  */
 
 if (!defined('ABSPATH')) {
@@ -11,17 +11,12 @@ if (!defined('ABSPATH')) {
 /**
  * --------------------------------------------------
  * HEADLESS REST AUTH FIX
- * Allow public GET requests for dashboard data
+ * Allow public GET requests (read-only)
  * --------------------------------------------------
  */
 add_filter('rest_authentication_errors', function ($result) {
+    if (!empty($result)) return $result;
 
-    // Se já existe erro, respeita
-    if (!empty($result)) {
-        return $result;
-    }
-
-    // Libera APENAS GET (leitura)
     if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
         return null;
     }
@@ -37,150 +32,100 @@ class DJZ_Dashboard_API {
 
     public function register_routes() {
 
-        $ns_theme = 'djzeneyer/v1';
-        $ns_zenra = 'zen-ra/v1';
+        $ns = 'djzeneyer/v1';
 
-        register_rest_route($ns_theme, '/tracks/(?P<id>\d+)', [
-            'methods'  => 'GET',
-            'callback' => [$this, 'get_user_tracks'],
+        register_rest_route($ns, '/gamipress/(?P<id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [$this, 'gamipress'],
             'permission_callback' => '__return_true',
         ]);
 
-        register_rest_route($ns_theme, '/streak/(?P<id>\d+)', [
-            'methods'  => 'GET',
-            'callback' => [$this, 'get_user_streak'],
+        register_rest_route($ns, '/activity/(?P<id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [$this, 'activity'],
             'permission_callback' => '__return_true',
         ]);
 
-        register_rest_route($ns_theme, '/events/(?P<id>\d+)', [
-            'methods'  => 'GET',
-            'callback' => [$this, 'get_user_events'],
+        register_rest_route($ns, '/tracks/(?P<id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [$this, 'tracks'],
             'permission_callback' => '__return_true',
         ]);
 
-        register_rest_route($ns_zenra, '/activity/(?P<id>\d+)', [
-            'methods'  => 'GET',
-            'callback' => [$this, 'get_zen_activity'],
+        register_rest_route($ns, '/events/(?P<id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [$this, 'events'],
             'permission_callback' => '__return_true',
         ]);
 
-        register_rest_route($ns_zenra, '/gamipress/(?P<id>\d+)', [
-            'methods'  => 'GET',
-            'callback' => [$this, 'get_zen_gamipress'],
+        register_rest_route($ns, '/streak/(?P<id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [$this, 'streak'],
             'permission_callback' => '__return_true',
         ]);
     }
 
     // --------------------------------------------------
-    // CALLBACKS
+    // ADAPTER METHODS (PLUGIN → REACT)
     // --------------------------------------------------
 
-    public function get_user_tracks($request) {
-        return new WP_REST_Response([
-            'total' => 0,
-            'tracks' => [],
-        ], 200);
+    private function plugin(): ?Zen_RA {
+        return class_exists('Zen_RA') ? Zen_RA::get_instance() : null;
     }
 
-    public function get_user_streak($request) {
-        $user_id = (int) $request['id'];
-        $points  = (int) get_user_meta($user_id, '_gamipress_points', true);
-
-        return new WP_REST_Response([
-            'current_streak' => 1,
-            'best_streak'    => 1,
-            'last_login'     => date('Y-m-d H:i:s'),
-            'points'         => $points,
-        ], 200);
-    }
-
-    public function get_user_events($request) {
-        return new WP_REST_Response([
-            'upcoming' => [],
-            'past'     => [],
-        ], 200);
-    }
-
-    public function get_zen_activity($request) {
-        return new WP_REST_Response([
-            'success' => true,
-            'activities' => [
-                [
-                    'id'        => 'welcome-1',
-                    'type'      => 'achievement',
-                    'title'     => __('Bem-vindo à Tribo!', 'djzeneyer'),
-                    'description' => __('Conexão com o servidor estabelecida.', 'djzeneyer'),
-                    'xp'        => 100,
-                    'date'      => date('Y-m-d'),
-                    'timestamp' => time(),
-                    'meta'      => [],
-                ],
-            ],
-        ], 200);
-    }
-
-    public function get_zen_gamipress($request) {
-
-        $user_id = (int) $request['id'];
-
-        if (!function_exists('gamipress_get_user_points')) {
-            return new WP_REST_Response([
-                'success' => false,
-                'message' => __('GamiPress not active', 'djzeneyer'),
-            ], 200);
+    public function gamipress($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_player_stats')) {
+            return rest_ensure_response(['success' => false]);
         }
 
-        $points_type = function_exists('djz_get_gamipress_points_type_slug')
-            ? djz_get_gamipress_points_type_slug()
-            : '';
+        return rest_ensure_response(
+            $plugin->get_player_stats(['id' => (int)$request['id']])
+        );
+    }
 
-        $points = (int) gamipress_get_user_points($user_id, $points_type);
-
-        $tiers_payload = function_exists('djz_get_gamipress_rank_tiers')
-            ? djz_get_gamipress_rank_tiers()
-            : ['tiers' => [], 'source' => 'fallback'];
-
-        $tiers = $tiers_payload['tiers'];
-
-        if (empty($tiers)) {
-            return new WP_REST_Response([
-                'success' => false,
-                'message' => __('No tiers available', 'djzeneyer'),
-            ], 200);
+    public function activity($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_activity_feed')) {
+            return rest_ensure_response(['success' => false, 'activities' => []]);
         }
 
-        $level = 1;
-        $rank_name = $tiers[0]['name'];
-        $next = $tiers[0]['next'];
+        return rest_ensure_response(
+            $plugin->get_activity_feed(['id' => (int)$request['id']])
+        );
+    }
 
-        foreach ($tiers as $index => $tier) {
-            if ($points < $tier['min']) {
-                break;
-            }
-            $level = $index + 1;
-            $rank_name = $tier['name'];
-            $next = $tier['next'];
+    public function tracks($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_user_tracks')) {
+            return rest_ensure_response(['success' => true, 'tracks' => []]);
         }
 
-        $current_min = $tiers[$level - 1]['min'];
-        $progress = ($next > $current_min)
-            ? min(100, round((($points - $current_min) / ($next - $current_min)) * 100))
-            : 0;
+        return rest_ensure_response(
+            $plugin->get_user_tracks(['id' => (int)$request['id']])
+        );
+    }
 
-        return new WP_REST_Response([
-            'success' => true,
-            'stats' => [
-                'xp'    => $points,
-                'level' => $level,
-                'rank'  => [
-                    'current' => $rank_name,
-                    'icon'    => '',
-                    'next_milestone'   => $next,
-                    'progress_percent' => $progress,
-                ],
-            ],
-            'points_type' => $points_type,
-        ], 200);
+    public function events($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_user_events')) {
+            return rest_ensure_response(['success' => true, 'events' => []]);
+        }
+
+        return rest_ensure_response(
+            $plugin->get_user_events(['id' => (int)$request['id']])
+        );
+    }
+
+    public function streak($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_streak_data')) {
+            return rest_ensure_response(['success' => true, 'streak' => 0]);
+        }
+
+        return rest_ensure_response(
+            $plugin->get_streak_data(['id' => (int)$request['id']])
+        );
     }
 }
 
