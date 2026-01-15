@@ -1,203 +1,145 @@
 <?php
+/**
+ * Plugin Name: Zen BIT - Bandsintown Events
+ * Plugin URI: https://djzeneyer.com
+ * Description: Display Bandsintown events with beautiful design and SEO optimization for search engines and AI bots
+ * Version: 1.1.0
+ * Author: Zen Eyer
+ * Author URI: https://djzeneyer.com
+ * License: GPL v2 or later
+ * Text Domain: zen-bit
+ */
+
 if (!defined('ABSPATH')) exit;
 
-class Zen_BIT_API {
+define('ZEN_BIT_VERSION', '1.1.0');
+define('ZEN_BIT_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('ZEN_BIT_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-    // Defaults seguros
-    private const DEFAULT_ARTIST_ID   = '15619775';
-    private const DEFAULT_CACHE_TIME  = 86400; // 24h (transient)
-    private const DEFAULT_TIMEOUT     = 15;
-    private const MAX_LIMIT           = 100;
+class Zen_BIT {
+    private static $instance = null;
 
-    private static function get_artist_id(): string {
-        $id = (string) get_option('zen_bit_artist_id', self::DEFAULT_ARTIST_ID);
-        $id = preg_replace('/[^0-9]/', '', $id);
-        return $id !== '' ? $id : self::DEFAULT_ARTIST_ID;
-    }
-
-    private static function get_api_key(): string {
-        // NÃO usa key default hardcoded
-        $key = (string) get_option('zen_bit_api_key', '');
-        return trim($key);
-    }
-
-    private static function get_cache_time(): int {
-        $ttl = (int) get_option('zen_bit_cache_time', self::DEFAULT_CACHE_TIME);
-        // Proteções básicas
-        if ($ttl < 60) $ttl = 60;
-        if ($ttl > 7 * DAY_IN_SECONDS) $ttl = 7 * DAY_IN_SECONDS;
-        return $ttl;
-    }
-
-    private static function debug_log(string $msg): void {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[Zen BIT] ' . $msg);
+    public static function get_instance() {
+        if (null === self::$instance) {
+            self::$instance = new self();
         }
+        return self::$instance;
     }
 
-    private static function build_url(string $artist_id, string $api_key): string {
-        // Bandsintown aceita app_id como identificador do app
-        $base = "https://rest.bandsintown.com/artists/id_{$artist_id}/events";
-        return add_query_arg(['app_id' => $api_key], $base);
+    private function __construct() {
+        $this->load_dependencies();
+        $this->init_hooks();
     }
 
-    /**
-     * Normaliza payload para garantir array de eventos.
-     */
-    private static function normalize_events($data): array {
-        // Pode vir como objeto único
-        if (is_array($data) && !isset($data[0]) && isset($data['id'])) {
-            return [$data];
-        }
-
-        if (!is_array($data)) return [];
-
-        // Se for array associativo com erro/message
-        if (isset($data['error']) || isset($data['message'])) {
-            return [];
-        }
-
-        // Se for array de eventos
-        if (isset($data[0]) && is_array($data[0])) {
-            return $data;
-        }
-
-        return [];
+    private function load_dependencies() {
+        require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-api.php';
+        require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-shortcode.php';
+        require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
     }
 
-    /**
-     * Sanitiza campos minimamente (evita dados estranhos quebrando seu frontend).
-     * Aqui eu mantenho a estrutura original da API, mas removo alguns riscos óbvios.
-     */
-    private static function sanitize_event(array $event): array {
-        // Remoção de campos absurdos ou objetos inválidos não é necessária,
-        // mas garantimos que alguns strings não venham nulos.
-        foreach (['url', 'datetime', 'title', 'description'] as $k) {
-            if (isset($event[$k]) && !is_string($event[$k])) {
-                $event[$k] = '';
+    private function init_hooks() {
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
+
+        add_action('rest_api_init', array($this, 'register_rest_routes'));
+        add_shortcode('zen_bit_events_schema', array($this, 'shortcode_events_schema'));
+
+        register_activation_hook(__FILE__, array($this, 'activate'));
+    }
+
+    public function load_textdomain() {
+        load_plugin_textdomain('zen-bit', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    }
+
+    public function enqueue_public_assets() {
+        // Só carrega CSS se shortcode estiver na página (se for WP tradicional)
+        if (function_exists('has_shortcode') && is_singular()) {
+            $content = get_post_field('post_content', get_the_ID());
+            if (is_string($content) && has_shortcode($content, 'zen_bit_events')) {
+                wp_enqueue_style(
+                    'zen-bit-public',
+                    ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
+                    [],
+                    ZEN_BIT_VERSION
+                );
             }
         }
 
-        // Venue
-        if (isset($event['venue']) && is_array($event['venue'])) {
-            foreach (['name','city','region','country'] as $k) {
-                if (isset($event['venue'][$k]) && !is_string($event['venue'][$k])) {
-                    $event['venue'][$k] = '';
-                }
-            }
-        }
-
-        // Offers
-        if (isset($event['offers']) && is_array($event['offers'])) {
-            $event['offers'] = array_values(array_filter($event['offers'], function($offer) {
-                return is_array($offer) && isset($offer['url']) && is_string($offer['url']);
-            }));
-        }
-
-        return $event;
+        wp_enqueue_script(
+            'zen-bit-public',
+            ZEN_BIT_PLUGIN_URL . 'public/js/zen-bit-public.js',
+            array('jquery'),
+            ZEN_BIT_VERSION,
+            true
+        );
     }
 
-    /**
-     * Retorna eventos (cacheados via transient).
-     */
-    public static function get_events($limit = 50): array {
-        $limit = (int) $limit;
-        if ($limit <= 0) $limit = 50;
-        if ($limit > self::MAX_LIMIT) $limit = self::MAX_LIMIT;
-
-        $artist_id = self::get_artist_id();
-        $cache_key = 'zen_bit_events_' . $artist_id;
-
-        $cached = get_transient($cache_key);
-        if (is_array($cached) && !empty($cached)) {
-            self::debug_log("Cache hit: " . count($cached) . " events");
-            return array_slice($cached, 0, $limit);
-        }
-
-        $api_key = self::get_api_key();
-        if ($api_key === '') {
-            self::debug_log("Missing API key (zen_bit_api_key). Returning empty.");
-            return [];
-        }
-
-        $url = self::build_url($artist_id, $api_key);
-
-        $response = wp_remote_get($url, array(
-            'timeout' => self::DEFAULT_TIMEOUT,
-            'headers' => array(
-                'Accept'     => 'application/json',
-                'User-Agent' => 'ZenBIT/' . ZEN_BIT_VERSION . ' (' . home_url('/') . ')',
-            ),
+    public function register_rest_routes() {
+        // Eventos (JSON cru)
+        register_rest_route('zen-bit/v1', '/events', array(
+            'methods' => 'GET',
+            'callback' => array('Zen_BIT_API', 'get_events_rest'),
+            'permission_callback' => '__return_true'
         ));
 
-        if (is_wp_error($response)) {
-            self::debug_log("HTTP error: " . $response->get_error_message());
-            return [];
-        }
+        // Eventos (JSON-LD Schema graph)
+        register_rest_route('zen-bit/v1', '/events-schema', array(
+            'methods' => 'GET',
+            'callback' => array('Zen_BIT_API', 'get_events_schema_rest'),
+            'permission_callback' => '__return_true'
+        ));
 
-        $code = (int) wp_remote_retrieve_response_code($response);
-        $body = (string) wp_remote_retrieve_body($response);
-
-        if ($code < 200 || $code >= 300) {
-            self::debug_log("Non-2xx status: {$code}. Body head: " . substr($body, 0, 200));
-            return [];
-        }
-
-        $decoded = json_decode($body, true);
-        $events  = self::normalize_events($decoded);
-
-        if (empty($events)) {
-            self::debug_log("No valid events after normalize. Body head: " . substr($body, 0, 200));
-            return [];
-        }
-
-        // Sanitiza cada evento (leve)
-        $events = array_map(function($ev) {
-            return is_array($ev) ? self::sanitize_event($ev) : [];
-        }, $events);
-
-        // Remove vazios
-        $events = array_values(array_filter($events, function($ev) {
-            return is_array($ev) && !empty($ev);
-        }));
-
-        if (empty($events)) {
-            self::debug_log("Events empty after sanitize.");
-            return [];
-        }
-
-        // Cacheia TODOS, aplica limit no retorno
-        set_transient($cache_key, $events, self::get_cache_time());
-        self::debug_log("Cached " . count($events) . " events for artist {$artist_id}");
-
-        return array_slice($events, 0, $limit);
+        // Clear cache (admin)
+        register_rest_route('zen-bit/v1', '/clear-cache', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'clear_cache_rest'),
+            'permission_callback' => function() {
+                return current_user_can('manage_options');
+            }
+        ));
     }
 
-    /**
-     * REST endpoint: GET /wp-json/zen-bit/v1/events?limit=15
-     */
-    public static function get_events_rest($request) {
-        $limit  = $request->get_param('limit');
-        $events = self::get_events($limit);
+    public function shortcode_events_schema($atts) {
+        $atts = shortcode_atts(array(
+            'limit' => 25,
+        ), $atts, 'zen_bit_events_schema');
 
-        $response = rest_ensure_response(array(
+        $limit = (int) $atts['limit'];
+        if ($limit <= 0) $limit = 25;
+        if ($limit > 100) $limit = 100;
+
+        $graph = Zen_BIT_API::get_events_schema_graph($limit);
+        if (empty($graph)) return '';
+
+        $json = wp_json_encode($graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return '<script type="application/ld+json">' . $json . '</script>';
+    }
+
+    public function clear_cache_rest() {
+        Zen_BIT_API::clear_cache();
+        return rest_ensure_response(array(
             'success' => true,
-            'count'   => count($events),
-            'events'  => $events,
+            'message' => 'Cache cleared successfully'
         ));
-
-        // Browser cache curto (você já tem transient longo no servidor)
-        // Isso melhora UX sem “congelar” resultados por 24h no cliente.
-        $browser_cache = 300; // 5 min
-        $response->header('Cache-Control', 'public, max-age=' . $browser_cache);
-        $response->header('Expires', gmdate('D, d M Y H:i:s', time() + $browser_cache) . ' GMT');
-
-        return $response;
     }
 
-    public static function clear_cache(): void {
-        $artist_id = self::get_artist_id();
-        delete_transient('zen_bit_events_' . $artist_id);
-        self::debug_log("Cache cleared for artist {$artist_id}");
+    public function activate() {
+        if (!get_option('zen_bit_artist_id')) {
+            add_option('zen_bit_artist_id', '15619775');
+        }
+        if (!get_option('zen_bit_api_key')) {
+            // Importante: sem key hardcoded.
+            add_option('zen_bit_api_key', '');
+        }
+        if (!get_option('zen_bit_cache_time')) {
+            add_option('zen_bit_cache_time', '86400'); // 24h
+        }
     }
 }
+
+function zen_bit_init() {
+    return Zen_BIT::get_instance();
+}
+
+zen_bit_init();
