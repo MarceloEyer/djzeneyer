@@ -90,6 +90,20 @@ class Rest_Routes {
             'callback' => [__CLASS__, 'get_settings'],
             'permission_callback' => '__return_true',
         ]);
+        
+        // 11. Update Profile
+        register_rest_route(self::NAMESPACE, '/profile', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'update_profile'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
+        
+        // 12. Get Profile
+        register_rest_route(self::NAMESPACE, '/profile', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [__CLASS__, 'get_profile'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
     }
     
     // Login endpoint
@@ -366,5 +380,104 @@ class Rest_Routes {
             'display_name' => $user->display_name,
             'roles' => $user->roles,
         ];
+    }
+    
+    /**
+     * Update user profile
+     * Saves: real_name, preferred_name, facebook_url, instagram_url, dance_role, gender
+     */
+    public static function update_profile($request) {
+        $user_id = self::get_user_id_from_token($request);
+        
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+        
+        // Sanitize and save each field
+        $fields = [
+            'zen_real_name' => sanitize_text_field($request->get_param('real_name')),
+            'zen_preferred_name' => sanitize_text_field($request->get_param('preferred_name')),
+            'zen_facebook_url' => esc_url_raw($request->get_param('facebook_url')),
+            'zen_instagram_url' => esc_url_raw($request->get_param('instagram_url')),
+            'zen_dance_role' => self::sanitize_dance_role($request->get_param('dance_role')),
+            'zen_gender' => self::sanitize_gender($request->get_param('gender')),
+        ];
+        
+        foreach ($fields as $meta_key => $value) {
+            if ($value !== null && $value !== '') {
+                update_user_meta($user_id, $meta_key, $value);
+            } elseif ($value === '') {
+                delete_user_meta($user_id, $meta_key);
+            }
+        }
+        
+        // Update display_name if preferred_name is set
+        if (!empty($fields['zen_preferred_name'])) {
+            wp_update_user([
+                'ID' => $user_id,
+                'display_name' => $fields['zen_preferred_name'],
+            ]);
+        }
+        
+        return rest_ensure_response([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'data' => self::get_profile_data($user_id),
+        ]);
+    }
+    
+    /**
+     * Get user profile data
+     */
+    public static function get_profile($request) {
+        $user_id = self::get_user_id_from_token($request);
+        
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+        
+        return rest_ensure_response([
+            'success' => true,
+            'data' => self::get_profile_data($user_id),
+        ]);
+    }
+    
+    /**
+     * Get profile data for a user
+     */
+    private static function get_profile_data($user_id) {
+        $user = get_userdata($user_id);
+        
+        return [
+            'id' => $user_id,
+            'email' => $user->user_email,
+            'display_name' => $user->display_name,
+            'real_name' => get_user_meta($user_id, 'zen_real_name', true),
+            'preferred_name' => get_user_meta($user_id, 'zen_preferred_name', true),
+            'facebook_url' => get_user_meta($user_id, 'zen_facebook_url', true),
+            'instagram_url' => get_user_meta($user_id, 'zen_instagram_url', true),
+            'dance_role' => get_user_meta($user_id, 'zen_dance_role', true) ?: [],
+            'gender' => get_user_meta($user_id, 'zen_gender', true),
+        ];
+    }
+    
+    /**
+     * Sanitize dance role (array of 'leader' and/or 'follower')
+     */
+    private static function sanitize_dance_role($roles) {
+        if (!is_array($roles)) {
+            return [];
+        }
+        
+        $allowed = ['leader', 'follower'];
+        return array_values(array_intersect($roles, $allowed));
+    }
+    
+    /**
+     * Sanitize gender field
+     */
+    private static function sanitize_gender($gender) {
+        $allowed = ['male', 'female', 'non-binary', ''];
+        return in_array($gender, $allowed) ? $gender : '';
     }
 }

@@ -112,8 +112,38 @@ const MyAccountPage: React.FC = () => {
   useEffect(() => {
     if (user?.isLoggedIn) {
       fetchOrders();
+      fetchProfile();
     }
   }, [user]);
+
+  // Fetch profile data
+  const fetchProfile = async () => {
+    if (!user?.token) return;
+    
+    try {
+      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setProfileForm({
+            realName: data.data.real_name || user.name || '',
+            preferredName: data.data.preferred_name || '',
+            facebookUrl: data.data.facebook_url || '',
+            instagramUrl: data.data.instagram_url || '',
+            danceRole: data.data.dance_role || [],
+            gender: data.data.gender || '',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error fetching profile:', error);
+    }
+  };
 
   const fetchOrders = async () => {
     if (!user?.token) {
@@ -341,29 +371,53 @@ const MyAccountPage: React.FC = () => {
 
         const handleSaveProfile = async () => {
           setSavingProfile(true);
-          // TODO: Implement API call to save profile
-          // For now, simulate save
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          setSavingProfile(false);
-          setProfileSaved(true);
-          setTimeout(() => setProfileSaved(false), 3000);
+          try {
+            const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`,
+              },
+              body: JSON.stringify({
+                real_name: profileForm.realName,
+                preferred_name: profileForm.preferredName,
+                facebook_url: profileForm.facebookUrl,
+                instagram_url: profileForm.instagramUrl,
+                dance_role: profileForm.danceRole,
+                gender: profileForm.gender,
+              }),
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              setProfileSaved(true);
+              setTimeout(() => setProfileSaved(false), 3000);
+            } else {
+              console.error('[MyAccountPage] Error saving profile:', data.message);
+            }
+          } catch (error) {
+            console.error('[MyAccountPage] Error saving profile:', error);
+          } finally {
+            setSavingProfile(false);
+          }
         };
 
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Account Settings</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('nav_my_account')}</h2>
 
             {/* Profile Settings */}
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <User className="text-primary" size={24} />
-                <h3 className="text-xl font-semibold">Profile Information</h3>
+                <h3 className="text-xl font-semibold">{t('profile.title')}</h3>
               </div>
               <div className="space-y-4">
                 {/* Real Name */}
                 <div>
                   <label htmlFor="account-real-name" className="block text-sm font-semibold mb-2">
-                    Real Name <span className="text-white/50 font-normal">(for purchases and friend lists)</span>
+                    {t('profile.real_name')} <span className="text-white/50 font-normal">({t('profile.real_name_hint')})</span>
                   </label>
                   <input
                     id="account-real-name"
@@ -372,7 +426,7 @@ const MyAccountPage: React.FC = () => {
                     value={profileForm.realName}
                     onChange={(e) => handleProfileChange('realName', e.target.value)}
                     autoComplete="name"
-                    placeholder="Your full legal name"
+                    placeholder={t('profile.real_name')}
                     className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
                   />
                 </div>
@@ -380,7 +434,7 @@ const MyAccountPage: React.FC = () => {
                 {/* Preferred Name */}
                 <div>
                   <label htmlFor="account-preferred-name" className="block text-sm font-semibold mb-2">
-                    Preferred Name <span className="text-white/50 font-normal">(how we'll call you on the site and emails)</span>
+                    {t('profile.preferred_name')} <span className="text-white/50 font-normal">({t('profile.preferred_name_hint')})</span>
                   </label>
                   <input
                     id="account-preferred-name"
@@ -388,14 +442,14 @@ const MyAccountPage: React.FC = () => {
                     type="text"
                     value={profileForm.preferredName}
                     onChange={(e) => handleProfileChange('preferredName', e.target.value)}
-                    placeholder="How would you like to be called?"
+                    placeholder={t('profile.preferred_name')}
                     className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
                   />
                 </div>
 
                 {/* Email (read-only) */}
                 <div>
-                  <label htmlFor="account-email" className="block text-sm font-semibold mb-2">Email</label>
+                  <label htmlFor="account-email" className="block text-sm font-semibold mb-2">{t('profile.email')}</label>
                   <input
                     id="account-email"
                     name="account-email"
@@ -412,7 +466,7 @@ const MyAccountPage: React.FC = () => {
                   <div>
                     <label htmlFor="account-facebook" className="block text-sm font-semibold mb-2">
                       <Facebook size={16} className="inline mr-2" />
-                      Facebook
+                      {t('profile.facebook')}
                     </label>
                     <input
                       id="account-facebook"
@@ -420,14 +474,14 @@ const MyAccountPage: React.FC = () => {
                       type="url"
                       value={profileForm.facebookUrl}
                       onChange={(e) => handleProfileChange('facebookUrl', e.target.value)}
-                      placeholder="https://facebook.com/yourprofile"
+                      placeholder={t('profile.facebook_placeholder')}
                       className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
                     <label htmlFor="account-instagram" className="block text-sm font-semibold mb-2">
                       <Instagram size={16} className="inline mr-2" />
-                      Instagram
+                      {t('profile.instagram')}
                     </label>
                     <input
                       id="account-instagram"
@@ -435,7 +489,7 @@ const MyAccountPage: React.FC = () => {
                       type="url"
                       value={profileForm.instagramUrl}
                       onChange={(e) => handleProfileChange('instagramUrl', e.target.value)}
-                      placeholder="https://instagram.com/yourprofile"
+                      placeholder={t('profile.instagram_placeholder')}
                       className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
                     />
                   </div>
@@ -444,7 +498,7 @@ const MyAccountPage: React.FC = () => {
                 {/* Dance Role */}
                 <div>
                   <label className="block text-sm font-semibold mb-3">
-                    Dance Role <span className="text-white/50 font-normal">(you can select both)</span>
+                    {t('profile.dance_role')} <span className="text-white/50 font-normal">({t('profile.dance_role_hint')})</span>
                   </label>
                   <div className="flex flex-wrap gap-3">
                     <button
@@ -456,7 +510,7 @@ const MyAccountPage: React.FC = () => {
                           : 'border-white/20 text-white/70 hover:border-white/40'
                       }`}
                     >
-                      Leader (Condutor)
+                      {t('profile.leader')}
                     </button>
                     <button
                       type="button"
@@ -467,19 +521,19 @@ const MyAccountPage: React.FC = () => {
                           : 'border-white/20 text-white/70 hover:border-white/40'
                       }`}
                     >
-                      Follower (Conduzido)
+                      {t('profile.follower')}
                     </button>
                   </div>
                 </div>
 
                 {/* Gender */}
                 <div>
-                  <label className="block text-sm font-semibold mb-3">Gender</label>
+                  <label className="block text-sm font-semibold mb-3">{t('profile.gender')}</label>
                   <div className="flex flex-wrap gap-3">
                     {[
-                      { value: 'male', label: 'Male (Masculino)' },
-                      { value: 'female', label: 'Female (Feminino)' },
-                      { value: 'non-binary', label: 'Non-binary (Não-binário)' }
+                      { value: 'male', labelKey: 'profile.male' },
+                      { value: 'female', labelKey: 'profile.female' },
+                      { value: 'non-binary', labelKey: 'profile.non_binary' }
                     ].map((option) => (
                       <button
                         key={option.value}
@@ -491,7 +545,7 @@ const MyAccountPage: React.FC = () => {
                             : 'border-white/20 text-white/70 hover:border-white/40'
                         }`}
                       >
-                        {option.label}
+                        {t(option.labelKey)}
                       </button>
                     ))}
                   </div>
@@ -507,17 +561,17 @@ const MyAccountPage: React.FC = () => {
                     {savingProfile ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                        Saving...
+                        {t('profile.saving')}
                       </>
                     ) : profileSaved ? (
                       <>
                         <span className="text-success">✓</span>
-                        Saved!
+                        {t('profile.saved')}
                       </>
                     ) : (
                       <>
                         <Save size={16} />
-                        Save Profile
+                        {t('profile.save')}
                       </>
                     )}
                   </button>
