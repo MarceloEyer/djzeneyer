@@ -42,6 +42,7 @@ const MyAccountPage: React.FC = () => {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [newsletterEnabled, setNewsletterEnabled] = useState(false);
+  const [savingNewsletter, setSavingNewsletter] = useState(false);
   
   // Profile form state
   const [profileForm, setProfileForm] = useState({
@@ -108,11 +109,12 @@ const MyAccountPage: React.FC = () => {
     }
   }, [user, loading, navigate]);
 
-  // Fetch orders
+  // Fetch orders, profile, and newsletter status
   useEffect(() => {
     if (user?.isLoggedIn) {
       fetchOrders();
       fetchProfile();
+      fetchNewsletterStatus();
     }
   }, [user]);
 
@@ -142,6 +144,55 @@ const MyAccountPage: React.FC = () => {
       }
     } catch (error) {
       console.error('[MyAccountPage] Error fetching profile:', error);
+    }
+  };
+
+  // Fetch newsletter status
+  const fetchNewsletterStatus = async () => {
+    if (!user?.token) return;
+    
+    try {
+      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setNewsletterEnabled(data.subscribed);
+        }
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error fetching newsletter status:', error);
+    }
+  };
+
+  // Toggle newsletter subscription
+  const handleNewsletterToggle = async (enabled: boolean) => {
+    if (!user?.token) return;
+    
+    setSavingNewsletter(true);
+    try {
+      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setNewsletterEnabled(data.subscribed);
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error toggling newsletter:', error);
+    } finally {
+      setSavingNewsletter(false);
     }
   };
 
@@ -608,7 +659,8 @@ const MyAccountPage: React.FC = () => {
                           type="checkbox"
                           className="w-5 h-5"
                           checked={newsletterEnabled}
-                          onChange={(e) => setNewsletterEnabled(e.target.checked)}
+                          disabled={savingNewsletter}
+                          onChange={(e) => handleNewsletterToggle(e.target.checked)}
                         />
                         <span className="font-semibold">{t('account_page.newsletter_toggle')}</span>
                       </div>
@@ -616,8 +668,19 @@ const MyAccountPage: React.FC = () => {
                         {t('account_page.newsletter_desc')}
                       </p>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full ${newsletterEnabled ? 'bg-success/20 text-success' : 'bg-white/10 text-white/60'}`}>
-                      {newsletterEnabled ? t('account_page.newsletter_enabled') : t('account_page.newsletter_disabled')}
+                    <span className={`text-xs px-3 py-1 rounded-full ${
+                      savingNewsletter 
+                        ? 'bg-white/10 text-white/60' 
+                        : newsletterEnabled 
+                          ? 'bg-success/20 text-success' 
+                          : 'bg-white/10 text-white/60'
+                    }`}>
+                      {savingNewsletter 
+                        ? '...' 
+                        : newsletterEnabled 
+                          ? t('account_page.newsletter_enabled') 
+                          : t('account_page.newsletter_disabled')
+                      }
                     </span>
                   </label>
                 </div>

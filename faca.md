@@ -93,34 +93,12 @@ Se você mudou algum slug para SEO, precisa atualizar o arquivo `src/data/routeM
 
 **IMPORTANTE:** Após substituir as imagens, NÃO precisa mudar extensão no código se usar o mesmo nome. Exemplo: se você criar `hero-background.webp`, o código já aponta para `.webp`.
 
-### 8. Newsletter Integration com MailPoet
-**Arquivo:** `src/pages/MyAccountPage.tsx`
-**Problema:** Toggle de newsletter não salva.
-
-**Solução com MailPoet:**
-1. No WordPress, criar lista "Zen Tribe Newsletter" no MailPoet
-2. Adicionar endpoint no plugin `zeneyer-auth`:
-```php
-// Em class-rest-routes.php, adicionar:
-register_rest_route(self::NAMESPACE, '/newsletter', [
-    'methods' => 'POST',
-    'callback' => [__CLASS__, 'toggle_newsletter'],
-    'permission_callback' => [__CLASS__, 'check_auth'],
-]);
-
-public static function toggle_newsletter($request) {
-    $user_id = self::get_user_id_from_token($request);
-    $enabled = $request->get_param('enabled');
-    
-    if ($enabled) {
-        // Adicionar à lista MailPoet
-        $subscriber = \MailPoet\Models\Subscriber::findOne($user_id);
-        // ... lógica de adicionar à lista
-    } else {
-        // Remover da lista
-    }
-}
-```
+### 8. ~~Newsletter Integration com MailPoet~~
+✅ Implementado!
+- Endpoints criados: `GET/POST /wp-json/zeneyer-auth/v1/newsletter`
+- Integração com MailPoet (lista "Zen Tribe Newsletter")
+- Fallback para user_meta se MailPoet não estiver disponível
+- Frontend atualizado para usar a API real
 
 ### 9. Verificação de Email após Registro
 **Status:** Não implementado.
