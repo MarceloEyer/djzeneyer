@@ -358,7 +358,7 @@ const AboutPage: React.FC = () => {
                 também acreditam no poder da conexão através da arte.
               </p>
               <motion.a
-                href="/contact"
+                href="/work-with-me"
                 className="btn btn-primary btn-lg inline-flex items-center gap-3"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
