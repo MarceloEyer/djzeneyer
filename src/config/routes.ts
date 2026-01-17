@@ -42,6 +42,7 @@ const MusicPage = lazy(() => import('../pages/MusicPage'));
 const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
 const PressKitPage = lazy(() => import('../pages/PressKitPage'));
 const ShopPage = lazy(() => import('../pages/ShopPage'));
+const ProductPage = lazy(() => import('../pages/ProductPage'));
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
 const FAQPage = lazy(() => import('../pages/FAQPage'));
@@ -121,6 +122,10 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: ShopPage,
     paths: { en: 'shop', pt: 'loja' },
     hasWildcard: true,
+  },
+  {
+    component: ProductPage,
+    paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
   },
 
   // Dashboard

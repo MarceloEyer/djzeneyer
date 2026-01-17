@@ -51,7 +51,7 @@ function djz_get_menu($request) {
     $cache_key = 'djz_menu_' . $lang;
     
     $cached = get_transient($cache_key);
-    if ($cached) return rest_ensure_response($cached);
+    if ($cached && empty($slug)) return rest_ensure_response($cached);
     
     if (function_exists('pll_set_language')) {
         pll_set_language($lang);
@@ -97,10 +97,11 @@ function djz_get_menu($request) {
  */
 function djz_get_products($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
+    $slug = sanitize_title($request->get_param('slug') ?? '');
     $cache_key = 'djz_products_' . $lang;
     
     $cached = get_transient($cache_key);
-    if ($cached) return rest_ensure_response($cached);
+    if ($cached && empty($slug)) return rest_ensure_response($cached);
     
     $args = [
         'post_type' => 'product',
@@ -108,6 +109,11 @@ function djz_get_products($request) {
         'post_status' => 'publish',
         'no_found_rows' => true,
     ];
+
+    if (!empty($slug)) {
+        $args['name'] = $slug;
+        $args['posts_per_page'] = 1;
+    }
     
     if (function_exists('pll_get_post_language')) {
         $args['lang'] = $lang;
@@ -142,6 +148,11 @@ function djz_get_products($request) {
                 }
             }
             
+            $categories = wp_get_post_terms($id, 'product_cat');
+            if (is_wp_error($categories)) {
+                $categories = [];
+            }
+
             $products[] = [
                 'id' => $id,
                 'name' => $product->get_name(),
@@ -152,12 +163,24 @@ function djz_get_products($request) {
                 'on_sale' => $product->is_on_sale(),
                 'stock_status' => $product->get_stock_status(),
                 'images' => $images,
+                'short_description' => $product->get_short_description(),
+                'description' => $product->get_description(),
+                'permalink' => get_permalink($id),
+                'categories' => array_map(function($term) {
+                    return [
+                        'id' => $term->term_id,
+                        'name' => $term->name,
+                        'slug' => $term->slug,
+                    ];
+                }, $categories),
             ];
         }
         wp_reset_postdata();
     }
     
-    set_transient($cache_key, $products, DJZ_CACHE_PRODUCTS);
+    if (empty($slug)) {
+        set_transient($cache_key, $products, DJZ_CACHE_PRODUCTS);
+    }
     return rest_ensure_response($products);
 }
 
@@ -184,40 +207,47 @@ function djz_get_gamipress($request) {
                 'level' => 1,
                 'rank' => 'Zen Novice',
                 'achievements' => [],
+                'pointsType' => 'zen-points',
             ],
         ];
         set_transient($cache_key, $fallback, DJZ_CACHE_GAMIPRESS);
         return rest_ensure_response($fallback);
     }
     
-    $points = (int)gamipress_get_user_points($user_id, 'zen-points');
+    $points_type = djz_get_gamipress_points_type_slug();
+    $points = (int)gamipress_get_user_points($user_id, $points_type);
     
-    $ranks = [
-        ['name' => 'Zen Novice', 'min' => 0, 'next' => 100],
-        ['name' => 'Zen Apprentice', 'min' => 100, 'next' => 500],
-        ['name' => 'Zen Voyager', 'min' => 500, 'next' => 1500],
-        ['name' => 'Zen Master', 'min' => 1500, 'next' => 4000],
-        ['name' => 'Zen Legend', 'min' => 4000, 'next' => 10000],
-    ];
+    $tiers_payload = djz_get_gamipress_rank_tiers();
+    $ranks = $tiers_payload['tiers'];
     
     $level = 1;
     $rank = $ranks[0]['name'];
     $next = $ranks[0]['next'];
     
     foreach ($ranks as $i => $tier) {
-        if ($points >= $tier['min']) {
-            $level = $i + 1;
-            $rank = $tier['name'];
-            $next = $tier['next'];
+        if ($points < $tier['min']) {
+            break;
         }
+        $level = $i + 1;
+        $rank = $tier['name'];
+        $next = $tier['next'];
     }
     
     $current_min = $ranks[$level - 1]['min'];
-    $progress = min(100, round((($points - $current_min) / ($next - $current_min)) * 100));
+    $progress = ($next > $current_min)
+        ? min(100, round((($points - $current_min) / ($next - $current_min)) * 100))
+        : 0;
     
     $achievements = [];
+    $achievement_types = ['insigna'];
+    if (function_exists('gamipress_get_achievement_types')) {
+        $types = gamipress_get_achievement_types();
+        if (!empty($types)) {
+            $achievement_types = array_keys($types);
+        }
+    }
     $query = new WP_Query([
-        'post_type' => 'insigna',
+        'post_type' => $achievement_types,
         'posts_per_page' => 20,
         'post_status' => 'publish',
     ]);
@@ -248,6 +278,7 @@ function djz_get_gamipress($request) {
             'nextLevelPoints' => $next,
             'progressToNextLevel' => $progress,
             'achievements' => $achievements,
+            'pointsType' => $points_type,
         ],
     ];
     
@@ -272,7 +303,10 @@ function djz_subscribe_newsletter($request) {
     try {
         $api = \MailPoet\API\API::MP('v1');
         $lists = $api->getLists();
-        $list_id = $lists[0]['id'] ?? 1;
+        $list_id = (int) apply_filters('djz_mailpoet_list_id', 0);
+        if ($list_id <= 0) {
+            $list_id = $lists[0]['id'] ?? 1;
+        }
         
         $api->addSubscriber([
             'email' => $email,
