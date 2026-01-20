@@ -36,7 +36,7 @@ export const useRecentActivity = () => {
 
         const wpData = (window as any).wpData || {};
         const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
-        const endpoint = `${wpRestUrl}/djzeneyer/v1/activity/${user.id}`;
+        const endpoint = `${wpRestUrl}/zen-ra/v1/activity/${user.id}`;
 
         const res = await fetch(endpoint);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
