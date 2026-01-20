@@ -202,23 +202,57 @@ class Zen_RA {
 
     private function get_products_by_category($user_id, $slugs) {
         if (!class_exists('WooCommerce')) return [];
+
         $orders = wc_get_orders(['customer_id' => $user_id, 'status' => 'completed', 'limit' => -1]);
         $items = [];
+        $candidates = [];
+        $product_ids = [];
+
         foreach ($orders as $order) {
             foreach ($order->get_items() as $item) {
                 $product = $item->get_product();
                 if (!$product) continue;
-                $cats = wp_get_post_terms($product->get_id(), 'product_cat', ['fields' => 'slugs']);
-                if (array_intersect($slugs, $cats)) {
-                    $items[] = [
-                        'id' => $product->get_id(),
-                        'title' => $product->get_name(),
-                        'image' => wp_get_attachment_url($product->get_image_id()),
-                        'date' => $order->get_date_created()->date('Y-m-d'),
-                    ];
-                }
+
+                $pid = $product->get_id();
+                $candidates[] = [
+                    'product' => $product,
+                    'date' => $order->get_date_created()->date('Y-m-d'),
+                ];
+                $product_ids[] = $pid;
             }
         }
+
+        if (empty($product_ids)) return [];
+
+        $product_ids = array_unique($product_ids);
+
+        // Batch fetch categories
+        $terms = wp_get_object_terms($product_ids, 'product_cat', ['fields' => 'all_with_object_id']);
+
+        // Map product_id => [slugs]
+        $product_cats = [];
+        if (!is_wp_error($terms)) {
+            foreach ($terms as $term) {
+                $product_cats[$term->object_id][] = $term->slug;
+            }
+        }
+
+        foreach ($candidates as $candidate) {
+            $product = $candidate['product'];
+            $pid = $product->get_id();
+
+            $cats = $product_cats[$pid] ?? [];
+
+            if (array_intersect($slugs, $cats)) {
+                $items[] = [
+                    'id' => $pid,
+                    'title' => $product->get_name(),
+                    'image' => wp_get_attachment_url($product->get_image_id()),
+                    'date' => $candidate['date'],
+                ];
+            }
+        }
+
         return $items;
     }
 
