@@ -117,6 +117,9 @@ function djz_get_products($request) {
     $products = [];
     
     if ($query->have_posts()) {
+        $product_objects = [];
+        $all_img_ids = [];
+
         while ($query->have_posts()) {
             $query->the_post();
             $id = get_the_ID();
@@ -124,6 +127,28 @@ function djz_get_products($request) {
             
             if (!$product) continue;
             
+            $product_objects[] = $product;
+
+            $img_ids = $product->get_gallery_image_ids();
+            if ($product->get_image_id()) {
+                $img_ids[] = $product->get_image_id();
+            }
+
+            if (!empty($img_ids)) {
+                $all_img_ids = array_merge($all_img_ids, $img_ids);
+            }
+        }
+
+        // Batch prime caches for all images
+        if (!empty($all_img_ids)) {
+            $all_img_ids = array_unique($all_img_ids);
+            update_meta_cache('post', $all_img_ids);
+            if (function_exists('_prime_post_caches')) {
+                _prime_post_caches($all_img_ids, false, false);
+            }
+        }
+
+        foreach ($product_objects as $product) {
             $images = [];
             $img_ids = $product->get_gallery_image_ids();
             
@@ -143,7 +168,7 @@ function djz_get_products($request) {
             }
             
             $products[] = [
-                'id' => $id,
+                'id' => $product->get_id(),
                 'name' => $product->get_name(),
                 'slug' => $product->get_slug(),
                 'price' => $product->get_price(),
