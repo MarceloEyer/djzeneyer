@@ -275,5 +275,5 @@ export const getAlternateLinks = (currentPath: string, currentLang: Language): R
   
   // Fallback: retorna o mesmo path para ambos os idiomas
   return { en: currentPath, pt: currentPath };
-};
+
 };
