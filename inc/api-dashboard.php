@@ -1,40 +1,18 @@
 <?php
 /**
  * DJ Zen Eyer - Dashboard API Adapter/Facade (Headless WordPress)
- * Provides activity, tracks, events, and streak endpoints using Zen_RA plugin
- * 
- * Este arquivo atua como ADAPTER/FACADE entre o frontend React e o plugin Zen_RA.
- * 
- * ARQUITETURA:
- * Frontend React -> /wp-json/djzeneyer/v1/* -> api-dashboard.php -> Zen_RA Plugin -> WooCommerce/GamiPress
- * 
- * Endpoints expostos:
- * - GET /djzeneyer/v1/activity/{id} - Feed de atividades (pedidos + conquistas)
- * - GET /djzeneyer/v1/tracks/{id} - Produtos de música comprados
- * - GET /djzeneyer/v1/events/{id} - Ingressos de eventos comprados  
- * - GET /djzeneyer/v1/streak/{id} - Contador de login consecutivo
- * 
- * Nota: O plugin Zen_RA NÃO expõe REST API própria - este arquivo é responsável por isso.
- * @version 4.1.0
+ * @version 4.2.0 - Added error handling for all endpoints
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-/**
- * --------------------------------------------------
- * HEADLESS REST AUTH FIX
- * Allow public GET requests (read-only)
- * --------------------------------------------------
- */
 add_filter('rest_authentication_errors', function ($result) {
     if (!empty($result)) return $result;
-
     if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
         return null;
     }
-
     return $result;
 });
 
@@ -45,11 +23,7 @@ class DJZ_Dashboard_API {
     }
 
     public function register_routes() {
-
         $ns = 'djzeneyer/v1';
-
-        // Note: /gamipress endpoint is registered in inc/api.php
-        // These endpoints use Zen_RA plugin for activity tracking
 
         register_rest_route($ns, '/activity/(?P<id>\d+)', [
             'methods' => 'GET',
@@ -76,72 +50,79 @@ class DJZ_Dashboard_API {
         ]);
     }
 
-    // --------------------------------------------------
-    // ADAPTER METHODS (PLUGIN → REACT)
-    // --------------------------------------------------
-
     private function plugin(): ?Zen_RA {
         return class_exists('Zen_RA') ? Zen_RA::get_instance() : null;
     }
 
+    // ✅ FIX: Wrapped em try-catch
     public function activity($request) {
-        $plugin = $this->plugin();
-        if (!$plugin || !method_exists($plugin, 'get_activity_feed')) {
-            return rest_ensure_response(['success' => false, 'activities' => []]);
-        }
+        try {
+            $plugin = $this->plugin();
+            if (!$plugin || !method_exists($plugin, 'get_activity_feed')) {
+                return rest_ensure_response(['success' => false, 'activities' => []]);
+            }
 
-        return rest_ensure_response(
-            $plugin->get_activity_feed(['id' => (int)$request['id']])
-        );
+            $result = $plugin->get_activity_feed(['id' => (int)$request['id']]);
+            
+            // Garantir que sempre retorna array de activities
+            if (!isset($result['activities']) || !is_array($result['activities'])) {
+                $result['activities'] = [];
+            }
+            
+            return rest_ensure_response($result);
+            
+        } catch (Exception $e) {
+            error_log('[DJZ_Dashboard_API] Activity error: ' . $e->getMessage());
+            return rest_ensure_response([
+                'success' => false, 
+                'activities' => [],
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
     public function tracks($request) {
-        $plugin = $this->plugin();
-        if (!$plugin || !method_exists($plugin, 'get_user_tracks')) {
+        try {
+            $plugin = $this->plugin();
+            if (!$plugin || !method_exists($plugin, 'get_user_tracks')) {
+                return rest_ensure_response(['success' => true, 'tracks' => []]);
+            }
+            return rest_ensure_response(
+                $plugin->get_user_tracks(['id' => (int)$request['id']])
+            );
+        } catch (Exception $e) {
+            error_log('[DJZ_Dashboard_API] Tracks error: ' . $e->getMessage());
             return rest_ensure_response(['success' => true, 'tracks' => []]);
         }
-
-        return rest_ensure_response(
-            $plugin->get_user_tracks(['id' => (int)$request['id']])
-        );
     }
 
     public function events($request) {
-        $plugin = $this->plugin();
-        if (!$plugin || !method_exists($plugin, 'get_user_events')) {
+        try {
+            $plugin = $this->plugin();
+            if (!$plugin || !method_exists($plugin, 'get_user_events')) {
+                return rest_ensure_response(['success' => true, 'events' => []]);
+            }
+            return rest_ensure_response(
+                $plugin->get_user_events(['id' => (int)$request['id']])
+            );
+        } catch (Exception $e) {
+            error_log('[DJZ_Dashboard_API] Events error: ' . $e->getMessage());
             return rest_ensure_response(['success' => true, 'events' => []]);
         }
-
-        return rest_ensure_response(
-            $plugin->get_user_events(['id' => (int)$request['id']])
-        );
     }
 
-    // ✅ FIX: Adicionar fallback para erro 500
     public function streak($request) {
-        $plugin = $this->plugin();
-        
-        // Fallback se plugin não existir ou método não existir
-        if (!$plugin || !method_exists($plugin, 'get_streak_data')) {
-            return rest_ensure_response([
-                'success' => true, 
-                'streak' => 0
-            ]);
-        }
-
-        // ✅ Adicionar try-catch para capturar erros internos
         try {
-            $result = $plugin->get_streak_data(['id' => (int)$request['id']]);
-            return rest_ensure_response($result);
+            $plugin = $this->plugin();
+            if (!$plugin || !method_exists($plugin, 'get_streak_data')) {
+                return rest_ensure_response(['success' => true, 'streak' => 0]);
+            }
+            return rest_ensure_response(
+                $plugin->get_streak_data(['id' => (int)$request['id']])
+            );
         } catch (Exception $e) {
-            // Log do erro para debug
             error_log('[DJZ_Dashboard_API] Streak error: ' . $e->getMessage());
-            
-            // Retornar fallback ao invés de 500
-            return rest_ensure_response([
-                'success' => true,
-                'streak' => 0
-            ]);
+            return rest_ensure_response(['success' => true, 'streak' => 0]);
         }
     }
 
@@ -219,7 +200,6 @@ class DJZ_Dashboard_API {
             'points_type' => $points_type,
         ], 200);
     }
-
 }
 
 new DJZ_Dashboard_API();
