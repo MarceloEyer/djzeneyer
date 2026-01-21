@@ -31,9 +31,9 @@ function djz_get_gamipress_points_type_slug(): string {
     }
 
     $first = array_key_first($points_types);
-    return $first ?: $default;
-}
+	return apply_filters('djz_gamipress_points_type_slug', $first ?: $default, $points_types);}
 
+	// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_points_type_slug' para especificar.
 /**
  * GamiPress helper: resolve rank tiers with fallback.
  *
@@ -56,8 +56,8 @@ function djz_get_gamipress_rank_tiers(): array {
     }
 
     $rank_types = gamipress_get_rank_types();
-    $rank_slug = !empty($rank_types) ? array_key_first($rank_types) : null;
-    if (!$rank_slug) {
+	// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_rank_slug' para especificar.
+	$rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);    if (!$rank_slug) {
         return [
             'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
             'source' => 'fallback',
