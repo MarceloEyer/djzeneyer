@@ -119,15 +119,15 @@ export const ROUTES_CONFIG: RouteConfig[] = [
 
   // Shop (com wildcard para subrotas)
   {
+    component: ProductPage,
+    paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
+  },
+{
     component: ShopPage,
     paths: { en: 'shop', pt: 'loja' },
     hasWildcard: true,
   },
-  {
-    component: ProductPage,
-    paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
-  },
-
+  
   // Dashboard
   {
     component: DashboardPage,
