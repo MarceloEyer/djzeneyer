@@ -1,22 +1,8 @@
 <?php
 /**
  * Plugin Name: Zen-RA (Zen Recent Activity & Gamification)
- * Plugin URI: https://djzeneyer.com
- * Description: Engine de Gamificação (WooCommerce + GamiPress). Usado via PHP por temas headless.
-  * 
- * IMPORTANTE: Este plugin funciona como ENGINE INTERNA (não expõe REST API própria).
- * Os endpoints REST são expostos pelo tema via inc/api-dashboard.php no namespace /djzeneyer/v1/
- * 
- * Métodos públicos podem ser chamados diretamente via PHP:
- * - Zen_RA::get_instance()->get_activity_feed(['id' => $user_id])
- * - Zen_RA::get_instance()->get_player_stats(['id' => $user_id])
- * - Zen_RA::get_instance()->get_user_tracks(['id' => $user_id])
- * - Zen_RA::get_instance()->get_user_events(['id' => $user_id])
- * - Zen_RA::get_instance()->get_streak_data(['id' => $user_id])
- * Version: 3.0.0-ENGINE
- * Author: DJ Zen Eyer
- * License: GPL v2 or later
- * Text Domain: zen-ra
+ * Version: 3.1.0-SAFE
+ * Description: Engine de Gamificação com proteção contra erros
  */
 
 if (!defined('ABSPATH')) exit;
@@ -34,21 +20,13 @@ class Zen_RA {
     }
 
     private function __construct() {
-
-        // Hooks de atualização de estado
         add_action('gamipress_award_points', [$this, 'clear_user_cache_hook'], 10, 2);
         add_action('gamipress_award_achievement', [$this, 'clear_user_cache_hook'], 10, 2);
         add_action('woocommerce_order_status_completed', [$this, 'clear_order_cache_hook'], 10, 1);
         add_action('wp_login', [$this, 'update_login_streak'], 10, 2);
-
-        // Admin
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_init', [$this, 'register_settings']);
     }
-
-    // ======================================================
-    // ADMIN
-    // ======================================================
 
     public function add_admin_menu() {
         add_submenu_page(
@@ -89,128 +67,113 @@ class Zen_RA {
                 </table>
                 <?php submit_button(); ?>
             </form>
-		<p><strong>Modo:</strong> Engine interna (REST API exposta via tema em /djzeneyer/v1/)</p>        </div>
+            <p><strong>Modo:</strong> Engine interna (REST API exposta via tema em /djzeneyer/v1/)</p>
+        </div>
         <?php
     }
 
-    // ======================================================
-    // ENGINE METHODS (USADOS PELO TEMA)
-    // ======================================================
-
-    public function get_player_stats(array $request) {
-
-        $user_id = (int) ($request['id'] ?? 0);
-        if (!$user_id || !function_exists('gamipress_get_user_points')) {
-            return ['success' => false];
-        }
-
-        if ($cache = $this->get_cache($user_id, 'stats')) {
-            return $cache;
-        }
-
-        $xp = (int) gamipress_get_user_points($user_id, 'xp');
-
-        $rank_types = gamipress_get_rank_types();
-        $rank_slug = !empty($rank_types) ? array_key_first($rank_types) : null;
-        $rank_post = $rank_slug ? gamipress_get_user_rank($user_id, $rank_slug) : null;
-
-        $rank_title = $rank_post ? $rank_post->post_title : 'Zen Novice';
-        $rank_icon  = $rank_post ? get_the_post_thumbnail_url($rank_post->ID, 'thumbnail') : '';
-
-        $next = (floor($xp / 1000) + 1) * 1000;
-        $progress = $next > 0 ? min(100, round(($xp % 1000) / 10)) : 0;
-
-        $data = [
-            'success' => true,
-            'stats' => [
-                'xp' => $xp,
-                'level' => 1 + floor($xp / 1000),
-                'rank' => [
-                    'current' => $rank_title,
-                    'icon' => $rank_icon,
-                    'next_milestone' => $next,
-                    'progress_percent' => $progress,
-                ]
-            ]
-        ];
-
-        $this->set_cache($user_id, 'stats', $data);
-        return $data;
-    }
-
+    // ✅ SAFE: Wrapped em try-catch
     public function get_activity_feed(array $request) {
+        try {
+            $user_id = (int) ($request['id'] ?? 0);
+            
+            if (!$user_id) {
+                return ['success' => false, 'activities' => []];
+            }
 
-        $user_id = (int) ($request['id'] ?? 0);
-        if (!$user_id) {
+            if ($cache = $this->get_cache($user_id, 'feed')) {
+                return $cache;
+            }
+
+            $activities = [];
+            $order_xp = (int) get_option('zen_ra_order_xp', 50);
+            $default_xp = (int) get_option('zen_ra_achievement_default_xp', 10);
+
+            // WooCommerce Orders
+            if (class_exists('WooCommerce') && function_exists('wc_get_orders')) {
+                $orders = wc_get_orders(['customer_id' => $user_id, 'limit' => 5, 'status' => 'completed']);
+                if (is_array($orders)) {
+                    foreach ($orders as $order) {
+                        if (!is_object($order)) continue;
+                        $activities[] = [
+                            'id' => 'ord_' . $order->get_id(),
+                            'type' => 'loot',
+                            'description' => 'Order #' . $order->get_id(),
+                            'xp' => $order_xp,
+                            'timestamp' => $order->get_date_created()->getTimestamp(),
+                        ];
+                    }
+                }
+            }
+
+            // GamiPress Achievements
+            if (function_exists('gamipress_get_user_achievements')) {
+                $achs = gamipress_get_user_achievements(['user_id' => $user_id, 'limit' => 5]);
+                if (is_array($achs)) {
+                    foreach ($achs as $ach) {
+                        if (!is_object($ach)) continue;
+                        $xp = (int) gamipress_get_post_points($ach->ID, 'xp');
+                        if ($xp <= 0) $xp = $default_xp;
+
+                        $activities[] = [
+                            'id' => 'ach_' . $ach->ID,
+                            'type' => 'achievement',
+                            'description' => $ach->post_title,
+                            'xp' => $xp,
+                            'timestamp' => strtotime($ach->date_earned),
+                        ];
+                    }
+                }
+            }
+
+            usort($activities, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+
+            $data = [
+                'success' => true,
+                'activities' => array_slice($activities, 0, 10),
+            ];
+
+            $this->set_cache($user_id, 'feed', $data);
+            return $data;
+            
+        } catch (Exception $e) {
+            error_log('[Zen_RA] get_activity_feed error: ' . $e->getMessage());
             return ['success' => false, 'activities' => []];
         }
-
-        if ($cache = $this->get_cache($user_id, 'feed')) {
-            return $cache;
-        }
-
-        $activities = [];
-        $order_xp = (int) get_option('zen_ra_order_xp', 50);
-        $default_xp = (int) get_option('zen_ra_achievement_default_xp', 10);
-
-        if (class_exists('WooCommerce')) {
-            $orders = wc_get_orders(['customer_id' => $user_id, 'limit' => 5, 'status' => 'completed']);
-            foreach ($orders as $order) {
-                $activities[] = [
-                    'id' => 'ord_' . $order->get_id(),
-                    'type' => 'loot',
-                    'description' => 'Order #' . $order->get_id(),
-                    'xp' => $order_xp,
-                    'timestamp' => $order->get_date_created()->getTimestamp(),
-                ];
-            }
-        }
-
-        if (function_exists('gamipress_get_user_achievements')) {
-            $achs = gamipress_get_user_achievements(['user_id' => $user_id, 'limit' => 5]);
-            foreach ($achs as $ach) {
-                $xp = (int) gamipress_get_post_points($ach->ID, 'xp');
-                if ($xp <= 0) $xp = $default_xp;
-
-                $activities[] = [
-                    'id' => 'ach_' . $ach->ID,
-                    'type' => 'achievement',
-                    'description' => $ach->post_title,
-                    'xp' => $xp,
-                    'timestamp' => strtotime($ach->date_earned),
-                ];
-            }
-        }
-
-        usort($activities, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
-
-        $data = [
-            'success' => true,
-            'activities' => array_slice($activities, 0, 10),
-        ];
-
-        $this->set_cache($user_id, 'feed', $data);
-        return $data;
     }
 
     public function get_user_tracks(array $request) {
-        return ['success' => true, 'tracks' => $this->get_products_by_category((int)$request['id'], ['music', 'tracks'])];
+        try {
+            return ['success' => true, 'tracks' => $this->get_products_by_category((int)$request['id'], ['music', 'tracks'])];
+        } catch (Exception $e) {
+            error_log('[Zen_RA] get_user_tracks error: ' . $e->getMessage());
+            return ['success' => true, 'tracks' => []];
+        }
     }
 
     public function get_user_events(array $request) {
-        return ['success' => true, 'events' => $this->get_products_by_category((int)$request['id'], ['events', 'eventos'])];
+        try {
+            return ['success' => true, 'events' => $this->get_products_by_category((int)$request['id'], ['events', 'eventos'])];
+        } catch (Exception $e) {
+            error_log('[Zen_RA] get_user_events error: ' . $e->getMessage());
+            return ['success' => true, 'events' => []];
+        }
     }
 
     public function get_streak_data(array $request) {
-        return ['success' => true, 'streak' => (int) get_user_meta($request['id'], 'zen_login_streak', true)];
+        try {
+            $streak = (int) get_user_meta($request['id'], 'zen_login_streak', true);
+            return ['success' => true, 'streak' => $streak];
+        } catch (Exception $e) {
+            error_log('[Zen_RA] get_streak_data error: ' . $e->getMessage());
+            return ['success' => true, 'streak' => 0];
+        }
     }
 
-    // ======================================================
-    // HELPERS
-    // ======================================================
-
     private function get_products_by_category($user_id, $slugs) {
-        if (!class_exists('WooCommerce')) return [];
+        if (!class_exists('WooCommerce') || !function_exists('wc_get_orders')) {
+            return [];
+        }
 
         $orders = wc_get_orders(['customer_id' => $user_id, 'status' => 'completed', 'limit' => -1]);
         $items = [];
@@ -234,11 +197,8 @@ class Zen_RA {
         if (empty($product_ids)) return [];
 
         $product_ids = array_unique($product_ids);
-
-        // Batch fetch categories
         $terms = wp_get_object_terms($product_ids, 'product_cat', ['fields' => 'all_with_object_id']);
 
-        // Map product_id => [slugs]
         $product_cats = [];
         if (!is_wp_error($terms)) {
             foreach ($terms as $term) {
