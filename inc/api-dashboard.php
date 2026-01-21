@@ -146,8 +146,8 @@ class DJZ_Dashboard_API {
         $rank_icon = '';
         if ($tiers_source === 'gamipress' && function_exists('gamipress_get_rank_types') && function_exists('gamipress_get_user_rank')) {
             $rank_types = gamipress_get_rank_types();
-            $rank_slug = !empty($rank_types) ? array_key_first($rank_types) : null;
-            if ($rank_slug) {
+            		// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_rank_slug' para especificar.
+		$rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);            if ($rank_slug) {
                 $rank_post = gamipress_get_user_rank($user_id, $rank_slug);
                 if ($rank_post) {
                     $rank_name = $rank_post->post_title;
