@@ -237,4 +237,44 @@ export const findRouteByPath = (path: string, lang: Language): RouteConfig | und
       return fullPath === path || path.startsWith(fullPath + '/');
     });
   });
+
+  /**
+ * Retorna links alternativos para o path atual
+ */
+export const getAlternateLinks = (currentPath: string, currentLang: Language): Record<string, string> => {
+  const alternates: Record<string, string> = {};
+  
+  // Se o path está vazio, retorna as raízes
+  if (!currentPath || currentPath === '/') {
+    return { en: '/', pt: '/' };
+  }
+  
+  // Remove leading slash
+  const cleanPath = currentPath.startsWith('/') ? currentPath.slice(1) : currentPath;
+  
+  // Tenta encontrar a rota correspondente
+  for (const route of ROUTES_CONFIG) {
+    const paths = getLocalizedPaths(route, 'en');
+    const enPath = Array.isArray(paths) ? paths[0] : paths;
+    
+    const pathsPt = getLocalizedPaths(route, 'pt');
+    const ptPath = Array.isArray(pathsPt) ? pathsPt[0] : pathsPt;
+    
+    // Verifica se o caminho atual corresponde a esta rota
+    if (cleanPath === enPath || cleanPath.startsWith(enPath + '/')) {
+      alternates.en = `/${enPath}`;
+      alternates.pt = `/${ptPath}`;
+      return alternates;
+    }
+    
+    if (cleanPath === ptPath || cleanPath.startsWith(ptPath + '/')) {
+      alternates.en = `/${enPath}`;
+      alternates.pt = `/${ptPath}`;
+      return alternates;
+    }
+  }
+  
+  // Fallback: retorna o mesmo path para ambos os idiomas
+  return { en: currentPath, pt: currentPath };
+};
 };
