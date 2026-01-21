@@ -137,7 +137,6 @@ const AboutPage: React.FC = () => {
         image={`${ARTIST.site.baseUrl}/images/zen-eyer-about-emotional.jpg`}
         type="profile"
         schema={ABOUT_SCHEMA}
-        hrefLang={getHrefLangUrls(currentPath, ARTIST.site.baseUrl)}
       />
 
       {/* Layout visual */}

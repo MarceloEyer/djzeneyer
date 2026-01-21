@@ -262,7 +262,6 @@ const ZenTribePage: React.FC = () => {
         image="https://djzeneyer.com/images/zen-tribe-og.jpg"
         ogType="website"
         schema={ORGANIZATION_SCHEMA}
-        hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
         keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, DJ Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
       />
 
