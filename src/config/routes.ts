@@ -237,7 +237,7 @@ export const findRouteByPath = (path: string, lang: Language): RouteConfig | und
       return fullPath === path || path.startsWith(fullPath + '/');
     });
   });
-/**
+  /**
  * Retorna links alternativos para o path atual
  */
 export const getAlternateLinks = (currentPath: string, currentLang: Language): Record<string, string> => {
