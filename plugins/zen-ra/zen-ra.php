@@ -3,6 +3,16 @@
  * Plugin Name: Zen-RA (Zen Recent Activity & Gamification)
  * Plugin URI: https://djzeneyer.com
  * Description: Engine de Gamificação (WooCommerce + GamiPress). Usado via PHP por temas headless.
+  * 
+ * IMPORTANTE: Este plugin funciona como ENGINE INTERNA (não expõe REST API própria).
+ * Os endpoints REST são expostos pelo tema via inc/api-dashboard.php no namespace /djzeneyer/v1/
+ * 
+ * Métodos públicos podem ser chamados diretamente via PHP:
+ * - Zen_RA::get_instance()->get_activity_feed(['id' => $user_id])
+ * - Zen_RA::get_instance()->get_player_stats(['id' => $user_id])
+ * - Zen_RA::get_instance()->get_user_tracks(['id' => $user_id])
+ * - Zen_RA::get_instance()->get_user_events(['id' => $user_id])
+ * - Zen_RA::get_instance()->get_streak_data(['id' => $user_id])
  * Version: 3.0.0-ENGINE
  * Author: DJ Zen Eyer
  * License: GPL v2 or later
@@ -79,8 +89,7 @@ class Zen_RA {
                 </table>
                 <?php submit_button(); ?>
             </form>
-            <p><strong>Modo:</strong> Engine interna (API REST desativada)</p>
-        </div>
+		<p><strong>Modo:</strong> Engine interna (REST API exposta via tema em /djzeneyer/v1/)</p>        </div>
         <?php
     }
 
