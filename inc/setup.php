@@ -14,17 +14,13 @@ if (!defined('ABSPATH')) exit;
  */
 define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS);
 define('DJZ_CACHE_PRODUCTS', 30 * MINUTE_IN_SECONDS);
-define('DJZ_CACHE_GAMIPRESS', 15 * MINUTE_IN_SECONDS);
-define('DJZ_GAMIPRESS_DEFAULT_TIER_INCREMENT', 1000);
+define('DJZ_CACHE_GAMIPRESS', 24 * HOUR_IN_SECONDS);
 
 /**
- * --------------------------------------------------
- * GamiPress helpers
- * --------------------------------------------------
+ * GamiPress helper: resolve points type slug with fallback.
  */
 function djz_get_gamipress_points_type_slug(): string {
     $default = 'zen-points';
-
     if (!function_exists('gamipress_get_points_types')) {
         return $default;
     }
@@ -38,10 +34,13 @@ function djz_get_gamipress_points_type_slug(): string {
         return $default;
     }
 
-    return array_key_first($points_types) ?: $default;
-}
+    $first = array_key_first($points_types);
+	return apply_filters('djz_gamipress_points_type_slug', $first ?: $default, $points_types);}
 
+	// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_points_type_slug' para especificar.
 /**
+ * GamiPress helper: resolve rank tiers with fallback.
+ *
  * @return array{tiers: array<int, array{name: string, min: int, next: int}>, source: string}
  */
 function djz_get_gamipress_rank_tiers(): array {
@@ -61,9 +60,8 @@ function djz_get_gamipress_rank_tiers(): array {
     }
 
     $rank_types = gamipress_get_rank_types();
-    $rank_slug = !empty($rank_types) ? array_key_first($rank_types) : null;
-
-    if (!$rank_slug) {
+	// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_rank_slug' para especificar.
+	$rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);    if (!$rank_slug) {
         return [
             'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
             'source' => 'fallback',
@@ -71,11 +69,11 @@ function djz_get_gamipress_rank_tiers(): array {
     }
 
     $ranks = get_posts([
-        'post_type'   => $rank_slug,
+        'post_type' => $rank_slug,
         'post_status' => 'publish',
         'numberposts' => -1,
-        'orderby'     => 'menu_order',
-        'order'       => 'ASC',
+        'orderby' => 'menu_order',
+        'order' => 'ASC',
     ]);
 
     if (empty($ranks)) {
@@ -86,7 +84,6 @@ function djz_get_gamipress_rank_tiers(): array {
     }
 
     $tiers = [];
-
     foreach ($ranks as $rank) {
         $min_points = (int) get_post_meta($rank->ID, '_gamipress_points_required', true);
         if ($min_points <= 0) {
@@ -95,24 +92,26 @@ function djz_get_gamipress_rank_tiers(): array {
 
         $tiers[] = [
             'name' => $rank->post_title,
-            'min'  => max(0, $min_points),
+            'min' => max(0, $min_points),
             'next' => 0,
         ];
     }
 
-    usort($tiers, fn($a, $b) => $a['min'] <=> $b['min']);
+    usort($tiers, function($a, $b) {
+        return $a['min'] <=> $b['min'];
+    });
 
     $count = count($tiers);
     for ($i = 0; $i < $count; $i++) {
         $next_min = $tiers[$i + 1]['min'] ?? 0;
         if ($next_min <= $tiers[$i]['min']) {
-            $next_min = $tiers[$i]['min'] + DJZ_GAMIPRESS_DEFAULT_TIER_INCREMENT;
+            $next_min = $tiers[$i]['min'] + 1000;
         }
         $tiers[$i]['next'] = $next_min;
     }
 
     return [
-        'tiers'  => apply_filters('djz_gamipress_rank_tiers', $tiers),
+        'tiers' => apply_filters('djz_gamipress_rank_tiers', $tiers),
         'source' => 'gamipress',
     ];
 }

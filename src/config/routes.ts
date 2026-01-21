@@ -43,6 +43,7 @@ const MusicPage = lazy(() => import('../pages/MusicPage'));
 const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
 const PressKitPage = lazy(() => import('../pages/PressKitPage'));
 const ShopPage = lazy(() => import('../pages/ShopPage'));
+const ProductPage = lazy(() => import('../pages/ProductPage'));
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
 const FAQPage = lazy(() => import('../pages/FAQPage'));
@@ -119,11 +120,15 @@ export const ROUTES_CONFIG: RouteConfig[] = [
 
   // Shop (com wildcard para subrotas)
   {
+    component: ProductPage,
+    paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
+  },
+{
     component: ShopPage,
     paths: { en: 'shop', pt: 'loja' },
     hasWildcard: true,
   },
-
+  
   // Dashboard
   {
     component: DashboardPage,
@@ -232,69 +237,4 @@ export const findRouteByPath = (path: string, lang: Language): RouteConfig | und
       return fullPath === path || path.startsWith(fullPath + '/');
     });
   });
-};
-
-/**
- * Retorna links alternativos para o path atual
- */
-export const getAlternateLinks = (currentPath: string, currentLang: Language): Record<string, string> => {
-  const alternates: Record<string, string> = {};
-
-  // Find the matching route config
-  const matchedRoute = ROUTES_CONFIG.find(route => {
-    const paths = getLocalizedPaths(route, currentLang);
-    return paths.some(p => {
-      const fullPathPattern = buildFullPath(p, currentLang);
-      // Ensure we match patterns correctly (handling params)
-      // Note: matchPath from react-router v6+
-      return !!matchPath({ path: fullPathPattern, end: !route.hasWildcard }, currentPath);
-    });
-  });
-
-  if (!matchedRoute) {
-    return alternates;
-  }
-
-  // Extract params from the current path
-  let params = {};
-  const paths = getLocalizedPaths(matchedRoute, currentLang);
-  for (const p of paths) {
-    const fullPathPattern = buildFullPath(p, currentLang);
-    const match = matchPath({ path: fullPathPattern, end: !matchedRoute.hasWildcard }, currentPath);
-    if (match) {
-      params = match.params;
-      break;
-    }
-  }
-
-  // Generate alternate paths
-  const targetLangs: Language[] = ['en', 'pt'];
-
-  targetLangs.forEach(lang => {
-    if (lang === currentLang) return; // Skip current
-
-    const targetPaths = getLocalizedPaths(matchedRoute, lang);
-    if (targetPaths.length > 0) {
-      // Use the first path defined for the target language (canonical)
-      let targetPathPattern = buildFullPath(targetPaths[0], lang);
-
-      try {
-        // Substitute params
-        const finalPath = generatePath(targetPathPattern, params);
-        alternates[lang] = finalPath;
-      } catch (e) {
-        console.warn(`[getAlternateLinks] Error generating alternate path for ${lang}:`, e);
-      }
-    }
-  });
-
-  // Always include x-default (usually 'en')
-  if (alternates['en']) {
-    alternates['x-default'] = alternates['en'];
-  } else if (currentLang === 'en') {
-     // If we are on EN, then EN is x-default
-     alternates['x-default'] = currentPath;
-  }
-
-  return alternates;
 };

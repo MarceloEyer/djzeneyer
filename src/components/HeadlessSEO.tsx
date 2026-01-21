@@ -249,7 +249,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta name="author" content={ARTIST.identity.stageName} />
       <meta name="creator" content={ARTIST.identity.fullName} />
       <meta name="publisher" content={ARTIST.identity.stageName} />
-      <meta name="subject" content={ARTIST.subject} />
+      <meta name="subject" content="Brazilian Zouk DJ & Music Producer" />
 
       {/* Robots */}
       <meta

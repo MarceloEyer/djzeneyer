@@ -2,7 +2,7 @@
 // Visual inspirado em Netflix para venda de ingressos de eventos
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -35,6 +35,7 @@ interface ProductImage {
 
 interface ProductCategory {
   name: string;
+  slug?: string;
 }
 
 interface Product {
@@ -59,7 +60,8 @@ const ProductCarousel: React.FC<{
   onAddToCart: (id: number) => void;
   addingToCart: number | null;
   formatPrice: (price: string) => string;
-}> = ({ title, products, onAddToCart, addingToCart, formatPrice }) => {
+  productBasePath: string;
+}> = ({ title, products, onAddToCart, addingToCart, formatPrice, productBasePath }) => {
   const { t } = useTranslation();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -143,7 +145,7 @@ const ProductCarousel: React.FC<{
               whileHover={{ scale: 1.05, zIndex: 10, transition: { duration: 0.3 } }}
             >
               <div className="card overflow-hidden shadow-xl bg-surface border border-white/5 rounded-lg h-full flex flex-col">
-                <Link to={`/product/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
+                <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
                   <img 
                     src={product.images[0]?.src || 'https://placehold.co/640x360/0D96FF/FFFFFF?text=Event'}
                     alt={product.images[0]?.alt || product.name}
@@ -161,7 +163,7 @@ const ProductCarousel: React.FC<{
                 </Link>
 
                 <div className="p-4 flex flex-col flex-grow">
-                  <Link to={`/product/${product.slug}`}>
+                  <Link to={`${productBasePath}/${product.slug}`}>
                     <h3 className="text-base font-bold mb-1 text-white line-clamp-1 hover:text-primary transition-colors">
                       {product.name}
                     </h3>
@@ -235,7 +237,8 @@ const ProductCarousel: React.FC<{
 const ShopPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language.split('-')[0];
-  const navigate = useNavigate();
+  const isPortuguese = i18n.language.startsWith('pt');
+  const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -278,6 +281,7 @@ const ShopPage: React.FC = () => {
           'Content-Type': 'application/json',
           'X-WP-Nonce': (window as any).wpData?.nonce || '' 
         },
+        credentials: 'include',
         body: JSON.stringify({ id: productId, quantity: 1 })
       });
 
@@ -296,9 +300,10 @@ const ShopPage: React.FC = () => {
   const formatPrice = (price: string) => {
     if (!price) return 'R$ 0,00';
     const numPrice = parseFloat(price);
+    const locale = isPortuguese ? 'pt-BR' : 'en-US';
     return isNaN(numPrice) 
       ? price 
-      : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numPrice);
+      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
   };
 
   // Filtros de categorias para as seções
@@ -336,7 +341,7 @@ const ShopPage: React.FC = () => {
           <div className="relative h-[60vh] md:h-[80vh] w-full mb-8">
             <div className="absolute inset-0">
               <img 
-                src={featuredProduct.images[0]?.src || ''} 
+                src={featuredProduct.images[0]?.src || 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer'} 
                 alt={featuredProduct.name}
                 className="w-full h-full object-cover"
               />
@@ -381,7 +386,7 @@ const ShopPage: React.FC = () => {
                   </motion.button>
                   
                   <Link 
-                    to={`/product/${featuredProduct.slug}`}
+                    to={`${productBasePath}/${featuredProduct.slug}`}
                     className="btn btn-outline btn-lg px-8 flex items-center gap-2 bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20"
                   >
                     <Info size={20} />
@@ -401,6 +406,7 @@ const ShopPage: React.FC = () => {
             onAddToCart={addToCart}
             addingToCart={addingToCart}
             formatPrice={formatPrice}
+            productBasePath={productBasePath}
           />
 
           <ProductCarousel 
@@ -409,6 +415,7 @@ const ShopPage: React.FC = () => {
             onAddToCart={addToCart}
             addingToCart={addingToCart}
             formatPrice={formatPrice}
+            productBasePath={productBasePath}
           />
         </div>
 
