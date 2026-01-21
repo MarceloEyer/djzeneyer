@@ -3,7 +3,10 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { getAlternateLinks, Language } from '../config/routes';
 
 // ============================================================================
 // 1. INTERFACES
@@ -76,7 +79,11 @@ const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   return `${cleanBase}/${cleanPath}`;
 };
 
+/**
+ * @deprecated Use HeadlessSEO component which now handles this automatically.
+ */
 export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
+  // Keeping for backward compatibility but implementation is legacy naive
   const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '').replace(/\/$/, '') || '/';
   const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`;
   
@@ -107,11 +114,52 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   keywords,
   isHomepage = false,
   preload = [],
-  locale, // Recebe o locale
+  locale,
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
+  const { i18n } = useTranslation();
+  const location = useLocation();
+  const currentLang = (i18n.language || 'en') as Language;
 
-  // 1. Fallbacks
+  // 1. Automatic Hreflang Generation
+  const computedHrefLang = React.useMemo(() => {
+    // If explicitly provided, use it (backward compatibility)
+    if (hrefLang && hrefLang.length > 0) return hrefLang;
+
+    const links: HrefLang[] = [];
+    const siteUrlClean = baseUrl.replace(/\/$/, '');
+
+    // Add current page
+    const currentPathNormalized = location.pathname.startsWith('/') ? location.pathname : `/${location.pathname}`;
+    const currentFullUrl = ensureTrailingSlash(`${siteUrlClean}${currentPathNormalized}`);
+
+    links.push({
+        lang: currentLang === 'pt' ? 'pt-BR' : 'en',
+        url: currentFullUrl
+    });
+
+    // Add alternates
+    try {
+      const alternates = getAlternateLinks(location.pathname, currentLang);
+      Object.entries(alternates).forEach(([lang, path]) => {
+          // Normalize path to ensure it starts with /
+          const safePath = path.startsWith('/') ? path : `/${path}`;
+          const url = ensureTrailingSlash(`${siteUrlClean}${safePath}`);
+
+          if (lang === 'x-default') {
+               links.push({ lang: 'x-default', url });
+          } else {
+               links.push({ lang: lang === 'pt' ? 'pt-BR' : 'en', url });
+          }
+      });
+    } catch (err) {
+      console.error('Error generating alternate links:', err);
+    }
+
+    return links;
+  }, [hrefLang, location.pathname, currentLang, baseUrl]);
+
+  // 2. Fallbacks
   const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
   const finalDescription = data?.desc || description || ARTIST.site.defaultDescription;
   
@@ -241,7 +289,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta name="twitter:creator" content="@djzeneyer" />
 
       {/* Hreflang Tags */}
-      {hrefLang.map(({ lang, url: hrefUrl }) => (
+      {computedHrefLang.map(({ lang, url: hrefUrl }) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
       ))}
 
