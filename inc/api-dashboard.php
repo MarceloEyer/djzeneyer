@@ -1,7 +1,19 @@
 <?php
 /**
- * DJ Zen Eyer - Dashboard API (Headless Facade)
- * Provides activity, tracks, events, and streak endpoints using Zen_RA plugin
+ * DJ Zen Eyer - Dashboard API Adapter/Facade (Headless WordPress) * Provides activity, tracks, events, and streak endpoints using Zen_RA plugin
+  * 
+ * Este arquivo atua como ADAPTER/FACADE entre o frontend React e o plugin Zen_RA.
+ * 
+ * ARQUITETURA:
+ * Frontend React -> /wp-json/djzeneyer/v1/* -> api-dashboard.php -> Zen_RA Plugin -> WooCommerce/GamiPress
+ * 
+ * Endpoints expostos:
+ * - GET /djzeneyer/v1/activity/{id} - Feed de atividades (pedidos + conquistas)
+ * - GET /djzeneyer/v1/tracks/{id} - Produtos de música comprados
+ * - GET /djzeneyer/v1/events/{id} - Ingressos de eventos comprados  
+ * - GET /djzeneyer/v1/streak/{id} - Contador de login consecutivo
+ * 
+ * Nota: O plugin Zen_RA NÃO expõe REST API própria - este arquivo é responsável por isso.
  * @version 4.0.0
  */
 
