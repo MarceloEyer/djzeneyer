@@ -4,22 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
 import { Download, Music2, Clock, Filter, ExternalLink, Youtube, Cloud } from 'lucide-react';
-import { useTracksQuery } from '../hooks/useQueries';
-
-interface MusicTrack {
-  id: number;
-  title: { rendered: string };
-  category_name: string; 
-  tag_names: string[];
-  links: { // Novos campos da API
-    download: string;
-    soundcloud: string;
-    youtube: string;
-  };
-  _embedded?: {
-    'wp:featuredmedia'?: Array<{ source_url: string }>;
-  };
-}
+import { useTracksQuery, MusicTrack } from '../hooks/useQueries';
 
 const MusicPage: React.FC = () => {
   const { t } = useTranslation();
@@ -114,7 +99,9 @@ const MusicPage: React.FC = () => {
             <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence>
                 {filteredTracks.map((track) => {
-                  const coverUrl = track._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+                  const media = track._embedded?.['wp:featuredmedia']?.[0];
+                  // OPTIMIZATION: Use medium_large image instead of full size to improve performance
+                  const coverUrl = media?.media_details?.sizes?.medium_large?.source_url || media?.source_url;
                   
                   return (
                     <motion.div

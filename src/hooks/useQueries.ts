@@ -44,7 +44,7 @@ interface EventsResponse {
   events: BandsintownEvent[];
 }
 
-interface MusicTrack {
+export interface MusicTrack {
   id: number;
   title: { rendered: string };
   category_name: string;
@@ -55,7 +55,17 @@ interface MusicTrack {
     youtube: string;
   };
   _embedded?: {
-    'wp:featuredmedia'?: Array<{ source_url: string }>;
+    'wp:featuredmedia'?: Array<{
+      source_url: string;
+      media_details?: {
+        sizes?: {
+          medium?: { source_url: string };
+          medium_large?: { source_url: string };
+          large?: { source_url: string };
+          full?: { source_url: string };
+        };
+      };
+    }>;
   };
 }
 
