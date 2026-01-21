@@ -1,5 +1,5 @@
 // src/hooks/useRecentActivity.ts
-// v5.1 - Dashboard Compatible (No Nonce / No Credentials)
+// v5.2 - FIX: Correct endpoint namespace
 
 import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
@@ -36,7 +36,9 @@ export const useRecentActivity = () => {
 
         const wpData = (window as any).wpData || {};
         const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
-        const endpoint = `${wpRestUrl}/zen-ra/v1/activity/${user.id}`;
+        
+        // ✅ FIX: Namespace correto
+        const endpoint = `${wpRestUrl}/djzeneyer/v1/activity/${user.id}`;
 
         const res = await fetch(endpoint);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
