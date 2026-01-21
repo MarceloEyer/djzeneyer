@@ -51,8 +51,7 @@ function djz_get_menu($request) {
     $cache_key = 'djz_menu_' . $lang;
     
     $cached = get_transient($cache_key);
-    if ($cached && empty($slug)) return rest_ensure_response($cached);
-    
+	if ($cached) return rest_ensure_response($cached);    
     if (function_exists('pll_set_language')) {
         pll_set_language($lang);
     }
@@ -223,6 +222,25 @@ function djz_get_gamipress($request) {
     $level = 1;
     $rank = $ranks[0]['name'];
     $next = $ranks[0]['next'];
+
+    	// Validação: se ranks estiver vazio, retorna fallback
+	if (empty($ranks)) {
+		$fallback = [
+			'success' => true,
+			'data' => [
+				'points' => $points,
+				'level' => 1,
+				'rank' => 'Zen Novice',
+				'nextLevel' => 2,
+				'nextLevelPoints' => 100,
+				'progressToNextLevel' => 0,
+				'achievements' => [],
+				'pointsType' => $points_type,
+			],
+		];
+		set_transient($cache_key, $fallback, DJZ_CACHE_GAMIPRESS);
+		return rest_ensure_response($fallback);
+	}
     
     foreach ($ranks as $i => $tier) {
         if ($points < $tier['min']) {
