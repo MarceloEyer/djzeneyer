@@ -1,7 +1,8 @@
 <?php
 /**
- * DJ Zen Eyer - Dashboard API Adapter/Facade (Headless WordPress) * Provides activity, tracks, events, and streak endpoints using Zen_RA plugin
-  * 
+ * DJ Zen Eyer - Dashboard API Adapter/Facade (Headless WordPress)
+ * Provides activity, tracks, events, and streak endpoints using Zen_RA plugin
+ * 
  * Este arquivo atua como ADAPTER/FACADE entre o frontend React e o plugin Zen_RA.
  * 
  * ARQUITETURA:
@@ -14,7 +15,7 @@
  * - GET /djzeneyer/v1/streak/{id} - Contador de login consecutivo
  * 
  * Nota: O plugin Zen_RA NÃO expõe REST API própria - este arquivo é responsável por isso.
- * @version 4.0.0
+ * @version 4.1.0
  */
 
 if (!defined('ABSPATH')) {
@@ -116,6 +117,34 @@ class DJZ_Dashboard_API {
         );
     }
 
+    // ✅ FIX: Adicionar fallback para erro 500
+    public function streak($request) {
+        $plugin = $this->plugin();
+        
+        // Fallback se plugin não existir ou método não existir
+        if (!$plugin || !method_exists($plugin, 'get_streak_data')) {
+            return rest_ensure_response([
+                'success' => true, 
+                'streak' => 0
+            ]);
+        }
+
+        // ✅ Adicionar try-catch para capturar erros internos
+        try {
+            $result = $plugin->get_streak_data(['id' => (int)$request['id']]);
+            return rest_ensure_response($result);
+        } catch (Exception $e) {
+            // Log do erro para debug
+            error_log('[DJZ_Dashboard_API] Streak error: ' . $e->getMessage());
+            
+            // Retornar fallback ao invés de 500
+            return rest_ensure_response([
+                'success' => true,
+                'streak' => 0
+            ]);
+        }
+    }
+
     public function get_zen_gamipress($request) {
         $user_id = (int) $request['id'];
 
@@ -160,8 +189,8 @@ class DJZ_Dashboard_API {
         $rank_icon = '';
         if ($tiers_source === 'gamipress' && function_exists('gamipress_get_rank_types') && function_exists('gamipress_get_user_rank')) {
             $rank_types = gamipress_get_rank_types();
-            		// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_rank_slug' para especificar.
-		$rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);            if ($rank_slug) {
+            $rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);
+            if ($rank_slug) {
                 $rank_post = gamipress_get_user_rank($user_id, $rank_slug);
                 if ($rank_post) {
                     $rank_name = $rank_post->post_title;
