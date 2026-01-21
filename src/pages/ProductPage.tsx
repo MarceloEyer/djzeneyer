@@ -82,8 +82,7 @@ const ProductPage: React.FC = () => {
 
   useEffect(() => {
     fetchProduct();
-  }, [fetchProduct]);
-
+  }, [slug, t, currentLang]);
   const addToCart = async () => {
     if (!product) return;
     setAddingToCart(true);
