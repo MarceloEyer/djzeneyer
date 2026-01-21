@@ -7,7 +7,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones } from 'lucide-react';
+import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones, Instagram, Facebook, Save } from 'lucide-react';
 import { UserStatsCards } from '../components/account/UserStatsCards'; // Importação corrigida
 import { OrdersList } from '../components/account/OrdersList'; // Importação corrigida
 import { RecentActivity } from '../components/account/RecentActivity'; // Importação corrigida
@@ -42,6 +42,19 @@ const MyAccountPage: React.FC = () => {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [newsletterEnabled, setNewsletterEnabled] = useState(false);
+  const [savingNewsletter, setSavingNewsletter] = useState(false);
+  
+  // Profile form state
+  const [profileForm, setProfileForm] = useState({
+    realName: user?.name || '',
+    preferredName: '',
+    facebookUrl: '',
+    instagramUrl: '',
+    danceRole: [] as string[], // 'leader', 'follower', or both
+    gender: '' as '' | 'male' | 'female' | 'non-binary'
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
 
   console.log('[MyAccountPage] User:', user);
 
@@ -96,12 +109,92 @@ const MyAccountPage: React.FC = () => {
     }
   }, [user, loading, navigate]);
 
-  // Fetch orders
+  // Fetch orders, profile, and newsletter status
   useEffect(() => {
     if (user?.isLoggedIn) {
       fetchOrders();
+      fetchProfile();
+      fetchNewsletterStatus();
     }
   }, [user]);
+
+  // Fetch profile data
+  const fetchProfile = async () => {
+    if (!user?.token) return;
+    
+    try {
+      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setProfileForm({
+            realName: data.data.real_name || user.name || '',
+            preferredName: data.data.preferred_name || '',
+            facebookUrl: data.data.facebook_url || '',
+            instagramUrl: data.data.instagram_url || '',
+            danceRole: data.data.dance_role || [],
+            gender: data.data.gender || '',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error fetching profile:', error);
+    }
+  };
+
+  // Fetch newsletter status
+  const fetchNewsletterStatus = async () => {
+    if (!user?.token) return;
+    
+    try {
+      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setNewsletterEnabled(data.subscribed);
+        }
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error fetching newsletter status:', error);
+    }
+  };
+
+  // Toggle newsletter subscription
+  const handleNewsletterToggle = async (enabled: boolean) => {
+    if (!user?.token) return;
+    
+    setSavingNewsletter(true);
+    try {
+      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setNewsletterEnabled(data.subscribed);
+      }
+    } catch (error) {
+      console.error('[MyAccountPage] Error toggling newsletter:', error);
+    } finally {
+      setSavingNewsletter(false);
+    }
+  };
 
   const fetchOrders = async () => {
     if (!user?.token) {
@@ -312,45 +405,228 @@ const MyAccountPage: React.FC = () => {
         );
 
       case 'settings':
+        const handleProfileChange = (field: string, value: string | string[]) => {
+          setProfileForm(prev => ({ ...prev, [field]: value }));
+          setProfileSaved(false);
+        };
+
+        const handleDanceRoleToggle = (role: string) => {
+          setProfileForm(prev => {
+            const roles = prev.danceRole.includes(role)
+              ? prev.danceRole.filter(r => r !== role)
+              : [...prev.danceRole, role];
+            return { ...prev, danceRole: roles };
+          });
+          setProfileSaved(false);
+        };
+
+        const handleSaveProfile = async () => {
+          setSavingProfile(true);
+          try {
+            const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.token}`,
+              },
+              body: JSON.stringify({
+                real_name: profileForm.realName,
+                preferred_name: profileForm.preferredName,
+                facebook_url: profileForm.facebookUrl,
+                instagram_url: profileForm.instagramUrl,
+                dance_role: profileForm.danceRole,
+                gender: profileForm.gender,
+              }),
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              setProfileSaved(true);
+              setTimeout(() => setProfileSaved(false), 3000);
+            } else {
+              console.error('[MyAccountPage] Error saving profile:', data.message);
+            }
+          } catch (error) {
+            console.error('[MyAccountPage] Error saving profile:', error);
+          } finally {
+            setSavingProfile(false);
+          }
+        };
+
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Account Settings</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('nav_my_account')}</h2>
 
             {/* Profile Settings */}
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <User className="text-primary" size={24} />
-                <h3 className="text-xl font-semibold">Profile Information</h3>
+                <h3 className="text-xl font-semibold">{t('profile.title')}</h3>
               </div>
               <div className="space-y-4">
+                {/* Real Name */}
                 <div>
-                  <label htmlFor="account-name" className="block text-sm font-semibold mb-2">Full Name</label>
+                  <label htmlFor="account-real-name" className="block text-sm font-semibold mb-2">
+                    {t('profile.real_name')} <span className="text-white/50 font-normal">({t('profile.real_name_hint')})</span>
+                  </label>
                   <input
-                    id="account-name"
-                    name="account-name"
+                    id="account-real-name"
+                    name="account-real-name"
                     type="text"
-                    value={user.name}
+                    value={profileForm.realName}
+                    onChange={(e) => handleProfileChange('realName', e.target.value)}
                     autoComplete="name"
-                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
-                    disabled
+                    placeholder={t('profile.real_name')}
+                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
                   />
                 </div>
+
+                {/* Preferred Name */}
                 <div>
-                  <label htmlFor="account-email" className="block text-sm font-semibold mb-2">Email</label>
+                  <label htmlFor="account-preferred-name" className="block text-sm font-semibold mb-2">
+                    {t('profile.preferred_name')} <span className="text-white/50 font-normal">({t('profile.preferred_name_hint')})</span>
+                  </label>
+                  <input
+                    id="account-preferred-name"
+                    name="account-preferred-name"
+                    type="text"
+                    value={profileForm.preferredName}
+                    onChange={(e) => handleProfileChange('preferredName', e.target.value)}
+                    placeholder={t('profile.preferred_name')}
+                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
+                  />
+                </div>
+
+                {/* Email (read-only) */}
+                <div>
+                  <label htmlFor="account-email" className="block text-sm font-semibold mb-2">{t('profile.email')}</label>
                   <input
                     id="account-email"
                     name="account-email"
                     type="email"
                     value={user.email}
                     autoComplete="email"
-                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg"
+                    className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg text-white/50"
                     disabled
                   />
                 </div>
-                <button className="btn btn-outline flex items-center gap-2">
-                  <Edit3 size={16} />
-                  Edit Profile
-                </button>
+
+                {/* Social Media */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="account-facebook" className="block text-sm font-semibold mb-2">
+                      <Facebook size={16} className="inline mr-2" />
+                      {t('profile.facebook')}
+                    </label>
+                    <input
+                      id="account-facebook"
+                      name="account-facebook"
+                      type="url"
+                      value={profileForm.facebookUrl}
+                      onChange={(e) => handleProfileChange('facebookUrl', e.target.value)}
+                      placeholder={t('profile.facebook_placeholder')}
+                      className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="account-instagram" className="block text-sm font-semibold mb-2">
+                      <Instagram size={16} className="inline mr-2" />
+                      {t('profile.instagram')}
+                    </label>
+                    <input
+                      id="account-instagram"
+                      name="account-instagram"
+                      type="url"
+                      value={profileForm.instagramUrl}
+                      onChange={(e) => handleProfileChange('instagramUrl', e.target.value)}
+                      placeholder={t('profile.instagram_placeholder')}
+                      className="w-full px-4 py-3 bg-background border border-white/10 rounded-lg focus:border-primary focus:outline-none transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Dance Role */}
+                <div>
+                  <label className="block text-sm font-semibold mb-3">
+                    {t('profile.dance_role')} <span className="text-white/50 font-normal">({t('profile.dance_role_hint')})</span>
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleDanceRoleToggle('leader')}
+                      className={`px-5 py-2.5 rounded-lg border transition-all ${
+                        profileForm.danceRole.includes('leader')
+                          ? 'bg-primary border-primary text-white'
+                          : 'border-white/20 text-white/70 hover:border-white/40'
+                      }`}
+                    >
+                      {t('profile.leader')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDanceRoleToggle('follower')}
+                      className={`px-5 py-2.5 rounded-lg border transition-all ${
+                        profileForm.danceRole.includes('follower')
+                          ? 'bg-secondary border-secondary text-white'
+                          : 'border-white/20 text-white/70 hover:border-white/40'
+                      }`}
+                    >
+                      {t('profile.follower')}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Gender */}
+                <div>
+                  <label className="block text-sm font-semibold mb-3">{t('profile.gender')}</label>
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      { value: 'male', labelKey: 'profile.male' },
+                      { value: 'female', labelKey: 'profile.female' },
+                      { value: 'non-binary', labelKey: 'profile.non_binary' }
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => handleProfileChange('gender', option.value)}
+                        className={`px-5 py-2.5 rounded-lg border transition-all ${
+                          profileForm.gender === option.value
+                            ? 'bg-accent border-accent text-white'
+                            : 'border-white/20 text-white/70 hover:border-white/40'
+                        }`}
+                      >
+                        {t(option.labelKey)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="pt-4 border-t border-white/10">
+                  <button 
+                    onClick={handleSaveProfile}
+                    disabled={savingProfile}
+                    className="btn btn-primary flex items-center gap-2"
+                  >
+                    {savingProfile ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                        {t('profile.saving')}
+                      </>
+                    ) : profileSaved ? (
+                      <>
+                        <span className="text-success">✓</span>
+                        {t('profile.saved')}
+                      </>
+                    ) : (
+                      <>
+                        <Save size={16} />
+                        {t('profile.save')}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -383,7 +659,8 @@ const MyAccountPage: React.FC = () => {
                           type="checkbox"
                           className="w-5 h-5"
                           checked={newsletterEnabled}
-                          onChange={(e) => setNewsletterEnabled(e.target.checked)}
+                          disabled={savingNewsletter}
+                          onChange={(e) => handleNewsletterToggle(e.target.checked)}
                         />
                         <span className="font-semibold">{t('account_page.newsletter_toggle')}</span>
                       </div>
@@ -391,8 +668,19 @@ const MyAccountPage: React.FC = () => {
                         {t('account_page.newsletter_desc')}
                       </p>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full ${newsletterEnabled ? 'bg-success/20 text-success' : 'bg-white/10 text-white/60'}`}>
-                      {newsletterEnabled ? t('account_page.newsletter_enabled') : t('account_page.newsletter_disabled')}
+                    <span className={`text-xs px-3 py-1 rounded-full ${
+                      savingNewsletter 
+                        ? 'bg-white/10 text-white/60' 
+                        : newsletterEnabled 
+                          ? 'bg-success/20 text-success' 
+                          : 'bg-white/10 text-white/60'
+                    }`}>
+                      {savingNewsletter 
+                        ? '...' 
+                        : newsletterEnabled 
+                          ? t('account_page.newsletter_enabled') 
+                          : t('account_page.newsletter_disabled')
+                      }
                     </span>
                   </label>
                 </div>

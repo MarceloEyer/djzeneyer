@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e94560"/>
+      <stop offset="50%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg6)"/>
+  <circle cx="250" cy="300" r="50" fill="#ffffff" opacity="0.15"/>
+  <circle cx="400" cy="400" r="70" fill="#ffffff" opacity="0.15"/>
+  <circle cx="550" cy="300" r="50" fill="#ffffff" opacity="0.15"/>
+  <circle cx="300" cy="500" r="40" fill="#ffffff" opacity="0.15"/>
+  <circle cx="500" cy="500" r="40" fill="#ffffff" opacity="0.15"/>
+  <text x="400" y="650" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" text-anchor="middle" opacity="0.8">Press Photo 6</text>
+  <text x="400" y="700" font-family="Arial, sans-serif" font-size="20" fill="#ffffff" text-anchor="middle" opacity="0.5">Dance Floor</text>
+</svg>

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
-import { ARTIST_SCHEMA_BASE, ARTIST } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE, ARTIST, getWhatsAppUrl } from '../data/artistData';
 
 // ============================================================================
 // SCHEMA.ORG PARA A PÁGINA ABOUT
@@ -137,7 +137,6 @@ const AboutPage: React.FC = () => {
         image={`${ARTIST.site.baseUrl}/images/zen-eyer-about-emotional.jpg`}
         type="profile"
         schema={ABOUT_SCHEMA}
-        hrefLang={getHrefLangUrls(currentPath, ARTIST.site.baseUrl)}
       />
 
       {/* Layout visual */}
@@ -358,7 +357,9 @@ const AboutPage: React.FC = () => {
                 também acreditam no poder da conexão através da arte.
               </p>
               <motion.a
-                href="/contact"
+                href={getWhatsAppUrl('Olá Zen! Vi sua história no site e gostaria de compartilhar a minha também.')}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn btn-primary btn-lg inline-flex items-center gap-3"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

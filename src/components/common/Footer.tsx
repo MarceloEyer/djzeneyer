@@ -140,6 +140,8 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
               <li><Link to="/about/" className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
+              <li><Link to="/news/" className="text-white/70 hover:text-primary transition-colors">{t('footer_news', 'News & Blog')}</Link></li>
+              <li><Link to="/my-philosophy/" className="text-white/70 hover:text-primary transition-colors">{t('footer_philosophy', 'My Philosophy')}</Link></li>
               <li><Link to="/work-with-me/" className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
               <li><Link to="/media/" className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
               <li><Link to="/faq/" className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>

@@ -98,6 +98,9 @@ class Zen_SEO_Sitemap {
     private function generate_post_urls() {
         $xml = '';
         $post_types = Zen_SEO_Helpers::get_supported_post_types();
+
+        // Remove 'page' to avoid duplication with static sitemap-pages.xml which handles React routes
+        $post_types = array_diff($post_types, ['page']);
         
         // Query args
         $args = [

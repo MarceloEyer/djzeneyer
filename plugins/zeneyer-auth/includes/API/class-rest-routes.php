@@ -90,6 +90,34 @@ class Rest_Routes {
             'callback' => [__CLASS__, 'get_settings'],
             'permission_callback' => '__return_true',
         ]);
+        
+        // 11. Update Profile
+        register_rest_route(self::NAMESPACE, '/profile', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'update_profile'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
+        
+        // 12. Get Profile
+        register_rest_route(self::NAMESPACE, '/profile', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [__CLASS__, 'get_profile'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
+        
+        // 13. Newsletter Toggle
+        register_rest_route(self::NAMESPACE, '/newsletter', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'toggle_newsletter'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
+        
+        // 14. Newsletter Status
+        register_rest_route(self::NAMESPACE, '/newsletter', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [__CLASS__, 'get_newsletter_status'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
     }
     
     // Login endpoint
@@ -366,5 +394,315 @@ class Rest_Routes {
             'display_name' => $user->display_name,
             'roles' => $user->roles,
         ];
+    }
+    
+    /**
+     * Update user profile
+     * Saves: real_name, preferred_name, facebook_url, instagram_url, dance_role, gender
+     */
+    public static function update_profile($request) {
+        $user_id = self::get_user_id_from_token($request);
+        
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+        
+        // Sanitize and save each field
+        $fields = [
+            'zen_real_name' => sanitize_text_field($request->get_param('real_name')),
+            'zen_preferred_name' => sanitize_text_field($request->get_param('preferred_name')),
+            'zen_facebook_url' => esc_url_raw($request->get_param('facebook_url')),
+            'zen_instagram_url' => esc_url_raw($request->get_param('instagram_url')),
+            'zen_dance_role' => self::sanitize_dance_role($request->get_param('dance_role')),
+            'zen_gender' => self::sanitize_gender($request->get_param('gender')),
+        ];
+        
+        foreach ($fields as $meta_key => $value) {
+            if ($value !== null && $value !== '') {
+                update_user_meta($user_id, $meta_key, $value);
+            } elseif ($value === '') {
+                delete_user_meta($user_id, $meta_key);
+            }
+        }
+        
+        // Update display_name if preferred_name is set
+        if (!empty($fields['zen_preferred_name'])) {
+            wp_update_user([
+                'ID' => $user_id,
+                'display_name' => $fields['zen_preferred_name'],
+            ]);
+        }
+        
+        return rest_ensure_response([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'data' => self::get_profile_data($user_id),
+        ]);
+    }
+    
+    /**
+     * Get user profile data
+     */
+    public static function get_profile($request) {
+        $user_id = self::get_user_id_from_token($request);
+        
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+        
+        return rest_ensure_response([
+            'success' => true,
+            'data' => self::get_profile_data($user_id),
+        ]);
+    }
+    
+    /**
+     * Get profile data for a user
+     */
+    private static function get_profile_data($user_id) {
+        $user = get_userdata($user_id);
+        
+        return [
+            'id' => $user_id,
+            'email' => $user->user_email,
+            'display_name' => $user->display_name,
+            'real_name' => get_user_meta($user_id, 'zen_real_name', true),
+            'preferred_name' => get_user_meta($user_id, 'zen_preferred_name', true),
+            'facebook_url' => get_user_meta($user_id, 'zen_facebook_url', true),
+            'instagram_url' => get_user_meta($user_id, 'zen_instagram_url', true),
+            'dance_role' => get_user_meta($user_id, 'zen_dance_role', true) ?: [],
+            'gender' => get_user_meta($user_id, 'zen_gender', true),
+        ];
+    }
+    
+    /**
+     * Sanitize dance role (array of 'leader' and/or 'follower')
+     */
+    private static function sanitize_dance_role($roles) {
+        if (!is_array($roles)) {
+            return [];
+        }
+        
+        $allowed = ['leader', 'follower'];
+        return array_values(array_intersect($roles, $allowed));
+    }
+    
+    /**
+     * Sanitize gender field
+     */
+    private static function sanitize_gender($gender) {
+        $allowed = ['male', 'female', 'non-binary', ''];
+        return in_array($gender, $allowed) ? $gender : '';
+    }
+    
+    /**
+     * Toggle newsletter subscription (MailPoet integration)
+     */
+    public static function toggle_newsletter($request) {
+        $user_id = self::get_user_id_from_token($request);
+        
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+        
+        $enabled = (bool) $request->get_param('enabled');
+        $user = get_userdata($user_id);
+        
+        if (!$user) {
+            return new WP_Error('user_not_found', 'User not found', ['status' => 404]);
+        }
+        
+        // Check if MailPoet is active
+        if (!class_exists('\MailPoet\API\API')) {
+            // Fallback: save preference in user meta
+            update_user_meta($user_id, 'zen_newsletter_subscribed', $enabled ? '1' : '0');
+            
+            return rest_ensure_response([
+                'success' => true,
+                'message' => $enabled ? 'Newsletter preference saved' : 'Newsletter preference removed',
+                'subscribed' => $enabled,
+                'method' => 'user_meta'
+            ]);
+        }
+        
+        try {
+            $mailpoet_api = \MailPoet\API\API::MP('v1');
+            
+            // Get or create subscriber
+            $subscriber = null;
+            try {
+                $subscriber = $mailpoet_api->getSubscriber($user->user_email);
+            } catch (\Exception $e) {
+                // Subscriber doesn't exist, will create if enabling
+            }
+            
+            // Find "Zen Tribe Newsletter" list
+            $lists = $mailpoet_api->getLists();
+            $zen_list_id = null;
+            
+            foreach ($lists as $list) {
+                if (stripos($list['name'], 'Zen Tribe') !== false) {
+                    $zen_list_id = $list['id'];
+                    break;
+                }
+            }
+            
+            if (!$zen_list_id) {
+                // Fallback to user meta if list not found
+                update_user_meta($user_id, 'zen_newsletter_subscribed', $enabled ? '1' : '0');
+                
+                return rest_ensure_response([
+                    'success' => true,
+                    'message' => 'Newsletter list not found, preference saved locally',
+                    'subscribed' => $enabled,
+                    'method' => 'user_meta'
+                ]);
+            }
+            
+            if ($enabled) {
+                if (!$subscriber) {
+                    // Create new subscriber and add to list
+                    $subscriber = $mailpoet_api->addSubscriber([
+                        'email' => $user->user_email,
+                        'first_name' => $user->first_name ?: $user->display_name,
+                        'last_name' => $user->last_name ?: '',
+                    ], [$zen_list_id]);
+                } else {
+                    // Add existing subscriber to list
+                    $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
+                }
+                $message = 'Successfully subscribed to newsletter';
+            } else {
+                if ($subscriber) {
+                    // Remove from list
+                    $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
+                }
+                $message = 'Successfully unsubscribed from newsletter';
+            }
+            
+            // Also save in user meta for quick access
+            update_user_meta($user_id, 'zen_newsletter_subscribed', $enabled ? '1' : '0');
+            
+            return rest_ensure_response([
+                'success' => true,
+                'message' => $message,
+                'subscribed' => $enabled,
+                'method' => 'mailpoet'
+            ]);
+            
+        } catch (\Exception $e) {
+            // Log error and fallback to user meta
+            error_log('[ZenEyer Auth] MailPoet error: ' . $e->getMessage());
+            
+            update_user_meta($user_id, 'zen_newsletter_subscribed', $enabled ? '1' : '0');
+            
+            return rest_ensure_response([
+                'success' => true,
+                'message' => 'Newsletter preference saved (MailPoet unavailable)',
+                'subscribed' => $enabled,
+                'method' => 'user_meta'
+            ]);
+        }
+    }
+    
+    /**
+     * Get newsletter subscription status
+     */
+    public static function get_newsletter_status($request) {
+        $user_id = self::get_user_id_from_token($request);
+        
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+        
+        $user = get_userdata($user_id);
+        
+        if (!$user) {
+            return new WP_Error('user_not_found', 'User not found', ['status' => 404]);
+        }
+        
+        // Quick check from user meta first
+        $meta_subscribed = get_user_meta($user_id, 'zen_newsletter_subscribed', true);
+        
+        // If MailPoet not available, use meta
+        if (!class_exists('\MailPoet\API\API')) {
+            return rest_ensure_response([
+                'success' => true,
+                'subscribed' => $meta_subscribed === '1',
+                'method' => 'user_meta'
+            ]);
+        }
+        
+        try {
+            $mailpoet_api = \MailPoet\API\API::MP('v1');
+            
+            $subscriber = null;
+            try {
+                $subscriber = $mailpoet_api->getSubscriber($user->user_email);
+            } catch (\Exception $e) {
+                return rest_ensure_response([
+                    'success' => true,
+                    'subscribed' => false,
+                    'method' => 'mailpoet'
+                ]);
+            }
+            
+            if (!$subscriber) {
+                return rest_ensure_response([
+                    'success' => true,
+                    'subscribed' => false,
+                    'method' => 'mailpoet'
+                ]);
+            }
+            
+            // Find Zen Tribe list
+            $lists = $mailpoet_api->getLists();
+            $zen_list_id = null;
+            
+            foreach ($lists as $list) {
+                if (stripos($list['name'], 'Zen Tribe') !== false) {
+                    $zen_list_id = $list['id'];
+                    break;
+                }
+            }
+            
+            if (!$zen_list_id) {
+                return rest_ensure_response([
+                    'success' => true,
+                    'subscribed' => $meta_subscribed === '1',
+                    'method' => 'user_meta'
+                ]);
+            }
+            
+            // Check if subscribed to the list
+            $subscriptions = $subscriber['subscriptions'] ?? [];
+            $is_subscribed = false;
+            
+            foreach ($subscriptions as $sub) {
+                if (isset($sub['segment_id']) && $sub['segment_id'] == $zen_list_id && 
+                    isset($sub['status']) && $sub['status'] === 'subscribed') {
+                    $is_subscribed = true;
+                    break;
+                }
+            }
+            
+            // Sync meta with MailPoet status
+            update_user_meta($user_id, 'zen_newsletter_subscribed', $is_subscribed ? '1' : '0');
+            
+            return rest_ensure_response([
+                'success' => true,
+                'subscribed' => $is_subscribed,
+                'method' => 'mailpoet'
+            ]);
+            
+        } catch (\Exception $e) {
+            error_log('[ZenEyer Auth] MailPoet status check error: ' . $e->getMessage());
+            
+            return rest_ensure_response([
+                'success' => true,
+                'subscribed' => $meta_subscribed === '1',
+                'method' => 'user_meta'
+            ]);
+        }
     }
 }

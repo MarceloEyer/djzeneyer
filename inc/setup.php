@@ -2,12 +2,16 @@
 /**
  * Core Setup & Security
  * Theme support, CORS, performance tuning, and Security Headers
- * @version 2.1.0 (CSP Compatible - Async CSS Disabled)
+ * @version 2.1.1 (WP 6.7 Textdomain Lifecycle Fix)
  */
 
 if (!defined('ABSPATH')) exit;
 
-// Constants
+/**
+ * --------------------------------------------------
+ * Constants
+ * --------------------------------------------------
+ */
 define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS);
 define('DJZ_CACHE_PRODUCTS', 30 * MINUTE_IN_SECONDS);
 define('DJZ_CACHE_GAMIPRESS', 24 * HOUR_IN_SECONDS);
@@ -113,7 +117,9 @@ function djz_get_gamipress_rank_tiers(): array {
 }
 
 /**
- * Allowed origins for CORS
+ * --------------------------------------------------
+ * CORS
+ * --------------------------------------------------
  */
 function djz_allowed_origins(): array {
     return [
@@ -125,100 +131,89 @@ function djz_allowed_origins(): array {
 }
 
 /**
- * Theme Support
+ * --------------------------------------------------
+ * Theme Setup & Translations (CORRETO PARA WP 6.7)
+ * --------------------------------------------------
  */
 add_action('after_setup_theme', function () {
+
+    load_theme_textdomain('djzeneyer', get_template_directory() . '/languages');
+
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
     add_theme_support('woocommerce');
     add_theme_support('html5', [
-        'search-form', 
-        'comment-form', 
-        'comment-list', 
-        'gallery', 
-        'caption'
+        'search-form',
+        'comment-form',
+        'comment-list',
+        'gallery',
+        'caption',
     ]);
-    
+
     register_nav_menus([
-        'primary_menu' => __('Menu Principal', 'djzeneyer')
+        'primary_menu' => __('Menu Principal', 'djzeneyer'),
     ]);
-});
+}, 0);
 
 /**
- * CORS for REST API
- * (Mantido como fallback para o .htaccess)
+ * --------------------------------------------------
+ * REST API CORS
+ * --------------------------------------------------
  */
-add_action('rest_api_init', function() {
-    add_filter('rest_pre_serve_request', function($served) {
+add_action('rest_api_init', function () {
+    add_filter('rest_pre_serve_request', function ($served) {
+        $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
         $allowed = djz_allowed_origins();
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-        
+
         if (in_array($origin, $allowed, true)) {
             header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
             header('Access-Control-Allow-Credentials: true');
             header('Vary: Origin', false);
         }
-        
+
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce');
-        
+
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
             status_header(200);
             exit;
         }
-        
+
         return $served;
     }, 15);
 });
 
 /**
- * HttpOnly Cookies
+ * --------------------------------------------------
+ * Cookies
+ * --------------------------------------------------
  */
-add_filter('woocommerce_cookie_duration', function($duration) {
+add_filter('woocommerce_cookie_duration', function ($duration) {
     session_set_cookie_params($duration, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
     return $duration;
 });
 
 /**
- * Performance: Defer Critical Scripts (Resolve Render Blocking)
- * Adiciona 'defer' aos scripts do Vite e Webfontloader
+ * --------------------------------------------------
+ * Performance
+ * --------------------------------------------------
  */
-add_filter('script_loader_tag', function($tag, $handle) {
-    if (is_admin()) return $tag;
+add_filter('script_loader_tag', function ($tag, $handle) {
+    if (is_admin()) {
+        return $tag;
+    }
 
-    // Lista de scripts que devem carregar sem travar a página
     $defer_scripts = ['vite', 'index', 'webfontloader', 'react'];
 
-    foreach ($defer_scripts as $script_name) {
-        if (strpos($handle, $script_name) !== false) {
+    foreach ($defer_scripts as $script) {
+        if (strpos($handle, $script) !== false) {
             return str_replace(' src', ' defer src', $tag);
         }
     }
-    
+
     return $tag;
 }, 10, 2);
 
-/**
- * [DESATIVADO] Performance: Async CSS Loading
- * MOTIVO: Conflito com CSP Strict (unsafe-inline).
- * O truque onload="this.media='all'" é bloqueado pela política de segurança.
- * O carregamento do CSS agora é gerido de forma padrão ou via Preload no vite.php.
- */
-/*
-add_filter('style_loader_tag', function($html, $handle) {
-    if (is_admin()) return $html;
-
-    if (strpos($handle, 'index') !== false || strpos($handle, 'style') !== false) {
-        return str_replace("media='all'", "media='print' onload=\"this.media='all'\"", $html);
-    }
-    
-    return $html;
-}, 10, 2);
-*/
-
-/**
- * Performance: Remove Query Strings (Limpeza de URL)
- */
 add_filter('style_loader_src', 'djz_remove_query_strings', 10);
 add_filter('script_loader_src', 'djz_remove_query_strings', 10);
 
@@ -226,56 +221,58 @@ function djz_remove_query_strings($src) {
     return remove_query_arg('ver', $src);
 }
 
-/**
- * Performance: DNS Prefetch
- */
-add_action('wp_head', function() {
-    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . "\n";
-    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . "\n";
+add_action('wp_head', function () {
+    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . PHP_EOL;
+    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . PHP_EOL;
 }, 0);
 
-/**
- * Performance: Lazy Loading
- */
 add_filter('wp_lazy_loading_enabled', '__return_true');
 
-/**
- * Performance: Fetchpriority on First Image (LCP Optimizer)
- */
-add_filter('wp_get_attachment_image_attributes', function($attr, $attachment) {
+add_filter('wp_get_attachment_image_attributes', function ($attr) {
     static $first = true;
-    
+
     if ($first && is_front_page()) {
         $attr['fetchpriority'] = 'high';
         $first = false;
     }
-    
+
     return $attr;
-}, 10, 2);
+}, 10);
 
 /**
- * Database: Cleanup & Indexes
+ * --------------------------------------------------
+ * Database
+ * --------------------------------------------------
  */
-add_action('after_switch_theme', function() {
+add_action('after_switch_theme', function () {
     global $wpdb;
     $wpdb->query("CREATE INDEX IF NOT EXISTS idx_autoload ON {$wpdb->options} (autoload)");
 });
 
-// Limpeza diária de transients expirados
-add_action('wp_scheduled_delete', function() {
+add_action('wp_scheduled_delete', function () {
     global $wpdb;
-    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_%' AND option_value < UNIX_TIMESTAMP()");
+    $wpdb->query(
+        "DELETE FROM {$wpdb->options}
+         WHERE option_name LIKE '_transient_timeout_%'
+         AND option_value < UNIX_TIMESTAMP()"
+    );
 });
 
 /**
- * SEO: Canonical URL Fix
+ * --------------------------------------------------
+ * SEO
+ * --------------------------------------------------
  */
 add_filter('wpseo_canonical', 'djz_fix_canonical_slash');
 add_filter('rank_math/frontend/canonical', 'djz_fix_canonical_slash');
 add_filter('get_canonical_url', 'djz_fix_canonical_slash');
 
 function djz_fix_canonical_slash($url) {
-    if (is_string($url) && substr($url, -1) !== '/' && !preg_match('/\.[a-z]{2,4}$/i', $url)) {
+    if (
+        is_string($url) &&
+        substr($url, -1) !== '/' &&
+        !preg_match('/\.[a-z]{2,4}$/i', $url)
+    ) {
         return $url . '/';
     }
     return $url;

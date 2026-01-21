@@ -224,7 +224,6 @@ const HomePage: React.FC = () => {
         image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.jpg`}
         
         isHomepage={true}
-        hrefLang={getHrefLangUrls(currentPath, currentUrl)}
         schema={schemaData}
         keywords="DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
         

@@ -1,10 +1,11 @@
 // src/hooks/useQueries.ts
-// v4.0 - FIX: Added X-WP-Nonce for Cart and Gamipress Auth
+// v5.0 - Query Hub Aligned with Headless Facade Architecture
 
 /**
- * Custom React Query Hooks
- * * Hooks otimizados com cache automático para todas as APIs do projeto.
- * Substitui fetches manuais por queries com cache inteligente.
+ * Central de React Query hooks
+ * - Queries públicas (cache longo, sem auth)
+ * - Queries privadas reais (Woo Cart)
+ * - Queries de dashboard via API façade (sem nonce)
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -43,7 +44,7 @@ interface EventsResponse {
   events: BandsintownEvent[];
 }
 
-interface MusicTrack {
+export interface MusicTrack {
   id: number;
   title: { rendered: string };
   category_name: string;
@@ -54,12 +55,22 @@ interface MusicTrack {
     youtube: string;
   };
   _embedded?: {
-    'wp:featuredmedia'?: Array<{ source_url: string }>;
+    'wp:featuredmedia'?: Array<{
+      source_url: string;
+      media_details?: {
+        sizes?: {
+          medium?: { source_url: string };
+          medium_large?: { source_url: string };
+          large?: { source_url: string };
+          full?: { source_url: string };
+        };
+      };
+    }>;
   };
 }
 
 // ============================================================================
-// MENU QUERY (Público)
+// MENU QUERY (PÚBLICO)
 // ============================================================================
 
 export const useMenuQuery = (lang: string) => {
@@ -67,13 +78,9 @@ export const useMenuQuery = (lang: string) => {
     queryKey: QUERY_KEYS.menu.list(lang),
     queryFn: async (): Promise<MenuItem[]> => {
       const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
-      const response = await fetch(apiUrl);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch menu');
-      }
-      
-      const data = await response.json();
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch menu');
+      const data = await res.json();
       return Array.isArray(data) ? data : [];
     },
     staleTime: STALE_TIME.MENU,
@@ -82,27 +89,18 @@ export const useMenuQuery = (lang: string) => {
 };
 
 // ============================================================================
-// EVENTS QUERY (Público)
+// EVENTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventsQuery = (limit: number = 10) => {
+export const useEventsQuery = (limit = 10) => {
   return useQuery({
     queryKey: QUERY_KEYS.events.list(limit),
     queryFn: async (): Promise<BandsintownEvent[]> => {
-      const apiUrl = buildApiUrl('zen-bit/v1/events', { limit: limit.toString() });
-      const response = await fetch(apiUrl);
-      
-      if (!response.ok) {
-        throw new Error(`API Status: ${response.status}`);
-      }
-      
-      const data: EventsResponse = await response.json();
-      
-      if (data.success && Array.isArray(data.events)) {
-        return data.events;
-      }
-      
-      return [];
+      const apiUrl = buildApiUrl('zen-bit/v1/events', { limit: String(limit) });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error(`API ${res.status}`);
+      const data: EventsResponse = await res.json();
+      return data.success && Array.isArray(data.events) ? data.events : [];
     },
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
@@ -110,24 +108,20 @@ export const useEventsQuery = (limit: number = 10) => {
 };
 
 // ============================================================================
-// TRACKS/MUSIC QUERY (Público)
+// TRACKS QUERY (PÚBLICO)
 // ============================================================================
 
 export const useTracksQuery = () => {
   return useQuery({
     queryKey: QUERY_KEYS.tracks.list(),
     queryFn: async (): Promise<MusicTrack[]> => {
-      const apiUrl = buildApiUrl('wp/v2/remixes', { 
-        _embed: 'true', 
-        per_page: '100' 
+      const apiUrl = buildApiUrl('wp/v2/remixes', {
+        _embed: 'true',
+        per_page: '100',
       });
-      const response = await fetch(apiUrl);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch tracks');
-      }
-      
-      const data = await response.json();
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch tracks');
+      const data = await res.json();
       return Array.isArray(data) ? data : [];
     },
     staleTime: STALE_TIME.TRACKS,
@@ -136,7 +130,7 @@ export const useTracksQuery = () => {
 };
 
 // ============================================================================
-// PRODUCTS QUERY (Público)
+// PRODUCTS QUERY (PÚBLICO)
 // ============================================================================
 
 export const useProductsQuery = (lang?: string) => {
@@ -145,22 +139,17 @@ export const useProductsQuery = (lang?: string) => {
     queryFn: async () => {
       const params: Record<string, string> = { per_page: '100' };
       if (lang) params.lang = lang;
-      
       const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
-      const response = await fetch(apiUrl);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      
-      return response.json();
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch products');
+      return res.json();
     },
     staleTime: STALE_TIME.PRODUCTS,
   });
 };
 
 // ============================================================================
-// CART QUERY (Privado - Requer Auth/Nonce)
+// CART QUERY (PRIVADO REAL - WC STORE API)
 // ============================================================================
 
 export const useCartQuery = () => {
@@ -168,24 +157,18 @@ export const useCartQuery = () => {
     queryKey: QUERY_KEYS.cart.current,
     queryFn: async () => {
       const apiUrl = buildApiUrl('wc/store/v1/cart');
-      
-      // Pega o Nonce
       const nonce = (window as any).wpData?.nonce || '';
 
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: { 
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- VACINA APLICADA
+      const res = await fetch(apiUrl, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': nonce,
         },
         credentials: 'include',
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch cart');
-      }
-      
-      return response.json();
+
+      if (!res.ok) throw new Error('Failed to fetch cart');
+      return res.json();
     },
     staleTime: STALE_TIME.CART,
     refetchOnWindowFocus: true,
@@ -193,34 +176,20 @@ export const useCartQuery = () => {
 };
 
 // ============================================================================
-// USER GAMIPRESS QUERY (Privado - Requer Auth/Nonce)
+// USER GAMIPRESS QUERY (DASHBOARD - API FACADE, SEM AUTH)
 // ============================================================================
 
-export const useGamipressQuery = (userId: number | undefined) => {
+export const useGamipressQuery = (userId?: number) => {
   return useQuery({
     queryKey: QUERY_KEYS.user.gamipress(userId!),
     queryFn: async () => {
+      if (!userId) return null;
       const apiUrl = buildApiUrl(`djzeneyer/v1/gamipress/${userId}`);
-      
-      // Pega o Nonce
-      const nonce = (window as any).wpData?.nonce || '';
-
-      const response = await fetch(apiUrl, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- VACINA APLICADA
-          },
-          credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch gamipress data');
-      }
-      
-      return response.json();
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch gamipress');
+      return res.json();
     },
     staleTime: STALE_TIME.GAMIPRESS,
-    enabled: !!userId,
-    refetchOnWindowFocus: true,
+    enabled: Boolean(userId),
   });
 };

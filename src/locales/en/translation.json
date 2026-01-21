@@ -668,5 +668,29 @@
     "newsletter_desc": "Stay updated with exclusive Zouk events and releases",
     "newsletter_enabled": "Newsletter enabled",
     "newsletter_disabled": "Newsletter disabled"
+  },
+
+  "profile": {
+    "title": "Profile Information",
+    "real_name": "Real Name",
+    "real_name_hint": "for purchases and friend lists",
+    "preferred_name": "Preferred Name",
+    "preferred_name_hint": "how we'll call you on the site and emails",
+    "email": "Email",
+    "facebook": "Facebook",
+    "facebook_placeholder": "https://facebook.com/yourprofile",
+    "instagram": "Instagram",
+    "instagram_placeholder": "https://instagram.com/yourprofile",
+    "dance_role": "Dance Role",
+    "dance_role_hint": "you can select both",
+    "leader": "Leader",
+    "follower": "Follower",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "non_binary": "Non-binary",
+    "save": "Save Profile",
+    "saving": "Saving...",
+    "saved": "Saved!"
   }
 }

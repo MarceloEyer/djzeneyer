@@ -1,195 +1,148 @@
-# Zen-RA (Zen Recent Activity)
+# Zen-RA (Zen Recent Activity Engine)
 
-Plugin WordPress para API de histórico gamificado da Tribo Zen. Integra WooCommerce e GamiPress com narrativa épica.
+**Plugin WordPress de Gamificação Interna** para a Tribo Zen. 
 
-## Features
+⚠️ **IMPORTANTE**: Este plugin funciona como **engine interna** (não expõe REST API própria). 
+Os endpoints REST são expostos pelo tema via `inc/api-dashboard.php`.
 
-✅ **REST API Endpoint** - `/wp-json/zen-ra/v1/activity/{user_id}`  
-✅ **Gamificação** - Narrativa épica para compras e conquistas  
-✅ **Segurança** - Usuário só vê própria atividade (ou admin)  
-✅ **Performance** - Cache inteligente de 10 minutos  
-✅ **Auto-clear** - Cache limpo automaticamente em novas atividades  
-✅ **Configurável** - Limites e XP ajustáveis no admin  
-
-## Installation
-
-1. Upload `zen-ra` folder to `/wp-content/plugins/`
-2. Activate plugin in WordPress admin
-3. Go to **Zen Plugins** → **Zen-RA Activity**
-4. Configure settings (optional)
-
-## API Usage
-
-### Get User Activity
+## Arquitetura
 
 ```
-GET /wp-json/zen-ra/v1/activity/{user_id}
+Frontend React
+    ↓
+WordPress REST API: /djzeneyer/v1/*
+    ↓
+inc/api-dashboard.php (Adapter/Facade)
+    ↓
+Zen_RA Plugin (Engine Interna)
+    ↓
+WooCommerce + GamiPress + Custom Meta
 ```
 
-**Authentication:** User must be logged in and viewing own activity (or be admin)
+## O que este plugin faz
 
-**Response:**
-```json
-{
-  "success": true,
-  "cached": false,
-  "user_id": 1,
-  "count": 3,
-  "activities": [
-    {
-      "id": "order_123",
-      "type": "loot",
-      "title": "Adquiriu Artefato Musical",
-      "description": "Ingresso VIP Festival",
-      "xp": 50,
-      "date": "2025-12-01 10:30:00",
-      "timestamp": 1733053800,
-      "meta": {
-        "order_id": 123,
-        "total": "150.00",
-        "currency": "BRL",
-        "status": "completed"
-      }
-    },
-    {
-      "id": "ach_456",
-      "type": "achievement",
-      "title": "Desbloqueou Conquista Épica",
-      "description": "Membro da Tribo Zen",
-      "xp": 100,
-      "date": "2025-11-30 15:20:00",
-      "timestamp": 1732984800,
-      "meta": {
-        "achievement_id": 789,
-        "earning_id": 456,
-        "post_type": "achievement"
-      }
-    }
-  ]
-}
+### ✅ Agregação de Dados
+- **Combina múltiplas fontes**: WooCommerce orders + GamiPress achievements + Custom user meta
+- **Feed unificado**: Retorna atividades ordenadas por timestamp em um único array
+- **Filtros customizados**: Separa produtos comprados por categoria (tracks vs events)
+
+### ✅ Gamificação de Compras
+- **XP por pedidos**: Atribui XP configurável (padrão 50) quando pedido WooCommerce é completado
+- **XP por conquistas**: Integra com sistema de pontos do GamiPress
+- **Sistema de níveis**: Calcula nível baseado em XP (1000 XP = 1 nível)
+
+### ✅ Features Customizadas
+- **Login Streak**: Rastreia logins consecutivos (não disponível no GamiPress)
+- **Cache inteligente**: 10 minutos com auto-clear em novas atividades
+- **Performance**: Batch queries para evitar N+1
+
+## Métodos Públicos (PHP)
+
+### `get_player_stats(array $request)`
+Retorna estatísticas do jogador:
+```php
+$stats = Zen_RA::get_instance()->get_player_stats(['id' => 123]);
+// ['success' => true, 'stats' => ['xp' => 1500, 'level' => 2, 'rank' => [...]]]
 ```
 
-### Clear Cache (Admin Only)
-
+### `get_activity_feed(array $request)`
+Retorna feed de atividades (pedidos + conquistas):
+```php
+$feed = Zen_RA::get_instance()->get_activity_feed(['id' => 123]);
+// ['success' => true, 'activities' => [...]]
 ```
-POST /wp-json/zen-ra/v1/clear-cache/{user_id}
+
+### `get_user_tracks(array $request)`
+Retorna produtos comprados da categoria 'music' ou 'tracks':
+```php
+$tracks = Zen_RA::get_instance()->get_user_tracks(['id' => 123]);
+// ['success' => true, 'tracks' => [...]]
 ```
 
-## Activity Types
+### `get_user_events(array $request)`
+Retorna produtos comprados da categoria 'events' ou 'eventos':
+```php
+$events = Zen_RA::get_instance()->get_user_events(['id' => 123]);
+// ['success' => true, 'events' => [...]]
+```
 
-| Type | Title | Source | Icon |
-|------|-------|--------|------|
-| `loot` | Adquiriu Artefato Musical | WooCommerce Orders | 🎁 |
-| `achievement` | Desbloqueou Conquista Épica | GamiPress | 🏆 |
+### `get_streak_data(array $request)`
+Retorna contador de login streak:
+```php
+$streak = Zen_RA::get_instance()->get_streak_data(['id' => 123]);
+// ['success' => true, 'streak' => 7]
+```
 
-## Configuration
+## Endpoints REST (via tema)
 
-### Cache Settings
-- **Cache Duration:** 600 seconds (10 minutes) default
-- Auto-cleared on new orders/achievements
+**Namespace**: `/wp-json/djzeneyer/v1/`
 
-### Activity Limits
-- **Orders Limit:** 5 (recent WooCommerce orders)
-- **Achievements Limit:** 5 (recent GamiPress achievements)
-- **Total Limit:** 10 (maximum activities returned)
+| Endpoint | Método | Descrição |
+|----------|--------|------------|
+| `/activity/{id}` | GET | Feed de atividades do usuário |
+| `/tracks/{id}` | GET | Produtos de música comprados |
+| `/events/{id}` | GET | Ingressos de eventos comprados |
+| `/streak/{id}` | GET | Contador de login streak |
 
-### XP/Points
-- **Order XP:** 50 per completed order
-- **Achievement XP:** 10 default (uses GamiPress points if available)
+### Exemplos de uso:
 
-## Auto Cache Clearing
+```bash
+# Activity feed
+curl https://djzeneyer.com/wp-json/djzeneyer/v1/activity/123
 
-Cache is automatically cleared when:
-- New WooCommerce order created
-- Order status changes
-- New GamiPress achievement awarded
-- User points updated
+# User tracks
+curl https://djzeneyer.com/wp-json/djzeneyer/v1/tracks/123
 
-## Security
+# Login streak
+curl https://djzeneyer.com/wp-json/djzeneyer/v1/streak/123
+```
 
-- Users can only view their own activity
-- Admins can view any user's activity
-- Admins can clear cache via API
-- All endpoints require authentication
+## Instalação
+
+1. Upload da pasta `zen-ra` para `/wp-content/plugins/`
+2. Ative o plugin no admin WordPress
+3. Configure em **Settings → Zen Gamification**
+
+## Configuração
+
+Acesse **Settings → Zen Gamification** no admin:
+
+- **XP por Compra**: Pontos atribuídos quando pedido WooCommerce é completado (padrão: 50)
+- **XP Padrão Conquista**: XP para conquistas GamiPress sem pontos definidos (padrão: 10)
+- **Cache (segundos)**: TTL do cache (padrão: 600 = 10 minutos)
+
+## Como funciona o cache
+
+### Auto-clear automático
+O cache é limpo automaticamente quando:
+- ✅ Novo pedido WooCommerce criado
+- ✅ Status de pedido muda para 'completed'
+- ✅ Nova conquista GamiPress desbloqueada
+- ✅ Pontos GamiPress atualizados
+
+### Performance
+- **Batch queries**: Busca categorias de produtos em lote (evita N+1)
+- **Cache por usuário**: Cada usuário tem cache independente
+- **Memória**: Usa `wp_cache` (compatível com Redis/Memcached)
 
 ## Requirements
 
-- WordPress 5.0+
-- PHP 7.4+
-- WooCommerce (optional)
-- GamiPress (optional)
-
-## Frontend Integration
-
-### React/TypeScript Example
-
-```typescript
-interface Activity {
-  id: string;
-  type: 'loot' | 'achievement';
-  title: string;
-  description: string;
-  xp: number;
-  date: string;
-  timestamp: number;
-  meta: any;
-}
-
-async function fetchUserActivity(userId: number): Promise<Activity[]> {
-  const response = await fetch(
-    `${wpData.restUrl}/zen-ra/v1/activity/${userId}`,
-    {
-      headers: {
-        'X-WP-Nonce': wpData.nonce
-      }
-    }
-  );
-  
-  const data = await response.json();
-  return data.activities;
-}
-```
-
-### Display Example
-
-```tsx
-function ActivityFeed({ userId }: { userId: number }) {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  
-  useEffect(() => {
-    fetchUserActivity(userId).then(setActivities);
-  }, [userId]);
-  
-  return (
-    <div className="activity-feed">
-      {activities.map(activity => (
-        <div key={activity.id} className="activity-item">
-          <span className="icon">
-            {activity.type === 'loot' ? '🎁' : '🏆'}
-          </span>
-          <div>
-            <h4>{activity.title}</h4>
-            <p>{activity.description}</p>
-            <span className="xp">+{activity.xp} XP</span>
-            <time>{new Date(activity.timestamp * 1000).toLocaleDateString()}</time>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-```
+- **WordPress**: 5.0+
+- **PHP**: 7.4+
+- **WooCommerce**: Opcional (mas recomendado)
+- **GamiPress**: Opcional (mas recomendado)
 
 ## Changelog
 
-### 1.0.0 (2025-12-01)
-- Initial release
-- WooCommerce orders integration
-- GamiPress achievements integration
-- REST API endpoint
-- Admin settings page
-- Auto cache clearing
-- Gamified narratives
+### 3.0.0-ENGINE (2026-01-21)
+- ✅ Refatorado para engine interna (sem REST API própria)
+- ✅ Otimização de queries N+1 em produtos
+- ✅ Documentação atualizada para refletir arquitetura real
+
+### 2.0.0 (2025-12-01)
+- ✅ Sistema de cache inteligente
+- ✅ Login streak tracking
+- ✅ Integração WooCommerce + GamiPress
 
 ## Author
 

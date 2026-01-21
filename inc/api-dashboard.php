@@ -1,10 +1,41 @@
 <?php
 /**
- * DJ Zen Eyer - Dashboard API Endpoints (Universal Backend)
- * @version 2.1.0 (Fix 500 Error - Bulletproof Mode)
+ * DJ Zen Eyer - Dashboard API Adapter/Facade (Headless WordPress) * Provides activity, tracks, events, and streak endpoints using Zen_RA plugin
+  * 
+ * Este arquivo atua como ADAPTER/FACADE entre o frontend React e o plugin Zen_RA.
+ * 
+ * ARQUITETURA:
+ * Frontend React -> /wp-json/djzeneyer/v1/* -> api-dashboard.php -> Zen_RA Plugin -> WooCommerce/GamiPress
+ * 
+ * Endpoints expostos:
+ * - GET /djzeneyer/v1/activity/{id} - Feed de atividades (pedidos + conquistas)
+ * - GET /djzeneyer/v1/tracks/{id} - Produtos de música comprados
+ * - GET /djzeneyer/v1/events/{id} - Ingressos de eventos comprados  
+ * - GET /djzeneyer/v1/streak/{id} - Contador de login consecutivo
+ * 
+ * Nota: O plugin Zen_RA NÃO expõe REST API própria - este arquivo é responsável por isso.
+ * @version 4.0.0
  */
 
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * --------------------------------------------------
+ * HEADLESS REST AUTH FIX
+ * Allow public GET requests (read-only)
+ * --------------------------------------------------
+ */
+add_filter('rest_authentication_errors', function ($result) {
+    if (!empty($result)) return $result;
+
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+        return null;
+    }
+
+    return $result;
+});
 
 class DJZ_Dashboard_API {
 
@@ -13,93 +44,76 @@ class DJZ_Dashboard_API {
     }
 
     public function register_routes() {
-        $ns_theme = 'djzeneyer/v1';
-        $ns_zenra = 'zen-ra/v1';
 
-        // --- ROTAS DO TEMA ---
+        $ns = 'djzeneyer/v1';
 
-        // Tracks
-        register_rest_route($ns_theme, '/tracks/(?P<id>\d+)', [
+        // Note: /gamipress endpoint is registered in inc/api.php
+        // These endpoints use Zen_RA plugin for activity tracking
+
+        register_rest_route($ns, '/activity/(?P<id>\d+)', [
             'methods' => 'GET',
-            'callback' => [$this, 'get_user_tracks'],
-            'permission_callback' => '__return_true', // Blindado contra erro 500
-        ]);
-
-        // Streak
-        register_rest_route($ns_theme, '/streak/(?P<id>\d+)', [
-            'methods' => 'GET',
-            'callback' => [$this, 'get_user_streak'],
+            'callback' => [$this, 'activity'],
             'permission_callback' => '__return_true',
         ]);
 
-        // Eventos
-        register_rest_route($ns_theme, '/events/(?P<id>\d+)', [
+        register_rest_route($ns, '/tracks/(?P<id>\d+)', [
             'methods' => 'GET',
-            'callback' => [$this, 'get_user_events'],
+            'callback' => [$this, 'tracks'],
             'permission_callback' => '__return_true',
         ]);
 
-        // --- ROTAS DE COMPATIBILIDADE (zen-ra) ---
-        
-        // Activity
-        register_rest_route($ns_zenra, '/activity/(?P<id>\d+)', [
+        register_rest_route($ns, '/events/(?P<id>\d+)', [
             'methods' => 'GET',
-            'callback' => [$this, 'get_zen_activity'],
-            'permission_callback' => '__return_true', // Blindado contra erro 500
+            'callback' => [$this, 'events'],
+            'permission_callback' => '__return_true',
         ]);
 
-        // Gamipress
-        register_rest_route($ns_zenra, '/gamipress/(?P<id>\d+)', [
+        register_rest_route($ns, '/streak/(?P<id>\d+)', [
             'methods' => 'GET',
-            'callback' => [$this, 'get_zen_gamipress'],
+            'callback' => [$this, 'streak'],
             'permission_callback' => '__return_true',
         ]);
     }
 
-    // --- CALLBACKS SEGUROS ---
+    // --------------------------------------------------
+    // ADAPTER METHODS (PLUGIN → REACT)
+    // --------------------------------------------------
 
-    public function get_user_tracks($request) {
-        return new WP_REST_Response([
-            'total' => 0,
-            'tracks' => []
-        ], 200);
+    private function plugin(): ?Zen_RA {
+        return class_exists('Zen_RA') ? Zen_RA::get_instance() : null;
     }
 
-    public function get_user_streak($request) {
-        $user_id = $request['id'];
-        $points = get_user_meta($user_id, '_gamipress_points', true);
-        return new WP_REST_Response([
-            'current_streak' => 1,
-            'best_streak' => 1,
-            'last_login' => date('Y-m-d H:i:s'),
-            'points' => (int) $points
-        ], 200);
+    public function activity($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_activity_feed')) {
+            return rest_ensure_response(['success' => false, 'activities' => []]);
+        }
+
+        return rest_ensure_response(
+            $plugin->get_activity_feed(['id' => (int)$request['id']])
+        );
     }
 
-    public function get_user_events($request) {
-        return new WP_REST_Response([
-            'upcoming' => [],
-            'past' => []
-        ], 200);
+    public function tracks($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_user_tracks')) {
+            return rest_ensure_response(['success' => true, 'tracks' => []]);
+        }
+
+        return rest_ensure_response(
+            $plugin->get_user_tracks(['id' => (int)$request['id']])
+        );
     }
 
-    public function get_zen_activity($request) {
-        // Dados estáticos para garantir que o React renderize
-        return new WP_REST_Response([
-            'success' => true,
-            'activities' => [
-                [
-                    'id' => 'welcome-1',
-                    'type' => 'achievement',
-                    'title' => 'Bem-vindo à Tribo!',
-                    'description' => 'Conexão com o servidor estabelecida.',
-                    'xp' => 100,
-                    'date' => date('Y-m-d'),
-                    'timestamp' => time(),
-                    'meta' => []
-                ]
-            ]
-        ], 200);
+    public function events($request) {
+        $plugin = $this->plugin();
+        if (!$plugin || !method_exists($plugin, 'get_user_events')) {
+            return rest_ensure_response(['success' => true, 'events' => []]);
+        }
+
+        return rest_ensure_response(
+            $plugin->get_user_events(['id' => (int)$request['id']])
+        );
     }
 
     public function get_zen_gamipress($request) {

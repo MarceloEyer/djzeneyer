@@ -20,12 +20,12 @@
     "pt": "/noticias"
   },
   "zentribe": {
-    "en": "/zen-tribe",
+    "en": "/zentribe",
     "pt": "/tribo-zen"
   },
   "workWithMe": {
     "en": "/work-with-me",
-    "pt": "/contrate"
+    "pt": "/trabalho"
   },
   "shop": {
     "en": "/shop",
@@ -37,7 +37,7 @@
   },
   "faq": {
     "en": "/faq",
-    "pt": "/faq"
+    "pt": "/perguntas-frequentes"
   },
   "philosophy": {
     "en": "/my-philosophy",

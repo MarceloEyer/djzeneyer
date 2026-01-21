@@ -10,6 +10,7 @@
  */
 
 import { lazy, ComponentType } from 'react';
+import { matchPath, generatePath } from 'react-router-dom';
 
 // ============================================================================
 // TYPES
@@ -106,15 +107,15 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     component: ZenTribePage,
     paths: { 
-      en: ['tribe', 'zen-tribe', 'zentribe'], 
-      pt: ['tribo', 'tribo-zen'] 
+      en: ['zentribe', 'tribe', 'zen-tribe'],
+      pt: ['tribo-zen', 'tribo']
     },
   },
 
   // Press Kit / Work With Me
   {
     component: PressKitPage,
-    paths: { en: 'work-with-me', pt: 'contrate' },
+    paths: { en: 'work-with-me', pt: 'trabalho' },
   },
 
   // Shop (com wildcard para subrotas)
@@ -143,7 +144,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // FAQ
   {
     component: FAQPage,
-    paths: { en: 'faq', pt: 'faq' },
+    paths: { en: 'faq', pt: 'perguntas-frequentes' },
   },
 
   // Philosophy

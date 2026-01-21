@@ -1,93 +1,72 @@
 // src/hooks/useUserEvents.ts
-// v4.3 - FIX: Added X-WP-Nonce for Authentication
+// v5.1 - Dashboard Compatible (No Nonce / No Credentials)
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext';
 
-interface Event {
+export interface Event {
   id: number;
   title: string;
-  date: string;
-  location: string;
-  image: string;
-  url: string;
+  image?: string;
+  date?: string;
+  location?: string;
+  url?: string;
 }
 
-interface UserEventsData {
+interface EventsPayload {
   total: number;
   events: Event[];
-  loading: boolean;
-  error: string | null;
 }
 
-export const useUserEvents = (): UserEventsData => {
-  const { user, isAuthenticated } = useAuth();
-  const [data, setData] = useState<UserEventsData>({
-    total: 0,
-    events: [],
-    loading: true,
-    error: null,
-  });
+interface EventsResponse {
+  success?: boolean;
+  total?: number;
+  events?: Event[];
+}
+
+export const useUserEvents = () => {
+  const { user } = useUser();
+
+  const [data, setData] = useState<EventsPayload>({ total: 0, events: [] });
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!isAuthenticated || !user?.id) {
-      console.log('[useUserEvents] Usuário não autenticado');
-      setData(prev => ({
-        ...prev,
-        loading: false,
-        error: 'Usuário não autenticado'
-      }));
+    if (!user?.id) {
+      setLoading(false);
+      setData({ total: 0, events: [] });
       return;
     }
 
     const fetchEvents = async () => {
       try {
-        console.log('[useUserEvents] 📅 Buscando events para user_id:', user.id);
-        
-        // 1. Pega o Nonce (Crachá de Segurança)
-        const nonce = (window as any).wpData?.nonce || '';
-        
-        const endpoint = `/wp-json/djzeneyer/v1/events/${user.id}`;
-        
-        const response = await fetch(endpoint, {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- A CORREÇÃO
-          },
-        });
+        setLoading(true);
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
+        const wpData = (window as any).wpData || {};
+        const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
+        const endpoint = `${wpRestUrl}/djzeneyer/v1/events/${user.id}`;
 
-        const result = await response.json();
-        console.log('[useUserEvents] ✅ Dados recebidos:', result);
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        setData({
-          total: result.total || 0,
-          events: result.events || [],
-          loading: false,
-          error: null,
-        });
+        const json: EventsResponse = await res.json();
 
-      } catch (error) {
-        console.error('[useUserEvents] ❌ Erro:', error);
-        setData({
-          total: 0,
-          events: [],
-          loading: false,
-          error: error instanceof Error ? error.message : 'Erro desconhecido',
-        });
+        const events = Array.isArray(json.events) ? json.events : [];
+        const total = Number(json.total) || events.length;
+
+        setData({ total, events });
+      } catch (err) {
+        console.error('[useUserEvents]', err);
+        setData({ total: 0, events: [] });
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchEvents();
 
     const interval = setInterval(fetchEvents, 60000);
-
     return () => clearInterval(interval);
-  }, [user?.id, isAuthenticated]);
+  }, [user?.id]);
 
-  return data;
+  return { data, loading };
 };

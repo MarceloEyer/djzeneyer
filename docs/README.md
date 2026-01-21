@@ -1,59 +1,122 @@
-# DJ Zen Eyer - Documentation
+# Documentation
 
-Complete documentation for djzeneyer.com WordPress headless architecture.
+Complete documentation for DJ Zen Eyer website.
 
-## 📁 Documentation Structure
+---
 
-### Setup & Installation
-- [SETUP.md](setup/SETUP.md) - Initial project setup
-- [COMPLETE.md](setup/COMPLETE.md) - Complete architecture overview
+## 📖 Documentation Index
 
-### Plugins
-- [Zen SEO Lite](plugins/ZEN-SEO.md) - SEO optimization
-- [ZenEyer Auth](plugins/ZENEYER-AUTH.md) - Authentication
-- [Zen BIT](plugins/ZEN-BIT.md) - Bandsintown events
-- [Zen-RA](plugins/ZEN-RA.md) - Recent activity
-- [PLUGINS-GUIDE.md](plugins/PLUGINS-GUIDE.md) - Plugin management
+### Getting Started
 
-### Configuration Guides
-- [WordPress](guides/WORDPRESS-CONFIG.md) - WordPress settings
-- [LiteSpeed Cache](guides/LITESPEED-CACHE.md) - Cache optimization
-- [Cloudflare](guides/CLOUDFLARE.md) - CDN configuration
-- [.htaccess](guides/HTACCESS.md) - Server configuration
+- **[Architecture Overview](ARCHITECTURE.md)** - Technical architecture and data flow
+- **[Setup Guide](setup/)** - Installation and configuration instructions
 
-### Marketing & Growth
-- [MARKETING.md](guides/MARKETING.md) - Marketing strategies
-- [BLACKHAT.md](guides/BLACKHAT.md) - Growth hacks
+### Configuration
+
+- **[WordPress Configuration](guides/WORDPRESS-CONFIG.md)** - WordPress settings and optimization
+- **[Cloudflare Setup](guides/CLOUDFLARE.md)** - CDN and security configuration
+- **[LiteSpeed Cache](guides/LITESPEED-CACHE.md)** - Server-side caching setup
+- **[.htaccess Rules](guides/HTACCESS.md)** - Server configuration and URL rewriting
+
+### Custom Plugins
+
+- **[Plugins Guide](plugins/PLUGINS-GUIDE.md)** - Overview of all custom plugins
+- **[Zen SEO Lite](plugins/ZEN-SEO.md)** - SEO optimization plugin
+- **[ZenEyer Auth](../plugins/zeneyer-auth/README.md)** - Authentication plugin
+- **[Zen BIT](../plugins/zen-bit/README.md)** - Bandsintown events integration
+- **[Zen-RA](../plugins/zen-ra/README.md)** - Recent activity API
 
 ### Troubleshooting
-- [Google Login Fix](troubleshooting/CLOUDFLARE-FIX-GOOGLE-LOGIN.md)
-- [Common Issues](troubleshooting/COMMON-ISSUES.md)
 
-## 🏗️ Architecture
+- **[Common Issues](troubleshooting/COMMON-ISSUES.md)** - Frequently encountered problems and solutions
+- **[Cloudflare + Google Login Fix](troubleshooting/CLOUDFLARE-FIX-GOOGLE-LOGIN.md)** - Fix OAuth issues with Cloudflare
 
-- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS
-- **Backend:** WordPress REST API (Headless)
-- **Authentication:** JWT + Google OAuth
-- **Hosting:** Hostinger + Cloudflare CDN
-- **Deployment:** GitHub Actions CI/CD
+### Marketing & Growth
 
-## 🔌 Plugins
+- **[Marketing Strategies](guides/MARKETING.md)** - Growth and promotion tactics
+- **[Black Hat SEO](guides/BLACKHAT.md)** - Aggressive growth techniques (use with caution)
 
-1. **Zen SEO Lite Pro** - SEO optimization with schema.org
-2. **ZenEyer Auth Pro** - JWT authentication
-3. **Zen BIT** - Bandsintown events integration
-4. **Zen-RA** - Gamified activity tracking
+---
+
+## 🏗️ Quick Reference
+
+### Tech Stack
+
+**Frontend:**
+- React 18 + TypeScript + Vite 5
+- Tailwind CSS 3.4
+- React Query 5.90
+- i18next 25.7 (EN/PT)
+
+**Backend:**
+- WordPress 6.0+ (Headless)
+- PHP 8.0+
+- MySQL 5.7+
+- WooCommerce + GamiPress + Polylang
+
+**Infrastructure:**
+- LiteSpeed Server
+- Cloudflare CDN
+- Hostinger VPS
+- GitHub Actions CI/CD
+
+### Directory Structure
+
+```
+djzeneyer/
+├── src/                   # React frontend
+├── inc/                   # WordPress theme PHP
+├── plugins/               # Custom WP plugins
+├── scripts/               # Build scripts
+├── docs/                  # Documentation (you are here)
+└── dist/                  # Production build
+```
+
+### Key Concepts
+
+**Headless WordPress:**
+- WordPress serves only as REST API
+- No WordPress theme rendering
+- React handles 100% of frontend
+
+**Static Site Generation (SSG):**
+- HTML pre-rendered during build
+- Perfect SEO (Google sees complete HTML)
+- Fast initial load (LCP < 1.8s)
+
+**Bilingual Routing:**
+- English: `/about`, `/shop`, `/events`
+- Portuguese: `/pt/about`, `/pt/shop`, `/pt/events`
+- Auto-detection based on browser language
+
+---
 
 ## 🚀 Quick Start
 
-1. Clone repository
-2. Install dependencies: `npm install`
-3. Configure WordPress plugins
-4. Build: `npm run build`
-5. Deploy: GitHub Actions automatic
+```bash
+# Install dependencies
+npm install
 
-## 📝 Notes
+# Development
+npm run dev
 
-- All documentation is in Portuguese and English
-- Plugin-specific docs are in their respective folders
-- Temporary files (clear-*.php) should be deleted after use
+# Build for production
+npm run build
+
+# Deploy (automatic via GitHub Actions)
+git push origin main
+```
+
+---
+
+## 📞 Support
+
+**Issues?** Check [troubleshooting](troubleshooting/) first.
+
+**Developer:** Marcelo Eyer Fernandes
+**Website:** [djzeneyer.com](https://djzeneyer.com)
+**Email:** contato@djzeneyer.com
+
+---
+
+**Last Updated:** January 2026

@@ -1,5 +1,5 @@
 // scripts/generate-sitemap.js
-// v4.0 - SITEMAP COM ROTAS NOVAS (Mídia, Jurídico) + TRAILING SLASH
+// v4.1 - SITEMAP INDEX inclui sitemap-events.xml (Zen BIT Premium SEO) + trailing slash
 
 import fs from 'fs';
 import path from 'path';
@@ -7,18 +7,19 @@ import { fileURLToPath } from 'url';
 
 // Configuração
 const BASE_URL = 'https://djzeneyer.com';
-const ROUTE_MAP_PATH = '../src/data/routeMap.json'; 
-const PUBLIC_DIR = '../public'; // Agora salva na public para o build copiar
+const ROUTE_MAP_PATH = '../src/data/routeMap.json';
+const PUBLIC_DIR = '../public';
 
 // Nomes dos Arquivos
 const PAGES_SITEMAP = 'sitemap-pages.xml';
 const INDEX_SITEMAP = 'sitemap.xml';
 const WP_DYNAMIC_SITEMAP = 'sitemap-dynamic.xml'; // Gerado pelo WordPress (Posts/Produtos)
+const EVENTS_SITEMAP = 'sitemap-events.xml'; // ✅ NOVO (Zen BIT SSR Event Pages)
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 🆕 ROTAS MANUAIS (Garante que as páginas novas entrem mesmo sem routeMap)
+// 🆕 ROTAS MANUAIS
 const MANUAL_ROUTES = [
   { key: 'media', en: '/media/', pt: '/midia/' },
   { key: 'privacy', en: '/privacy-policy/', pt: '/politica-de-privacidade/' },
@@ -29,8 +30,8 @@ const MANUAL_ROUTES = [
 
 // 🚫 LISTA NEGRA
 const EXCLUDED_ROUTES = [
-  '/dashboard', '/my-account', '/minha-conta', '/painel', 
-  '/login', '/register', '/reset-password', '/cart', 
+  '/dashboard', '/my-account', '/minha-conta', '/painel',
+  '/login', '/register', '/reset-password', '/cart',
   '/checkout', '/404', '/thank-you'
 ];
 
@@ -38,12 +39,12 @@ const EXCLUDED_ROUTES = [
 const ensureSlash = (str) => str.endsWith('/') ? str : `${str}/`;
 
 try {
-  console.log('🗺️  Iniciando geração da Estrutura de Sitemaps v4.0...');
+  console.log('🗺️  Iniciando geração da Estrutura de Sitemaps v4.1...');
 
   // --- 1. CARREGAR ROUTEMAP EXISTENTE ---
   const routeMapPath = path.resolve(__dirname, ROUTE_MAP_PATH);
   let routeMap = {};
-  
+
   if (fs.existsSync(routeMapPath)) {
     const routeMapRaw = fs.readFileSync(routeMapPath, 'utf-8');
     routeMap = JSON.parse(routeMapRaw);
@@ -52,7 +53,6 @@ try {
   }
 
   // --- 2. MERGE: Juntar RouteMap com Rotas Manuais ---
-  // Se a rota manual não existir no routeMap, adiciona.
   MANUAL_ROUTES.forEach(route => {
     if (!routeMap[route.key]) {
       routeMap[route.key] = { en: route.en, pt: route.pt };
@@ -70,9 +70,9 @@ try {
     if (key.includes(':')) return; // Pula rotas dinâmicas (:id)
 
     const routeData = routeMap[key];
-    
+
     // Filtro de Segurança
-    const isExcluded = EXCLUDED_ROUTES.some(badRoute => 
+    const isExcluded = EXCLUDED_ROUTES.some(badRoute =>
       routeData.en.includes(badRoute) || (routeData.pt && routeData.pt.includes(badRoute))
     );
     if (isExcluded) return;
@@ -80,24 +80,14 @@ try {
     // Padronização de URL (Com Trailing Slash)
     const pathEn = ensureSlash(routeData.en === '/' ? '' : routeData.en);
     const urlEn = routeData.en === '/' ? BASE_URL + '/' : `${BASE_URL}${pathEn}`;
-    
-    // Rota Principal (EN)
+
     if (routeData.en) {
       // Se tiver PT
       let xhtmlLinks = '';
       if (routeData.pt) {
-        const pathPt = ensureSlash(routeData.pt);
-        const urlPt = `${BASE_URL}/pt${pathPt}`; // Assume prefixo /pt para rotas traduzidas
-        
-        // Correção: Se routeData.pt já vier com /pt no inicio, não duplica
-        // Mas o padrão do routeMap geralmente é só o slug. Vamos assumir slug.
-        // AJUSTE FINO: Se o routeData.pt começar com /, remove para concatenar limpo
-        // ou verifica se seu routeMap já tem o prefixo completo.
-        // VAMOS SIMPLIFICAR: Confie no dado do routeMap, mas garanta a barra final.
-        
-        const finalUrlPt = routeData.pt.startsWith('/pt') 
-            ? `${BASE_URL}${ensureSlash(routeData.pt)}` 
-            : `${BASE_URL}/pt${ensureSlash(routeData.pt)}`;
+        const finalUrlPt = routeData.pt.startsWith('/pt')
+          ? `${BASE_URL}${ensureSlash(routeData.pt)}`
+          : `${BASE_URL}/pt${ensureSlash(routeData.pt)}`;
 
         xhtmlLinks = `
     <xhtml:link rel="alternate" hreflang="pt" href="${finalUrlPt}" />
@@ -112,16 +102,14 @@ try {
     <priority>${urlEn === BASE_URL + '/' ? '1.0' : '0.8'}</priority>${xhtmlLinks}
   </url>`;
       count++;
-      
-      // Se quiser gerar entrada separada para PT (Opcional, mas hreflang já cobre)
-      // O Google recomenda que cada URL tenha sua entrada. Vamos adicionar a URL PT explicitamente?
-      // Sim, melhor para indexação.
-      if (routeData.pt) {
-         const finalUrlPt = routeData.pt.startsWith('/pt') 
-            ? `${BASE_URL}${ensureSlash(routeData.pt)}` 
-            : `${BASE_URL}/pt${ensureSlash(routeData.pt)}`;
 
-         pagesXml += `
+      // Entrada separada para PT (melhor indexação)
+      if (routeData.pt) {
+        const finalUrlPt = routeData.pt.startsWith('/pt')
+          ? `${BASE_URL}${ensureSlash(routeData.pt)}`
+          : `${BASE_URL}/pt${ensureSlash(routeData.pt)}`;
+
+        pagesXml += `
   <url>
     <loc>${finalUrlPt}</loc>
     <lastmod>${date}</lastmod>
@@ -130,18 +118,19 @@ try {
     <xhtml:link rel="alternate" hreflang="en" href="${urlEn}" />
     <xhtml:link rel="alternate" hreflang="pt" href="${finalUrlPt}" />
   </url>`;
-         count++;
+        count++;
       }
     }
   });
 
   pagesXml += `\n</urlset>`;
-  
+
   const pagesPath = path.resolve(__dirname, PUBLIC_DIR, PAGES_SITEMAP);
   fs.writeFileSync(pagesPath, pagesXml);
   console.log(`✅ ${PAGES_SITEMAP} gerado com sucesso (${count} URLs).`);
 
   // --- 4. GERAR SITEMAP INDEX ---
+  // ✅ Inclui sitemap de eventos SSR do WordPress (Zen BIT)
   let indexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
@@ -152,11 +141,15 @@ try {
     <loc>${BASE_URL}/${WP_DYNAMIC_SITEMAP}</loc>
     <lastmod>${date}</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>${BASE_URL}/${EVENTS_SITEMAP}</loc>
+    <lastmod>${date}</lastmod>
+  </sitemap>
 </sitemapindex>`;
 
   const indexPath = path.resolve(__dirname, PUBLIC_DIR, INDEX_SITEMAP);
   fs.writeFileSync(indexPath, indexXml);
-  console.log(`✅ ${INDEX_SITEMAP} (Index) atualizado.`);
+  console.log(`✅ ${INDEX_SITEMAP} (Index) atualizado com ${EVENTS_SITEMAP}.`);
 
 } catch (error) {
   console.error('❌ Erro:', error);

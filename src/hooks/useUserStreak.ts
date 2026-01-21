@@ -1,65 +1,50 @@
 // src/hooks/useUserStreak.ts
-// v4.3 - FIX: Added X-WP-Nonce for Authentication
+// v5.1 - Dashboard Compatible (No Nonce / No Credentials)
 
 import { useState, useEffect } from 'react';
-import { useUser } from '../contexts/UserContext'; 
+import { useUser } from '../contexts/UserContext';
 
-interface StreakData {
+interface StreakPayload {
   streak: number;
-  lastLogin: string | null;
   fire: boolean;
+}
+
+interface StreakResponse {
+  success?: boolean;
+  streak?: number;
 }
 
 export const useUserStreak = () => {
   const { user } = useUser();
-  
-  const [data, setData] = useState<StreakData>({ 
-    streak: 0, 
-    lastLogin: null,
-    fire: false 
-  });
+
+  const [data, setData] = useState<StreakPayload>({ streak: 0, fire: false });
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!user?.id) {
       setLoading(false);
+      setData({ streak: 0, fire: false });
       return;
     }
 
     const fetchStreak = async () => {
-      setLoading(true);
       try {
-        console.log('[useUserStreak] 🔥 Buscando streak para user_id:', user.id);
-        
-        // 1. Pega o Nonce
-        const nonce = (window as any).wpData?.nonce || '';
-        const endpoint = `/wp-json/djzeneyer/v1/streak/${user.id}`;
-        
-        const response = await fetch(endpoint, {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- A CORREÇÃO
-          },
-        });
+        setLoading(true);
 
-        if (!response.ok) {
-          console.warn(`[useUserStreak] API retornou ${response.status}. Usando fallback.`);
-          throw new Error(`HTTP ${response.status}`);
-        }
+        const wpData = (window as any).wpData || {};
+        const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
+        const endpoint = `${wpRestUrl}/djzeneyer/v1/streak/${user.id}`;
 
-        const result = await response.json();
-        const streakValue = result.streak || 0;
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        setData({
-          streak: streakValue,
-          lastLogin: result.last_login || null,
-          fire: streakValue >= 3 
-        });
+        const json: StreakResponse = await res.json();
+        const streakValue = Number(json.streak) || 0;
 
-      } catch (error) {
-        console.error('[useUserStreak] Erro (usando dados seguros):', error);
-        setData({ streak: 0, lastLogin: null, fire: false });
+        setData({ streak: streakValue, fire: streakValue >= 3 });
+      } catch (err) {
+        console.error('[useUserStreak]', err);
+        setData({ streak: 0, fire: false });
       } finally {
         setLoading(false);
       }
@@ -67,9 +52,8 @@ export const useUserStreak = () => {
 
     fetchStreak();
 
-    const interval = setInterval(fetchStreak, 300000);
+    const interval = setInterval(fetchStreak, 60000);
     return () => clearInterval(interval);
-
   }, [user?.id]);
 
   return { data, loading };

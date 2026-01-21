@@ -1,15 +1,11 @@
-// src/layouts/MainLayout.tsx - VERSÃO FINAL (SEO FIX)
-
 import React, { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Outlet } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import AuthModal from '../components/auth/AuthModal';
-import { siteConfig } from '../config/siteConfig';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 
 const MainLayout: React.FC = () => {
-  const location = useLocation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
@@ -20,24 +16,11 @@ const MainLayout: React.FC = () => {
   const closeModal = () => setIsAuthModalOpen(false);
   const toggleAuthMode = () => setAuthMode(prev => (prev === 'login' ? 'register' : 'login'));
 
-  // --- SEO FIX: TRAILING SLASH (Barra no Final) ---
-  // O WordPress força a barra no final. O React precisa acompanhar.
-  const siteUrl = siteConfig.siteUrl;
-  
-  // Se não tiver barra no final, adiciona.
-  const pathname = location.pathname.endsWith('/') 
-    ? location.pathname 
-    : `${location.pathname}/`;
-    
-  const canonicalUrl = `${siteUrl}${pathname}`;
-
   return (
     <>
-      <Helmet>
-        {/* Fallback padrão caso a página não tenha SEO específico */}
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:url" content={canonicalUrl} />
-      </Helmet>
+      {/* Default SEO for all pages using this layout.
+          Individual pages can override this by rendering HeadlessSEO themselves. */}
+      <HeadlessSEO />
 
       <div className="flex flex-col min-h-screen bg-background text-white">
         <Navbar onLoginClick={() => openModal('login')} />

@@ -1,94 +1,70 @@
 // src/hooks/useUserTracks.ts
-// v4.2 - FIX: Added X-WP-Nonce to prevent 401 Unauthorized
+// v5.1 - Dashboard Compatible (No Nonce / No Credentials)
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext';
 
-interface Track {
+export interface Track {
   id: number;
   title: string;
-  artist: string;
-  image: string;
-  date: string;
-  order_id: number;
+  image?: string;
+  date?: string;
 }
 
-interface UserTracksData {
+interface TracksPayload {
   total: number;
   tracks: Track[];
-  loading: boolean;
-  error: string | null;
 }
 
-export const useUserTracks = (): UserTracksData => {
-  const { user, isAuthenticated } = useAuth();
-  const [data, setData] = useState<UserTracksData>({
-    total: 0,
-    tracks: [],
-    loading: true,
-    error: null,
-  });
+interface TracksResponse {
+  success?: boolean;
+  total?: number;
+  tracks?: Track[];
+}
+
+export const useUserTracks = () => {
+  const { user } = useUser();
+
+  const [data, setData] = useState<TracksPayload>({ total: 0, tracks: [] });
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!isAuthenticated || !user?.id) {
-      console.log('[useUserTracks] Usuário não autenticado');
-      setData(prev => ({
-        ...prev,
-        loading: false,
-        error: 'Usuário não autenticado'
-      }));
+    if (!user?.id) {
+      setLoading(false);
+      setData({ total: 0, tracks: [] });
       return;
     }
 
     const fetchTracks = async () => {
       try {
-        console.log('[useUserTracks] 🎵 Buscando tracks para user_id:', user.id);
-        
-        // 1. Pega o Nonce global (O Crachá de Segurança)
-        const nonce = (window as any).wpData?.nonce || '';
-        
-        const endpoint = `/wp-json/djzeneyer/v1/tracks/${user.id}`;
-        
-        const response = await fetch(endpoint, {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce // <--- AQUI ESTÁ A CORREÇÃO DO 401
-          },
-        });
+        setLoading(true);
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
+        const wpData = (window as any).wpData || {};
+        const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json';
+        const endpoint = `${wpRestUrl}/djzeneyer/v1/tracks/${user.id}`;
 
-        const result = await response.json();
-        console.log('[useUserTracks] ✅ Dados recebidos:', result);
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        setData({
-          total: result.total || 0,
-          tracks: result.tracks || [], // O PHP retorna [] vazio se não tiver, então aqui não quebra
-          loading: false,
-          error: null,
-        });
+        const json: TracksResponse = await res.json();
 
-      } catch (error) {
-        console.error('[useUserTracks] ❌ Erro:', error);
-        setData({
-          total: 0,
-          tracks: [],
-          loading: false,
-          error: error instanceof Error ? error.message : 'Erro desconhecido',
-        });
+        const tracks = Array.isArray(json.tracks) ? json.tracks : [];
+        const total = Number(json.total) || tracks.length;
+
+        setData({ total, tracks });
+      } catch (err) {
+        console.error('[useUserTracks]', err);
+        setData({ total: 0, tracks: [] });
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchTracks();
 
-    // Atualizar a cada 60 segundos
     const interval = setInterval(fetchTracks, 60000);
-
     return () => clearInterval(interval);
-  }, [user?.id, isAuthenticated]);
+  }, [user?.id]);
 
-  return data;
+  return { data, loading };
 };
