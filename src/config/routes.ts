@@ -7,6 +7,10 @@
  * * ATUALIZAÇÃO v2.0:
  * - Adicionada rota de News (Notícias)
  * - Adicionada rota de Videos
+ * * ATUALIZAÇÃO v3.0:
+ * - Sincronizado com todas as páginas do WordPress
+ * - Adicionadas rotas: Cart, Checkout, Return Policy, Support Artist, Tickets
+ * - Slugs limpos e otimizados para SEO (sem sufixos -2)
  */
 
 import { lazy, ComponentType } from 'react';
@@ -44,6 +48,8 @@ const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
 const PressKitPage = lazy(() => import('../pages/PressKitPage'));
 const ShopPage = lazy(() => import('../pages/ShopPage'));
 const ProductPage = lazy(() => import('../pages/ProductPage'));
+const CartPage = lazy(() => import('../pages/CartPage'));
+const CheckoutPage = lazy(() => import('../pages/CheckoutPage'));
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
 const FAQPage = lazy(() => import('../pages/FAQPage'));
@@ -51,8 +57,12 @@ const PhilosophyPage = lazy(() => import('../pages/PhilosophyPage'));
 const NewsPage = lazy(() => import('../pages/NewsPage'));
 const MediaPage = lazy(() => import('../pages/MediaPage'));
 const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicyPage'));
+const ReturnPolicyPage = lazy(() => import('../pages/ReturnPolicyPage'));
 const TermsPage = lazy(() => import('../pages/TermsPage'));
 const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
+const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
+const TicketsPage = lazy(() => import('../pages/TicketsPage'));
+const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 // ============================================================================
@@ -93,23 +103,20 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: 'music/:slug', pt: 'musica/:slug' },
   },
 
-  // News / Blog (✨ NOVO)
+  // News / Blog
   {
     component: NewsPage,
     paths: { en: 'news', pt: 'noticias' },
   },
   {
-    component: NewsPage, // Idealmente seria NewsDetailPage, mas NewsPage pode tratar o slug
+    component: NewsPage,
     paths: { en: 'news/:slug', pt: 'noticias/:slug' },
   },
 
   // Zen Tribe (múltiplos aliases)
   {
     component: ZenTribePage,
-    paths: { 
-      en: ['zentribe', 'tribe', 'zen-tribe'],
-      pt: ['tribo-zen', 'tribo']
-    },
+    paths: { en: ['zentribe', 'tribe', 'zen-tribe'], pt: ['tribo-zen', 'tribo'] },
   },
 
   // Press Kit / Work With Me
@@ -123,12 +130,36 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: ProductPage,
     paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
   },
-{
+  {
     component: ShopPage,
     paths: { en: 'shop', pt: 'loja' },
     hasWildcard: true,
   },
-  
+
+  // Cart / Carrinho
+  {
+    component: CartPage,
+    paths: { en: 'cart', pt: 'carrinho' },
+  },
+
+  // Checkout / Finalizar Compra
+  {
+    component: CheckoutPage,
+    paths: { en: 'checkout', pt: 'finalizar-compra' },
+  },
+
+  // Tickets / Compra de Ingressos
+  {
+    component: TicketsPage,
+    paths: { en: 'tickets', pt: 'ingressos' },
+  },
+
+  // Tickets Checkout / Finalizar Ingressos
+  {
+    component: TicketsCheckoutPage,
+    paths: { en: 'tickets-checkout', pt: 'finalizar-ingressos' },
+  },
+
   // Dashboard
   {
     component: DashboardPage,
@@ -156,25 +187,37 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Media / Press
   {
     component: MediaPage,
-    paths: { en: 'media', pt: 'midia' },
+    paths: { en: 'media', pt: 'na-midia' },
   },
 
-  // Privacy Policy
+  // Support the Artist / Apoie o Artista
+  {
+    component: SupportArtistPage,
+    paths: { en: 'support-the-artist', pt: 'apoie-o-artista' },
+  },
+
+  // Privacy Policy / Política de Privacidade
   {
     component: PrivacyPolicyPage,
     paths: { en: 'privacy-policy', pt: 'politica-de-privacidade' },
   },
 
-  // Terms of Use
+  // Return Policy / Reembolso
+  {
+    component: ReturnPolicyPage,
+    paths: { en: 'return-policy', pt: 'reembolso' },
+  },
+
+  // Terms of Use / Termos
   {
     component: TermsPage,
     paths: { en: 'terms', pt: 'termos' },
   },
 
-  // Code of Conduct
+  // Code of Conduct / Regras de Conduta
   {
     component: CodeOfConductPage,
-    paths: { en: 'conduct', pt: 'conduta' },
+    paths: { en: 'conduct', pt: 'regras-de-conduta' },
   },
 ];
 
@@ -237,44 +280,44 @@ export const findRouteByPath = (path: string, lang: Language): RouteConfig | und
       return fullPath === path || path.startsWith(fullPath + '/');
     });
   });
-  };
-  /**
+};
+
+/**
  * Retorna links alternativos para o path atual
  */
-export const getAlternateLinks = (currentPath: string, currentLang: Language): Record<string, string> => {
-  const alternates: Record<string, string> = {};
-  
+export const getAlternateLinks = (currentPath: string, currentLang: Language): Record<Language, string> => {
+  const alternates: Record<Language, string> = {} as Record<Language, string>;
+
   // Se o path está vazio, retorna as raízes
   if (!currentPath || currentPath === '/') {
     return { en: '/', pt: '/' };
   }
-  
+
   // Remove leading slash
   const cleanPath = currentPath.startsWith('/') ? currentPath.slice(1) : currentPath;
-  
+
   // Tenta encontrar a rota correspondente
   for (const route of ROUTES_CONFIG) {
     const paths = getLocalizedPaths(route, 'en');
     const enPath = Array.isArray(paths) ? paths[0] : paths;
-    
+
     const pathsPt = getLocalizedPaths(route, 'pt');
     const ptPath = Array.isArray(pathsPt) ? pathsPt[0] : pathsPt;
-    
+
     // Verifica se o caminho atual corresponde a esta rota
     if (cleanPath === enPath || cleanPath.startsWith(enPath + '/')) {
       alternates.en = `/${enPath}`;
       alternates.pt = `/${ptPath}`;
       return alternates;
     }
-    
+
     if (cleanPath === ptPath || cleanPath.startsWith(ptPath + '/')) {
       alternates.en = `/${enPath}`;
       alternates.pt = `/${ptPath}`;
       return alternates;
     }
   }
-  
+
   // Fallback: retorna o mesmo path para ambos os idiomas
   return { en: currentPath, pt: currentPath };
-
 };
