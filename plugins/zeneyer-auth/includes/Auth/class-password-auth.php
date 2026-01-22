@@ -53,6 +53,9 @@ class Password_Auth {
             );
         }
         
+        // Trigger standard WP login hook for GamiPress and other plugins
+        do_action('wp_login', $user->user_login, $user);
+
         do_action('zeneyer_auth_successful_login', $user->ID);
         
         return $user;
