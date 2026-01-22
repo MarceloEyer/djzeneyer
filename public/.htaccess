@@ -36,7 +36,7 @@ ExpiresByType font/woff2 A31557600
 # END NON_LSCACHE
 
 # ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v15.0 (CSP DYNAMIC HANDOFF)
+# DJ ZEN EYER - PRODUCTION .htaccess v16.0 (FIXED ADMIN & GOOGLE LOGIN)
 # ==============================================================================
 
 # ==============================================================================
@@ -120,36 +120,36 @@ CacheKeyModify -qs:_ga
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
-  Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+  
+  # CORREÇÃO CRÍTICA: Permite que o popup do Google Login se comunique com o site
+  Header always set Cross-Origin-Opener-Policy "unsafe-none"
 
   Header unset Content-Security-Policy
   Header always unset Content-Security-Policy
-  # NOTA: A Content-Security-Policy (CSP) agora é gerada dinamicamente pelo PHP (inc/csp.php)
-  # Isso permite usar 'nonce' para scripts inline seguros e remover 'unsafe-inline'.
+  # NOTA: A CSP é gerada dinamicamente pelo PHP (inc/csp.php)
 </IfModule>
 
 # ==============================================================================
-# 4. CORS (FIXED FOR AUTHENTICATION)
+# 4. CORS (FIXED FOR ADMIN DASHBOARD & API)
 # ==============================================================================
 <IfModule mod_headers.c>
-    # Aceita apenas origens conhecidas (Produção e Localhost)
+    # 1. Detecta a Origem (Seu site ou Localhost)
     SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
+    
+    # 2. Fallback para acesso direto (Painel Admin/Same-Origin) onde o header Origin é vazio
+    SetEnvIf Origin "^$" ALLOWED_ORIGIN=https://djzeneyer.com
 
     <If "%{REQUEST_URI} =~ m#^/wp-json/#">
-        # Para API: Retorna a origem exata (necessário para allow-credentials)
+        # Aplica headers CORS apenas na API para não quebrar o Admin
         Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
-        Header always set Vary "Origin" env=ALLOWED_ORIGIN
-        Header always set Access-Control-Allow-Credentials "true" env=ALLOWED_ORIGIN
+        Header always set Access-Control-Allow-Credentials "true"
+        Header always set Vary "Origin"
+        
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
     </If>
-    <Else>
-        # Para assets estáticos
-        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
-        Header always set Vary "Origin" env=ALLOWED_ORIGIN
-    </Else>
-
-    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
     
+    # Tratamento de Preflight (OPTIONS)
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} OPTIONS
     RewriteRule ^(.*)$ $1 [R=204,L]
