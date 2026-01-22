@@ -120,7 +120,7 @@ CacheKeyModify -qs:_ga
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
-
+  
   # CORREÇÃO CRÍTICA: Permite que o popup do Google Login se comunique com o site
   Header always set Cross-Origin-Opener-Policy "unsafe-none"
 
@@ -135,7 +135,7 @@ CacheKeyModify -qs:_ga
 <IfModule mod_headers.c>
     # 1. Detecta a Origem (Seu site ou Localhost)
     SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
-
+    
     # 2. Fallback para acesso direto (Painel Admin/Same-Origin) onde o header Origin é vazio
     SetEnvIf Origin "^$" ALLOWED_ORIGIN=https://djzeneyer.com
 
@@ -144,11 +144,11 @@ CacheKeyModify -qs:_ga
         Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
         Header always set Access-Control-Allow-Credentials "true"
         Header always set Vary "Origin"
-
+        
         Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
         Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
     </If>
-
+    
     # Tratamento de Preflight (OPTIONS)
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} OPTIONS
