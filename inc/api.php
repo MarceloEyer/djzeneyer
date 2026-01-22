@@ -24,12 +24,6 @@ add_action('rest_api_init', function() {
         'permission_callback' => '__return_true',
     ]);
     
-    register_rest_route($ns, '/gamipress/(?P<user_id>\d+)', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_gamipress',
-        'permission_callback' => '__return_true',
-    ]);
-    
     register_rest_route($ns, '/subscribe', [
         'methods' => 'POST',
         'callback' => 'djz_subscribe_newsletter',
@@ -40,6 +34,21 @@ add_action('rest_api_init', function() {
         'methods' => 'POST',
         'callback' => 'djz_update_profile',
         'permission_callback' => 'is_user_logged_in',
+    ]);
+
+    // Register Custom User Meta for REST
+    register_meta('user', 'zen_login_streak', [
+        'show_in_rest' => true,
+        'single' => true,
+        'type' => 'integer',
+        'auth_callback' => '__return_true',
+    ]);
+
+    register_meta('user', 'zen_last_login', [
+        'show_in_rest' => true,
+        'single' => true,
+        'type' => 'string',
+        'auth_callback' => '__return_true',
     ]);
 });
 
@@ -209,127 +218,6 @@ function djz_get_products($request) {
 }
 
 /**
- * GamiPress Endpoint (Cached 15min)
- */
-function djz_get_gamipress($request) {
-    $user_id = (int)$request->get_param('user_id');
-    
-    if ($user_id <= 0) {
-        return new WP_Error('invalid_user', 'Invalid user ID', ['status' => 400]);
-    }
-    
-    $cache_key = 'djz_gamipress_' . $user_id;
-    $cached = get_transient($cache_key);
-    if ($cached) return rest_ensure_response($cached);
-    
-    if (!function_exists('gamipress_get_user_points')) {
-        $fallback = [
-            'success' => false,
-            'message' => 'GamiPress not active',
-            'data' => [
-                'points' => 0,
-                'level' => 1,
-                'rank' => 'Zen Novice',
-                'achievements' => [],
-                'pointsType' => 'zen-points',
-            ],
-        ];
-        set_transient($cache_key, $fallback, DJZ_CACHE_GAMIPRESS);
-        return rest_ensure_response($fallback);
-    }
-    
-    $points_type = djz_get_gamipress_points_type_slug();
-    $points = (int)gamipress_get_user_points($user_id, $points_type);
-    
-    $tiers_payload = djz_get_gamipress_rank_tiers();
-    $ranks = $tiers_payload['tiers'];
-    
-    $level = 1;
-    $rank = $ranks[0]['name'];
-    $next = $ranks[0]['next'];
-
-    	// Validação: se ranks estiver vazio, retorna fallback
-	if (empty($ranks)) {
-		$fallback = [
-			'success' => true,
-			'data' => [
-				'points' => $points,
-				'level' => 1,
-				'rank' => 'Zen Novice',
-				'nextLevel' => 2,
-				'nextLevelPoints' => 100,
-				'progressToNextLevel' => 0,
-				'achievements' => [],
-				'pointsType' => $points_type,
-			],
-		];
-		set_transient($cache_key, $fallback, DJZ_CACHE_GAMIPRESS);
-		return rest_ensure_response($fallback);
-	}
-    
-    foreach ($ranks as $i => $tier) {
-        if ($points < $tier['min']) {
-            break;
-        }
-        $level = $i + 1;
-        $rank = $tier['name'];
-        $next = $tier['next'];
-    }
-    
-    $current_min = $ranks[$level - 1]['min'];
-    $progress = ($next > $current_min)
-        ? min(100, round((($points - $current_min) / ($next - $current_min)) * 100))
-        : 0;
-    
-    $achievements = [];
-    $achievement_types = ['insigna'];
-    if (function_exists('gamipress_get_achievement_types')) {
-        $types = gamipress_get_achievement_types();
-        if (!empty($types)) {
-            $achievement_types = array_keys($types);
-        }
-    }
-    $query = new WP_Query([
-        'post_type' => $achievement_types,
-        'posts_per_page' => 20,
-        'post_status' => 'publish',
-    ]);
-    
-    if ($query->have_posts()) {
-        while ($query->have_posts()) {
-            $query->the_post();
-            $id = get_the_ID();
-            
-            $achievements[] = [
-                'id' => $id,
-                'title' => get_the_title(),
-                'description' => get_the_excerpt(),
-                'image' => get_the_post_thumbnail_url($id, 'medium'),
-                'earned' => gamipress_has_user_earned_achievement($id, $user_id),
-            ];
-        }
-        wp_reset_postdata();
-    }
-    
-    $response = [
-        'success' => true,
-        'data' => [
-            'points' => $points,
-            'level' => $level,
-            'rank' => $rank,
-            'nextLevel' => min($level + 1, count($ranks)),
-            'nextLevelPoints' => $next,
-            'progressToNextLevel' => $progress,
-            'achievements' => $achievements,
-            'pointsType' => $points_type,
-        ],
-    ];
-    
-    set_transient($cache_key, $response, DJZ_CACHE_GAMIPRESS);
-    return rest_ensure_response($response);
-}
-
-/**
  * Newsletter Subscription
  */
 function djz_subscribe_newsletter($request) {
@@ -391,8 +279,6 @@ function djz_update_profile($request) {
         return new WP_Error('update_failed', 'Update failed', ['status' => 400]);
     }
     
-    delete_transient('djz_gamipress_' . $user_id);
-    
     return rest_ensure_response([
         'success' => true,
         'message' => 'Profile updated!',
@@ -413,17 +299,6 @@ add_action('wp_update_nav_menu', function() {
 add_action('save_post_product', function() {
     global $wpdb;
     $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_products_%'");
-});
-
-/**
- * Clear cache on GamiPress update
- */
-add_action('gamipress_update_user_points', function($user_id) {
-    delete_transient('djz_gamipress_' . $user_id);
-});
-
-add_action('gamipress_award_achievement', function($user_id) {
-    delete_transient('djz_gamipress_' . $user_id);
 });
 
 /**

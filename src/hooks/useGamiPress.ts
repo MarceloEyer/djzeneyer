@@ -1,5 +1,5 @@
 // src/hooks/useGamiPress.ts
-// v7.0 - NATIVE GAMIPRESS REST API
+// v7.2 - NATIVE GAMIPRESS REST API + STREAK (FIXED TYPES & IMAGES)
 
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
@@ -10,9 +10,9 @@ import { useUser } from '../contexts/UserContext';
 
 export interface Achievement {
   id: number;
-  title: { rendered: string };
-  content: { rendered: string };
-  featured_media: number;
+  title: string;
+  description: string;
+  image: string;
   earned: boolean;
   date_earned?: string;
 }
@@ -25,6 +25,8 @@ export interface GamiPressData {
   nextLevelPoints: number;
   progressToNextLevel: number;
   achievements: Achievement[];
+  streak: number;
+  streakFire: boolean;
 }
 
 interface GamiPressHookResponse extends GamiPressData {
@@ -38,14 +40,10 @@ interface GamiPressHookResponse extends GamiPressData {
  * CONFIGURAÇÃO
  * ========================= */
 
-// TODO: Descobrir o slug real do seu points type
-const POINTS_TYPE_SLUG = 'zen-points'; // Verificar no admin: GamiPress > Points Types
-
-// TODO: Descobrir o slug real do seu rank type
-const RANK_TYPE_SLUG = 'zen-rank'; // Verificar no admin: GamiPress > Rank Types
-
-// TODO: Descobrir o slug real do seu achievement type
-const ACHIEVEMENT_TYPE_SLUG = 'badges'; // Verificar no admin: GamiPress > Achievement Types
+// Defaults set based on inc/setup.php
+const POINTS_TYPE_SLUG = 'zen-points';
+const RANK_TYPE_SLUG = 'zen-rank';
+const ACHIEVEMENT_TYPE_SLUG = 'badges';
 
 /* =========================
  * HELPER: Buscar Achievement Type Real
@@ -99,7 +97,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
 
       const userData = await response.json();
 
-      // ✅ EXTRAIR DADOS DO GAMIPRESS QUE JÁ ESTÃO NO USER.META
+      // ✅ EXTRAIR DADOS
       const meta = userData.meta || {};
 
       // Points
@@ -109,6 +107,14 @@ export const useGamiPress = (): GamiPressHookResponse => {
       // Rank
       const rankKey = `_gamipress_${RANK_TYPE_SLUG}_rank`;
       const rankId = Number(meta[rankKey]) || 0;
+
+      // Streak
+      const streak = Number(meta['zen_login_streak']) || 0;
+      const lastLogin = meta['zen_last_login'];
+      let streakFire = false;
+      if (streak > 0) {
+        streakFire = true;
+      }
 
       // Buscar informações do rank
       let rankName = 'Zen Novice';
@@ -149,7 +155,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
           
           if (achievementIds.length > 0) {
             const achievementsResponse = await fetch(
-              `${wpRestUrl}wp/v2/${achievementType}?include=${achievementIds.join(',')}&per_page=100`
+              `${wpRestUrl}wp/v2/${achievementType}?include=${achievementIds.join(',')}&per_page=100&_embed`
             );
             
             if (achievementsResponse.ok) {
@@ -159,7 +165,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
                 id: ach.id,
                 title: ach.title?.rendered || 'Achievement',
                 description: ach.content?.rendered || '',
-                image: ach.featured_media ? `${wpRestUrl}wp/v2/media/${ach.featured_media}` : '',
+                image: ach._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
                 earned: true,
                 date_earned: earnings.find((e: any) => e.post_id === ach.id)?.date || ''
               }));
@@ -178,6 +184,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
         nextLevelPoints,
         progressToNextLevel,
         achievements,
+        streak,
+        streakFire,
       };
 
       setData(parsedData);
@@ -195,6 +203,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
         nextLevelPoints: 100,
         progressToNextLevel: 0,
         achievements: [],
+        streak: 0,
+        streakFire: false,
       });
     } finally {
       setLoading(false);
@@ -219,6 +229,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
     nextLevelPoints: 100,
     progressToNextLevel: 0,
     achievements: [],
+    streak: 0,
+    streakFire: false,
   };
 
   return {
@@ -229,6 +241,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
     nextLevelPoints: data?.nextLevelPoints ?? fallback.nextLevelPoints,
     progressToNextLevel: data?.progressToNextLevel ?? fallback.progressToNextLevel,
     achievements: data?.achievements ?? fallback.achievements,
+    streak: data?.streak ?? fallback.streak,
+    streakFire: data?.streakFire ?? fallback.streakFire,
     data,
     loading,
     error,
