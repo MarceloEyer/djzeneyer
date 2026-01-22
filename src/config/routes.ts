@@ -115,7 +115,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Press Kit / Work With Me
   {
     component: PressKitPage,
-    paths: { en: 'work-with-me', pt: 'trabalho' },
+    paths: { en: 'work-with-me', pt: 'trabalhe-comigo' },
   },
 
   // Shop (com wildcard para subrotas)
