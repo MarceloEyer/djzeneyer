@@ -1,4 +1,4 @@
-# DJ ZEN EYER - PROJECT PROMPT
+# DJ ZEN EYER - AI ASSISTANT PROMPT
 
 You are assisting with the DJ Zen Eyer website, a high-performance headless WordPress + React application for a 2× World Champion Brazilian Zouk DJ and producer.
 
@@ -12,7 +12,7 @@ You are assisting with the DJ Zen Eyer website, a high-performance headless Word
 
 ### Key Features
 1. **Bilingual (EN/PT):** All routes must exist in both languages (`/` = EN, `/pt` = PT)
-2. **Static Site Generation:** HTML pre-rendered for SEO (see `scripts/prerender.mjs`)
+2. **Static Site Generation:** HTML pre-rendered for SEO (see `scripts/prerender.js`)
 3. **Lazy Loading:** React components code-split for performance
 4. **Gamification:** User points, ranks, achievements via GamiPress API
 5. **E-commerce:** WooCommerce products consumed via REST API
@@ -27,6 +27,10 @@ You are assisting with the DJ Zen Eyer website, a high-performance headless Word
   /locales/     → i18n translations (en/pt)
 /dist/          → Production build output (deploy this folder)
 /public/        → Static assets (images, fonts, manifests)
+/plugins/       → Custom WordPress plugins
+  /zen-seo-lite/    → SEO optimization engine
+  /zeneyer-auth/    → JWT authentication + OAuth
+  /zen-bit/         → Bandsintown events integration
 ```
 
 ## RULES FOR AI ASSISTANTS
@@ -70,7 +74,7 @@ You are assisting with the DJ Zen Eyer website, a high-performance headless Word
 
 ### Build & Deploy
 1. **Development:** `npm run dev` (Vite dev server at :5173)
-2. **Build:** `npm run build` (compiles + prerenders 16 HTML files)
+2. **Build:** `npm run build` (compiles + prerenders HTML files)
 3. **Deploy:** Upload `/dist` folder to server root (not in `/wp-content/themes`)
 4. **Cache:** Clear LiteSpeed Cache + Cloudflare after deploy
 
@@ -78,8 +82,8 @@ You are assisting with the DJ Zen Eyer website, a high-performance headless Word
 
 ### Add New Route
 1. Create page in `/src/pages/NewPage.tsx`
-2. Add lazy import in `/src/App.tsx`
-3. Add route metadata to `/scripts/prerender.mjs`
+2. Add lazy import in `/src/components/AppRoutes.tsx`
+3. Add route metadata to `/scripts/prerender.js`
 4. Add translations to `en/translation.json` + `pt/translation.json`
 5. Rebuild: `npm run build`
 
@@ -87,13 +91,13 @@ You are assisting with the DJ Zen Eyer website, a high-performance headless Word
 1. Register CPT in `/inc/cpt.php`
 2. Enable `show_in_rest: true`
 3. Create API endpoint in `/inc/api.php` if custom logic needed
-4. Consume in React via `fetch(wpData.restUrl + '/wp/v2/your-cpt')`
+4. Consume in React via `fetch()` with proper error handling
 
 ### Debug API Issues
-1. Check CORS: `curl -H "Origin: https://djzeneyer.com" https://your-site.com/wp-json/`
-2. Verify nonce: `console.log(wpData.nonce)` in browser
-3. Test endpoint: `/wp-json/djzeneyer/v1/products?lang=pt`
-4. Check PHP errors: `wp-content/debug.log`
+1. Check CORS: `curl -H "Origin: https://djzeneyer.com" https://site.com/wp-json/`
+2. Verify endpoint: `/wp-json/djzeneyer/v1/products?lang=pt`
+3. Check PHP errors: `wp-content/debug.log`
+4. Test authentication: verify JWT token or nonce
 
 ## CONTACT & BRAND VOICE
 - **Artist Name:** DJ Zen Eyer (legal: Marcelo Eyer Fernandes)
@@ -109,6 +113,7 @@ You are assisting with the DJ Zen Eyer website, a high-performance headless Word
 - ❌ Add heavy libraries without justification
 - ❌ Ignore accessibility (alt texts, ARIA labels)
 - ❌ Deploy without building (`npm run build`)
+- ❌ Use purple/indigo colors (unless explicitly requested)
 
 ## PRIORITY ORDER
 1. **Security** (CORS, XSS protection, HTTPS)
@@ -117,6 +122,39 @@ You are assisting with the DJ Zen Eyer website, a high-performance headless Word
 4. **UX** (loading states, error handling, mobile-first)
 5. **Aesthetics** (animations, polish, dark theme consistency)
 
+## AVAILABLE API ENDPOINTS
+
+### Active Endpoints ✅
+- `GET /djzeneyer/v1/menu?lang=en` - Menu structure
+- `GET /djzeneyer/v1/products?lang=en` - WooCommerce products
+- `POST /djzeneyer/v1/subscribe` - Newsletter subscription
+- `POST /djzeneyer/v1/user/update-profile` - Update user profile (auth required)
+
+### Authentication Endpoints ✅
+- `POST /zeneyer-auth/v1/register` - User registration
+- `POST /zeneyer-auth/v1/login` - User login (email/password)
+- `POST /zeneyer-auth/v1/google` - Google OAuth login
+- `GET /zeneyer-auth/v1/validate` - Validate JWT token
+
+### Planned Endpoints 🚧
+- `/djzeneyer/v1/activity/{user_id}` - User activity feed
+- `/djzeneyer/v1/gamipress/{user_id}` - User stats (points, rank)
+- `/djzeneyer/v1/streak/{user_id}` - Login streak
+- `/djzeneyer/v1/tracks/{user_id}` - Purchased music
+- `/djzeneyer/v1/events/{user_id}` - Purchased events
+
+**Note:** Use native GamiPress API as workaround:
+- `GET /gamipress/v1/users/{id}/points`
+- `GET /gamipress/v1/users/{id}/ranks`
+- `GET /gamipress/v1/users/{id}/achievements`
+
+## DOCUMENTATION REFERENCES
+- [Architecture](docs/ARCHITECTURE.md)
+- [API Reference](docs/API.md)
+- [Setup Guide](docs/SETUP.md)
+- [Configuration](docs/CONFIGURATION.md)
+- [Dev Guide](docs/DEV_GUIDE.md)
+
 ---
 
-**For more details:** Check `SETUP.md` for full deployment guide.
+**For more details:** Check project documentation in `/docs/` folder.

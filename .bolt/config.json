@@ -1,92 +1,76 @@
 {
-  "projectName": "DJ Zen Eyer - Brazilian Zouk",
-  "version": "2.0.0",
-  "architecture": "headless-wordpress-react",
-  "stack": {
-    "frontend": {
-      "framework": "React 18.3",
-      "bundler": "Vite 5.4",
-      "language": "TypeScript",
-      "styling": "Tailwind CSS",
-      "animations": "Framer Motion",
-      "i18n": "react-i18next",
-      "routing": "react-router-dom"
-    },
-    "backend": {
-      "cms": "WordPress 6.x (Headless)",
-      "ecommerce": "WooCommerce",
-      "gamification": "GamiPress",
-      "multilingual": "Polylang",
-      "newsletter": "MailPoet"
-    },
-    "infrastructure": {
-      "hosting": "LiteSpeed Server",
-      "cdn": "Cloudflare",
-      "cache": "LiteSpeed Cache",
-      "ssl": "Cloudflare SSL"
-    }
-  },
-  "features": {
-    "ssg": {
-      "enabled": true,
-      "routes": 16,
-      "languages": ["en", "pt"],
-      "script": "scripts/prerender.mjs"
-    },
-    "seo": {
-      "staticHtml": true,
-      "hreflang": true,
-      "canonical": true,
-      "openGraph": true,
-      "schema": true,
-      "sitemap": "dynamic"
-    },
-    "performance": {
-      "lazyLoading": true,
-      "codeSplitting": true,
-      "imageOptimization": true,
-      "preloadHero": true,
-      "targetLCP": "< 1.8s",
-      "targetCLS": "< 0.05"
-    },
-    "security": {
-      "cors": true,
-      "csp": true,
-      "hsts": true,
-      "xssProtection": true,
-      "httpsOnly": true
-    }
-  },
-  "endpoints": {
-    "production": "https://djzeneyer.com",
-    "apiBase": "https://djzeneyer.com/wp-json/djzeneyer/v1",
-    "wpRest": "https://djzeneyer.com/wp-json/wp/v2"
-  },
-  "buildConfig": {
-    "command": "npm run build",
-    "outputDir": "dist",
-    "assetsDir": "assets",
-    "prerender": true,
-    "minify": true,
-    "sourcemap": false
+  "name": "DJ Zen Eyer",
+  "version": "1.1.0",
+  "description": "High-performance headless WordPress + React SPA for 2× World Champion Brazilian Zouk DJ",
+  "type": "fullstack",
+  "framework": "react",
+  "buildTool": "vite",
+  "language": "typescript",
+  "styling": "tailwindcss",
+  "features": [
+    "spa",
+    "i18n",
+    "ssg",
+    "pwa",
+    "ecommerce",
+    "authentication",
+    "gamification"
+  ],
+  "backend": {
+    "type": "wordpress-headless",
+    "api": "rest",
+    "plugins": [
+      "woocommerce",
+      "gamipress",
+      "polylang",
+      "mailpoet"
+    ],
+    "customPlugins": [
+      "zen-seo-lite",
+      "zeneyer-auth",
+      "zen-bit"
+    ]
   },
   "deployment": {
-    "platform": "LiteSpeed + Cloudflare",
-    "strategy": "Static Site Generation (SSG)",
-    "cicd": "GitHub Actions (optional)",
-    "rollback": "Git-based"
+    "platform": "hostinger-vps",
+    "cdn": "cloudflare",
+    "cache": "litespeed",
+    "ci": "github-actions"
   },
-  "maintenance": {
-    "phpFiles": "/inc/*.php",
-    "reactComponents": "/src/components/**/*.tsx",
-    "pages": "/src/pages/**/*.tsx",
-    "translations": "/src/locales/{en,pt}/translation.json",
-    "styles": "/src/index.css"
+  "performance": {
+    "targets": {
+      "lcp": "< 1.8s",
+      "cls": "< 0.05",
+      "fid": "< 100ms",
+      "bundle": "< 200KB gzipped"
+    },
+    "optimizations": [
+      "code-splitting",
+      "lazy-loading",
+      "image-optimization",
+      "static-generation",
+      "compression"
+    ]
   },
-  "notes": {
-    "wpIntegration": "WordPress serves ONLY as headless CMS/API. No theme rendering.",
-    "frontendDeployment": "Build React app and upload /dist folder to server root.",
-    "languageStrategy": "Client-side detection + URL-based routing (/pt prefix).",
-    "cacheStrategy": "Static HTML for SEO + React hydration for interactivity."
+  "i18n": {
+    "defaultLanguage": "en",
+    "languages": ["en", "pt"],
+    "detection": "browser",
+    "fallback": "en"
+  },
+  "seo": {
+    "sitemap": true,
+    "robots": true,
+    "structured-data": true,
+    "og-tags": true,
+    "canonical": true,
+    "hreflang": true
+  },
+  "security": {
+    "cors": "restricted",
+    "csp": "strict",
+    "hsts": true,
+    "jwt": true,
+    "rate-limiting": true
   }
 }
