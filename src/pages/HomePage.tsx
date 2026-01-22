@@ -9,7 +9,8 @@ import {
   PlayCircle, Calendar, Users, Music, Award, Trophy,
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getHrefLangUrls } from '../utils/seo';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 

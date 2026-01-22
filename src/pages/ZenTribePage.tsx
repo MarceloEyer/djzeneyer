@@ -13,7 +13,8 @@
 import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getHrefLangUrls } from '../utils/seo';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 

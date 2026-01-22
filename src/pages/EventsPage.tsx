@@ -4,7 +4,8 @@
 import { useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getHrefLangUrls } from '../utils/seo';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
 import type { Event, Testimonial, FlyerData } from '../types';
 import { EventsList } from '../components/EventsList';

@@ -14,7 +14,8 @@ import {
   Mail as Envelope,
 } from 'lucide-react';
 
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getHrefLangUrls } from '../utils/seo';
 import { ARTIST_SCHEMA_BASE, ARTIST, getWhatsAppUrl } from '../data/artistData';
 
 // ============================================================================

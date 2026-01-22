@@ -7,7 +7,8 @@ import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ARTIST } from '../data/artistData';
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getHrefLangUrls } from '../utils/seo';
 import {
   Download,
   Phone,

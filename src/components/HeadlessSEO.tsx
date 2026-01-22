@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { getAlternateLinks, Language } from '../config/routes';
+import { ensureTrailingSlash, HrefLang } from '../utils/seo';
 
 // ============================================================================
 // 1. INTERFACES
@@ -31,11 +32,6 @@ interface ZenSeoPluginData {
   event_ticket?: string;
 }
 
-interface HrefLang {
-  lang: string;
-  url: string;
-}
-
 interface HeadlessSEOProps {
   data?: ZenSeoPluginData;
   schema?: object;
@@ -56,45 +52,12 @@ interface HeadlessSEOProps {
 // 2. HELPER FUNCTIONS
 // ============================================================================
 
-export const ensureTrailingSlash = (url: string): string => {
-  if (!url) return '/';
-  if (url.endsWith('/')) return url;
-  const hasQuery = url.includes('?');
-  const hasHash = url.includes('#');
-
-  if (hasQuery || hasHash) {
-    const [basePath, ...rest] = url.split(/(\?|#)/);
-    return `${basePath}/${rest.join('')}`;
-  }
-
-  if (/\.[a-z0-9]{2,4}$/i.test(url)) return url;
-  return `${url}/`;
-};
-
 const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   if (!u) return baseUrl;
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
   const cleanBase = baseUrl.replace(/\/$/, '');
   const cleanPath = u.replace(/^\//, '');
   return `${cleanBase}/${cleanPath}`;
-};
-
-/**
- * @deprecated Use HeadlessSEO component which now handles this automatically.
- */
-export const getHrefLangUrls = (path: string, baseUrl: string): HrefLang[] => {
-  // Keeping for backward compatibility but implementation is legacy naive
-  const cleanPath = path.replace(/^\/pt/, '').replace(/^\//, '').replace(/\/$/, '') || '/';
-  const suffix = cleanPath === '/' ? '' : `/${cleanPath}/`;
-  
-  const enUrl = ensureTrailingSlash(`${baseUrl}${suffix}`);
-  const ptUrl = ensureTrailingSlash(`${baseUrl}/pt${suffix}`);
-
-  return [
-    { lang: 'en', url: enUrl },
-    { lang: 'pt-BR', url: ptUrl },
-    { lang: 'x-default', url: enUrl },
-  ];
 };
 
 // ============================================================================
