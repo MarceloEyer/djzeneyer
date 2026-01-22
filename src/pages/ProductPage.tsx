@@ -7,17 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
-
-interface ProductImage {
-  src: string;
-  alt: string;
-}
-
-interface ProductCategory {
-  id: number;
-  name: string;
-  slug: string;
-}
+import { ProductImage, ProductCategory } from '../types/product';
 
 interface Product {
   id: number;
@@ -145,7 +135,11 @@ const ProductPage: React.FC = () => {
     );
   }
 
-  const mainImage = activeImage || product.images?.[0]?.src || placeholderImage;
+  // Optimization: Use large or medium_large for main image if available, fallback to full src
+  const mainImageObject = product.images?.[0];
+  const optimizedMainImage = mainImageObject?.sizes?.large || mainImageObject?.sizes?.medium_large || mainImageObject?.src;
+
+  const mainImage = activeImage || optimizedMainImage || placeholderImage;
 
   return (
     <>
@@ -182,7 +176,7 @@ const ProductPage: React.FC = () => {
                       onClick={() => setActiveImage(img.src)}
                       className={`rounded-lg overflow-hidden border ${activeImage === img.src ? 'border-primary' : 'border-white/10'}`}
                     >
-                      <img src={img.src} alt={img.alt || product.name} className="w-full h-full object-cover" />
+                      <img src={img.sizes?.thumbnail || img.src} alt={img.alt || product.name} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
