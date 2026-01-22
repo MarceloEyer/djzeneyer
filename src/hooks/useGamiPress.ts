@@ -1,5 +1,5 @@
 // src/hooks/useGamiPress.ts
-// v7.2 - NATIVE GAMIPRESS REST API + STREAK (FIXED TYPES & IMAGES)
+// v7.3 - NATIVE GAMIPRESS REST API + STREAK (AUTHENTICATED)
 
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
@@ -86,12 +86,26 @@ export const useGamiPress = (): GamiPressHookResponse => {
       const wpData = (window as any).wpData || {};
       const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json/';
 
-      // ✅ USAR API NATIVA DO WORDPRESS
-      const userEndpoint = `${wpRestUrl}wp/v2/users/${user.id}`;
+      // ✅ USAR API NATIVA DO WORDPRESS COM AUTENTICAÇÃO
+      // Usando /users/me para garantir acesso aos dados e validar o token
+      const userEndpoint = `${wpRestUrl}wp/v2/users/me`;
 
-      const response = await fetch(userEndpoint);
+      const token = localStorage.getItem('jwt') || localStorage.getItem('token');
+
+      const headers: HeadersInit = {
+          'Content-Type': 'application/json'
+      };
+
+      if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(userEndpoint, { headers });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+             throw new Error('Unauthorized');
+        }
         throw new Error(`HTTP ${response.status}`);
       }
 
@@ -110,7 +124,6 @@ export const useGamiPress = (): GamiPressHookResponse => {
 
       // Streak
       const streak = Number(meta['zen_login_streak']) || 0;
-      const lastLogin = meta['zen_last_login'];
       let streakFire = false;
       if (streak > 0) {
         streakFire = true;
@@ -143,8 +156,11 @@ export const useGamiPress = (): GamiPressHookResponse => {
         const achievementType = await discoverAchievementType(wpRestUrl);
         
         // Buscar user earnings (conquistas desbloqueadas)
+        // Note: gamipress-user-earnings might also need auth depending on settings,
+        // but often it filters by user_id which is public. If issues arise, add auth here too.
         const earningsResponse = await fetch(
-          `${wpRestUrl}wp/v2/gamipress-user-earnings?user_id=${user.id}&post_type=${achievementType}&per_page=100`
+          `${wpRestUrl}wp/v2/gamipress-user-earnings?user_id=${user.id}&post_type=${achievementType}&per_page=100`,
+           { headers } // Adding auth headers just in case
         );
 
         if (earningsResponse.ok) {
