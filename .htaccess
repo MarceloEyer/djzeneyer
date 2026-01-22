@@ -1,3 +1,196 @@
+# BEGIN NON_LSCACHE
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+### marker BROWSER CACHE start ###
+<IfModule mod_expires.c>
+ExpiresActive on
+ExpiresByType application/pdf A31557600
+ExpiresByType image/x-icon A31557600
+ExpiresByType image/vnd.microsoft.icon A31557600
+ExpiresByType image/svg+xml A31557600
+ExpiresByType image/jpg A31557600
+ExpiresByType image/jpeg A31557600
+ExpiresByType image/png A31557600
+ExpiresByType image/gif A31557600
+ExpiresByType image/webp A31557600
+ExpiresByType image/avif A31557600
+ExpiresByType video/ogg A31557600
+ExpiresByType audio/ogg A31557600
+ExpiresByType video/mp4 A31557600
+ExpiresByType video/webm A31557600
+ExpiresByType text/css A31557600
+ExpiresByType text/javascript A31557600
+ExpiresByType application/javascript A31557600
+ExpiresByType application/x-javascript A31557600
+ExpiresByType application/x-font-ttf A31557600
+ExpiresByType application/x-font-woff A31557600
+ExpiresByType application/font-woff A31557600
+ExpiresByType application/font-woff2 A31557600
+ExpiresByType application/vnd.ms-fontobject A31557600
+ExpiresByType font/ttf A31557600
+ExpiresByType font/otf A31557600
+ExpiresByType font/woff A31557600
+ExpiresByType font/woff2 A31557600
+</IfModule>
+### marker BROWSER CACHE end ###
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+# END NON_LSCACHE
+
+# ==============================================================================
+# DJ ZEN EYER - PRODUCTION .htaccess v16.0 (FIXED ADMIN & GOOGLE LOGIN)
+# ==============================================================================
+
+# ==============================================================================
+# 1. LITESPEED CACHE
+# ==============================================================================
+# BEGIN LSCACHE
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+<IfModule LiteSpeed>
+RewriteEngine on
+CacheLookup on
+RewriteRule .* - [E=Cache-Control:no-autoflush]
+RewriteRule litespeed/debug/.*\.log$ - [F,L]
+RewriteRule \.litespeed_conf\.dat - [F,L]
+
+### marker ASYNC start ###
+RewriteCond %{REQUEST_URI} /wp-admin/admin-ajax\.php
+RewriteCond %{QUERY_STRING} action=async_litespeed
+RewriteRule .* - [E=noabort:1]
+### marker ASYNC end ###
+
+### marker MOBILE start ###
+RewriteCond %{HTTP_USER_AGENT} Mobile|Android|Silk/|Kindle|BlackBerry|Opera\ Mini|Opera\ Mobi [NC]
+RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+ismobile]
+### marker MOBILE end ###
+
+### marker NOCACHE COOKIES start ###
+RewriteCond %{HTTP_COOKIE} wordpress_logged_in_|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|wordpress_logged_in_\*|woocommerce_\*
+RewriteRule .* - [E=Cache-Control:no-cache]
+### marker NOCACHE COOKIES end ###
+
+### marker NOCACHE USER AGENTS start ###
+RewriteCond %{HTTP_USER_AGENT} /wp\-json/\*|/feed/\*|/comments/feed/\*|/api/\* [NC]
+RewriteRule .* - [E=Cache-Control:no-cache]
+### marker NOCACHE USER AGENTS end ###
+
+### marker WEBP start ###
+RewriteCond %{HTTP_ACCEPT} image/webp [OR]
+RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
+RewriteCond %{HTTP_USER_AGENT} Firefox/([6-9][0-9]|[1-9][0-9]{2,})
+RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+webp]
+### marker WEBP end ###
+
+### marker DROPQS start ###
+CacheKeyModify -qs:fbclid
+CacheKeyModify -qs:gclid
+CacheKeyModify -qs:utm*
+CacheKeyModify -qs:_ga
+### marker DROPQS end ###
+
+</IfModule>
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+# END LSCACHE
+
+# ==============================================================================
+# 2. MIME TYPES
+# ==============================================================================
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType text/css .css
+  AddType application/json .json .map
+  AddType font/woff .woff
+  AddType font/woff2 .woff2
+  AddType font/ttf .ttf
+  AddType font/otf .otf
+  AddType image/svg+xml .svg .svgz
+  AddType image/webp .webp
+  AddType image/avif .avif
+  AddType application/manifest+json .webmanifest
+  AddCharset UTF-8 .html .css .js .xml .json
+</IfModule>
+
+# ==============================================================================
+# 3. SECURITY HEADERS
+# ==============================================================================
+<IfModule mod_headers.c>
+  Header unset Server
+  Header unset X-Powered-By
+  Header always unset X-Pingback
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+
+  # CORREÇÃO CRÍTICA: Permite que o popup do Google Login se comunique com o site
+  Header always set Cross-Origin-Opener-Policy "unsafe-none"
+
+  Header unset Content-Security-Policy
+  Header always unset Content-Security-Policy
+  # NOTA: A CSP é gerada dinamicamente pelo PHP (inc/csp.php)
+</IfModule>
+
+# ==============================================================================
+# 4. CORS (FIXED FOR ADMIN DASHBOARD & API)
+# ==============================================================================
+<IfModule mod_headers.c>
+    # 1. Detecta a Origem (Seu site ou Localhost)
+    SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
+
+    # 2. Fallback para acesso direto (Painel Admin/Same-Origin) onde o header Origin é vazio
+    SetEnvIf Origin "^$" ALLOWED_ORIGIN=https://djzeneyer.com
+
+    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
+        # Aplica headers CORS apenas na API para não quebrar o Admin
+        Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
+        Header always set Access-Control-Allow-Credentials "true"
+        Header always set Vary "Origin"
+
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
+    </If>
+
+    # Tratamento de Preflight (OPTIONS)
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=204,L]
+</IfModule>
+
+# ==============================================================================
+# 5. COMPRESSÃO
+# ==============================================================================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml font/ttf font/otf
+</IfModule>
+
+# ==============================================================================
+# 6. CACHE CONTROL (ASSETS)
+# ==============================================================================
+<IfModule mod_headers.c>
+    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    </If>
+    <FilesMatch "\.(css|js|mjs|woff|woff2|ttf|otf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+        Header set Cache-Control "public, max-age=15552000"
+    </FilesMatch>
+</IfModule>
+
+# ==============================================================================
+# 7. SEGURANÇA DE ARQUIVOS
+# ==============================================================================
+<FilesMatch "^(wp-config\.php|\.htaccess|readme\.html|license\.txt|\.git.*|composer\.json|package\.json)$">
+  Require all denied
+</FilesMatch>
+<Files xmlrpc.php>
+  Require all denied
+</Files>
+Options -Indexes
+
+# ==============================================================================
+# 8. ROTEAMENTO PADRÃO DO WORDPRESS
+# ==============================================================================
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
@@ -9,33 +202,3 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
 # END WordPress
-
-# Security Headers
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
-    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
-</IfModule>
-
-# Compression
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json
-</IfModule>
-
-# Browser Caching
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/pdf "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/x-javascript "access plus 1 month"
-    ExpiresByType image/x-icon "access plus 1 year"
-    ExpiresDefault "access plus 2 days"
-</IfModule>
