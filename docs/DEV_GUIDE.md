@@ -128,3 +128,30 @@ To add server-side functionality:
      */
     ```
 3.  The deployment workflow will automatically detect and deploy the new plugin folder to `wp-content/plugins/`.
+
+---
+
+## 4. Troubleshooting & Common Issues
+
+### Build Errors
+If `npm run build` fails unexpectedly:
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+### White Screen (Production)
+1. Enable `WP_DEBUG` in `wp-config.php`.
+2. Check `wp-content/debug.log`.
+3. Verify if `window.wpData` is being correctly injected (View Source).
+
+### CORS Errors
+If API requests are blocked:
+1. Check Cloudflare "Page Rules" (Ensure `/wp-json/*` is set to Bypass Cache).
+2. Check `.htaccess` headers.
+3. Verify `inc/setup.php` allows the correct origin.
+
+### REST API 404
+1. Go to **Settings > Permalinks** in WP Admin.
+2. Click **Save Changes** to flush rewrite rules.

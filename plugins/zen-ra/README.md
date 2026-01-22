@@ -111,6 +111,14 @@ Acesse **Settings → Zen Gamification** no admin:
 - **XP Padrão Conquista**: XP para conquistas GamiPress sem pontos definidos (padrão: 10)
 - **Cache (segundos)**: TTL do cache (padrão: 600 = 10 minutos)
 
+## Error Handling
+
+O plugin implementa tratamento de erros robusto:
+
+1.  **Try-Catch Blocks**: Todos os métodos públicos (`get_player_stats`, `get_activity_feed`, etc.) são envolvidos em blocos `try-catch` para evitar Fatal Errors no site.
+2.  **Graceful Degradation**: Se ocorrer um erro (ex: GamiPress não instalado, erro de banco), o plugin retorna um array vazio ou valores padrão (streak: 0, activities: []) para que o frontend continue funcionando.
+3.  **Logs**: Erros são registrados no `error_log` do servidor com o prefixo `[Zen_RA]`.
+
 ## Como funciona o cache
 
 ### Auto-clear automático
