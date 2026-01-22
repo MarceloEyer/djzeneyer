@@ -27,23 +27,9 @@ import {
   Zap
 } from 'lucide-react';
 
+import { ProductImage, ProductCategory } from '../types/product';
+
 // --- Interfaces (Idealmente em src/types/index.ts) ---
-interface ProductImage {
-  src: string;
-  alt: string;
-  sizes?: {
-    thumbnail?: string;
-    medium?: string;
-    medium_large?: string;
-    large?: string;
-  };
-}
-
-interface ProductCategory {
-  name: string;
-  slug?: string;
-}
-
 interface Product {
   id: number;
   name: string;
