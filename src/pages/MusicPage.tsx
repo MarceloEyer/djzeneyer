@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getHrefLangUrls } from '../utils/seo';
 import { Download, Music2, Clock, Filter, ExternalLink, Youtube, Cloud } from 'lucide-react';
 import { useTracksQuery, MusicTrack } from '../hooks/useQueries';
 

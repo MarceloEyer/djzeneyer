@@ -6,7 +6,8 @@
 
 import React, { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeadlessSEO, getHrefLangUrls } from '../components/HeadlessSEO';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getHrefLangUrls } from '../utils/seo';
 import { ChevronDown, HelpCircle, Users, Award, Globe, Brain, Disc, Mic2, Star, BookOpen, HeartPulse } from 'lucide-react';
 
 // ============================================================================
