@@ -31,6 +31,12 @@ import {
 interface ProductImage {
   src: string;
   alt: string;
+  sizes?: {
+    thumbnail?: string;
+    medium?: string;
+    medium_large?: string;
+    large?: string;
+  };
 }
 
 interface ProductCategory {
@@ -147,7 +153,7 @@ const ProductCarousel: React.FC<{
               <div className="card overflow-hidden shadow-xl bg-surface border border-white/5 rounded-lg h-full flex flex-col">
                 <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
                   <img 
-                    src={product.images[0]?.src || 'https://placehold.co/640x360/0D96FF/FFFFFF?text=Event'}
+                    src={product.images[0]?.sizes?.medium || product.images[0]?.src || 'https://placehold.co/640x360/0D96FF/FFFFFF?text=Event'}
                     alt={product.images[0]?.alt || product.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
                     loading="lazy"

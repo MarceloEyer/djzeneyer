@@ -173,11 +173,25 @@ function djz_get_products($request) {
             foreach ($img_ids as $img_id) {
                 $src = wp_get_attachment_url($img_id);
                 if ($src) {
-                    $images[] = [
+                    $img_data = [
                         'id' => $img_id,
                         'src' => $src,
                         'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
                     ];
+
+                    $sizes = ['thumbnail', 'medium', 'medium_large', 'large'];
+                    $img_sizes = [];
+                    foreach ($sizes as $size) {
+                        $img_src = wp_get_attachment_image_src($img_id, $size);
+                        if ($img_src) {
+                            $img_sizes[$size] = $img_src[0];
+                        }
+                    }
+                    if (!empty($img_sizes)) {
+                        $img_data['sizes'] = $img_sizes;
+                    }
+
+                    $images[] = $img_data;
                 }
             }
             

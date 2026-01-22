@@ -11,6 +11,12 @@ import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
 interface ProductImage {
   src: string;
   alt: string;
+  sizes?: {
+    thumbnail?: string;
+    medium?: string;
+    medium_large?: string;
+    large?: string;
+  };
 }
 
 interface ProductCategory {
@@ -182,7 +188,7 @@ const ProductPage: React.FC = () => {
                       onClick={() => setActiveImage(img.src)}
                       className={`rounded-lg overflow-hidden border ${activeImage === img.src ? 'border-primary' : 'border-white/10'}`}
                     >
-                      <img src={img.src} alt={img.alt || product.name} className="w-full h-full object-cover" />
+                      <img src={img.sizes?.thumbnail || img.src} alt={img.alt || product.name} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
