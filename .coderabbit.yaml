@@ -14,6 +14,7 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+    ignore_authors: []
     base_branches:
       - main
       - develop
