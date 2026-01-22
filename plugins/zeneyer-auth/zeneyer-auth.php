@@ -128,6 +128,13 @@ final class ZenEyer_Auth_Pro {
         // 4. A Guilhotina
         add_action('user_register', function($user_id) {
             if (is_admin() && current_user_can('create_users')) return;
+
+            // Allow WooCommerce customers
+            if (class_exists('WooCommerce')) {
+                $user = get_userdata($user_id);
+                if ($user && in_array('customer', (array) $user->roles)) return;
+            }
+
             if (!defined('ZEN_AUTH_VALIDATED')) {
                 error_log("🚨 [ZenEyer Security] INTRUSO DETECTADO: Usuário ID $user_id. Removendo...");
                 wp_delete_user($user_id);
