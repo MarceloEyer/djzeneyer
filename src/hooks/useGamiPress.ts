@@ -1,5 +1,5 @@
 // src/hooks/useGamiPress.ts
-// v7.0 - NATIVE GAMIPRESS REST API
+// v7.3 - NATIVE GAMIPRESS REST API + STREAK (AUTHENTICATED)
 
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
@@ -10,9 +10,9 @@ import { useUser } from '../contexts/UserContext';
 
 export interface Achievement {
   id: number;
-  title: { rendered: string };
-  content: { rendered: string };
-  featured_media: number;
+  title: string;
+  description: string;
+  image: string;
   earned: boolean;
   date_earned?: string;
 }
@@ -25,6 +25,8 @@ export interface GamiPressData {
   nextLevelPoints: number;
   progressToNextLevel: number;
   achievements: Achievement[];
+  streak: number;
+  streakFire: boolean;
 }
 
 interface GamiPressHookResponse extends GamiPressData {
@@ -38,14 +40,10 @@ interface GamiPressHookResponse extends GamiPressData {
  * CONFIGURAÇÃO
  * ========================= */
 
-// TODO: Descobrir o slug real do seu points type
-const POINTS_TYPE_SLUG = 'zen-points'; // Verificar no admin: GamiPress > Points Types
-
-// TODO: Descobrir o slug real do seu rank type
-const RANK_TYPE_SLUG = 'zen-rank'; // Verificar no admin: GamiPress > Rank Types
-
-// TODO: Descobrir o slug real do seu achievement type
-const ACHIEVEMENT_TYPE_SLUG = 'badges'; // Verificar no admin: GamiPress > Achievement Types
+// Defaults set based on inc/setup.php
+const POINTS_TYPE_SLUG = 'zen-points';
+const RANK_TYPE_SLUG = 'zen-rank';
+const ACHIEVEMENT_TYPE_SLUG = 'badges';
 
 /* =========================
  * HELPER: Buscar Achievement Type Real
@@ -88,18 +86,32 @@ export const useGamiPress = (): GamiPressHookResponse => {
       const wpData = (window as any).wpData || {};
       const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json/';
 
-      // ✅ USAR API NATIVA DO WORDPRESS
-      const userEndpoint = `${wpRestUrl}wp/v2/users/${user.id}`;
+      // ✅ USAR API NATIVA DO WORDPRESS COM AUTENTICAÇÃO
+      // Usando /users/me para garantir acesso aos dados e validar o token
+      const userEndpoint = `${wpRestUrl}wp/v2/users/me`;
 
-      const response = await fetch(userEndpoint);
+      const token = localStorage.getItem('jwt') || localStorage.getItem('token');
+
+      const headers: HeadersInit = {
+          'Content-Type': 'application/json'
+      };
+
+      if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(userEndpoint, { headers });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+             throw new Error('Unauthorized');
+        }
         throw new Error(`HTTP ${response.status}`);
       }
 
       const userData = await response.json();
 
-      // ✅ EXTRAIR DADOS DO GAMIPRESS QUE JÁ ESTÃO NO USER.META
+      // ✅ EXTRAIR DADOS
       const meta = userData.meta || {};
 
       // Points
@@ -109,6 +121,13 @@ export const useGamiPress = (): GamiPressHookResponse => {
       // Rank
       const rankKey = `_gamipress_${RANK_TYPE_SLUG}_rank`;
       const rankId = Number(meta[rankKey]) || 0;
+
+      // Streak
+      const streak = Number(meta['zen_login_streak']) || 0;
+      let streakFire = false;
+      if (streak > 0) {
+        streakFire = true;
+      }
 
       // Buscar informações do rank
       let rankName = 'Zen Novice';
@@ -137,8 +156,11 @@ export const useGamiPress = (): GamiPressHookResponse => {
         const achievementType = await discoverAchievementType(wpRestUrl);
         
         // Buscar user earnings (conquistas desbloqueadas)
+        // Note: gamipress-user-earnings might also need auth depending on settings,
+        // but often it filters by user_id which is public. If issues arise, add auth here too.
         const earningsResponse = await fetch(
-          `${wpRestUrl}wp/v2/gamipress-user-earnings?user_id=${user.id}&post_type=${achievementType}&per_page=100`
+          `${wpRestUrl}wp/v2/gamipress-user-earnings?user_id=${user.id}&post_type=${achievementType}&per_page=100`,
+           { headers } // Adding auth headers just in case
         );
 
         if (earningsResponse.ok) {
@@ -149,7 +171,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
           
           if (achievementIds.length > 0) {
             const achievementsResponse = await fetch(
-              `${wpRestUrl}wp/v2/${achievementType}?include=${achievementIds.join(',')}&per_page=100`
+              `${wpRestUrl}wp/v2/${achievementType}?include=${achievementIds.join(',')}&per_page=100&_embed`
             );
             
             if (achievementsResponse.ok) {
@@ -159,7 +181,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
                 id: ach.id,
                 title: ach.title?.rendered || 'Achievement',
                 description: ach.content?.rendered || '',
-                image: ach.featured_media ? `${wpRestUrl}wp/v2/media/${ach.featured_media}` : '',
+                image: ach._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
                 earned: true,
                 date_earned: earnings.find((e: any) => e.post_id === ach.id)?.date || ''
               }));
@@ -178,6 +200,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
         nextLevelPoints,
         progressToNextLevel,
         achievements,
+        streak,
+        streakFire,
       };
 
       setData(parsedData);
@@ -195,6 +219,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
         nextLevelPoints: 100,
         progressToNextLevel: 0,
         achievements: [],
+        streak: 0,
+        streakFire: false,
       });
     } finally {
       setLoading(false);
@@ -219,6 +245,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
     nextLevelPoints: 100,
     progressToNextLevel: 0,
     achievements: [],
+    streak: 0,
+    streakFire: false,
   };
 
   return {
@@ -229,6 +257,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
     nextLevelPoints: data?.nextLevelPoints ?? fallback.nextLevelPoints,
     progressToNextLevel: data?.progressToNextLevel ?? fallback.progressToNextLevel,
     achievements: data?.achievements ?? fallback.achievements,
+    streak: data?.streak ?? fallback.streak,
+    streakFire: data?.streakFire ?? fallback.streakFire,
     data,
     loading,
     error,

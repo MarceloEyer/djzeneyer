@@ -1,5 +1,5 @@
 // src/pages/DashboardPage.tsx
-// v17.0 - REAL ACTIVITY MASTER: Custom API Integration (Zen-RA)
+// v18.1 - NATIVE GAMIPRESS INTEGRATION (Fixed Types)
 
 import { useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -10,15 +10,10 @@ import {
   Target, Gift, Loader2, TrendingUp, Star 
 } from 'lucide-react';
 import GamificationWidget from '../components/Gamification/GamificationWidget';
-import { useGamiPress } from '../hooks/useGamiPress';
-import { useUserTracks } from '../hooks/useUserTracks';
-import { useUserEvents } from '../hooks/useUserEvents';
-import { useUserStreak } from '../hooks/useUserStreak';
-import { useRecentActivity, ZenActivity } from '../hooks/useRecentActivity'; // ✅ Novo Hook Importado
+import { useGamiPress, Achievement } from '../hooks/useGamiPress';
 
 // --- HELPER: Formatação de Tempo (Ex: "2 hours ago") ---
 function getTimeAgo(timestamp: number): string {
-  // Multiplicamos por 1000 porque PHP usa Segundos e JS usa Milissegundos
   const seconds = Math.floor((new Date().getTime() - timestamp * 1000) / 1000);
   
   let interval = seconds / 31536000;
@@ -47,12 +42,8 @@ const DashboardPage = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   
-  // Hooks de Dados Reais
+  // Hook de Dados Reais
   const gamipress = useGamiPress();
-  const tracks = useUserTracks();
-  const events = useUserEvents();
-  const streak = useUserStreak();
-  const activity = useRecentActivity(); // ✅ Hook da sua API Customizada
 
   useEffect(() => {
     if (user?.name) {
@@ -72,28 +63,43 @@ const DashboardPage = () => {
     nextLevelXP: gamipress.nextLevelPoints,
     progress: gamipress.progressToNextLevel,
     rank: gamipress.rank,
-    totalTracks: tracks.data?.total ?? 0,
-    eventsAttended: events.data?.total ?? 0,
-    streakDays: streak.data?.streak ?? 0,
-    streakFire: streak.data?.fire ?? false,
+    totalTracks: 0, // Placeholder: WooCommerce hook removed
+    eventsAttended: 0, // Placeholder: WooCommerce hook removed
+    streakDays: gamipress.streak,
+    streakFire: gamipress.streakFire,
     tribeFriends: 0 
-  }), [gamipress, tracks.data, events.data, streak.data]);
+  }), [gamipress]);
 
   const safeAchievements = useMemo<SafeAchievement[]>(() => {
     const raw = gamipress.achievements;
     if (Array.isArray(raw) && raw.length > 0) {
       return raw
-        .filter((ach: any) => ach?.earned)
-        .map((ach: any) => ({
-          id: ach?.id,
-          title: ach?.title || 'Achievement',
-          description: ach?.description || 'Achievement unlocked!',
-          image: ach?.image || '',
-          emoji: ach?.image ? '' : '🏆',
+        .filter((ach) => ach.earned)
+        .map((ach) => ({
+          id: ach.id,
+          title: ach.title || 'Achievement',
+          description: ach.description || 'Achievement unlocked!',
+          image: ach.image || '',
+          emoji: ach.image ? '' : '🏆',
           earned: true
         }));
     }
     return [];
+  }, [gamipress.achievements]);
+
+  const recentActivities = useMemo(() => {
+      if (!gamipress.achievements) return [];
+      return [...gamipress.achievements]
+          .filter(a => a.earned && a.date_earned)
+          .sort((a, b) => new Date(b.date_earned!).getTime() - new Date(a.date_earned!).getTime())
+          .slice(0, 10)
+          .map(a => ({
+              id: `ach_${a.id}`,
+              type: 'achievement',
+              description: a.title || 'Achievement',
+              xp: 0, // XP unknown in this context without extra fetch
+              timestamp: new Date(a.date_earned!).getTime() / 1000
+          }));
   }, [gamipress.achievements]);
 
   const unlockedCount = safeAchievements.length;
@@ -180,9 +186,9 @@ const DashboardPage = () => {
         {/* STATS GRID */}
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
           {[
-            { icon: Music, value: userStats.totalTracks, label: 'Tracks Downloaded', color: 'text-primary', loading: tracks.loading },
-            { icon: Calendar, value: userStats.eventsAttended, label: 'Events Attended', color: 'text-success', loading: events.loading },
-            { icon: Target, value: userStats.streakDays, label: userStats.streakFire ? 'Day Streak 🔥' : 'Day Streak', color: 'text-warning', loading: streak.loading },
+            { icon: Music, value: userStats.totalTracks, label: 'Tracks Downloaded', color: 'text-primary', loading: false },
+            { icon: Calendar, value: userStats.eventsAttended, label: 'Events Attended', color: 'text-success', loading: false },
+            { icon: Target, value: userStats.streakDays, label: userStats.streakFire ? 'Day Streak 🔥' : 'Day Streak', color: 'text-warning', loading: gamipress.loading },
             { icon: Users, value: userStats.tribeFriends, label: 'Tribe Friends', color: 'text-accent', loading: false },
           ].map((stat, i) => (
             <motion.div key={i} variants={itemVariants} whileHover={{ scale: 1.05, y: -5 }} className="card p-4 md:p-6 transition-all hover:shadow-2xl">
@@ -208,14 +214,14 @@ const DashboardPage = () => {
               </div>
               
               <div className="space-y-4">
-                {activity.loading ? (
+                {gamipress.loading ? (
                    // Loading State
                    <div className="flex flex-col gap-4">
                      {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />)}
                    </div>
-                ) : activity.data.length > 0 ? (
+                ) : recentActivities.length > 0 ? (
                   // ✅ Renderização da Atividade Real
-                  activity.data.map((act: ZenActivity, i) => {
+                  recentActivities.map((act, i) => {
                     // Mapeamento de Estilo baseado no Tipo
                     const isLoot = act.type === 'loot';
                     const icon = isLoot ? <Gift size={20} /> : <Trophy size={20} />;
@@ -243,9 +249,11 @@ const DashboardPage = () => {
                         </div>
                         
                         {/* XP Badge */}
-                        <div className="text-success font-bold text-sm flex-shrink-0 flex items-center gap-1 bg-success/10 px-3 py-1 rounded-full border border-success/20">
-                          <Star size={14} className="fill-success" /> +{act.xp} XP
-                        </div>
+                        {act.xp > 0 && (
+                            <div className="text-success font-bold text-sm flex-shrink-0 flex items-center gap-1 bg-success/10 px-3 py-1 rounded-full border border-success/20">
+                            <Star size={14} className="fill-success" /> +{act.xp} XP
+                            </div>
+                        )}
                       </motion.div>
                     );
                   })
