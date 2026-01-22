@@ -53,8 +53,9 @@ This document tracks pending tasks, improvements, and configuration checks for t
 ## ⚙️ Configuration & DevOps
 
 ### WordPress Configuration
+- [x] **Enterprise Architecture**: Verified consistency of .bolt/config.json with codebase (CSP, Nonces, Setup). (2026-01-22)
 - [ ] **Permalinks**: Ensure set to "Post name" (`/%postname%/`).
-- [ ] **Cors**: Verify `Access-Control-Allow-Origin` headers allow the production frontend domain.
+- [x] **Cors**: Verify `Access-Control-Allow-Origin` headers allow the production frontend domain.
 - [ ] **Caching**:
     - Configure LiteSpeed Cache to exclude REST API endpoints specific to user data (`/zeneyer-auth`, `/cart`).
     - Enable Object Cache if available on hosting.
