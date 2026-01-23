@@ -8,7 +8,7 @@ import { useCart } from '../contexts/CartContext';
 
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading } = useCart();
+  const { cart, loading, removeItem } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
 
   const containerVariants = {
@@ -105,7 +105,11 @@ const CartPage: React.FC = () => {
                     <div className="flex-grow flex flex-col justify-between">
                       <div className="flex justify-between items-start">
                         <h3 className="font-semibold text-lg line-clamp-2">{item.name}</h3>
-                        <button className="text-white/40 hover:text-error transition-colors p-1" aria-label={t('cart_remove_item', 'Remove item')}>
+                        <button
+                          onClick={() => removeItem(item.key)}
+                          className="text-white/40 hover:text-error transition-colors p-1"
+                          aria-label={t('cart_remove_item', 'Remove item')}
+                        >
                           <Trash2 size={18} />
                         </button>
                       </div>

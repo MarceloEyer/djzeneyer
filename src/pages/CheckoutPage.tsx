@@ -32,9 +32,12 @@ const CheckoutPage: React.FC = () => {
     setIsProcessing(true);
 
     // Simulate API call
+    // TODO: Integrate with real Payment Gateway (Stripe/PagSeguro/WooCommerce)
+    // This is a mock implementation for the frontend prototype.
     setTimeout(() => {
       setIsProcessing(false);
       setOrderSuccess(true);
+      // TODO: Clear cart using a context method like clearCart() after successful order
     }, 2000);
   };
 
