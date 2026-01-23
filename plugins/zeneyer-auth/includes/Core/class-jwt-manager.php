@@ -79,6 +79,9 @@ class JWT_Manager {
         }
         
         try {
+            // Add leeway to account for clock skew
+            JWT::$leeway = 60;
+
             $decoded = JWT::decode($token, new Key($secret_key, self::ALGORITHM));
             
             // Verify user still exists
