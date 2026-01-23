@@ -109,6 +109,11 @@ class WP_Auth_Integration {
             return true;
         }
 
+        // If a token was provided but failed validation, return the specific error
+        if (is_wp_error($decoded)) {
+            return $decoded;
+        }
+
         return $errors;
     }
 

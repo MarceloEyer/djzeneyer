@@ -87,6 +87,16 @@ export const useGamiPress = (): GamiPressHookResponse => {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+            const errorText = await response.text();
+            console.error('[useGamiPress] ❌ 401 Unauthorized:', errorText);
+            try {
+                const errorJson = JSON.parse(errorText);
+                console.error('[useGamiPress] Error Details:', errorJson);
+            } catch (e) {
+                // Ignore parse error
+            }
+        }
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
