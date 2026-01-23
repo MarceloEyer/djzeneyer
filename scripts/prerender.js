@@ -49,8 +49,9 @@ const ROUTES = [
   { path: '/pt/conduta', minSize: 2000, waitFor: 'h1, footer' },
 
   // --- LOJA (Dados Reais) ---
-  { path: '/shop', minSize: 3000, waitFor: 'h1, .card, footer' },
-  { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .card, footer' },
+  // REMOVIDO DO PRERENDER PARA EVITAR PREÇOS DESATUALIZADOS
+  // { path: '/shop', minSize: 3000, waitFor: 'h1, .card, footer' },
+  // { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .card, footer' },
 ];
 
 // ... (Resto do código permanece IDÊNTICO ao v14.0 que você mandou) ...
@@ -123,8 +124,8 @@ async function prerenderRoute(page, route, retries = 2) {
       console.log(`\n🚏 ROTA: ${route.path}`);
 
       const response = await page.goto(url, {
-        waitUntil: 'domcontentloaded', 
-        timeout: 45000
+        waitUntil: 'networkidle0',
+        timeout: 60000
       });
 
       if (!response || !response.ok()) {
