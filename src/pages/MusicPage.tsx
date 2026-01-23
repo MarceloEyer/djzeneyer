@@ -100,9 +100,8 @@ const MusicPage: React.FC = () => {
             <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence>
                 {filteredTracks.map((track) => {
-                  const media = track._embedded?.['wp:featuredmedia']?.[0];
-                  // OPTIMIZATION: Use medium_large image instead of full size to improve performance
-                  const coverUrl = media?.media_details?.sizes?.medium_large?.source_url || media?.source_url;
+                  // OPTIMIZATION: Use direct field instead of _embedded traversal
+                  const coverUrl = track.featured_image_src;
                   
                   return (
                     <motion.div

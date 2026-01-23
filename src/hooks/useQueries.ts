@@ -54,19 +54,7 @@ export interface MusicTrack {
     soundcloud: string;
     youtube: string;
   };
-  _embedded?: {
-    'wp:featuredmedia'?: Array<{
-      source_url: string;
-      media_details?: {
-        sizes?: {
-          medium?: { source_url: string };
-          medium_large?: { source_url: string };
-          large?: { source_url: string };
-          full?: { source_url: string };
-        };
-      };
-    }>;
-  };
+  featured_image_src?: string | null;
 }
 
 // ============================================================================
@@ -116,7 +104,6 @@ export const useTracksQuery = () => {
     queryKey: QUERY_KEYS.tracks.list(),
     queryFn: async (): Promise<MusicTrack[]> => {
       const apiUrl = buildApiUrl('wp/v2/remixes', {
-        _embed: 'true',
         per_page: '100',
       });
       const res = await fetch(apiUrl);
