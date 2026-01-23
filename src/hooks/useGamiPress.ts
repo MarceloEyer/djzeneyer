@@ -79,7 +79,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
       }
 
       // ✅ BUSCAR DADOS DO USUÁRIO (com autenticação)
-      const userEndpoint = `${wpRestUrl}wp/v2/users/${user.id}`;
+      const userEndpoint = `${wpRestUrl}wp/v2/users/me`;
 
       const response = await fetch(userEndpoint, {
         headers,
