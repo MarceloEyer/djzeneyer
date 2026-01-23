@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Heart, Coffee, Share2, ShoppingBag, Music } from 'lucide-react';
+import { Calendar, Share2, ShoppingBag, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { ARTIST } from '../data/artistData';
 
 const SupportArtistPage: React.FC = () => {
   const { t } = useTranslation();
@@ -28,19 +29,19 @@ const SupportArtistPage: React.FC = () => {
       color: 'text-primary'
     },
     {
-      icon: <Coffee size={32} />,
-      title: t('support_coffee_title', 'Buy me a Coffee'),
-      desc: t('support_coffee_desc', 'Direct support helps keep the music flowing and the streams running.'),
-      action: t('support_coffee_action', 'Donate'),
-      link: '#', // Placeholder for donation link
+      icon: <Calendar size={32} />,
+      title: t('support_booking_title', 'Book a Gig'),
+      desc: t('support_booking_desc', 'Want the Zen Experience at your event? Let\'s make it happen.'),
+      action: t('support_booking_action', 'Book Now'),
+      link: '/work-with-me',
       color: 'text-yellow-500'
     },
     {
       icon: <Share2 size={32} />,
       title: t('support_share_title', 'Share the Music'),
       desc: t('support_share_desc', 'The biggest help is free. Share my tracks and sets with your friends.'),
-      action: t('support_share_action', 'Share'),
-      link: '/press-kit',
+      action: t('support_share_action', 'Press Kit'),
+      link: '/work-with-me', // Using press kit page for sharing assets
       color: 'text-blue-400'
     },
     {
@@ -48,7 +49,7 @@ const SupportArtistPage: React.FC = () => {
       title: t('support_spotify_title', 'Stream on Spotify'),
       desc: t('support_spotify_desc', 'Follow and listen on Spotify. Every stream counts.'),
       action: t('support_spotify_action', 'Listen'),
-      link: 'https://open.spotify.com/artist/PLACEHOLDER', // Should be pulled from artistData
+      link: ARTIST.social.spotify.url,
       color: 'text-green-500'
     }
   ];
@@ -69,7 +70,12 @@ const SupportArtistPage: React.FC = () => {
             className="text-center mb-16"
           >
             <div className="inline-flex p-4 bg-primary/10 rounded-full text-primary mb-6">
-              <Heart size={48} />
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                <Music size={48} />
+              </motion.div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 font-display">
               {t('support_hero_title', 'Support the Art')}

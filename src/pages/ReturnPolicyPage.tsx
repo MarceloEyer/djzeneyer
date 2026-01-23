@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { ARTIST } from '../data/artistData';
 
 const ReturnPolicyPage: React.FC = () => {
   const { t } = useTranslation();
@@ -58,7 +59,7 @@ const ReturnPolicyPage: React.FC = () => {
 
             <h2>{t('return_policy_request_title', '4. How to Request a Refund')}</h2>
             <p>
-              {t('return_policy_request_text', 'To initiate a return or refund request, please email us at')} <strong>support@djzeneyer.com</strong> {t('return_policy_request_text_2', 'with your order number and details of the issue.')}
+              {t('return_policy_request_text', 'To initiate a return or refund request, please email us at')} <strong>{ARTIST.contact.email}</strong> {t('return_policy_request_text_2', 'with your order number and details of the issue.')}
             </p>
 
             <div className="mt-12 pt-8 border-t border-white/10 text-sm text-white/50">
