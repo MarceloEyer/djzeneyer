@@ -58,6 +58,26 @@ const ROUTES = [
 // Só vou repetir as funções abaixo para garantir que você tenha o arquivo funcional
 // Se quiser, pode apenas atualizar o array ROUTES acima no seu arquivo.
 
+// Normalizar URLs para evitar duplicatas no cache
+function normalizeUrl(path) {
+  // Remove query params de tracking (?utm_*, ?fbclid, etc) e barra final
+  return path.split('?')[0].replace(/\/$/, '') || '/';
+}
+
+// Futuro: Verificar se a loja deve ser pulada (timeout de API)
+async function shouldSkipShop(page) {
+  // Verificar se produtos foram carregados via API
+  const hasProducts = await page.evaluate(() => {
+    return document.querySelectorAll('.card').length > 0;
+  });
+
+  if (!hasProducts) {
+    console.warn('⚠️  Loja sem produtos - provavelmente timeout de API');
+    return true;
+  }
+  return false;
+}
+
 function validateHTML(content, route) {
   const errors = [];
   const warnings = [];
