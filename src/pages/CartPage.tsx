@@ -5,6 +5,20 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
+import { ProductImage } from '../types/product';
+
+// Define local interface for cart item consistency
+interface CartItem {
+  key: string;
+  id: number;
+  name: string;
+  price: string;
+  quantity: number;
+  images: ProductImage[];
+  totals?: {
+    line_total: string;
+  };
+}
 
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -86,7 +100,7 @@ const CartPage: React.FC = () => {
                 animate="visible"
                 className="lg:col-span-2 space-y-4"
               >
-                {cart.items.map((item: any) => (
+                {cart.items.map((item: CartItem) => (
                   <motion.div
                     key={item.key || item.id}
                     variants={itemVariants}

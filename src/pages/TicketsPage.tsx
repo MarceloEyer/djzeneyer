@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ProductImage, ProductCategory } from '../types/product';
+import { buildApiUrl } from '../config/api';
 
 interface Product {
   id: number;
@@ -32,8 +33,8 @@ const TicketsPage: React.FC = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       setLoading(true);
-      const baseUrl = (window as any).wpData?.restUrl || `${window.location.origin}/wp-json/`;
-      const apiUrl = `${baseUrl}djzeneyer/v1/products?lang=${currentLang}`;
+      // Use centralized API builder for consistency and better dev/prod handling
+      const apiUrl = buildApiUrl('djzeneyer/v1/products', { lang: currentLang });
 
       try {
         const response = await fetch(apiUrl);

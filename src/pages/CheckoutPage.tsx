@@ -7,7 +7,7 @@ import { useCart } from '../contexts/CartContext';
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading } = useCart();
+  const { cart, loading, clearCart } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
 
   const [formData, setFormData] = useState({
@@ -34,10 +34,11 @@ const CheckoutPage: React.FC = () => {
     // Simulate API call
     // TODO: Integrate with real Payment Gateway (Stripe/PagSeguro/WooCommerce)
     // This is a mock implementation for the frontend prototype.
-    setTimeout(() => {
+    setTimeout(async () => {
+      // Clear cart on successful "mock" payment
+      await clearCart();
       setIsProcessing(false);
       setOrderSuccess(true);
-      // TODO: Clear cart using a context method like clearCart() after successful order
     }, 2000);
   };
 
