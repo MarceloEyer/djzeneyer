@@ -64,7 +64,7 @@ export const useGamiPress = (): GamiPressHookResponse => {
       setLoading(true);
       setError(null);
 
-      const wpData = (window as any).wpData || {};
+      const wpData = window.wpData || {};
       const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json/';
 
       // ✅ HEADERS COM AUTENTICAÇÃO JWT
