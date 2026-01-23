@@ -81,10 +81,20 @@ add_action('rest_api_init', function() {
         },
     ]);
     
-    register_rest_field('remixes', 'type_name', [
+    $get_type_callback = function($object) {
+        $terms = get_the_terms($object['id'], 'music_type');
+        return $terms ? $terms[0]->name : 'Music';
+    };
+
+    register_rest_field('remixes', 'type_name', ['get_callback' => $get_type_callback]);
+    register_rest_field('remixes', 'category_name', ['get_callback' => $get_type_callback]);
+
+    register_rest_field('remixes', 'featured_image_src', [
         'get_callback' => function($object) {
-            $terms = get_the_terms($object['id'], 'music_type');
-            return $terms ? $terms[0]->name : 'Music';
+            $img_id = get_post_thumbnail_id($object['id']);
+            if (!$img_id) return null;
+            $src = wp_get_attachment_image_src($img_id, 'medium_large');
+            return $src ? $src[0] : wp_get_attachment_url($img_id);
         },
     ]);
 });
