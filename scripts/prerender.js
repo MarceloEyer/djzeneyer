@@ -113,7 +113,8 @@ async function waitForContent(page, route) {
     return false;
   }
   
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // Aguardar XHRs finais (1s de pausa)
+  await new Promise(resolve => setTimeout(resolve, 1000));
   return true;
 }
 
@@ -124,7 +125,7 @@ async function prerenderRoute(page, route, retries = 2) {
       console.log(`\n🚏 ROTA: ${route.path}`);
 
       const response = await page.goto(url, {
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded', // Mais confiável que networkidle0
         timeout: 60000
       });
 
@@ -152,8 +153,13 @@ async function prerenderRoute(page, route, retries = 2) {
       return true;
 
     } catch (err) {
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Retry exponencial
       console.error(`   Tentativa ${attempt} falhou: ${err.message}`);
+
       if (attempt === retries) return false;
+
+      console.log(`   Aguardando ${delay}ms antes de retentar...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
       await page.goto('about:blank'); 
     }
   }
