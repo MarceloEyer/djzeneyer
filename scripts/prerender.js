@@ -49,13 +49,34 @@ const ROUTES = [
   { path: '/pt/conduta', minSize: 2000, waitFor: 'h1, footer' },
 
   // --- LOJA (Dados Reais) ---
-  { path: '/shop', minSize: 3000, waitFor: 'h1, .card, footer' },
-  { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .card, footer' },
+  // REMOVIDO DO PRERENDER PARA EVITAR PREÇOS DESATUALIZADOS
+  // { path: '/shop', minSize: 3000, waitFor: 'h1, .card, footer' },
+  // { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .card, footer' },
 ];
 
 // ... (Resto do código permanece IDÊNTICO ao v14.0 que você mandou) ...
 // Só vou repetir as funções abaixo para garantir que você tenha o arquivo funcional
 // Se quiser, pode apenas atualizar o array ROUTES acima no seu arquivo.
+
+// Normalizar URLs para evitar duplicatas no cache
+function normalizeUrl(path) {
+  // Remove query params de tracking (?utm_*, ?fbclid, etc) e barra final
+  return path.split('?')[0].replace(/\/$/, '') || '/';
+}
+
+// Futuro: Verificar se a loja deve ser pulada (timeout de API)
+async function shouldSkipShop(page) {
+  // Verificar se produtos foram carregados via API
+  const hasProducts = await page.evaluate(() => {
+    return document.querySelectorAll('.card').length > 0;
+  });
+
+  if (!hasProducts) {
+    console.warn('⚠️  Loja sem produtos - provavelmente timeout de API');
+    return true;
+  }
+  return false;
+}
 
 function validateHTML(content, route) {
   const errors = [];
@@ -112,7 +133,8 @@ async function waitForContent(page, route) {
     return false;
   }
   
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // Aguardar XHRs finais (1s de pausa)
+  await new Promise(resolve => setTimeout(resolve, 1000));
   return true;
 }
 
@@ -123,8 +145,8 @@ async function prerenderRoute(page, route, retries = 2) {
       console.log(`\n🚏 ROTA: ${route.path}`);
 
       const response = await page.goto(url, {
-        waitUntil: 'domcontentloaded', 
-        timeout: 45000
+        waitUntil: 'domcontentloaded', // Mais confiável que networkidle0
+        timeout: 60000
       });
 
       if (!response || !response.ok()) {
@@ -151,8 +173,13 @@ async function prerenderRoute(page, route, retries = 2) {
       return true;
 
     } catch (err) {
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Retry exponencial
       console.error(`   Tentativa ${attempt} falhou: ${err.message}`);
+
       if (attempt === retries) return false;
+
+      console.log(`   Aguardando ${delay}ms antes de retentar...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
       await page.goto('about:blank'); 
     }
   }
