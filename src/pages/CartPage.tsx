@@ -6,6 +6,7 @@ import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { ProductImage } from '../types/product';
+import { formatPrice } from '../utils/currency';
 
 // Define local interface for cart item consistency
 interface CartItem {
@@ -20,34 +21,20 @@ interface CartItem {
   };
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+} as const;
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 }
+} as const;
+
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { cart, loading, removeItem } = useCart();
-  const isPortuguese = i18n.language.startsWith('pt');
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
-  };
-
-  // Improved price formatting
-  const formatPrice = (price: string | number) => {
-    if (price === undefined || price === null) return 'R$ 0,00';
-    // If it's already formatted (contains currency symbol), return as is
-    if (typeof price === 'string' && (price.includes('R$') || price.includes('$'))) return price;
-
-    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-    const locale = isPortuguese ? 'pt-BR' : 'en-US';
-
-    return isNaN(numPrice)
-      ? price.toString()
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
-  };
+  const locale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   if (loading) {
     return (
@@ -108,7 +95,13 @@ const CartPage: React.FC = () => {
                   >
                     <div className="w-20 h-20 bg-white/5 rounded-md overflow-hidden flex-shrink-0">
                       {item.images && item.images[0] ? (
-                        <img src={item.images[0].src} alt={item.name} className="w-full h-full object-cover" />
+                        <img
+                          src={item.images[0].src}
+                          alt={item.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                          <div className="w-full h-full flex items-center justify-center text-white/20">
                            <ShoppingCart size={24} />
@@ -122,9 +115,10 @@ const CartPage: React.FC = () => {
                         <button
                           onClick={() => removeItem(item.key)}
                           className="text-white/40 hover:text-error transition-colors p-1"
-                          aria-label={t('cart_remove_item', 'Remove item')}
+                          aria-label={`${t('cart_remove_item', 'Remove')} ${item.name}`}
+                          type="button"
                         >
-                          <Trash2 size={18} />
+                          <Trash2 size={18} aria-hidden="true" />
                         </button>
                       </div>
 
@@ -133,7 +127,7 @@ const CartPage: React.FC = () => {
                           {t('cart_qty', 'Qty')}: {item.quantity}
                         </div>
                         <div className="font-bold text-primary">
-                          {formatPrice(item.totals?.line_total || item.price)}
+                          {formatPrice(item.totals?.line_total || item.price, locale)}
                         </div>
                       </div>
                     </div>
@@ -156,7 +150,7 @@ const CartPage: React.FC = () => {
                   <div className="space-y-2 mb-4 text-sm">
                     <div className="flex justify-between text-white/70">
                       <span>{t('cart_subtotal', 'Subtotal')}</span>
-                      <span>{formatPrice(cart.totals?.total_price || '0')}</span>
+                      <span>{formatPrice(cart.totals?.total_price || '0', locale)}</span>
                     </div>
                     <div className="flex justify-between text-white/70">
                       <span>{t('cart_shipping', 'Shipping')}</span>
@@ -166,7 +160,7 @@ const CartPage: React.FC = () => {
 
                   <div className="flex justify-between text-xl font-bold border-t border-white/10 pt-4 mb-6">
                     <span>{t('cart_total', 'Total')}</span>
-                    <span className="text-primary">{formatPrice(cart.totals?.total_price || '0')}</span>
+                    <span className="text-primary">{formatPrice(cart.totals?.total_price || '0', locale)}</span>
                   </div>
 
                   <Link

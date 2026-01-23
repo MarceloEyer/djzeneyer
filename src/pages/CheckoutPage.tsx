@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { CreditCard, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
+import { formatPrice } from '../utils/currency';
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { cart, loading, clearCart } = useCart();
-  const isPortuguese = i18n.language.startsWith('pt');
+  const locale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -42,19 +43,6 @@ const CheckoutPage: React.FC = () => {
     }, 2000);
   };
 
-  // Improved price formatting
-  const formatPrice = (price: string | number) => {
-    if (price === undefined || price === null) return 'R$ 0,00';
-    if (typeof price === 'string' && (price.includes('R$') || price.includes('$'))) return price;
-
-    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-    const locale = isPortuguese ? 'pt-BR' : 'en-US';
-
-    return isNaN(numPrice)
-      ? price.toString()
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white">
@@ -67,6 +55,8 @@ const CheckoutPage: React.FC = () => {
     return (
       <div className="min-h-screen pt-24 pb-12 bg-background text-white flex flex-col items-center justify-center text-center px-4">
         <motion.div
+          role="alert"
+          aria-live="polite"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="bg-surface p-8 rounded-2xl border border-primary/20 max-w-md w-full"
@@ -234,7 +224,7 @@ const CheckoutPage: React.FC = () => {
                           {item.quantity}x {item.name}
                         </span>
                         <span className="font-mono text-white/60">
-                          {formatPrice(item.totals?.line_total || item.price)}
+                          {formatPrice(item.totals?.line_total || item.price, locale)}
                         </span>
                       </div>
                     ))}
@@ -249,11 +239,11 @@ const CheckoutPage: React.FC = () => {
                 <div className="space-y-2 mb-6 text-sm border-t border-white/10 pt-4">
                   <div className="flex justify-between text-white/70">
                     <span>{t('cart_subtotal', 'Subtotal')}</span>
-                    <span>{formatPrice(cart?.totals?.total_price || '0')}</span>
+                    <span>{formatPrice(cart?.totals?.total_price || '0', locale)}</span>
                   </div>
                   <div className="flex justify-between text-white/70">
                     <span>{t('cart_total', 'Total')}</span>
-                    <span className="text-primary font-bold text-lg">{formatPrice(cart?.totals?.total_price || '0')}</span>
+                    <span className="text-primary font-bold text-lg">{formatPrice(cart?.totals?.total_price || '0', locale)}</span>
                   </div>
                 </div>
 

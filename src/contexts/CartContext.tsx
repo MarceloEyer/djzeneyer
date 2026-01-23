@@ -15,7 +15,9 @@ interface CartContextType {
   cart: CartData | null;
   getCart: () => Promise<void>;
   removeItem: (key: string) => Promise<void>;
+  updateQuantity: (key: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
+  addItem: (productId: number, quantity: number) => Promise<void>;
   loading: boolean;
 }
 
@@ -74,9 +76,63 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [getCart]);
 
+  const updateQuantity = useCallback(async (key: string, quantity: number) => {
+    if (quantity < 1) return removeItem(key);
+
+    setLoading(true);
+    const apiUrl = buildApiUrl(`wc/store/v1/cart/items/${key}`);
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': (window as any).wpData?.nonce || ''
+        },
+        credentials: 'include',
+        body: JSON.stringify({ quantity })
+      });
+
+      if (!response.ok) throw new Error('Failed to update quantity');
+      await getCart();
+    } catch (err: any) {
+      console.error("[CartContext] Error updating quantity:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [getCart, removeItem]);
+
+  const addItem = useCallback(async (productId: number, quantity: number) => {
+    setLoading(true);
+    const apiUrl = buildApiUrl('wc/store/v1/cart/add-item');
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': (window as any).wpData?.nonce || ''
+        },
+        credentials: 'include',
+        body: JSON.stringify({ id: productId, quantity })
+      });
+
+      if (!response.ok) {
+         const data = await response.json();
+         throw new Error(data.message || 'Failed to add item');
+      }
+
+      await getCart();
+    } catch (err: any) {
+       console.error("[CartContext] Error adding item:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [getCart]);
+
   const clearCart = useCallback(async () => {
     setLoading(true);
-    const apiUrl = buildApiUrl('wc/store/v1/cart/items'); // Removes all items
+    const apiUrl = buildApiUrl('wc/store/v1/cart/items');
 
     try {
       const response = await fetch(apiUrl, {
@@ -101,7 +157,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [getCart]);
 
-  const value = { cart, getCart, removeItem, clearCart, loading };
+  const value = { cart, getCart, removeItem, updateQuantity, addItem, clearCart, loading };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

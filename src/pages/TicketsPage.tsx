@@ -6,6 +6,8 @@ import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ProductImage, ProductCategory } from '../types/product';
 import { buildApiUrl } from '../config/api';
+import { formatPrice } from '../utils/currency';
+import { SkeletonCard } from '../components/SkeletonCard';
 
 interface Product {
   id: number;
@@ -25,7 +27,7 @@ interface Product {
 const TicketsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language.split('-')[0];
-  const isPortuguese = i18n.language.startsWith('pt');
+  const locale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   const [tickets, setTickets] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +35,6 @@ const TicketsPage: React.FC = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       setLoading(true);
-      // Use centralized API builder for consistency and better dev/prod handling
       const apiUrl = buildApiUrl('djzeneyer/v1/products', { lang: currentLang });
 
       try {
@@ -52,15 +53,6 @@ const TicketsPage: React.FC = () => {
 
     fetchTickets();
   }, [currentLang]);
-
-  const formatPrice = (price: string) => {
-    if (!price) return t('price_free', 'Free');
-    const numPrice = parseFloat(price);
-    const locale = isPortuguese ? 'pt-BR' : 'en-US';
-    return isNaN(numPrice)
-      ? price
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
-  };
 
   return (
     <>
@@ -86,9 +78,9 @@ const TicketsPage: React.FC = () => {
           </motion.div>
 
           {loading ? (
-            <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+               {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {tickets.map((ticket, index) => (
@@ -99,10 +91,12 @@ const TicketsPage: React.FC = () => {
                   transition={{ delay: index * 0.1 }}
                   className="bg-surface rounded-xl overflow-hidden border border-white/10 group hover:border-primary/50 transition-colors"
                 >
-                  <Link to={isPortuguese ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`} className="block relative aspect-video overflow-hidden">
+                  <Link to={i18n.language.startsWith('pt') ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`} className="block relative aspect-video overflow-hidden">
                     <img
                       src={ticket.images[0]?.src || 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event'}
                       alt={ticket.name}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-80" />
@@ -123,11 +117,11 @@ const TicketsPage: React.FC = () => {
                     <div className="flex items-center justify-between mt-auto">
                       <div className="flex flex-col">
                         <span className="text-xs text-white/40 uppercase tracking-wider">{t('ticket_starting_at', 'Starting at')}</span>
-                        <span className="text-xl font-bold text-primary">{formatPrice(ticket.price)}</span>
+                        <span className="text-xl font-bold text-primary">{formatPrice(ticket.price, locale)}</span>
                       </div>
 
                       <Link
-                        to={isPortuguese ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`}
+                        to={i18n.language.startsWith('pt') ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`}
                         className="btn btn-outline btn-sm rounded-full flex items-center gap-2"
                       >
                         {t('tickets_details', 'Details')} <ArrowRight size={16} />
