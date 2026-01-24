@@ -11,26 +11,30 @@ if (!defined('ABSPATH')) exit;
  * Route all React paths through index.php
  *
  * Important:
- * - We intentionally serve index.php for unknown front-end routes so React Router can handle them.
- * - Avoid emitting an HTTP 404 status when we decided to serve the SPA.
+ * - We intentionally serve index.php for all frontend routes (including products) so React Router can handle them.
+ * - This prevents WordPress from serving plugin templates (like WooCommerce) that lack the React root.
  */
 add_filter('template_include', function($template) {
-    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
+    // 1. Exclude Admin, API, and special non-HTML requests
+    if (
+        is_admin() ||
+        (defined('REST_REQUEST') && REST_REQUEST) ||
+        is_feed() ||
+        is_trackback() ||
+        is_robots() ||
+        is_embed()
+    ) {
         return $template;
     }
     
-    // Only intercept main front-end 404s (i.e., unknown WP routes) and hand them to the SPA.
-    if (is_404() && is_main_query()) {
-        // Mark that we intentionally routed to the SPA so other hooks do not restore the 404 header.
-        $GLOBALS['DJZ_SPA_ROUTED'] = true;
+    // 2. Force SPA for everything else (Products, Pages, Posts, 404s)
+    // Mark that we intentionally routed to the SPA so other hooks do not restore the 404 header.
+    $GLOBALS['DJZ_SPA_ROUTED'] = true;
 
-        status_header(200);
-        nocache_headers();
+    status_header(200);
+    nocache_headers();
 
-        return get_theme_file_path('/index.php');
-    }
-    
-    return $template;
+    return get_theme_file_path('/index.php');
 });
 
 /**

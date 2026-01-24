@@ -126,10 +126,17 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   },
 
   // Shop (com wildcard para subrotas)
+  // Specific Product Route (Standard)
   {
     component: ProductPage,
     paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
   },
+  // Short Product Route (WP Permalink support)
+  {
+    component: ProductPage,
+    paths: { en: 'shop/:slug', pt: 'loja/:slug' },
+  },
+  // Shop Index
   {
     component: ShopPage,
     paths: { en: 'shop', pt: 'loja' },
