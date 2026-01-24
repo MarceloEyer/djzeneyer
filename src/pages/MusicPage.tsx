@@ -1,20 +1,17 @@
 // src/pages/MusicPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
-import { Download, Music2, Clock, Filter, ExternalLink, Youtube, Cloud } from 'lucide-react';
-import { useTracksQuery, MusicTrack } from '../hooks/useQueries';
+import { Download, Music2, Filter, Youtube, Cloud } from 'lucide-react';
+import { useTracksQuery } from '../hooks/useQueries';
 
 const MusicPage: React.FC = () => {
-  const { t } = useTranslation();
   const currentPath = '/music';
   
   // React Query: cache automático + deduplicação
   const { data: tracks = [], isLoading: loading, error } = useTracksQuery();
   
-  const [filteredTracks, setFilteredTracks] = useState<MusicTrack[]>([]);
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -23,9 +20,12 @@ const MusicPage: React.FC = () => {
     console.error('Error fetching tracks:', error);
   }
 
-  const allTags = ['Todos', ...Array.from(new Set(tracks.flatMap(t => t.tag_names || [])))].filter(Boolean);
+  // OPTIMIZATION: Memoize expensive calculations to prevent re-runs on every render
+  const allTags = useMemo(() => {
+    return ['Todos', ...Array.from(new Set(tracks.flatMap(t => t.tag_names || [])))].filter(Boolean);
+  }, [tracks]);
 
-  useEffect(() => {
+  const filteredTracks = useMemo(() => {
     let result = tracks;
     if (activeTag !== 'Todos') {
       result = result.filter(t => t.tag_names && t.tag_names.includes(activeTag));
@@ -33,7 +33,7 @@ const MusicPage: React.FC = () => {
     if (searchQuery) {
       result = result.filter(t => t.title.rendered.toLowerCase().includes(searchQuery.toLowerCase()));
     }
-    setFilteredTracks(result);
+    return result;
   }, [activeTag, searchQuery, tracks]);
 
   return (
