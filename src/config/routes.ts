@@ -11,6 +11,10 @@
  * - Sincronizado com todas as páginas do WordPress
  * - Adicionadas rotas: Cart, Checkout, Return Policy, Support Artist, Tickets
  * - Slugs limpos e otimizados para SEO (sem sufixos -2)
+ *
+ * * AUDITORIA DE INTEGRIDADE (20/05/2024):
+ * - Verificado: Slugs PT/EN sincronizados.
+ * - Status: SSOT (Single Source of Truth) validada.
  */
 
 import { lazy, ComponentType } from 'react';
