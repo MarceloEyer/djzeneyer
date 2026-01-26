@@ -46,6 +46,7 @@ interface EventsResponse {
 
 export interface MusicTrack {
   id: number;
+  slug: string;
   title: { rendered: string };
   category_name: string;
   tag_names: string[];

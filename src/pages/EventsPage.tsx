@@ -2,6 +2,7 @@
 // VERSÃO FINAL: SEGURA (XSS FIX) + SEO OTIMIZADO + HREF SANITIZE + ABORT FETCH
 
 import { useEffect, useState, memo } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -56,7 +57,7 @@ const FEATURED_EVENTS: Event[] = [
     type: 'Education',
     image: '/images/events/mentoria-dj.svg',
     price: 'Lista de Espera',
-    link: '/work-with-me',
+    link: '/work-with-me', // This is handled by internal navigation check in FeaturedEventCard
     isExternal: false,
     status: 'Vagas Limitadas',
     description: 'Aprenda os segredos da cremosidade diretamente com o bicampeão mundial.'
@@ -70,7 +71,7 @@ const FEATURED_EVENTS: Event[] = [
     type: 'Festa Exclusiva',
     image: '/images/events/zouk-experience.svg',
     price: 'R$ 80,00',
-    link: '/shop/zouk-experience-rj',
+    link: '/shop/product/zouk-experience-rj',
     isExternal: false,
     status: 'Últimos Ingressos',
     description: 'Uma noite de Zouk Brasileiro com sets exclusivos e a energia única do Rio.'
@@ -179,14 +180,24 @@ const FeaturedEventCard = memo<{ event: Event }>(({ event }) => (
       <div className="flex items-center justify-between pt-4 border-t border-white/5">
         <span className="text-lg font-bold text-primary">{event.price}</span>
 
-        {/* Link sanitizado (se um dia vier do WP/API, não vira vetor de XSS) */}
-        <a
-          href={sanitizeHref(event.link)}
-          className="btn btn-primary btn-sm flex items-center gap-2"
-          {...(event.isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        >
-          <Ticket size={16} /> Saiba Mais
-        </a>
+        {/* Use Link for internal routes, a for external */}
+        {event.isExternal ? (
+          <a
+            href={sanitizeHref(event.link)}
+            className="btn btn-primary btn-sm flex items-center gap-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Ticket size={16} /> Saiba Mais
+          </a>
+        ) : (
+          <Link
+            to={sanitizeHref(event.link)}
+            className="btn btn-primary btn-sm flex items-center gap-2"
+          >
+            <Ticket size={16} /> Saiba Mais
+          </Link>
+        )}
       </div>
     </div>
   </motion.div>
@@ -441,9 +452,9 @@ const EventsPage: React.FC = () => {
                 >
                   <Phone size={20} /> Contratar para Evento
                 </a>
-                <a href="/work-with-me" className="btn btn-outline btn-lg flex items-center gap-2">
+                <Link to="/work-with-me" className="btn btn-outline btn-lg flex items-center gap-2">
                   <Briefcase size={20} /> Press Kit & Rider
-                </a>
+                </Link>
               </div>
             </motion.div>
           </div>
@@ -457,9 +468,9 @@ const EventsPage: React.FC = () => {
               </h2>
               <p className="text-white/50 text-sm mt-1">Experiências exclusivas com {ARTIST.identity.shortName}</p>
             </div>
-            <a href="/shop" className="text-primary text-sm hover:underline flex items-center gap-1">
+            <Link to="/shop" className="text-primary text-sm hover:underline flex items-center gap-1">
               Ver todos <ChevronRight size={16} />
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -504,9 +515,9 @@ const EventsPage: React.FC = () => {
                 >
                   <ExternalLink size={14} /> Bandsintown
                 </a>
-                <a href="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2">
+                <Link to="/work-with-me" className="btn btn-outline btn-sm flex items-center gap-2">
                   <Download size={14} /> Press Kit
-                </a>
+                </Link>
               </div>
             </div>
 

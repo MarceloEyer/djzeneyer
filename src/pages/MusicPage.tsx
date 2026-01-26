@@ -1,14 +1,16 @@
 // src/pages/MusicPage.tsx
 import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
-import { Download, Music2, Clock, Filter, ExternalLink, Youtube, Cloud } from 'lucide-react';
+import { Download, Music2, Clock, Filter, ExternalLink, Youtube, Cloud, ArrowLeft } from 'lucide-react';
 import { useTracksQuery, MusicTrack } from '../hooks/useQueries';
 
 const MusicPage: React.FC = () => {
   const { t } = useTranslation();
+  const { slug } = useParams<{ slug: string }>();
   const currentPath = '/music';
   
   // React Query: cache automático + deduplicação
@@ -27,22 +29,29 @@ const MusicPage: React.FC = () => {
 
   useEffect(() => {
     let result = tracks;
-    if (activeTag !== 'Todos') {
-      result = result.filter(t => t.tag_names && t.tag_names.includes(activeTag));
-    }
-    if (searchQuery) {
-      result = result.filter(t => t.title.rendered.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    if (slug) {
+      // Single track view mode
+      result = result.filter(t => t.slug === slug);
+    } else {
+      // List view mode with filters
+      if (activeTag !== 'Todos') {
+        result = result.filter(t => t.tag_names && t.tag_names.includes(activeTag));
+      }
+      if (searchQuery) {
+        result = result.filter(t => t.title.rendered.toLowerCase().includes(searchQuery.toLowerCase()));
+      }
     }
     setFilteredTracks(result);
-  }, [activeTag, searchQuery, tracks]);
+  }, [activeTag, searchQuery, tracks, slug]);
 
   return (
     <>
       <HeadlessSEO 
-        title="Downloads & Sets | DJ Zen Eyer" 
+        title={slug && filteredTracks[0] ? `${filteredTracks[0].title.rendered} | DJ Zen Eyer` : "Downloads & Sets | DJ Zen Eyer"}
         description="Baixe remixes exclusivos e sets de Zouk Brasileiro. Ouça no SoundCloud e YouTube."
-        url={`https://djzeneyer.com${currentPath}`}
-        image="https://djzeneyer.com/images/music-og.jpg"
+        url={`https://djzeneyer.com${currentPath}${slug ? '/' + slug : ''}`}
+        image={slug && filteredTracks[0]?.featured_image_src ? filteredTracks[0].featured_image_src : "https://djzeneyer.com/images/music-og.jpg"}
         hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
       />
 
@@ -51,6 +60,11 @@ const MusicPage: React.FC = () => {
           
           {/* Header */}
           <div className="text-center mb-12">
+            {slug && (
+              <Link to="/music" className="inline-flex items-center gap-2 text-white/60 hover:text-primary mb-6 transition-colors">
+                <ArrowLeft size={16} /> Voltar para Músicas
+              </Link>
+            )}
             <h1 className="text-4xl md:text-6xl font-black font-display mb-4">
               Music <span className="text-primary">Hub</span>
             </h1>

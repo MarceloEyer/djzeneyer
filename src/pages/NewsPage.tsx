@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Calendar, Clock, ArrowRight, TrendingUp, Hash } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 // ============================================================================
 // TYPES
@@ -13,6 +13,7 @@ interface WPPost {
   slug: string;
   title: { rendered: string };
   excerpt: { rendered: string };
+  content: { rendered: string };
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url: string }>;
     'author'?: Array<{ name: string }>;
@@ -36,9 +37,107 @@ const stripHtml = (html: string) => {
 };
 
 // ============================================================================
-// COMPONENT
+// SUB-COMPONENTS
 // ============================================================================
-const NewsPage: React.FC = () => {
+
+const SinglePostView: React.FC<{ slug: string }> = ({ slug }) => {
+  const [post, setPost] = useState<WPPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    // Fetch single post by slug
+    fetch(`https://djzeneyer.com/wp-json/wp/v2/posts?slug=${slug}&_embed`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setPost(data[0]);
+        } else {
+          setError(true);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setError(true);
+        setLoading(false);
+      });
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 flex justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 text-center text-white bg-background">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-4">Post not found</h2>
+          <Link to="/news" className="btn btn-outline inline-flex items-center gap-2">
+            <ArrowRight className="rotate-180" size={16} /> Back to News
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <HeadlessSEO
+        title={`${post.title.rendered} | Zen News`}
+        description={stripHtml(post.excerpt.rendered).slice(0, 160)}
+        url={`https://djzeneyer.com/news/${post.slug}`}
+        image={post._embedded?.['wp:featuredmedia']?.[0]?.source_url}
+      />
+
+      <div className="min-h-screen pt-24 pb-20 bg-background text-white">
+        <article className="container mx-auto px-4 max-w-4xl">
+          <Link to="/news" className="text-white/60 hover:text-primary mb-8 inline-flex items-center gap-2 transition-colors">
+            <ArrowRight className="rotate-180" size={16} /> Back to News
+          </Link>
+
+          <header className="mb-12">
+            <div className="flex items-center gap-4 text-primary font-bold mb-4">
+              <span className="bg-primary/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md border border-primary/30">
+                Article
+              </span>
+              <span className="flex items-center gap-2 text-white/80 text-sm">
+                <Calendar size={14} /> {formatDate(post.date)}
+              </span>
+            </div>
+
+            <h1
+              className="text-4xl md:text-6xl font-black font-display leading-tight mb-8"
+              dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+            />
+
+            {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
+              <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl mb-12">
+                <img
+                  src={post._embedded['wp:featuredmedia'][0].source_url}
+                  alt={post.title.rendered}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            )}
+          </header>
+
+          <div
+            className="prose prose-invert prose-lg max-w-none text-white/80 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: post.content?.rendered || '' }}
+          />
+        </article>
+      </div>
+    </>
+  );
+};
+
+const NewsList: React.FC = () => {
   const [posts, setPosts] = useState<WPPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -225,6 +324,11 @@ const NewsPage: React.FC = () => {
       </div>
     </>
   );
+};
+
+const NewsPage: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  return slug ? <SinglePostView slug={slug} /> : <NewsList />;
 };
 
 export default NewsPage;
