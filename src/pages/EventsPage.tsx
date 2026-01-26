@@ -262,7 +262,7 @@ const FlyerGallery: React.FC = () => {
 
     const wpData = (window as any).wpData || {};
     const restUrl = (wpData.restUrl || `${ARTIST.site.baseUrl}/wp-json`).replace(/\/$/, '');
-    const endpoint = `${restUrl}/wp/v2/flyers?_embed&per_page=8`;
+    const endpoint = `${restUrl}/wp/v2/flyers?per_page=8`;
 
     fetch(endpoint, { signal: controller.signal })
       .then((res) => {
@@ -305,9 +305,8 @@ const FlyerGallery: React.FC = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {flyers.map((flyer, index) => {
-              const media = flyer._embedded?.['wp:featuredmedia']?.[0];
-              const fullImageUrl = media?.source_url;
-              const thumbUrl = media?.media_details?.sizes?.medium_large?.source_url || fullImageUrl;
+              const fullImageUrl = flyer.featured_image_src_full;
+              const thumbUrl = flyer.featured_image_src || fullImageUrl;
 
               if (!thumbUrl) {
                 return (

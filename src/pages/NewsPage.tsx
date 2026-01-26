@@ -13,10 +13,9 @@ interface WPPost {
   slug: string;
   title: { rendered: string };
   excerpt: { rendered: string };
-  _embedded?: {
-    'wp:featuredmedia'?: Array<{ source_url: string }>;
-    'author'?: Array<{ name: string }>;
-  };
+  featured_image_src?: string;
+  featured_image_src_full?: string;
+  author_name?: string;
 }
 
 // ============================================================================
@@ -42,9 +41,9 @@ const NewsPage: React.FC = () => {
   const [posts, setPosts] = useState<WPPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Busca posts com imagens e autor embutidos
+  // Busca posts com imagens otimizadas (sem _embed)
   useEffect(() => {
-    fetch('https://djzeneyer.com/wp-json/wp/v2/posts?_embed&per_page=10')
+    fetch('https://djzeneyer.com/wp-json/wp/v2/posts?per_page=10')
       .then(res => res.json())
       .then(data => {
         setPosts(data);
@@ -113,7 +112,7 @@ const NewsPage: React.FC = () => {
                   <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                      {/* Imagem de Fundo com Zoom suave no Hover */}
                      <img 
-                       src={featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'} 
+                       src={featuredPost.featured_image_src_full || '/images/hero-background.webp'}
                        alt={featuredPost.title.rendered}
                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                      />
@@ -170,7 +169,7 @@ const NewsPage: React.FC = () => {
                     {/* Imagem do Card */}
                     <Link to={`/news/${post.slug}`} className="block h-56 overflow-hidden relative">
                       <img 
-                        src={post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'} 
+                        src={post.featured_image_src || '/images/hero-background.webp'}
                         alt={post.title.rendered}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
