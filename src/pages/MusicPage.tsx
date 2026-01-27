@@ -7,7 +7,7 @@ import { getHreflangUrls } from '../utils/seo';
 import { Download, Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
 import { useTracksQuery } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths } from '../config/routes';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
@@ -20,7 +20,8 @@ const MusicPage: React.FC = () => {
   const getRouteForKey = (key: string): string => {
     const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
     if (!route) return `/${key}`;
-    return buildFullPath(getLocalizedPaths(route, i18n.language as 'en' | 'pt')[0], i18n.language as 'en' | 'pt');
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
   };
 
   // Encontra faixa específica se houver slug

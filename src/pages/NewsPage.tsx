@@ -4,7 +4,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Calendar, Clock, ArrowRight, TrendingUp, Hash, ArrowLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths } from '../config/routes';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
 // ============================================================================
 // TYPES
@@ -52,7 +52,8 @@ const NewsPage: React.FC = () => {
   const getRouteForKey = (key: string): string => {
     const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
     if (!route) return `/${key}`;
-    return buildFullPath(getLocalizedPaths(route, i18n.language as 'en' | 'pt')[0], i18n.language as 'en' | 'pt');
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
   };
 
   // Busca conteúdo (lista ou post único)
