@@ -105,6 +105,8 @@ export const useTracksQuery = () => {
     queryFn: async (): Promise<MusicTrack[]> => {
       const apiUrl = buildApiUrl('wp/v2/remixes', {
         per_page: '100',
+        // OPTIMIZATION: Limit fields to reduce payload size
+        _fields: 'id,title,category_name,tag_names,links,featured_image_src',
       });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error('Failed to fetch tracks');
