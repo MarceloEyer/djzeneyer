@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
 import { ARTIST, getWhatsAppUrl } from '../../data/artistData';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths } from '../../config/routes';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../../config/routes';
 
 declare global {
   interface Window {
@@ -49,8 +49,9 @@ const Footer: React.FC = () => {
       return pathEn === key;
     });
     if (!route) return `/${key}`;
-    const localizedPath = getLocalizedPaths(route, i18n.language as 'en' | 'pt')[0];
-    return buildFullPath(localizedPath, i18n.language as 'en' | 'pt');
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    const localizedPath = getLocalizedPaths(route, normalizedLanguage)[0];
+    return buildFullPath(localizedPath, normalizedLanguage);
   };
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -101,7 +102,7 @@ const Footer: React.FC = () => {
           
           {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
-            <Link to={buildFullPath('', i18n.language as 'en' | 'pt')} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
+            <Link to={buildFullPath('', normalizeLanguage(i18n.language))} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
               </div>

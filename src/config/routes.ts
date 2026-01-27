@@ -22,6 +22,11 @@ import { matchPath, generatePath } from 'react-router-dom';
 
 export type Language = 'en' | 'pt';
 
+export const normalizeLanguage = (lang: string): Language => {
+  const normalized = lang.trim().toLowerCase();
+  return normalized.startsWith('pt') ? 'pt' : 'en';
+};
+
 export interface RouteConfig {
   /** Componente da página (lazy loaded) */
   component: ComponentType;

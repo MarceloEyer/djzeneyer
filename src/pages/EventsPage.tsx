@@ -10,7 +10,7 @@ import { ARTIST, getWhatsAppUrl } from '../data/artistData';
 import { Event, Testimonial, FlyerData } from '../types';
 import { EventsList } from '../components/EventsList';
 import { useParams, Link } from 'react-router-dom';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths } from '../config/routes';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 import { 
   Calendar as CalendarIcon,
   MapPin,
@@ -42,7 +42,8 @@ const EventsPage: React.FC = () => {
   const getRouteForKey = (key: string): string => {
     const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
     if (!route) return `/${key}`;
-    return buildFullPath(getLocalizedPaths(route, i18n.language as 'en' | 'pt')[0], i18n.language as 'en' | 'pt');
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
   };
 
   useEffect(() => {

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths } from '../../config/routes';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../../config/routes';
 
 interface UserMenuProps {
   orientation?: 'horizontal' | 'vertical';
@@ -35,8 +35,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
       return pathEn === key;
     });
     if (!route) return `/${key}`;
-    const localizedPath = getLocalizedPaths(route, i18n.language as 'en' | 'pt')[0];
-    return buildFullPath(localizedPath, i18n.language as 'en' | 'pt');
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    const localizedPath = getLocalizedPaths(route, normalizedLanguage)[0];
+    return buildFullPath(localizedPath, normalizedLanguage);
   };
 
   // ✅ FIX 1: O segredo para não travar. 
