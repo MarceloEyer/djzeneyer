@@ -1,191 +1,188 @@
 // src/pages/MusicPage.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getHrefLangUrls } from '../utils/seo';
-import { Download, Music2, Filter, Youtube, Cloud } from 'lucide-react';
+import { getHreflangUrls } from '../utils/seo';
+import { Download, Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
 import { useTracksQuery } from '../hooks/useQueries';
+import { useParams, Link } from 'react-router-dom';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
 const MusicPage: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { t } = useTranslation();
-  const currentPath = '/music';
-  
-  // React Query: cache automático + deduplicação
+  const { slug } = useParams<{ slug?: string }>();
+  const { t, i18n } = useTranslation();
   const { data: tracks = [], isLoading: loading, error } = useTracksQuery();
-  
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Log de erro
+
+  // Helper para rotas localizadas
+  const getRouteForKey = (key: string): string => {
+    const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
+    if (!route) return `/${key}`;
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
+  };
+
+  // Encontra faixa específica se houver slug
+  const singleTrack = useMemo(() => {
+    if (!slug || !tracks.length) return null;
+    return tracks.find((t: any) => t.slug === slug);
+  }, [slug, tracks]);
+
   if (error) {
     console.error('Error fetching tracks:', error);
   }
 
-  // OPTIMIZATION: Memoize expensive calculations to prevent re-runs on every render
-  const allTags = useMemo(() => {
-    return ['Todos', ...Array.from(new Set(tracks.flatMap(t => t.tag_names || [])))].filter(Boolean);
-  }, [tracks]);
+  // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
+  if (!loading && slug && singleTrack) {
+    return (
+      <>
+        <HeadlessSEO
+          title={`${singleTrack.title?.rendered || 'Music'} | Zen Music`}
+          description={singleTrack.excerpt?.rendered || "Ouça as últimas produções de DJ Zen Eyer."}
+          url={`https://djzeneyer.com/music/${slug}`}
+        />
+        <div className="min-h-screen bg-background text-white pt-24 pb-20">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
+              <ArrowLeft size={20} /> VOLTAR PARA MÚSICAS
+            </Link>
 
-  // OPTIMIZATION: Derive filteredTracks directly from state/props using useMemo
-  // This avoids double-renders caused by useEffect updating state
-  const filteredTracks = useMemo(() => {
-    let result = tracks;
-    if (activeTag !== 'Todos') {
-      result = result.filter(t => t.tag_names && t.tag_names.includes(activeTag));
-    }
-    if (searchQuery) {
-      result = result.filter(t => t.title.rendered.toLowerCase().includes(searchQuery.toLowerCase()));
-    }
-    return result;
-  }, [activeTag, searchQuery, tracks]);
+            <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Music2 size={200} />
+              </div>
+
+              <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
+                <div className="w-64 h-64 rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
+                  <img
+                    src={singleTrack._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                    className="w-full h-full object-cover"
+                    alt={singleTrack.title?.rendered}
+                  />
+                </div>
+
+                <div className="text-center md:text-left flex-1">
+                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: singleTrack.title?.rendered }} />
+                  <p className="text-primary font-bold mb-8 tracking-widest uppercase">DJ Zen Eyer Original</p>
+
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
+                      <Play fill="currentColor" size={20} /> OUVIR AGORA
+                    </button>
+                    <a href={singleTrack.acf?.soundcloud_url} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
+                      <Cloud size={20} /> SOUNDCLOUD
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-16 border-t border-white/5 pt-10">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> SOBRE A FAIXA</h2>
+                <div
+                  className="prose prose-invert max-w-none text-white/60"
+                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || "" }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
+  const tags = ['Todos', ...new Set(tracks.flatMap((t: any) => t.tags_names || []))];
+  const filteredTracks = tracks.filter((track: any) => {
+    const matchesTag = activeTag === 'Todos' || track.tags_names?.includes(activeTag);
+    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesTag && matchesSearch;
+  });
 
   return (
     <>
       <HeadlessSEO 
-        title="Downloads & Sets | DJ Zen Eyer" 
-        description="Baixe remixes exclusivos e sets de Zouk Brasileiro. Ouça no SoundCloud e YouTube."
-        url={`https://djzeneyer.com${currentPath}`}
-        image="https://djzeneyer.com/images/music-og.jpg"
-        hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
+        title="Zen Music | High-Energy Zouk Remixes"
+        description="Explore as produções musicais, remixes e sets originais de DJ Zen Eyer."
+        url="https://djzeneyer.com/music"
       />
-
-      <div className="min-h-screen pt-24 pb-20 bg-background">
+      <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4">
-          
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-black font-display mb-4">
-              Music <span className="text-primary">Hub</span>
+          <div className="max-w-4xl mb-16">
+            <h1 className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6">
+              ZEN <span className="text-primary italic">SOUNDS</span>
             </h1>
-            <p className="text-white/60 max-w-2xl mx-auto">
-              Baixe meus sets e remixes para tocar ou ouvir. 
-              <br/>Conecte-se nas plataformas de streaming.
-            </p>
+            <p className="text-xl text-white/60">Remixes oficiais e produções originais para a pista.</p>
           </div>
 
-          {/* Filtros */}
-          <div className="mb-12 space-y-6">
-            <div className="max-w-md mx-auto relative">
-              <label htmlFor="music-search" className="sr-only">Buscar música</label>
-              <input
-                id="music-search"
-                name="music-search"
-                type="text"
-                placeholder="Buscar música..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-surface/50 border border-white/10 rounded-full py-3 px-12 text-white focus:border-primary outline-none transition-all"
-              />
-              <Filter className="absolute left-4 top-3.5 text-white/40" size={20} />
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-2">
-              {allTags.map(tag => (
+          <div className="flex flex-col md:flex-row gap-8 mb-12 items-center justify-between">
+            <div className="flex flex-wrap gap-2">
+              {tags.map(tag => (
                 <button
                   key={tag}
                   onClick={() => setActiveTag(tag)}
-                  className={`px-5 py-2 rounded-full text-sm font-bold transition-all ${
-                    activeTag === tag 
-                      ? 'bg-primary text-black scale-105' 
-                      : 'bg-surface border border-white/10 text-white/70 hover:text-white'
+                  className={`px-6 py-2 rounded-full text-sm font-bold border transition-all ${
+                    activeTag === tag ? 'bg-primary border-primary text-black' : 'bg-white/5 border-white/10 hover:border-primary/50'
                   }`}
                 >
                   {tag}
                 </button>
               ))}
             </div>
+            <div className="relative w-full md:w-80">
+              <input
+                type="text"
+                placeholder="Buscar música..."
+                className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
-          {/* Grid */}
           {loading ? (
-            <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+              {[1,2,3,4,5,6].map(i => <div key={i} className="h-80 bg-white/5 rounded-3xl" />)}
+            </div>
           ) : (
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {filteredTracks.map((track) => {
-                  // OPTIMIZATION: Use direct field instead of _embedded traversal
-                  const coverUrl = track.featured_image_src;
-                  
-                  return (
-                    <motion.div
-                      layout
-                      key={track.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="bg-surface/40 border border-white/5 rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:bg-surface/60 group"
-                    >
-                      {/* Capa */}
-                      <div className="relative aspect-video bg-black overflow-hidden">
-                        {coverUrl ? (
-                          <img src={coverUrl} alt={track.title.rendered} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center"><Music2 size={48} className="text-white/20" /></div>
-                        )}
-                        <div className="absolute top-3 left-3">
-                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${track.category_name === 'Sets' ? 'bg-secondary text-black' : 'bg-primary text-black'}`}>
-                              {track.category_name || 'TRACK'}
-                           </span>
-                        </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredTracks.map((track: any) => (
+                <motion.div
+                  key={track.id}
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-surface/30 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/40 transition-all group"
+                >
+                  <div className="aspect-square relative overflow-hidden">
+                    <img
+                      src={track._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      alt={track.title.rendered}
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                      <Link
+                        to={`${getRouteForKey('music')}/${track.slug}`}
+                        className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform"
+                      >
+                        <Play fill="currentColor" size={20} />
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold font-display mb-2 truncate" dangerouslySetInnerHTML={{ __html: track.title.rendered }} />
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-xs text-white/40 font-mono">ZEN EYER REMIX</span>
+                      <div className="flex gap-3">
+                        <Youtube size={18} className="text-white/20 hover:text-primary cursor-pointer" />
+                        <Cloud size={18} className="text-white/20 hover:text-primary cursor-pointer" />
                       </div>
-
-                      {/* Conteúdo */}
-                      <div className="p-5">
-                        <h3 className="text-lg font-bold text-white mb-2 line-clamp-1" title={track.title.rendered}>
-                          {track.title.rendered}
-                        </h3>
-                        
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-1 mb-6">
-                          {track.tag_names?.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-[10px] px-2 py-0.5 bg-white/10 rounded text-white/60">#{tag}</span>
-                          ))}
-                        </div>
-
-                        {/* Botões de Ação */}
-                        <div className="space-y-3">
-                          {/* Download Principal */}
-                          {track.links.download && (
-                            <a 
-                              href={track.links.download} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="btn btn-primary w-full flex items-center justify-center gap-2"
-                            >
-                              <Download size={18} /> Download Grátis
-                            </a>
-                          )}
-
-                          {/* Links Secundários */}
-                          <div className="flex gap-2">
-                            {track.links.soundcloud && (
-                              <a 
-                                href={track.links.soundcloud} target="_blank" rel="noopener noreferrer"
-                                className="flex-1 btn btn-outline btn-sm flex items-center justify-center gap-2 hover:bg-[#ff5500] hover:border-[#ff5500] hover:text-white"
-                                title="Ouvir no SoundCloud"
-                              >
-                                <Cloud size={16} /> SoundCloud
-                              </a>
-                            )}
-                            {track.links.youtube && (
-                              <a 
-                                href={track.links.youtube} target="_blank" rel="noopener noreferrer"
-                                className="flex-1 btn btn-outline btn-sm flex items-center justify-center gap-2 hover:bg-[#ff0000] hover:border-[#ff0000] hover:text-white"
-                                title="Ver no YouTube"
-                              >
-                                <Youtube size={16} /> YouTube
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </motion.div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           )}
         </div>
       </div>

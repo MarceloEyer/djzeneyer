@@ -1,5 +1,5 @@
 // src/components/common/UserMenu.tsx
-// v3.0 - DIAMOND MASTER: Route Listener Fix & Event Safety
+// v3.0 - DIAMOND MASTER: Route Listener Fix & Event Safety + i18n Routes
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -13,6 +13,8 @@ import {
   ChevronDown 
 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
+import { useTranslation } from 'react-i18next';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../../config/routes';
 
 interface UserMenuProps {
   orientation?: 'horizontal' | 'vertical';
@@ -20,10 +22,23 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
   const { user, logout } = useUser();
+  const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ NOVO: Ouve a mudança de rota
+  const location = useLocation();
+
+  // Helper para criar link localizado
+  const getRouteForKey = (key: string): string => {
+    const route = ROUTES_CONFIG.find(r => {
+      const pathEn = getLocalizedPaths(r, 'en')[0];
+      return pathEn === key;
+    });
+    if (!route) return `/${key}`;
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    const localizedPath = getLocalizedPaths(route, normalizedLanguage)[0];
+    return buildFullPath(localizedPath, normalizedLanguage);
+  };
 
   // ✅ FIX 1: O segredo para não travar. 
   // Sempre que a Rota (URL) mudar, fecha o menu automaticamente.
@@ -33,10 +48,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
 
   // ✅ FIX 2: Click Outside com lógica segura
   useEffect(() => {
-    if (!isOpen) return; // Se fechado, não faz nada (economiza memória)
+    if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      // Verifica se o elemento existe E se o clique foi fora dele
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -46,10 +60,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
       if (event.key === 'Escape') setIsOpen(false);
     };
 
-    // Pequeno delay para evitar que o clique de ABRIR dispare o FECHAR imediatamente
     const timeoutId = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleEscKey);
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscKey);
     }, 10);
 
     return () => {
@@ -72,18 +85,18 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
     return (
       <div className="flex flex-col gap-2 w-full pt-2 border-t border-white/10 mt-2">
         <div className="flex items-center gap-3 px-2 py-2 mb-2">
-           {user.avatar ? (
-             <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-primary object-cover" />
-           ) : (
-             <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary"/></div>
-           )}
-           <div className="overflow-hidden">
-             <div className="font-bold text-sm text-white truncate">{user.name}</div>
-             <div className="text-xs text-white/50 truncate">{user.email}</div>
-           </div>
+          {user.avatar ? (
+            <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-primary object-cover" />
+          ) : (
+            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary"/></div>
+          )}
+          <div className="overflow-hidden">
+            <div className="font-bold text-sm text-white truncate">{user.name}</div>
+            <div className="text-xs text-white/50 truncate">{user.email}</div>
+          </div>
         </div>
         
-        <Link to="/dashboard/" className="btn btn-primary w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
+        <Link to={getRouteForKey('dashboard')} className="btn btn-primary w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
           <User size={18} /> <span>Dashboard</span>
         </Link>
         <button onClick={handleLogout} className="btn btn-outline w-full flex items-center justify-center gap-2 text-red-400 hover:bg-red-950/30 border border-red-500/30 py-2 rounded-lg mt-2 transition-colors">
@@ -99,8 +112,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
       {/* Trigger Button */}
       <button
         onClick={(e) => {
-            e.stopPropagation(); // Impede que o clique suba para o document
-            setIsOpen(!isOpen);
+          e.stopPropagation();
+          setIsOpen(!isOpen);
         }}
         className={`flex items-center gap-2 px-2 py-1.5 rounded-full border transition-all duration-200 ${isOpen ? 'bg-white/10 border-primary/50' : 'border-transparent hover:bg-white/5'}`}
         aria-expanded={isOpen}
@@ -140,24 +153,21 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
               <p className="text-xs text-white/50 truncate font-mono mt-0.5">{user.email}</p>
             </div>
 
-            {/* Links - Removemos os onClicks manuais pois o useEffect da Rota cuida disso agora */}
+            {/* Links - Rotas dinâmicas agora */}
             <div className="py-2 flex flex-col">
-              <Link to="/dashboard/" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to={getRouteForKey('dashboard')} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <User size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">Dashboard</span>
               </Link>
-
-              <Link to="/my-account/" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to={getRouteForKey('my-account')} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <Settings size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">My Account</span>
               </Link>
-
-              <Link to="/my-account/?tab=orders" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to={`${getRouteForKey('my-account')}?tab=orders`} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <ShoppingBag size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">My Orders</span>
               </Link>
-
-              <Link to="/my-account/?tab=achievements" className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
+              <Link to={`${getRouteForKey('my-account')}?tab=achievements`} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <Award size={18} className="text-white/60 group-hover:text-primary transition-colors" />
                 <span className="text-sm font-medium text-white/80 group-hover:text-white">Achievements</span>
               </Link>

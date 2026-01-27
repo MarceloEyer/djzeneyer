@@ -16,18 +16,17 @@ export interface SocialLink {
 }
 
 export interface Event {
-  id: string;
-  title: string;
+  id: number;
   date: string;
-  time: string;
-  location: string;
-  type: string;
-  image: string;
-  price: string;
-  link: string;
-  isExternal: boolean;
-  status: string;
-  description: string;
+  title: { rendered: string };
+  content?: { rendered: string };
+  excerpt?: { rendered: string };
+  featured_image_src?: string;
+  featured_image_src_full?: string;
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{ source_url: string }>;
+  };
+  link?: string; // Keeping for potential compatibility or if API returns it
 }
 
 interface Track {

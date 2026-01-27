@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { Calendar, Clock, ArrowRight, TrendingUp, Hash } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Calendar, Clock, ArrowRight, TrendingUp, Hash, ArrowLeft } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
 // ============================================================================
 // TYPES
@@ -13,9 +15,14 @@ interface WPPost {
   slug: string;
   title: { rendered: string };
   excerpt: { rendered: string };
+  content?: { rendered: string };
   featured_image_src?: string;
   featured_image_src_full?: string;
   author_name?: string;
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{ source_url: string }>;
+    'author'?: Array<{ name: string }>;
+  };
 }
 
 // ============================================================================
@@ -38,21 +45,94 @@ const stripHtml = (html: string) => {
 // COMPONENT
 // ============================================================================
 const NewsPage: React.FC = () => {
+  const { slug } = useParams<{ slug?: string }>();
+  const { i18n } = useTranslation();
   const [posts, setPosts] = useState<WPPost[]>([]);
+  const [singlePost, setSinglePost] = useState<WPPost | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Busca posts com imagens otimizadas (sem _embed)
+  // Helper para rotas localizadas
+  const getRouteForKey = (key: string): string => {
+    const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
+    if (!route) return `/${key}`;
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
+  };
+
+  // Busca conteúdo (lista ou post único)
   useEffect(() => {
-    fetch('https://djzeneyer.com/wp-json/wp/v2/posts?per_page=10')
+    setLoading(true);
+    // OPTIMIZATION: Removed _embed
+    const endpoint = slug
+      ? `https://djzeneyer.com/wp-json/wp/v2/posts?slug=${slug}`
+      : `https://djzeneyer.com/wp-json/wp/v2/posts?per_page=10`;
+
+    fetch(endpoint)
       .then(res => res.json())
       .then(data => {
-        setPosts(data);
+        if (slug) {
+          setSinglePost(data[0] || null);
+        } else {
+          setPosts(Array.isArray(data) ? data : []);
+        }
         setLoading(false);
       })
-      .catch(err => console.error('Failed to fetch news:', err));
-  }, []);
+      .catch(err => {
+        console.error('Failed to fetch news:', err);
+        setLoading(false);
+      });
+  }, [slug]);
 
-  // Separa o destaque (primeiro post) dos demais
+  // --- RENDERIZAÇÃO DE POST ÚNICO ---
+  if (!loading && slug && singlePost) {
+    const heroImage = singlePost.featured_image_src_full || singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    const author = singlePost.author_name || singlePost._embedded?.author?.[0]?.name || 'Zen Eyer';
+
+    return (
+      <>
+        <HeadlessSEO
+          title={`${stripHtml(singlePost.title.rendered)} | Zen News`}
+          description={stripHtml(singlePost.excerpt.rendered)}
+          url={`https://djzeneyer.com/news/${singlePost.slug}`}
+        />
+        <div className="min-h-screen bg-background text-white pt-24 pb-20">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <Link to={getRouteForKey('news')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-8 font-bold">
+              <ArrowLeft size={20} /> VOLTAR PARA NOTÍCIAS
+            </Link>
+
+            <article>
+              <header className="mb-10 text-center">
+                <div className="flex items-center justify-center gap-4 text-white/50 text-sm mb-4 font-mono uppercase tracking-widest">
+                  <span className="flex items-center gap-1.5"><Calendar size={14} /> {formatDate(singlePost.date)}</span>
+                  <span>•</span>
+                  <span>Por {author}</span>
+                </div>
+                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: singlePost.title.rendered }} />
+
+                {heroImage && (
+                  <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
+                    <img
+                      src={heroImage}
+                      className="w-full h-full object-cover"
+                      alt={singlePost.title.rendered}
+                    />
+                  </div>
+                )}
+              </header>
+
+              <div
+                className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:font-black prose-a:text-primary hover:prose-a:text-white transition-colors"
+                dangerouslySetInnerHTML={{ __html: singlePost.content?.rendered || "" }}
+              />
+            </article>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // --- RENDERIZAÇÃO DA LISTA ---
   const featuredPost = posts[0];
   const secondaryPosts = posts.slice(1);
 
@@ -63,11 +143,9 @@ const NewsPage: React.FC = () => {
         description="Notícias oficiais, lançamentos e artigos sobre o universo do Zouk Brasileiro por DJ Zen Eyer."
         url="https://djzeneyer.com/news"
       />
-
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4">
           
-          {/* HEADER EDITORIAL */}
           <header className="mb-16 border-b border-white/10 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
               <motion.div 
@@ -90,7 +168,6 @@ const NewsPage: React.FC = () => {
           </header>
 
           {loading ? (
-            // SKELETON LOADER (Premium feel even while loading)
             <div className="animate-pulse space-y-8">
               <div className="h-[500px] bg-white/5 rounded-2xl w-full" />
               <div className="grid md:grid-cols-3 gap-8">
@@ -101,7 +178,6 @@ const NewsPage: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* 1. HERO SECTION (Manchete Principal) */}
               {featuredPost && (
                 <motion.article
                   initial={{ opacity: 0, y: 30 }}
@@ -110,47 +186,40 @@ const NewsPage: React.FC = () => {
                   className="relative group cursor-pointer mb-20"
                 >
                   <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
-                     {/* Imagem de Fundo com Zoom suave no Hover */}
-                     <img 
-                       src={featuredPost.featured_image_src_full || '/images/hero-background.webp'}
-                       alt={featuredPost.title.rendered}
-                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                     />
-                     {/* Gradiente Cinematográfico */}
-                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
-                     
-                     {/* Conteúdo da Manchete */}
-                     <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full md:w-3/4">
-                       <div className="flex items-center gap-4 text-primary font-bold mb-4">
-                         <span className="bg-primary/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md border border-primary/30">
-                           Destaque
-                         </span>
-                         <span className="flex items-center gap-2 text-white/80 text-sm">
-                           <Calendar size={14} /> {formatDate(featuredPost.date)}
-                         </span>
-                       </div>
+                    <img
+                      src={featuredPost.featured_image_src_full || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                      alt={featuredPost.title.rendered}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
 
-                       <h2 
-                         className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors"
-                         dangerouslySetInnerHTML={{ __html: featuredPost.title.rendered }} 
-                       />
-
-                       <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
-                         <p 
-                           className="text-lg text-white/80 line-clamp-3"
-                           dangerouslySetInnerHTML={{ __html: stripHtml(featuredPost.excerpt.rendered) }} 
-                         />
-                       </div>
-
-                       <Link to={`/news/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-bold text-lg hover:gap-4 transition-all">
-                         LER MATÉRIA COMPLETA <div className="bg-white text-black rounded-full p-1"><ArrowRight size={16} /></div>
-                       </Link>
-                     </div>
+                    <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full md:w-3/4">
+                      <div className="flex items-center gap-4 text-primary font-bold mb-4">
+                        <span className="bg-primary/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md border border-primary/30">
+                          Destaque
+                        </span>
+                        <span className="flex items-center gap-2 text-white/80 text-sm">
+                          <Calendar size={14} /> {formatDate(featuredPost.date)}
+                        </span>
+                      </div>
+                      <h2
+                        className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors"
+                        dangerouslySetInnerHTML={{ __html: featuredPost.title.rendered }}
+                      />
+                      <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
+                        <p
+                          className="text-lg text-white/80 line-clamp-3"
+                          dangerouslySetInnerHTML={{ __html: stripHtml(featuredPost.excerpt.rendered) }}
+                        />
+                      </div>
+                      <Link to={`${getRouteForKey('news')}/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-bold text-lg hover:gap-4 transition-all">
+                        LER MATÉRIA COMPLETA <div className="bg-white text-black rounded-full p-1"><ArrowRight size={16} /></div>
+                      </Link>
+                    </div>
                   </div>
                 </motion.article>
               )}
 
-              {/* 2. TRENDING GRID (Notícias Secundárias) */}
               <div className="mb-8 flex items-center gap-2 text-xl font-display font-bold text-white/90">
                 <TrendingUp className="text-primary" />
                 <span>Latest Stories</span>
@@ -166,10 +235,9 @@ const NewsPage: React.FC = () => {
                     transition={{ delay: index * 0.1 }}
                     className="group flex flex-col h-full bg-surface/30 rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 hover:bg-surface/50 transition-all duration-300"
                   >
-                    {/* Imagem do Card */}
-                    <Link to={`/news/${post.slug}`} className="block h-56 overflow-hidden relative">
+                    <Link to={`${getRouteForKey('news')}/${post.slug}`} className="block h-56 overflow-hidden relative">
                       <img 
-                        src={post.featured_image_src || '/images/hero-background.webp'}
+                        src={post.featured_image_src || post.featured_image_src_full || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
                         alt={post.title.rendered}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
@@ -177,30 +245,25 @@ const NewsPage: React.FC = () => {
                         <Clock size={12} className="inline mr-1" /> 3 min read
                       </div>
                     </Link>
-
-                    {/* Corpo do Card */}
                     <div className="p-6 flex-1 flex flex-col">
                       <div className="text-xs text-primary mb-3 font-bold uppercase tracking-wider flex items-center gap-2">
                         <Hash size={12} /> News
                       </div>
-                      
-                      <Link to={`/news/${post.slug}`}>
+                      <Link to={`${getRouteForKey('news')}/${post.slug}`}>
                         <h3 
                           className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2"
                           dangerouslySetInnerHTML={{ __html: post.title.rendered }}
                         />
                       </Link>
-
                       <p 
                         className="text-white/60 text-sm line-clamp-3 mb-6 flex-1"
                         dangerouslySetInnerHTML={{ __html: stripHtml(post.excerpt.rendered) }}
                       />
-
                       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
                         <span className="text-xs text-white/40 font-medium">
                           {formatDate(post.date)}
                         </span>
-                        <Link to={`/news/${post.slug}`} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
+                        <Link to={`${getRouteForKey('news')}/${post.slug}`} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
                           Read More
                         </Link>
                       </div>
@@ -211,7 +274,6 @@ const NewsPage: React.FC = () => {
             </>
           )}
 
-          {/* FOOTER DO FEED */}
           {!loading && posts.length > 0 && (
             <div className="mt-20 text-center border-t border-white/10 pt-10">
               <p className="text-white/40 text-sm mb-4">Você chegou ao fim das atualizações recentes.</p>
