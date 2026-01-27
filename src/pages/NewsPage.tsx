@@ -15,14 +15,17 @@ interface WPPost {
   slug: string;
   title: { rendered: string };
   excerpt: { rendered: string };
+<<<<<<< HEAD
   content?: { rendered: string };
-  featured_image_src?: string;
-  featured_image_src_full?: string;
-  author_name?: string;
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url: string }>;
     'author'?: Array<{ name: string }>;
   };
+=======
+  featured_image_src?: string;
+  featured_image_src_full?: string;
+  author_name?: string;
+>>>>>>> d52c9d9 (⚡ Bolt: Remove _embed from REST API calls)
 }
 
 // ============================================================================
@@ -46,11 +49,12 @@ const stripHtml = (html: string) => {
 // ============================================================================
 const NewsPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [posts, setPosts] = useState<WPPost[]>([]);
   const [singlePost, setSinglePost] = useState<WPPost | null>(null);
   const [loading, setLoading] = useState(true);
 
+<<<<<<< HEAD
   // Helper para rotas localizadas
   const getRouteForKey = (key: string): string => {
     const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
@@ -62,18 +66,22 @@ const NewsPage: React.FC = () => {
   // Busca conteúdo (lista ou post único)
   useEffect(() => {
     setLoading(true);
-    // OPTIMIZATION: Removed _embed
     const endpoint = slug
-      ? `https://djzeneyer.com/wp-json/wp/v2/posts?slug=${slug}`
-      : `https://djzeneyer.com/wp-json/wp/v2/posts?per_page=10`;
+      ? `https://djzeneyer.com/wp-json/wp/v2/posts?slug=${slug}&_embed`
+      : `https://djzeneyer.com/wp-json/wp/v2/posts?_embed&per_page=10`;
 
     fetch(endpoint)
+=======
+  // Busca posts com imagens otimizadas (sem _embed)
+  useEffect(() => {
+    fetch('https://djzeneyer.com/wp-json/wp/v2/posts?per_page=10')
+>>>>>>> d52c9d9 (⚡ Bolt: Remove _embed from REST API calls)
       .then(res => res.json())
       .then(data => {
         if (slug) {
           setSinglePost(data[0] || null);
         } else {
-          setPosts(Array.isArray(data) ? data : []);
+          setPosts(data);
         }
         setLoading(false);
       })
@@ -85,9 +93,6 @@ const NewsPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DE POST ÚNICO ---
   if (!loading && slug && singlePost) {
-    const heroImage = singlePost.featured_image_src_full || singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-    const author = singlePost.author_name || singlePost._embedded?.author?.[0]?.name || 'Zen Eyer';
-
     return (
       <>
         <HeadlessSEO
@@ -106,14 +111,14 @@ const NewsPage: React.FC = () => {
                 <div className="flex items-center justify-center gap-4 text-white/50 text-sm mb-4 font-mono uppercase tracking-widest">
                   <span className="flex items-center gap-1.5"><Calendar size={14} /> {formatDate(singlePost.date)}</span>
                   <span>•</span>
-                  <span>Por {author}</span>
+                  <span>Por {singlePost._embedded?.author?.[0]?.name || 'Zen Eyer'}</span>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: singlePost.title.rendered }} />
 
-                {heroImage && (
+                {singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
                     <img
-                      src={heroImage}
+                      src={singlePost._embedded['wp:featuredmedia'][0].source_url}
                       className="w-full h-full object-cover"
                       alt={singlePost.title.rendered}
                     />
@@ -186,8 +191,9 @@ const NewsPage: React.FC = () => {
                   className="relative group cursor-pointer mb-20"
                 >
                   <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+<<<<<<< HEAD
                     <img
-                      src={featuredPost.featured_image_src_full || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                      src={featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
                       alt={featuredPost.title.rendered}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
@@ -216,6 +222,44 @@ const NewsPage: React.FC = () => {
                         LER MATÉRIA COMPLETA <div className="bg-white text-black rounded-full p-1"><ArrowRight size={16} /></div>
                       </Link>
                     </div>
+=======
+                     {/* Imagem de Fundo com Zoom suave no Hover */}
+                     <img
+                       src={featuredPost.featured_image_src_full || '/images/hero-background.webp'}
+                       alt={featuredPost.title.rendered}
+                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                     />
+                     {/* Gradiente Cinematográfico */}
+                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
+
+                     {/* Conteúdo da Manchete */}
+                     <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full md:w-3/4">
+                       <div className="flex items-center gap-4 text-primary font-bold mb-4">
+                         <span className="bg-primary/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md border border-primary/30">
+                           Destaque
+                         </span>
+                         <span className="flex items-center gap-2 text-white/80 text-sm">
+                           <Calendar size={14} /> {formatDate(featuredPost.date)}
+                         </span>
+                       </div>
+
+                       <h2
+                         className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors"
+                         dangerouslySetInnerHTML={{ __html: featuredPost.title.rendered }}
+                       />
+
+                       <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
+                         <p
+                           className="text-lg text-white/80 line-clamp-3"
+                           dangerouslySetInnerHTML={{ __html: stripHtml(featuredPost.excerpt.rendered) }}
+                         />
+                       </div>
+
+                       <Link to={`/news/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-bold text-lg hover:gap-4 transition-all">
+                         LER MATÉRIA COMPLETA <div className="bg-white text-black rounded-full p-1"><ArrowRight size={16} /></div>
+                       </Link>
+                     </div>
+>>>>>>> d52c9d9 (⚡ Bolt: Remove _embed from REST API calls)
                   </div>
                 </motion.article>
               )}
@@ -237,7 +281,7 @@ const NewsPage: React.FC = () => {
                   >
                     <Link to={`${getRouteForKey('news')}/${post.slug}`} className="block h-56 overflow-hidden relative">
                       <img 
-                        src={post.featured_image_src || post.featured_image_src_full || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                        src={post.featured_image_src || '/images/hero-background.webp'}
                         alt={post.title.rendered}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />

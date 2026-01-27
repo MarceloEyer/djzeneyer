@@ -89,7 +89,7 @@ add_action('rest_api_init', function() {
     register_rest_field('remixes', 'type_name', ['get_callback' => $get_type_callback]);
     register_rest_field('remixes', 'category_name', ['get_callback' => $get_type_callback]);
 
-    $post_types = ['remixes', 'post', 'flyers', 'events'];
+    $post_types = ['remixes', 'post', 'flyers'];
 
     register_rest_field($post_types, 'featured_image_src', [
         'get_callback' => function($object) {

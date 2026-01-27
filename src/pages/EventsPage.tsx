@@ -2,22 +2,33 @@
 // VERSÃO FINAL: SEGURA (XSS FIX) + SEO OTIMIZADO + HREF SANITIZE + i18n Routes + Dynamic Content
 
 import { useEffect, useState, memo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST } from '../data/artistData';
-import { Event } from '../types';
+import { getHreflangUrls } from '../utils/seo';
+import { ARTIST, getWhatsAppUrl } from '../data/artistData';
+import { Event, Testimonial, FlyerData } from '../types';
+import { EventsList } from '../components/EventsList';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 import {
   Calendar as CalendarIcon,
   MapPin,
   Ticket,
+  Star,
   Plus,
+  Globe,
+  Download,
   Briefcase,
+  Lock,
+  Plane,
+  ExternalLink,
+  Trophy,
+  Users,
+  Music2,
   ArrowRight,
   ArrowLeft,
-  Send
+  Info
 } from 'lucide-react';
 
 const EventsPage: React.FC = () => {
@@ -39,10 +50,10 @@ const EventsPage: React.FC = () => {
     const abortController = new AbortController();
     setLoading(true);
 
+<<<<<<< HEAD
     const fetchEvents = async () => {
       try {
-        // OPTIMIZATION: Removed ?_embed and used custom fields
-        const response = await fetch(`https://djzeneyer.com/wp-json/wp/v2/events${id ? `/${id}` : ''}`, {
+        const response = await fetch(`https://djzeneyer.com/wp-json/wp/v2/events${id ? `/${id}` : ''}?_embed`, {
           signal: abortController.signal
         });
         const data = await response.json();
@@ -50,7 +61,7 @@ const EventsPage: React.FC = () => {
         if (id) {
           setSingleEvent(data);
         } else {
-          setEvents(Array.isArray(data) ? data : []);
+          setEvents(data);
         }
         setLoading(false);
       } catch (err: any) {
@@ -60,6 +71,11 @@ const EventsPage: React.FC = () => {
         }
       }
     };
+=======
+    const wpData = (window as any).wpData || {};
+    const restUrl = (wpData.restUrl || `${ARTIST.site.baseUrl}/wp-json`).replace(/\/$/, '');
+    const endpoint = `${restUrl}/wp/v2/flyers?per_page=8`;
+>>>>>>> d52c9d9 (⚡ Bolt: Remove _embed from REST API calls)
 
     fetchEvents();
     return () => abortController.abort();
@@ -84,7 +100,7 @@ const EventsPage: React.FC = () => {
               <div className="space-y-8">
                 <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
                   <img
-                    src={singleEvent.featured_image_src_full || singleEvent._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                    src={singleEvent._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
                     className="w-full aspect-[4/5] object-cover"
                     alt={singleEvent.title?.rendered}
                   />
@@ -169,6 +185,7 @@ const EventsPage: React.FC = () => {
             </motion.p>
           </div>
 
+<<<<<<< HEAD
           <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
               <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
@@ -177,6 +194,12 @@ const EventsPage: React.FC = () => {
                 </h2>
                 <span className="text-white/40 text-sm font-mono">{events.length} EVENTOS ENCONTRADOS</span>
               </div>
+=======
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {flyers.map((flyer, index) => {
+              const fullImageUrl = flyer.featured_image_src_full;
+              const thumbUrl = flyer.featured_image_src || fullImageUrl;
+>>>>>>> d52c9d9 (⚡ Bolt: Remove _embed from REST API calls)
 
               {loading ? (
                 <div className="space-y-6 animate-pulse">
@@ -198,7 +221,7 @@ const EventsPage: React.FC = () => {
                       <div className="flex flex-col md:flex-row p-6 gap-8">
                         <div className="md:w-48 h-48 rounded-2xl overflow-hidden shrink-0">
                           <img
-                            src={event.featured_image_src || event._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                            src={event._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                             alt={event.title?.rendered}
                           />
