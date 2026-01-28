@@ -30,9 +30,37 @@ class DJZ_Vite_Loader {
             $this->dist_path . '/manifest.json'
         ];
 
+        $cache_key = 'djz_vite_manifest_v2';
+        $cached    = get_transient($cache_key);
+
         foreach ($paths as $path) {
             if (file_exists($path)) {
-                $this->manifest = json_decode(file_get_contents($path), true);
+                $mtime = filemtime($path);
+
+                // Check cache validity (Path match + Mtime match)
+                if (
+                    is_array($cached) &&
+                    isset($cached['path'], $cached['mtime'], $cached['data']) &&
+                    $cached['path'] === $path &&
+                    $cached['mtime'] === $mtime
+                ) {
+                    $this->manifest = $cached['data'];
+                    return;
+                }
+
+                // Cache Miss or Stale: Read file
+                $content = file_get_contents($path);
+                $data    = json_decode($content, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $this->manifest = $data;
+                    set_transient($cache_key, [
+                        'path'  => $path,
+                        'mtime' => $mtime,
+                        'data'  => $data
+                    ], 7 * DAY_IN_SECONDS);
+                }
+
                 return;
             }
         }
