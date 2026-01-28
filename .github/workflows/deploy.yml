@@ -79,7 +79,7 @@ jobs:
 
       # --- FRONTEND BUILD ---
       - name: 📦 Install dependencies
-            run: |
+                run: |
                     npm install --package-lock-only
                             npm ci --prefer-offline --no-audit
 
