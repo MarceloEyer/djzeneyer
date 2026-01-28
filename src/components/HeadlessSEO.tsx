@@ -135,7 +135,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   const finalUrl = ensureTrailingSlash(absoluteUrl);
 
   // FIX: Imagem padrão robusta se nada for passado
-  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.jpg`; // Certifique-se que essa imagem existe na pasta public/images/
+  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.svg`; // Certifique-se que essa imagem existe na pasta public/images/
   const finalImage = ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl);
 
   const shouldNoIndex = data?.noindex || noindex;

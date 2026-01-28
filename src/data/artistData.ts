@@ -221,7 +221,7 @@ export const ARTIST_SCHEMA_BASE = {
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   knowsAbout: ['Brazilian Zouk', 'DJing', 'Music Production', 'Remixing', 'Festival Performance'],
   url: ARTIST.site.baseUrl,
-  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.jpg`,
+  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.svg`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],
   award: [
     {

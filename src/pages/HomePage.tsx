@@ -222,7 +222,7 @@ const HomePage: React.FC = () => {
         url={currentUrl}
         
         // Imagem vinda do painel WP ou fallback local
-        image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.jpg`}
+        image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.svg`}
         
         isHomepage={true}
         schema={schemaData}
