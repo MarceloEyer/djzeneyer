@@ -132,6 +132,7 @@ function djz_get_products($request) {
     
     if ($query->have_posts()) {
         $product_objects = [];
+        $product_ids = [];
         $all_img_ids = [];
 
         while ($query->have_posts()) {
@@ -142,6 +143,7 @@ function djz_get_products($request) {
             if (!$product) continue;
             
             $product_objects[] = $product;
+            $product_ids[] = $product->get_id();
 
             $img_ids = $product->get_gallery_image_ids();
             if ($product->get_image_id()) {
@@ -160,6 +162,11 @@ function djz_get_products($request) {
             if (function_exists('_prime_post_caches')) {
                 _prime_post_caches($all_img_ids, false, false);
             }
+        }
+
+        // Batch prime caches for terms
+        if (!empty($product_ids)) {
+            update_object_term_cache($product_ids, 'product');
         }
 
         foreach ($product_objects as $product) {
@@ -195,7 +202,7 @@ function djz_get_products($request) {
                 }
             }
             
-            $categories = wp_get_post_terms($id, 'product_cat');
+            $categories = wp_get_post_terms($product->get_id(), 'product_cat');
             if (is_wp_error($categories)) {
                 $categories = [];
             }
@@ -212,7 +219,7 @@ function djz_get_products($request) {
                 'images' => $images,
                 'short_description' => $product->get_short_description(),
                 'description' => $product->get_description(),
-                'permalink' => get_permalink($id),
+                'permalink' => get_permalink($product->get_id()),
                 'categories' => array_map(function($term) {
                     return [
                         'id' => $term->term_id,
