@@ -4,17 +4,14 @@
   "version": "1.1.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run gen:sitemap && vite",
-    "gen:sitemap": "node scripts/generate-sitemap.js",
-    "generate-sitemaps": "node scripts/generate-sitemap.js",
-    "build": "npm run gen:sitemap && tsc && vite build && node scripts/prerender.js",
-    "build:client": "npm run gen:sitemap && vite build",
-    "build:ssg": "npm run build:client && node scripts/prerender.js",
-    "build:prod": "npm run build:ssg",
+    "dev": "vite",
+    "generate-sitemaps": "node scripts/generate-sitemap-fixed.js",
+    "prerender": "node scripts/prerender-fixed.js",
+    "build": "tsc && vite build",
+    "build:full": "npm run generate-sitemaps && npm run build && npm run prerender",
     "preview": "vite preview",
     "lint": "eslint . --fix",
-    "format": "prettier --write .",
-    "check-build": "node scripts/check-build.js"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.4.1",
@@ -56,19 +53,5 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "browserslist": [
-    "> 0.5%",
-    "last 2 versions",
-    "not dead",
-    "not op_mini all"
-  ]
-}
-
-{
-  "scripts": {
-    "generate-sitemaps": "node scripts/generate-sitemap-fixed.js",
-    "prerender": "node scripts/prerender-fixed.js",
-    "build:full": "npm run build && npm run prerender"
   }
 }
