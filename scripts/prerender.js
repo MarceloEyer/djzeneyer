@@ -17,7 +17,7 @@ const __dirname = dirname(__filename);
 // CONFIGURAÇÃO
 // =============================
 const CONFIG = {
-  server: 'http://localhost:5173',
+  server: 'http://localhost:5173/wp-content/themes/zentheme/dist',
   distDir: join(process.cwd(), 'dist'),
   timeout: 30000,
   waitForSelector: '#root',
