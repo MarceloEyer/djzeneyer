@@ -211,7 +211,8 @@ function djz_get_products($request) {
                 'stock_status' => $product->get_stock_status(),
                 'images' => $images,
                 'short_description' => $product->get_short_description(),
-                'description' => $product->get_description(),
+                // OPTIMIZATION: Only include full description for single product requests
+                'description' => !empty($slug) ? $product->get_description() : '',
                 'permalink' => get_permalink($id),
                 'categories' => array_map(function($term) {
                     return [
