@@ -64,3 +64,11 @@
     "not op_mini all"
   ]
 }
+
+{
+  "scripts": {
+    "generate-sitemaps": "node scripts/generate-sitemap-fixed.js",
+    "prerender": "node scripts/prerender-fixed.js",
+    "build:full": "npm run build && npm run prerender"
+  }
+}
