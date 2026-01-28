@@ -79,11 +79,10 @@ jobs:
 
       # --- FRONTEND BUILD ---
       - name: 📦 Install dependencies
-        run: npm ci --prefer-offline --no-audit
-
+      run: npm install --prefer-offline --no-audit
       - name: 🗺️ Generate sitemaps
         run: |
-          echo "🗺️ Generating sitemaps..."
+          echo "npm install🗺️ Generating sitemaps..."
           npm run generate-sitemaps
           
           # Validar que os sitemaps foram gerados
