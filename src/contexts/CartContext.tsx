@@ -15,6 +15,7 @@ interface CartContextType {
   cart: CartData | null;
   getCart: () => Promise<void>;
   removeItem: (key: string) => Promise<void>;
+  clearCart: () => Promise<void>;
   loading: boolean;
 }
 
@@ -75,7 +76,41 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [getCart]);
 
-  const value = { cart, getCart, removeItem, loading };
+  const clearCart = useCallback(async () => {
+    if (!cart?.items?.length) return;
+
+    setLoading(true);
+    try {
+      const promises = cart.items.map(async (item: any) => {
+        if (!item.key) return;
+
+        const apiUrl = buildApiUrl(`wc/store/v1/cart/items/${item.key}`);
+        const response = await fetch(apiUrl, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': (window as any).wpData?.nonce || ''
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+           const data = await response.json();
+           console.warn(`[CartContext] Failed to remove item ${item.key}:`, data.message);
+        }
+      });
+
+      await Promise.all(promises);
+      await getCart();
+
+    } catch (err: any) {
+      console.error("[CartContext] Error clearing cart:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [cart, getCart]);
+
+  const value = { cart, getCart, removeItem, clearCart, loading };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
