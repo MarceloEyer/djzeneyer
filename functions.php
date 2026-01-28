@@ -20,12 +20,10 @@ require_once get_theme_file_path('/inc/api.php');        // General REST endpoin
 require_once get_theme_file_path('/inc/cpt.php');        // Custom post types
 require_once get_theme_file_path('/inc/metaboxes.php');  // Admin metaboxes
 require_once get_theme_file_path('/inc/ai-llm.php');     // AI LLM Strategy
+require_once get_template_directory() . '/inc/ssr-handler.php';  // Carregar SSR Handler
 
 /**
  * Disable admin bar on frontend
  * (Breaks headless layout)
  */
 add_filter('show_admin_bar', '__return_false');
-
-// Carregar SSR Handler
-require_once get_template_directory() . '/inc/ssr-handler.php';
