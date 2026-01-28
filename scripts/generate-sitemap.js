@@ -4,6 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import routesData from '../src/config/routes.data.json' assert { type: 'json' };
 
 // ============================================================================
 // CONFIGURATION
@@ -20,36 +21,7 @@ const EVENTS_SITEMAP = 'sitemap-events.xml';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Routes imported from routes.ts (manually extracted - TypeScript can't be imported directly in Node)
-// This list is synced with src/config/routes.ts
-const ROUTES_FROM_CONFIG = [
-  { en: '', pt: '' },  // Home
-  { en: 'about', pt: 'sobre' },
-  { en: 'events', pt: 'eventos' },
-  { en: 'music', pt: 'musica' },
-  { en: 'news', pt: 'noticias' },
-  { en: ['zentribe', 'tribe', 'zen-tribe'], pt: ['tribo-zen', 'tribo'] },
-  { en: 'work-with-me', pt: 'trabalhe-comigo' },
-  { en: 'shop', pt: 'loja' },
-  { en: 'faq', pt: 'perguntas-frequentes' },
-  { en: 'my-philosophy', pt: 'minha-filosofia' },
-  { en: 'media', pt: 'na-midia' },
-  { en: 'support-the-artist', pt: 'apoie-o-artista' },
-  { en: 'privacy-policy', pt: 'politica-de-privacidade' },
-  { en: 'return-policy', pt: 'reembolso' },
-  { en: 'terms', pt: 'termos' },
-  { en: 'conduct', pt: 'regras-de-conduta' },
-];
-
-// Routes to exclude from sitemap (auth, admin, dynamic)
-const EXCLUDED_ROUTES = [
-  'dashboard', 'painel',
-  'my-account', 'minha-conta',
-  'cart', 'carrinho',
-  'checkout', 'finalizar-compra',
-  'tickets-checkout', 'finalizar-ingressos',
-  'order-complete', 'pedido-completo',
-];
+const ROUTES_FROM_CONFIG = routesData;
 
 // ============================================================================
 // HELPERS
@@ -60,10 +32,8 @@ const ensureSlash = (str) => {
   return str.endsWith('/') ? str : `${str}/`;
 };
 
-const shouldExclude = (path) => {
-  return EXCLUDED_ROUTES.some(excluded => path.includes(excluded)) || 
-         path.includes(':') ||  // Dynamic routes
-         path.includes('*');    // Wildcard routes
+const shouldIncludeInSitemap = (route, path) => {
+  return route.sitemap !== false && !path.includes(':') && !path.includes('*');
 };
 
 // ============================================================================
@@ -82,15 +52,15 @@ try {
 
   ROUTES_FROM_CONFIG.forEach(route => {
     // Handle array paths (multiple aliases)
-    const enPaths = Array.isArray(route.en) ? route.en : [route.en];
-    const ptPaths = Array.isArray(route.pt) ? route.pt : [route.pt];
+    const enPaths = Array.isArray(route.paths.en) ? route.paths.en : [route.paths.en];
+    const ptPaths = Array.isArray(route.paths.pt) ? route.paths.pt : [route.paths.pt];
 
     // Use first path as canonical
     const enPath = enPaths[0];
     const ptPath = ptPaths[0];
 
     // Skip excluded routes
-    if (shouldExclude(enPath) || shouldExclude(ptPath)) return;
+    if (!shouldIncludeInSitemap(route, enPath) || !shouldIncludeInSitemap(route, ptPath)) return;
 
     // Build EN URL
     const urlEn = enPath === '' 
@@ -160,9 +130,7 @@ try {
   fs.writeFileSync(indexPath, indexXml);
   console.log(`✅ ${INDEX_SITEMAP} (Index) atualizado.`);
   console.log('');
-  console.log('📝 IMPORTANTE: Este script usa uma cópia manual das rotas do routes.ts');
-  console.log('   Quando adicionar novas rotas, atualize ROUTES_FROM_CONFIG neste arquivo.');
-  console.log('   Fonte da verdade: src/config/routes.ts');
+  console.log('📝 IMPORTANTE: Fonte da verdade única em src/config/routes.data.json');
 
 } catch (error) {
   console.error('❌ Erro:', error);
