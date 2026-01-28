@@ -79,9 +79,8 @@ jobs:
 
       # --- FRONTEND BUILD ---
       - name: 📦 Install dependencies
-      run: |
-        npm install --package-lock-only
-        npm ci --prefer-offline --no-audit
+        run: npm ci --prefer-offline --no-audit
+
       - name: 🗺️ Generate sitemaps
         run: |
           echo "🗺️ Generating sitemaps..."
