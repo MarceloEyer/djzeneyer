@@ -698,4 +698,66 @@
     "saving": "Salvando...",
     "saved": "Salvo!"
   }
+,
+  "support": {
+    "seo": {
+      "title": "Apoie o DJ Zen Eyer | Informações de Pagamento",
+      "description": "Apoie o DJ Zen Eyer através de doações ou contrate para eventos. Múltiplos métodos de pagamento disponíveis mundialmente incluindo Inter Global, Wise e PayPal.",
+      "keywords": "apoiar artista, contratar dj, métodos de pagamento, pagamentos internacionais, dj brazilian zouk"
+    },
+    "header": {
+      "title": "Apoie a Música",
+      "description": "Seu apoio ajuda a criar novas músicas, conteúdo educacional e construir a comunidade Brazilian Zouk mundialmente. Seja contratando para um evento ou fazendo uma doação, cada contribuição faz a diferença."
+    },
+    "reasons": {
+      "title": "Por Que Seu Apoio Importa",
+      "music": {
+        "title": "Apoie Novas Músicas",
+        "description": "Ajude a produzir e lançar novas faixas de Brazilian Zouk"
+      },
+      "community": {
+        "title": "Crescimento da Comunidade",
+        "description": "Apoie workshops, eventos e conteúdo educacional"
+      },
+      "worldwide": {
+        "title": "Presença Mundial",
+        "description": "Possibilite turnês internacionais e colaborações"
+      }
+    },
+    "payment": {
+      "title": "Métodos de Pagamento"
+    },
+    "inter": {
+      "title": "Conta Inter Global (Preferencial)",
+      "description": "Contas bancárias nos EUA e Brasil para pagamentos internacionais e locais",
+      "usa": "Estados Unidos",
+      "brazil": "Brasil"
+    },
+    "wise": {
+      "title": "Wise (TransferWise)",
+      "description": "Transferências internacionais com taxas baixas para múltiplas moedas"
+    },
+    "paypal": {
+      "title": "PayPal",
+      "description": "Pagamentos rápidos e fáceis mundialmente"
+    },
+    "preferred": "Preferencial",
+    "accountName": "Nome da Conta",
+    "routingNumber": "Número de Roteamento",
+    "accountNumber": "Número da Conta",
+    "accountType": "Tipo de Conta",
+    "swiftCode": "SWIFT/BIC",
+    "bank": "Banco",
+    "branch": "Agência",
+    "account": "Conta",
+    "pixKey": "Chave PIX",
+    "email": "Email",
+    "sendPayment": "Enviar Pagamento via",
+    "business": {
+      "title": "Contratações para Eventos & Consultas Comerciais",
+      "description": "Para contratações de eventos, solicitações de workshops ou colaborações comerciais, envie os detalhes de pagamento para o email abaixo. Inclua detalhes do evento, localização e data para processamento mais rápido.",
+      "contact": "Contato para Contratações"
+    },
+    "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
+  }
 }

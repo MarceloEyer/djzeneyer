@@ -693,4 +693,66 @@
     "saving": "Saving...",
     "saved": "Saved!"
   }
+,
+  "support": {
+    "seo": {
+      "title": "Support DJ Zen Eyer | Payment Information",
+      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.",
+      "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
+    },
+    "header": {
+      "title": "Support the Music",
+      "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
+    },
+    "reasons": {
+      "title": "Why Your Support Matters",
+      "music": {
+        "title": "Support New Music",
+        "description": "Help produce and release new Brazilian Zouk tracks"
+      },
+      "community": {
+        "title": "Community Growth",
+        "description": "Support workshops, events, and educational content"
+      },
+      "worldwide": {
+        "title": "Worldwide Presence",
+        "description": "Enable international tours and collaborations"
+      }
+    },
+    "payment": {
+      "title": "Payment Methods"
+    },
+    "inter": {
+      "title": "Inter Global Account (Preferred)",
+      "description": "US and Brazil bank accounts for international and local payments",
+      "usa": "United States",
+      "brazil": "Brazil"
+    },
+    "wise": {
+      "title": "Wise (TransferWise)",
+      "description": "Low-fee international transfers to multiple currencies"
+    },
+    "paypal": {
+      "title": "PayPal",
+      "description": "Quick and easy payments worldwide"
+    },
+    "preferred": "Preferred",
+    "accountName": "Account Name",
+    "routingNumber": "Routing Number",
+    "accountNumber": "Account Number",
+    "accountType": "Account Type",
+    "swiftCode": "SWIFT/BIC",
+    "bank": "Bank",
+    "branch": "Branch",
+    "account": "Account",
+    "pixKey": "PIX Key",
+    "email": "Email",
+    "sendPayment": "Send Payment via",
+    "business": {
+      "title": "Event Bookings & Business Inquiries",
+      "description": "For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.",
+      "contact": "Contact for Bookings"
+    },
+    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
+  }
 }

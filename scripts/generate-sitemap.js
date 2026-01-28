@@ -1,136 +1,145 @@
 // scripts/generate-sitemap.js
-// v4.1 - SITEMAP INDEX inclui sitemap-events.xml (Zen BIT Premium SEO) + trailing slash
+// v5.0 - UNIFIED: Usa routes.ts como única fonte da verdade
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Configuração
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
 const BASE_URL = 'https://djzeneyer.com';
-const ROUTE_MAP_PATH = '../src/data/routeMap.json';
 const PUBLIC_DIR = '../public';
 
-// Nomes dos Arquivos
 const PAGES_SITEMAP = 'sitemap-pages.xml';
 const INDEX_SITEMAP = 'sitemap.xml';
-const WP_DYNAMIC_SITEMAP = 'sitemap-dynamic.xml'; // Gerado pelo WordPress (Posts/Produtos)
-const EVENTS_SITEMAP = 'sitemap-events.xml'; // ✅ NOVO (Zen BIT SSR Event Pages)
+const WP_DYNAMIC_SITEMAP = 'sitemap-dynamic.xml';
+const EVENTS_SITEMAP = 'sitemap-events.xml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 🆕 ROTAS MANUAIS
-const MANUAL_ROUTES = [
-  { key: 'media', en: '/media/', pt: '/midia/' },
-  { key: 'privacy', en: '/privacy-policy/', pt: '/politica-de-privacidade/' },
-  { key: 'terms', en: '/terms/', pt: '/termos/' },
-  { key: 'conduct', en: '/conduct/', pt: '/conduta/' },
-  { key: 'faq', en: '/faq/', pt: '/faq/' }
+// Routes imported from routes.ts (manually extracted - TypeScript can't be imported directly in Node)
+// This list is synced with src/config/routes.ts
+const ROUTES_FROM_CONFIG = [
+  { en: '', pt: '' },  // Home
+  { en: 'about', pt: 'sobre' },
+  { en: 'events', pt: 'eventos' },
+  { en: 'music', pt: 'musica' },
+  { en: 'news', pt: 'noticias' },
+  { en: ['zentribe', 'tribe', 'zen-tribe'], pt: ['tribo-zen', 'tribo'] },
+  { en: 'work-with-me', pt: 'trabalhe-comigo' },
+  { en: 'shop', pt: 'loja' },
+  { en: 'faq', pt: 'perguntas-frequentes' },
+  { en: 'my-philosophy', pt: 'minha-filosofia' },
+  { en: 'media', pt: 'na-midia' },
+  { en: 'support-the-artist', pt: 'apoie-o-artista' },
+  { en: 'privacy-policy', pt: 'politica-de-privacidade' },
+  { en: 'return-policy', pt: 'reembolso' },
+  { en: 'terms', pt: 'termos' },
+  { en: 'conduct', pt: 'regras-de-conduta' },
 ];
 
-// 🚫 LISTA NEGRA
+// Routes to exclude from sitemap (auth, admin, dynamic)
 const EXCLUDED_ROUTES = [
-  '/dashboard', '/my-account', '/minha-conta', '/painel',
-  '/login', '/register', '/reset-password', '/cart',
-  '/checkout', '/404', '/thank-you'
+  'dashboard', 'painel',
+  'my-account', 'minha-conta',
+  'cart', 'carrinho',
+  'checkout', 'finalizar-compra',
+  'tickets-checkout', 'finalizar-ingressos',
+  'order-complete', 'pedido-completo',
 ];
 
-// Helper: Garante barra no final
-const ensureSlash = (str) => str.endsWith('/') ? str : `${str}/`;
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+const ensureSlash = (str) => {
+  if (!str || str === '') return '/';
+  return str.endsWith('/') ? str : `${str}/`;
+};
+
+const shouldExclude = (path) => {
+  return EXCLUDED_ROUTES.some(excluded => path.includes(excluded)) || 
+         path.includes(':') ||  // Dynamic routes
+         path.includes('*');    // Wildcard routes
+};
+
+// ============================================================================
+// MAIN
+// ============================================================================
 
 try {
-  console.log('🗺️  Iniciando geração da Estrutura de Sitemaps v4.1...');
+  console.log('🗺️  Iniciando geração da Estrutura de Sitemaps v5.0 (UNIFIED)...');
 
-  // --- 1. CARREGAR ROUTEMAP EXISTENTE ---
-  const routeMapPath = path.resolve(__dirname, ROUTE_MAP_PATH);
-  let routeMap = {};
-
-  if (fs.existsSync(routeMapPath)) {
-    const routeMapRaw = fs.readFileSync(routeMapPath, 'utf-8');
-    routeMap = JSON.parse(routeMapRaw);
-  } else {
-    console.warn('⚠️  RouteMap não encontrado. Usando apenas rotas manuais.');
-  }
-
-  // --- 2. MERGE: Juntar RouteMap com Rotas Manuais ---
-  MANUAL_ROUTES.forEach(route => {
-    if (!routeMap[route.key]) {
-      routeMap[route.key] = { en: route.en, pt: route.pt };
-    }
-  });
-
-  // --- 3. GERAR XML ---
   const date = new Date().toISOString();
   let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
 
   let count = 0;
+  const processedUrls = new Set(); // Avoid duplicates
 
-  Object.keys(routeMap).forEach(key => {
-    if (key.includes(':')) return; // Pula rotas dinâmicas (:id)
+  ROUTES_FROM_CONFIG.forEach(route => {
+    // Handle array paths (multiple aliases)
+    const enPaths = Array.isArray(route.en) ? route.en : [route.en];
+    const ptPaths = Array.isArray(route.pt) ? route.pt : [route.pt];
 
-    const routeData = routeMap[key];
+    // Use first path as canonical
+    const enPath = enPaths[0];
+    const ptPath = ptPaths[0];
 
-    // Filtro de Segurança
-    const isExcluded = EXCLUDED_ROUTES.some(badRoute =>
-      routeData.en.includes(badRoute) || (routeData.pt && routeData.pt.includes(badRoute))
-    );
-    if (isExcluded) return;
+    // Skip excluded routes
+    if (shouldExclude(enPath) || shouldExclude(ptPath)) return;
 
-    // Padronização de URL (Com Trailing Slash)
-    const pathEn = ensureSlash(routeData.en === '/' ? '' : routeData.en);
-    const urlEn = routeData.en === '/' ? BASE_URL + '/' : `${BASE_URL}${pathEn}`;
+    // Build EN URL
+    const urlEn = enPath === '' 
+      ? `${BASE_URL}/` 
+      : `${BASE_URL}${ensureSlash('/' + enPath)}`;
 
-    if (routeData.en) {
-      // Se tiver PT
-      let xhtmlLinks = '';
-      if (routeData.pt) {
-        const finalUrlPt = routeData.pt.startsWith('/pt')
-          ? `${BASE_URL}${ensureSlash(routeData.pt)}`
-          : `${BASE_URL}/pt${ensureSlash(routeData.pt)}`;
+    // Build PT URL
+    const urlPt = ptPath === ''
+      ? `${BASE_URL}/pt/`
+      : `${BASE_URL}/pt${ensureSlash('/' + ptPath)}`;
 
-        xhtmlLinks = `
-    <xhtml:link rel="alternate" hreflang="pt" href="${finalUrlPt}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${urlEn}" />`;
-      }
+    // Skip if already processed
+    if (processedUrls.has(urlEn)) return;
+    processedUrls.add(urlEn);
+    processedUrls.add(urlPt);
 
-      pagesXml += `
+    // EN entry with PT alternate
+    pagesXml += `
   <url>
     <loc>${urlEn}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${urlEn === BASE_URL + '/' ? '1.0' : '0.8'}</priority>${xhtmlLinks}
+    <priority>${urlEn === `${BASE_URL}/` ? '1.0' : '0.8'}</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${urlEn}" />
+    <xhtml:link rel="alternate" hreflang="pt" href="${urlPt}" />
   </url>`;
-      count++;
+    count++;
 
-      // Entrada separada para PT (melhor indexação)
-      if (routeData.pt) {
-        const finalUrlPt = routeData.pt.startsWith('/pt')
-          ? `${BASE_URL}${ensureSlash(routeData.pt)}`
-          : `${BASE_URL}/pt${ensureSlash(routeData.pt)}`;
-
-        pagesXml += `
+    // PT entry with EN alternate
+    pagesXml += `
   <url>
-    <loc>${finalUrlPt}</loc>
+    <loc>${urlPt}</loc>
     <lastmod>${date}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pt" href="${urlPt}" />
     <xhtml:link rel="alternate" hreflang="en" href="${urlEn}" />
-    <xhtml:link rel="alternate" hreflang="pt" href="${finalUrlPt}" />
   </url>`;
-        count++;
-      }
-    }
+    count++;
   });
 
   pagesXml += `\n</urlset>`;
 
+  // Write pages sitemap
   const pagesPath = path.resolve(__dirname, PUBLIC_DIR, PAGES_SITEMAP);
   fs.writeFileSync(pagesPath, pagesXml);
   console.log(`✅ ${PAGES_SITEMAP} gerado com sucesso (${count} URLs).`);
 
-  // --- 4. GERAR SITEMAP INDEX ---
-  // ✅ Inclui sitemap de eventos SSR do WordPress (Zen BIT)
+  // Generate sitemap index
   let indexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
@@ -149,7 +158,11 @@ try {
 
   const indexPath = path.resolve(__dirname, PUBLIC_DIR, INDEX_SITEMAP);
   fs.writeFileSync(indexPath, indexXml);
-  console.log(`✅ ${INDEX_SITEMAP} (Index) atualizado com ${EVENTS_SITEMAP}.`);
+  console.log(`✅ ${INDEX_SITEMAP} (Index) atualizado.`);
+  console.log('');
+  console.log('📝 IMPORTANTE: Este script usa uma cópia manual das rotas do routes.ts');
+  console.log('   Quando adicionar novas rotas, atualize ROUTES_FROM_CONFIG neste arquivo.');
+  console.log('   Fonte da verdade: src/config/routes.ts');
 
 } catch (error) {
   console.error('❌ Erro:', error);

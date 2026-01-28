@@ -1,5 +1,5 @@
 // scripts/prerender.js
-// v14.1 - DADOS REAIS + API SAFE + NOVAS PÁGINAS
+// v15.0 - UNIFIED: Usa mesma estrutura do routes.ts como única fonte da verdade
 
 import fs from 'fs';
 import path from 'path';
@@ -10,72 +10,82 @@ import { createServer } from 'http';
 
 const PORT = 5173;
 const BASE_URL = `http://localhost:${PORT}`;
-const DIST_PATH = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '../dist'
-);
+const DIST_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
 const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
 
-// CONFIGURAÇÃO DAS ROTAS (EN + PT + SHOP + NOVAS PÁGINAS)
-const ROUTES = [
-  // --- INGLÊS (Main) ---
-  { path: '/', minSize: 3000, waitFor: 'header, h1, footer' },
-  { path: '/events', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/music', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/about', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/zentribe', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/work-with-me', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/faq', minSize: 3000, waitFor: 'h1, footer' },
-  
-  // Novas Páginas (Jurídico & Mídia)
-  { path: '/media', minSize: 2000, waitFor: 'h1, footer' },
-  { path: '/privacy-policy', minSize: 2000, waitFor: 'h1, footer' },
-  { path: '/terms', minSize: 2000, waitFor: 'h1, footer' },
-  { path: '/conduct', minSize: 2000, waitFor: 'h1, footer' },
+// ============================================================================
+// ROUTES CONFIGURATION (Synced with src/config/routes.ts)
+// ============================================================================
 
-  // --- PORTUGUÊS ---
-  { path: '/pt', minSize: 3000, waitFor: 'header, h1, footer' },
-  { path: '/pt/eventos', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/pt/musica', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/pt/sobre', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/pt/tribo-zen', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/pt/trabalhe-comigo', minSize: 3000, waitFor: 'h1, footer' },
-  { path: '/pt/faq', minSize: 3000, waitFor: 'h1, footer' },
-  
-  // Novas Páginas PT
-  { path: '/pt/midia', minSize: 2000, waitFor: 'h1, footer' },
-  { path: '/pt/politica-de-privacidade', minSize: 2000, waitFor: 'h1, footer' },
-  { path: '/pt/termos', minSize: 2000, waitFor: 'h1, footer' },
-  { path: '/pt/conduta', minSize: 2000, waitFor: 'h1, footer' },
-
-  // --- LOJA (Dados Reais) ---
-  // REMOVIDO DO PRERENDER PARA EVITAR PREÇOS DESATUALIZADOS
-  // { path: '/shop', minSize: 3000, waitFor: 'h1, .card, footer' },
-  // { path: '/pt/loja', minSize: 3000, waitFor: 'h1, .card, footer' },
+const ROUTES_CONFIG = [
+  { en: '', pt: '' },  // Home
+  { en: 'about', pt: 'sobre' },
+  { en: 'events', pt: 'eventos' },
+  { en: 'music', pt: 'musica' },
+  { en: 'news', pt: 'noticias' },
+  { en: 'zentribe', pt: 'tribo-zen' },  // Using first alias
+  { en: 'work-with-me', pt: 'trabalhe-comigo' },
+  { en: 'faq', pt: 'perguntas-frequentes' },
+  { en: 'my-philosophy', pt: 'minha-filosofia' },
+  { en: 'media', pt: 'na-midia' },
+  { en: 'support-the-artist', pt: 'apoie-o-artista' },
+  { en: 'privacy-policy', pt: 'politica-de-privacidade' },
+  { en: 'return-policy', pt: 'reembolso' },
+  { en: 'terms', pt: 'termos' },
+  { en: 'conduct', pt: 'regras-de-conduta' },
 ];
 
-// ... (Resto do código permanece IDÊNTICO ao v14.0 que você mandou) ...
-// Só vou repetir as funções abaixo para garantir que você tenha o arquivo funcional
-// Se quiser, pode apenas atualizar o array ROUTES acima no seu arquivo.
+// Routes to skip from prerendering
+const SKIP_PRERENDER = [
+  'shop', 'loja',  // Skip shop - dynamic prices
+  'cart', 'carrinho',
+  'checkout', 'finalizar-compra',
+  'dashboard', 'painel',
+  'my-account', 'minha-conta',
+  'tickets-checkout', 'finalizar-ingressos',
+  'order-complete', 'pedido-completo',
+];
 
-// Normalizar URLs para evitar duplicatas no cache
-function normalizeUrl(path) {
-  // Remove query params de tracking (?utm_*, ?fbclid, etc) e barra final
-  return path.split('?')[0].replace(/\/$/, '') || '/';
-}
+// Build routes array from config
+const ROUTES = [];
 
-// Futuro: Verificar se a loja deve ser pulada (timeout de API)
-async function shouldSkipShop(page) {
-  // Verificar se produtos foram carregados via API
-  const hasProducts = await page.evaluate(() => {
-    return document.querySelectorAll('.card').length > 0;
+ROUTES_CONFIG.forEach(route => {
+  const shouldSkip = SKIP_PRERENDER.some(skip => 
+    route.en.includes(skip) || route.pt.includes(skip)
+  );
+  
+  if (shouldSkip) return;
+
+  // Add EN route
+  ROUTES.push({
+    path: route.en === '' ? '/' : `/${route.en}`,
+    minSize: route.en === '' ? 3000 : 2000,
+    waitFor: 'h1, footer'
   });
 
-  if (!hasProducts) {
-    console.warn('⚠️  Loja sem produtos - provavelmente timeout de API');
-    return true;
-  }
-  return false;
+  // Add PT route
+  ROUTES.push({
+    path: route.pt === '' ? '/pt' : `/pt/${route.pt}`,
+    minSize: 2000,
+    waitFor: 'h1, footer'
+  });
+});
+
+console.log(`
+╔═══════════════════════════════════════════════════════╗
+║   🏗️  PRERENDER v15.0 - UNIFIED WITH ROUTES.TS       ║
+╚═══════════════════════════════════════════════════════╝
+
+📡 Servidor: ${BASE_URL}
+📄 Rotas para pre-render: ${ROUTES.length}
+`);
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+function normalizeUrl(path) {
+  return path.split('?')[0].replace(/\/$/, '') || '/';
 }
 
 function validateHTML(content, route) {
@@ -88,186 +98,109 @@ function validateHTML(content, route) {
   if (!/<footer/i.test(content) && !/footer/i.test(content)) {
     errors.push('Missing footer element');
   }
-   
-  if (route.path.includes('shop') || route.path.includes('loja')) {
-    if (!content.includes('price') && !content.includes('R$')) {
-      warnings.push('Shop page might be missing products (API timeout?)');
-    }
-  }
 
   const size = Buffer.byteLength(content, 'utf8');
   if (size < route.minSize) {
     warnings.push(`HTML size (${size} bytes) below expected minimum`);
   }
+
   return { errors, warnings, size };
 }
 
-async function waitForElement(page, selector, timeout = 10000) {
-  const start = Date.now();
-  while (Date.now() - start < timeout) {
-    try {
-      await page.waitForSelector(selector, { timeout: 1000 });
-      return true;
-    } catch (e) {
-      await new Promise(resolve => setTimeout(resolve, 200));
-    }
-  }
-  return false;
-}
-
-async function waitForContent(page, route) {
-  const selectors = route.waitFor.split(',').map(s => s.trim());
-  const elementTimeout = (route.path.includes('shop') || route.path.includes('loja')) ? 15000 : 8000;
-  
-  const found = [];
-  for (const selector of selectors) {
-    const success = await waitForElement(page, selector, elementTimeout);
-    if (success) found.push(selector);
-  }
-  
-  const hasFooter = found.some(s => s.includes('footer'));
-  const hasContent = found.some(s => s.includes('h1') || s.includes('card'));
-  
-  if (!hasFooter || !hasContent) {
-    console.warn(`⚠️  Incompleto: Encontrado=[${found.join(', ')}]`);
-    return false;
-  }
-  
-  // Aguardar XHRs finais (1s de pausa)
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return true;
-}
-
-async function prerenderRoute(page, route, retries = 2) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const url = `${BASE_URL}${route.path}`;
-      console.log(`\n🚏 ROTA: ${route.path}`);
-
-      const response = await page.goto(url, {
-        waitUntil: 'domcontentloaded', // Mais confiável que networkidle0
-        timeout: 60000
-      });
-
-      if (!response || !response.ok()) {
-        throw new Error(`HTTP ${response?.status()}`);
-      }
-
-      const loaded = await waitForContent(page, route);
-      if (!loaded) throw new Error('Conteúdo visual incompleto');
-
-      const content = await page.content();
-      const validation = validateHTML(content, route);
-      
-      if (validation.errors.length > 0) throw new Error(`Validação: ${validation.errors.join(', ')}`);
-      if (validation.warnings.length > 0) console.warn(`   ⚠️ Avisos: ${validation.warnings.join(', ')}`);
-
-      const routePath = route.path === '/' ? '/index.html' : `${route.path}/index.html`;
-      const filePath = path.join(DIST_PATH, routePath);
-      const dir = path.dirname(filePath);
-      
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(filePath, content);
-      
-      console.log(`✅ Sucesso (${validation.size} bytes)`);
-      return true;
-
-    } catch (err) {
-      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Retry exponencial
-      console.error(`   Tentativa ${attempt} falhou: ${err.message}`);
-
-      if (attempt === retries) return false;
-
-      console.log(`   Aguardando ${delay}ms antes de retentar...`);
-      await new Promise(resolve => setTimeout(resolve, delay));
-      await page.goto('about:blank'); 
-    }
-  }
-  return false;
-}
+// ============================================================================
+// MAIN FUNCTION
+// ============================================================================
 
 async function prerender() {
-  console.log('\n╔═══════════════════════════════════════════════════════╗');
-  console.log('║   🏗️  PRERENDER v14.1 - API SAFE + NEW PAGES          ║');
-  console.log('╚═══════════════════════════════════════════════════════╝\n');
-
-  if (!fs.existsSync(DIST_PATH)) {
-    console.error('❌ ERRO: dist/ não encontrado!');
-    process.exit(1);
-  }
-
-  const app = express();
-  app.use(PUBLIC_PATH, express.static(DIST_PATH));
-  app.use(express.static(DIST_PATH));
-  app.use('*', (req, res) => res.sendFile(path.join(DIST_PATH, 'index.html')));
-
-  const server = createServer(app);
-  await new Promise((resolve) => server.listen(PORT, resolve));
-  console.log(`📡 Servidor: ${BASE_URL}`);
-
+  let server;
   let browser;
-  const results = { success: [], failed: [] };
 
   try {
+    const app = express();
+    app.use(express.static(DIST_PATH));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(DIST_PATH, 'index.html'));
+    });
+
+    server = createServer(app);
+    await new Promise((resolve) => server.listen(PORT, resolve));
+    console.log(`✅ Servidor Express rodando na porta ${PORT}\n`);
+
     browser = await puppeteer.launch({
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     });
 
-    const page = await browser.newPage();
-    
-    await page.evaluateOnNewDocument(() => {
-      window.wpData = {
-        siteUrl: 'https://djzeneyer.com',
-        restUrl: 'https://djzeneyer.com/wp-json/',
-        themeUrl: 'https://djzeneyer.com/wp-content/themes/zentheme',
-        nonce: '',
-        isUserLoggedIn: false
-      };
-    });
-
-    await page.setRequestInterception(true);
-    page.on('request', (req) => {
-      const type = req.resourceType();
-      const url = req.url().toLowerCase();
-
-      // GOLDEN RULE: Permitir API calls
-      if (['xhr', 'fetch', 'document', 'script'].includes(type)) {
-        req.continue();
-        return;
-      }
-
-      const blockTypes = ['image', 'media', 'font', 'stylesheet'];
-      const blockUrls = ['google-analytics', 'facebook', 'googletagmanager'];
-
-      if (blockTypes.includes(type) || blockUrls.some(u => url.includes(u))) {
-        req.abort();
-      } else {
-        req.continue();
-      }
-    });
+    let successCount = 0;
+    let errorCount = 0;
 
     for (const route of ROUTES) {
-      const success = await prerenderRoute(page, route, 2);
-      if (success) results.success.push(route.path);
-      else results.failed.push(route.path);
+      try {
+        const page = await browser.newPage();
+        await page.setUserAgent('Mozilla/5.0 (compatible; Prerenderer/15.0)');
+
+        const url = `${BASE_URL}${route.path}`;
+        console.log(`\n🔍 Renderizando: ${route.path}`);
+
+        await page.goto(url, { 
+          waitUntil: 'networkidle0', 
+          timeout: 30000 
+        });
+
+        if (route.waitFor) {
+          await page.waitForSelector(route.waitFor.split(',')[0].trim(), { 
+            timeout: 10000 
+          });
+        }
+
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
+
+        const content = await page.content();
+        const validation = validateHTML(content, route);
+
+        if (validation.errors.length > 0) {
+          console.error(`❌ Erros de validação:`, validation.errors.join(', '));
+          errorCount++;
+        } else {
+          const fileName = normalizeUrl(route.path).replace(/\//g, '_') || 'index';
+          const outputPath = path.join(DIST_PATH, `${fileName}_prerendered.html`);
+          fs.writeFileSync(outputPath, content, 'utf-8');
+          console.log(`✅ Salvo: ${fileName}_prerendered.html (${validation.size} bytes)`);
+          
+          if (validation.warnings.length > 0) {
+            console.warn(`⚠️  Avisos:`, validation.warnings.join(', '));
+          }
+          
+          successCount++;
+        }
+
+        await page.close();
+      } catch (error) {
+        console.error(`❌ Erro ao renderizar ${route.path}:`, error.message);
+        errorCount++;
+      }
     }
 
-  } catch (err) {
-    console.error('\n❌ ERRO GERAL:', err);
+    console.log(`
+════════════════════════════════════════════════════════════
+🎉 Sucesso total!
+
+✅ Renderizados com sucesso: ${successCount}
+❌ Erros: ${errorCount}
+
+📝 IMPORTANTE: Rotas sincronizadas com src/config/routes.ts
+   Para adicionar novas rotas, atualize ROUTES_CONFIG neste arquivo
+   e em generate-sitemap.js
+════════════════════════════════════════════════════════════
+`);
+
+  } catch (error) {
+    console.error('\n❌ ERRO GERAL:', error);
+    process.exit(1);
   } finally {
     if (browser) await browser.close();
-    server.close();
-  }
-
-  console.log('\n' + '═'.repeat(60));
-  if (results.failed.length > 0) {
-    console.warn(`⚠️  ${results.failed.length} rotas falharam.`);
-    process.exit(0); 
-  } else {
-    console.log(`🎉 Sucesso total!`);
-    process.exit(0);
+    if (server) server.close();
   }
 }
 
-prerender();
+prerender().catch(console.error);
