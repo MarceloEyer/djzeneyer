@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
-import { getAlternateLinks, Language } from '../config/routes';
+import { getAlternateLinks, Language, normalizeLanguage } from '../config/routes';
 import { ensureTrailingSlash, HrefLang } from '../utils/seo';
 
 // ============================================================================
@@ -82,7 +82,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   const baseUrl = ARTIST.site.baseUrl;
   const { i18n } = useTranslation();
   const location = useLocation();
-  const currentLang = (i18n.language || 'en') as Language;
+  const currentLang = normalizeLanguage(i18n.language || 'en');
 
   // 1. Automatic Hreflang Generation
   const computedHrefLang = React.useMemo(() => {
@@ -140,11 +140,11 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
   const shouldNoIndex = data?.noindex || noindex;
 
-  // FIX: Determinação inteligente do idioma para a tag <html lang="">
-  // Se não foi passado via prop, tenta adivinhar pela URL
+  // Determinação inteligente do idioma para a tag <html lang="">
+  // Se não foi passado via prop, usa o idioma atual do i18n (SSOT)
   let currentLocale = locale;
   if (!currentLocale) {
-    currentLocale = finalUrl.includes('/pt/') ? 'pt_BR' : 'en_US';
+    currentLocale = currentLang === 'pt' ? 'pt_BR' : 'en_US';
   }
   const htmlLangAttribute = currentLocale === 'pt_BR' ? 'pt-BR' : 'en';
   const nameParts = ARTIST.identity.fullName.split(' ').filter(Boolean);
