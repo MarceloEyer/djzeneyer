@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "generate-sitemaps": "node scripts/generate-sitemap-fixed.js",
-    "prerender": "node scripts/prerender-fixed.js",
+    "prerender": "node scripts/prerender.js",
     "build": "tsc && vite build",
     "build:full": "npm run generate-sitemaps && npm run build && npm run prerender",
     "preview": "vite preview",
