@@ -1,0 +1,163 @@
+[
+  {
+    "key": "home",
+    "paths": { "en": "", "pt": "" },
+    "isIndex": true,
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "about",
+    "paths": { "en": "about", "pt": "sobre" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "events",
+    "paths": { "en": "events", "pt": "eventos" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "events-detail",
+    "paths": { "en": "events/:id", "pt": "eventos/:id" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "music",
+    "paths": { "en": "music", "pt": "musica" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "music-detail",
+    "paths": { "en": "music/:slug", "pt": "musica/:slug" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "news",
+    "paths": { "en": "news", "pt": "noticias" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "news-detail",
+    "paths": { "en": "news/:slug", "pt": "noticias/:slug" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "zentribe",
+    "paths": {
+      "en": ["zentribe", "tribe", "zen-tribe"],
+      "pt": ["tribo-zen", "tribo"]
+    },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "press-kit",
+    "paths": { "en": "work-with-me", "pt": "trabalhe-comigo" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "shop-product",
+    "paths": { "en": "shop/product/:slug", "pt": "loja/produto/:slug" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "shop",
+    "paths": { "en": "shop", "pt": "loja" },
+    "hasWildcard": true,
+    "sitemap": true,
+    "prerender": false
+  },
+  {
+    "key": "cart",
+    "paths": { "en": "cart", "pt": "carrinho" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "checkout",
+    "paths": { "en": "checkout", "pt": "finalizar-compra" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "tickets",
+    "paths": { "en": "tickets", "pt": "ingressos" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "tickets-checkout",
+    "paths": { "en": "tickets-checkout", "pt": "finalizar-ingressos" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "dashboard",
+    "paths": { "en": "dashboard", "pt": "painel" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "my-account",
+    "paths": { "en": "my-account", "pt": "minha-conta" },
+    "sitemap": false,
+    "prerender": false
+  },
+  {
+    "key": "faq",
+    "paths": { "en": "faq", "pt": "perguntas-frequentes" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "philosophy",
+    "paths": { "en": "my-philosophy", "pt": "minha-filosofia" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "media",
+    "paths": { "en": "media", "pt": "na-midia" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "support-artist",
+    "paths": { "en": "support-the-artist", "pt": "apoie-o-artista" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "privacy-policy",
+    "paths": { "en": "privacy-policy", "pt": "politica-de-privacidade" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "return-policy",
+    "paths": { "en": "return-policy", "pt": "reembolso" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "terms",
+    "paths": { "en": "terms", "pt": "termos" },
+    "sitemap": true,
+    "prerender": true
+  },
+  {
+    "key": "conduct",
+    "paths": { "en": "conduct", "pt": "regras-de-conduta" },
+    "sitemap": true,
+    "prerender": true
+  }
+]

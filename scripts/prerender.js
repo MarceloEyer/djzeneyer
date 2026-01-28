@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
 import express from 'express';
 import { createServer } from 'http';
+import routesData from '../src/config/routes.data.json' assert { type: 'json' };
 
 const PORT = 5173;
 const BASE_URL = `http://localhost:${PORT}`;
@@ -14,58 +15,35 @@ const DIST_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
 
 // ============================================================================
-// ROUTES CONFIGURATION (Synced with src/config/routes.ts)
+// ROUTES CONFIGURATION (Single Source of Truth)
 // ============================================================================
 
-const ROUTES_CONFIG = [
-  { en: '', pt: '' },  // Home
-  { en: 'about', pt: 'sobre' },
-  { en: 'events', pt: 'eventos' },
-  { en: 'music', pt: 'musica' },
-  { en: 'news', pt: 'noticias' },
-  { en: 'zentribe', pt: 'tribo-zen' },  // Using first alias
-  { en: 'work-with-me', pt: 'trabalhe-comigo' },
-  { en: 'faq', pt: 'perguntas-frequentes' },
-  { en: 'my-philosophy', pt: 'minha-filosofia' },
-  { en: 'media', pt: 'na-midia' },
-  { en: 'support-the-artist', pt: 'apoie-o-artista' },
-  { en: 'privacy-policy', pt: 'politica-de-privacidade' },
-  { en: 'return-policy', pt: 'reembolso' },
-  { en: 'terms', pt: 'termos' },
-  { en: 'conduct', pt: 'regras-de-conduta' },
-];
-
-// Routes to skip from prerendering
-const SKIP_PRERENDER = [
-  'shop', 'loja',  // Skip shop - dynamic prices
-  'cart', 'carrinho',
-  'checkout', 'finalizar-compra',
-  'dashboard', 'painel',
-  'my-account', 'minha-conta',
-  'tickets-checkout', 'finalizar-ingressos',
-  'order-complete', 'pedido-completo',
-];
+const ROUTES_CONFIG = routesData;
 
 // Build routes array from config
 const ROUTES = [];
 
 ROUTES_CONFIG.forEach(route => {
-  const shouldSkip = SKIP_PRERENDER.some(skip => 
-    route.en.includes(skip) || route.pt.includes(skip)
-  );
-  
-  if (shouldSkip) return;
+  if (route.prerender === false) return;
+
+  const enPaths = Array.isArray(route.paths.en) ? route.paths.en : [route.paths.en];
+  const ptPaths = Array.isArray(route.paths.pt) ? route.paths.pt : [route.paths.pt];
+  const enPath = enPaths[0];
+  const ptPath = ptPaths[0];
+
+  if (enPath.includes(':') || enPath.includes('*')) return;
+  if (ptPath.includes(':') || ptPath.includes('*')) return;
 
   // Add EN route
   ROUTES.push({
-    path: route.en === '' ? '/' : `/${route.en}`,
-    minSize: route.en === '' ? 3000 : 2000,
+    path: enPath === '' ? '/' : `/${enPath}`,
+    minSize: enPath === '' ? 3000 : 2000,
     waitFor: 'h1, footer'
   });
 
   // Add PT route
   ROUTES.push({
-    path: route.pt === '' ? '/pt' : `/pt/${route.pt}`,
+    path: ptPath === '' ? '/pt' : `/pt/${ptPath}`,
     minSize: 2000,
     waitFor: 'h1, footer'
   });
@@ -142,9 +120,9 @@ async function prerender() {
         const url = `${BASE_URL}${route.path}`;
         console.log(`\n🔍 Renderizando: ${route.path}`);
 
-        await page.goto(url, { 
-          waitUntil: 'networkidle0', 
-          timeout: 30000 
+        await page.goto(url, {
+          waitUntil: 'networkidle2',
+          timeout: 30000
         });
 
         if (route.waitFor) {
@@ -188,9 +166,7 @@ async function prerender() {
 ✅ Renderizados com sucesso: ${successCount}
 ❌ Erros: ${errorCount}
 
-📝 IMPORTANTE: Rotas sincronizadas com src/config/routes.ts
-   Para adicionar novas rotas, atualize ROUTES_CONFIG neste arquivo
-   e em generate-sitemap.js
+📝 IMPORTANTE: Fonte da verdade única em src/config/routes.data.json
 ════════════════════════════════════════════════════════════
 `);
 
