@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 /**
  * SSR PRERENDER v18.7 - SHELL ONLY (Offline Safe)
- * * OBJETIVO: Gerar a estrutura de arquivos (index.html em cada pasta)
- * sem depender de chamadas de API externas.
- * * Lógica:
- * 1. Carrega a página.
- * 2. Espera o React montar (#root).
- * 3. Salva imediatamente (App Shell), confiando que o cliente buscará os dados.
+ * * OBJECTIVE: Generate the file structure (e.g., /about/index.html) to prevent 404s.
+ * CONSTRAINT: No API access during build.
+ * LOGIC: Load page -> Wait for React mount (#root) -> Save immediately.
  */
 
 import { spawn } from 'child_process';
@@ -19,35 +16,34 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // =============================
-// 1. CARREGAR ROTAS (SSOT)
+// 1. LOAD ROUTES (SSOT)
 // =============================
 let routesList = [];
 const ROUTES_CONFIG_PATH = join(__dirname, 'routes-config.json');
 
 try {
     if (!existsSync(ROUTES_CONFIG_PATH)) {
-        // Fallback de segurança caso o JSON não exista
-        console.warn('⚠️ JSON de rotas não encontrado. Usando lista mínima.');
+        console.warn('⚠️ Routes JSON not found. Using minimal fallback.');
         routesList = ['/', '/about', '/shop'];
     } else {
         const routesConfig = JSON.parse(readFileSync(ROUTES_CONFIG_PATH, 'utf8'));
         routesList = routesConfig.routes;
-        console.log(`📋 SSOT: ${routesList.length} rotas carregadas para geração de estrutura.`);
+        console.log(`📋 SSOT: Loaded ${routesList.length} routes for structure generation.`);
     }
 } catch (e) {
-    console.error('❌ Erro ao ler rotas. Continuando com home apenas.');
+    console.error('❌ Error reading routes. Proceeding with home only.');
     routesList = ['/'];
 }
 
 // =============================
-// CONFIGURAÇÃO
+// CONFIGURATION
 // =============================
 const CONFIG = {
   serverBase: 'http://localhost:5173',
   entryPoint: 'http://localhost:5173',
   distDir: join(process.cwd(), 'dist'),
   timeout: 60000, 
-  // Espera apenas o container principal, não o conteúdo da API
+  // Wait only for the main container, NOT specific content (h1, article)
   waitForSelector: '#root', 
   routes: routesList
 };
@@ -75,9 +71,8 @@ let viteProcess = null;
 
 function startDevServer() {
   return new Promise(async (resolve, reject) => {
-    console.log('🚀 Iniciando servidor Vite (Preview)...');
+    console.log('🚀 Starting Vite Server (Preview)...');
     
-    // Herda stdio para debug se necessário
     viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
       stdio: 'inherit',
@@ -86,22 +81,22 @@ function startDevServer() {
 
     viteProcess.on('error', (err) => reject(err));
     
-    console.log(`⏳ Aguardando servidor...`);
+    console.log(`⏳ Waiting for server...`);
     const isReady = await checkConnection(CONFIG.serverBase, 60000);
 
     if (isReady) {
-      console.log('\n✅ Servidor Online.');
+      console.log('\n✅ Server Online.');
       resolve();
     } else {
       stopDevServer();
-      reject(new Error(`Timeout ao conectar no Vite.`));
+      reject(new Error(`Timeout connecting to Vite.`));
     }
   });
 }
 
 function stopDevServer() {
   if (viteProcess) {
-    console.log('🛑 Parando servidor...');
+    console.log('🛑 Stopping server...');
     viteProcess.kill();
     viteProcess = null;
   }
@@ -119,7 +114,7 @@ async function prerender() {
     });
 
     const page = await browser.newPage();
-    // User Agent genérico para não bloquear nada
+    // Generic User Agent to avoid blocking
     await page.setUserAgent('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
 
     let successCount = 0;
@@ -128,7 +123,7 @@ async function prerender() {
       const routePath = route.startsWith('/') ? route : `/${route}`;
       const url = `${CONFIG.entryPoint}${routePath}`;
       
-      // Definição de Caminhos
+      // Path Definition
       let outputPath;
       if (route === '/' || route === '') {
         outputPath = join(CONFIG.distDir, 'index.html');
@@ -140,43 +135,42 @@ async function prerender() {
       }
 
       try {
-        // Navegação rápida: domcontentloaded é suficiente para o Shell
+        // Fast navigation: domcontentloaded is enough for Shell
         await page.goto(url, { 
           waitUntil: 'domcontentloaded', 
           timeout: 30000 
         });
 
-        // Espera mínima para o React montar o básico (Header/Footer)
+        // Minimal wait for React to mount basic structure (Header/Footer)
         try {
             await page.waitForSelector('#root', { timeout: 5000 });
-            await wait(1000); // Pequena pausa para injeção de CSS/JS
+            await wait(1000); // Small pause for CSS/JS injection
         } catch (e) {
-            // Se falhar, salva assim mesmo (melhor um HTML vazio que 404)
+            // If it fails, save anyway (better empty HTML than 404)
         }
 
         const html = await page.content();
         
-        // Injeta meta tag para confirmar prerender
+        // Inject meta tag to confirm prerender
         const finalHtml = html.replace('<head>', `<head>\n  <meta name="prerender-generated" content="true">`);
         
         writeFileSync(outputPath, finalHtml, 'utf8');
         
-        // Log simplificado
-        console.log(`✅ Gerado: ${route} (${finalHtml.length} bytes)`);
+        console.log(`✅ Generated: ${route} (${finalHtml.length} bytes)`);
         successCount++;
 
       } catch (error) {
-        console.error(`❌ Erro em ${route}: ${error.message}`);
-        // Não falha o build, apenas loga o erro
+        console.error(`❌ Error on ${route}: ${error.message}`);
+        // Do not fail build, just log error
       }
     }
 
     console.log('\n╔═══════════════════════════════════════════════════════╗');
-    console.log(`║  ✅ CONCLUSÃO: ${successCount}/${CONFIG.routes.length} arquivos gerados.`);
+    console.log(`║  ✅ COMPLETED: ${successCount}/${CONFIG.routes.length} files generated.`);
     console.log('╚═══════════════════════════════════════════════════════╝\n');
 
   } catch (error) {
-    console.error('\n❌ ERRO FATAL:', error);
+    console.error('\n❌ FATAL ERROR:', error);
     process.exit(1);
   } finally {
     if (browser) try { await browser.close(); } catch(e) {}
