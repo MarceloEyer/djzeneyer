@@ -16,6 +16,17 @@ interface WPPost {
   featured_image_src?: string;
   featured_image_src_full?: string;
   author_name?: string;
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{
+      source_url?: string;
+      media_details?: {
+        sizes?: {
+          medium_large?: { source_url?: string };
+          full?: { source_url?: string };
+        };
+      };
+    }>;
+  };
 }
 
 // ============================================================================
@@ -32,6 +43,29 @@ const formatDate = (dateString: string) => {
 const stripHtml = (html: string) => {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   return doc.body.textContent || "";
+};
+
+const getEmbeddedImage = (post: WPPost, size: 'full' | 'medium') => {
+  const media = post._embedded?.['wp:featuredmedia']?.[0];
+  if (!media) return undefined;
+  if (size === 'full') {
+    return (
+      media.media_details?.sizes?.full?.source_url ||
+      media.source_url
+    );
+  }
+  return (
+    media.media_details?.sizes?.medium_large?.source_url ||
+    media.media_details?.sizes?.full?.source_url ||
+    media.source_url
+  );
+};
+
+const getPostImage = (post: WPPost, size: 'full' | 'medium') => {
+  if (size === 'full') {
+    return post.featured_image_src_full || post.featured_image_src || getEmbeddedImage(post, 'full');
+  }
+  return post.featured_image_src || post.featured_image_src_full || getEmbeddedImage(post, 'medium');
 };
 
 // ============================================================================
@@ -112,7 +146,7 @@ const NewsPage: React.FC = () => {
                   <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                      {/* Imagem de Fundo com Zoom suave no Hover */}
                      <img 
-                       src={featuredPost.featured_image_src_full || '/images/hero-background.webp'}
+                       src={getPostImage(featuredPost, 'full') || '/images/hero-background.webp'}
                        alt={featuredPost.title.rendered}
                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                      />
@@ -169,7 +203,7 @@ const NewsPage: React.FC = () => {
                     {/* Imagem do Card */}
                     <Link to={`/news/${post.slug}`} className="block h-56 overflow-hidden relative">
                       <img 
-                        src={post.featured_image_src || '/images/hero-background.webp'}
+                        src={getPostImage(post, 'medium') || '/images/hero-background.webp'}
                         alt={post.title.rendered}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
