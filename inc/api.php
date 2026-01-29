@@ -163,6 +163,7 @@ function djz_get_products($request) {
         }
 
         foreach ($product_objects as $product) {
+            $id = $product->get_id(); // Fix: Update ID for current loop iteration
             $images = [];
             $img_ids = $product->get_gallery_image_ids();
             
@@ -211,7 +212,7 @@ function djz_get_products($request) {
                 'stock_status' => $product->get_stock_status(),
                 'images' => $images,
                 'short_description' => $product->get_short_description(),
-                'description' => $product->get_description(),
+                'description' => !empty($slug) ? $product->get_description() : '', // Optimization: Only return description for single view
                 'permalink' => get_permalink($id),
                 'categories' => array_map(function($term) {
                     return [
