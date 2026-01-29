@@ -13,6 +13,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // ============================================================================
 // 1. INTERFACES (Type Safety)
@@ -107,6 +108,7 @@ const HomePage: React.FC = () => {
   const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
   
   const isPortuguese = i18n.language?.startsWith('pt');
+  const currentLang = normalizeLanguage(i18n.language);
   const currentPath = '/';
   const currentUrl = ARTIST.site.baseUrl;
 
@@ -290,7 +292,7 @@ const HomePage: React.FC = () => {
                 <span>{isPortuguese ? 'Ouvir no SoundCloud' : 'Listen on SoundCloud'}</span>
               </a>
               <Link
-                to={isPortuguese ? '/pt/contrate' : '/work-with-me'}
+                to={getLocalizedRoute('work-with-me', currentLang)}
                 className="btn btn-outline btn-lg flex items-center gap-2 backdrop-blur-sm"
                 aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
@@ -343,7 +345,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-              <Link to="/events/" className="btn btn-primary btn-lg flex items-center gap-2">
+              <Link to={getLocalizedRoute('events', currentLang)} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
                 <span>{isPortuguese ? 'Agenda completa' : 'Full schedule'}</span>
               </Link>
@@ -393,7 +395,7 @@ const HomePage: React.FC = () => {
                 <Download size={20} className="text-primary" /> {isPortuguese ? 'Imprensa & Mídia' : 'Press & Media'}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Acesse fotos, bio e assets.' : 'Access photos, bio and assets.'}</p>
-              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+              <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {isPortuguese ? 'BAIXAR PRESS KIT' : 'DOWNLOAD PRESS KIT'} →
               </Link>
             </motion.div>
@@ -402,7 +404,7 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} className="text-green-500" /> {isPortuguese ? 'Contratantes' : 'Bookers'}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Leve o "Zen Experience" para o seu evento.' : 'Bring the "Zen Experience" to your event.'}</p>
-              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
+              <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {isPortuguese ? 'ORÇAMENTO' : 'REQUEST BOOKING'} →
               </Link>
             </motion.div>
@@ -436,7 +438,7 @@ const HomePage: React.FC = () => {
             {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-            <Link to="/zentribe/" className="btn btn-primary btn-lg min-w-[200px]">
+            <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">
               {isPortuguese ? 'Entrar na Tribo' : 'Join the Tribe'}
             </Link>
           </motion.div>
