@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v18.1 - FINAL FIXED
- * Alterações: Adicionadas rotas faltantes (/music, /zentribe) que causavam falha na validação.
+ * SSR PRERENDER v18.4 - SSOT + CONTENT AWARE
+ * 1. Single Source of Truth: Lê estritamente de scripts/routes-config.json
+ * 2. Content Aware: Espera seletores reais (h1, main) para evitar arquivos vazios
  */
 
 import { spawn } from 'child_process';
@@ -13,25 +14,41 @@ import puppeteer from 'puppeteer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// =============================
+// 1. CARREGAR ROTAS (SSOT)
+// =============================
+let routesList = [];
 const ROUTES_CONFIG_PATH = join(__dirname, 'routes-config.json');
-const routesConfig = JSON.parse(readFileSync(ROUTES_CONFIG_PATH, 'utf8'));
+
+try {
+    if (!existsSync(ROUTES_CONFIG_PATH)) {
+        throw new Error(`Arquivo de rotas não encontrado em: ${ROUTES_CONFIG_PATH}`);
+    }
+    const routesConfig = JSON.parse(readFileSync(ROUTES_CONFIG_PATH, 'utf8'));
+    routesList = routesConfig.routes;
+    console.log(`📋 Carregadas ${routesList.length} rotas da SSOT.`);
+} catch (e) {
+    console.error('❌ Erro crítico: Não foi possível carregar a configuração de rotas.');
+    console.error(e.message);
+    process.exit(1); // Falha se não tiver a fonte da verdade
+}
 
 // =============================
 // CONFIGURAÇÃO
 // =============================
 const CONFIG = {
   serverBase: 'http://localhost:5173',
-  entryPoint: 'http://localhost:5173', // Ajuste se houver subpasta no WP
+  entryPoint: 'http://localhost:5173',
   distDir: join(process.cwd(), 'dist'),
-  timeout: 60000, 
-  waitForSelector: '#root',
+  timeout: 90000, // 90s para garantir
+  // Seletores para confirmar que o conteúdo carregou (não apenas o #root vazio)
+  waitForSelectors: ['h1', 'main', '.page-content', 'article', '.hero'], 
   
-  // LISTA DE ROTAS ATUALIZADA (SSOT via JSON)
-  routes: routesConfig.routes
+  routes: routesList
 };
 
 console.log('╔═══════════════════════════════════════════════════════╗');
-console.log('║   🏗️  PRERENDER v18.1 - FINAL FIXED                   ║');
+console.log('║   🏗️  PRERENDER v18.4 - SSOT + CONTENT AWARE          ║');
 console.log('╚═══════════════════════════════════════════════════════╝');
 console.log(`📡 Server: ${CONFIG.entryPoint}`);
 console.log(`📂 Output: ${CONFIG.distDir}\n`);
@@ -47,9 +64,7 @@ async function checkConnection(url, timeout) {
     try {
       const res = await fetch(url);
       if (res.ok || res.status === 404) return true;
-    } catch (e) {
-      // Falha na conexão, tenta de novo
-    }
+    } catch (e) {}
     await wait(1000);
     process.stdout.write('.');
   }
@@ -74,7 +89,7 @@ function startDevServer() {
     viteProcess.on('error', (err) => reject(err));
     
     console.log(`⏳ Aguardando conexão em ${CONFIG.serverBase} (Timeout: 60s)...`);
-    const isReady = await checkConnection(CONFIG.serverBase, CONFIG.timeout);
+    const isReady = await checkConnection(CONFIG.serverBase, 60000);
 
     if (isReady) {
       console.log('\n✅ Servidor respondeu! Conexão estabelecida.');
@@ -128,7 +143,6 @@ async function prerender() {
       const cleanEntryPoint = CONFIG.entryPoint.endsWith('/') ? CONFIG.entryPoint.slice(0, -1) : CONFIG.entryPoint;
       const url = `${cleanEntryPoint}${routePath}`;
       
-      // Lógica de Pastas
       let outputPath;
       if (route === '/' || route === '') {
         outputPath = join(CONFIG.distDir, 'index.html');
@@ -144,22 +158,31 @@ async function prerender() {
       try {
         console.log(`📄 Rendering: ${route}`);
         
+        // Navegar
         await page.goto(url, { 
-          waitUntil: 'networkidle0',
+          waitUntil: 'domcontentloaded',
           timeout: CONFIG.timeout 
         });
 
+        // Espera Inteligente por Conteúdo (Não só #root vazio)
         try {
-            await page.waitForSelector(CONFIG.waitForSelector, { timeout: 10000 });
+            // Tenta achar qualquer um dos seletores de conteúdo real
+            await page.waitForFunction(
+                (selectors) => document.querySelector(selectors),
+                { timeout: 15000 }, // 15s para hidratação
+                CONFIG.waitForSelectors.join(',')
+            );
         } catch (e) {
-            console.warn(`   ⚠️ Warning: Selector ${CONFIG.waitForSelector} not found`);
+            console.warn(`   ⚠️ Warning: Nenhum conteúdo detectado para ${route} (pode gerar arquivo pequeno)`);
         }
 
-        // Scroll Hack
+        // Scroll Hack para lazy loading
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await wait(200);
-        await page.evaluate(() => window.scrollTo(0, 0));
         await wait(500);
+        await page.evaluate(() => window.scrollTo(0, 0));
+        
+        // Pausa final para estabilização
+        await wait(2000);
 
         const html = await page.content();
         
@@ -171,7 +194,12 @@ async function prerender() {
         writeFileSync(outputPath, finalHtml, 'utf8');
         
         const displayPath = route === '/' ? 'index.html' : `${route.slice(1)}/index.html`;
-        console.log(`   ✅ Saved: ${displayPath}`);
+        console.log(`   ✅ Saved: ${displayPath} (${finalHtml.length} bytes)`);
+        
+        if (finalHtml.length < 1000) {
+             console.warn(`   ⚠️ ALERTA: Arquivo muito pequeno! Verifique a renderização.`);
+        }
+
         successCount++;
 
       } catch (error) {
