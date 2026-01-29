@@ -77,38 +77,38 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [getCart]);
 
   const clearCart = useCallback(async () => {
-    if (!cart?.items?.length) return;
-
     setLoading(true);
+    // Uses the dedicated WooCommerce Store API endpoint to clear the cart
+    const apiUrl = buildApiUrl('wc/store/v1/cart/clear');
+
     try {
-      const promises = cart.items.map(async (item: any) => {
-        if (!item.key) return;
-
-        const apiUrl = buildApiUrl(`wc/store/v1/cart/items/${item.key}`);
-        const response = await fetch(apiUrl, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-WP-Nonce': (window as any).wpData?.nonce || ''
-          },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-           const data = await response.json();
-           console.warn(`[CartContext] Failed to remove item ${item.key}:`, data.message);
-        }
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': (window as any).wpData?.nonce || ''
+        },
+        credentials: 'include',
       });
 
-      await Promise.all(promises);
-      await getCart();
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to clear cart');
+      }
+
+      // Update cart state after clearing
+      // The API returns the new empty cart state
+      const responseData = await response.json();
+      setCart(responseData);
 
     } catch (err: any) {
       console.error("[CartContext] Error clearing cart:", err);
+      // Fallback: try to refresh cart from server just in case
+      await getCart();
     } finally {
       setLoading(false);
     }
-  }, [cart, getCart]);
+  }, [getCart]);
 
   const value = { cart, getCart, removeItem, clearCart, loading };
 
