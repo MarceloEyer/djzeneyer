@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { CreditCard, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
@@ -77,10 +78,8 @@ const CheckoutPage: React.FC = () => {
           <p className="text-white/70 mb-8">
             {t('checkout_success_desc', 'Thank you for your purchase. You will receive an email confirmation shortly.')}
           </p>
-          <a href="/shop" className="btn btn-primary w-full">
-            {t('checkout_back_shop', 'Return to Shop')}
-          </a>
-        </motion.div>
+            <Link to="/shop" className="btn btn-primary w-full">            {t('checkout_back_shop', 'Return to Shop')}
+            </Link>        </motion.div>
       </div>
     );
   }
