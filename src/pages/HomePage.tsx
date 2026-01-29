@@ -303,7 +303,11 @@ const HomePage: React.FC = () => {
               <Trans
                 i18nKey="home_hero_cta_text"
                 components={[
-                  <Link key="events-link" to="/events/" className="text-primary hover:text-primary/80 underline underline-offset-4" />,
+                  <Link
+                    key="events-link"
+                    to={isPortuguese ? '/pt/eventos/' : '/events/'}
+                    className="text-primary hover:text-primary/80 underline underline-offset-4"
+                  />,
                   <Link key="work-with-me-link" to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="text-primary hover:text-primary/80 underline underline-offset-4" />
                 ]}
               />
