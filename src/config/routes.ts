@@ -262,6 +262,44 @@ export const buildFullPath = (path: string, lang: Language): string => {
 };
 
 /**
+ * Normaliza chave de rota para comparação interna
+ */
+export const normalizeRouteKey = (key: string): string => {
+  if (!key) return '';
+  const trimmed = key.trim();
+  if (!trimmed || trimmed === '/' || trimmed === '/pt') return '';
+
+  return trimmed
+    .replace(/^\/pt(\/|$)/, '/')
+    .replace(/^\//, '')
+    .replace(/\/$/, '');
+};
+
+/**
+ * Obtém o caminho localizado para uma rota, a partir de uma chave em inglês
+ */
+export const getLocalizedRoute = (key: string, lang: Language): string => {
+  const normalizedKey = normalizeRouteKey(key);
+  if (!normalizedKey) return buildFullPath('', lang);
+
+  const route = ROUTES_CONFIG.find(routeConfig => {
+    const enPaths = getLocalizedPaths(routeConfig, 'en');
+    return enPaths.some(path => path === normalizedKey);
+  });
+
+  if (!route) {
+    return buildFullPath(normalizedKey, lang);
+  }
+
+  const enPaths = getLocalizedPaths(route, 'en');
+  const localizedPaths = getLocalizedPaths(route, lang);
+  const matchedIndex = enPaths.findIndex(path => path === normalizedKey);
+  const localizedPath = localizedPaths[Math.max(0, Math.min(matchedIndex, localizedPaths.length - 1))] ?? localizedPaths[0];
+
+  return buildFullPath(localizedPath, lang);
+};
+
+/**
  * Obtém todas as rotas configuradas para um idioma
  */
 export const getRoutesForLanguage = (lang: Language) => {
