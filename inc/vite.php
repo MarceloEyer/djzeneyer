@@ -37,6 +37,11 @@ class DJZ_Vite_Loader {
             if (file_exists($path)) {
                 $mtime = filemtime($path);
 
+                // Defensive handling if filemtime fails
+                if ($mtime === false) {
+                    $mtime = 0;
+                }
+
                 // Check cache validity (Path match + Mtime match)
                 if (
                     is_array($cached) &&
@@ -61,6 +66,8 @@ class DJZ_Vite_Loader {
                             'mtime' => $mtime,
                             'data'  => $data
                         ], 7 * DAY_IN_SECONDS);
+                    } else {
+                        error_log('DJZ Vite: JSON Decode Error in ' . $path . ': ' . json_last_error_msg());
                     }
                 }
 
