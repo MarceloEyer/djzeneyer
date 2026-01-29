@@ -30,24 +30,27 @@ class DJZ_Vite_Loader {
             $this->dist_path . '/manifest.json'
         ];
 
-        $cache_key = 'djz_vite_manifest_v2';
-        $cached    = get_transient($cache_key);
-
         foreach ($paths as $path) {
             if (file_exists($path)) {
+                $cache_key = 'djz_vite_manifest_v2_' . md5($path);
+                $cached    = get_transient($cache_key);
+
+                // Check cache validity (Mtime check to be safe, though transient logic should handle hit/miss)
+                // However, we need to compare current file mtime to cached mtime to invalidate on deployment.
+                // To do this without reading the file content, we normally need filemtime.
+                // But the instruction says: "Race Condition... Ler mtime APÓS ler o conteúdo".
+                // If we read content every time to avoid race condition, we defeat the purpose of caching (IO reduction).
+                // Let's optimize: check mtime first for cache hit. If hit, good.
+                // If miss, read content, then read mtime again to store.
+
                 $mtime = filemtime($path);
+                if ($mtime === false) $mtime = 0;
 
-                // Defensive handling if filemtime fails
-                if ($mtime === false) {
-                    $mtime = 0;
-                }
-
-                // Check cache validity (Path match + Mtime match)
                 if (
                     is_array($cached) &&
-                    isset($cached['path'], $cached['mtime'], $cached['data']) &&
-                    $cached['path'] === $path &&
-                    $cached['mtime'] === $mtime
+                    isset($cached['mtime'], $cached['data']) &&
+                    $cached['mtime'] === $mtime &&
+                    $mtime !== 0 // Force refresh if mtime is broken/0 to be safe or rely on short cache
                 ) {
                     $this->manifest = $cached['data'];
                     return;
@@ -57,18 +60,32 @@ class DJZ_Vite_Loader {
                 $content = file_get_contents($path);
 
                 if ($content !== false) {
+                    // Re-read mtime after content read to reduce race condition window for the stored cache entry
+                    $mtime_post_read = filemtime($path);
+                    if ($mtime_post_read === false) $mtime_post_read = 0;
+
                     $data = json_decode($content, true);
 
                     if (json_last_error() === JSON_ERROR_NONE) {
                         $this->manifest = $data;
+
+                        // Timeout shorter if mtime failed
+                        $cache_duration = ($mtime_post_read === 0) ? 5 * MINUTE_IN_SECONDS : 7 * DAY_IN_SECONDS;
+
                         set_transient($cache_key, [
                             'path'  => $path,
-                            'mtime' => $mtime,
+                            'mtime' => $mtime_post_read,
                             'data'  => $data
-                        ], 7 * DAY_IN_SECONDS);
+                        ], $cache_duration);
                     } else {
                         error_log('DJZ Vite: JSON Decode Error in ' . $path . ': ' . json_last_error_msg());
+                        // File exists but is invalid. Stop trying other paths?
+                        // If one exists, it's the one.
+                        return;
                     }
+                } else {
+                    error_log('DJZ Vite: Failed to read manifest file: ' . $path);
+                    return;
                 }
 
                 return;
