@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v17.1 - ROBUST POLLING
+ * SSR PRERENDER v17.0 - ENVIRONMENT-SAFE
  * Gera versões HTML estáticas para bots (Googlebot, etc)
- * Correção: Timeout de CI e detecção de servidor via HTTP Ping
  */
 
 import { spawn } from 'child_process';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
@@ -18,10 +17,9 @@ const __dirname = dirname(__filename);
 // CONFIGURAÇÃO
 // =============================
 const CONFIG = {
-  server: 'http://localhost:5173', // Base URL para check de conexão
-  entryPoint: 'http://localhost:5173/wp-content/themes/zentheme/dist', // URL real das rotas
+  server: 'http://localhost:5173/wp-content/themes/zentheme/dist',
   distDir: join(process.cwd(), 'dist'),
-  timeout: 60000, // Aumentado para 60s (CI Friendly)
+  timeout: 30000,
   waitForSelector: '#root',
   
   routes: [
@@ -53,32 +51,11 @@ const CONFIG = {
 };
 
 console.log('╔═══════════════════════════════════════════════════════╗');
-console.log('║   🏗️  PRERENDER v17.1 - ROBUST POLLING                ║');
+console.log('║   🏗️  PRERENDER v17.0 - ENVIRONMENT-SAFE            ║');
 console.log('╚═══════════════════════════════════════════════════════╝');
-console.log(`📡 Server Entry: ${CONFIG.entryPoint}`);
+console.log(`📡 Server: ${CONFIG.server}`);
 console.log(`📄 Routes: ${CONFIG.routes.length}`);
 console.log(`📂 Output: ${CONFIG.distDir}\n`);
-
-// =============================
-// HELPER: WAIT & CHECK CONNECTION
-// =============================
-const wait = (ms) => new Promise(r => setTimeout(r, ms));
-
-async function checkConnection(url, timeout) {
-  const start = Date.now();
-  while (Date.now() - start < timeout) {
-    try {
-      // Tenta conectar. Se der 200 ou 404, o servidor existe.
-      const res = await fetch(url);
-      if (res.ok || res.status === 404) return true;
-    } catch (e) {
-      // ECONNREFUSED = Servidor ainda não subiu. Espera.
-    }
-    await wait(1000);
-    process.stdout.write('.'); // Feedback visual
-  }
-  return false;
-}
 
 // =============================
 // SERVIDOR VITE
@@ -86,29 +63,36 @@ async function checkConnection(url, timeout) {
 let viteProcess = null;
 
 function startDevServer() {
-  return new Promise(async (resolve, reject) => {
-    console.log('🚀 Starting dev server (Vite Preview)...');
+  return new Promise((resolve, reject) => {
+    console.log('🚀 Starting dev server...');
     
-    // 1. Inicia o processo com output herdado (para ver erros no CI)
     viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
-      stdio: 'inherit', 
-      env: { ...process.env, FORCE_COLOR: '1' }
+      stdio: ['ignore', 'pipe', 'pipe']
     });
 
-    viteProcess.on('error', (err) => reject(err));
+    let resolved = false;
     
-    // 2. Polling Ativo: Tenta conectar até conseguir
-    console.log(`⏳ Aguardando conexão em ${CONFIG.server} (Timeout: ${CONFIG.timeout}ms)...`);
-    const isReady = await checkConnection(CONFIG.server, CONFIG.timeout);
+    const onData = (data) => {
+      const output = data.toString();
+      process.stdout.write(output); // Mostrar output
+      
+      if (!resolved && (output.includes('5173') || output.includes('Local:') || output.includes('preview'))) {
+        resolved = true;
+        setTimeout(() => resolve(), 3000);
+      }
+    };
 
-    if (isReady) {
-      console.log('\n✅ Servidor respondeu! Conexão estabelecida.');
-      resolve();
-    } else {
-      stopDevServer();
-      reject(new Error(`Server start timeout: Não foi possível conectar na porta 5173 após ${CONFIG.timeout / 1000} segundos.`));
-    }
+    viteProcess.stdout.on('data', onData);
+    viteProcess.stderr.on('data', onData);
+
+    viteProcess.on('error', (err) => {
+      if (!resolved) reject(err);
+    });
+    
+    setTimeout(() => {
+      if (!resolved) reject(new Error('Server start timeout'));
+    }, 30000);
   });
 }
 
@@ -128,11 +112,11 @@ async function prerender() {
   
   try {
     await startDevServer();
-    console.log('✅ Prerender process starting...\n');
+    console.log('✅ Dev server running\n');
 
-    // LAUNCH COM ARGS PARA AMBIENTES RESTRITOS (CI)
+    // LAUNCH COM ARGS PARA AMBIENTES RESTRITOS
     browser = await puppeteer.launch({
-      headless: 'shell',
+      headless: 'shell', // Modo shell (mais compatível)
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -153,12 +137,19 @@ async function prerender() {
     let errorCount = 0;
 
     for (const route of CONFIG.routes) {
-      // Ajuste na URL: remove barra duplicada se houver
-      const routePath = route.startsWith('/') ? route : `/${route}`;
-      const url = `${CONFIG.entryPoint}${routePath}`;
+      const url = `${CONFIG.server}${route}`;
       
-      const filename = route === '/' ? 'index' : route.slice(1).replace(/\//g, '-');
-      const outputPath = join(CONFIG.distDir, `${filename}_ssr.html`);
+      // Criar estrutura de diretórios: /about -> dist/about/index.html
+      let outputPath;
+      if (route === '/') {
+        outputPath = join(CONFIG.distDir, 'index.html');
+      } else {
+        const dir = join(CONFIG.distDir, route.slice(1));
+        if (!existsSync(dir)) {
+          mkdirSync(dir, { recursive: true });
+        }
+        outputPath = join(dir, 'index.html');
+      }
 
       try {
         console.log(`📄 Rendering: ${route}`);
@@ -168,13 +159,17 @@ async function prerender() {
           timeout: CONFIG.timeout 
         });
 
-        // Espera seletor principal ou timeout menor para não travar tudo
-        try {
-            await page.waitForSelector(CONFIG.waitForSelector, { timeout: 5000 });
-        } catch (e) {
-            console.warn(`   ⚠️ Warning: Selector ${CONFIG.waitForSelector} not found (might be 404 page)`);
-        }
+        // Esperar seletor e dar tempo para hidratação
+        await page.waitForSelector(CONFIG.waitForSelector, { timeout: 10000 });
         
+        // Scroll para trigger lazy loading
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await page.evaluate(() => window.scrollTo(0, 0));
+        
+        // Tempo extra para garantir conteúdo carregado
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         const html = await page.content();
         
         // Injetar meta para identificação
@@ -183,12 +178,9 @@ async function prerender() {
           `<head>\n  <meta name="prerender-generated" content="true" data-route="${route}">`
         );
 
-        if (!existsSync(CONFIG.distDir)) {
-            mkdirSync(CONFIG.distDir, { recursive: true });
-        }
-
         writeFileSync(outputPath, finalHtml, 'utf8');
-        console.log(`   ✅ Saved: ${filename}_ssr.html`);
+        const displayPath = route === '/' ? 'index.html' : `${route.slice(1)}/index.html`;
+        console.log(`   ✅ Saved: ${displayPath}`);
         successCount++;
 
       } catch (error) {
@@ -208,14 +200,8 @@ async function prerender() {
     console.error('\n❌ FATAL ERROR:', error);
     process.exit(1);
   } finally {
-    if (browser) {
-        try { await browser.close(); } catch(e) {}
-    }
+    if (browser) await browser.close();
     stopDevServer();
-    
-    // FORÇA O ENCERRAMENTO PARA NÃO TRAVAR O CI
-    console.log('👋 Prerender complete. Exiting...');
-    process.exit(0);
   }
 }
 
