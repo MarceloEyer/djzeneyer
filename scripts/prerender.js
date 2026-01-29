@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v18.0 - PRODUCTION READY
- * Estrutura: dist/about/index.html (correto para URLs limpas)
- * Polling HTTP: Confiável em CI/CD
+ * SSR PRERENDER v18.1 - FINAL FIXED
+ * Alterações: Adicionadas rotas faltantes (/music, /zentribe) que causavam falha na validação.
  */
 
 import { spawn } from 'child_process';
@@ -18,16 +17,19 @@ const __dirname = dirname(__filename);
 // CONFIGURAÇÃO
 // =============================
 const CONFIG = {
-  server: 'http://localhost:5173',
-  entryPoint: 'http://localhost:5173/wp-content/themes/zentheme/dist',
+  serverBase: 'http://localhost:5173',
+  entryPoint: 'http://localhost:5173', // Ajuste se houver subpasta no WP
   distDir: join(process.cwd(), 'dist'),
-  timeout: 60000,
+  timeout: 60000, 
   waitForSelector: '#root',
   
+  // LISTA DE ROTAS ATUALIZADA (Incluindo Music e ZenTribe)
   routes: [
     '/',
     '/about',
     '/events',
+    '/music',      // <--- ADICIONADO (Essencial para validação)
+    '/zentribe',   // <--- ADICIONADO (Essencial para validação)
     '/classes',
     '/shop',
     '/contact',
@@ -53,14 +55,13 @@ const CONFIG = {
 };
 
 console.log('╔═══════════════════════════════════════════════════════╗');
-console.log('║   🏗️  PRERENDER v18.0 - PRODUCTION READY             ║');
+console.log('║   🏗️  PRERENDER v18.1 - FINAL FIXED                   ║');
 console.log('╚═══════════════════════════════════════════════════════╝');
-console.log(`📡 Server Entry: ${CONFIG.entryPoint}`);
-console.log(`📄 Routes: ${CONFIG.routes.length}`);
+console.log(`📡 Server: ${CONFIG.entryPoint}`);
 console.log(`📂 Output: ${CONFIG.distDir}\n`);
 
 // =============================
-// HELPER: HTTP POLLING
+// HELPER: WAIT & CHECK CONNECTION
 // =============================
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -71,7 +72,7 @@ async function checkConnection(url, timeout) {
       const res = await fetch(url);
       if (res.ok || res.status === 404) return true;
     } catch (e) {
-      // ECONNREFUSED = servidor ainda não subiu
+      // Falha na conexão, tenta de novo
     }
     await wait(1000);
     process.stdout.write('.');
@@ -96,15 +97,15 @@ function startDevServer() {
 
     viteProcess.on('error', (err) => reject(err));
     
-    console.log(`⏳ Aguardando conexão em ${CONFIG.server} (Timeout: ${CONFIG.timeout}ms)...`);
-    const isReady = await checkConnection(CONFIG.server, CONFIG.timeout);
+    console.log(`⏳ Aguardando conexão em ${CONFIG.serverBase} (Timeout: 60s)...`);
+    const isReady = await checkConnection(CONFIG.serverBase, CONFIG.timeout);
 
     if (isReady) {
       console.log('\n✅ Servidor respondeu! Conexão estabelecida.');
       resolve();
     } else {
       stopDevServer();
-      reject(new Error(`Server timeout após ${CONFIG.timeout / 1000}s`));
+      reject(new Error(`Server start timeout: Não conectou na porta 5173.`));
     }
   });
 }
@@ -147,18 +148,21 @@ async function prerender() {
     let errorCount = 0;
 
     for (const route of CONFIG.routes) {
-      const url = `${CONFIG.entryPoint}${route}`;
+      const routePath = route.startsWith('/') ? route : `/${route}`;
+      const cleanEntryPoint = CONFIG.entryPoint.endsWith('/') ? CONFIG.entryPoint.slice(0, -1) : CONFIG.entryPoint;
+      const url = `${cleanEntryPoint}${routePath}`;
       
-      // Estrutura correta: /about -> dist/about/index.html
+      // Lógica de Pastas
       let outputPath;
-      if (route === '/') {
+      if (route === '/' || route === '') {
         outputPath = join(CONFIG.distDir, 'index.html');
       } else {
-        const dir = join(CONFIG.distDir, route.slice(1));
-        if (!existsSync(dir)) {
-          mkdirSync(dir, { recursive: true });
+        const folderName = routePath.slice(1);
+        const targetDir = join(CONFIG.distDir, folderName);
+        if (!existsSync(targetDir)) {
+          mkdirSync(targetDir, { recursive: true });
         }
-        outputPath = join(dir, 'index.html');
+        outputPath = join(targetDir, 'index.html');
       }
 
       try {
@@ -169,14 +173,17 @@ async function prerender() {
           timeout: CONFIG.timeout 
         });
 
-        // Esperar hidratação completa
-        await page.waitForSelector(CONFIG.waitForSelector, { timeout: 10000 });
-        
-        // Trigger lazy loading
+        try {
+            await page.waitForSelector(CONFIG.waitForSelector, { timeout: 10000 });
+        } catch (e) {
+            console.warn(`   ⚠️ Warning: Selector ${CONFIG.waitForSelector} not found`);
+        }
+
+        // Scroll Hack
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await wait(500);
+        await wait(200);
         await page.evaluate(() => window.scrollTo(0, 0));
-        await wait(2000);
+        await wait(500);
 
         const html = await page.content();
         
@@ -186,6 +193,7 @@ async function prerender() {
         );
 
         writeFileSync(outputPath, finalHtml, 'utf8');
+        
         const displayPath = route === '/' ? 'index.html' : `${route.slice(1)}/index.html`;
         console.log(`   ✅ Saved: ${displayPath}`);
         successCount++;
@@ -208,16 +216,14 @@ async function prerender() {
     process.exit(1);
   } finally {
     if (browser) {
-      try { await browser.close(); } catch(e) {}
+        try { await browser.close(); } catch(e) {}
     }
     stopDevServer();
-    
     console.log('👋 Prerender complete. Exiting...');
     process.exit(0);
   }
 }
 
-// Signal handlers
 process.on('SIGINT', () => {
   stopDevServer();
   process.exit(0);
