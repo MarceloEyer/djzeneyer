@@ -55,6 +55,7 @@ export interface MusicTrack {
     youtube: string;
   };
   featured_image_src?: string | null;
+    slug: string;
 }
 
 // ============================================================================
