@@ -7,7 +7,7 @@ import { useCart } from '../contexts/CartContext';
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading } = useCart();
+  const { cart, loading, clearCart } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
 
   const [formData, setFormData] = useState({
@@ -37,7 +37,7 @@ const CheckoutPage: React.FC = () => {
     setTimeout(() => {
       setIsProcessing(false);
       setOrderSuccess(true);
-      // TODO: Clear cart using a context method like clearCart() after successful order
+      clearCart();
     }, 2000);
   };
 
