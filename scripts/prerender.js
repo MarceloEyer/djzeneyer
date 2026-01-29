@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v17.0 - ENVIRONMENT-SAFE
+ * SSR PRERENDER v17.1 - ROBUST POLLING
  * Gera versões HTML estáticas para bots (Googlebot, etc)
+ * Correção: Timeout de CI e detecção de servidor via HTTP Ping
  */
 
 import { spawn } from 'child_process';
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
@@ -17,9 +18,10 @@ const __dirname = dirname(__filename);
 // CONFIGURAÇÃO
 // =============================
 const CONFIG = {
-  server: 'http://localhost:5173/wp-content/themes/zentheme/dist',
+  server: 'http://localhost:5173', // Base URL para check de conexão
+  entryPoint: 'http://localhost:5173/wp-content/themes/zentheme/dist', // URL real das rotas
   distDir: join(process.cwd(), 'dist'),
-  timeout: 30000,
+  timeout: 60000, // Aumentado para 60s (CI Friendly)
   waitForSelector: '#root',
   
   routes: [
@@ -51,11 +53,32 @@ const CONFIG = {
 };
 
 console.log('╔═══════════════════════════════════════════════════════╗');
-console.log('║   🏗️  PRERENDER v17.0 - ENVIRONMENT-SAFE            ║');
+console.log('║   🏗️  PRERENDER v17.1 - ROBUST POLLING                ║');
 console.log('╚═══════════════════════════════════════════════════════╝');
-console.log(`📡 Server: ${CONFIG.server}`);
+console.log(`📡 Server Entry: ${CONFIG.entryPoint}`);
 console.log(`📄 Routes: ${CONFIG.routes.length}`);
 console.log(`📂 Output: ${CONFIG.distDir}\n`);
+
+// =============================
+// HELPER: WAIT & CHECK CONNECTION
+// =============================
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+async function checkConnection(url, timeout) {
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    try {
+      // Tenta conectar. Se der 200 ou 404, o servidor existe.
+      const res = await fetch(url);
+      if (res.ok || res.status === 404) return true;
+    } catch (e) {
+      // ECONNREFUSED = Servidor ainda não subiu. Espera.
+    }
+    await wait(1000);
+    process.stdout.write('.'); // Feedback visual
+  }
+  return false;
+}
 
 // =============================
 // SERVIDOR VITE
@@ -63,36 +86,29 @@ console.log(`📂 Output: ${CONFIG.distDir}\n`);
 let viteProcess = null;
 
 function startDevServer() {
-  return new Promise((resolve, reject) => {
-    console.log('🚀 Starting dev server...');
+  return new Promise(async (resolve, reject) => {
+    console.log('🚀 Starting dev server (Vite Preview)...');
     
+    // 1. Inicia o processo com output herdado (para ver erros no CI)
     viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: 'inherit', 
+      env: { ...process.env, FORCE_COLOR: '1' }
     });
 
-    let resolved = false;
+    viteProcess.on('error', (err) => reject(err));
     
-    const onData = (data) => {
-      const output = data.toString();
-      process.stdout.write(output); // Mostrar output
-      
-      if (!resolved && (output.includes('5173') || output.includes('Local:') || output.includes('preview'))) {
-        resolved = true;
-        setTimeout(() => resolve(), 3000);
-      }
-    };
+    // 2. Polling Ativo: Tenta conectar até conseguir
+    console.log(`⏳ Aguardando conexão em ${CONFIG.server} (Timeout: ${CONFIG.timeout}ms)...`);
+    const isReady = await checkConnection(CONFIG.server, CONFIG.timeout);
 
-    viteProcess.stdout.on('data', onData);
-    viteProcess.stderr.on('data', onData);
-
-    viteProcess.on('error', (err) => {
-      if (!resolved) reject(err);
-    });
-    
-    setTimeout(() => {
-      if (!resolved) reject(new Error('Server start timeout'));
-    }, 30000);
+    if (isReady) {
+      console.log('\n✅ Servidor respondeu! Conexão estabelecida.');
+      resolve();
+    } else {
+      stopDevServer();
+      reject(new Error(`Server start timeout: Não foi possível conectar na porta 5173 após ${CONFIG.timeout / 1000} segundos.`));
+    }
   });
 }
 
@@ -112,11 +128,11 @@ async function prerender() {
   
   try {
     await startDevServer();
-    console.log('✅ Dev server running\n');
+    console.log('✅ Prerender process starting...\n');
 
-    // LAUNCH COM ARGS PARA AMBIENTES RESTRITOS
+    // LAUNCH COM ARGS PARA AMBIENTES RESTRITOS (CI)
     browser = await puppeteer.launch({
-      headless: 'shell', // Modo shell (mais compatível)
+      headless: 'shell',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -137,7 +153,10 @@ async function prerender() {
     let errorCount = 0;
 
     for (const route of CONFIG.routes) {
-      const url = `${CONFIG.server}${route}`;
+      // Ajuste na URL: remove barra duplicada se houver
+      const routePath = route.startsWith('/') ? route : `/${route}`;
+      const url = `${CONFIG.entryPoint}${routePath}`;
+      
       const filename = route === '/' ? 'index' : route.slice(1).replace(/\//g, '-');
       const outputPath = join(CONFIG.distDir, `${filename}_ssr.html`);
 
@@ -149,9 +168,13 @@ async function prerender() {
           timeout: CONFIG.timeout 
         });
 
-        await page.waitForSelector(CONFIG.waitForSelector, { timeout: 5000 });
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
+        // Espera seletor principal ou timeout menor para não travar tudo
+        try {
+            await page.waitForSelector(CONFIG.waitForSelector, { timeout: 5000 });
+        } catch (e) {
+            console.warn(`   ⚠️ Warning: Selector ${CONFIG.waitForSelector} not found (might be 404 page)`);
+        }
+        
         const html = await page.content();
         
         // Injetar meta para identificação
@@ -159,6 +182,10 @@ async function prerender() {
           '<head>',
           `<head>\n  <meta name="prerender-generated" content="true" data-route="${route}">`
         );
+
+        if (!existsSync(CONFIG.distDir)) {
+            mkdirSync(CONFIG.distDir, { recursive: true });
+        }
 
         writeFileSync(outputPath, finalHtml, 'utf8');
         console.log(`   ✅ Saved: ${filename}_ssr.html`);
@@ -181,8 +208,14 @@ async function prerender() {
     console.error('\n❌ FATAL ERROR:', error);
     process.exit(1);
   } finally {
-    if (browser) await browser.close();
+    if (browser) {
+        try { await browser.close(); } catch(e) {}
+    }
     stopDevServer();
+    
+    // FORÇA O ENCERRAMENTO PARA NÃO TRAVAR O CI
+    console.log('👋 Prerender complete. Exiting...');
+    process.exit(0);
   }
 }
 
