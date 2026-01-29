@@ -1,11 +1,11 @@
 import { useRoutes, RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
-// Certifique-se que o caminho do import está correto para onde seu arquivo de config está
+// CORREÇÃO: Apontando para o local correto onde você definiu suas rotas
 import { 
   ROUTES_CONFIG, 
   NOT_FOUND_COMPONENT, 
   Language 
-} from '../scripts/routes-config'; 
+} from '../config/routes'; 
 
 // Função auxiliar robusta para gerar rotas do React Router v6
 const generateRoutes = (lang: Language): RouteObject[] => {
