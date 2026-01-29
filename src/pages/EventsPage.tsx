@@ -28,7 +28,8 @@ import {
   Music2,
   ArrowRight,
   ArrowLeft,
-  Info
+  Info,
+  Send // ✅ CORREÇÃO: Import adicionado aqui!
 } from 'lucide-react';
 
 const EventsPage: React.FC = () => {
