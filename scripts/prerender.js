@@ -5,13 +5,16 @@
  */
 
 import { spawn } from 'child_process';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const ROUTES_CONFIG_PATH = join(__dirname, 'routes-config.json');
+const routesConfig = JSON.parse(readFileSync(ROUTES_CONFIG_PATH, 'utf8'));
 
 // =============================
 // CONFIGURAÇÃO
@@ -23,35 +26,8 @@ const CONFIG = {
   timeout: 60000, 
   waitForSelector: '#root',
   
-  // LISTA DE ROTAS ATUALIZADA (Incluindo Music e ZenTribe)
-  routes: [
-    '/',
-    '/about',
-    '/events',
-    '/music',      // <--- ADICIONADO (Essencial para validação)
-    '/zentribe',   // <--- ADICIONADO (Essencial para validação)
-    '/classes',
-    '/shop',
-    '/contact',
-    '/blog',
-    '/login',
-    '/register',
-    '/dashboard',
-    '/workshops',
-    '/private-lessons',
-    '/festival-prep',
-    '/demo-program',
-    '/team',
-    '/media',
-    '/testimonials',
-    '/faq',
-    '/privacy',
-    '/terms',
-    '/sitemap',
-    '/thank-you',
-    '/gamification',
-    '/profile'
-  ]
+  // LISTA DE ROTAS ATUALIZADA (SSOT via JSON)
+  routes: routesConfig.routes
 };
 
 console.log('╔═══════════════════════════════════════════════════════╗');
