@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v18.7 - SHELL ONLY (Offline Safe)
- * * OBJECTIVE: Generate the file structure (e.g., /about/index.html) to prevent 404s.
- * CONSTRAINT: No API access during build.
- * LOGIC: Load page -> Wait for React mount (#root) -> Save immediately.
+ * SSR PRERENDER v18.8 - PATH FIX & DEBUG
+ * Tenta corrigir o problema de carregamento de assets em sub-rotas e mostra erros de JS.
  */
 
 import { spawn } from 'child_process';
@@ -15,171 +13,136 @@ import puppeteer from 'puppeteer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// =============================
-// 1. LOAD ROUTES (SSOT)
-// =============================
+// 1. Carregar Rotas (SSOT)
 let routesList = [];
 const ROUTES_CONFIG_PATH = join(__dirname, 'routes-config.json');
-
 try {
-    if (!existsSync(ROUTES_CONFIG_PATH)) {
-        console.warn('⚠️ Routes JSON not found. Using minimal fallback.');
-        routesList = ['/', '/about', '/shop'];
+    if (existsSync(ROUTES_CONFIG_PATH)) {
+        routesList = JSON.parse(readFileSync(ROUTES_CONFIG_PATH, 'utf8')).routes;
+        console.log(`📋 SSOT: ${routesList.length} rotas.`);
     } else {
-        const routesConfig = JSON.parse(readFileSync(ROUTES_CONFIG_PATH, 'utf8'));
-        routesList = routesConfig.routes;
-        console.log(`📋 SSOT: Loaded ${routesList.length} routes for structure generation.`);
+        throw new Error("Arquivo não encontrado");
     }
 } catch (e) {
-    console.error('❌ Error reading routes. Proceeding with home only.');
-    routesList = ['/'];
+    console.error('❌ Erro na SSOT. Abortando.');
+    process.exit(1);
 }
 
-// =============================
-// CONFIGURATION
-// =============================
 const CONFIG = {
   serverBase: 'http://localhost:5173',
-  entryPoint: 'http://localhost:5173',
   distDir: join(process.cwd(), 'dist'),
   timeout: 60000, 
-  // Wait only for the main container, NOT specific content (h1, article)
   waitForSelector: '#root', 
   routes: routesList
 };
 
-console.log('╔═══════════════════════════════════════════════════════╗');
-console.log('║   🏗️  PRERENDER v18.7 - SHELL ONLY (Offline Safe)     ║');
-console.log('╚═══════════════════════════════════════════════════════╝');
-
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
-async function checkConnection(url, timeout) {
-  const start = Date.now();
-  while (Date.now() - start < timeout) {
-    try {
-      const res = await fetch(url);
-      if (res.ok || res.status === 404) return true;
-    } catch (e) {}
-    await wait(1000);
-    process.stdout.write('.');
-  }
-  return false;
-}
-
+// Servidor Vite
 let viteProcess = null;
-
 function startDevServer() {
   return new Promise(async (resolve, reject) => {
-    console.log('🚀 Starting Vite Server (Preview)...');
-    
+    console.log('🚀 Iniciando Vite...');
     viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
-      stdio: 'inherit',
-      env: { ...process.env, FORCE_COLOR: '1' }
+      stdio: 'inherit', env: { ...process.env, FORCE_COLOR: '1' }
     });
-
-    viteProcess.on('error', (err) => reject(err));
+    viteProcess.on('error', reject);
     
-    console.log(`⏳ Waiting for server...`);
-    const isReady = await checkConnection(CONFIG.serverBase, 60000);
-
-    if (isReady) {
-      console.log('\n✅ Server Online.');
-      resolve();
-    } else {
-      stopDevServer();
-      reject(new Error(`Timeout connecting to Vite.`));
+    // Polling de conexão
+    const start = Date.now();
+    while (Date.now() - start < 60000) {
+        try {
+            const res = await fetch(CONFIG.serverBase);
+            if (res.ok || res.status === 404) {
+                console.log('✅ Servidor OK.');
+                return resolve();
+            }
+        } catch (e) {}
+        await wait(1000);
+        process.stdout.write('.');
     }
+    reject(new Error('Timeout Vite'));
   });
-}
-
-function stopDevServer() {
-  if (viteProcess) {
-    console.log('🛑 Stopping server...');
-    viteProcess.kill();
-    viteProcess = null;
-  }
 }
 
 async function prerender() {
   let browser = null;
-  
   try {
     await startDevServer();
-    
     browser = await puppeteer.launch({
       headless: 'shell',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
-
     const page = await browser.newPage();
-    // Generic User Agent to avoid blocking
-    await page.setUserAgent('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
+    
+    // 🚨 DEBUG: Ver erros do navegador
+    page.on('console', msg => {
+        if (msg.type() === 'error') console.log(`[JS ERROR]: ${msg.text()}`);
+    });
+    page.on('pageerror', err => console.log(`[PAGE CRASH]: ${err.message}`));
+    page.on('requestfailed', req => {
+        if (req.url().endsWith('.js') || req.url().endsWith('.css')) {
+            console.log(`[ASSET 404]: ${req.url()}`); // Isso vai confirmar se é erro de caminho
+        }
+    });
 
     let successCount = 0;
 
     for (const route of CONFIG.routes) {
-      const routePath = route.startsWith('/') ? route : `/${route}`;
-      const url = `${CONFIG.entryPoint}${routePath}`;
+      // Ajuste de URL: Garante que não tenha barra dupla //
+      const cleanRoute = route.replace(/^\//, '');
+      const url = `${CONFIG.serverBase}/${cleanRoute}`; 
       
-      // Path Definition
       let outputPath;
       if (route === '/' || route === '') {
         outputPath = join(CONFIG.distDir, 'index.html');
       } else {
-        const folderName = routePath.slice(1);
-        const targetDir = join(CONFIG.distDir, folderName);
+        const targetDir = join(CONFIG.distDir, cleanRoute);
         if (!existsSync(targetDir)) mkdirSync(targetDir, { recursive: true });
         outputPath = join(targetDir, 'index.html');
       }
 
       try {
-        // Fast navigation: domcontentloaded is enough for Shell
-        await page.goto(url, { 
-          waitUntil: 'domcontentloaded', 
-          timeout: 30000 
-        });
+        // console.log(`📄 Renderizando: ${route}`); // Menos log
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
 
-        // Minimal wait for React to mount basic structure (Header/Footer)
+        // Tenta esperar o React montar
         try {
-            await page.waitForSelector('#root', { timeout: 5000 });
-            await wait(1000); // Small pause for CSS/JS injection
-        } catch (e) {
-            // If it fails, save anyway (better empty HTML than 404)
-        }
+            await page.waitForSelector('#root div', { timeout: 5000 }); // Espera algo DENTRO do root
+        } catch(e) {}
 
         const html = await page.content();
         
-        // Inject meta tag to confirm prerender
-        const finalHtml = html.replace('<head>', `<head>\n  <meta name="prerender-generated" content="true">`);
-        
-        writeFileSync(outputPath, finalHtml, 'utf8');
-        
-        console.log(`✅ Generated: ${route} (${finalHtml.length} bytes)`);
-        successCount++;
+        // Verifica se pegou só o shell vazio
+        if (html.length < 1000) {
+            console.warn(`❌ ${route} VAZIO (${html.length}b). Erro de JS ou 404?`);
+        } else {
+            const finalHtml = html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+            writeFileSync(outputPath, finalHtml, 'utf8');
+            console.log(`✅ ${route} (${finalHtml.length}b)`);
+            successCount++;
+        }
 
       } catch (error) {
-        console.error(`❌ Error on ${route}: ${error.message}`);
-        // Do not fail build, just log error
+        console.error(`❌ Erro em ${route}: ${error.message}`);
       }
     }
-
-    console.log('\n╔═══════════════════════════════════════════════════════╗');
-    console.log(`║  ✅ COMPLETED: ${successCount}/${CONFIG.routes.length} files generated.`);
-    console.log('╚═══════════════════════════════════════════════════════╝\n');
+    
+    // Se falhar muitos, avisa
+    if (successCount < CONFIG.routes.length) {
+        console.error(`⚠️ Apenas ${successCount}/${CONFIG.routes.length} rotas geradas corretamente.`);
+        // Não damos exit(1) aqui para deixar o script de validação decidir se falha o build
+    }
 
   } catch (error) {
-    console.error('\n❌ FATAL ERROR:', error);
+    console.error('FATAL:', error);
     process.exit(1);
   } finally {
-    if (browser) try { await browser.close(); } catch(e) {}
-    stopDevServer();
+    if (browser) await browser.close();
+    if (viteProcess) viteProcess.kill();
     process.exit(0);
   }
 }
-
-process.on('SIGINT', () => { stopDevServer(); process.exit(0); });
-process.on('SIGTERM', () => { stopDevServer(); process.exit(0); });
 
 prerender();
