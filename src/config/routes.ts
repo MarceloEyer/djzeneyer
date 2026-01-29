@@ -11,6 +11,8 @@
  * - Sincronizado com todas as páginas do WordPress
  * - Adicionadas rotas: Cart, Checkout, Return Policy, Support Artist, Tickets
  * - Slugs limpos e otimizados para SEO (sem sufixos -2)
+ * * ATUALIZAÇÃO v3.1:
+ * - Corrigido bug de i18n route switching (getAlternateLinks)
  */
 
 import { lazy, ComponentType } from 'react';
@@ -289,40 +291,51 @@ export const findRouteByPath = (path: string, lang: Language): RouteConfig | und
 
 /**
  * Retorna links alternativos para o path atual
+ * CORRIGIDO v3.1: Agora retorna paths localizados corretos
  */
-export const getAlternateLinks = (currentPath: string, currentLang: Language): Record<Language, string> => {
-  const alternates: Record<Language, string> = {} as Record<Language, string>;
+export const getAlternateLinks = (currentPath: string, currentLang: string): Record<string, string> => {
+  const alternates: Record<string, string> = {};
 
-  // Se o path está vazio, retorna as raízes
   if (!currentPath || currentPath === '/') {
-    return { en: '/', pt: '/' };
+    return { en: '/', pt: '/pt/' };
   }
 
-  // Remove leading slash
-  const cleanPath = currentPath.startsWith('/') ? currentPath.slice(1) : currentPath;
+  // Remove o prefixo de idioma e barras extras
+  const cleanPath = currentPath
+    .replace(/^\/pt\//, '')  // Remove /pt/ se existir
+    .replace(/^\//, '')       // Remove / inicial
+    .replace(/\/$/, '');      // Remove / final
 
-  // Tenta encontrar a rota correspondente
   for (const route of ROUTES_CONFIG) {
-    const paths = getLocalizedPaths(route, 'en');
-    const enPath = Array.isArray(paths) ? paths[0] : paths;
+    // Pega os paths em inglês
+    const pathsEn = getLocalizedPaths(route, 'en');
+    const enPath = Array.isArray(pathsEn) ? pathsEn[0] : pathsEn;
 
+    // Pega os paths em português
     const pathsPt = getLocalizedPaths(route, 'pt');
     const ptPath = Array.isArray(pathsPt) ? pathsPt[0] : pathsPt;
 
-    // Verifica se o caminho atual corresponde a esta rota
+    // Verifica se o cleanPath corresponde ao path em inglês
     if (cleanPath === enPath || cleanPath.startsWith(enPath + '/')) {
-      alternates.en = `/${enPath}`;
-      alternates.pt = `/${ptPath}`;
+      alternates.en = enPath ? `/${enPath}` : '/';
+      alternates.pt = ptPath ? `/pt/${ptPath}` : '/pt/';
+      alternates['x-default'] = alternates.en;
       return alternates;
     }
 
+    // Verifica se o cleanPath corresponde ao path em português
     if (cleanPath === ptPath || cleanPath.startsWith(ptPath + '/')) {
-      alternates.en = `/${enPath}`;
-      alternates.pt = `/${ptPath}`;
+      alternates.en = enPath ? `/${enPath}` : '/';
+      alternates.pt = ptPath ? `/pt/${ptPath}` : '/pt/';
+      alternates['x-default'] = alternates.en;
       return alternates;
     }
   }
 
-  // Fallback: retorna o mesmo path para ambos os idiomas
-  return { en: currentPath, pt: currentPath };
+  // Fallback: retorna o path atual se não encontrar
+  return { 
+    en: currentPath.replace(/^\/pt/, ''), 
+    pt: currentPath.startsWith('/pt') ? currentPath : `/pt${currentPath}`,
+    'x-default': currentPath.replace(/^\/pt/, '')
+  };
 };
