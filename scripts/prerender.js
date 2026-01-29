@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v17.0 - ENVIRONMENT-SAFE
- * Gera versões HTML estáticas para bots (Googlebot, etc)
+ * SSR PRERENDER v18.0 - PRODUCTION READY
+ * Estrutura: dist/about/index.html (correto para URLs limpas)
+ * Polling HTTP: Confiável em CI/CD
  */
 
 import { spawn } from 'child_process';
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
@@ -17,9 +18,10 @@ const __dirname = dirname(__filename);
 // CONFIGURAÇÃO
 // =============================
 const CONFIG = {
-  server: 'http://localhost:5173/wp-content/themes/zentheme/dist',
+  server: 'http://localhost:5173',
+  entryPoint: 'http://localhost:5173/wp-content/themes/zentheme/dist',
   distDir: join(process.cwd(), 'dist'),
-  timeout: 30000,
+  timeout: 60000,
   waitForSelector: '#root',
   
   routes: [
@@ -51,11 +53,31 @@ const CONFIG = {
 };
 
 console.log('╔═══════════════════════════════════════════════════════╗');
-console.log('║   🏗️  PRERENDER v17.0 - ENVIRONMENT-SAFE            ║');
+console.log('║   🏗️  PRERENDER v18.0 - PRODUCTION READY             ║');
 console.log('╚═══════════════════════════════════════════════════════╝');
-console.log(`📡 Server: ${CONFIG.server}`);
+console.log(`📡 Server Entry: ${CONFIG.entryPoint}`);
 console.log(`📄 Routes: ${CONFIG.routes.length}`);
 console.log(`📂 Output: ${CONFIG.distDir}\n`);
+
+// =============================
+// HELPER: HTTP POLLING
+// =============================
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+async function checkConnection(url, timeout) {
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    try {
+      const res = await fetch(url);
+      if (res.ok || res.status === 404) return true;
+    } catch (e) {
+      // ECONNREFUSED = servidor ainda não subiu
+    }
+    await wait(1000);
+    process.stdout.write('.');
+  }
+  return false;
+}
 
 // =============================
 // SERVIDOR VITE
@@ -63,36 +85,27 @@ console.log(`📂 Output: ${CONFIG.distDir}\n`);
 let viteProcess = null;
 
 function startDevServer() {
-  return new Promise((resolve, reject) => {
-    console.log('🚀 Starting dev server...');
+  return new Promise(async (resolve, reject) => {
+    console.log('🚀 Starting dev server (Vite Preview)...');
     
     viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: 'inherit',
+      env: { ...process.env, FORCE_COLOR: '1' }
     });
 
-    let resolved = false;
+    viteProcess.on('error', (err) => reject(err));
     
-    const onData = (data) => {
-      const output = data.toString();
-      process.stdout.write(output); // Mostrar output
-      
-      if (!resolved && (output.includes('5173') || output.includes('Local:') || output.includes('preview'))) {
-        resolved = true;
-        setTimeout(() => resolve(), 3000);
-      }
-    };
+    console.log(`⏳ Aguardando conexão em ${CONFIG.server} (Timeout: ${CONFIG.timeout}ms)...`);
+    const isReady = await checkConnection(CONFIG.server, CONFIG.timeout);
 
-    viteProcess.stdout.on('data', onData);
-    viteProcess.stderr.on('data', onData);
-
-    viteProcess.on('error', (err) => {
-      if (!resolved) reject(err);
-    });
-    
-    setTimeout(() => {
-      if (!resolved) reject(new Error('Server start timeout'));
-    }, 30000);
+    if (isReady) {
+      console.log('\n✅ Servidor respondeu! Conexão estabelecida.');
+      resolve();
+    } else {
+      stopDevServer();
+      reject(new Error(`Server timeout após ${CONFIG.timeout / 1000}s`));
+    }
   });
 }
 
@@ -112,11 +125,10 @@ async function prerender() {
   
   try {
     await startDevServer();
-    console.log('✅ Dev server running\n');
+    console.log('✅ Prerender process starting...\n');
 
-    // LAUNCH COM ARGS PARA AMBIENTES RESTRITOS
     browser = await puppeteer.launch({
-      headless: 'shell', // Modo shell (mais compatível)
+      headless: 'shell',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -129,17 +141,15 @@ async function prerender() {
     });
 
     const page = await browser.newPage();
-    
-    // User-agent de bot
     await page.setUserAgent('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
     
     let successCount = 0;
     let errorCount = 0;
 
     for (const route of CONFIG.routes) {
-      const url = `${CONFIG.server}${route}`;
+      const url = `${CONFIG.entryPoint}${route}`;
       
-      // Criar estrutura de diretórios: /about -> dist/about/index.html
+      // Estrutura correta: /about -> dist/about/index.html
       let outputPath;
       if (route === '/') {
         outputPath = join(CONFIG.distDir, 'index.html');
@@ -159,20 +169,17 @@ async function prerender() {
           timeout: CONFIG.timeout 
         });
 
-        // Esperar seletor e dar tempo para hidratação
+        // Esperar hidratação completa
         await page.waitForSelector(CONFIG.waitForSelector, { timeout: 10000 });
         
-        // Scroll para trigger lazy loading
+        // Trigger lazy loading
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await wait(500);
         await page.evaluate(() => window.scrollTo(0, 0));
-        
-        // Tempo extra para garantir conteúdo carregado
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await wait(2000);
 
         const html = await page.content();
         
-        // Injetar meta para identificação
         const finalHtml = html.replace(
           '<head>',
           `<head>\n  <meta name="prerender-generated" content="true" data-route="${route}">`
@@ -200,12 +207,17 @@ async function prerender() {
     console.error('\n❌ FATAL ERROR:', error);
     process.exit(1);
   } finally {
-    if (browser) await browser.close();
+    if (browser) {
+      try { await browser.close(); } catch(e) {}
+    }
     stopDevServer();
+    
+    console.log('👋 Prerender complete. Exiting...');
+    process.exit(0);
   }
 }
 
-// Trap de sinais
+// Signal handlers
 process.on('SIGINT', () => {
   stopDevServer();
   process.exit(0);
@@ -216,5 +228,4 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-// EXECUTAR
 prerender();
