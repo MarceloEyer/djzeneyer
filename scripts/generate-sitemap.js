@@ -13,15 +13,16 @@ const __dirname = path.dirname(__filename);
 
 const BASE_URL = 'https://djzeneyer.com';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
-const ROUTES_DATA = path.resolve(__dirname, 'routes-data.json');
+const ROUTES_DATA = path.resolve(__dirname, 'routes-config.json');
 
 console.log('🗺️  Sitemap Generator v7.0 - SIMPLIFIED\n');
 
-function buildUrlEntry(enPath, ptPath, date) {
-  const enUrl = enPath === '' ? `${BASE_URL}/` : `${BASE_URL}/${enPath}`;
-  const ptUrl = ptPath === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${ptPath}`;
+function buildUrlEntry(route, date) {
+  const cleanPath = route === '/' ? '' : route.replace(/^\/+/, '');
+  const enUrl = cleanPath === '' ? `${BASE_URL}/` : `${BASE_URL}/${cleanPath}`;
+  const ptUrl = cleanPath === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${cleanPath}`;
 
-  const priority = enPath === '' ? '1.0' : '0.8';
+  const priority = cleanPath === '' ? '1.0' : '0.8';
 
   return `
   <url>
@@ -45,7 +46,7 @@ function generateSitemaps() {
     let urlCount = 0;
 
     for (const route of routesData.routes) {
-      pagesXml += buildUrlEntry(route.en, route.pt, date);
+      pagesXml += buildUrlEntry(route, date);
       urlCount++;
     }
 

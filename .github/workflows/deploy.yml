@@ -126,11 +126,11 @@ jobs:
           echo ""
           echo "📊 Validating prerendered files:"
           
-          # ⚠️ REMOVI O /shop DA LISTA PARA NÃO FALHAR O BUILD
-          ROUTES=("/" "/events" "/music" "/about" "/zentribe")
+          # 🔁 SSOT: carregar rotas do JSON via Node (string com espaços)
+          ROUTES=$(node -p "require('./scripts/routes-config.json').routes.join(' ')")
           FAILED=0
           
-          for route in "${ROUTES[@]}"; do
+          for route in $ROUTES; do
             if [ "$route" = "/" ]; then
               FILE="dist/index.html"
             else
