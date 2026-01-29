@@ -50,15 +50,18 @@ class DJZ_Vite_Loader {
 
                 // Cache Miss or Stale: Read file
                 $content = file_get_contents($path);
-                $data    = json_decode($content, true);
 
-                if (json_last_error() === JSON_ERROR_NONE) {
-                    $this->manifest = $data;
-                    set_transient($cache_key, [
-                        'path'  => $path,
-                        'mtime' => $mtime,
-                        'data'  => $data
-                    ], 7 * DAY_IN_SECONDS);
+                if ($content !== false) {
+                    $data = json_decode($content, true);
+
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $this->manifest = $data;
+                        set_transient($cache_key, [
+                            'path'  => $path,
+                            'mtime' => $mtime,
+                            'data'  => $data
+                        ], 7 * DAY_IN_SECONDS);
+                    }
                 }
 
                 return;
