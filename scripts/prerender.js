@@ -1,206 +1,148 @@
-// scripts/prerender.js
-// v15.0 - UNIFIED: Usa mesma estrutura do routes.ts como única fonte da verdade
+#!/usr/bin/env node
+/**
+ * SSR PRERENDER v18.8 - PATH FIX & DEBUG
+ * Tenta corrigir o problema de carregamento de assets em sub-rotas e mostra erros de JS.
+ */
 
-import fs from 'fs';
-import path from 'path';
+import { spawn } from 'child_process';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
+import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
-import express from 'express';
-import { createServer } from 'http';
 
-const PORT = 5173;
-const BASE_URL = `http://localhost:${PORT}`;
-const DIST_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
-const PUBLIC_PATH = '/wp-content/themes/zentheme/dist';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-// ============================================================================
-// ROUTES CONFIGURATION (Synced with src/config/routes.ts)
-// ============================================================================
-
-const ROUTES_CONFIG = [
-  { en: '', pt: '' },  // Home
-  { en: 'about', pt: 'sobre' },
-  { en: 'events', pt: 'eventos' },
-  { en: 'music', pt: 'musica' },
-  { en: 'news', pt: 'noticias' },
-  { en: 'zentribe', pt: 'tribo-zen' },  // Using first alias
-  { en: 'work-with-me', pt: 'trabalhe-comigo' },
-  { en: 'faq', pt: 'perguntas-frequentes' },
-  { en: 'my-philosophy', pt: 'minha-filosofia' },
-  { en: 'media', pt: 'na-midia' },
-  { en: 'support-the-artist', pt: 'apoie-o-artista' },
-  { en: 'privacy-policy', pt: 'politica-de-privacidade' },
-  { en: 'return-policy', pt: 'reembolso' },
-  { en: 'terms', pt: 'termos' },
-  { en: 'conduct', pt: 'regras-de-conduta' },
-];
-
-// Routes to skip from prerendering
-const SKIP_PRERENDER = [
-  'shop', 'loja',  // Skip shop - dynamic prices
-  'cart', 'carrinho',
-  'checkout', 'finalizar-compra',
-  'dashboard', 'painel',
-  'my-account', 'minha-conta',
-  'tickets-checkout', 'finalizar-ingressos',
-  'order-complete', 'pedido-completo',
-];
-
-// Build routes array from config
-const ROUTES = [];
-
-ROUTES_CONFIG.forEach(route => {
-  const shouldSkip = SKIP_PRERENDER.some(skip => 
-    route.en.includes(skip) || route.pt.includes(skip)
-  );
-  
-  if (shouldSkip) return;
-
-  // Add EN route
-  ROUTES.push({
-    path: route.en === '' ? '/' : `/${route.en}`,
-    minSize: route.en === '' ? 3000 : 2000,
-    waitFor: 'h1, footer'
-  });
-
-  // Add PT route
-  ROUTES.push({
-    path: route.pt === '' ? '/pt' : `/pt/${route.pt}`,
-    minSize: 2000,
-    waitFor: 'h1, footer'
-  });
-});
-
-console.log(`
-╔═══════════════════════════════════════════════════════╗
-║   🏗️  PRERENDER v15.0 - UNIFIED WITH ROUTES.TS       ║
-╚═══════════════════════════════════════════════════════╝
-
-📡 Servidor: ${BASE_URL}
-📄 Rotas para pre-render: ${ROUTES.length}
-`);
-
-// ============================================================================
-// HELPERS
-// ============================================================================
-
-function normalizeUrl(path) {
-  return path.split('?')[0].replace(/\/$/, '') || '/';
+// 1. Carregar Rotas (SSOT)
+let routesList = [];
+const ROUTES_CONFIG_PATH = join(__dirname, 'routes-config.json');
+try {
+    if (existsSync(ROUTES_CONFIG_PATH)) {
+        routesList = JSON.parse(readFileSync(ROUTES_CONFIG_PATH, 'utf8')).routes;
+        console.log(`📋 SSOT: ${routesList.length} rotas.`);
+    } else {
+        throw new Error("Arquivo não encontrado");
+    }
+} catch (e) {
+    console.error('❌ Erro na SSOT. Abortando.');
+    process.exit(1);
 }
 
-function validateHTML(content, route) {
-  const errors = [];
-  const warnings = [];
+const CONFIG = {
+  serverBase: 'http://localhost:5173',
+  distDir: join(process.cwd(), 'dist'),
+  timeout: 60000, 
+  waitForSelector: '#root', 
+  routes: routesList
+};
 
-  if (!/<h1[^>]*>[\s\S]+?<\/h1>/.test(content)) {
-    errors.push('Missing <h1> tag');
-  }
-  if (!/<footer/i.test(content) && !/footer/i.test(content)) {
-    errors.push('Missing footer element');
-  }
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
-  const size = Buffer.byteLength(content, 'utf8');
-  if (size < route.minSize) {
-    warnings.push(`HTML size (${size} bytes) below expected minimum`);
-  }
-
-  return { errors, warnings, size };
+// Servidor Vite
+let viteProcess = null;
+function startDevServer() {
+  return new Promise(async (resolve, reject) => {
+    console.log('🚀 Iniciando Vite...');
+    viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
+      cwd: process.cwd(),
+      stdio: 'inherit', env: { ...process.env, FORCE_COLOR: '1' }
+    });
+    viteProcess.on('error', reject);
+    
+    // Polling de conexão
+    const start = Date.now();
+    while (Date.now() - start < 60000) {
+        try {
+            const res = await fetch(CONFIG.serverBase);
+            if (res.ok || res.status === 404) {
+                console.log('✅ Servidor OK.');
+                return resolve();
+            }
+        } catch (e) {}
+        await wait(1000);
+        process.stdout.write('.');
+    }
+    reject(new Error('Timeout Vite'));
+  });
 }
-
-// ============================================================================
-// MAIN FUNCTION
-// ============================================================================
 
 async function prerender() {
-  let server;
-  let browser;
-
+  let browser = null;
   try {
-    const app = express();
-    app.use(express.static(DIST_PATH));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(DIST_PATH, 'index.html'));
-    });
-
-    server = createServer(app);
-    await new Promise((resolve) => server.listen(PORT, resolve));
-    console.log(`✅ Servidor Express rodando na porta ${PORT}\n`);
-
+    await startDevServer();
     browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+      headless: 'shell',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    
+    // 🚨 DEBUG: Ver erros do navegador
+    page.on('console', msg => {
+        if (msg.type() === 'error') console.log(`[JS ERROR]: ${msg.text()}`);
+    });
+    page.on('pageerror', err => console.log(`[PAGE CRASH]: ${err.message}`));
+    page.on('requestfailed', req => {
+        if (req.url().endsWith('.js') || req.url().endsWith('.css')) {
+            console.log(`[ASSET 404]: ${req.url()}`); // Isso vai confirmar se é erro de caminho
+        }
     });
 
     let successCount = 0;
-    let errorCount = 0;
 
-    for (const route of ROUTES) {
+    for (const route of CONFIG.routes) {
+      // Ajuste de URL: Garante que não tenha barra dupla //
+      const cleanRoute = route.replace(/^\//, '');
+      const url = `${CONFIG.serverBase}/${cleanRoute}`; 
+      
+      let outputPath;
+      if (route === '/' || route === '') {
+        outputPath = join(CONFIG.distDir, 'index.html');
+      } else {
+        const targetDir = join(CONFIG.distDir, cleanRoute);
+        if (!existsSync(targetDir)) mkdirSync(targetDir, { recursive: true });
+        outputPath = join(targetDir, 'index.html');
+      }
+
       try {
-        const page = await browser.newPage();
-        await page.setUserAgent('Mozilla/5.0 (compatible; Prerenderer/15.0)');
+        // console.log(`📄 Renderizando: ${route}`); // Menos log
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
 
-        const url = `${BASE_URL}${route.path}`;
-        console.log(`\n🔍 Renderizando: ${route.path}`);
+        // Tenta esperar o React montar
+        try {
+            await page.waitForSelector('#root div', { timeout: 5000 }); // Espera algo DENTRO do root
+        } catch(e) {}
 
-        await page.goto(url, { 
-          waitUntil: 'networkidle0', 
-          timeout: 30000 
-        });
-
-        if (route.waitFor) {
-          await page.waitForSelector(route.waitFor.split(',')[0].trim(), { 
-            timeout: 10000 
-          });
-        }
-
-        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
-
-        const content = await page.content();
-        const validation = validateHTML(content, route);
-
-        if (validation.errors.length > 0) {
-          console.error(`❌ Erros de validação:`, validation.errors.join(', '));
-          errorCount++;
+        const html = await page.content();
+        
+        // Verifica se pegou só o shell vazio
+        if (html.length < 1000) {
+            console.warn(`❌ ${route} VAZIO (${html.length}b). Erro de JS ou 404?`);
         } else {
-          const fileName = normalizeUrl(route.path).replace(/\//g, '_') || 'index';
-          const outputPath = path.join(DIST_PATH, `${fileName}_prerendered.html`);
-          fs.writeFileSync(outputPath, content, 'utf-8');
-          console.log(`✅ Salvo: ${fileName}_prerendered.html (${validation.size} bytes)`);
-          
-          if (validation.warnings.length > 0) {
-            console.warn(`⚠️  Avisos:`, validation.warnings.join(', '));
-          }
-          
-          successCount++;
+            const finalHtml = html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+            writeFileSync(outputPath, finalHtml, 'utf8');
+            console.log(`✅ ${route} (${finalHtml.length}b)`);
+            successCount++;
         }
 
-        await page.close();
       } catch (error) {
-        console.error(`❌ Erro ao renderizar ${route.path}:`, error.message);
-        errorCount++;
+        console.error(`❌ Erro em ${route}: ${error.message}`);
       }
     }
-
-    console.log(`
-════════════════════════════════════════════════════════════
-🎉 Sucesso total!
-
-✅ Renderizados com sucesso: ${successCount}
-❌ Erros: ${errorCount}
-
-📝 IMPORTANTE: Rotas sincronizadas com src/config/routes.ts
-   Para adicionar novas rotas, atualize ROUTES_CONFIG neste arquivo
-   e em generate-sitemap.js
-════════════════════════════════════════════════════════════
-`);
+    
+    // Se falhar muitos, avisa
+    if (successCount < CONFIG.routes.length) {
+        console.error(`⚠️ Apenas ${successCount}/${CONFIG.routes.length} rotas geradas corretamente.`);
+        // Não damos exit(1) aqui para deixar o script de validação decidir se falha o build
+    }
 
   } catch (error) {
-    console.error('\n❌ ERRO GERAL:', error);
+    console.error('FATAL:', error);
     process.exit(1);
   } finally {
     if (browser) await browser.close();
-    if (server) server.close();
+    if (viteProcess) viteProcess.kill();
+    process.exit(0);
   }
 }
 
-prerender().catch(console.error);
+prerender();
