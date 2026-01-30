@@ -125,9 +125,11 @@
   "hero_cta": "Listen Now",
   "hero_cta_secondary": "View Events",
 
-  "home_hero_badge": "2× World Champion - Brazilian Zouk World Championships",
+  "home_hero_badge": "2× World Champion - Zouk World Championships",
   "home_hero_title": "DJ Zen Eyer",
   "home_hero_subtitle": "2× World Champion Brazilian Zouk DJ & Producer",
+  "home_hero_slogan": "Haste is the enemy of creaminess ™",
+  "home_hero_cta_text": "Full sets and exclusive remixes. Check <0>Events</0> for schedule. Head to <1>Work With Me</1> for bookings.",
   "home_stat_champion": "World Champion",
   "home_stat_countries": "Countries",
   "home_stat_events": "Events",

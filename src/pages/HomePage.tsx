@@ -4,7 +4,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   PlayCircle, Calendar, Users, Music, Award, Trophy,
   Globe, Mail, ExternalLink, Sparkles, Download
@@ -13,6 +13,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // ============================================================================
 // 1. INTERFACES (Type Safety)
@@ -107,6 +108,7 @@ const HomePage: React.FC = () => {
   const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
   
   const isPortuguese = i18n.language?.startsWith('pt');
+  const currentLang = normalizeLanguage(i18n.language);
   const currentPath = '/';
   const currentUrl = ARTIST.site.baseUrl;
 
@@ -258,7 +260,7 @@ const HomePage: React.FC = () => {
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
                 <Trophy size={16} />
-                <span className="font-semibold">2× World Champion - Zouk World Championships</span>
+                <span className="font-semibold">{t('home_hero_badge')}</span>
               </div>
             </motion.div>
 
@@ -267,11 +269,11 @@ const HomePage: React.FC = () => {
             </motion.h1>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
-              {isPortuguese ? 'Bicampeão Mundial de Zouk Brasileiro' : '2× World Champion Brazilian Zouk DJ & Producer'}
+              {t('home_hero_subtitle')}
             </motion.p>
 
             <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
-              "{ARTIST.philosophy.slogan}" ™
+              "{t('home_hero_slogan')}"
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
@@ -287,22 +289,30 @@ const HomePage: React.FC = () => {
                 aria-label="Listen to DJ Zen Eyer on SoundCloud"
               >
                 <PlayCircle size={22} />
-                <span>{isPortuguese ? 'Ouvir no SoundCloud' : 'Listen on SoundCloud'}</span>
+                <span>{t('home_cta_soundcloud')}</span>
               </a>
               <Link
-                to={isPortuguese ? '/pt/contrate' : '/work-with-me'}
+                to={getLocalizedRoute('work-with-me', currentLang)}
                 className="btn btn-outline btn-lg flex items-center gap-2 backdrop-blur-sm"
                 aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
                 <Mail size={22} />
-                <span>{isPortuguese ? 'Contrate / Press Kit' : 'Booking / Press Kit'}</span>
+                <span>{t('home_cta_booking')}</span>
               </Link>
             </motion.div>
 
             <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
-              {isPortuguese
-                ? 'Sets completos e remixes exclusivos. Para agenda, vá para Events. Para bookings, acesse Work With Me.'
-                : 'Full sets and exclusive remixes. Check Events for schedule. Head to Work With Me for bookings.'}
+              <Trans
+                i18nKey="home_hero_cta_text"
+                components={[
+                  <Link
+                    key="events-link"
+                    to={isPortuguese ? '/pt/eventos/' : '/events/'}
+                    className="text-primary hover:text-primary/80 underline underline-offset-4"
+                  />,
+                  <Link key="work-with-me-link" to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="text-primary hover:text-primary/80 underline underline-offset-4" />
+                ]}
+              />
             </motion.p>
           </motion.div>
         </div>
@@ -343,7 +353,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-              <Link to="/events/" className="btn btn-primary btn-lg flex items-center gap-2">
+              <Link to={getLocalizedRoute('events', currentLang)} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
                 <span>{isPortuguese ? 'Agenda completa' : 'Full schedule'}</span>
               </Link>
@@ -393,7 +403,7 @@ const HomePage: React.FC = () => {
                 <Download size={20} className="text-primary" /> {isPortuguese ? 'Imprensa & Mídia' : 'Press & Media'}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Acesse fotos, bio e assets.' : 'Access photos, bio and assets.'}</p>
-              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+              <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {isPortuguese ? 'BAIXAR PRESS KIT' : 'DOWNLOAD PRESS KIT'} →
               </Link>
             </motion.div>
@@ -402,7 +412,7 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} className="text-green-500" /> {isPortuguese ? 'Contratantes' : 'Bookers'}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Leve o "Zen Experience" para o seu evento.' : 'Bring the "Zen Experience" to your event.'}</p>
-              <Link to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
+              <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {isPortuguese ? 'ORÇAMENTO' : 'REQUEST BOOKING'} →
               </Link>
             </motion.div>
@@ -436,7 +446,7 @@ const HomePage: React.FC = () => {
             {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-            <Link to="/zentribe/" className="btn btn-primary btn-lg min-w-[200px]">
+            <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">
               {isPortuguese ? 'Entrar na Tribo' : 'Join the Tribe'}
             </Link>
           </motion.div>
