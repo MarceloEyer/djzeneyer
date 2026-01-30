@@ -14,7 +14,7 @@ This document tracks pending tasks, improvements, and configuration checks for t
     - `hero-background` (WebP, 1920x1080)
     - `press-photo-*.jpg` (800x800)
     - Event images (`mentoria-dj`, `zouk-experience`)
-    - `zen-eyer-og-image.svg` (1200x630)
+    - `zen-eyer-og-image.png` (1200x630)
 
 ### 3. Testing
 - [ ] **End-to-End User Flow**:
