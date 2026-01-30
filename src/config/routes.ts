@@ -17,6 +17,7 @@
 
 import { lazy, ComponentType } from 'react';
 import { matchPath, generatePath } from 'react-router-dom';
+import routesData from './routes.data.js';
 
 // ============================================================================
 // TYPES
@@ -39,6 +40,20 @@ export interface RouteConfig {
   /** Se true, permite rotas filhas com wildcard */
   hasWildcard?: boolean;
 }
+
+interface RouteDataEntry {
+  key: string;
+  paths: Record<Language, string | string[]>;
+  isIndex?: boolean;
+  hasWildcard?: boolean;
+  prerender?: boolean;
+}
+
+interface RoutesData {
+  routes: RouteDataEntry[];
+}
+
+const ROUTES_DATA = routesData as RoutesData;
 
 // ============================================================================
 // LAZY LOADED COMPONENTS
@@ -76,157 +91,41 @@ const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 // ROUTES CONFIGURATION
 // ============================================================================
 
-export const ROUTES_CONFIG: RouteConfig[] = [
-  // Home (Index)
-  {
-    component: HomePage,
-    paths: { en: '', pt: '' },
-    isIndex: true,
-  },
+const ROUTE_COMPONENTS: Record<RouteDataEntry['key'], ComponentType> = {
+  home: HomePage,
+  about: AboutPage,
+  events: EventsPage,
+  'events-detail': EventsPage,
+  music: MusicPage,
+  'music-detail': MusicPage,
+  news: NewsPage,
+  'news-detail': NewsPage,
+  'zen-tribe': ZenTribePage,
+  'press-kit': PressKitPage,
+  'shop-product': ProductPage,
+  shop: ShopPage,
+  cart: CartPage,
+  checkout: CheckoutPage,
+  tickets: TicketsPage,
+  'tickets-checkout': TicketsCheckoutPage,
+  dashboard: DashboardPage,
+  'my-account': MyAccountPage,
+  faq: FAQPage,
+  philosophy: PhilosophyPage,
+  media: MediaPage,
+  'support-artist': SupportArtistPage,
+  'privacy-policy': PrivacyPolicyPage,
+  'return-policy': ReturnPolicyPage,
+  terms: TermsPage,
+  'code-of-conduct': CodeOfConductPage,
+};
 
-  // About
-  {
-    component: AboutPage,
-    paths: { en: 'about', pt: 'sobre' },
-  },
-
-  // Events (com rota dinâmica :id)
-  {
-    component: EventsPage,
-    paths: { en: 'events', pt: 'eventos' },
-  },
-  {
-    component: EventsPage,
-    paths: { en: 'events/:id', pt: 'eventos/:id' },
-  },
-
-  // Music (com rota dinâmica :slug)
-  {
-    component: MusicPage,
-    paths: { en: 'music', pt: 'musica' },
-  },
-  {
-    component: MusicPage,
-    paths: { en: 'music/:slug', pt: 'musica/:slug' },
-  },
-
-  // News / Blog
-  {
-    component: NewsPage,
-    paths: { en: 'news', pt: 'noticias' },
-  },
-  {
-    component: NewsPage,
-    paths: { en: 'news/:slug', pt: 'noticias/:slug' },
-  },
-
-  // Zen Tribe (múltiplos aliases)
-  {
-    component: ZenTribePage,
-    paths: { en: ['zentribe', 'tribe', 'zen-tribe'], pt: ['tribo-zen', 'tribo'] },
-  },
-
-  // Press Kit / Work With Me
-  {
-    component: PressKitPage,
-    paths: { en: 'work-with-me', pt: 'trabalhe-comigo' },
-  },
-
-  // Shop (com wildcard para subrotas)
-  {
-    component: ProductPage,
-    paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
-  },
-  {
-    component: ShopPage,
-    paths: { en: 'shop', pt: 'loja' },
-    hasWildcard: true,
-  },
-
-  // Cart / Carrinho
-  {
-    component: CartPage,
-    paths: { en: 'cart', pt: 'carrinho' },
-  },
-
-  // Checkout / Finalizar Compra
-  {
-    component: CheckoutPage,
-    paths: { en: 'checkout', pt: 'finalizar-compra' },
-  },
-
-  // Tickets / Compra de Ingressos
-  {
-    component: TicketsPage,
-    paths: { en: 'tickets', pt: 'ingressos' },
-  },
-
-  // Tickets Checkout / Finalizar Ingressos
-  {
-    component: TicketsCheckoutPage,
-    paths: { en: 'tickets-checkout', pt: 'finalizar-ingressos' },
-  },
-
-  // Dashboard
-  {
-    component: DashboardPage,
-    paths: { en: 'dashboard', pt: 'painel' },
-  },
-
-  // My Account
-  {
-    component: MyAccountPage,
-    paths: { en: 'my-account', pt: 'minha-conta' },
-  },
-
-  // FAQ
-  {
-    component: FAQPage,
-    paths: { en: 'faq', pt: 'perguntas-frequentes' },
-  },
-
-  // Philosophy
-  {
-    component: PhilosophyPage,
-    paths: { en: 'my-philosophy', pt: 'minha-filosofia' },
-  },
-
-  // Media / Press
-  {
-    component: MediaPage,
-    paths: { en: 'media', pt: 'na-midia' },
-  },
-
-  // Support the Artist / Apoie o Artista
-  {
-    component: SupportArtistPage,
-    paths: { en: 'support-the-artist', pt: 'apoie-o-artista' },
-  },
-
-  // Privacy Policy / Política de Privacidade
-  {
-    component: PrivacyPolicyPage,
-    paths: { en: 'privacy-policy', pt: 'politica-de-privacidade' },
-  },
-
-  // Return Policy / Reembolso
-  {
-    component: ReturnPolicyPage,
-    paths: { en: 'return-policy', pt: 'reembolso' },
-  },
-
-  // Terms of Use / Termos
-  {
-    component: TermsPage,
-    paths: { en: 'terms', pt: 'termos' },
-  },
-
-  // Code of Conduct / Regras de Conduta
-  {
-    component: CodeOfConductPage,
-    paths: { en: 'conduct', pt: 'regras-de-conduta' },
-  },
-];
+export const ROUTES_CONFIG: RouteConfig[] = ROUTES_DATA.routes.map(route => ({
+  component: ROUTE_COMPONENTS[route.key],
+  paths: route.paths,
+  isIndex: route.isIndex,
+  hasWildcard: route.hasWildcard,
+}));
 
 /**
  * Componente 404 (usado fora do loop de rotas)
