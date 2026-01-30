@@ -70,6 +70,8 @@ const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
 const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
 const TicketsPage = lazy(() => import('../pages/TicketsPage'));
 const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
+const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage'));
+const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 // ============================================================================
@@ -225,6 +227,18 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     component: CodeOfConductPage,
     paths: { en: 'conduct', pt: 'regras-de-conduta' },
+  },
+
+  // Zen Link (Linktree Style)
+  {
+    component: ZenLinkPage,
+    paths: { en: ['links', 'zenlink'], pt: ['links', 'zenlink'] },
+  },
+
+  // Zouk Persona Quiz
+  {
+    component: ZoukPersonaQuizPage,
+    paths: { en: 'quiz', pt: 'quiz-zouk' },
   },
 ];
 
