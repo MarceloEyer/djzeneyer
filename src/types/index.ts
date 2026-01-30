@@ -84,8 +84,6 @@ export interface Testimonial {
 export interface FlyerData {
   id: number;
   title: { rendered: string };
-  featured_image_src?: string;
-  featured_image_src_full?: string;
   _embedded?: {
     'wp:featuredmedia'?: Array<{
       source_url: string;

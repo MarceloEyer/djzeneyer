@@ -51,6 +51,49 @@ This project pushes the boundaries of what a DJ portfolio can be:
 
 ---
 
+## 🔄 Workflow de Desenvolvimento
+
+### Como funciona a sincronização automática
+
+```
+Seu Computador → [git push] → GitHub → [Auto Deploy] → djzeneyer.com
+     ↓                           ↓                            ↓
+  Edita código            GitHub Actions              Servidor Produção
+                          Build + Deploy                (5-10 min)
+```
+
+### Deploy automático configurado
+
+Quando você faz `git push origin main`, o GitHub Actions automaticamente:
+
+1. ✅ Faz build do projeto (TypeScript + Vite)
+2. ✅ Gera sitemaps otimizados
+3. ✅ Faz prerender das páginas (SSG)
+4. ✅ Deploy via SSH no servidor
+5. ✅ Limpa cache LiteSpeed + OPcache
+6. ✅ Verifica saúde do site
+
+### Push rápido
+
+```bash
+# Use o script helper
+./scripts/quick-push.sh "Descrição da alteração"
+
+# Ou manualmente
+git add .
+git commit -m "Sua mensagem"
+git push origin main
+```
+
+### Acompanhe o deploy
+
+- **GitHub Actions:** https://github.com/MarceloEyer/djzeneyer/actions
+- **Site ao vivo:** https://djzeneyer.com
+
+📖 **Documentação completa:** [`.bolt/SYNC_WORKFLOW.md`](.bolt/SYNC_WORKFLOW.md)
+
+---
+
 ## 🚀 Quick Start
 
 Get the frontend running locally in minutes:
@@ -111,3 +154,5 @@ djzeneyer/
 ---
 
 *Built with ❤️ and 🎶 by the Zen Tribe.*
+
+Teste
