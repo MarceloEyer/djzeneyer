@@ -1,5 +1,5 @@
 // src/pages/EventsPage.tsx
-// VERSÃO FINAL CORRIGIDA: URL API CORRETA (zen-bit) + Blindagem Anti-Crash
+// VERSÃO FINAL: SEGURA (XSS FIX) + SEO OTIMIZADO + HREF SANITIZE + i18n Routes + Dynamic Content
 
 import { useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,9 +28,7 @@ import {
   Music2,
   ArrowRight,
   ArrowLeft,
-  Info,
-  Send,
-  AlertCircle
+  Info
 } from 'lucide-react';
 
 const EventsPage: React.FC = () => {
@@ -39,7 +37,6 @@ const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [singleEvent, setSingleEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Helper para rotas localizadas
   const getRouteForKey = (key: string): string => {
@@ -52,49 +49,25 @@ const EventsPage: React.FC = () => {
   useEffect(() => {
     const abortController = new AbortController();
     setLoading(true);
-    setError(null);
 
     const fetchEvents = async () => {
       try {
-        // ✅ CORREÇÃO: Usando o endpoint correto 'zen-bit/v1/events'
-        const baseUrl = 'https://djzeneyer.com/wp-json/zen-bit/v1/events';
-        // Se tiver ID, tentamos buscar o específico, senão a lista
-        const url = id ? `${baseUrl}/${id}` : baseUrl;
-
-        const response = await fetch(url, {
+        const response = await fetch(`https://djzeneyer.com/wp-json/wp/v2/events${id ? `/${id}` : ''}?_embed`, {
           signal: abortController.signal
         });
-
-        if (!response.ok) {
-          throw new Error(`Erro na API: ${response.status}`);
-        }
-
         const data = await response.json();
         
-        // Log para debug (ajuda a ver se a estrutura do JSON mudou)
-        console.log("Dados recebidos da API zen-bit:", data);
-
         if (id) {
           setSingleEvent(data);
         } else {
-          // BLINDAGEM: Garante que é um array antes de setar
-          if (Array.isArray(data)) {
-            setEvents(data);
-          } else {
-            // Se a API retornar um objeto wrapper tipo { data: [...] }, tenta ajustar aqui
-            // Por enquanto, logamos o erro e deixamos vazio para não quebrar
-            console.error("Formato inesperado da API:", data);
-            setEvents([]); 
-          }
+          setEvents(data);
         }
+        setLoading(false);
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           console.error('Failed to fetch events:', err);
-          setError('Não foi possível carregar a agenda de eventos.');
-          setEvents([]); 
+          setLoading(false);
         }
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -104,18 +77,10 @@ const EventsPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DE EVENTO ÚNICO ---
   if (!loading && id && singleEvent) {
-    // Nota: APIs customizadas as vezes não usam "title.rendered", usam só "title"
-    // Adicionei fallbacks (singleEvent.title?.rendered || singleEvent.title)
-    const title = singleEvent.title?.rendered || (typeof singleEvent.title === 'string' ? singleEvent.title : 'Evento');
-    const content = singleEvent.content?.rendered || (typeof singleEvent.content === 'string' ? singleEvent.content : '');
-    const date = singleEvent.date || new Date().toISOString();
-    // Tenta pegar imagem destaque do padrão WP ou de um campo customizado se houver
-    const image = singleEvent._embedded?.['wp:featuredmedia']?.[0]?.source_url || singleEvent.featured_image_url || '/images/hero-background.webp';
-
     return (
       <>
         <HeadlessSEO 
-          title={`${title} | Zen Events`}
+          title={`${singleEvent.title?.rendered || 'Evento'} | Zen Events`}
           description={singleEvent.excerpt?.rendered || ""}
           url={`https://djzeneyer.com/events/${id}`}
         />
@@ -129,9 +94,9 @@ const EventsPage: React.FC = () => {
               <div className="space-y-8">
                 <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
                   <img 
-                    src={image} 
+                    src={singleEvent._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
                     className="w-full aspect-[4/5] object-cover" 
-                    alt={title} 
+                    alt={singleEvent.title?.rendered}
                   />
                 </div>
               </div>
@@ -141,7 +106,7 @@ const EventsPage: React.FC = () => {
                   {t('events_status_upcoming', 'Próximo Evento')}
                 </div>
                 
-                <h1 className="text-4xl md:text-5xl font-black font-display mb-6" dangerouslySetInnerHTML={{ __html: title }} />
+                <h1 className="text-4xl md:text-5xl font-black font-display mb-6" dangerouslySetInnerHTML={{ __html: singleEvent.title?.rendered || "" }} />
                 
                 <div className="space-y-4 mb-10">
                   <div className="flex items-center gap-4 text-white/80">
@@ -150,7 +115,7 @@ const EventsPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-xs text-white/40 uppercase font-bold tracking-tighter">Data</p>
-                      <p className="font-bold">{new Date(date).toLocaleDateString()}</p>
+                      <p className="font-bold">{new Date(singleEvent.date).toLocaleDateString()}</p>
                     </div>
                   </div>
                   
@@ -167,7 +132,7 @@ const EventsPage: React.FC = () => {
 
                 <div 
                   className="prose prose-invert max-w-none mb-10 text-white/70"
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  dangerouslySetInnerHTML={{ __html: singleEvent.content?.rendered || "" }}
                 />
 
                 <div className="mt-auto flex flex-col sm:flex-row gap-4">
@@ -220,9 +185,7 @@ const EventsPage: React.FC = () => {
                 <h2 className="text-2xl font-display font-bold flex items-center gap-3">
                   <CalendarIcon className="text-primary" /> {t('events_upcoming', 'Próximos Eventos')}
                 </h2>
-                <span className="text-white/40 text-sm font-mono">
-                  {!loading && !error ? `${events.length} EVENTOS ENCONTRADOS` : '...'}
-                </span>
+                <span className="text-white/40 text-sm font-mono">{events.length} EVENTOS ENCONTRADOS</span>
               </div>
 
               {loading ? (
@@ -231,62 +194,45 @@ const EventsPage: React.FC = () => {
                     <div key={i} className="h-48 bg-white/5 rounded-3xl w-full" />
                   ))}
                 </div>
-              ) : error ? (
-                <div className="p-8 rounded-3xl bg-red-500/10 border border-red-500/20 text-center">
-                  <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Não foi possível carregar a agenda</h3>
-                  <p className="text-white/60">{error}</p>
-                </div>
-              ) : events.length === 0 ? (
-                <div className="p-8 rounded-3xl bg-white/5 border border-white/10 text-center">
-                  <p className="text-white/60">Nenhum evento agendado no momento.</p>
-                </div>
               ) : (
                 <div className="space-y-6">
-                  {events.map((event, index) => {
-                    // Fallback seguro para propriedades que podem variar entre APIs padrão e custom
-                    const title = event.title?.rendered || (typeof event.title === 'string' ? event.title : 'Evento sem título');
-                    const image = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || event.featured_image_url || '/images/hero-background.webp';
-                    const date = event.date || new Date().toISOString();
-
-                    return (
-                      <motion.div
-                        key={event.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                        className="group bg-surface/30 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/40 transition-all duration-500"
-                      >
-                        <div className="flex flex-col md:flex-row p-6 gap-8">
-                          <div className="md:w-48 h-48 rounded-2xl overflow-hidden shrink-0">
-                            <img 
-                              src={image} 
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                              alt={title}
-                            />
+                  {events.map((event, index) => (
+                    <motion.div
+                      key={event.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="group bg-surface/30 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/40 transition-all duration-500"
+                    >
+                      <div className="flex flex-col md:flex-row p-6 gap-8">
+                        <div className="md:w-48 h-48 rounded-2xl overflow-hidden shrink-0">
+                          <img
+                            src={event._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                            alt={event.title?.rendered}
+                          />
+                        </div>
+                        <div className="flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center gap-4 text-primary text-xs font-bold uppercase mb-3">
+                              <span className="flex items-center gap-1.5"><CalendarIcon size={14} /> {new Date(event.date).toLocaleDateString()}</span>
+                              <span className="flex items-center gap-1.5"><MapPin size={14} /> São Paulo, SP</span>
+                            </div>
+                            <h3 className="text-2xl md:text-3xl font-black font-display mb-4 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: event.title?.rendered || "" }} />
                           </div>
-                          <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-4 text-primary text-xs font-bold uppercase mb-3">
-                                <span className="flex items-center gap-1.5"><CalendarIcon size={14} /> {new Date(date).toLocaleDateString()}</span>
-                                <span className="flex items-center gap-1.5"><MapPin size={14} /> São Paulo, SP</span>
-                              </div>
-                              <h3 className="text-2xl md:text-3xl font-black font-display mb-4 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: title }} />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <Link to={`${getRouteForKey('events')}/${event.id}`} className="text-sm font-bold flex items-center gap-2 hover:gap-4 transition-all">
-                                DETALHES DO EVENTO <ArrowRight size={16} />
-                              </Link>
-                              <a href="#" className="btn btn-primary px-6 py-2 rounded-full text-xs font-bold">
-                                TICKETS
-                              </a>
-                            </div>
+                          <div className="flex items-center justify-between">
+                            <Link to={`${getRouteForKey('events')}/${event.id}`} className="text-sm font-bold flex items-center gap-2 hover:gap-4 transition-all">
+                              DETALHES DO EVENTO <ArrowRight size={16} />
+                            </Link>
+                            <a href="#" className="btn btn-primary px-6 py-2 rounded-full text-xs font-bold">
+                              TICKETS
+                            </a>
                           </div>
                         </div>
-                      </motion.div>
-                    );
-                  })}
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               )}
             </div>

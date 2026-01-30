@@ -19,12 +19,7 @@ export default defineConfig(({ command, mode }) => {
     ].filter(Boolean),
     
     publicDir: false,
-    
-    // 🚨 CORREÇÃO CRÍTICA AQUI 🚨
-    // Mudamos para '/' absoluto. 
-    // Isso permite que o 'vite preview' no GitHub Actions encontre os arquivos JS/CSS.
-    // O caminho antigo (/wp-content/...) causava 404 no Prerender.
-    base: '/',
+    base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
     resolve: {
       alias: {
@@ -38,15 +33,15 @@ export default defineConfig(({ command, mode }) => {
       emptyOutDir: true,
       target: 'es2020',
       
-      // 🔒 PULO DO GATO ANTI-EVAL
-      minify: 'terser',
-      sourcemap: false,
+      // 🔒 AQUI É O PULO DO GATO ANTI-EVAL
+      minify: 'terser', // O Terser não usa eval por padrão
+      sourcemap: false, // Desliga os mapas (eles usam eval!)
       
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true,
-          // Segurança
+          // Força o Terser a não usar truques inseguros
           evaluate: false, 
           unsafe: false,
         },

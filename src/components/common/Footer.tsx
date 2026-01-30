@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
 import { ARTIST, getWhatsAppUrl } from '../../data/artistData';
-import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../../config/routes';
 
 declare global {
   interface Window {
@@ -41,7 +41,18 @@ const Footer: React.FC = () => {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
   const whatsappLink = getWhatsAppUrl('Hello DJ Zen Eyer!');
-  const currentLang = normalizeLanguage(i18n.language);
+
+  // Helper para criar link localizado
+  const getRouteForKey = (key: string): string => {
+    const route = ROUTES_CONFIG.find(r => {
+      const pathEn = getLocalizedPaths(r, 'en')[0];
+      return pathEn === key;
+    });
+    if (!route) return `/${key}`;
+    const normalizedLanguage = normalizeLanguage(i18n.language);
+    const localizedPath = getLocalizedPaths(route, normalizedLanguage)[0];
+    return buildFullPath(localizedPath, normalizedLanguage);
+  };
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +102,7 @@ const Footer: React.FC = () => {
           
           {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
-            <Link to={getLocalizedRoute('', currentLang)} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
+            <Link to={buildFullPath('', normalizeLanguage(i18n.language))} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
               </div>
@@ -125,10 +136,10 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
-              <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
-              <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
+              <li><Link to={getRouteForKey('events')} className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
+              <li><Link to={getRouteForKey('music')} className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
+              <li><Link to={getRouteForKey('zentribe')} className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
+              <li><Link to={getRouteForKey('shop')} className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
               <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
             </ul>
           </div>
@@ -137,13 +148,13 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
-              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_news', 'News & Blog')}</Link></li>
-              <li><Link to={getLocalizedRoute('my-philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_philosophy', 'My Philosophy')}</Link></li>
-              <li><Link to={getLocalizedRoute('work-with-me', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
-              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
-              <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
+              <li><Link to={getRouteForKey('about')} className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
+              <li><Link to={getRouteForKey('news')} className="text-white/70 hover:text-primary transition-colors">{t('footer_news', 'News & Blog')}</Link></li>
+              <li><Link to={getRouteForKey('my-philosophy')} className="text-white/70 hover:text-primary transition-colors">{t('footer_philosophy', 'My Philosophy')}</Link></li>
+              <li><Link to={getRouteForKey('work-with-me')} className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
+              <li><Link to={getRouteForKey('media')} className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
+              <li><Link to={getRouteForKey('faq')} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to={getRouteForKey('conduct')} className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
             </ul>
           </div>
 
@@ -190,9 +201,9 @@ const Footer: React.FC = () => {
           <p>{t('footer_copyright', { year: currentYear })}</p>
           
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
-            <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to={getRouteForKey('privacy-policy')} className="hover:text-primary transition-colors">Privacy Policy</Link>
             <span>•</span>
-            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">Terms of Use</Link>
+            <Link to={getRouteForKey('terms')} className="hover:text-primary transition-colors">Terms of Use</Link>
           </div>
           <div className="mt-4 space-y-1">
             <p><strong>{t('footer_legal_name', 'Razão Social')}:</strong> Marcelo Eyer Fernandes</p>

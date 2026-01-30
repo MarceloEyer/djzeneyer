@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { CreditCard, Lock, CheckCircle, AlertCircle } from 'lucide-react';
+import { CreditCard, Lock, CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
@@ -15,7 +15,7 @@ interface PaymentMethod {
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading, getCart }, clearCart = useCart();
+  const { cart, loading, getCart } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -34,6 +34,7 @@ const CheckoutPage: React.FC = () => {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchCheckoutData = async () => {
@@ -43,6 +44,7 @@ const CheckoutPage: React.FC = () => {
         const response = await fetch(url, {
           method: 'GET',
           headers: headers as HeadersInit,
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -68,14 +70,19 @@ const CheckoutPage: React.FC = () => {
               country: data.billing_address.country || '',
             }));
           }
+        } else {
+          const data = await response.json().catch(() => ({}));
+          console.error('Failed to fetch checkout data:', data);
+          setError(data.message || t('checkout_load_error', 'Failed to load checkout data.'));
         }
       } catch (error) {
         console.error('Failed to fetch checkout data', error);
+        setError(t('checkout_load_error', 'Failed to load checkout data.'));
       }
     };
 
     fetchCheckoutData();
-  }, []);
+  }, [t]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -84,9 +91,10 @@ const CheckoutPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     if (!selectedPaymentMethod) {
-      alert(t('checkout_select_payment', 'Please select a payment method.'));
+      setError(t('checkout_select_payment', 'Please select a payment method.'));
       return;
     }
 
@@ -124,6 +132,7 @@ const CheckoutPage: React.FC = () => {
         method: 'POST',
         headers: headers as HeadersInit,
         body: JSON.stringify(payload),
+        credentials: 'include',
       });
 
       const data = await response.json();
@@ -143,7 +152,7 @@ const CheckoutPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
-      alert(error.message || t('checkout_generic_error', 'An error occurred during checkout.'));
+      setError(error.message || t('checkout_generic_error', 'An error occurred during checkout.'));
     } finally {
       setIsProcessing(false);
     }
@@ -185,8 +194,10 @@ const CheckoutPage: React.FC = () => {
           <p className="text-white/70 mb-8">
             {t('checkout_success_desc', 'Thank you for your purchase. You will receive an email confirmation shortly.')}
           </p>
-            <Link to="/shop" className="btn btn-primary w-full">            {t('checkout_back_shop', 'Return to Shop')}
-            </Link>        </motion.div>
+          <a href="/shop" className="btn btn-primary w-full">
+            {t('checkout_back_shop', 'Return to Shop')}
+          </a>
+        </motion.div>
       </div>
     );
   }
@@ -206,6 +217,20 @@ const CheckoutPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Checkout Form */}
             <div className="lg:col-span-2">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-xl mb-8 flex items-start gap-3"
+                >
+                  <AlertTriangle className="shrink-0 text-red-400" />
+                  <div>
+                    <h3 className="font-bold text-red-400 mb-1">{t('error_title', 'Error')}</h3>
+                    <p className="text-sm opacity-90">{error}</p>
+                  </div>
+                </motion.div>
+              )}
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -362,7 +387,10 @@ const CheckoutPage: React.FC = () => {
                         />
                         <div>
                           <div className="font-semibold">{method.title}</div>
-                          <div className="text-xs text-white/60 mt-1" dangerouslySetInnerHTML={{ __html: method.description }} />
+                          <div
+                            className="text-xs text-white/60 mt-1"
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(method.description) }}
+                          />
                         </div>
                       </label>
                     ))

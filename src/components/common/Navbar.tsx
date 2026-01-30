@@ -14,7 +14,6 @@ import UserMenu from '../common/UserMenu';
 import { useMenu } from '../../hooks/useMenu';
 import routeMapData from '../../data/routeMap.json';
 import { normalizePath, tryDynamicMapping } from '../../utils/routeUtils';
-import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 
 // ============================================================================
 // SECURITY: Path Sanitization (Previne Open Redirect + Path Traversal)
@@ -137,7 +136,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   
   const menuItems = useMenu();
-  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   
   // 1. Scroll Lock
   useEffect(() => {
@@ -175,27 +173,14 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
   const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
   const handleLoginButtonClick = useCallback(() => { setIsMenuOpen(false); onLoginClick(); }, [onLoginClick]);
   
-  const homeLink = useMemo(() => getLocalizedRoute('', currentLang), [currentLang]);
-  const resolveMenuUrl = useCallback((url: string): string => {
-    const rawUrl = url || '/';
-    if (/^https?:\/\//i.test(rawUrl)) return rawUrl;
-
-    const [pathWithQuery, hash = ''] = rawUrl.split('#');
-    const [path, query = ''] = pathWithQuery.split('?');
-    const localizedPath = getLocalizedRoute(path, currentLang);
-    const queryPart = query ? `?${query}` : '';
-    const hashPart = hash ? `#${hash}` : '';
-
-    return `${localizedPath}${queryPart}${hashPart}`;
-  }, [currentLang]);
+  const homeLink = useMemo(() => i18n.language?.startsWith('pt') ? '/pt' : '/', [i18n.language]);
 
   // Renderiza Links
   const renderNavLinks = useCallback((isMobile = false) => {
     if (!menuItems || menuItems.length === 0) return null;
     
     return menuItems.map((item) => {
-      const localizedUrl = resolveMenuUrl(item.url || '/');
-      const safeUrl = sanitizePath(localizedUrl);
+      const safeUrl = sanitizePath(item.url || '/');
       const safeTitle = sanitizeHTML(item.title || '');
       const isExternal = item.target === '_blank';
       const visuals = getLinkVisuals(safeUrl);

@@ -36,12 +36,6 @@ add_action('rest_api_init', function() {
         'permission_callback' => 'is_user_logged_in',
     ]);
 
-    register_rest_route($ns, '/gamipress/user-data', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_gamipress_user_data',
-        'permission_callback' => 'is_user_logged_in',
-    ]);
-
     // Register Custom User Meta for REST
     register_meta('user', 'zen_login_streak', [
         'show_in_rest' => true,
@@ -138,7 +132,6 @@ function djz_get_products($request) {
     
     if ($query->have_posts()) {
         $product_objects = [];
-        $product_ids = [];
         $all_img_ids = [];
 
         while ($query->have_posts()) {
@@ -149,7 +142,6 @@ function djz_get_products($request) {
             if (!$product) continue;
             
             $product_objects[] = $product;
-            $product_ids[] = $product->get_id();
 
             $img_ids = $product->get_gallery_image_ids();
             if ($product->get_image_id()) {
@@ -170,13 +162,7 @@ function djz_get_products($request) {
             }
         }
 
-        // Batch prime caches for terms
-        if (!empty($product_ids)) {
-            update_object_term_cache($product_ids, 'product');
-        }
-
         foreach ($product_objects as $product) {
-            $id = $product->get_id(); // Fix: Update ID for current loop iteration
             $images = [];
             $img_ids = $product->get_gallery_image_ids();
             
@@ -209,7 +195,7 @@ function djz_get_products($request) {
                 }
             }
             
-            $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+            $categories = wp_get_post_terms($id, 'product_cat');
             if (is_wp_error($categories)) {
                 $categories = [];
             }
@@ -225,8 +211,8 @@ function djz_get_products($request) {
                 'stock_status' => $product->get_stock_status(),
                 'images' => $images,
                 'short_description' => $product->get_short_description(),
-                'description' => !empty($slug) ? $product->get_description() : '', // Optimization: Only return description for single view
-                'permalink' => get_permalink($product->get_id()),
+                'description' => $product->get_description(),
+                'permalink' => get_permalink($id),
                 'categories' => array_map(function($term) {
                     return [
                         'id' => $term->term_id,
@@ -310,101 +296,6 @@ function djz_update_profile($request) {
     return rest_ensure_response([
         'success' => true,
         'message' => 'Profile updated!',
-    ]);
-}
-
-/**
- * GamiPress User Data (Aggregated)
- */
-function djz_get_gamipress_user_data($request) {
-    $user_id = get_current_user_id();
-
-    // 1. Points
-    $points = (int) get_user_meta($user_id, '_gamipress_points_points', true);
-
-    // 2. Rank
-    $rank_id = (int) get_user_meta($user_id, '_gamipress_rank_rank', true);
-    $rank_title = 'Zen Novice';
-    if ($rank_id > 0) {
-        $rank_post = get_post($rank_id);
-        if ($rank_post) {
-            $rank_title = $rank_post->post_title;
-        }
-    }
-
-    // 3. Level Calculation
-    $level = floor($points / 100) + 1;
-    $next_level_points = $level * 100;
-    $progress = min(100, (($points % 100) / 100) * 100);
-
-    // 4. Achievements
-    $achievements = [];
-
-    if (function_exists('gamipress_get_user_earnings')) {
-        $earnings = gamipress_get_user_earnings($user_id, [
-            'limit' => 100,
-            'orderby' => 'date',
-            'order' => 'DESC',
-            'post_type' => 'achievement',
-        ]);
-
-        if (!empty($earnings)) {
-            $achievement_ids = [];
-            $earning_map = []; // achievement_id => earning_date
-
-            foreach ($earnings as $earning) {
-                // Support both object and array return types just in case
-                $e_obj = (object) $earning;
-                $a_id = $e_obj->post_id ?? 0;
-
-                if ($a_id) {
-                    $achievement_ids[] = $a_id;
-                    if (!isset($earning_map[$a_id])) {
-                        $earning_map[$a_id] = $e_obj->date ?? '';
-                    }
-                }
-            }
-
-            $achievement_ids = array_unique($achievement_ids);
-
-            if (!empty($achievement_ids)) {
-                $posts = get_posts([
-                    'post_type' => 'any',
-                    'include' => $achievement_ids,
-                    'numberposts' => -1,
-                ]);
-
-                foreach ($posts as $post) {
-                    $img_id = get_post_thumbnail_id($post->ID);
-                    $img_url = $img_id ? wp_get_attachment_url($img_id) : '';
-
-                    // Cleanup content
-                    $description = strip_tags($post->post_content);
-                    if (empty($description)) {
-                        $description = $post->post_excerpt;
-                    }
-
-                    $achievements[] = [
-                        'id' => $post->ID,
-                        'title' => $post->post_title,
-                        'description' => trim($description),
-                        'image' => $img_url,
-                        'earned' => true,
-                        'date_earned' => $earning_map[$post->ID] ?? '',
-                    ];
-                }
-            }
-        }
-    }
-
-    return rest_ensure_response([
-        'points' => $points,
-        'level' => $level,
-        'rank' => $rank_title,
-        'rankId' => $rank_id,
-        'nextLevelPoints' => $next_level_points,
-        'progressToNextLevel' => $progress,
-        'achievements' => $achievements,
     ]);
 }
 

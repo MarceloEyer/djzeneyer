@@ -1,19 +1,76 @@
 {
-  "github": {
-    "enabled": true,
-    "repository": "MarceloEyer/djzeneyer",
-    "branch": "main",
-    "autoSync": true,
-    "syncOnSave": true
-  },
-  "project": {
-    "name": "DJ Zen Eyer Website",
-    "type": "react-vite",
-    "framework": "react-typescript"
+  "name": "DJ Zen Eyer",
+  "version": "1.1.0",
+  "description": "High-performance headless WordPress + React SPA for 2× World Champion Brazilian Zouk DJ",
+  "type": "fullstack",
+  "framework": "react",
+  "buildTool": "vite",
+  "language": "typescript",
+  "styling": "tailwindcss",
+  "features": [
+    "spa",
+    "i18n",
+    "ssg",
+    "pwa",
+    "ecommerce",
+    "authentication",
+    "gamification"
+  ],
+  "backend": {
+    "type": "wordpress-headless",
+    "api": "rest",
+    "plugins": [
+      "woocommerce",
+      "gamipress",
+      "polylang",
+      "mailpoet"
+    ],
+    "customPlugins": [
+      "zen-seo-lite",
+      "zeneyer-auth",
+      "zen-bit"
+    ]
   },
   "deployment": {
-    "provider": "github-actions",
-    "autoDeployOnPush": true,
-    "target": "production"
+    "platform": "hostinger-vps",
+    "cdn": "cloudflare",
+    "cache": "litespeed",
+    "ci": "github-actions"
+  },
+  "performance": {
+    "targets": {
+      "lcp": "< 1.8s",
+      "cls": "< 0.05",
+      "fid": "< 100ms",
+      "bundle": "< 200KB gzipped"
+    },
+    "optimizations": [
+      "code-splitting",
+      "lazy-loading",
+      "image-optimization",
+      "static-generation",
+      "compression"
+    ]
+  },
+  "i18n": {
+    "defaultLanguage": "en",
+    "languages": ["en", "pt"],
+    "detection": "browser",
+    "fallback": "en"
+  },
+  "seo": {
+    "sitemap": true,
+    "robots": true,
+    "structured-data": true,
+    "og-tags": true,
+    "canonical": true,
+    "hreflang": true
+  },
+  "security": {
+    "cors": "restricted",
+    "csp": "strict",
+    "hsts": true,
+    "jwt": true,
+    "rate-limiting": true
   }
 }

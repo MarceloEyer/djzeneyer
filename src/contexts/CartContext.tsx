@@ -15,7 +15,6 @@ interface CartContextType {
   cart: CartData | null;
   getCart: () => Promise<void>;
   removeItem: (key: string) => Promise<void>;
-  clearCart: () => Promise<void>;
   loading: boolean;
 }
 
@@ -76,39 +75,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [getCart]);
 
-  const clearCart = useCallback(async () => {
-    setLoading(true);
-    // Uses the dedicated WooCommerce Store API endpoint to clear the cart
-    // Using DELETE on /items clears all items according to documentation
-    const apiUrl = buildApiUrl('wc/store/v1/cart/items');
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': (window as any).wpData?.nonce || ''
-        },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to clear cart');
-      }
-
-      // Update cart state after clearing
-      // We call getCart() to ensure we have the correct empty state structure (totals, etc)
-      await getCart();
-
-    } catch (err: any) {
-      console.error("[CartContext] Error clearing cart:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [getCart]);
-
-  const value = { cart, getCart, removeItem, clearCart, loading };
+  const value = { cart, getCart, removeItem, loading };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

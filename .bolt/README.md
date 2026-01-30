@@ -1,78 +1,75 @@
-# Configuração do bolt.new
+# .bolt Configuration
 
-Este projeto está configurado para sincronização automática com o GitHub.
+This directory contains configuration and context files for AI assistants (like Bolt.new, Claude, etc.) working on this project.
 
-## Status Atual
+## 📑 Files Index
 
-✅ **Repositório GitHub:** `MarceloEyer/djzeneyer`
-✅ **Branch Ativo:** `main`
-✅ **Auto-Sync:** Habilitado
-✅ **Sync on Save:** Habilitado
+### Core Configuration
 
-## Como Funciona
+| File | Purpose | Size |
+|------|---------|------|
+| **config.json** | Project metadata and tech stack | 1.5 KB |
+| **prompt** | Comprehensive AI assistant instructions | 6.5 KB |
+| **architecture-diagram.md** | Visual system architecture | 18 KB |
+| **quick-reference.md** | Fast reference for common tasks | 3.7 KB |
+| **CHANGELOG.md** | Version history | 1.0 KB |
+| **.gitignore** | Ignored temporary files | 80 B |
 
-Quando você salva um arquivo no bolt.new:
-
-1. ✅ O arquivo é automaticamente adicionado ao Git
-2. ✅ Um commit é criado com as alterações
-3. ✅ O commit é enviado para o GitHub (branch `main`)
-4. ✅ O GitHub Actions detecta o push
-5. ✅ Deploy automático é executado (~5-10 minutos)
-6. ✅ Site atualizado em https://djzeneyer.com
-
-## Verificação de Sincronização
-
-No bolt.new, você deve ver:
-
-- 🟢 "Synced to GitHub" (círculo verde)
-- 📍 Branch ativo: `djzeneyer/main`
-- ⚡ Sincronização automática ativa
-
-## Arquivos de Configuração
-
-- `.bolt/config.json` - Configuração do bolt.new
-- `.github/workflows/deploy.yml` - GitHub Actions para deploy automático
-- `.git/` - Repositório Git local
-
-## Troubleshooting
-
-### Sincronização não está funcionando?
-
-1. Verifique se o bolt.new mostra "Synced to GitHub"
-2. Clique no ícone do GitHub no bolt.new para reconectar
-3. Verifique se o branch está configurado como `main`
-4. Teste fazendo uma alteração simples em um arquivo
-
-### Deploy não está acontecendo?
-
-1. Acesse: https://github.com/MarceloEyer/djzeneyer/actions
-2. Verifique se o workflow "🚀 Production Deploy" está rodando
-3. Clique no workflow para ver logs em tempo real
-4. Se houver erro, verifique as credenciais e secrets no GitHub
-
-## Links Úteis
-
-- 🌐 **Site:** https://djzeneyer.com
-- 📦 **Repositório:** https://github.com/MarceloEyer/djzeneyer
-- 🚀 **Actions:** https://github.com/MarceloEyer/djzeneyer/actions
-- 📊 **Branches:** https://github.com/MarceloEyer/djzeneyer/branches
-
-## Configuração Manual (se necessário)
-
-Se a sincronização automática parar de funcionar:
-
-```bash
-# Verificar configuração
-git remote -v
-git branch
-
-# Reconectar ao GitHub (se necessário)
-git remote add origin https://github.com/MarceloEyer/djzeneyer.git
-git branch -M main
-git push -u origin main
-```
+**Total:** 7 files, 775 lines, 48 KB
 
 ---
 
-**Última atualização:** 2026-01-29
-**Configurado por:** AI Assistant (Claude)
+## 📄 File Descriptions
+
+### `config.json`
+Project metadata and configuration for AI assistants:
+- Tech stack information
+- Framework and build tool details
+- Performance targets
+- Security settings
+- Feature flags
+
+### `prompt`
+Comprehensive instructions for AI assistants working on this codebase:
+- Architecture overview
+- Development rules and best practices
+- Common tasks and workflows
+- API endpoint references
+- Brand guidelines
+
+### `architecture-diagram.md`
+Visual diagrams showing:
+- System architecture overview
+- Frontend component structure
+- Data flow patterns
+- Build and deployment pipeline
+- Security layers
+- Performance optimization stack
+
+### `quick-reference.md`
+Fast reference guide containing:
+- Common commands
+- API testing snippets
+- Troubleshooting solutions
+- Design system guidelines
+- Deployment checklist
+
+### Usage
+
+When working with AI assistants on this project, reference these files to ensure:
+1. Consistent code quality
+2. Adherence to architectural patterns
+3. Proper handling of bilingual content
+4. Maintenance of performance benchmarks
+5. Security best practices
+
+## Important Notes
+
+- **DO NOT** modify these files unless you're updating project architecture or guidelines
+- **DO** reference the `prompt` file when onboarding new AI assistants
+- **KEEP** these files in sync with actual project configuration
+- **UPDATE** version numbers when making significant project changes
+
+---
+
+**Last Updated:** January 2026
