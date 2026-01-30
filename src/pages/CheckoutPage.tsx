@@ -1,26 +1,81 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { CreditCard, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
+
+interface PaymentMethod {
+  id: string;
+  title: string;
+  description: string;
+}
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading } = useCart();
+  const { cart, loading, getCart }, clearCart = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
+
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     address: '',
     city: '',
+    state: '',
     zip: '',
     country: ''
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+
+  React.useEffect(() => {
+    const fetchCheckoutData = async () => {
+      try {
+        const url = buildApiUrl('wc/store/v1/checkout');
+        const headers = getAuthHeaders();
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: headers as HeadersInit,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.payment_methods) {
+            setPaymentMethods(data.payment_methods);
+            // Select the first one by default if available
+            if (data.payment_methods.length > 0) {
+              setSelectedPaymentMethod(data.payment_methods[0].id);
+            }
+          }
+          if (data.billing_address) {
+            setFormData(prev => ({
+              ...prev,
+              firstName: data.billing_address.first_name || '',
+              lastName: data.billing_address.last_name || '',
+              email: data.billing_address.email || '',
+              phone: data.billing_address.phone || '',
+              address: data.billing_address.address_1 || '',
+              city: data.billing_address.city || '',
+              state: data.billing_address.state || '',
+              zip: data.billing_address.postcode || '',
+              country: data.billing_address.country || '',
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch checkout data', error);
+      }
+    };
+
+    fetchCheckoutData();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,16 +84,69 @@ const CheckoutPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!selectedPaymentMethod) {
+      alert(t('checkout_select_payment', 'Please select a payment method.'));
+      return;
+    }
+
     setIsProcessing(true);
 
-    // Simulate API call
-    // TODO: Integrate with real Payment Gateway (Stripe/PagSeguro/WooCommerce)
-    // This is a mock implementation for the frontend prototype.
-    setTimeout(() => {
+    try {
+      const url = buildApiUrl('wc/store/v1/checkout');
+      const headers = getAuthHeaders();
+
+      const payload = {
+        billing_address: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address_1: formData.address,
+          city: formData.city,
+          state: formData.state,
+          postcode: formData.zip,
+          country: formData.country,
+        },
+        shipping_address: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          address_1: formData.address,
+          city: formData.city,
+          state: formData.state,
+          postcode: formData.zip,
+          country: formData.country,
+        },
+        payment_method: selectedPaymentMethod,
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers as HeadersInit,
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Checkout failed');
+      }
+
+      // Refresh cart (should be empty)
+      await getCart();
+
+      // Handle redirect or success
+      if (data.payment_result?.redirect_url) {
+        window.location.href = data.payment_result.redirect_url;
+      } else {
+        setOrderSuccess(true);
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      alert(error.message || t('checkout_generic_error', 'An error occurred during checkout.'));
+    } finally {
       setIsProcessing(false);
-      setOrderSuccess(true);
-      // TODO: Clear cart using a context method like clearCart() after successful order
-    }, 2000);
+    }
   };
 
   // Improved price formatting
@@ -77,10 +185,8 @@ const CheckoutPage: React.FC = () => {
           <p className="text-white/70 mb-8">
             {t('checkout_success_desc', 'Thank you for your purchase. You will receive an email confirmation shortly.')}
           </p>
-          <a href="/shop" className="btn btn-primary w-full">
-            {t('checkout_back_shop', 'Return to Shop')}
-          </a>
-        </motion.div>
+            <Link to="/shop" className="btn btn-primary w-full">            {t('checkout_back_shop', 'Return to Shop')}
+            </Link>        </motion.div>
       </div>
     );
   }
@@ -136,16 +242,28 @@ const CheckoutPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm text-white/60 mb-1">{t('form_email', 'Email Address')}</label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-white/60 mb-1">{t('form_email', 'Email Address')}</label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-white/60 mb-1">{t('form_phone', 'Phone')}</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -173,6 +291,20 @@ const CheckoutPage: React.FC = () => {
                       />
                     </div>
                     <div>
+                      <label className="block text-sm text-white/60 mb-1">{t('form_state', 'State')}</label>
+                      <input
+                        type="text"
+                        name="state"
+                        required
+                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
                       <label className="block text-sm text-white/60 mb-1">{t('form_zip', 'ZIP Code')}</label>
                       <input
                         type="text"
@@ -180,6 +312,17 @@ const CheckoutPage: React.FC = () => {
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.zip}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-white/60 mb-1">{t('form_country', 'Country')}</label>
+                      <input
+                        type="text"
+                        name="country"
+                        required
+                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        value={formData.country}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -198,12 +341,34 @@ const CheckoutPage: React.FC = () => {
                   {t('checkout_payment', 'Payment Method')}
                 </h2>
 
-                <div className="p-4 bg-black/20 rounded-lg border border-white/10 flex items-center gap-4 opacity-50 cursor-not-allowed">
-                  <CreditCard className="text-white/60" />
-                  <div>
-                    <div className="font-semibold">{t('payment_credit_card', 'Credit Card')}</div>
-                    <div className="text-xs text-white/40">{t('payment_secure_mock', 'Secure payment via Stripe (Mock)')}</div>
-                  </div>
+                <div className="space-y-4">
+                  {paymentMethods.length > 0 ? (
+                    paymentMethods.map((method) => (
+                      <label
+                        key={method.id}
+                        className={`p-4 rounded-lg border flex items-start gap-4 cursor-pointer transition-colors ${
+                          selectedPaymentMethod === method.id
+                            ? 'border-primary bg-primary/10'
+                            : 'border-white/10 hover:border-white/30 bg-black/20'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value={method.id}
+                          checked={selectedPaymentMethod === method.id}
+                          onChange={() => setSelectedPaymentMethod(method.id)}
+                          className="mt-1"
+                        />
+                        <div>
+                          <div className="font-semibold">{method.title}</div>
+                          <div className="text-xs text-white/60 mt-1" dangerouslySetInnerHTML={{ __html: method.description }} />
+                        </div>
+                      </label>
+                    ))
+                  ) : (
+                    <div className="text-white/60 italic">{t('checkout_no_payments', 'No payment methods available.')}</div>
+                  )}
                 </div>
 
                 <div className="mt-4 flex items-center gap-2 text-sm text-white/60">

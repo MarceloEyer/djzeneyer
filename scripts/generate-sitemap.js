@@ -1,170 +1,81 @@
-// scripts/generate-sitemap.js
-// v5.0 - UNIFIED: Usa routes.ts como única fonte da verdade
+#!/usr/bin/env node
+/**
+ * Sitemap Generator v7.0 - SIMPLIFIED
+ * Gera sitemaps baseado em arquivo JSON estático
+ */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// ============================================================================
-// CONFIGURATION
-// ============================================================================
-
-const BASE_URL = 'https://djzeneyer.com';
-const PUBLIC_DIR = '../public';
-
-const PAGES_SITEMAP = 'sitemap-pages.xml';
-const INDEX_SITEMAP = 'sitemap.xml';
-const WP_DYNAMIC_SITEMAP = 'sitemap-dynamic.xml';
-const EVENTS_SITEMAP = 'sitemap-events.xml';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Routes imported from routes.ts (manually extracted - TypeScript can't be imported directly in Node)
-// This list is synced with src/config/routes.ts
-const ROUTES_FROM_CONFIG = [
-  { en: '', pt: '' },  // Home
-  { en: 'about', pt: 'sobre' },
-  { en: 'events', pt: 'eventos' },
-  { en: 'music', pt: 'musica' },
-  { en: 'news', pt: 'noticias' },
-  { en: ['zentribe', 'tribe', 'zen-tribe'], pt: ['tribo-zen', 'tribo'] },
-  { en: 'work-with-me', pt: 'trabalhe-comigo' },
-  { en: 'shop', pt: 'loja' },
-  { en: 'faq', pt: 'perguntas-frequentes' },
-  { en: 'my-philosophy', pt: 'minha-filosofia' },
-  { en: 'media', pt: 'na-midia' },
-  { en: 'support-the-artist', pt: 'apoie-o-artista' },
-  { en: 'privacy-policy', pt: 'politica-de-privacidade' },
-  { en: 'return-policy', pt: 'reembolso' },
-  { en: 'terms', pt: 'termos' },
-  { en: 'conduct', pt: 'regras-de-conduta' },
-];
+const BASE_URL = 'https://djzeneyer.com';
+const PUBLIC_DIR = path.resolve(__dirname, '../public');
+const ROUTES_DATA = path.resolve(__dirname, 'routes-config.json');
 
-// Routes to exclude from sitemap (auth, admin, dynamic)
-const EXCLUDED_ROUTES = [
-  'dashboard', 'painel',
-  'my-account', 'minha-conta',
-  'cart', 'carrinho',
-  'checkout', 'finalizar-compra',
-  'tickets-checkout', 'finalizar-ingressos',
-  'order-complete', 'pedido-completo',
-];
+console.log('🗺️  Sitemap Generator v7.0 - SIMPLIFIED\n');
 
-// ============================================================================
-// HELPERS
-// ============================================================================
+function buildUrlEntry(route, date) {
+  const cleanPath = route === '/' ? '' : route.replace(/^\/+/, '');
+  const enUrl = cleanPath === '' ? `${BASE_URL}/` : `${BASE_URL}/${cleanPath}`;
+  const ptUrl = cleanPath === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${cleanPath}`;
 
-const ensureSlash = (str) => {
-  if (!str || str === '') return '/';
-  return str.endsWith('/') ? str : `${str}/`;
-};
+  const priority = cleanPath === '' ? '1.0' : '0.8';
 
-const shouldExclude = (path) => {
-  return EXCLUDED_ROUTES.some(excluded => path.includes(excluded)) || 
-         path.includes(':') ||  // Dynamic routes
-         path.includes('*');    // Wildcard routes
-};
+  return `
+  <url>
+    <loc>${enUrl}</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${priority}</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />
+    <xhtml:link rel="alternate" hreflang="pt" href="${ptUrl}" />
+  </url>`;
+}
 
-// ============================================================================
-// MAIN
-// ============================================================================
+function generateSitemaps() {
+  try {
+    const routesData = JSON.parse(fs.readFileSync(ROUTES_DATA, 'utf-8'));
+    const date = new Date().toISOString();
 
-try {
-  console.log('🗺️  Iniciando geração da Estrutura de Sitemaps v5.0 (UNIFIED)...');
-
-  const date = new Date().toISOString();
-  let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
+    let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
 
-  let count = 0;
-  const processedUrls = new Set(); // Avoid duplicates
+    let urlCount = 0;
 
-  ROUTES_FROM_CONFIG.forEach(route => {
-    // Handle array paths (multiple aliases)
-    const enPaths = Array.isArray(route.en) ? route.en : [route.en];
-    const ptPaths = Array.isArray(route.pt) ? route.pt : [route.pt];
+    for (const route of routesData.routes) {
+      pagesXml += buildUrlEntry(route, date);
+      urlCount++;
+    }
 
-    // Use first path as canonical
-    const enPath = enPaths[0];
-    const ptPath = ptPaths[0];
+    pagesXml += '\n</urlset>';
 
-    // Skip excluded routes
-    if (shouldExclude(enPath) || shouldExclude(ptPath)) return;
+    fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), pagesXml);
+    console.log(`✅ sitemap-pages.xml created (${urlCount} URLs)\n`);
 
-    // Build EN URL
-    const urlEn = enPath === '' 
-      ? `${BASE_URL}/` 
-      : `${BASE_URL}${ensureSlash('/' + enPath)}`;
-
-    // Build PT URL
-    const urlPt = ptPath === ''
-      ? `${BASE_URL}/pt/`
-      : `${BASE_URL}/pt${ensureSlash('/' + ptPath)}`;
-
-    // Skip if already processed
-    if (processedUrls.has(urlEn)) return;
-    processedUrls.add(urlEn);
-    processedUrls.add(urlPt);
-
-    // EN entry with PT alternate
-    pagesXml += `
-  <url>
-    <loc>${urlEn}</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${urlEn === `${BASE_URL}/` ? '1.0' : '0.8'}</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="${urlEn}" />
-    <xhtml:link rel="alternate" hreflang="pt" href="${urlPt}" />
-  </url>`;
-    count++;
-
-    // PT entry with EN alternate
-    pagesXml += `
-  <url>
-    <loc>${urlPt}</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="pt" href="${urlPt}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${urlEn}" />
-  </url>`;
-    count++;
-  });
-
-  pagesXml += `\n</urlset>`;
-
-  // Write pages sitemap
-  const pagesPath = path.resolve(__dirname, PUBLIC_DIR, PAGES_SITEMAP);
-  fs.writeFileSync(pagesPath, pagesXml);
-  console.log(`✅ ${PAGES_SITEMAP} gerado com sucesso (${count} URLs).`);
-
-  // Generate sitemap index
-  let indexXml = `<?xml version="1.0" encoding="UTF-8"?>
+    const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>${BASE_URL}/${PAGES_SITEMAP}</loc>
-    <lastmod>${date}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${BASE_URL}/${WP_DYNAMIC_SITEMAP}</loc>
-    <lastmod>${date}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${BASE_URL}/${EVENTS_SITEMAP}</loc>
+    <loc>${BASE_URL}/sitemap-pages.xml</loc>
     <lastmod>${date}</lastmod>
   </sitemap>
 </sitemapindex>`;
 
-  const indexPath = path.resolve(__dirname, PUBLIC_DIR, INDEX_SITEMAP);
-  fs.writeFileSync(indexPath, indexXml);
-  console.log(`✅ ${INDEX_SITEMAP} (Index) atualizado.`);
-  console.log('');
-  console.log('📝 IMPORTANTE: Este script usa uma cópia manual das rotas do routes.ts');
-  console.log('   Quando adicionar novas rotas, atualize ROUTES_FROM_CONFIG neste arquivo.');
-  console.log('   Fonte da verdade: src/config/routes.ts');
+    fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), sitemapIndex);
+    console.log('✅ sitemap.xml index created\n');
 
-} catch (error) {
-  console.error('❌ Erro:', error);
-  process.exit(1);
+    console.log('════════════════════════════════════════');
+    console.log('✅ Sitemap generation complete!');
+    console.log(`📄 Total URLs: ${urlCount}`);
+    console.log(`📍 Location: ${PUBLIC_DIR}`);
+    console.log('════════════════════════════════════════\n');
+
+  } catch (error) {
+    console.error('❌ Error:', error);
+    process.exit(1);
+  }
 }
+
+generateSitemaps();

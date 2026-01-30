@@ -1,8 +1,9 @@
 // src/hooks/useGamiPress.ts
-// v7.1 - NATIVE GAMIPRESS REST API + JWT AUTH
+// v7.2 - OPTIMIZED GAMIPRESS API AGGREGATION
 
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { buildApiUrl } from '../config/api';
 
 /* =========================
  * INTERFACES
@@ -10,11 +11,11 @@ import { useUser } from '../contexts/UserContext';
 
 export interface Achievement {
   id: number;
-  title: { rendered: string };
-  content: { rendered: string };
-  featured_media: number;
+  title: string;
+  description: string;
+  image: string;
   earned: boolean;
-  date_earned?: string;
+  date_earned: string;
 }
 
 export interface GamiPressData {
@@ -33,15 +34,6 @@ interface GamiPressHookResponse extends GamiPressData {
   error: string | null;
   refresh: () => void;
 }
-
-/* =========================
- * CONFIGURAÇÃO
- * ========================= */
-
-// Slugs padrão do GamiPress (ajustar depois de verificar no WP-CLI)
-const POINTS_TYPE_SLUG = 'points'; // Padrão: 'points'
-const RANK_TYPE_SLUG = 'rank'; // Padrão: 'rank'
-const ACHIEVEMENT_TYPE_SLUG = 'achievement'; // Padrão: 'achievement'
 
 /* =========================
  * HOOK
@@ -65,130 +57,31 @@ export const useGamiPress = (): GamiPressHookResponse => {
       setError(null);
 
       const wpData = (window as any).wpData || {};
-      const wpRestUrl = wpData.restUrl || 'https://djzeneyer.com/wp-json/';
+      const endpoint = buildApiUrl('djzeneyer/v1/gamipress/user-data');
 
-      // ✅ HEADERS COM AUTENTICAÇÃO JWT
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`, // 🔑 JWT Token do ZenEyer Auth
+        'Authorization': `Bearer ${user.token}`,
       };
 
-      // Se tiver nonce do WordPress, adicionar também (fallback)
       if (wpData.nonce) {
         headers['X-WP-Nonce'] = wpData.nonce;
       }
 
-      // ✅ BUSCAR DADOS DO USUÁRIO (com autenticação)
-      const userEndpoint = `${wpRestUrl}wp/v2/users/me`;
-
-      const response = await fetch(userEndpoint, {
+      const response = await fetch(endpoint, {
         headers,
-        credentials: 'include', // Incluir cookies
+        credentials: 'include',
       });
 
       if (!response.ok) {
         if (response.status === 401) {
-            const errorText = await response.text();
-            console.error('[useGamiPress] ❌ 401 Unauthorized:', errorText);
-            try {
-                const errorJson = JSON.parse(errorText);
-                console.error('[useGamiPress] Error Details:', errorJson);
-            } catch (e) {
-                // Ignore parse error
-            }
+            console.error('[useGamiPress] ❌ 401 Unauthorized');
         }
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const userData = await response.json();
-
-      // ✅ EXTRAIR DADOS DO GAMIPRESS QUE JÁ ESTÃO NO USER.META
-      const meta = userData.meta || {};
-
-      // Points
-      const pointsKey = `_gamipress_${POINTS_TYPE_SLUG}_points`;
-      const points = Number(meta[pointsKey]) || 0;
-
-      // Rank
-      const rankKey = `_gamipress_${RANK_TYPE_SLUG}_rank`;
-      const rankId = Number(meta[rankKey]) || 0;
-
-      // Buscar informações do rank
-      let rankName = 'Zen Novice';
-      if (rankId > 0) {
-        try {
-          const rankResponse = await fetch(
-            `${wpRestUrl}wp/v2/${RANK_TYPE_SLUG}/${rankId}`,
-            { headers, credentials: 'include' }
-          );
-          
-          if (rankResponse.ok) {
-            const rankData = await rankResponse.json();
-            rankName = rankData.title?.rendered || rankName;
-          }
-        } catch (err) {
-          console.warn('[useGamiPress] Failed to fetch rank details:', err);
-        }
-      }
-
-      // Calcular level (100 points = 1 level)
-      const level = Math.floor(points / 100) + 1;
-      const nextLevelPoints = level * 100;
-      const progressToNextLevel = Math.min(100, ((points % 100) / 100) * 100);
-
-      // ✅ BUSCAR ACHIEVEMENTS DO ENDPOINT NATIVO
-      let achievements: Achievement[] = [];
-      
-      try {
-        // Buscar user earnings (conquistas desbloqueadas)
-        const earningsResponse = await fetch(
-          `${wpRestUrl}wp/v2/gamipress-user-earnings?user_id=${user.id}&post_type=${ACHIEVEMENT_TYPE_SLUG}&per_page=100`,
-          { headers, credentials: 'include' }
-        );
-
-        if (earningsResponse.ok) {
-          const earnings = await earningsResponse.json();
-          
-          // Buscar detalhes de cada achievement
-          const achievementIds = earnings.map((e: any) => e.post_id).filter(Boolean);
-          
-          if (achievementIds.length > 0) {
-            const achievementsResponse = await fetch(
-              `${wpRestUrl}wp/v2/${ACHIEVEMENT_TYPE_SLUG}?include=${achievementIds.join(',')}&per_page=100`,
-              { headers, credentials: 'include' }
-            );
-            
-            if (achievementsResponse.ok) {
-              const achievementsData = await achievementsResponse.json();
-              
-              achievements = achievementsData.map((ach: any) => ({
-                id: ach.id,
-                title: ach.title?.rendered || 'Achievement',
-                description: ach.content?.rendered?.replace(/<[^>]*>/g, '') || '',
-                image: ach.featured_media 
-                  ? `${wpRestUrl}wp/v2/media/${ach.featured_media}` 
-                  : '',
-                earned: true,
-                date_earned: earnings.find((e: any) => e.post_id === ach.id)?.date || ''
-              }));
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('[useGamiPress] Failed to fetch achievements:', err);
-      }
-
-      const parsedData: GamiPressData = {
-        points,
-        level,
-        rank: rankName,
-        rankId,
-        nextLevelPoints,
-        progressToNextLevel,
-        achievements,
-      };
-
-      setData(parsedData);
+      const newData = await response.json();
+      setData(newData);
 
     } catch (err) {
       console.error('[useGamiPress]', err);

@@ -1,0 +1,20 @@
+{
+  "routes": [
+    { "en": "", "pt": "" },
+    { "en": "about", "pt": "sobre" },
+    { "en": "events", "pt": "eventos" },
+    { "en": "music", "pt": "musica" },
+    { "en": "news", "pt": "noticias" },
+    { "en": "zentribe", "pt": "tribo-zen" },
+    { "en": "work-with-me", "pt": "trabalhe-comigo" },
+    { "en": "shop", "pt": "loja" },
+    { "en": "faq", "pt": "perguntas-frequentes" },
+    { "en": "my-philosophy", "pt": "minha-filosofia" },
+    { "en": "media", "pt": "na-midia" },
+    { "en": "support-the-artist", "pt": "apoie-o-artista" },
+    { "en": "privacy-policy", "pt": "politica-de-privacidade" },
+    { "en": "return-policy", "pt": "reembolso" },
+    { "en": "terms", "pt": "termos" },
+    { "en": "conduct", "pt": "regras-de-conduta" }
+  ]
+}
