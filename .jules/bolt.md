@@ -5,3 +5,7 @@
 ## 2025-02-20 - Optimize WP REST API Payloads with _fields
 **Learning:** Default WP REST API endpoints return full objects (content, excerpts, etc.) which is wasteful for lists. Using `_fields` allows precise selection of data, reducing payload size by >80% for collections.
 **Action:** When using `wp/v2` endpoints, always specify `_fields` for the data actually needed by the component.
+
+## 2025-02-21 - Environment Limitations
+**Learning:** The `node_modules` directory is missing, preventing `tsc` and linting from running.
+**Action:** Rely on manual type verification and strict code review for frontend changes until the environment is fixed.
