@@ -1,18 +1,23 @@
 // src/pages/MusicPage.tsx
-import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getHreflangUrls } from '../utils/seo';
-import { Download, Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery } from '../hooks/useQueries';
+import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
+import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
-  const { data: tracks = [], isLoading: loading, error } = useTracksQuery();
+
+  // Optimization: Conditionally fetch data
+  // If slug is present, fetch only the single track (heavy details)
+  // If slug is absent, fetch the list (lightweight)
+  const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
+  const { data: listTracks = [], isLoading: listLoading, error } = useTracksQuery({ enabled: !slug });
+
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -24,18 +29,12 @@ const MusicPage: React.FC = () => {
     return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
   };
 
-  // Encontra faixa específica se houver slug
-  const singleTrack = useMemo(() => {
-    if (!slug || !tracks.length) return null;
-    return tracks.find((t: any) => t.slug === slug);
-  }, [slug, tracks]);
-
   if (error) {
     console.error('Error fetching tracks:', error);
   }
 
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
-  if (!loading && slug && singleTrack) {
+  if (!singleLoading && slug && singleTrack) {
     return (
       <>
         <HeadlessSEO 
@@ -57,7 +56,7 @@ const MusicPage: React.FC = () => {
               <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
                 <div className="w-64 h-64 rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
                   <img 
-                    src={singleTrack._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'} 
+                    src={singleTrack.featured_image_src_full || singleTrack.featured_image_src || '/images/hero-background.webp'}
                     className="w-full h-full object-cover"
                     alt={singleTrack.title?.rendered}
                   />
@@ -71,9 +70,11 @@ const MusicPage: React.FC = () => {
                     <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
                       <Play fill="currentColor" size={20} /> OUVIR AGORA
                     </button>
-                    <a href={singleTrack.acf?.soundcloud_url} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
-                      <Cloud size={20} /> SOUNDCLOUD
-                    </a>
+                    {singleTrack.links?.soundcloud && (
+                      <a href={singleTrack.links.soundcloud} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
+                        <Cloud size={20} /> SOUNDCLOUD
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -82,7 +83,7 @@ const MusicPage: React.FC = () => {
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> SOBRE A FAIXA</h2>
                 <div 
                   className="prose prose-invert max-w-none text-white/60"
-                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || "" }}
+                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "" }}
                 />
               </div>
             </div>
@@ -93,9 +94,9 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(tracks.flatMap((t: any) => t.tags_names || []))];
-  const filteredTracks = tracks.filter((track: any) => {
-    const matchesTag = activeTag === 'Todos' || track.tags_names?.includes(activeTag);
+  const tags = ['Todos', ...new Set(listTracks.flatMap((t: any) => t.tag_names || []))];
+  const filteredTracks = listTracks.filter((track: any) => {
+    const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
     const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTag && matchesSearch;
   });
@@ -141,7 +142,7 @@ const MusicPage: React.FC = () => {
             </div>
           </div>
 
-          {loading ? (
+          {listLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
               {[1,2,3,4,5,6].map(i => <div key={i} className="h-80 bg-white/5 rounded-3xl" />)}
             </div>
@@ -157,7 +158,7 @@ const MusicPage: React.FC = () => {
                 >
                   <div className="aspect-square relative overflow-hidden">
                     <img 
-                      src={track._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'} 
+                      src={track.featured_image_src || '/images/hero-background.webp'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       alt={track.title.rendered}
                     />
