@@ -120,12 +120,19 @@ const ROUTE_COMPONENTS: Record<RouteDataEntry['key'], ComponentType> = {
   'code-of-conduct': CodeOfConductPage,
 };
 
-export const ROUTES_CONFIG: RouteConfig[] = ROUTES_DATA.routes.map(route => ({
-  component: ROUTE_COMPONENTS[route.key],
-  paths: route.paths,
-  isIndex: route.isIndex,
-  hasWildcard: route.hasWildcard,
-}));
+export const ROUTES_CONFIG: RouteConfig[] = ROUTES_DATA.routes.map(route => {
+  const component = ROUTE_COMPONENTS[route.key];
+  if (!component) {
+    // Lança um erro descritivo para facilitar a depuração durante o desenvolvimento.
+    throw new Error(`Mapeamento de componente ausente para a chave de rota: "${route.key}"`);
+  }
+  return {
+    component,
+    paths: route.paths,
+    isIndex: route.isIndex,
+    hasWildcard: route.hasWildcard,
+  };
+});
 
 /**
  * Componente 404 (usado fora do loop de rotas)
