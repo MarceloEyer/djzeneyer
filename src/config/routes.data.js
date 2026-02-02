@@ -135,7 +135,7 @@ export const getLocalizedRoutePairs = (route) => {
 
   return enPaths.map((enPath, index) => ({
     en: enPath,
-    pt: ptPaths[clampIndex(index, maxPtIndex)] ?? ptPaths[0] ?? '',
+    pt: ptPaths[clampIndex(index, maxPtIndex)] ?? '',
   }));
 };
 
