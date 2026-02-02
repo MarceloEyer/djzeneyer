@@ -94,8 +94,8 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(listTracks.flatMap((t: any) => t.tag_names || []))];
-  const filteredTracks = listTracks.filter((track: any) => {
+  const tags = ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
+  const filteredTracks = listTracks.filter((track: MusicTrack) => {
     const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
     const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTag && matchesSearch;
