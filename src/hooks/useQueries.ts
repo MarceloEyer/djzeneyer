@@ -125,7 +125,7 @@ export const useTracksQuery = (options: { enabled?: boolean } = {}) => {
 
 export const useTrackBySlug = (slug?: string) => {
   return useQuery({
-    queryKey: ['tracks', slug],
+    queryKey: ['tracks', 'detail', slug],
     queryFn: async (): Promise<MusicTrack | null> => {
       if (!slug) return null;
       const apiUrl = buildApiUrl('wp/v2/remixes', {
