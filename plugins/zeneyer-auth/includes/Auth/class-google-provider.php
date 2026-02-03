@@ -168,17 +168,54 @@ class Google_Provider {
      * @return string
      */
     private static function generate_username($email) {
+        global $wpdb;
+
         $username = sanitize_user(substr($email, 0, strpos($email, '@')));
         
         // Ensure uniqueness
-        $original = $username;
-        $counter = 1;
+        if (!username_exists($username)) {
+            return $username;
+        }
+
+        // Optimization: Fetch all colliding usernames in one query instead of looping
+        // This prevents N+1 queries when many users share the same base name
+        $query = $wpdb->prepare(
+            "SELECT user_login FROM {$wpdb->users} WHERE user_login LIKE %s",
+            $wpdb->esc_like($username) . '%'
+        );
         
-        while (username_exists($username)) {
-            $username = $original . $counter;
-            $counter++;
+        $taken_usernames = $wpdb->get_col($query);
+
+        if (empty($taken_usernames)) {
+            // Fallback (should normally be caught by username_exists check)
+            return $username;
+        }
+
+        $max_suffix = 0;
+
+        foreach ($taken_usernames as $taken) {
+            // Check if it follows the pattern "username" + "number"
+            // We only care if it starts with our base username (case-insensitive)
+            if (stripos($taken, $username) !== 0) {
+                continue;
+            }
+
+            $suffix = substr($taken, strlen($username));
+
+            // If it's the base username itself
+            if (empty($suffix)) {
+                continue;
+            }
+
+            // If the suffix is numeric, track the max
+            if (ctype_digit($suffix)) {
+                $suffix_int = (int) $suffix;
+                if ($suffix_int > $max_suffix) {
+                    $max_suffix = $suffix_int;
+                }
+            }
         }
         
-        return $username;
+        return $username . ($max_suffix + 1);
     }
 }
