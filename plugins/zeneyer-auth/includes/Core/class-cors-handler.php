@@ -112,8 +112,15 @@ class CORS_Handler {
         // Wildcard match (e.g., *.djzeneyer.com)
         foreach ($allowed_origins as $allowed) {
             if (strpos($allowed, '*') !== false) {
+                // Extract host from allowed pattern if it's a URL (e.g. https://*.example.com -> *.example.com)
+                // This ensures we compare Host vs Host, as requested.
+                $allowed_host = parse_url($allowed, PHP_URL_HOST);
+                if (!$allowed_host) {
+                    $allowed_host = $allowed;
+                }
+
                 // Escape other glob characters (?, [], etc) to ensure only * acts as wildcard
-                $safe_pattern = addcslashes($allowed, '?[]');
+                $safe_pattern = addcslashes($allowed_host, '?[]');
 
                 if (fnmatch($safe_pattern, $origin_host)) {
                     return true;
