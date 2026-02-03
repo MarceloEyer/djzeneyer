@@ -105,8 +105,7 @@ class CORS_Handler {
         // Wildcard match (e.g., *.djzeneyer.com)
         foreach ($allowed_origins as $allowed) {
             if (strpos($allowed, '*') !== false) {
-                $pattern = str_replace('*', '.*', preg_quote($allowed, '/'));
-                if (preg_match('/^' . $pattern . '$/', $origin)) {
+                if (fnmatch($allowed, $origin)) {
                     return true;
                 }
             }
