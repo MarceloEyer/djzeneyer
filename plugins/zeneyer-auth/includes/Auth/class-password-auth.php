@@ -334,16 +334,45 @@ class Password_Auth {
      * @return string
      */
     private static function generate_username($email) {
+        global $wpdb;
+
         $username = sanitize_user(substr($email, 0, strpos($email, '@')));
         
-        $original = $username;
-        $counter = 1;
-        
-        while (username_exists($username)) {
-            $username = $original . $counter;
-            $counter++;
+        // Fast check: if username is free, return immediately
+        if (!username_exists($username)) {
+            return $username;
+        }
+
+        // Find all usernames that start with this base
+        // We use LIKE 'name%' which is index-friendly
+        $search = $wpdb->esc_like($username) . '%';
+
+        $query = $wpdb->prepare(
+            "SELECT user_login FROM {$wpdb->users} WHERE user_login = %s OR user_login LIKE %s",
+            $username,
+            $search
+        );
+
+        $taken_usernames = $wpdb->get_col($query);
+
+        if (empty($taken_usernames)) {
+            // Should not happen as we already checked username_exists, but safe fallback
+            return $username;
         }
         
-        return $username;
+        // Find the highest numeric suffix
+        $max_suffix = 0;
+
+        foreach ($taken_usernames as $taken) {
+            // Check if it matches pattern: base + number (e.g., john123)
+            if (preg_match('/^' . preg_quote($username, '/') . '(\d+)$/', $taken, $matches)) {
+                $suffix = intval($matches[1]);
+                if ($suffix > $max_suffix) {
+                    $max_suffix = $suffix;
+                }
+            }
+        }
+        
+        return $username . ($max_suffix + 1);
     }
 }
