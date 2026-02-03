@@ -102,10 +102,20 @@ class CORS_Handler {
             return true;
         }
         
+        // Extract host from origin for wildcard matching
+        $origin_host = parse_url($origin, PHP_URL_HOST);
+
+        if (!$origin_host) {
+            return false;
+        }
+
         // Wildcard match (e.g., *.djzeneyer.com)
         foreach ($allowed_origins as $allowed) {
             if (strpos($allowed, '*') !== false) {
-                if (fnmatch($allowed, $origin)) {
+                // Escape other glob characters (?, [], etc) to ensure only * acts as wildcard
+                $safe_pattern = addcslashes($allowed, '?[]');
+
+                if (fnmatch($safe_pattern, $origin_host)) {
                     return true;
                 }
             }
