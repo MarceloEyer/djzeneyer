@@ -63,8 +63,8 @@ const DashboardPage = () => {
     nextLevelXP: gamipress.nextLevelPoints,
     progress: gamipress.progressToNextLevel,
     rank: gamipress.rank,
-    totalTracks: 0, // Placeholder: WooCommerce hook removed
-    eventsAttended: 0, // Placeholder: WooCommerce hook removed
+    totalTracks: gamipress.totalTracks,
+    eventsAttended: gamipress.eventsAttended,
     streakDays: gamipress.streak,
     streakFire: gamipress.streakFire,
     tribeFriends: 0 

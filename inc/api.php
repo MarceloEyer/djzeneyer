@@ -337,7 +337,42 @@ function djz_get_gamipress_user_data($request) {
     $next_level_points = $level * 100;
     $progress = min(100, (($points % 100) / 100) * 100);
 
-    // 4. Achievements
+    // 4. Tracks Downloaded
+    $total_tracks = 0;
+    if (function_exists('wc_get_customer_available_downloads')) {
+        $downloads = wc_get_customer_available_downloads($user_id);
+        $total_tracks = count($downloads);
+    }
+
+    // 5. Events Attended
+    $events_attended = 0;
+    if (class_exists('WooCommerce')) {
+        // Count items in orders that are categorized as events
+        $event_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
+
+        $orders = wc_get_orders([
+            'customer_id' => $user_id,
+            'limit' => -1,
+            'status' => ['completed', 'processing'],
+            'return' => 'ids',
+        ]);
+
+        if (!empty($orders)) {
+            foreach ($orders as $order_id) {
+                $order = wc_get_order($order_id);
+                if (!$order) continue;
+
+                foreach ($order->get_items() as $item) {
+                    $product_id = $item->get_product_id();
+                    if ($product_id && has_term($event_slugs, 'product_cat', $product_id)) {
+                        $events_attended += $item->get_quantity();
+                    }
+                }
+            }
+        }
+    }
+
+    // 6. Achievements
     $achievements = [];
 
     if (function_exists('gamipress_get_user_earnings')) {
@@ -422,6 +457,8 @@ function djz_get_gamipress_user_data($request) {
         'nextLevelPoints' => $next_level_points,
         'progressToNextLevel' => $progress,
         'achievements' => $achievements,
+        'totalTracks' => $total_tracks,
+        'eventsAttended' => $events_attended,
     ]);
 }
 
