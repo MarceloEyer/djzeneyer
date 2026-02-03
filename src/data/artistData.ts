@@ -53,6 +53,8 @@ export const ARTIST = {
 
   // 🌎 Festivais de Destaque
   // Datas adicionadas baseadas nos anos informados e calendário típico dos eventos
+  // NOTA: Datas mantidas intencionalmente no passado para fins de autoridade/histórico.
+  // NÃO ATUALIZAR para datas futuras estimadas a menos que confirmado.
   festivals: [
     {
       name: 'One Zouk Congress',
@@ -66,7 +68,7 @@ export const ARTIST = {
       country: 'Netherlands',
       flag: '🇳🇱',
       url: 'https://www.dutchzouk.nl/',
-      date: '2026-10-14', // Confirmed 2026 Edition
+      date: '2025-10-15', // Edição de 2025 (Outubro)
     },
     {
       name: 'Prague Zouk Congress',
@@ -87,7 +89,7 @@ export const ARTIST = {
       country: 'Switzerland',
       flag: '🇨🇭',
       url: 'https://www.zurichzoukcongress.com/',
-      date: '2026-09-18', // Estimated (September 2026)
+      date: '2023-09-22', // Data estimada baseada no calendário anual (Setembro)
     },
     {
       name: 'Rio Zouk Congress',
@@ -101,7 +103,7 @@ export const ARTIST = {
       country: 'Brazil',
       flag: '🇧🇷',
       url: 'https://www.instagram.com/izcbrazil/',
-      date: '2026-01-24', // Estimated (January 2026)
+      date: '2024-01-20', // Data estimada (Geralmente segue a temporada de Janeiro/Fev)
     },
     {
       name: 'Polish Zouk Festival - Katowice',
@@ -109,7 +111,7 @@ export const ARTIST = {
       flag: '🇵🇱',
       url: 'https://www.polishzoukfestival.pl/',
       upcoming: true,
-      date: '2026-11-19', // Estimated (November 2026)
+      date: '2025-11-20', // Data estimada para edição futura
     },
   ] as Festival[],
 
