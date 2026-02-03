@@ -28,10 +28,12 @@ function djz_is_bot() {
             'whatsapp',
             'telegrambot',
             // AI Bots
-            'gptbot',       // OpenAI
-            'claudebot',    // Anthropic
-            'claude-web',
-            'anthropic-ai',
+            'claudebot',    // Anthropic (atual 2026)
+            'claude-web',   // Anthropic (legado, manter para compatibilidade)
+            'anthropic-ai', // Anthropic (legado, manter para compatibilidade)
+            'gptbot',       // OpenAI (crawler de treinamento)
+            'oai-searchbot', // OpenAI (indexação ChatGPT search)
+            'chatgpt-user',  // OpenAI (visitas do ChatGPT)
             'google-extended', // Google Bard
             'perplexitybot',
             'youbot',
