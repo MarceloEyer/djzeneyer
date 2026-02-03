@@ -137,6 +137,11 @@ class Google_Provider {
         $username = self::generate_username($email);
         $password = wp_generate_password(20, true, true);
         
+        // ✅ SALVA-VIDAS: Define que este cadastro é legítimo para a "Guilhotina" não deletar
+        if ( ! defined('ZEN_AUTH_VALIDATED') ) {
+            define('ZEN_AUTH_VALIDATED', true);
+        }
+
         $user_id = wp_create_user($username, $password, $email);
         
         if (is_wp_error($user_id)) {
@@ -180,16 +185,11 @@ class Google_Provider {
         // Optimization: Fetch all colliding usernames in one query instead of looping
         // This prevents N+1 queries when many users share the same base name
         $query = $wpdb->prepare(
-            "SELECT user_login FROM {$wpdb->users} WHERE user_login LIKE %s",
-            $wpdb->esc_like($username) . '%'
+            "SELECT user_login FROM {$wpdb->users} WHERE LOWER(user_login) LIKE %s",
+            $wpdb->esc_like(strtolower($username)) . '%'
         );
         
         $taken_usernames = $wpdb->get_col($query);
-
-        if (empty($taken_usernames)) {
-            // Fallback (should normally be caught by username_exists check)
-            return $username;
-        }
 
         $max_suffix = 0;
 

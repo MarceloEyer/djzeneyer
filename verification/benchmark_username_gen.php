@@ -11,6 +11,7 @@ function get_option($name, $default = false) { return $default; }
 function update_user_meta($user_id, $meta_key, $meta_value, $prev_value = '') {}
 function do_action($tag, ...$arg) {}
 function wp_remote_get($url, $args = array()) {}
+function wp_remote_post($url, $args = array()) {}
 function wp_remote_retrieve_body($response) {}
 function sanitize_email($email) { return $email; }
 function get_user_by($field, $value) { return false; }
@@ -18,6 +19,10 @@ function wp_generate_password($length = 12, $special_chars = true, $extra_specia
 function wp_create_user($username, $password, $email = '') { return 1; }
 function wp_update_user($userdata) {}
 function sanitize_user($username, $strict = false) { return $username; }
+function is_email($email) { return strpos($email, '@') !== false; }
+function email_exists($email) { return false; }
+function apply_filters($tag, $value) { return $value; }
+function sanitize_text_field($str) { return $str; }
 
 // Simulation State
 $existing_usernames = [];
@@ -54,6 +59,7 @@ class MockWPDB {
         global $existing_usernames, $query_count;
         $query_count++;
         // Simulate finding matching usernames (Case Insensitive)
+        // Simplified mock: if query contains LIKE 'testuser%', return all matches
         if (strpos($query, "LIKE 'testuser%'") !== false) {
              $matches = [];
              foreach ($existing_usernames as $u) {
@@ -70,15 +76,47 @@ class MockWPDB {
 global $wpdb;
 $wpdb = new MockWPDB();
 
-// Load the class file
+// Load the class files
 require_once __DIR__ . '/../plugins/zeneyer-auth/includes/Auth/class-google-provider.php';
-
-// Reflection to access private method
-$reflection = new \ReflectionClass('ZenEyer\Auth\Auth\Google_Provider');
-$method = $reflection->getMethod('generate_username');
-$method->setAccessible(true);
+require_once __DIR__ . '/../plugins/zeneyer-auth/includes/Auth/class-password-auth.php';
 
 // --- BENCHMARK ---
+
+function run_benchmark($className, $methodName, $label) {
+    global $query_count, $existing_usernames;
+
+    $reflection = new \ReflectionClass($className);
+    $method = $reflection->getMethod($methodName);
+    $method->setAccessible(true);
+
+    echo "\n=== Benchmarking $label ===\n";
+
+    // Reset counters for clean measurement
+    $start_queries = $query_count;
+    $start_time = microtime(true);
+
+    $result = $method->invoke(null, 'testuser@example.com');
+
+    $end_time = microtime(true);
+    $end_queries = $query_count;
+
+    echo "Result: $result\n";
+    echo "Time: " . number_format(($end_time - $start_time) * 1000, 2) . " ms\n";
+    echo "Queries Used: " . ($end_queries - $start_queries) . "\n";
+
+    // Validation
+    if ($result !== 'testuser1000') {
+        echo "FAIL: Expected testuser1000, got $result\n";
+    } else {
+        echo "PASS: Logic correct.\n";
+    }
+
+    if (($end_queries - $start_queries) > 5) {
+         echo "FAIL: Too many queries (" . ($end_queries - $start_queries) . "). Optimization likely failed.\n";
+    } else {
+         echo "PASS: Query count optimized.\n";
+    }
+}
 
 // Setup: Create 1000 collisions with MIXED CASE
 $base = 'testuser';
@@ -90,20 +128,8 @@ for ($i = 0; $i < 1000; $i++) {
     }
     $existing_usernames[] = $u;
 }
-// e.g. testuser, TESTUSER1, testuser2, TESTUSER3 ...
 
-echo "Benchmarking generate_username with 1000 mixed-case collisions...\n";
+echo "Setup: 1000 existing users (mixed case) created in mock DB.\n";
 
-// Measure
-$start_time = microtime(true);
-$start_queries = $query_count;
-
-// We expect it to generate 'testuser1000' (or verify against existing logic)
-$result = $method->invoke(null, 'testuser@example.com');
-
-$end_time = microtime(true);
-$end_queries = $query_count;
-
-echo "Result: $result\n";
-echo "Time: " . number_format(($end_time - $start_time) * 1000, 2) . " ms\n";
-echo "Queries: " . ($end_queries - $start_queries) . "\n";
+run_benchmark('ZenEyer\Auth\Auth\Google_Provider', 'generate_username', 'Google_Provider::generate_username');
+run_benchmark('ZenEyer\Auth\Auth\Password_Auth', 'generate_username', 'Password_Auth::generate_username');
