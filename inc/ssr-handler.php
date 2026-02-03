@@ -12,42 +12,39 @@ function djz_is_bot() {
         return false;
     }
 
-    $user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-    
-    $bots = [
-        'googlebot',
-        'bingbot',
-        'slurp',        // Yahoo
-        'duckduckbot',
-        'baiduspider',
-        'yandexbot',
-        'facebookexternalhit',
-        'twitterbot',
-        'linkedinbot',
-        'whatsapp',
-        'telegrambot',
-        // AI Bots
-        'gptbot',       // OpenAI
-        'claudebot',    // Anthropic
-        'claude-web',
-        'anthropic-ai',
-        'google-extended', // Google Bard
-        'perplexitybot',
-        'youbot',
-        // SEO tools
-        'ahrefsbot',
-        'semrushbot',
-        'mj12bot',
-        'dotbot',
-    ];
+    static $pattern = null;
 
-    foreach ($bots as $bot) {
-        if (strpos($user_agent, $bot) !== false) {
-            return true;
-        }
+    if ($pattern === null) {
+        $bots = [
+            'googlebot',
+            'bingbot',
+            'slurp',        // Yahoo
+            'duckduckbot',
+            'baiduspider',
+            'yandexbot',
+            'facebookexternalhit',
+            'twitterbot',
+            'linkedinbot',
+            'whatsapp',
+            'telegrambot',
+            // AI Bots
+            'gptbot',       // OpenAI
+            'claudebot',    // Anthropic
+            'claude-web',
+            'anthropic-ai',
+            'google-extended', // Google Bard
+            'perplexitybot',
+            'youbot',
+            // SEO tools
+            'ahrefsbot',
+            'semrushbot',
+            'mj12bot',
+            'dotbot',
+        ];
+        $pattern = '/' . implode('|', array_map(function($bot) { return preg_quote($bot, '/'); }, $bots)) . '/i';
     }
 
-    return false;
+    return (bool) preg_match($pattern, $_SERVER['HTTP_USER_AGENT']);
 }
 
 // Servir arquivo SSR se existir
