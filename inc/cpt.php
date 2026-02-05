@@ -105,3 +105,33 @@ add_action('rest_api_init', function() {
         },
     ]);
 });
+
+/**
+ * Optimize REST API: Batch Prime Attachments
+ * Solves N+1 problem for featured_image_src field
+ */
+add_filter('the_posts', function($posts, $query) {
+    if (empty($posts)) return $posts;
+    if ($query->get('post_type') !== 'remixes') return $posts;
+
+    // Only target REST requests to be safe
+    if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
+
+    $attachment_ids = [];
+    foreach ($posts as $post) {
+        $thumb_id = get_post_thumbnail_id($post->ID);
+        if ($thumb_id) {
+            $attachment_ids[] = $thumb_id;
+        }
+    }
+
+    if (!empty($attachment_ids)) {
+        $attachment_ids = array_unique($attachment_ids);
+        update_meta_cache('post', $attachment_ids);
+        if (function_exists('_prime_post_caches')) {
+            _prime_post_caches($attachment_ids, false, false);
+        }
+    }
+
+    return $posts;
+}, 10, 2);
