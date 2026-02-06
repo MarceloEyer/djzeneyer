@@ -105,3 +105,33 @@ add_action('rest_api_init', function() {
         },
     ]);
 });
+
+/**
+ * Performance: Batch Prime Attachment Caches for Remixes
+ * Solves N+1 query issue when fetching featured images for lists
+ */
+add_filter('the_posts', function($posts, $query) {
+    if (empty($posts)) return $posts;
+
+    // Only target REST API requests for 'remixes'
+    if ($query->get('post_type') !== 'remixes') return $posts;
+    if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
+
+    $img_ids = [];
+    foreach ($posts as $post) {
+        $tid = get_post_thumbnail_id($post);
+        if ($tid) {
+            $img_ids[] = $tid;
+        }
+    }
+
+    if (!empty($img_ids)) {
+        $img_ids = array_unique($img_ids);
+        // Prime attachment objects and their meta (including _wp_attachment_metadata for sizes)
+        if (function_exists('_prime_post_caches')) {
+            _prime_post_caches($img_ids, false, true);
+        }
+    }
+
+    return $posts;
+}, 10, 2);
