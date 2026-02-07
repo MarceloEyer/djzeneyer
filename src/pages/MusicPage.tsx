@@ -1,5 +1,5 @@
 // src/pages/MusicPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -94,12 +94,21 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  const filteredTracks = listTracks.filter((track: MusicTrack) => {
-    const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
-    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTag && matchesSearch;
-  });
+  const tags = useMemo(() => {
+    return ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
+  }, [listTracks]);
+
+  const filteredTracks = useMemo(() => {
+    return listTracks.filter((track: MusicTrack) => {
+      const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
+      const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTag && matchesSearch;
+    });
+  }, [listTracks, activeTag, searchQuery]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
 
   return (
     <>
@@ -137,7 +146,7 @@ const MusicPage: React.FC = () => {
                 placeholder="Buscar música..." 
                 className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
               />
             </div>
           </div>
@@ -161,6 +170,7 @@ const MusicPage: React.FC = () => {
                       src={track.featured_image_src || '/images/hero-background.webp'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       alt={track.title.rendered}
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                       <Link 
