@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery, useTrackBySlug, MusicTrack } from '../hooks/useQueries';
+import { useTracksQuery, useTrackBySlug, type MusicTrack } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
+
+const ALL_TAGS_KEY = '__ALL__';
 
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
@@ -19,7 +21,7 @@ const MusicPage: React.FC = () => {
   const { data: listTracks = [], isLoading: listLoading, error } = useTracksQuery({ enabled: !slug });
 
   const allTagsLabel = t('music_all_tags', 'Todos');
-  const [activeTag, setActiveTag] = useState<string>(allTagsLabel);
+  const [activeTag, setActiveTag] = useState<string>(ALL_TAGS_KEY);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Helper para rotas localizadas
@@ -96,16 +98,16 @@ const MusicPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
   const tags = useMemo(() => {
-    return [allTagsLabel, ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  }, [listTracks, allTagsLabel]);
+    return [ALL_TAGS_KEY, ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
+  }, [listTracks]);
 
   const filteredTracks = useMemo(() => {
     return listTracks.filter((track: MusicTrack) => {
-      const matchesTag = activeTag === allTagsLabel || track.tag_names?.includes(activeTag);
+      const matchesTag = activeTag === ALL_TAGS_KEY || track.tag_names?.includes(activeTag);
       const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesTag && matchesSearch;
     });
-  }, [listTracks, activeTag, searchQuery, allTagsLabel]);
+  }, [listTracks, activeTag, searchQuery]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -137,7 +139,7 @@ const MusicPage: React.FC = () => {
                     activeTag === tag ? 'bg-primary border-primary text-black' : 'bg-white/5 border-white/10 hover:border-primary/50'
                   }`}
                 >
-                  {tag}
+                  {tag === ALL_TAGS_KEY ? allTagsLabel : tag}
                 </button>
               ))}
             </div>
