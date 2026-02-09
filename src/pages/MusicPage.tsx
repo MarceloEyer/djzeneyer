@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
+import { useTracksQuery, useTrackBySlug, MusicTrack } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
@@ -18,7 +18,8 @@ const MusicPage: React.FC = () => {
   const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
   const { data: listTracks = [], isLoading: listLoading, error } = useTracksQuery({ enabled: !slug });
 
-  const [activeTag, setActiveTag] = useState<string>('Todos');
+  const allTagsLabel = t('music_all_tags', 'Todos');
+  const [activeTag, setActiveTag] = useState<string>(allTagsLabel);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Helper para rotas localizadas
@@ -32,23 +33,6 @@ const MusicPage: React.FC = () => {
   if (error) {
     console.error('Error fetching tracks:', error);
   }
-
-  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = useMemo(() => {
-    return ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  }, [listTracks]);
-
-  const filteredTracks = useMemo(() => {
-    return listTracks.filter((track: MusicTrack) => {
-      const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
-      const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesTag && matchesSearch;
-    });
-  }, [listTracks, activeTag, searchQuery]);
-
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  }, []);
 
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
   if (!singleLoading && slug && singleTrack) {
@@ -109,6 +93,23 @@ const MusicPage: React.FC = () => {
       </>
     );
   }
+
+  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
+  const tags = useMemo(() => {
+    return [allTagsLabel, ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
+  }, [listTracks, allTagsLabel]);
+
+  const filteredTracks = useMemo(() => {
+    return listTracks.filter((track: MusicTrack) => {
+      const matchesTag = activeTag === allTagsLabel || track.tag_names?.includes(activeTag);
+      const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTag && matchesSearch;
+    });
+  }, [listTracks, activeTag, searchQuery, allTagsLabel]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
 
   return (
     <>
