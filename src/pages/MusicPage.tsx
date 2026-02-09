@@ -33,6 +33,23 @@ const MusicPage: React.FC = () => {
     console.error('Error fetching tracks:', error);
   }
 
+  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
+  const tags = useMemo(() => {
+    return ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
+  }, [listTracks]);
+
+  const filteredTracks = useMemo(() => {
+    return listTracks.filter((track: MusicTrack) => {
+      const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
+      const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTag && matchesSearch;
+    });
+  }, [listTracks, activeTag, searchQuery]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
   if (!singleLoading && slug && singleTrack) {
     return (
@@ -92,23 +109,6 @@ const MusicPage: React.FC = () => {
       </>
     );
   }
-
-  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = useMemo(() => {
-    return ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  }, [listTracks]);
-
-  const filteredTracks = useMemo(() => {
-    return listTracks.filter((track: MusicTrack) => {
-      const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
-      const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesTag && matchesSearch;
-    });
-  }, [listTracks, activeTag, searchQuery]);
-
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  }, []);
 
   return (
     <>
