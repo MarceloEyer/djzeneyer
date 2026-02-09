@@ -111,7 +111,7 @@ add_action('rest_api_init', function() {
  * Prevents N+1 queries for featured_image_src in REST API
  */
 add_filter('the_posts', function($posts, $query) {
-    if (empty($posts) || !is_array($posts)) return $posts;
+    if (empty($posts) || !is_array($posts) || !($query instanceof WP_Query)) return $posts;
 
     // Target only 'remixes' queries
     $post_type = $query->get('post_type');
