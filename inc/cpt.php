@@ -105,3 +105,34 @@ add_action('rest_api_init', function() {
         },
     ]);
 });
+
+/**
+ * Optimization: Batch Prime Caches for Remixes (N+1 Fix)
+ */
+add_filter('the_posts', function($posts, $query) {
+    if (empty($posts)) return $posts;
+
+    // Only run on REST API requests for 'remixes'
+    if (defined('REST_REQUEST') && REST_REQUEST &&
+        isset($query->query['post_type']) && $query->query['post_type'] === 'remixes') {
+
+        $img_ids = [];
+        foreach ($posts as $post) {
+            $tid = get_post_thumbnail_id($post->ID);
+            if ($tid) {
+                $img_ids[] = $tid;
+            }
+        }
+
+        if (!empty($img_ids)) {
+            $img_ids = array_unique($img_ids);
+            // Prime attachment posts and their metadata to prevent N+1 queries in featured_image_src callback
+            if (function_exists('_prime_post_caches')) {
+                _prime_post_caches($img_ids, false, false);
+            }
+            update_meta_cache('post', $img_ids);
+        }
+    }
+
+    return $posts;
+}, 10, 2);
