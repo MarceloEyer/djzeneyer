@@ -126,7 +126,7 @@ add_filter('the_posts', function($posts, $query) {
 
         if (!empty($img_ids)) {
             $img_ids = array_unique($img_ids);
-            // Prime attachment posts and their metadata to prevent N+1 queries in featured_image_src callback
+            // Batch prime attachment posts and their metadata to prevent N+1 queries in featured_image_src callback
             if (function_exists('_prime_post_caches')) {
                 _prime_post_caches($img_ids, false, false);
             }
