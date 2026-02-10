@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import GamificationWidget from '../components/Gamification/GamificationWidget';
 import { useGamiPress, Achievement } from '../hooks/useGamiPress';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // --- HELPER: Formatação de Tempo (Ex: "2 hours ago") ---
 function getTimeAgo(timestamp: number): string {
@@ -41,6 +43,13 @@ interface SafeAchievement {
 const DashboardPage = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
+  const homeRoute = getLocalizedRoute('', currentLang);
+  const shopRoute = getLocalizedRoute('shop', currentLang);
+  const myAccountRoute = getLocalizedRoute('my-account', currentLang);
+  const musicRoute = getLocalizedRoute('music', currentLang);
+  const eventsRoute = getLocalizedRoute('events', currentLang);
   
   // Hook de Dados Reais
   const gamipress = useGamiPress();
@@ -53,9 +62,9 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!user?.isLoggedIn) {
-      navigate('/', { replace: true });
+      navigate(homeRoute, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, homeRoute]);
 
   const userStats = useMemo(() => ({
     level: gamipress.level,
@@ -174,7 +183,7 @@ const DashboardPage = () => {
               </div>
 
               <motion.button 
-                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/shop')}
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate(shopRoute)}
                 className="btn btn-primary flex items-center gap-2 whitespace-nowrap shadow-xl"
               >
                 <Zap size={20} /> Boost XP
@@ -210,7 +219,7 @@ const DashboardPage = () => {
                 <h2 className="text-xl md:text-2xl font-bold font-display flex items-center gap-2">
                   <Clock className="text-primary" size={24} /> Recent Activity
                 </h2>
-                <button onClick={() => navigate('/my-account')} className="text-primary hover:underline text-sm transition-all hover:scale-105">View All →</button>
+                <button onClick={() => navigate(myAccountRoute)} className="text-primary hover:underline text-sm transition-all hover:scale-105">View All →</button>
               </div>
               
               <div className="space-y-4">
@@ -277,9 +286,9 @@ const DashboardPage = () => {
               <h3 className="text-xl font-bold font-display mb-4 flex items-center gap-2"><Zap className="text-primary" size={20} /> Quick Actions</h3>
               <div className="space-y-3">
                 {[
-                  { icon: Music, label: 'Browse Music', path: '/music', variant: 'primary' },
-                  { icon: Calendar, label: 'View Events', path: '/events', variant: 'outline' },
-                  { icon: Gift, label: 'Visit Shop', path: '/shop', variant: 'outline' },
+                  { icon: Music, label: 'Browse Music', path: musicRoute, variant: 'primary' },
+                  { icon: Calendar, label: 'View Events', path: eventsRoute, variant: 'outline' },
+                  { icon: Gift, label: 'Visit Shop', path: shopRoute, variant: 'outline' },
                 ].map((action, i) => (
                   <motion.button key={i} whileHover={{ scale: 1.02, x: 5 }} whileTap={{ scale: 0.98 }} onClick={() => navigate(action.path)} className={`w-full btn btn-${action.variant} justify-start gap-3`}>
                     <action.icon size={20} /> {action.label}
@@ -317,7 +326,7 @@ const DashboardPage = () => {
                 <Trophy className="w-16 h-16 text-white/20 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">Start Your Journey</h3>
                 <p className="text-white/60 mb-6 max-w-md mx-auto">Complete tasks like listening to tracks, attending events, or visiting the shop to unlock your first achievements!</p>
-                <button onClick={() => navigate('/music')} className="btn btn-primary">Start Listening</button>
+                <button onClick={() => navigate(musicRoute)} className="btn btn-primary">Start Listening</button>
               </div>
             )}
           </div>

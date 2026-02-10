@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
 import { useEventsQuery } from '../hooks/useQueries';
+import { ARTIST } from '../data/artistData';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -40,6 +42,9 @@ interface EventsListProps {
 export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
+  const currentLang = normalizeLanguage(i18n.language);
+  const eventsRoute = getLocalizedRoute('events', currentLang);
+  const eventsUrl = `${ARTIST.site.baseUrl}${eventsRoute}`;
 
   // React Query: cache automático + deduplicação
   const { data: events = [], isLoading: loading, error } = useEventsQuery(limit);
@@ -102,7 +107,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
 
     const renderEventJsonLd = (event: BandsintownEvent) => {
       const completeData = getCompleteEventData(event);
-      const ticketUrl = event.offers?.[0]?.url || event.url || 'https://djzeneyer.com/events';
+      const ticketUrl = event.offers?.[0]?.url || event.url || eventsUrl;
 
       return {
         '@type': 'MusicEvent',
@@ -154,7 +159,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
       '@context': 'https://schema.org',
       '@type': 'EventSeries',
       name: 'Zen Eyer World Tour',
-      url: `https://djzeneyer.com/${i18n.language}/events`,
+      url: eventsUrl,
       description: 'Official tour dates for DJ Zen Eyer, two-time world champion Brazilian Zouk DJ',
       performer: {
         '@type': 'MusicGroup',
@@ -163,7 +168,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
       },
       subEvent: events.map(renderEventJsonLd)
     }).replace(/</g, '\\u003c'); // ✅ Proteção contra XSS
-  }, [events, i18n.language]);
+  }, [events, eventsUrl]);
 
   // --- Render States ---
   if (loading) {

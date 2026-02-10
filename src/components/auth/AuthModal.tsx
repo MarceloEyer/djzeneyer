@@ -10,6 +10,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useUser } from '../../contexts/UserContext';
 import { getTurnstileSiteKey } from '../../config/api';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -24,8 +25,10 @@ interface FormErrors {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const currentLang = normalizeLanguage(i18n.language);
+  const dashboardRoute = getLocalizedRoute('dashboard', currentLang);
   // ATENÇÃO: Verifique se o seu useUser() já aceita o 4º argumento (token) no register
   const { login, register, googleLogin, googleClientId } = useUser();
   
@@ -107,7 +110,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       
       if (onSuccess) onSuccess();
       onClose();
-      navigate('/dashboard');
+      navigate(dashboardRoute);
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro:', err);
       // Se der erro, reseta o token para forçar nova verificação
@@ -131,7 +134,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       await googleLogin(credentialResponse.credential);
       if (onSuccess) onSuccess();
       onClose();
-      navigate('/dashboard');
+      navigate(dashboardRoute);
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro no Google Login:', err);
       setError('Falha na autenticação com Google.');

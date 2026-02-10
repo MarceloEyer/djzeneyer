@@ -7,6 +7,8 @@
 
 import { Link } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 
 interface Order {
   id: number;
@@ -50,6 +52,10 @@ const getOrderStatusText = (status: string) => {
 };
 
 export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
+  const { i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
+  const shopRoute = getLocalizedRoute('shop', currentLang);
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -67,7 +73,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
         <p className="text-white/60 mb-8 max-w-md mx-auto">
           Start exploring our exclusive content and merchandise!
         </p>
-        <Link to="/shop/" className="btn btn-primary">
+        <Link to={shopRoute} className="btn btn-primary">
           Browse Shop
         </Link>
       </div>
@@ -78,7 +84,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Order History</h2>
-        <Link to="/shop/" className="btn btn-primary">
+        <Link to={shopRoute} className="btn btn-primary">
           Continue Shopping
         </Link>
       </div>

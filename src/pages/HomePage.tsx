@@ -111,6 +111,8 @@ const HomePage: React.FC = () => {
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = '/';
   const currentUrl = ARTIST.site.baseUrl;
+  const eventsRoute = getLocalizedRoute('events', currentLang);
+  const workWithMeRoute = getLocalizedRoute('work-with-me', currentLang);
 
   // --- FETCH PLUGIN SETTINGS (Integration) ---
   useEffect(() => {
@@ -302,15 +304,15 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
-              <Trans
+                <Trans
                 i18nKey="home_hero_cta_text"
                 components={[
                   <Link
                     key="events-link"
-                    to={isPortuguese ? '/pt/eventos/' : '/events/'}
+                    to={eventsRoute}
                     className="text-primary hover:text-primary/80 underline underline-offset-4"
                   />,
-                  <Link key="work-with-me-link" to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="text-primary hover:text-primary/80 underline underline-offset-4" />
+                  <Link key="work-with-me-link" to={workWithMeRoute} className="text-primary hover:text-primary/80 underline underline-offset-4" />
                 ]}
               />
             </motion.p>

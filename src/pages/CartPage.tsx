@@ -5,11 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { cart, loading, removeItem } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
+  const currentLang = normalizeLanguage(i18n.language);
+  const shopRoute = getLocalizedRoute('shop', currentLang);
+  const checkoutRoute = getLocalizedRoute('checkout', currentLang);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -73,7 +77,7 @@ const CartPage: React.FC = () => {
               <ShoppingCart size={64} className="mx-auto mb-4 text-white/20" />
               <h2 className="text-xl font-semibold mb-2">{t('cart_empty', 'Your cart is empty')}</h2>
               <p className="text-white/60 mb-8">{t('cart_empty_desc', 'Looks like you haven\'t added any items yet.')}</p>
-              <Link to="/shop" className="btn btn-primary">
+              <Link to={shopRoute} className="btn btn-primary">
                 {t('cart_continue_shopping', 'Continue Shopping')}
               </Link>
             </motion.div>
@@ -156,7 +160,7 @@ const CartPage: React.FC = () => {
                   </div>
 
                   <Link
-                    to="/checkout"
+                    to={checkoutRoute}
                     className="btn btn-primary w-full flex items-center justify-center gap-2 py-3 text-lg"
                   >
                     {t('cart_checkout', 'Proceed to Checkout')}
