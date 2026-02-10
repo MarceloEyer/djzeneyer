@@ -1,10 +1,10 @@
 // src/pages/MusicPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
+import { useTracksQuery, useTrackBySlug, MusicTrack } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
@@ -94,12 +94,21 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  const filteredTracks = listTracks.filter((track: MusicTrack) => {
-    const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
-    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTag && matchesSearch;
-  });
+  const tags = useMemo(() => {
+    const allTags = listTracks.flatMap((t: MusicTrack) => t.tag_names || []);
+    // Use Set directly for uniqueness and spread into array
+    return ['Todos', ...new Set(allTags)];
+  }, [listTracks]);
+
+  const filteredTracks = useMemo(() => {
+    const lowerSearchQuery = searchQuery.toLowerCase();
+    return listTracks.filter((track: MusicTrack) => {
+      const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
+      // Optimization: Check for empty search query first to skip string operations
+      const matchesSearch = !searchQuery || track.title.rendered.toLowerCase().includes(lowerSearchQuery);
+      return matchesTag && matchesSearch;
+    });
+  }, [listTracks, activeTag, searchQuery]);
 
   return (
     <>
@@ -148,7 +157,7 @@ const MusicPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTracks.map((track: any) => (
+              {filteredTracks.map((track: MusicTrack) => (
                 <motion.div
                   key={track.id}
                   layout
