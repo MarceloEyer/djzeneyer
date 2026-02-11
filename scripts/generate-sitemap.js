@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Sitemap Generator v7.0 - SIMPLIFIED
- * Gera sitemaps baseado em arquivo JSON estático
+ * Sitemap Generator v8.0 - SSOT
+ * Gera sitemaps baseado na Single Source of Truth (routes.data.js)
  */
 
 import fs from 'fs';
@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const BASE_URL = 'https://djzeneyer.com';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 
-console.log('🗺️  Sitemap Generator v7.0 - SIMPLIFIED\n');
+console.log('🗺️  Sitemap Generator v8.0 - SSOT\n');
 
 function buildUrlEntry(paths, date) {
   const enUrl = `${BASE_URL}${paths.en}`;

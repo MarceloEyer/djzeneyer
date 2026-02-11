@@ -116,13 +116,21 @@ export const routes = [
     key: 'code-of-conduct',
     paths: { en: 'conduct', pt: 'regras-de-conduta' },
   },
+  {
+    key: 'zen-link',
+    paths: { en: 'zen-link', pt: 'zen-link' },
+  },
+  {
+    key: 'zouk-persona-quiz',
+    paths: { en: 'zouk-persona-quiz', pt: 'quiz-persona-zouk' },
+  },
 ];
 
 export const getLocalizedPaths = (route, lang) => normalizePaths(route.paths[lang]);
 
 export const buildFullPath = (path, lang) => {
   if (!path) {
-    return lang === 'pt' ? '/pt/' : '/';
+    return lang === 'pt' ? '/pt' : '/';
   }
 
   return lang === 'pt' ? `/pt/${path}` : `/${path}`;
