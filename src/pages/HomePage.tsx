@@ -224,7 +224,7 @@ const HomePage: React.FC = () => {
         url={currentUrl}
         
         // Imagem vinda do painel WP ou fallback local
-        image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.jpg`}
+        image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.png`}
         
         isHomepage={true}
         schema={schemaData}
@@ -264,8 +264,8 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white mb-4 tracking-tight">
-              DJ Zen Eyer
+            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-primary mb-4 tracking-tight">
+              {ARTIST.identity.displayTitle}
             </motion.h1>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">

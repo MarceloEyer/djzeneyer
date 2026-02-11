@@ -53,6 +53,8 @@ export const ARTIST = {
 
   // 🌎 Festivais de Destaque
   // Datas adicionadas baseadas nos anos informados e calendário típico dos eventos
+  // NOTA: Datas mantidas intencionalmente no passado para fins de autoridade/histórico.
+  // NÃO ATUALIZAR para datas futuras estimadas a menos que confirmado.
   festivals: [
     {
       name: 'One Zouk Congress',
@@ -157,6 +159,33 @@ export const ARTIST = {
     },
   },
 
+  // 💰 Dados Bancários
+  payment: {
+    interUs: {
+      bankName: 'Inter Global Account',
+      accountName: 'Marcelo Eyer Fernandes',
+      routingNumber: '084106768',
+      accountNumber: '9100169982',
+      accountType: 'Checking',
+      swiftCode: 'CINTUS33',
+    },
+    interBr: {
+      bankName: 'Banco Inter (077)',
+      accountName: 'Marcelo Eyer Fernandes',
+      branch: '0001',
+      accountNumber: '94635616-7',
+      pixKey: 'contato@djzeneyer.com',
+    },
+    wise: {
+      email: 'contato@djzeneyer.com',
+      link: 'https://wise.com',
+    },
+    paypal: {
+      email: 'contato@djzeneyer.com',
+      link: 'https://paypal.me/djzeneyer',
+    },
+  },
+
   // 💡 Filosofia & Marca
   philosophy: {
     slogan: 'A pressa é inimiga da cremosidade',
@@ -221,7 +250,7 @@ export const ARTIST_SCHEMA_BASE = {
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   knowsAbout: ['Brazilian Zouk', 'DJing', 'Music Production', 'Remixing', 'Festival Performance'],
   url: ARTIST.site.baseUrl,
-  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.jpg`,
+  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],
   award: [
     {
