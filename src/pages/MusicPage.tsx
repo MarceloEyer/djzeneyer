@@ -12,7 +12,8 @@ import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } fr
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
-  const { data: tracks = [], isLoading: loading, error } = useTracksQuery();
+  // OPTIMIZATION: Avoid fetching the full list if we are viewing a single track
+  const { data: tracks = [], isLoading: loading, error } = useTracksQuery({ enabled: !slug });
   const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');

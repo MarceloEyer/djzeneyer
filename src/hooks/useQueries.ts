@@ -102,7 +102,7 @@ export const useEventsQuery = (limit = 10) => {
 // TRACKS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useTracksQuery = () => {
+export const useTracksQuery = (options: { enabled?: boolean } = {}) => {
   return useQuery({
     queryKey: QUERY_KEYS.tracks.list(),
     queryFn: async (): Promise<MusicTrack[]> => {
@@ -118,6 +118,7 @@ export const useTracksQuery = () => {
     },
     staleTime: STALE_TIME.TRACKS,
     gcTime: 15 * 60 * 1000,
+    ...options,
   });
 };
 
