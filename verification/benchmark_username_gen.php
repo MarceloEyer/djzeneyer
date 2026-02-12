@@ -77,6 +77,7 @@ global $wpdb;
 $wpdb = new MockWPDB();
 
 // Load the class files
+require_once __DIR__ . '/../plugins/zeneyer-auth/includes/Auth/Trait-Username-Generator.php'; // Required for traits
 require_once __DIR__ . '/../plugins/zeneyer-auth/includes/Auth/class-google-provider.php';
 require_once __DIR__ . '/../plugins/zeneyer-auth/includes/Auth/class-password-auth.php';
 
