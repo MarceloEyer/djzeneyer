@@ -78,9 +78,11 @@ const MusicPage: React.FC = () => {
                       <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
                         <Play fill="currentColor" size={20} /> OUVIR AGORA
                       </button>
-                      <a href={singleTrack.links?.soundcloud} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
-                        <Cloud size={20} /> SOUNDCLOUD
-                      </a>
+                      {singleTrack.links?.soundcloud && (
+                        <a href={singleTrack.links.soundcloud} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
+                          <Cloud size={20} /> SOUNDCLOUD
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
