@@ -17,6 +17,7 @@
 
 import { lazy, ComponentType } from 'react';
 import { matchPath, generatePath } from 'react-router-dom';
+import routesData from './routes.data.js';
 
 // ============================================================================
 // TYPES
@@ -39,6 +40,20 @@ export interface RouteConfig {
   /** Se true, permite rotas filhas com wildcard */
   hasWildcard?: boolean;
 }
+
+interface RouteDataEntry {
+  key: string;
+  paths: Record<Language, string | string[]>;
+  isIndex?: boolean;
+  hasWildcard?: boolean;
+  prerender?: boolean;
+}
+
+interface RoutesData {
+  routes: RouteDataEntry[];
+}
+
+const ROUTES_DATA = routesData as RoutesData;
 
 // ============================================================================
 // LAZY LOADED COMPONENTS
@@ -67,6 +82,8 @@ const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicyPage'));
 const ReturnPolicyPage = lazy(() => import('../pages/ReturnPolicyPage'));
 const TermsPage = lazy(() => import('../pages/TermsPage'));
 const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
+const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage'));
+const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
 const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
 const TicketsPage = lazy(() => import('../pages/TicketsPage'));
 const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
@@ -349,7 +366,7 @@ export const getAlternateLinks = (currentPath: string, currentLang: string): Rec
   const alternates: Record<string, string> = {};
 
   if (!currentPath || currentPath === '/') {
-    return { en: '/', pt: '/pt/' };
+    return { en: '/', pt: '/pt' };
   }
 
   // Remove o prefixo de idioma e barras extras
@@ -370,7 +387,7 @@ export const getAlternateLinks = (currentPath: string, currentLang: string): Rec
     // Verifica se o cleanPath corresponde ao path em inglês
     if (cleanPath === enPath || cleanPath.startsWith(enPath + '/')) {
       alternates.en = enPath ? `/${enPath}` : '/';
-      alternates.pt = ptPath ? `/pt/${ptPath}` : '/pt/';
+      alternates.pt = ptPath ? `/pt/${ptPath}` : '/pt';
       alternates['x-default'] = alternates.en;
       return alternates;
     }
@@ -378,7 +395,7 @@ export const getAlternateLinks = (currentPath: string, currentLang: string): Rec
     // Verifica se o cleanPath corresponde ao path em português
     if (cleanPath === ptPath || cleanPath.startsWith(ptPath + '/')) {
       alternates.en = enPath ? `/${enPath}` : '/';
-      alternates.pt = ptPath ? `/pt/${ptPath}` : '/pt/';
+      alternates.pt = ptPath ? `/pt/${ptPath}` : '/pt';
       alternates['x-default'] = alternates.en;
       return alternates;
     }

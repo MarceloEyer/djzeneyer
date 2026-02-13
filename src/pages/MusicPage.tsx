@@ -12,8 +12,9 @@ import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } fr
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
-  const { data: tracks = [], isLoading: loading, error } = useTracksQuery();
-  const { data: singleTrack, isLoading: loadingSingle } = useTrackBySlug(slug);
+  // OPTIMIZATION: Avoid fetching the full list if we are viewing a single track
+  const { data: tracks = [], isLoading: loading, error } = useTracksQuery({ enabled: !slug });
+  const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -31,14 +32,17 @@ const MusicPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
   if (slug) {
-    if (loadingSingle) {
-      return (
+    if (singleLoading) {
+       return (
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
-             <div className="h-96 bg-white/5 rounded-3xl animate-pulse"></div>
+             <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-white/40 mb-10 font-bold">
+              <ArrowLeft size={20} /> VOLTAR PARA MÚSICAS
+            </Link>
+            <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 h-96 animate-pulse"></div>
           </div>
         </div>
-      );
+       )
     }
 
     if (singleTrack) {
@@ -77,25 +81,26 @@ const MusicPage: React.FC = () => {
                       <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
                         <Play fill="currentColor" size={20} /> OUVIR AGORA
                       </button>
-                      <a href={singleTrack.links?.soundcloud} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
+                      <a href={singleTrack.links?.soundcloud || singleTrack.acf?.soundcloud_url} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
                         <Cloud size={20} /> SOUNDCLOUD
                       </a>
                     </div>
                   </div>
                 </div>
 
-              <div className="mt-16 border-t border-white/5 pt-10">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> SOBRE A FAIXA</h2>
-                <div 
-                  className="prose prose-invert max-w-none text-white/60"
-                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || "" }}
-                />
+                <div className="mt-16 border-t border-white/5 pt-10">
+                  <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> SOBRE A FAIXA</h2>
+                  <div
+                    className="prose prose-invert max-w-none text-white/60"
+                    dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || "" }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </>
-    );
+        </>
+      );
+    }
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
