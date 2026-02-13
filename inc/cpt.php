@@ -97,44 +97,4 @@ add_action('rest_api_init', function() {
             return $src ? $src[0] : wp_get_attachment_url($img_id);
         },
     ]);
-
-    register_rest_field('remixes', 'featured_image_src_full', [
-        'get_callback' => function($object) {
-            $img_id = get_post_thumbnail_id($object['id']);
-            return $img_id ? wp_get_attachment_url($img_id) : null;
-        },
-    ]);
 });
-/**
- * Optimize REST API: Batch prime attachment caches for Remixes
- */
-add_filter('the_posts', function($posts, $query) {
-    if (empty($posts)) return $posts;
-
-    // Only run for REST API requests to 'remixes' endpoint
-    if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
-
-    // Check if main query for remixes
-    $post_type = $query->get('post_type');
-    if ($post_type !== 'remixes' && (!is_array($post_type) || !in_array('remixes', $post_type))) {
-        return $posts;
-    }
-
-    $img_ids = [];
-    foreach ($posts as $post) {
-        $tid = get_post_thumbnail_id($post->ID);
-        if ($tid) {
-            $img_ids[] = $tid;
-        }
-    }
-
-    if (!empty($img_ids)) {
-        $img_ids = array_unique($img_ids);
-        update_meta_cache('post', $img_ids);
-        if (function_exists('_prime_post_caches')) {
-            _prime_post_caches($img_ids, false, false);
-        }
-    }
-
-    return $posts;
-}, 10, 2);

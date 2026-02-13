@@ -13,7 +13,7 @@ function djz_is_bot() {
     }
 
     $user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-    
+
     $bots = [
         'googlebot',
         'bingbot',
