@@ -9,3 +9,7 @@
 ## 2025-02-21 - Batch Cache Priming for Attachments
 **Learning:** Functions like `wp_get_attachment_url()` inside loops trigger N+1 queries because they require the attachment post object and its meta, which aren't automatically primed by the parent query.
 **Action:** When iterating over posts to get their thumbnails, collect all attachment IDs first and use `update_meta_cache('post', $ids)` and `_prime_post_caches($ids)` to batch fetch the data in constant time.
+
+## 2024-05-23 - Frontend Memoization for List Filtering
+**Learning:** Even with small lists (100 items), re-filtering and re-calculating derived state (like unique tags) on every render causes unnecessary CPU usage, especially during user interactions like typing in a search box.
+**Action:** Always memoize expensive derived state in list views, especially when filtering logic involves string manipulation or iteration over the entire dataset.
