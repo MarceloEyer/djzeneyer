@@ -67,7 +67,7 @@ const MusicPage: React.FC = () => {
                   <p className="text-primary font-bold mb-8 tracking-widest uppercase">DJ Zen Eyer Original</p>
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
+                    <button type="button" className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
                       <Play fill="currentColor" size={20} /> OUVIR AGORA
                     </button>
                     {singleTrack.links?.soundcloud && (
