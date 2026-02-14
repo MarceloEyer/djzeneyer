@@ -4,16 +4,20 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
+import { useTracksQuery, useTrackBySlug, MusicTrack } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
-  const { data: tracks = [], isLoading: loading, error } = useTracksQuery();
-  // Fetch detailed track data only when a slug is present
-  const { data: singleTrack, isLoading: loadingSingle } = useTrackBySlug(slug);
+
+  // Optimization: Conditionally fetch data
+  // If slug is present, fetch only the single track (heavy details)
+  // If slug is absent, fetch the list (lightweight)
+  const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
+  const { data: tracks = [], isLoading: loading, error } = useTracksQuery({ enabled: !slug });
+
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -30,35 +34,19 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
-  if (slug) {
-    if (loadingSingle) {
-      return (
+  if (!singleLoading && slug && singleTrack) {
+    return (
+      <>
+        <HeadlessSEO
+          title={`${singleTrack.title?.rendered || 'Music'} | Zen Music`}
+          description={singleTrack.excerpt?.rendered || "Ouça as últimas produções de DJ Zen Eyer."}
+          url={`https://djzeneyer.com/music/${slug}`}
+        />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
-             <div className="h-96 bg-white/5 rounded-3xl animate-pulse"></div>
-          </div>
-        </div>
-      );
-    }
-
-    if (singleTrack) {
-      return (
-        <>
-          <HeadlessSEO
-            title={`${singleTrack.title?.rendered || 'Music'} | Zen Music`}
-            description={singleTrack.excerpt?.rendered || "Ouça as últimas produções de DJ Zen Eyer."}
-            url={`https://djzeneyer.com/music/${slug}`}
-          />
-          <div className="min-h-screen bg-background text-white pt-24 pb-20">
-            <div className="container mx-auto px-4 max-w-4xl">
-              <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
-                <ArrowLeft size={20} /> VOLTAR PARA MÚSICAS
-              </Link>
-
-              <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative group">
-                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Music2 size={200} />
-                </div>
+            <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
+              <ArrowLeft size={20} /> VOLTAR PARA MÚSICAS
+            </Link>
 
             <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative group">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -74,16 +62,19 @@ const MusicPage: React.FC = () => {
                   />
                 </div>
 
-                    <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                      <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
-                        <Play fill="currentColor" size={20} /> OUVIR AGORA
-                      </button>
-                      {singleTrack.links?.soundcloud && (
-                        <a href={singleTrack.links.soundcloud} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
-                          <Cloud size={20} /> SOUNDCLOUD
-                        </a>
-                      )}
-                    </div>
+                <div className="text-center md:text-left flex-1">
+                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: singleTrack.title?.rendered }} />
+                  <p className="text-primary font-bold mb-8 tracking-widest uppercase">DJ Zen Eyer Original</p>
+
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
+                      <Play fill="currentColor" size={20} /> OUVIR AGORA
+                    </button>
+                    {singleTrack.links?.soundcloud && (
+                      <a href={singleTrack.links.soundcloud} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
+                        <Cloud size={20} /> SOUNDCLOUD
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -92,7 +83,7 @@ const MusicPage: React.FC = () => {
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> SOBRE A FAIXA</h2>
                 <div
                   className="prose prose-invert max-w-none text-white/60"
-                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || "" }}
+                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "" }}
                 />
               </div>
             </div>
@@ -103,8 +94,8 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  const filteredTracks = listTracks.filter((track: MusicTrack) => {
+  const tags = ['Todos', ...new Set(tracks.flatMap((t: MusicTrack) => t.tag_names || []))];
+  const filteredTracks = tracks.filter((track: MusicTrack) => {
     const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
     const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTag && matchesSearch;
@@ -151,7 +142,7 @@ const MusicPage: React.FC = () => {
             </div>
           </div>
 
-          {listLoading ? (
+          {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
               {[1,2,3,4,5,6].map(i => <div key={i} className="h-80 bg-white/5 rounded-3xl" />)}
             </div>

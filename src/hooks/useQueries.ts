@@ -103,7 +103,7 @@ export const useEventsQuery = (limit = 10) => {
 // TRACKS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useTracksQuery = () => {
+export const useTracksQuery = (options: { enabled?: boolean } = {}) => {
   return useQuery({
     queryKey: QUERY_KEYS.tracks.list(),
     queryFn: async (): Promise<MusicTrack[]> => {
@@ -119,6 +119,7 @@ export const useTracksQuery = () => {
     },
     staleTime: STALE_TIME.TRACKS,
     gcTime: 15 * 60 * 1000,
+    ...options,
   });
 };
 
@@ -129,7 +130,7 @@ export const useTrackBySlug = (slug?: string) => {
       if (!slug) return null;
       const apiUrl = buildApiUrl('wp/v2/remixes', {
         slug,
-        _fields: 'id,title,content,excerpt,featured_image_src,links,slug,category_name,tag_names',
+        _fields: 'id,title,content,excerpt,links,featured_image_src_full,slug',
       });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error('Failed to fetch track');
