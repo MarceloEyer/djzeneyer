@@ -374,6 +374,23 @@ function djz_get_gamipress_user_data($request) {
                     'numberposts' => -1,
                 ]);
 
+                // Batch prime caches for achievement images to prevent N+1 queries
+                $all_img_ids = [];
+                foreach ($posts as $post) {
+                    $tid = get_post_thumbnail_id($post->ID);
+                    if ($tid) {
+                        $all_img_ids[] = $tid;
+                    }
+                }
+
+                if (!empty($all_img_ids)) {
+                    $all_img_ids = array_unique($all_img_ids);
+                    update_meta_cache('post', $all_img_ids);
+                    if (function_exists('_prime_post_caches')) {
+                        _prime_post_caches($all_img_ids, false, false);
+                    }
+                }
+
                 foreach ($posts as $post) {
                     $img_id = get_post_thumbnail_id($post->ID);
                     $img_url = $img_id ? wp_get_attachment_url($img_id) : '';
