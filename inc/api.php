@@ -521,6 +521,9 @@ add_action('admin_init', function() {
  */
 add_action('woocommerce_order_status_completed', 'djz_clear_user_events_cache', 10, 1);
 add_action('woocommerce_order_status_processing', 'djz_clear_user_events_cache', 10, 1);
+add_action('woocommerce_order_status_refunded', 'djz_clear_user_events_cache', 10, 1);
+add_action('woocommerce_order_status_cancelled', 'djz_clear_user_events_cache', 10, 1);
+add_action('woocommerce_order_status_failed', 'djz_clear_user_events_cache', 10, 1);
 
 function djz_clear_user_events_cache($order_id) {
     $order = wc_get_order($order_id);
