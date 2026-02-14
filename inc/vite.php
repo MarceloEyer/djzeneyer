@@ -20,8 +20,6 @@ class DJZ_Vite_Loader {
 
         $this->dist_path = get_theme_file_path('/dist');
         $this->dist_url  = get_template_directory_uri() . '/dist';
-
-        $this->load_manifest();
     }
 
     private function load_manifest() {
@@ -99,6 +97,11 @@ class DJZ_Vite_Loader {
             wp_enqueue_script('vite-client', 'http://localhost:5173/@vite/client', [], null, true);
             wp_enqueue_script('vite-main', 'http://localhost:5173/src/main.tsx', [], null, true);
             return;
+        }
+
+        // Lazy load manifest
+        if (empty($this->manifest)) {
+            $this->load_manifest();
         }
 
         if (empty($this->manifest)) return;
