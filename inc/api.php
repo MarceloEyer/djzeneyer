@@ -338,60 +338,10 @@ function djz_get_gamipress_user_data($request) {
     $progress = min(100, (($points % 100) / 100) * 100);
 
     // 4. Tracks Downloaded
-    $total_tracks = get_transient("djz_user_total_tracks_{$user_id}");
-
-    if (false === $total_tracks) {
-        $total_tracks = 0;
-        if (function_exists('wc_get_customer_available_downloads')) {
-            $downloads = wc_get_customer_available_downloads($user_id);
-            $total_tracks = count($downloads);
-        }
-        set_transient("djz_user_total_tracks_{$user_id}", $total_tracks, 12 * 3600);
-    }
+    $total_tracks = djz_get_user_total_tracks($user_id);
 
     // 5. Events Attended
-    // We cache this calculation as it iterates through all orders and can be resource intensive.
-    // The cache key is specific to the user and lasts for 12 hours.
-    // It is invalidated on 'woocommerce_order_status_completed', 'woocommerce_order_status_processing',
-    // 'woocommerce_order_status_refunded', 'woocommerce_order_status_cancelled', and 'woocommerce_order_status_failed'.
-    $events_attended = get_transient("djz_user_events_attended_{$user_id}");
-
-    if (false === $events_attended) {
-        $events_attended = 0;
-
-        if (class_exists('WooCommerce')) {
-            // Define slugs for categories that count as "events"
-            // Filterable via 'djz_dashboard_event_slugs' to allow future extensibility without code changes
-            $default_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
-            $event_slugs = apply_filters('djz_dashboard_event_slugs', $default_slugs);
-
-            // Fetch all relevant orders for the user
-            $orders = wc_get_orders([
-                'customer_id' => $user_id,
-                'limit' => -1,
-                'status' => ['completed', 'processing'],
-                'return' => 'ids',
-            ]);
-
-            if (!empty($orders)) {
-                foreach ($orders as $order_id) {
-                    $order = wc_get_order($order_id);
-                    if (!$order) continue;
-
-                    foreach ($order->get_items() as $item) {
-                        $product_id = $item->get_product_id();
-                        // Check if the product belongs to any of the event categories
-                        if ($product_id && has_term($event_slugs, 'product_cat', $product_id)) {
-                            $events_attended += $item->get_quantity();
-                        }
-                    }
-                }
-            }
-        }
-
-        // Cache the result for 12 hours (12 * HOUR_IN_SECONDS)
-        set_transient("djz_user_events_attended_{$user_id}", $events_attended, 12 * 3600);
-    }
+    $events_attended = djz_get_user_events_attended($user_id);
 
     // 6. Achievements
     $achievements = [];
@@ -481,6 +431,74 @@ function djz_get_gamipress_user_data($request) {
         'totalTracks' => $total_tracks,
         'eventsAttended' => $events_attended,
     ]);
+}
+
+/**
+ * Helper: Get User Total Tracks (Cached)
+ */
+function djz_get_user_total_tracks($user_id) {
+    $total_tracks = get_transient("djz_user_total_tracks_{$user_id}");
+
+    if (false === $total_tracks) {
+        $total_tracks = 0;
+        if (function_exists('wc_get_customer_available_downloads')) {
+            $downloads = wc_get_customer_available_downloads($user_id);
+            $total_tracks = count($downloads);
+        }
+        set_transient("djz_user_total_tracks_{$user_id}", $total_tracks, 12 * 3600);
+    }
+
+    return (int) $total_tracks;
+}
+
+/**
+ * Helper: Get User Events Attended (Cached)
+ */
+function djz_get_user_events_attended($user_id) {
+    // We cache this calculation as it iterates through all orders and can be resource intensive.
+    // The cache key is specific to the user and lasts for 12 hours.
+    // It is invalidated on 'woocommerce_order_status_completed', 'woocommerce_order_status_processing',
+    // 'woocommerce_order_status_refunded', 'woocommerce_order_status_cancelled', and 'woocommerce_order_status_failed'.
+    $events_attended = get_transient("djz_user_events_attended_{$user_id}");
+
+    if (false === $events_attended) {
+        $events_attended = 0;
+
+        if (class_exists('WooCommerce')) {
+            // Define slugs for categories that count as "events"
+            // Filterable via 'djz_dashboard_event_slugs' to allow future extensibility without code changes
+            $default_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
+            $event_slugs = apply_filters('djz_dashboard_event_slugs', $default_slugs);
+
+            // Fetch all relevant orders for the user
+            $orders = wc_get_orders([
+                'customer_id' => $user_id,
+                'limit' => -1,
+                'status' => ['completed', 'processing'],
+                'return' => 'ids',
+            ]);
+
+            if (!empty($orders)) {
+                foreach ($orders as $order_id) {
+                    $order = wc_get_order($order_id);
+                    if (!$order) continue;
+
+                    foreach ($order->get_items() as $item) {
+                        $product_id = $item->get_product_id();
+                        // Check if the product belongs to any of the event categories
+                        if ($product_id && has_term($event_slugs, 'product_cat', $product_id)) {
+                            $events_attended += $item->get_quantity();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Cache the result for 12 hours (12 * HOUR_IN_SECONDS)
+        set_transient("djz_user_events_attended_{$user_id}", $events_attended, 12 * 3600);
+    }
+
+    return (int) $events_attended;
 }
 
 /**
