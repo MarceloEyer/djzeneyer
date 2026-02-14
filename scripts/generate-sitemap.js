@@ -1,27 +1,28 @@
 #!/usr/bin/env node
 /**
- * Sitemap Generator v8.0 - SSOT
- * Gera sitemaps baseado na Single Source of Truth (routes.data.js)
+ * Sitemap Generator v7.0 - SIMPLIFIED
+ * Gera sitemaps baseado em arquivo JSON estático
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getLocalizedRouteEntries } from '../src/config/routes.data.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const BASE_URL = 'https://djzeneyer.com';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
+const ROUTES_DATA = path.resolve(__dirname, 'routes-config.json');
 
-console.log('🗺️  Sitemap Generator v8.0 - SSOT\n');
+console.log('🗺️  Sitemap Generator v7.0 - SIMPLIFIED\n');
 
-function buildUrlEntry(paths, date) {
-  const enUrl = `${BASE_URL}${paths.en}`;
-  const ptUrl = `${BASE_URL}${paths.pt}`;
+function buildUrlEntry(route, date) {
+  const cleanPath = route === '/' ? '' : route.replace(/^\/+/, '');
+  const enUrl = cleanPath === '' ? `${BASE_URL}/` : `${BASE_URL}/${cleanPath}`;
+  const ptUrl = cleanPath === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${cleanPath}`;
 
-  const priority = paths.en === '/' ? '1.0' : '0.8';
+  const priority = cleanPath === '' ? '1.0' : '0.8';
 
   return `
   <url>
@@ -36,16 +37,16 @@ function buildUrlEntry(paths, date) {
 
 function generateSitemaps() {
   try {
+    const routesData = JSON.parse(fs.readFileSync(ROUTES_DATA, 'utf-8'));
     const date = new Date().toISOString();
-    const routeEntries = getLocalizedRouteEntries({ prerenderOnly: true });
 
     let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
 
     let urlCount = 0;
 
-    for (const entry of routeEntries) {
-      pagesXml += buildUrlEntry(entry.fullPaths, date);
+    for (const route of routesData.routes) {
+      pagesXml += buildUrlEntry(route, date);
       urlCount++;
     }
 
@@ -70,6 +71,7 @@ function generateSitemaps() {
     console.log(`📄 Total URLs: ${urlCount}`);
     console.log(`📍 Location: ${PUBLIC_DIR}`);
     console.log('════════════════════════════════════════\n');
+
   } catch (error) {
     console.error('❌ Error:', error);
     process.exit(1);
