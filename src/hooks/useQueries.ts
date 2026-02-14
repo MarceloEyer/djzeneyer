@@ -55,7 +55,6 @@ export interface MusicTrack {
     youtube: string;
   };
   featured_image_src?: string | null;
-  featured_image_src_full?: string | null;
   slug: string;
   content?: { rendered: string };
   excerpt?: { rendered: string };
@@ -103,7 +102,7 @@ export const useEventsQuery = (limit = 10) => {
 // TRACKS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useTracksQuery = (options: { enabled?: boolean } = {}) => {
+export const useTracksQuery = () => {
   return useQuery({
     queryKey: QUERY_KEYS.tracks.list(),
     queryFn: async (): Promise<MusicTrack[]> => {
@@ -119,18 +118,17 @@ export const useTracksQuery = (options: { enabled?: boolean } = {}) => {
     },
     staleTime: STALE_TIME.TRACKS,
     gcTime: 15 * 60 * 1000,
-    ...options,
   });
 };
 
 export const useTrackBySlug = (slug?: string) => {
   return useQuery({
-    queryKey: ['tracks', 'detail', slug],
+    queryKey: QUERY_KEYS.tracks.detail(slug || ''),
     queryFn: async (): Promise<MusicTrack | null> => {
       if (!slug) return null;
       const apiUrl = buildApiUrl('wp/v2/remixes', {
         slug,
-        _fields: 'id,title,content,excerpt,links,featured_image_src_full,slug',
+        _fields: 'id,title,content,excerpt,featured_image_src,links,slug,category_name,tag_names',
       });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error('Failed to fetch track');
