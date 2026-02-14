@@ -338,16 +338,22 @@ function djz_get_gamipress_user_data($request) {
     $progress = min(100, (($points % 100) / 100) * 100);
 
     // 4. Tracks Downloaded
-    $total_tracks = 0;
-    if (function_exists('wc_get_customer_available_downloads')) {
-        $downloads = wc_get_customer_available_downloads($user_id);
-        $total_tracks = count($downloads);
+    $total_tracks = get_transient("djz_user_total_tracks_{$user_id}");
+
+    if (false === $total_tracks) {
+        $total_tracks = 0;
+        if (function_exists('wc_get_customer_available_downloads')) {
+            $downloads = wc_get_customer_available_downloads($user_id);
+            $total_tracks = count($downloads);
+        }
+        set_transient("djz_user_total_tracks_{$user_id}", $total_tracks, 12 * 3600);
     }
 
     // 5. Events Attended
     // We cache this calculation as it iterates through all orders and can be resource intensive.
     // The cache key is specific to the user and lasts for 12 hours.
-    // It is invalidated on 'woocommerce_order_status_completed' and 'woocommerce_order_status_processing'.
+    // It is invalidated on 'woocommerce_order_status_completed', 'woocommerce_order_status_processing',
+    // 'woocommerce_order_status_refunded', 'woocommerce_order_status_cancelled', and 'woocommerce_order_status_failed'.
     $events_attended = get_transient("djz_user_events_attended_{$user_id}");
 
     if (false === $events_attended) {
@@ -531,6 +537,7 @@ function djz_clear_user_events_cache($order_id) {
         $user_id = $order->get_user_id();
         if ($user_id) {
             delete_transient("djz_user_events_attended_{$user_id}");
+            delete_transient("djz_user_total_tracks_{$user_id}");
         }
     }
 }
