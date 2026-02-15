@@ -99,7 +99,7 @@ const MusicPage: React.FC = () => {
         </div>
       </>
     );
-  }
+    }
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
