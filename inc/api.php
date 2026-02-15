@@ -374,8 +374,32 @@ function djz_get_gamipress_user_data($request) {
                     'numberposts' => -1,
                 ]);
 
+                // Batch prime caches for achievement images to prevent N+1 queries
+                $all_img_ids = [];
+                $post_thumbnail_map = [];
+
                 foreach ($posts as $post) {
-                    $img_id = get_post_thumbnail_id($post->ID);
+                    $thumbnail_id = get_post_thumbnail_id($post->ID);
+                    if ($thumbnail_id) {
+                        $all_img_ids[] = $thumbnail_id;
+                        $post_thumbnail_map[$post->ID] = $thumbnail_id;
+                    }
+                }
+
+                if (!empty($all_img_ids)) {
+                    $all_img_ids = array_unique($all_img_ids);
+                    update_meta_cache('post', $all_img_ids);
+                    // _prime_post_caches is an internal WP function (since 3.4) that efficiently
+                    // primes the object cache for a list of post IDs. We use it here to avoid
+                    // N+1 queries when wp_get_attachment_url() requests the attachment post object.
+                    // If it's not available (highly unlikely in WP), we simply skip this optimization step.
+                    if (function_exists('_prime_post_caches')) {
+                        _prime_post_caches($all_img_ids, false, false);
+                    }
+                }
+
+                foreach ($posts as $post) {
+                    $img_id = $post_thumbnail_map[$post->ID] ?? 0;
                     $img_url = $img_id ? wp_get_attachment_url($img_id) : '';
 
                     // Cleanup content

@@ -133,7 +133,7 @@ const ProductCarousel: React.FC<{
           {products.map((product) => (
             <motion.div
               key={product.id}
-              className="flex-shrink-0 w-64 md:w-72 lg:w-80 relative group/card"
+              className="shrink-0 w-64 md:w-72 lg:w-80 relative group/card"
               whileHover={{ scale: 1.05, zIndex: 10, transition: { duration: 0.3 } }}
             >
               <div className="card overflow-hidden shadow-xl bg-surface border border-white/5 rounded-lg h-full flex flex-col">
@@ -154,7 +154,7 @@ const ProductCarousel: React.FC<{
                   )}
                 </Link>
 
-                <div className="p-4 flex flex-col flex-grow">
+                <div className="p-4 flex flex-col grow">
                   <Link to={`${productBasePath}/${product.slug}`}>
                     <h3 className="text-base font-bold mb-1 text-white line-clamp-1 hover:text-primary transition-colors">
                       {product.name}
