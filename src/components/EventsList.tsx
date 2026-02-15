@@ -169,7 +169,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12" role="status">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" aria-hidden="true"></div>
+        <div className="animate-spin rounded-full size-12 border-b-2 border-primary" aria-hidden="true"></div>
         <span className="sr-only">{t('events.loading', 'Loading events...')}</span>
       </div>
     );
@@ -219,7 +219,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 className="card hover:border-primary/50 transition-all duration-300 group"
               >
                 <div className="flex items-start gap-4 p-4">
-                  <time dateTime={event.datetime} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10">
+                  <time dateTime={event.datetime} className="shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10">
                     <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
                     <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' })}</div>
                   </time>
@@ -227,11 +227,11 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">{event.title}</h3>
                     <div className="space-y-1 text-sm text-white/70">
                       <div className="flex items-center gap-2">
-                         <MapPin size={14} className="flex-shrink-0" />
+                         <MapPin size={14} className="shrink-0" />
                          <span className="truncate">{completeData.locationName}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock size={14} className="flex-shrink-0" />
+                        <Clock size={14} className="shrink-0" />
                         <span className="truncate">{eventLocation}</span>
                       </div>
                     </div>
@@ -241,7 +241,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                       href={ticketUrl} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="btn btn-sm btn-primary flex-shrink-0 flex items-center gap-2"
+                      className="btn btn-sm btn-primary shrink-0 flex items-center gap-2"
                       aria-label={ariaLabel}
                     >
                       <Ticket size={14} />
@@ -265,7 +265,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
                 {event.image ? (
-                   <img src={event.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500" />
+                   <img src={event.image} alt="" className="absolute inset-0 size-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500" />
                 ) : null}
                 
                 <time dateTime={event.datetime} className="relative z-10 text-center drop-shadow-lg">
@@ -279,18 +279,18 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white">{event.title}</h3>
                 <div className="space-y-2 mb-4 text-sm text-white/70">
                   <div className="flex items-start gap-2">
-                    <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
+                    <MapPin size={16} className="shrink-0 mt-0.5 text-primary" />
                     <div>
                       <div className="font-semibold text-white">{completeData.locationName}</div>
                       <div>{completeData.city}, {completeData.country}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar size={16} className="flex-shrink-0 text-secondary" />
+                    <Calendar size={16} className="shrink-0 text-secondary" />
                     <span>{formattedDate}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock size={16} className="flex-shrink-0 text-accent" />
+                    <Clock size={16} className="shrink-0 text-accent" />
                     <span>{formattedTime}</span>
                   </div>
                 </div>

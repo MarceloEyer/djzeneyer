@@ -105,7 +105,7 @@ const ProductCarousel: React.FC<{
               exit={{ opacity: 0 }}
               onClick={() => scroll('left')}
               aria-label="Scroll left"
-              className="absolute left-0 top-0 bottom-0 z-20 bg-black/50 hover:bg-black/70 p-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-12"
+              className="absolute left-0 inset-y-0 z-20 bg-black/50 hover:bg-black/70 p-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-12"
             >
               <ChevronLeft size={40} className="text-white" />
             </motion.button>
@@ -118,7 +118,7 @@ const ProductCarousel: React.FC<{
               exit={{ opacity: 0 }}
               onClick={() => scroll('right')}
               aria-label="Scroll right"
-              className="absolute right-0 top-0 bottom-0 z-20 bg-black/50 hover:bg-black/70 p-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-12"
+              className="absolute right-0 inset-y-0 z-20 bg-black/50 hover:bg-black/70 p-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-12"
             >
               <ChevronRight size={40} className="text-white" />
             </motion.button>
@@ -133,7 +133,7 @@ const ProductCarousel: React.FC<{
           {products.map((product) => (
             <motion.div
               key={product.id}
-              className="flex-shrink-0 w-64 md:w-72 lg:w-80 relative group/card"
+              className="shrink-0 w-64 md:w-72 lg:w-80 relative group/card"
               whileHover={{ scale: 1.05, zIndex: 10, transition: { duration: 0.3 } }}
             >
               <div className="card overflow-hidden shadow-xl bg-surface border border-white/5 rounded-lg h-full flex flex-col">
@@ -141,7 +141,7 @@ const ProductCarousel: React.FC<{
                   <img 
                     src={product.images[0]?.sizes?.medium || product.images[0]?.src || 'https://placehold.co/640x360/0D96FF/FFFFFF?text=Event'}
                     alt={product.images[0]?.alt || product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
+                    className="size-full object-cover transition-transform duration-500 group-hover/card:scale-110"
                     loading="lazy"
                   />
                   
@@ -154,7 +154,7 @@ const ProductCarousel: React.FC<{
                   )}
                 </Link>
 
-                <div className="p-4 flex flex-col flex-grow">
+                <div className="p-4 flex flex-col grow">
                   <Link to={`${productBasePath}/${product.slug}`}>
                     <h3 className="text-base font-bold mb-1 text-white line-clamp-1 hover:text-primary transition-colors">
                       {product.name}
@@ -335,13 +335,13 @@ const ShopPage: React.FC = () => {
               <img 
                 src={featuredProduct.images[0]?.src || 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer'} 
                 alt={featuredProduct.name}
-                className="w-full h-full object-cover"
+                className="size-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
             </div>
 
-            <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 lg:p-16 flex flex-col justify-end h-full pointer-events-none">
+            <div className="absolute bottom-0 left-0 size-full p-6 md:p-12 lg:p-16 flex flex-col justify-end pointer-events-none">
               <div className="max-w-3xl pointer-events-auto">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="bg-primary text-black font-bold px-2 py-1 text-xs uppercase tracking-wide rounded">

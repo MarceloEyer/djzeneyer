@@ -82,7 +82,7 @@ const PrivacyPolicyPage: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
+            <div className="inline-flex items-center justify-center size-20 rounded-full bg-primary/20 mb-6">
               <Shield size={40} className="text-primary" />
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
@@ -121,7 +121,7 @@ const PrivacyPolicyPage: React.FC = () => {
               className="card p-8 mb-6"
             >
               <div className="flex items-start gap-4 mb-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                <div className="shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                   <section.icon size={24} className="text-primary" />
                 </div>
                 <h2 className="text-2xl font-display font-bold mt-1">{section.title}</h2>

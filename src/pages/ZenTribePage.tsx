@@ -97,7 +97,7 @@ const BenefitCard = memo<{
       },
     }}
   >
-    <div className={`w-12 h-12 rounded-full bg-${color}/20 flex items-center justify-center mb-4`}>
+    <div className={`w-12`size-12 rounded-full bg-${}/20 flex items-center justify-center mb-4`}>
       {icon}
     </div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
@@ -128,7 +128,7 @@ const MembershipCard = memo<{
       </div>
     )}
     <div className={`p-6 bg-${tier.color}/10`}>
-      <div className={`w-12 h-12 rounded-full bg-${tier.color}/20 flex items-center justify-center mb-4 text-${tier.color}`}>
+      <div className={`w-12`size-12 rounded-full bg-${color}/20 flex items-center justify-center mb-4 text-${tier.color}`}>
         {tier.icon}
       </div>
       <h3 className="text-2xl font-bold mb-2 font-display">{tier.name}</h3>
