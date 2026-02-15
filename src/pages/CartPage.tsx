@@ -38,7 +38,7 @@ const CartPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full size-12 border-y-2 border-primary"></div>
       </div>
     );
   }
@@ -92,11 +92,11 @@ const CartPage: React.FC = () => {
                     variants={itemVariants}
                     className="flex gap-4 p-4 bg-surface rounded-lg border border-white/10"
                   >
-                    <div className="w-20 h-20 bg-white/5 rounded-md overflow-hidden flex-shrink-0">
+                    <div className="size-20 bg-white/5 rounded-md overflow-hidden flex-shrink-0">
                       {item.images && item.images[0] ? (
-                        <img src={item.images[0].src} alt={item.name} className="w-full h-full object-cover" />
+                        <img src={item.images[0].src} alt={item.name} className="size-full object-cover" />
                       ) : (
-                         <div className="w-full h-full flex items-center justify-center text-white/20">
+                         <div className="size-full flex items-center justify-center text-white/20">
                            <ShoppingCart size={24} />
                          </div>
                       )}

@@ -84,11 +84,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
   if (orientation === 'vertical') {
     return (
       <div className="flex flex-col gap-2 w-full pt-2 border-t border-white/10 mt-2">
-        <div className="flex items-center gap-3 px-2 py-2 mb-2">
+        <div className="flex items-center gap-3 p-2 mb-2">
           {user.avatar ? (
-            <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-primary object-cover" />
+            <img src={user.avatar} alt={user.name} className="size-10 rounded-full border border-primary object-cover" />
           ) : (
-            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary"/></div>
+            <div className="size-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary"/></div>
           )}
           <div className="overflow-hidden">
             <div className="font-bold text-sm text-white truncate">{user.name}</div>
@@ -124,10 +124,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
           <img 
             src={user.avatar} 
             alt={user.name} 
-            className="w-8 h-8 rounded-full object-cover border border-primary/50"
+            className="size-8 rounded-full object-cover border border-primary/50"
           />
         ) : (
-          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center border border-primary/20">
+          <div className="size-8 bg-primary/20 rounded-full flex items-center justify-center border border-primary/20">
             <User className="text-primary" size={16} />
           </div>
         )}

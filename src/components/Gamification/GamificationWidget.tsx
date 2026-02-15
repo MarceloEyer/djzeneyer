@@ -114,8 +114,7 @@ const GamificationWidget: React.FC = () => {
               <motion.div
                 key={achievement?.id || index}
                 whileHover={{ scale: 1.1, rotate: 5 }}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  achievement?.earned 
+                className={``size-10 rounded-lg flex items-center justify-center ${                  achievement?.earned 
                     ? 'bg-gradient-to-br from-primary to-secondary' 
                     : 'bg-white/5 opacity-40'
                 }`}
@@ -125,7 +124,7 @@ const GamificationWidget: React.FC = () => {
                   <img 
                     src={achievement.image} 
                     alt={achievement.title || 'Achievement'}
-                    className="w-6 h-6 object-contain"
+                    className="wsize-6 object-contain
                   />
                 ) : (
                   <Award size={16} className={achievement?.earned ? 'text-white' : 'text-white/30'} />

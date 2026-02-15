@@ -344,7 +344,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                       }}
                       className={`w-full bg-black/40 text-white border ${
                         formErrors.password ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                      } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                      } rounded-lg py-3 px-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                       placeholder="••••••••"
                       disabled={loading}
                     />
