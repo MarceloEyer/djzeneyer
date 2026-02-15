@@ -107,7 +107,7 @@ const NewsPage: React.FC = () => {
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
                     <img 
                       src={singlePost._embedded['wp:featuredmedia'][0].source_url} 
-                      className="size-full object-cover" 
+                      className="w-full h-full object-cover"
                       alt={singlePost.title.rendered} 
                     />
                   </div>
@@ -146,7 +146,7 @@ const NewsPage: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center gap-2 text-primary font-bold tracking-widest text-xs uppercase mb-2"
               >
-                <div className="size-2 bg-primary rounded-full animate-pulse" />
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                 Live Feed
               </motion.div>
               <h1 className="text-5xl md:text-7xl font-black font-display tracking-tight text-white">
@@ -182,7 +182,7 @@ const NewsPage: React.FC = () => {
                     <img 
                       src={featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'} 
                       alt={featuredPost.title.rendered}
-                      className="absolute inset-0 size-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
                     
@@ -232,7 +232,7 @@ const NewsPage: React.FC = () => {
                       <img 
                         src={post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'} 
                         alt={post.title.rendered}
-                        className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white border border-white/10">
                         <Clock size={12} className="inline mr-1" /> 3 min read
