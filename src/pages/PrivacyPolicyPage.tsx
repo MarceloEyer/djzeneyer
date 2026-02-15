@@ -121,7 +121,7 @@ const PrivacyPolicyPage: React.FC = () => {
               className="card p-8 mb-6"
             >
               <div className="flex items-start gap-4 mb-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                <div className="shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                   <section.icon size={24} className="text-primary" />
                 </div>
                 <h2 className="text-2xl font-display font-bold mt-1">{section.title}</h2>
