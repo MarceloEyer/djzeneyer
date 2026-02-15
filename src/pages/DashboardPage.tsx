@@ -65,8 +65,8 @@ const DashboardPage = () => {
     rank: gamipress.rank,
     totalTracks: gamipress.totalTracks,
     eventsAttended: gamipress.eventsAttended,
-    streakDays: gamipress.streak,
-    streakFire: gamipress.streakFire,
+    streakDays: 0, // Placeholder for future implementation
+    streakFire: false, // Placeholder for future implementation
     tribeFriends: 0 
   }), [gamipress]);
 
