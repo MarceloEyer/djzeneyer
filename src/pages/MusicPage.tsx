@@ -100,6 +100,7 @@ const MusicPage: React.FC = () => {
       </>
     );
   }
+  }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
   const tags = ['Todos', ...new Set(tracks.flatMap((t: any) => t.tags_names || []))];
