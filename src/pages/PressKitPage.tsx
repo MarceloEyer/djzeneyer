@@ -231,7 +231,7 @@ const MediaKitCard = memo<{ icon: React.ReactNode; title: string; description: s
       {icon}
     </div>
     <h3 className="font-bold text-xl text-white mb-2">{title}</h3>
-    <p className="tetext-white/70 mb-4 grow{description}</p>
+    <p className="text-white/70 mb-4 flex-grow">{description}</p>
     <div className="flex items-center justify-center gap-2 text-primary font-semibold mt-auto">
       {isExternal ? <ExternalLink size={20} /> : <Download size={20} />}
       <span>{isExternal ? "Acessar" : "Download"}</span>

@@ -29,7 +29,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ achievements }) 
               key={achievement.id} 
               className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
             >
-              <Award className="text-secondary shrink-0" size={20} />
+              <Award className="text-secondary flex-shrink-0" size={20} />
               <div className="flex-1">
                 <p className="font-medium">{achievement.title}</p>
                 <p className="text-sm text-white/60">Recently achieved</p>

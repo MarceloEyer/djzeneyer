@@ -218,7 +218,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   animate={{ opacity: 1, height: 'auto' }}
                   className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm flex items-start gap-3"
                 >
-                  <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                  <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </motion.div>
               )}
@@ -288,7 +288,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         }}
                         className={`w-full bg-black/40 text-white border ${
                           formErrors.username ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-white/20`}
+                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                         placeholder="Como devemos te chamar?"
                         disabled={loading}
                       />
@@ -311,7 +311,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                       }}
                       className={`w-full bg-black/40 text-white border ${
                         formErrors.email ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                      } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-white/20`}
+                      } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                       placeholder="seu@email.com"
                       disabled={loading}
                     />
@@ -344,7 +344,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                       }}
                       className={`w-full bg-black/40 text-white border ${
                         formErrors.password ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                      } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-white/20`}
+                      } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                       placeholder="••••••••"
                       disabled={loading}
                     />
@@ -375,7 +375,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex justify-center items-center gap-2 mt-2"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-primary/20 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex justify-center items-center gap-2 mt-2"
                 >
                   {loading ? (
                     <>
