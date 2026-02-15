@@ -20,8 +20,8 @@ def verify_music_page(page: Page):
     # Let's wait for a button "Download Grátis" which is on the cards.
     # But it might take time to fetch from remote API.
     try:
-        page.wait_for_selector("text=Download Grátis", timeout=10000)
-    except:
+        page.wait_for_selector('text=Download Grátis', timeout=10000)
+    except Exception:
         print("Timeout waiting for tracks. Taking screenshot anyway to debug.")
 
     # Interact with search to trigger the memoized code
