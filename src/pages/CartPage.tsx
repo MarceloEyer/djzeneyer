@@ -92,7 +92,7 @@ const CartPage: React.FC = () => {
                     variants={itemVariants}
                     className="flex gap-4 p-4 bg-surface rounded-lg border border-white/10"
                   >
-                    <div className="w-20 h-20 bg-white/5 rounded-md overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-20 bg-white/5 rounded-md overflow-hidden shrink-0">
                       {item.images && item.images[0] ? (
                         <img src={item.images[0].src} alt={item.name} className="w-full h-full object-cover" />
                       ) : (
@@ -102,7 +102,7 @@ const CartPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex-grow flex flex-col justify-between">
+                    <div className="grow flex flex-col justify-between">
                       <div className="flex justify-between items-start">
                         <h3 className="font-semibold text-lg line-clamp-2">{item.name}</h3>
                         <button
