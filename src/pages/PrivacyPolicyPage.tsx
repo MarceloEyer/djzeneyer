@@ -82,7 +82,7 @@ const PrivacyPolicyPage: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
+            <div className="inline-flex items-center justify-center size-20 rounded-full bg-primary/20 mb-6">
               <Shield size={40} className="text-primary" />
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">

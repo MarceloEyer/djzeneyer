@@ -247,7 +247,7 @@ const MyAccountPage: React.FC = () => {
       className="min-h-screen flex items-center justify-center pt-24"
     >
       <div className="text-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary mx-auto mb-4"></div>
+        <div className="ananimate-spin rounded-full size-16 border-y-4 border-primary mx-auto mb-4</div>
         <p className="text-xl font-semibold">{message}</p>
       </div>
     </motion.div>
@@ -611,7 +611,7 @@ const MyAccountPage: React.FC = () => {
                   >
                     {savingProfile ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                        <div className="animanimate-spin rounded-full size-4 border-2 border-white border-t-transparent
                         {t('profile.saving')}
                       </>
                     ) : profileSaved ? (
@@ -638,15 +638,15 @@ const MyAccountPage: React.FC = () => {
               </div>
               <div className="space-y-3">
                 <label htmlFor="notify-events" className="flex items-center gap-3 cursor-pointer">
-                  <input id="notify-events" name="notify-events" type="checkbox" className="w-5 h-5" defaultChecked />
+                  <input id="notify-events" name="notify-events" type="checkbox" className="w-5 size-5faultChecked />
                   <span>Email notifications for new events</span>
                 </label>
                 <label htmlFor="notify-achievements" className="flex items-center gap-3 cursor-pointer">
-                  <input id="notify-achievements" name="notify-achievements" type="checkbox" className="w-5 h-5" defaultChecked />
+                  <input id="notify-achievements" name="notify-achievements" type="checkbox" className="w-5 size-5faultChecked />
                   <span>Achievement updates</span>
                 </label>
                 <label htmlFor="notify-marketing" className="flex items-center gap-3 cursor-pointer">
-                  <input id="notify-marketing" name="notify-marketing" type="checkbox" className="w-5 h-5" />
+                  <input id="notify-marketing" name="notify-marketing" type="checkbox" className="w-5 size-5
                   <span>Marketing emails</span>
                 </label>
                 <div className="pt-3 border-t border-white/10">
@@ -657,8 +657,7 @@ const MyAccountPage: React.FC = () => {
                           id="notify-newsletter"
                           name="notify-newsletter"
                           type="checkbox"
-                          className="w-5 h-5"
-                          checked={newsletterEnabled}
+                          className="w-5 size-5                        checked={newsletterEnabled}
                           disabled={savingNewsletter}
                           onChange={(e) => handleNewsletterToggle(e.target.checked)}
                         />
@@ -759,11 +758,9 @@ const MyAccountPage: React.FC = () => {
                         <img 
                           src={user.avatar} 
                           alt={user.name}
-                          className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-primary/30"
-                        />
+                          className="w-20size-20 rounded-full mx-auto object-cover border-4 border-primary/30                      />
                       ) : (
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto">
-                          <User className="text-white" size={32} />
+                        <div className="w-20size-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto                         <User className="text-white" size={32} />
                         </div>
                       )}
                     </div>

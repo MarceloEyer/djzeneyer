@@ -164,7 +164,7 @@ const ProductPage: React.FC = () => {
                 <img
                   src={mainImage}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="size-full object-cover"
                 />
               </div>
 
@@ -176,7 +176,7 @@ const ProductPage: React.FC = () => {
                       onClick={() => setActiveImage(img.src)}
                       className={`rounded-lg overflow-hidden border ${activeImage === img.src ? 'border-primary' : 'border-white/10'}`}
                     >
-                      <img src={img.sizes?.thumbnail || img.src} alt={img.alt || product.name} className="w-full h-full object-cover" />
+                      <img src={img.sizes?.thumbnail || img.src} alt={img.alt || product.name} className="size-full object-cover" />
                     </button>
                   ))}
                 </div>

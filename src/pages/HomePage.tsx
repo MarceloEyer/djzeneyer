@@ -78,7 +78,7 @@ const ITEM_VARIANTS: Variants = {
 
 const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
   <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
-    <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
+    <Icon className="size-6 mx-auto mb-2 text-primary" aria-hidden="true" />
     <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
     <div className="text-sm text-white/70 uppercase tracking-wider">{label}</div>
   </motion.div>
@@ -236,14 +236,14 @@ const HomePage: React.FC = () => {
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-20 pb-12" aria-label="Introduction">
         <div className="absolute inset-0 z-0 bg-black">
-          <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
+          <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="size-full">
             <picture>
               <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.webp" />
               <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
               <img
                 src="/images/hero-background.webp"
                 alt="DJ Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
-                className="w-full h-full object-cover object-center opacity-40"
+                className="size-full object-cover object-center opacity-40"
                 width="1920"
                 height="1080"
                 loading="eager"

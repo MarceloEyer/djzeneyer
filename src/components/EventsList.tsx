@@ -169,7 +169,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12" role="status">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" aria-hidden="true"></div>
+        <div className="animate-spin rounded-full size-12 border-b-2 border-primary" aria-hidden="true"></div>
         <span className="sr-only">{t('events.loading', 'Loading events...')}</span>
       </div>
     );
@@ -265,7 +265,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
                 {event.image ? (
-                   <img src={event.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500" />
+                   <img src={event.image} alt="" className="absolute inset-0 size-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500" />
                 ) : null}
                 
                 <time dateTime={event.datetime} className="relative z-10 text-center drop-shadow-lg">
