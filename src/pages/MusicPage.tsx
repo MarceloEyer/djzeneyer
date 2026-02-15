@@ -34,9 +34,20 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
-  if (!singleLoading && slug && singleTrack) {
-    return (
-      <>
+  if (slug) {
+    if (singleLoading) {
+      return (
+        <div className="min-h-screen bg-background text-white pt-24 pb-20">
+          <div className="container mx-auto px-4 max-w-4xl">
+             <div className="h-96 bg-white/5 rounded-3xl animate-pulse"></div>
+          </div>
+        </div>
+      );
+    }
+
+    if (singleTrack) {
+      return (
+        <>
         <HeadlessSEO
           title={`${singleTrack.title?.rendered || 'Music'} | Zen Music`}
           description={singleTrack.excerpt?.rendered || "Ouça as últimas produções de DJ Zen Eyer."}
@@ -90,7 +101,8 @@ const MusicPage: React.FC = () => {
           </div>
         </div>
       </>
-    );
+      );
+    }
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---

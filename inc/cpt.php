@@ -109,7 +109,7 @@ add_action('rest_api_init', function() {
  * Optimize REST API: Batch prime attachment caches for Remixes
  */
 add_filter('the_posts', function($posts, $query) {
-    if (empty($posts)) return $posts;
+    if (empty($posts) || !($query instanceof WP_Query)) return $posts;
 
     // Only run for REST API requests to 'remixes' endpoint
     if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
