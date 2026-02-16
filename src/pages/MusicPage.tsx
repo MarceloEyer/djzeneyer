@@ -106,12 +106,13 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(tracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  const filteredTracks = tracks.filter((track: MusicTrack) => {
+  const tags = useMemo(() => ['Todos', ...new Set(tracks.flatMap((t: MusicTrack) => t.tag_names || []))], [tracks]);
+
+  const filteredTracks = useMemo(() => tracks.filter((track: MusicTrack) => {
     const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
     const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTag && matchesSearch;
-  });
+  }), [tracks, activeTag, searchQuery]);
 
   return (
     <>
@@ -171,6 +172,7 @@ const MusicPage: React.FC = () => {
                   <div className="aspect-square relative overflow-hidden">
                     <img 
                       src={track.featured_image_src || '/images/hero-background.webp'}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       alt={track.title.rendered}
                     />
