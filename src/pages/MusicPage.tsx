@@ -1,5 +1,5 @@
 // src/pages/MusicPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -94,12 +94,17 @@ const MusicPage: React.FC = () => {
   }
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  const filteredTracks = listTracks.filter((track: MusicTrack) => {
-    const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
-    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTag && matchesSearch;
-  });
+  const tags = useMemo(() => {
+    return ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
+  }, [listTracks]);
+
+  const filteredTracks = useMemo(() => {
+    return listTracks.filter((track: MusicTrack) => {
+      const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
+      const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTag && matchesSearch;
+    });
+  }, [listTracks, activeTag, searchQuery]);
 
   return (
     <>
