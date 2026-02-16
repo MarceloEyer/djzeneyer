@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) exit;
 class DJZ_Vite_Loader {
 
     private $manifest = [];
+    private $manifest_loaded = false;
     private $dist_path;
     private $dist_url;
 
@@ -95,9 +96,14 @@ class DJZ_Vite_Loader {
      * Get manifest data, lazy-loading if necessary
      */
     private function get_manifest() {
-        if (empty($this->manifest)) {
-            $this->load_manifest();
+        // Prevent infinite retry loops or redundant checks
+        if ($this->manifest_loaded) {
+            return $this->manifest;
         }
+
+        $this->load_manifest();
+        $this->manifest_loaded = true;
+
         return $this->manifest;
     }
 
@@ -110,10 +116,20 @@ class DJZ_Vite_Loader {
         }
 
         $manifest = $this->get_manifest();
-        if (empty($manifest)) return;
+        if (empty($manifest)) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('DJZ Vite: Manifest is empty or failed to load.');
+            }
+            return;
+        }
 
         $entry = $manifest['index.html'] ?? $manifest['src/main.tsx'] ?? null;
-        if (!$entry) return;
+        if (!$entry) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('DJZ Vite: Entry point (index.html or src/main.tsx) not found in manifest.');
+            }
+            return;
+        }
 
         // 1. JS
         if (!empty($entry['file'])) {
@@ -183,4 +199,7 @@ class DJZ_Vite_Loader {
     }
 }
 
-new DJZ_Vite_Loader();
+// Singleton-like guard: Ensure we don't instantiate twice if file is included multiple times
+if (!isset($GLOBALS['djz_vite_loader'])) {
+    $GLOBALS['djz_vite_loader'] = new DJZ_Vite_Loader();
+}
