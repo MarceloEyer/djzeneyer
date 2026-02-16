@@ -1,5 +1,5 @@
 // src/pages/MusicPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -160,7 +160,7 @@ const MusicPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTracks.map((track: any) => (
+              {filteredTracks.map((track: MusicTrack) => (
                 <motion.div
                   key={track.id}
                   layout
