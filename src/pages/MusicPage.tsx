@@ -33,6 +33,21 @@ const MusicPage: React.FC = () => {
     console.error('Error fetching tracks:', error);
   }
 
+  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
+  const tags = useMemo(() => {
+    const allTags = listTracks.flatMap((t: MusicTrack) => t.tag_names || []);
+    return ['Todos', ...Array.from(new Set(allTags))];
+  }, [listTracks]);
+
+  const filteredTracks = useMemo(() => {
+    const lowerSearchQuery = searchQuery.toLowerCase();
+    return listTracks.filter((track: MusicTrack) => {
+      const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
+      const matchesSearch = !searchQuery || track.title.rendered.toLowerCase().includes(lowerSearchQuery);
+      return matchesTag && matchesSearch;
+    });
+  }, [listTracks, activeTag, searchQuery]);
+
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
   if (slug) {
     if (singleLoading) {
