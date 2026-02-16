@@ -26,6 +26,8 @@ export interface GamiPressData {
   nextLevelPoints: number;
   progressToNextLevel: number;
   achievements: Achievement[];
+  totalTracks: number;
+  eventsAttended: number;
 }
 
 interface GamiPressHookResponse extends GamiPressData {
@@ -96,6 +98,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
         nextLevelPoints: 100,
         progressToNextLevel: 0,
         achievements: [],
+        totalTracks: 0,
+        eventsAttended: 0,
       });
     } finally {
       setLoading(false);
@@ -120,6 +124,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
     nextLevelPoints: 100,
     progressToNextLevel: 0,
     achievements: [],
+    totalTracks: 0,
+    eventsAttended: 0,
   };
 
   return {
@@ -130,6 +136,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
     nextLevelPoints: data?.nextLevelPoints ?? fallback.nextLevelPoints,
     progressToNextLevel: data?.progressToNextLevel ?? fallback.progressToNextLevel,
     achievements: data?.achievements ?? fallback.achievements,
+    totalTracks: data?.totalTracks ?? fallback.totalTracks,
+    eventsAttended: data?.eventsAttended ?? fallback.eventsAttended,
     data,
     loading,
     error,

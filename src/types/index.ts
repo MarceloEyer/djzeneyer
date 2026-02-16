@@ -7,7 +7,6 @@ export interface Festival {
   flag: string;
   url: string;
   upcoming?: boolean;
-  date?: string;
 }
 
 export interface SocialLink {
