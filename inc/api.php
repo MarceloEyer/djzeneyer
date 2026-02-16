@@ -475,14 +475,12 @@ function djz_get_user_events_attended($user_id) {
                 'customer_id' => $user_id,
                 'limit' => -1,
                 'status' => ['completed', 'processing'],
-                'return' => 'objects',
+                'return' => 'ids',
             ]);
 
             if (!empty($orders)) {
-                foreach ($orders as $order) {
-                    if (!$order) {
-                        continue;
-                    }
+                foreach ($orders as $order_id) {
+                    $order = wc_get_order($order_id);
                     if (!$order) continue;
 
                     foreach ($order->get_items() as $item) {
