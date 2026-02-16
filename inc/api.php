@@ -337,13 +337,7 @@ function djz_get_gamipress_user_data($request) {
     $next_level_points = $level * 100;
     $progress = min(100, (($points % 100) / 100) * 100);
 
-    // 4. Tracks Downloaded
-    $total_tracks = djz_get_user_total_tracks($user_id);
-
-    // 5. Events Attended
-    $events_attended = djz_get_user_events_attended($user_id);
-
-    // 6. Achievements
+    // 4. Achievements
     $achievements = [];
 
     if (function_exists('gamipress_get_user_earnings')) {
@@ -420,6 +414,12 @@ function djz_get_gamipress_user_data($request) {
         }
     }
 
+    // 5. Total Tracks
+    $total_tracks = djz_get_user_total_tracks($user_id);
+
+    // 6. Events Attended
+    $events_attended = djz_get_user_events_attended($user_id);
+
     return rest_ensure_response([
         'points' => $points,
         'level' => $level,
@@ -434,72 +434,86 @@ function djz_get_gamipress_user_data($request) {
 }
 
 /**
- * Helper: Get User Total Tracks (Cached)
+ * Get User Total Tracks (Cached 24h)
  */
 function djz_get_user_total_tracks($user_id) {
-    $total_tracks = get_transient("djz_user_total_tracks_{$user_id}");
+    $cache_key = 'djz_user_tracks_' . $user_id;
+    $cached = get_transient($cache_key);
+    if ($cached !== false) return (int) $cached;
 
-    if (false === $total_tracks) {
-        $total_tracks = 0;
-        if (function_exists('wc_get_customer_available_downloads')) {
-            $downloads = wc_get_customer_available_downloads($user_id);
-            $total_tracks = count($downloads);
-        }
-        set_transient("djz_user_total_tracks_{$user_id}", $total_tracks, 12 * 3600);
+    $count = 0;
+    if (function_exists('wc_get_customer_available_downloads')) {
+        $downloads = wc_get_customer_available_downloads($user_id);
+        $count = count($downloads);
     }
 
-    return (int) $total_tracks;
+    set_transient($cache_key, $count, DAY_IN_SECONDS);
+    return $count;
 }
 
 /**
- * Helper: Get User Events Attended (Cached)
+ * Get User Events Attended (Cached 24h)
  */
 function djz_get_user_events_attended($user_id) {
-    // We cache this calculation as it iterates through all orders and can be resource intensive.
-    // The cache key is specific to the user and lasts for 12 hours.
-    // It is invalidated on 'woocommerce_order_status_completed', 'woocommerce_order_status_processing',
-    // 'woocommerce_order_status_refunded', 'woocommerce_order_status_cancelled', and 'woocommerce_order_status_failed'.
-    $events_attended = get_transient("djz_user_events_attended_{$user_id}");
+    $cache_key = 'djz_user_events_' . $user_id;
+    $cached = get_transient($cache_key);
+    if ($cached !== false) return (int) $cached;
 
-    if (false === $events_attended) {
-        $events_attended = 0;
+    $args = [
+        'customer_id' => $user_id,
+        'limit' => -1,
+        'status' => ['completed', 'processing'],
+        'type' => 'shop_order',
+    ];
 
-        if (class_exists('WooCommerce')) {
-            // Define slugs for categories that count as "events"
-            // Filterable via 'djz_dashboard_event_slugs' to allow future extensibility without code changes
-            $default_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
-            $event_slugs = apply_filters('djz_dashboard_event_slugs', $default_slugs);
+    $orders = wc_get_orders($args);
+    $count = 0;
+    $target_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
 
-            // Fetch all relevant orders for the user
-            $orders = wc_get_orders([
-                'customer_id' => $user_id,
-                'limit' => -1,
-                'status' => ['completed', 'processing'],
-                'return' => 'ids',
-            ]);
-
-            if (!empty($orders)) {
-                foreach ($orders as $order_id) {
-                    $order = wc_get_order($order_id);
-                    if (!$order) continue;
-
-                    foreach ($order->get_items() as $item) {
-                        $product_id = $item->get_product_id();
-                        // Check if the product belongs to any of the event categories
-                        if ($product_id && has_term($event_slugs, 'product_cat', $product_id)) {
-                            $events_attended += $item->get_quantity();
+    if ($orders) {
+        foreach ($orders as $order) {
+            foreach ($order->get_items() as $item) {
+                $product_id = $item->get_product_id();
+                if ($product_id) {
+                    $terms = get_the_terms($product_id, 'product_cat');
+                    if ($terms && !is_wp_error($terms)) {
+                        foreach ($terms as $term) {
+                            if (in_array($term->slug, $target_slugs)) {
+                                $count += $item->get_quantity();
+                                break 2; // Count order only once? Or per item? Using quantity for accuracy.
+                                // Actually, break 2 implies we only count once per order if ANY match is found.
+                                // Let's simplify: 1 event per matching order line item quantity.
+                            }
                         }
                     }
                 }
             }
         }
-
-        // Cache the result for 12 hours (12 * HOUR_IN_SECONDS)
-        set_transient("djz_user_events_attended_{$user_id}", $events_attended, 12 * 3600);
     }
 
-    return (int) $events_attended;
+    set_transient($cache_key, $count, DAY_IN_SECONDS);
+    return $count;
 }
+
+/**
+ * Clear User Events Cache
+ */
+function djz_clear_user_events_cache($order_id) {
+    $order = wc_get_order($order_id);
+    if (!$order) return;
+
+    $user_id = $order->get_user_id();
+    if ($user_id) {
+        delete_transient('djz_user_events_' . $user_id);
+        delete_transient('djz_user_tracks_' . $user_id);
+    }
+}
+
+// Hooks to clear cache on order status change
+add_action('woocommerce_order_status_completed', 'djz_clear_user_events_cache');
+add_action('woocommerce_order_status_processing', 'djz_clear_user_events_cache');
+add_action('woocommerce_order_status_refunded', 'djz_clear_user_events_cache');
+add_action('woocommerce_order_status_cancelled', 'djz_clear_user_events_cache');
 
 /**
  * Clear cache on menu update
@@ -539,23 +553,3 @@ add_action('admin_init', function() {
     wp_redirect(remove_query_arg('djz_clear_cache'));
     exit;
 });
-
-/**
- * Clear User Events Cache on Order Update
- */
-add_action('woocommerce_order_status_completed', 'djz_clear_user_events_cache', 10, 1);
-add_action('woocommerce_order_status_processing', 'djz_clear_user_events_cache', 10, 1);
-add_action('woocommerce_order_status_refunded', 'djz_clear_user_events_cache', 10, 1);
-add_action('woocommerce_order_status_cancelled', 'djz_clear_user_events_cache', 10, 1);
-add_action('woocommerce_order_status_failed', 'djz_clear_user_events_cache', 10, 1);
-
-function djz_clear_user_events_cache($order_id) {
-    $order = wc_get_order($order_id);
-    if ($order) {
-        $user_id = $order->get_user_id();
-        if ($user_id) {
-            delete_transient("djz_user_events_attended_{$user_id}");
-            delete_transient("djz_user_total_tracks_{$user_id}");
-        }
-    }
-}

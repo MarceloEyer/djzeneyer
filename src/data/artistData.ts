@@ -53,6 +53,8 @@ export const ARTIST = {
 
   // 🌎 Festivais de Destaque
   // Datas adicionadas baseadas nos anos informados e calendário típico dos eventos
+  // NOTA: Datas mantidas intencionalmente no passado para fins de autoridade/histórico.
+  // NÃO ATUALIZAR para datas futuras estimadas a menos que confirmado.
   festivals: [
     {
       name: 'One Zouk Congress',

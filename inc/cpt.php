@@ -105,34 +105,33 @@ add_action('rest_api_init', function() {
         },
     ]);
 });
+
 /**
- * Optimize REST API: Batch prime attachment caches for Remixes
+ * Optimization: Batch prime attachment caches for REST API
+ * Resolves N+1 query issue when fetching 'remixes' with 'featured_image_src'
  */
 add_filter('the_posts', function($posts, $query) {
-    if (empty($posts) || !($query instanceof WP_Query)) return $posts;
+    if (empty($posts) || !is_array($posts)) return $posts;
 
-    // Only run for REST API requests to 'remixes' endpoint
+    // Only target 'remixes' REST API request
     if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
+    if ($query->get('post_type') !== 'remixes') return $posts;
 
-    // Check if main query for remixes
-    $post_type = $query->get('post_type');
-    if ($post_type !== 'remixes' && (!is_array($post_type) || !in_array('remixes', $post_type))) {
-        return $posts;
-    }
-
+    // Collect thumbnail IDs
     $img_ids = [];
     foreach ($posts as $post) {
-        $tid = get_post_thumbnail_id($post->ID);
-        if ($tid) {
-            $img_ids[] = $tid;
+        if ($post instanceof WP_Post) {
+            $tid = get_post_thumbnail_id($post->ID);
+            if ($tid) {
+                $img_ids[] = $tid;
+            }
         }
     }
 
+    // Batch prime caches
     if (!empty($img_ids)) {
         $img_ids = array_unique($img_ids);
         update_meta_cache('post', $img_ids);
-
-        // Use internal _prime_post_caches to avoid WP_Query overhead
         if (function_exists('_prime_post_caches')) {
             _prime_post_caches($img_ids, false, false);
         }
