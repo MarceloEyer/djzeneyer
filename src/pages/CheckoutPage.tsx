@@ -15,7 +15,7 @@ interface PaymentMethod {
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading, getCart } = useCart();
+  const { cart, loading, getCart, clearCart } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
