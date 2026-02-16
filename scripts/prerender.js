@@ -31,8 +31,8 @@ try {
 const CONFIG = {
   serverBase: 'http://localhost:5173',
   distDir: join(process.cwd(), 'dist'),
-  timeout: 60000, 
-  waitForSelector: '#root', 
+  timeout: 60000,
+  waitForSelector: '#root',
   routes: routesList
 };
 
@@ -48,7 +48,7 @@ function startDevServer() {
       stdio: 'inherit', env: { ...process.env, FORCE_COLOR: '1' }
     });
     viteProcess.on('error', reject);
-    
+
     // Polling de conexão
     const start = Date.now();
     while (Date.now() - start < 60000) {
@@ -75,7 +75,7 @@ async function prerender() {
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
-    
+
     // 🚨 DEBUG: Ver erros do navegador
     page.on('console', msg => {
         if (msg.type() === 'error') console.log(`[JS ERROR]: ${msg.text()}`);
@@ -92,8 +92,8 @@ async function prerender() {
     for (const route of CONFIG.routes) {
       // Ajuste de URL: Garante que não tenha barra dupla //
       const cleanRoute = route.replace(/^\//, '');
-      const url = `${CONFIG.serverBase}/${cleanRoute}`; 
-      
+      const url = `${CONFIG.serverBase}/${cleanRoute}`;
+
       let outputPath;
       if (route === '/' || route === '') {
         outputPath = join(CONFIG.distDir, 'index.html');
@@ -113,7 +113,7 @@ async function prerender() {
         } catch(e) {}
 
         const html = await page.content();
-        
+
         // Verifica se pegou só o shell vazio
         if (html.length < 1000) {
             console.warn(`❌ ${route} VAZIO (${html.length}b). Erro de JS ou 404?`);
@@ -128,7 +128,7 @@ async function prerender() {
         console.error(`❌ Erro em ${route}: ${error.message}`);
       }
     }
-    
+
     // Se falhar muitos, avisa
     if (successCount < CONFIG.routes.length) {
         console.error(`⚠️ Apenas ${successCount}/${CONFIG.routes.length} rotas geradas corretamente.`);

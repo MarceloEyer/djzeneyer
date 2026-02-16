@@ -11,7 +11,7 @@ import { Event, Testimonial, FlyerData } from '../types';
 import { EventsList } from '../components/EventsList';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
-import { 
+import {
   Calendar as CalendarIcon,
   MapPin,
   Ticket,
@@ -70,7 +70,7 @@ const EventsPage: React.FC = () => {
         }
 
         const data = await response.json();
-        
+
         // Log para debug (ajuda a ver se a estrutura do JSON mudou)
         console.log("Dados recebidos da API zen-bit:", data);
 
@@ -84,14 +84,14 @@ const EventsPage: React.FC = () => {
             // Se a API retornar um objeto wrapper tipo { data: [...] }, tenta ajustar aqui
             // Por enquanto, logamos o erro e deixamos vazio para não quebrar
             console.error("Formato inesperado da API:", data);
-            setEvents([]); 
+            setEvents([]);
           }
         }
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           console.error('Failed to fetch events:', err);
           setError('Não foi possível carregar a agenda de eventos.');
-          setEvents([]); 
+          setEvents([]);
         }
       } finally {
         setLoading(false);
@@ -114,7 +114,7 @@ const EventsPage: React.FC = () => {
 
     return (
       <>
-        <HeadlessSEO 
+        <HeadlessSEO
           title={`${title} | Zen Events`}
           description={singleEvent.excerpt?.rendered || ""}
           url={`https://djzeneyer.com/events/${id}`}
@@ -128,10 +128,10 @@ const EventsPage: React.FC = () => {
             <div className="grid lg:grid-cols-2 gap-12">
               <div className="space-y-8">
                 <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                  <img 
-                    src={image} 
-                    className="w-full aspect-[4/5] object-cover" 
-                    alt={title} 
+                  <img
+                    src={image}
+                    className="w-full aspect-[4/5] object-cover"
+                    alt={title}
                   />
                 </div>
               </div>
@@ -140,9 +140,9 @@ const EventsPage: React.FC = () => {
                 <div className="bg-primary/10 border border-primary/20 self-start px-4 py-1.5 rounded-full text-primary text-xs font-bold uppercase tracking-widest mb-6">
                   {t('events_status_upcoming', 'Próximo Evento')}
                 </div>
-                
+
                 <h1 className="text-4xl md:text-5xl font-black font-display mb-6" dangerouslySetInnerHTML={{ __html: title }} />
-                
+
                 <div className="space-y-4 mb-10">
                   <div className="flex items-center gap-4 text-white/80">
                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
@@ -153,7 +153,7 @@ const EventsPage: React.FC = () => {
                       <p className="font-bold">{new Date(date).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 text-white/80">
                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
                       <MapPin size={20} />
@@ -165,7 +165,7 @@ const EventsPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div 
+                <div
                   className="prose prose-invert max-w-none mb-10 text-white/70"
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
@@ -197,14 +197,14 @@ const EventsPage: React.FC = () => {
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mb-20">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6"
             >
               ZEN <span className="text-primary italic">EXPERIENCE</span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -260,8 +260,8 @@ const EventsPage: React.FC = () => {
                       >
                         <div className="flex flex-col md:flex-row p-6 gap-8">
                           <div className="md:w-48 h-48 rounded-2xl overflow-hidden shrink-0">
-                            <img 
-                              src={image} 
+                            <img
+                              src={image}
                               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                               alt={title}
                             />
