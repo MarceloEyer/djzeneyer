@@ -9,8 +9,7 @@ if (!defined('ABSPATH')) exit;
 
 class DJZ_Vite_Loader {
 
-    private $manifest = [];
-    private $manifest_loaded = false;
+    private $manifest = null;
     private $dist_path;
     private $dist_url;
 
@@ -96,13 +95,17 @@ class DJZ_Vite_Loader {
      * Get manifest data, lazy-loading if necessary
      */
     private function get_manifest() {
-        // Prevent infinite retry loops or redundant checks
-        if ($this->manifest_loaded) {
+        // Prevent infinite retry loops using null sentinel
+        if ($this->manifest !== null) {
             return $this->manifest;
         }
 
         $this->load_manifest();
-        $this->manifest_loaded = true;
+
+        // If still null after attempt, mark as empty array to prevent retries
+        if ($this->manifest === null) {
+            $this->manifest = [];
+        }
 
         return $this->manifest;
     }
