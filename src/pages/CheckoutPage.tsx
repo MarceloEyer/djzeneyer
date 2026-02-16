@@ -15,7 +15,7 @@ interface PaymentMethod {
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading, getCart }, clearCart = useCart();
+  const { cart, loading, getCart, clearCart } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -132,13 +132,15 @@ const CheckoutPage: React.FC = () => {
         throw new Error(data.message || 'Checkout failed');
       }
 
-      // Refresh cart (should be empty)
+      // Refresh cart state after checkout
       await getCart();
 
       // Handle redirect or success
       if (data.payment_result?.redirect_url) {
         window.location.href = data.payment_result.redirect_url;
       } else {
+        // Defensive clear to guarantee local cart consistency in non-redirect payments
+        await clearCart();
         setOrderSuccess(true);
       }
     } catch (error: any) {
