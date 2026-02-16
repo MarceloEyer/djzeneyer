@@ -20,8 +20,6 @@ class DJZ_Vite_Loader {
 
         $this->dist_path = get_theme_file_path('/dist');
         $this->dist_url  = get_template_directory_uri() . '/dist';
-
-        $this->load_manifest();
     }
 
     private function load_manifest() {
@@ -93,6 +91,16 @@ class DJZ_Vite_Loader {
         }
     }
 
+    /**
+     * Get manifest data, lazy-loading if necessary
+     */
+    private function get_manifest() {
+        if (empty($this->manifest)) {
+            $this->load_manifest();
+        }
+        return $this->manifest;
+    }
+
     public function enqueue_assets() {
         // Dev Mode
         if (defined('DJZ_IS_DEV') && DJZ_IS_DEV) {
@@ -101,9 +109,10 @@ class DJZ_Vite_Loader {
             return;
         }
 
-        if (empty($this->manifest)) return;
+        $manifest = $this->get_manifest();
+        if (empty($manifest)) return;
 
-        $entry = $this->manifest['index.html'] ?? $this->manifest['src/main.tsx'] ?? null;
+        $entry = $manifest['index.html'] ?? $manifest['src/main.tsx'] ?? null;
         if (!$entry) return;
 
         // 1. JS
@@ -119,14 +128,14 @@ class DJZ_Vite_Loader {
         }
 
         // 3. Preloads
-        add_action('wp_head', function() use ($entry) {
+        add_action('wp_head', function() use ($entry, $manifest) {
             if (!empty($entry['file'])) {
                 echo '<link rel="modulepreload" href="' . esc_url($this->dist_url . '/' . $entry['file']) . '" />' . "\n";
             }
             if (!empty($entry['imports'])) {
                 foreach ($entry['imports'] as $import_key) {
-                    if (isset($this->manifest[$import_key]['file'])) {
-                        $chunk_url = $this->dist_url . '/' . $this->manifest[$import_key]['file'];
+                    if (isset($manifest[$import_key]['file'])) {
+                        $chunk_url = $this->dist_url . '/' . $manifest[$import_key]['file'];
                         echo '<link rel="modulepreload" href="' . esc_url($chunk_url) . '" />' . "\n";
                     }
                 }
