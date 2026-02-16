@@ -102,11 +102,32 @@ class CORS_Handler {
             return true;
         }
         
+        // Extract host from origin for wildcard matching
+        $origin_host = parse_url($origin, PHP_URL_HOST);
+
+        if (!$origin_host) {
+            return false;
+        }
+
         // Wildcard match (e.g., *.djzeneyer.com)
         foreach ($allowed_origins as $allowed) {
             if (strpos($allowed, '*') !== false) {
-                $pattern = str_replace('*', '.*', preg_quote($allowed, '/'));
-                if (preg_match('/^' . $pattern . '$/', $origin)) {
+                // Extract host from allowed pattern if it's a URL (e.g. https://*.example.com -> *.example.com)
+                $allowed_host = parse_url($allowed, PHP_URL_HOST);
+                if (!$allowed_host) {
+                    $allowed_host = $allowed;
+                }
+
+                // Convert wildcard pattern to regex
+                // 1. Quote the string to escape all regex special characters
+                $pattern = preg_quote($allowed_host, '/');
+
+                // 2. Replace the escaped wildcard (\*) with regex wildcard (.*)
+                // This ensures ONLY the original '*' acts as a wildcard, while other chars like '?' or '[]' are treated literally.
+                $pattern = str_replace('\*', '.*', $pattern);
+
+                // 3. Anchor the pattern to ensure full host match
+                if (preg_match('/^' . $pattern . '$/', $origin_host)) {
                     return true;
                 }
             }
