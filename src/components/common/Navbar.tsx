@@ -27,6 +27,8 @@ function sanitizePath(path: string): string {
   
   const trimmed = path.trim();
   
+  if (trimmed.startsWith('//')) return '/';
+
   try {
     const url = new URL(trimmed, window.location.origin);
     if (!ALLOWED_PROTOCOLS.includes(url.protocol)) return '/';
@@ -35,7 +37,6 @@ function sanitizePath(path: string): string {
     if (url.origin !== window.location.origin) return trimmed;
   } catch { }
   
-  if (trimmed.startsWith('//')) return '/';
   if (trimmed.includes('..') || trimmed.includes('./')) return '/';
 
   // For internal paths, ensure they match safe pattern
@@ -192,8 +193,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     
     return menuItems.map(item => {
       const localizedUrl = resolveMenuUrl(item.url || '/');
-      let isExternal = item.target === '_blank';
-      let safeUrl = localizedUrl;
+      let isExternal = false;
 
       // Check if external origin
       try {
@@ -203,7 +203,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         }
       } catch {}
 
-      safeUrl = sanitizePath(localizedUrl);
+      const safeUrl = sanitizePath(localizedUrl);
       const visuals = getLinkVisuals(safeUrl);
       
       return {
@@ -264,8 +264,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
           <a
             key={item.ID}
             href={item.safeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={item.target || '_self'}
+            rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
             onClick={() => setIsMenuOpen(false)}
             className={`${commonClasses}`}
           >
