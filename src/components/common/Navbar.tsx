@@ -189,29 +189,44 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     return `${localizedPath}${queryPart}${hashPart}`;
   }, [currentLang]);
 
-  // Renderiza Links
-  const renderNavLinks = useCallback((isMobile = false) => {
-    if (!menuItems || menuItems.length === 0) return null;
+  // Memoize processed menu items to avoid re-calculation on every render
+  const processedMenuItems = useMemo(() => {
+    if (!menuItems || menuItems.length === 0) return [];
     
-    return menuItems.map((item) => {
+    return menuItems.map(item => {
       const localizedUrl = resolveMenuUrl(item.url || '/');
       const safeUrl = sanitizePath(localizedUrl);
       const safeTitle = sanitizeHTML(item.title || '');
       const isExternal = item.target === '_blank';
       const visuals = getLinkVisuals(safeUrl);
       
+      return {
+        ...item,
+        safeUrl,
+        safeTitle,
+        isExternal,
+        visuals
+      };
+    });
+  }, [menuItems, resolveMenuUrl]);
+
+  // Renderiza Links
+  const renderNavLinks = useCallback((isMobile = false) => {
+    if (!processedMenuItems || processedMenuItems.length === 0) return null;
+
+    return processedMenuItems.map((item) => {
       return (
         <NavLink
           key={item.ID}
-          to={safeUrl}
+          to={item.safeUrl}
           end
           target={item.target || '_self'}
-          rel={isExternal ? 'noopener noreferrer' : undefined}
+          rel={item.isExternal ? 'noopener noreferrer' : undefined}
           onClick={() => setIsMenuOpen(false)}
           className={({ isActive }) => 
             isMobile 
               ? `group flex items-center justify-between p-3 rounded-xl transition-all duration-300 border border-transparent ${
-                  isActive ? `${visuals.bg} border-white/5` : 'hover:bg-white/5'
+                  isActive ? `${item.visuals.bg} border-white/5` : 'hover:bg-white/5'
                 }`
               // ✨ DESKTOP: Adicionado 'relative group' para o efeito de sublinhado
               : `relative group nav-link py-2 ${isActive ? 'text-primary font-medium' : 'text-white/80 hover:text-white'}`
@@ -222,14 +237,14 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
               <div className="flex items-center gap-3">
                 {/* Ícone Colorido (Só no Mobile) */}
                 {isMobile && (
-                  <div className={`p-2 rounded-lg ${isActive ? visuals.color : 'text-white/50 group-hover:text-white'} ${isActive ? 'bg-black/20' : 'bg-white/5'}`}>
-                    {visuals.icon}
+                  <div className={`p-2 rounded-lg ${isActive ? item.visuals.color : 'text-white/50 group-hover:text-white'} ${isActive ? 'bg-black/20' : 'bg-white/5'}`}>
+                    {item.visuals.icon}
                   </div>
                 )}
                 
                 <span 
                   className={`${isMobile ? 'text-base font-medium' : ''} ${isActive ? (isMobile ? 'text-white' : '') : 'text-white/80 group-hover:text-white'}`}
-                  dangerouslySetInnerHTML={{ __html: safeTitle }}
+                  dangerouslySetInnerHTML={{ __html: item.safeTitle }}
                 />
               </div>
 
@@ -250,7 +265,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         </NavLink>
       );
     });
-  }, [menuItems]);
+  }, [processedMenuItems]);
   
   return (
     <>
