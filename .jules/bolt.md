@@ -5,3 +5,11 @@
 ## 2025-02-20 - Optimize WP REST API Payloads with _fields
 **Learning:** Default WP REST API endpoints return full objects (content, excerpts, etc.) which is wasteful for lists. Using `_fields` allows precise selection of data, reducing payload size by >80% for collections.
 **Action:** When using `wp/v2` endpoints, always specify `_fields` for the data actually needed by the component.
+
+## 2025-02-21 - Batch Cache Priming for Attachments
+**Learning:** Functions like `wp_get_attachment_url()` inside loops trigger N+1 queries because they require the attachment post object and its meta, which aren't automatically primed by the parent query.
+**Action:** When iterating over posts to get their thumbnails, collect all attachment IDs first and use `update_meta_cache('post', $ids)` and `_prime_post_caches($ids)` to batch fetch the data in constant time.
+
+## 2025-02-22 - Eager Loading Vite Manifest in WordPress
+**Learning:** Instantiating classes that perform file I/O in `__construct` (like loading a Vite manifest) adds overhead to every WordPress request, including REST API and Admin AJAX. This is especially impactful for high-frequency endpoints.
+**Action:** Always lazy-load resource-intensive configuration files. Only load them when the specific action (like `wp_enqueue_scripts`) is actually fired.

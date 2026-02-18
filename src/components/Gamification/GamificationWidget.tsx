@@ -121,7 +121,7 @@ const GamificationWidget: React.FC = () => {
                 key={achievement?.id || index}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  achievement?.earned 
+                  achievement?.earned
                     ? 'bg-gradient-to-br from-primary to-secondary' 
                     : 'bg-white/5 opacity-40'
                 }`}
