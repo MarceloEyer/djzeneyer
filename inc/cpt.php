@@ -117,10 +117,7 @@ add_filter('the_posts', function($posts, $query) {
     // 2. Defensive check for query object
     if (!$query instanceof WP_Query) return $posts;
 
-    // 3. Ensure it's the main query to avoid over-triggering
-    if (!$query->is_main_query()) return $posts;
-
-    // 4. Check for posts and post type
+    // 3. Check for posts and post type
     if (empty($posts) || $query->get('post_type') !== 'remixes') return $posts;
 
     $img_ids = [];
