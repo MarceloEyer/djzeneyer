@@ -117,8 +117,17 @@ add_filter('the_posts', function($posts, $query) {
     // 2. Defensive check for query object
     if (!$query instanceof WP_Query) return $posts;
 
-    // 3. Check for posts and post type
-    if (empty($posts) || $query->get('post_type') !== 'remixes') return $posts;
+    // 3. Ensure it's the main query to avoid over-triggering
+    if (!$query->is_main_query()) return $posts;
+
+    // 4. Check for posts and post type (handles string or array)
+    if (empty($posts)) return $posts;
+    $post_type = $query->get('post_type');
+    if (is_array($post_type)) {
+        if (!in_array('remixes', $post_type)) return $posts;
+    } else {
+        if ($post_type !== 'remixes') return $posts;
+    }
 
     $img_ids = [];
     foreach ($posts as $post) {
@@ -131,6 +140,7 @@ add_filter('the_posts', function($posts, $query) {
     if (!empty($img_ids)) {
         $img_ids = array_unique($img_ids);
         // Prime attachment objects and their meta (including _wp_attachment_metadata for sizes)
+        // Args: (ids, update_term_cache=false, update_meta_cache=true)
         if (function_exists('_prime_post_caches')) {
             _prime_post_caches($img_ids, false, true);
         }
