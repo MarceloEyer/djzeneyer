@@ -21,6 +21,16 @@ const MusicPage: React.FC = () => {
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
+  // MOVED UP to satisfy React Hook rules (must be called unconditionally)
+  const tags = useMemo(() => ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))], [listTracks]);
+
+  const filteredTracks = useMemo(() => listTracks.filter((track: MusicTrack) => {
+    const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
+    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesTag && matchesSearch;
+  }), [listTracks, activeTag, searchQuery]);
+
   // Helper para rotas localizadas
   const getRouteForKey = (key: string): string => {
     const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
@@ -67,7 +77,7 @@ const MusicPage: React.FC = () => {
                   <p className="text-primary font-bold mb-8 tracking-widest uppercase">DJ Zen Eyer Original</p>
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
+                    <button type="button" className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
                       <Play fill="currentColor" size={20} /> OUVIR AGORA
                     </button>
                     {singleTrack.links?.soundcloud && (
@@ -93,14 +103,6 @@ const MusicPage: React.FC = () => {
     );
   }
 
-  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))];
-  const filteredTracks = listTracks.filter((track: MusicTrack) => {
-    const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
-    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTag && matchesSearch;
-  });
-
   return (
     <>
       <HeadlessSEO 
@@ -121,6 +123,7 @@ const MusicPage: React.FC = () => {
             <div className="flex flex-wrap gap-2">
               {tags.map(tag => (
                 <button
+                  type="button"
                   key={tag}
                   onClick={() => setActiveTag(tag)}
                   className={`px-6 py-2 rounded-full text-sm font-bold border transition-all ${
