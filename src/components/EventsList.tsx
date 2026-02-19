@@ -267,7 +267,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 {event.image ? (
                    <img
                      src={event.image}
-                     alt={event.title}
+                     alt=""
                      className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
                      loading="lazy"
                      decoding="async"

@@ -231,7 +231,15 @@
       "releaseDate": "Lançamento",
       "playPreview": "Reproduzir Preview",
       "pausePreview": "Pausar Preview"
-    }
+    },
+    "back": "VOLTAR PARA MÚSICAS",
+    "listen_now": "OUVIR AGORA",
+    "about_track": "SOBRE A FAIXA",
+    "remix_description": "Remixes oficiais e produções originais para a pista.",
+    "search_placeholder": "Buscar música...",
+    "track_title": "ZEN SOUNDS",
+    "artist_tag": "DJ Zen Eyer Original",
+    "remix_tag": "ZEN EYER REMIX"
   },
 
   "shop_page_title": "Loja",
