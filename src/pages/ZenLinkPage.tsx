@@ -97,7 +97,7 @@ export const ZenLinkPage = () => {
             transition={{ type: 'spring', stiffness: 300 }}
             className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-gradient shadow-2xl"
             style={{
-              borderImage: 'linear-gradient(135deg, `#8B5CF6`, `#EC4899`) 1',
+              borderImage: 'linear-gradient(135deg, #8B5CF6, #EC4899) 1',
             }}
           >
             <img
