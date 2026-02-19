@@ -10,7 +10,7 @@ import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } fr
 
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   // Optimization: Conditionally fetch data
   // If slug is present, fetch only the single track (heavy details)
@@ -69,6 +69,8 @@ const MusicPage: React.FC = () => {
                     src={singleTrack.featured_image_src_full || singleTrack.featured_image_src || '/images/hero-background.webp'}
                     className="w-full h-full object-cover"
                     alt={singleTrack.title?.rendered}
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 </div>
 
@@ -164,6 +166,8 @@ const MusicPage: React.FC = () => {
                       src={track.featured_image_src || '/images/hero-background.webp'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       alt={track.title.rendered}
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                       <Link 

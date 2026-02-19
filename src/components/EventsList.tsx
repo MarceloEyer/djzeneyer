@@ -265,7 +265,13 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
                 {event.image ? (
-                   <img src={event.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500" />
+                   <img
+                     src={event.image}
+                     alt=""
+                     className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
+                     loading="lazy"
+                     decoding="async"
+                   />
                 ) : null}
                 
                 <time dateTime={event.datetime} className="relative z-10 text-center drop-shadow-lg">
