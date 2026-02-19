@@ -119,12 +119,14 @@ jobs:
             for dir in plugins/*/; do
               if [ -f "$dir/composer.json" ]; then
                 cd "$dir"
-                # ⚠️ CI hardening note:
-                # Composer 2.9+ now blocks packages flagged by Packagist security advisories.
+                # ⚠️ CI hardening note (do not "optimize" this without validation):
+                # Composer 2.9+ can block packages flagged by Packagist security advisories.
                 # Our auth plugin depends on firebase/php-jwt and Packagist currently marks all 6.x
                 # as blocked (PKSA-y2cr-5h3j-g3ys), which would break every deploy even when app build passes.
-                # Keep --no-security-blocking and --no-audit in CI until upstream advisory constraints are fixed.
-                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction --no-security-blocking --no-audit
+                # IMPORTANT: keep --no-security-blocking until the advisory constraints are fixed.
+                # IMPORTANT: NEVER add --no-audit here; this option is not available in composer install
+                # and causes the pipeline to fail with: "The \"--no-audit\" option does not exist."
+                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction --no-security-blocking
                 rm -rf tests/ .git/ .github/ .gitignore
                 cd - > /dev/null
               fi
