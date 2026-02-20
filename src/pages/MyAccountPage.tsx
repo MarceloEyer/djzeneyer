@@ -11,6 +11,7 @@ import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield,
 import { UserStatsCards } from '../components/account/UserStatsCards'; // Importação corrigida
 import { OrdersList } from '../components/account/OrdersList'; // Importação corrigida
 import { RecentActivity } from '../components/account/RecentActivity'; // Importação corrigida
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // Interfaces
 interface Order {
@@ -35,9 +36,13 @@ interface UserStats {
 }
 
 const MyAccountPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, loading, logout } = useUser();
   const navigate = useNavigate();
+  const currentLang = normalizeLanguage(i18n.language);
+  const homeRoute = getLocalizedRoute('', currentLang);
+  const dashboardRoute = getLocalizedRoute('dashboard', currentLang);
+  const musicRoute = getLocalizedRoute('music', currentLang);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -111,7 +116,7 @@ const MyAccountPage: React.FC = () => {
       }
       navigate('/');
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, homeRoute]);
 
   // Fetch orders, profile, and newsletter status
   useEffect(() => {
@@ -238,10 +243,10 @@ const MyAccountPage: React.FC = () => {
     }
     try {
       await logout();
-      navigate('/');
+      navigate(homeRoute);
     } catch (error) {
       console.error('[MyAccountPage] Erro no logout:', error);
-      navigate('/');
+      navigate(homeRoute);
     }
   };
 
@@ -342,7 +347,7 @@ const MyAccountPage: React.FC = () => {
                 <p className="text-white/60 mb-8 max-w-md mx-auto">
                   Start exploring and engaging to unlock your first achievements!
                 </p>
-                <Link to="/dashboard/" className="btn btn-primary btn-lg">
+                <Link to={dashboardRoute} className="btn btn-primary btn-lg">
                   Start Your Journey
                 </Link>
               </div>
@@ -392,7 +397,7 @@ const MyAccountPage: React.FC = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">My Music Collection</h2>
-              <Link to="/music/" className="btn btn-primary">
+              <Link to={musicRoute} className="btn btn-primary">
                 Browse Music
               </Link>
             </div>
@@ -403,7 +408,7 @@ const MyAccountPage: React.FC = () => {
               <p className="text-white/60 mb-8 max-w-md mx-auto">
                 Access exclusive tracks, mixes, and playlists curated by DJ Zen Eyer
               </p>
-              <Link to="/music/" className="btn btn-primary btn-lg">
+              <Link to={musicRoute} className="btn btn-primary btn-lg">
                 Explore Music
               </Link>
             </div>

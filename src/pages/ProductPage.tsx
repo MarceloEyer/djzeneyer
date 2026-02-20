@@ -8,6 +8,7 @@ import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
 import { ProductImage, ProductCategory } from '../types/product';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 interface Product {
   id: number;
@@ -33,9 +34,9 @@ const ProductPage: React.FC = () => {
   const [addingToCart, setAddingToCart] = useState(false);
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
-  const isPortuguese = i18n.language.startsWith('pt');
-  const currentLang = i18n.language.split('-')[0];
-  const shopPath = isPortuguese ? '/pt/loja' : '/shop';
+  const currentLang = normalizeLanguage(i18n.language);
+  const isPortuguese = currentLang === 'pt';
+  const shopRoute = getLocalizedRoute('shop', currentLang);
   const placeholderImage = 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer';
 
   const fetchProduct = useCallback(async () => {
@@ -126,7 +127,7 @@ const ProductPage: React.FC = () => {
           <AlertCircle className="mx-auto mb-4 text-error" size={48} />
           <h2 className="text-2xl font-bold mb-2">{t('shop_product_not_found')}</h2>
           <p className="opacity-70">{error}</p>
-          <Link to={shopPath} className="mt-6 btn btn-primary inline-flex items-center gap-2">
+          <Link to={shopRoute} className="mt-6 btn btn-primary inline-flex items-center gap-2">
             <ArrowLeft size={18} />
             {t('shop_back_to_shop')}
           </Link>
@@ -153,7 +154,7 @@ const ProductPage: React.FC = () => {
 
       <div className="min-h-screen bg-background text-white pb-20">
         <div className="container mx-auto px-4 py-10">
-          <Link to={shopPath} className="inline-flex items-center gap-2 text-white/70 hover:text-primary mb-6">
+          <Link to={shopRoute} className="inline-flex items-center gap-2 text-white/70 hover:text-primary mb-6">
             <ArrowLeft size={18} />
             {t('shop_back_to_shop')}
           </Link>

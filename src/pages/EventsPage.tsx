@@ -40,13 +40,15 @@ const EventsPage: React.FC = () => {
   const [singleEvent, setSingleEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const currentLang = normalizeLanguage(i18n.language);
+  const eventsRoute = getLocalizedRoute('events', currentLang);
+  const eventsUrl = `${ARTIST.site.baseUrl}${eventsRoute}`;
 
   // Helper para rotas localizadas
   const getRouteForKey = (key: string): string => {
     const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
     if (!route) return `/${key}`;
-    const normalizedLanguage = normalizeLanguage(i18n.language);
-    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
+    return buildFullPath(getLocalizedPaths(route, currentLang)[0], currentLang);
   };
 
   useEffect(() => {
@@ -117,7 +119,7 @@ const EventsPage: React.FC = () => {
         <HeadlessSEO
           title={`${title} | Zen Events`}
           description={singleEvent.excerpt?.rendered || ""}
-          url={`https://djzeneyer.com/events/${id}`}
+          url={`${eventsUrl}/${id}`}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-5xl">
@@ -192,7 +194,7 @@ const EventsPage: React.FC = () => {
       <HeadlessSEO 
         title="Zen Events | Zouk Brasileiro Worldwide"
         description="Confira a agenda de eventos, workshops e congressos com DJ Zen Eyer."
-        url="https://djzeneyer.com/events"
+        url={eventsUrl}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4">

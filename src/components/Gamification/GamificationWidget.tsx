@@ -4,9 +4,15 @@ import { motion } from 'framer-motion';
 import { Star, Award, Zap, TrendingUp } from 'lucide-react';
 import { useGamiPress } from '../../hooks/useGamiPress';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 
 const GamificationWidget: React.FC = () => {
   const { points, rank, level, achievements, loading } = useGamiPress();
+  const { i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
+  const myAccountRoute = getLocalizedRoute('my-account', currentLang);
+  const eventsRoute = getLocalizedRoute('events', currentLang);
 
   if (loading) {
     return (
@@ -40,7 +46,7 @@ const GamificationWidget: React.FC = () => {
           <p className="text-sm text-white/60">Your Progress</p>
         </div>
         <Link
-          to="/my-account/"
+          to={myAccountRoute}
           className="px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-lg text-primary font-bold text-sm transition-all"
         >
           View All
@@ -142,7 +148,7 @@ const GamificationWidget: React.FC = () => {
 
       {/* Quick Action */}
       <Link
-        to="/events/"
+        to={eventsRoute}
         className="mt-4 w-full btn btn-primary flex items-center justify-center gap-2"
       >
         <TrendingUp size={18} />

@@ -6,6 +6,7 @@ import { CreditCard, Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 interface PaymentMethod {
   id: string;
@@ -17,6 +18,8 @@ const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { cart, loading, getCart, clearCart } = useCart();
   const isPortuguese = i18n.language.startsWith('pt');
+  const currentLang = normalizeLanguage(i18n.language);
+  const shopRoute = getLocalizedRoute('shop', currentLang);
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
@@ -187,8 +190,10 @@ const CheckoutPage: React.FC = () => {
           <p className="text-white/70 mb-8">
             {t('checkout_success_desc', 'Thank you for your purchase. You will receive an email confirmation shortly.')}
           </p>
-            <Link to="/shop" className="btn btn-primary w-full">            {t('checkout_back_shop', 'Return to Shop')}
-            </Link>        </motion.div>
+          <Link to={shopRoute} className="btn btn-primary w-full">
+            {t('checkout_back_shop', 'Return to Shop')}
+          </Link>
+        </motion.div>
       </div>
     );
   }

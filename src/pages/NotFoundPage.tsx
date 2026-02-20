@@ -1,8 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Music, Calendar, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const NotFoundPage: React.FC = () => {
+  const { i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
+  const homeRoute = getLocalizedRoute('', currentLang);
+  const musicRoute = getLocalizedRoute('music', currentLang);
+  const eventsRoute = getLocalizedRoute('events', currentLang);
+  const zenTribeRoute = getLocalizedRoute('zentribe', currentLang);
+
   return (
     <div className="min-h-screen pt-24 flex items-center justify-center">
       <div className="container mx-auto px-4 py-12 text-center">
@@ -39,7 +48,7 @@ const NotFoundPage: React.FC = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <Link 
-              to="/"
+              to={homeRoute}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -49,7 +58,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
             
             <Link
-              to="/music/"
+              to={musicRoute}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -59,7 +68,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to="/events/"
+              to={eventsRoute}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -69,7 +78,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to="/tribe/"
+              to={zenTribeRoute}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -79,7 +88,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
           </div>
           
-          <Link to="/" className="btn btn-primary px-8 py-3">
+          <Link to={homeRoute} className="btn btn-primary px-8 py-3">
             Back to Homepage
           </Link>
         </div>
