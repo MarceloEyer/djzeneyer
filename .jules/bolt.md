@@ -13,3 +13,7 @@
 ## 2025-02-22 - Eager Loading Vite Manifest in WordPress
 **Learning:** Instantiating classes that perform file I/O in `__construct` (like loading a Vite manifest) adds overhead to every WordPress request, including REST API and Admin AJAX. This is especially impactful for high-frequency endpoints.
 **Action:** Always lazy-load resource-intensive configuration files. Only load them when the specific action (like `wp_enqueue_scripts`) is actually fired.
+
+## 2025-02-22 - Lazy Loading Vite Assets
+**Learning:** Initializing properties using functions that access the file system (like `get_theme_file_path`) in `__construct` runs on every request, even if the assets are not used (e.g., REST API).
+**Action:** Always lazy-load properties that require file system checks or heavy computations, especially in classes that are instantiated on every request.
