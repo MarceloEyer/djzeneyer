@@ -764,17 +764,5 @@
       "contact": "Contact for Bookings"
     },
     "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
-  },
-
-  "payme": {
-    "title": "Support DJ Zen Eyer | Payment Methods",
-    "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide.",
-    "heading": "Support DJ Zen Eyer",
-    "subtitle": "Connect, Support & Collaborate",
-    "description": "Choose your preferred payment method to support the music or hire for your event. Available in multiple currencies and countries.",
-    "for_donors": "For Music Lovers",
-    "donors_description": "Support the creation of new music and community initiatives. Your donation, regardless of size, makes a real difference in the Brazilian Zouk world.",
-    "for_clients": "For Event Organizers",
-    "clients_description": "Hire DJ Zen Eyer for your event. Select the payment method that works best for your location and currency."
   }
 }

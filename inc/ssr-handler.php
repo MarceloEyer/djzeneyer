@@ -70,7 +70,8 @@ function djz_serve_ssr() {
     $filename = djz_path_to_filename($path);
     
     // Caminho do arquivo SSR
-    $ssr_file = get_theme_file_path('/dist/' . $filename . '_ssr.html');
+    $theme_path = get_stylesheet_directory();
+    $ssr_file = $theme_path . '/dist/' . $filename . '_ssr.html';
 
     // Se arquivo SSR existe, servir
     if (file_exists($ssr_file)) {

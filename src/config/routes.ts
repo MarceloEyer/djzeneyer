@@ -49,7 +49,6 @@ import HomePage from '../pages/HomePage';
 
 // Demais páginas são lazy loaded
 const AboutPage = lazy(() => import('../pages/AboutPage'));
-const PayMePage = lazy(() => import('../pages/PayMePage'));
 const EventsPage = lazy(() => import('../pages/EventsPage'));
 const MusicPage = lazy(() => import('../pages/MusicPage'));
 const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
@@ -91,12 +90,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     component: AboutPage,
     paths: { en: 'about', pt: 'sobre' },
-  },
-
-  // Pay Me / Formas de Pagamento
-  {
-    component: PayMePage,
-    paths: { en: 'payme', pt: 'payme' },
   },
 
   // Events (com rota dinâmica :id)
