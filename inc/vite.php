@@ -10,22 +10,34 @@ if (!defined('ABSPATH')) exit;
 class DJZ_Vite_Loader {
 
     private $manifest = null;
-    private $dist_path;
-    private $dist_url;
+    private $dist_path = null;
+    private $dist_url = null;
 
     public function __construct() {
         // Prioridade 20 para rodar depois dos enqueues padrões
         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets'], 20);
         add_filter('script_loader_tag', [$this, 'add_module_type'], 10, 3);
+    }
 
-        $this->dist_path = get_theme_file_path('/dist');
-        $this->dist_url  = get_template_directory_uri() . '/dist';
+    private function get_dist_path() {
+        if ($this->dist_path === null) {
+            $this->dist_path = get_theme_file_path('/dist');
+        }
+        return $this->dist_path;
+    }
+
+    private function get_dist_url() {
+        if ($this->dist_url === null) {
+            $this->dist_url = get_theme_file_uri('/dist');
+        }
+        return $this->dist_url;
     }
 
     private function load_manifest() {
+        $dist_path = $this->get_dist_path();
         $paths = [
-            $this->dist_path . '/.vite/manifest.json',
-            $this->dist_path . '/manifest.json'
+            $dist_path . '/.vite/manifest.json',
+            $dist_path . '/manifest.json'
         ];
 
         foreach ($paths as $path) {
@@ -134,27 +146,29 @@ class DJZ_Vite_Loader {
             return;
         }
 
+        $dist_url = $this->get_dist_url();
+
         // 1. JS
         if (!empty($entry['file'])) {
-            wp_enqueue_script('djz-react-main', $this->dist_url . '/' . $entry['file'], [], null, true);
+            wp_enqueue_script('djz-react-main', $dist_url . '/' . $entry['file'], [], null, true);
         }
 
         // 2. CSS (Com Hash MD5)
         if (!empty($entry['css'])) {
             foreach ($entry['css'] as $css_file) {
-                wp_enqueue_style('djz-react-style-' . md5($css_file), $this->dist_url . '/' . $css_file, [], null);
+                wp_enqueue_style('djz-react-style-' . md5($css_file), $dist_url . '/' . $css_file, [], null);
             }
         }
 
         // 3. Preloads
-        add_action('wp_head', function() use ($entry, $manifest) {
+        add_action('wp_head', function() use ($entry, $manifest, $dist_url) {
             if (!empty($entry['file'])) {
-                echo '<link rel="modulepreload" href="' . esc_url($this->dist_url . '/' . $entry['file']) . '" />' . "\n";
+                echo '<link rel="modulepreload" href="' . esc_url($dist_url . '/' . $entry['file']) . '" />' . "\n";
             }
             if (!empty($entry['imports'])) {
                 foreach ($entry['imports'] as $import_key) {
                     if (isset($manifest[$import_key]['file'])) {
-                        $chunk_url = $this->dist_url . '/' . $manifest[$import_key]['file'];
+                        $chunk_url = $dist_url . '/' . $manifest[$import_key]['file'];
                         echo '<link rel="modulepreload" href="' . esc_url($chunk_url) . '" />' . "\n";
                     }
                 }
