@@ -107,7 +107,7 @@ const NewsPage: React.FC = () => {
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
                     <img 
                       src={singlePost._embedded['wp:featuredmedia'][0].source_url} 
-                      className="w-full h-full object-cover" 
+                      className="w-full h-full object-cover"
                       alt={singlePost.title.rendered} 
                     />
                   </div>

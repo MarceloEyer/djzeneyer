@@ -33,7 +33,7 @@ const CONFIG = {
   distDir: join(process.cwd(), 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
-  routes: routesList,
+  routes: routesList
 };
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
