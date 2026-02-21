@@ -274,7 +274,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             target={item.target || '_self'}
             rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
             onClick={() => setIsMenuOpen(false)}
-            className={`${commonClasses}`}
+            className={commonClasses}
           >
             {content(false)}
           </a>
