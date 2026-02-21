@@ -22,12 +22,6 @@ import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 const SAFE_PATH_REGEX = /^\/[a-zA-Z0-9\-_\/?=&%#\.]*$/;
 const ALLOWED_PROTOCOLS = ['http:', 'https:'];
 
-/**
- * Normalize and validate a user-supplied path or URL, returning a safe navigable string.
- *
- * @param path - The input path or URL (may be a full URL, absolute/relative path, or empty/invalid string)
- * @returns A sanitized path or URL. Returns `"/"` for invalid or potentially unsafe input. For valid external URLs with an allowed protocol (`http:` or `https:`), returns the trimmed original URL; for internal paths, returns a normalized path with consecutive slashes collapsed and only if it matches the internal safe-path pattern.
- */
 function sanitizePath(path: string): string {
   if (!path || typeof path !== 'string') return '/';
   
@@ -42,8 +36,15 @@ function sanitizePath(path: string): string {
     // For internal URLs, we'll continue with regex checks
     if (url.origin !== window.location.origin) return trimmed;
   } catch { }
+
+  let decodedPath = trimmed;
+  try {
+    decodedPath = decodeURIComponent(trimmed);
+  } catch {
+    return '/';
+  }
   
-  if (trimmed.includes('..') || trimmed.includes('./')) return '/';
+  if (decodedPath.includes('..') || decodedPath.includes('./')) return '/';
 
   // For internal paths, ensure they match safe pattern
   if (trimmed.startsWith('/') && !SAFE_PATH_REGEX.test(trimmed)) return '/';
