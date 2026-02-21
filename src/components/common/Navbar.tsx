@@ -19,7 +19,7 @@ import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 // ============================================================================
 // SECURITY: Path Sanitization (Previne Open Redirect + Path Traversal)
 // ============================================================================
-const SAFE_PATH_REGEX = /^\/[a-zA-Z0-9\-_\/]*$/;
+const SAFE_PATH_REGEX = /^\/[a-zA-Z0-9\-_\/?=&%#\.]*$/;
 const ALLOWED_PROTOCOLS = ['http:', 'https:'];
 
 function sanitizePath(path: string): string {
@@ -27,25 +27,30 @@ function sanitizePath(path: string): string {
   
   const trimmed = path.trim();
   
+  if (trimmed.startsWith('//')) return '/';
+
   try {
     const url = new URL(trimmed, window.location.origin);
     if (!ALLOWED_PROTOCOLS.includes(url.protocol)) return '/';
-    if (url.origin !== window.location.origin) return '/';
+    // Allow external URLs to pass through sanitization if they are valid
+    // For internal URLs, we'll continue with regex checks
+    if (url.origin !== window.location.origin) return trimmed;
   } catch { }
+
+  let decodedPath = trimmed;
+  try {
+    decodedPath = decodeURIComponent(trimmed);
+  } catch {
+    return '/';
+  }
   
-  if (trimmed.startsWith('//')) return '/';
-  if (trimmed.includes('..') || trimmed.includes('./')) return '/';
-  if (!SAFE_PATH_REGEX.test(trimmed)) return '/';
+  if (decodedPath.includes('..') || decodedPath.includes('./')) return '/';
+
+  // For internal paths, ensure they match safe pattern
+  if (trimmed.startsWith('/') && !SAFE_PATH_REGEX.test(trimmed)) return '/';
   
   const normalized = trimmed.replace(/\/+/g, '/');
   return normalized || '/';
-}
-
-function sanitizeHTML(str: string): string {
-  if (!str) return '';
-  const temp = document.createElement('div');
-  temp.textContent = str; 
-  return temp.innerHTML;
 }
 
 // ============================================================================
@@ -189,68 +194,108 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     return `${localizedPath}${queryPart}${hashPart}`;
   }, [currentLang]);
 
-  // Renderiza Links
-  const renderNavLinks = useCallback((isMobile = false) => {
-    if (!menuItems || menuItems.length === 0) return null;
+  // Memoize processed menu items to avoid re-calculation on every render
+  const processedMenuItems = useMemo(() => {
+    if (!menuItems || menuItems.length === 0) return [];
     
-    return menuItems.map((item) => {
+    return menuItems.map(item => {
       const localizedUrl = resolveMenuUrl(item.url || '/');
+      let isExternal = false;
+
+      // Check if external origin
+      try {
+        const urlObj = new URL(localizedUrl, window.location.origin);
+        if (urlObj.origin !== window.location.origin) {
+          isExternal = true;
+        }
+      } catch {}
+
       const safeUrl = sanitizePath(localizedUrl);
-      const safeTitle = sanitizeHTML(item.title || '');
-      const isExternal = item.target === '_blank';
       const visuals = getLinkVisuals(safeUrl);
       
+      return {
+        ...item,
+        safeUrl,
+        safeTitle: item.title || '',
+        isExternal,
+        visuals
+      };
+    });
+  }, [menuItems, resolveMenuUrl]);
+
+  // Renderiza Links
+  const renderNavLinks = useCallback((isMobile = false) => {
+    if (!processedMenuItems || processedMenuItems.length === 0) return null;
+
+    return processedMenuItems.map((item) => {
+      const commonClasses = isMobile
+        ? `group flex items-center justify-between p-3 rounded-xl transition-all duration-300 border border-transparent hover:bg-white/5`
+        : `relative group nav-link py-2 text-white/80 hover:text-white`;
+
+      const activeClasses = isMobile
+        ? `${item.visuals.bg} border-white/5`
+        : `text-primary font-medium`;
+
+      const content = (isActive: boolean) => (
+        <>
+          <div className="flex items-center gap-3">
+            {/* Ícone Colorido (Só no Mobile) */}
+            {isMobile && (
+              <div className={`p-2 rounded-lg ${isActive ? item.visuals.color : 'text-white/50 group-hover:text-white'} ${isActive ? 'bg-black/20' : 'bg-white/5'}`}>
+                {item.visuals.icon}
+              </div>
+            )}
+
+            <span className={`${isMobile ? 'text-base font-medium' : ''} ${isActive ? (isMobile ? 'text-white' : '') : 'text-white/80 group-hover:text-white'}`}>
+              {item.safeTitle}
+            </span>
+          </div>
+
+          {/* ✨ DESKTOP HOVER EFFECT: Linha Azul Elétrico */}
+          {!isMobile && (
+            <span
+              className={`absolute -bottom-0.5 left-0 h-[2px] bg-primary transition-all duration-300 ease-out
+                ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}
+            />
+          )}
+
+          {/* Seta (Só no Mobile) */}
+          {isMobile && (
+            <ChevronRight size={16} className={`transition-transform ${isActive ? 'text-primary translate-x-1' : 'text-white/20'}`} />
+          )}
+        </>
+      );
+
+      if (item.isExternal) {
+        return (
+          <a
+            key={item.ID}
+            href={item.safeUrl}
+            target={item.target || '_self'}
+            rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
+            onClick={() => setIsMenuOpen(false)}
+            className={`${commonClasses}`}
+          >
+            {content(false)}
+          </a>
+        );
+      }
+
       return (
         <NavLink
           key={item.ID}
-          to={safeUrl}
+          to={item.safeUrl}
           end
-          target={item.target || '_self'}
-          rel={isExternal ? 'noopener noreferrer' : undefined}
           onClick={() => setIsMenuOpen(false)}
           className={({ isActive }) => 
-            isMobile 
-              ? `group flex items-center justify-between p-3 rounded-xl transition-all duration-300 border border-transparent ${
-                  isActive ? `${visuals.bg} border-white/5` : 'hover:bg-white/5'
-                }`
-              // ✨ DESKTOP: Adicionado 'relative group' para o efeito de sublinhado
-              : `relative group nav-link py-2 ${isActive ? 'text-primary font-medium' : 'text-white/80 hover:text-white'}`
+            `${commonClasses} ${isActive ? activeClasses : ''}`
           }
         >
-          {({ isActive }) => (
-            <>
-              <div className="flex items-center gap-3">
-                {/* Ícone Colorido (Só no Mobile) */}
-                {isMobile && (
-                  <div className={`p-2 rounded-lg ${isActive ? visuals.color : 'text-white/50 group-hover:text-white'} ${isActive ? 'bg-black/20' : 'bg-white/5'}`}>
-                    {visuals.icon}
-                  </div>
-                )}
-                
-                <span 
-                  className={`${isMobile ? 'text-base font-medium' : ''} ${isActive ? (isMobile ? 'text-white' : '') : 'text-white/80 group-hover:text-white'}`}
-                  dangerouslySetInnerHTML={{ __html: safeTitle }}
-                />
-              </div>
-
-              {/* ✨ DESKTOP HOVER EFFECT: Linha Azul Elétrico */}
-              {!isMobile && (
-                <span 
-                  className={`absolute -bottom-0.5 left-0 h-[2px] bg-primary transition-all duration-300 ease-out 
-                    ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} 
-                />
-              )}
-
-              {/* Seta (Só no Mobile) */}
-              {isMobile && (
-                <ChevronRight size={16} className={`transition-transform ${isActive ? 'text-primary translate-x-1' : 'text-white/20'}`} />
-              )}
-            </>
-          )}
+          {({ isActive }) => content(isActive)}
         </NavLink>
       );
     });
-  }, [menuItems]);
+  }, [processedMenuItems]);
   
   return (
     <>
