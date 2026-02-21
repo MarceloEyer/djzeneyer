@@ -221,7 +221,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     return menuItems.map(item => {
       const localizedUrl = resolveMenuUrl(item.url || '/');
       const safeUrl = sanitizePath(localizedUrl);
-      const safeTitle = sanitizeHTML(item.title || '');
+      const safeTitle = item.title || '';
       const isExternal = item.target === '_blank';
       const visuals = getLinkVisuals(safeUrl);
 
