@@ -17,7 +17,3 @@
 ## 2025-02-23 - Conditional Image Processing in REST API
 **Learning:** Iterating through all images and sizes in a list view API response adds significant CPU overhead and payload size, even when the frontend only displays a single thumbnail. For 100 items, this can result in thousands of unnecessary function calls.
 **Action:** Implement conditional logic in API endpoints to detect "list view" vs "detail view" contexts. In list views, restrict image processing to only the primary image and essential sizes.
-
-## 2025-02-22 - Lazy Loading Vite Assets
-**Learning:** Initializing properties using functions that access the file system (like `get_theme_file_path`) in `__construct` runs on every request, even if the assets are not used (e.g., REST API).
-**Action:** Always lazy-load properties that require file system checks or heavy computations, especially in classes that are instantiated on every request.

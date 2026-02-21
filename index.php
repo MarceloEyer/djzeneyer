@@ -5,7 +5,7 @@
  */
 
 // 1. Define a base segura e garante a barra final para evitar colisão de prefixo
-$dist_path = get_theme_file_path('/dist');
+$dist_path = get_template_directory() . '/dist';
 $real_dist_path = realpath($dist_path);
 
 if (!$real_dist_path) {
@@ -80,4 +80,4 @@ if ($serve_file) {
 
 // 6. Fallback: Se não é estático, entrega o App React (index.html raiz)
 // Como o $real_dist_path agora tem barra no final, concatenamos direto
-require(get_theme_file_path('/dist/index.html'));
+require($real_dist_path . 'index.html');
