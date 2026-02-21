@@ -28,7 +28,7 @@ class DJZ_Vite_Loader {
 
     private function get_dist_url() {
         if ($this->dist_url === null) {
-            $this->dist_url = get_template_directory_uri() . '/dist';
+            $this->dist_url = get_theme_file_uri('/dist');
         }
         return $this->dist_url;
     }
