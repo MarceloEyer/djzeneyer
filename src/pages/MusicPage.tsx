@@ -23,7 +23,7 @@ const MusicPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
   // MOVED UP to satisfy React Hook rules (must be called unconditionally)
-  const tags = useMemo(() => ['Todos', ...new Set(listTracks.flatMap((t: MusicTrack) => t.tag_names || []))], [listTracks]);
+  const tags = useMemo(() => ['Todos', ...new Set(listTracks.flatMap((track: MusicTrack) => track.tag_names || []))], [listTracks]);
 
   const filteredTracks = useMemo(() => listTracks.filter((track: MusicTrack) => {
     const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
@@ -55,7 +55,7 @@ const MusicPage: React.FC = () => {
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
             <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
-              <ArrowLeft size={20} /> VOLTAR PARA MÚSICAS
+              <ArrowLeft size={20} /> {t('music.back')}
             </Link>
 
             <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative group">
@@ -69,16 +69,18 @@ const MusicPage: React.FC = () => {
                     src={singleTrack.featured_image_src_full || singleTrack.featured_image_src || '/images/hero-background.webp'}
                     className="w-full h-full object-cover"
                     alt={singleTrack.title?.rendered}
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 </div>
 
                 <div className="text-center md:text-left flex-1">
                   <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: singleTrack.title?.rendered }} />
-                  <p className="text-primary font-bold mb-8 tracking-widest uppercase">DJ Zen Eyer Original</p>
+                  <p className="text-primary font-bold mb-8 tracking-widest uppercase">{t('music.artist_tag')}</p>
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     <button type="button" className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
-                      <Play fill="currentColor" size={20} /> OUVIR AGORA
+                      <Play fill="currentColor" size={20} /> {t('music.listen_now')}
                     </button>
                     {singleTrack.links?.soundcloud && (
                       <a href={singleTrack.links.soundcloud} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
@@ -90,7 +92,7 @@ const MusicPage: React.FC = () => {
               </div>
 
               <div className="mt-16 border-t border-white/5 pt-10">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> SOBRE A FAIXA</h2>
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> {t('music.about_track')}</h2>
                 <div
                   className="prose prose-invert max-w-none text-white/60"
                   dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "" }}
@@ -116,7 +118,7 @@ const MusicPage: React.FC = () => {
             <h1 className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6">
               ZEN <span className="text-primary italic">SOUNDS</span>
             </h1>
-            <p className="text-xl text-white/60">Remixes oficiais e produções originais para a pista.</p>
+            <p className="text-xl text-white/60">{t('music.remix_description')}</p>
           </div>
 
           <div className="flex flex-col md:flex-row gap-8 mb-12 items-center justify-between">
@@ -137,7 +139,7 @@ const MusicPage: React.FC = () => {
             <div className="relative w-full md:w-80">
               <input 
                 type="text" 
-                placeholder="Buscar música..." 
+                placeholder={t('music.search_placeholder')}
                 className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -164,6 +166,8 @@ const MusicPage: React.FC = () => {
                       src={track.featured_image_src || '/images/hero-background.webp'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       alt={track.title.rendered}
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                       <Link 
@@ -177,7 +181,7 @@ const MusicPage: React.FC = () => {
                   <div className="p-6">
                     <h3 className="text-xl font-bold font-display mb-2 truncate" dangerouslySetInnerHTML={{ __html: track.title.rendered }} />
                     <div className="flex items-center justify-between mt-4">
-                      <span className="text-xs text-white/40 font-mono">ZEN EYER REMIX</span>
+                      <span className="text-xs text-white/40 font-mono">{t('music.remix_tag')}</span>
                       <div className="flex gap-3">
                         <Youtube size={18} className="text-white/20 hover:text-primary cursor-pointer" />
                         <Cloud size={18} className="text-white/20 hover:text-primary cursor-pointer" />
