@@ -267,14 +267,20 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
       );
 
       if (item.isExternal) {
+        const isNewTab = item.target === '_blank';
+        const ariaLabel = isNewTab
+          ? `${item.safeTitle} (${t('opens_in_new_tab') || 'opens in a new tab'})`
+          : undefined;
+
         return (
           <a
             key={item.ID}
             href={item.safeUrl}
             target={item.target || '_self'}
-            rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
+            rel={isNewTab ? 'noopener noreferrer' : undefined}
+            aria-label={ariaLabel}
             onClick={() => setIsMenuOpen(false)}
-            className={commonClasses}
+            className={`${commonClasses}`}
           >
             {content(false)}
           </a>
