@@ -21,9 +21,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from '../common/UserMenu';
 import { useMenu } from '../../hooks/useMenu';
-import routeMapData from '../../data/routeMap.json';
-import { normalizePath, tryDynamicMapping } from '../../utils/routeUtils';
-import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { getLocalizedRoute, normalizeLanguage, getAlternateLinks } from '../../config/routes';
 
 // ============================================================================
 // SECURITY: Path Sanitization (Previne Open Redirect + Path Traversal)
@@ -90,38 +88,18 @@ const LanguageSelector: React.FC = React.memo(() => {
     [i18n.language]
   );
 
-  const routeMap: Record<string, { pt: string; en: string }> = routeMapData as any;
-
   const changeLanguage = useCallback(
     (newLang: 'pt' | 'en') => {
       if (newLang === currentLang) return;
 
-      const rawPath = normalizePath(location.pathname);
       const search = location.search || '';
       const hash = location.hash || '';
 
-      // Tenta mapeamento
-      const mapping = routeMap[rawPath];
-      if (mapping) {
-        navigate(sanitizePath(mapping[newLang]) + search + hash);
-        return;
-      }
+      // Usa a lógica centralizada de rotas para obter o caminho alternativo
+      const alternates = getAlternateLinks(location.pathname, currentLang);
+      const targetPath = alternates[newLang] || (newLang === 'pt' ? '/pt/' : '/');
 
-      // Tenta dinâmico
-      const dyn = tryDynamicMapping(rawPath, newLang);
-      if (dyn) {
-        navigate(sanitizePath(dyn) + search + hash);
-        return;
-      }
-
-      // Fallback
-      if (newLang === 'pt') {
-        const newPath = rawPath === '/' ? '/pt' : `/pt${rawPath}`;
-        navigate(sanitizePath(newPath) + search + hash);
-      } else {
-        const withoutPt = rawPath.startsWith('/pt') ? rawPath.replace(/^\/pt/, '') || '/' : rawPath;
-        navigate(sanitizePath(withoutPt) + search + hash);
-      }
+      navigate(sanitizePath(targetPath) + search + hash);
     },
     [currentLang, location, navigate]
   );
