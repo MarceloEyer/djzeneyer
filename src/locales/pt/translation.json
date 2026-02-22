@@ -90,7 +90,11 @@
     }
   },
   "common": {
-    "close": "Fechar"
+    "close": "Fechar",
+    "platforms": {
+      "spotify": "SPOTIFY",
+      "soundcloud": "SOUNDCLOUD"
+    }
   },
   "badge_featured": "Destaque",
   "badge_new": "Novo",
@@ -250,7 +254,15 @@
     "search_placeholder": "Buscar música...",
     "track_title": "ZEN SOUNDS",
     "artist_tag": "DJ Zen Eyer Original",
-    "remix_tag": "ZEN EYER REMIX"
+    "remix_tag": "ZEN EYER REMIX",
+    "hub_title": "Hub de Streaming",
+    "hub_subtitle": "Selecione sua plataforma favorita para ouvir os últimos lançamentos, sets e remixes.",
+    "steal_button": "BAIXAR",
+    "steal_desc": "Para quem acredita que a música deve ser livre. Arquivos de alta qualidade para download direto.",
+    "support_button": "APOIE O ARTISTA",
+    "support_desc": "Apoie a produção e mantenha as vibrações 'cremosas' rolando.",
+    "steal_cta": "BAIXAR AGORA",
+    "support_cta": "APOIAR ARTISTA"
   },
   "shop_page_title": "Loja",
   "shop_page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
@@ -435,30 +447,6 @@
   "presskit_stat_years": "Anos de Experiência",
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
-  "footer_rights": "Todos os direitos reservados.",
-  "footer_about": "Sobre",
-  "footer_contact": "Contato",
-  "footer_privacy": "Política de Privacidade",
-  "footer_terms": "Termos de Serviço",
-  "footer_quick_links": "Links Rápidos",
-  "footer_discover_more": "Descubra Mais",
-  "footer_music_philosophy": "Filosofia Musical",
-  "footer_press_kit_booking": "Press Kit / Booking",
-  "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine a Newsletter",
-  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
-  "footer_email_placeholder": "Seu endereço de e-mail",
-  "footer_subscribe": "Inscrever-se",
-  "footer_zen_tribe_info": "Info Zen Tribe",
-  "footer_home": "Início",
-  "footer_music": "Música",
-  "footer_events": "Eventos",
-  "footer_contact_text": "Contato",
-  "footer_bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
-  "footer_tagline": "A pressa é inimiga da cremosidade.",
-  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
-  "footer_subscribe_error": "Falha ao se inscrever. Tente novamente.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
   "media_page": {
     "title": "Mídia & Press Kit",
     "subtitle": "Recursos oficiais de mídia e informações de imprensa para DJ Zen Eyer",
@@ -739,27 +727,40 @@
     "inter": {
       "title": "Conta Inter Global (Preferencial)",
       "description": "Contas bancárias nos EUA e Brasil para pagamentos internacionais e locais",
-      "usa": "Estados Unidos",
-      "brazil": "Brasil"
+      "usd": "Conta Dólar (USD)",
+      "eur": "Conta Euro (EUR)",
+      "gbp": "Conta Libra (GBP)",
+      "brazil": "Brasil (Local)"
     },
     "wise": {
       "title": "Wise (TransferWise)",
-      "description": "Transferências internacionais com taxas baixas para múltiplas moedas"
+      "description": "Transferências internacionais com taxas baixas para múltiplas moedas",
+      "sepa": "Transferência SEPA (Europa)"
     },
     "paypal": {
       "title": "PayPal",
       "description": "Pagamentos rápidos e fáceis mundialmente"
     },
     "preferred": "Preferencial",
-    "accountName": "Nome da Conta",
+    "accountName": "Nome do Beneficiário",
+    "beneficiaryBank": "Banco Beneficiário",
     "routingNumber": "Número de Roteamento",
     "accountNumber": "Número da Conta",
     "accountType": "Tipo de Conta",
-    "swiftCode": "SWIFT/BIC",
+    "swiftCode": "Código SWIFT",
+    "achRouting": "ACH Routing",
+    "wireRouting": "Wire Routing",
+    "bankAddress": "Endereço do Banco",
+    "intermediary": "Banco Intermediário",
+    "swiftInter": "SWIFT Intermediário",
+    "aba": "ABA/Routing",
+    "iban": "IBAN",
+    "intermediaryAcc": "Conta Intermediária",
     "bank": "Banco",
     "branch": "Agência",
     "account": "Conta",
     "pixKey": "Chave PIX",
+    "cpf": "CPF",
     "email": "Email",
     "sendPayment": "Enviar Pagamento via",
     "business": {
@@ -797,6 +798,84 @@
   "footer_bio": "Produtor musical e DJ criando experiências de áudio imersivas para mente, corpo e alma.",
   "footer_tagline": "Elevando vibrações, uma batida de cada vez.",
   "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
+  "about": {
+    "hero": {
+      "badge": "MINHA HISTÓRIA",
+      "title": "A <1>Jornada</1>",
+      "subtitle": "Da paixão pela música à conexão com milhares de almas através do Zouk Brasileiro"
+    },
+    "stats": {
+      "passion": "Anos de paixão",
+      "events": "Eventos íntimos",
+      "stories": "Histórias compartilhadas",
+      "smiles": "Sorrisos criados"
+    },
+    "story": {
+      "p1": "Tudo começou em <strong>Niterói, RJ</strong>, onde um jovem Marcelo Eyer Fernandes descobriu que a música poderia ser mais do que som: poderia ser <strong>emoção pura</strong>. Aos 15 anos, enquanto seus amigos ouviam rock e pop, ele se perdia nos ritmos caribenhos e brasileiros que encontrava em velhas fitas cassete de seu pai.",
+      "p2": "O encontro com o <strong>Zouk Brasileiro</strong> foi um divisor de águas. 'Lembro como se fosse hoje', conta Zen Eyer. 'Era 2012, uma festa pequena em Copacabana. Quando ouvi aquele som suave mas pulsante, senti que tinha encontrado minha linguagem.' Aquela noite mudou tudo: ele vendeu seu primeiro equipamento de DJ com o dinheiro que juntou trabalhando em um bar.",
+      "p3": "Os anos seguintes foram de <strong>dedicação obsessiva</strong>. Enquanto trabalhava durante o dia, passava noites estudando técnicas de mixagem, teoria musical e, acima de tudo, <strong>como fazer as pessoas sentirem</strong> através da música. 'Não queria ser apenas mais um DJ. Queria criar momentos onde as pessoas se esquecessem de tudo e apenas sentissem', explica.",
+      "p4": "A consagração veio em <strong>2022</strong>, quando se tornou <strong>bicampeão mundial</strong> de Zouk Brasileiro. Mas o que mais o orgulha não são os troféus, e sim as <strong>histórias que coleciona</strong>: o casal que se reconectou em um de seus sets, a jovem que superou a timidez dançando ao som de suas músicas, os amigos que se abraçaram chorando em meio à pista.",
+      "p5": "Hoje, Zen Eyer é conhecido por sua <strong>'cremosidade'</strong> - um estilo que une técnica impecável com uma sensibilidade rara. 'Cada set que faço é como uma conversa íntima com quem está dançando. Quero que saiam da pista sentindo que viveram algo único', confessa.",
+      "p6": "Sua missão vai além da música: 'Quero que as pessoas lembre que são capazes de sentir profundamente, de se conectar, de serem vulneráveis. O Zouk Brasileiro é apenas a trilha sonora para isso.'"
+    },
+    "timeline": {
+      "title": "Momentos que <1>Mudaram Tudo</1>",
+      "m1": {
+        "title": "Primeiros Passos",
+        "desc": "Descobriu a paixão pela música aos 15 anos, influenciado pela cultura brasileira e ritmos caribenhos. Começou a explorar equipamentos de DJ e produção musical em Niterói, RJ."
+      },
+      "m2": {
+        "title": "Encontro com o Zouk",
+        "desc": "Teve seu primeiro contato com o Zouk Brasileiro em uma festa local. Foi amor à primeira vista: 'Era como se a música falasse diretamente à minha alma', lembra Zen Eyer."
+      },
+      "m3": {
+        "title": "Dedicação Total",
+        "desc": "Deixou seu emprego corporativo para se dedicar 100% à música. Passou anos estudando técnicas de DJ, produção musical e a psicologia por trás das pistas de dança."
+      },
+      "m4": {
+        "title": "Consagração Mundial",
+        "desc": "Conquistou o bicampeonato mundial de Zouk Brasileiro, provando que sua abordagem emocional e técnica era única. 'Foi a realização de um sonho de infância', conta."
+      }
+    },
+    "philosophy": {
+      "title": "Minha <1>Filosofia</1>",
+      "quote": "\"A música é minha forma de criar um espaço seguro onde as pessoas podem ser quem realmente são. Não toca só os ouvidos - toca a alma. Cada batida, cada transição, cada silêncio é pensado para que alguém na pista sinta: 'Isso é sobre mim. Isso é para mim.'\""
+    },
+    "cta": {
+      "title": "Vamos <1>Conversar?</1>",
+      "desc": "Se você se identificou com essa história ou quer saber mais sobre a filosofia por trás da minha música, adoro conhecer pessoas que também acreditam no poder da conexão através da arte.",
+      "button": "Compartilhe Sua História",
+      "whatsapp_msg": "Olá Zen! Vi sua história no site e gostaria de compartilhar a minha também."
+    }
+  },
+  "philosophy_page": {
+    "title": "Minha Filosofia Musical",
+    "style_title": "Cremosidade",
+    "mission_title": "Missão",
+    "coming_soon_title": "Em Breve",
+    "coming_soon_desc": "Mais conteúdo sobre a filosofia musical de {{name}} será adicionado em breve. Acompanhe nas redes sociais para não perder novidades!"
+  },
+  "home": {
+    "shows": {
+      "title": "Próximos Shows",
+      "cta": "Agenda completa"
+    },
+    "press": {
+      "title": "Imprensa & Mídia",
+      "desc": "Acesse fotos, bio e assets.",
+      "cta": "BAIXAR PRESS KIT"
+    },
+    "bookers": {
+      "title": "Contratantes",
+      "desc": "Leve o 'Zen Experience' para o seu evento.",
+      "cta": "ORÇAMENTO"
+    },
+    "verified": "Perfis Verificados",
+    "tribe": {
+      "title": "Junte-se à <1>Zen Tribe</1>",
+      "desc": "Não é só sobre música. É sobre vibração. Entre para a lista VIP."
+    }
+  },
   "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
   "footer_copyright": "© {{year}} DJ Zen Eyer. Elevando vibrações, uma batida de cada vez.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",

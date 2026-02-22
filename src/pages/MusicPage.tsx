@@ -82,12 +82,12 @@ const MusicPage: React.FC = () => {
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     {singleTrack.links?.spotify && (
                       <a href={singleTrack.links.spotify} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2">
-                        <Play fill="currentColor" size={18} /> SPOTIFY
+                        <Play fill="currentColor" size={18} /> {t('common.platforms.spotify', 'SPOTIFY')}
                       </a>
                     )}
                     {singleTrack.links?.soundcloud && (
                       <a href={singleTrack.links.soundcloud} target="_blank" rel="noopener noreferrer" className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20">
-                        <Cloud size={18} /> SOUNDCLOUD
+                        <Cloud size={18} /> {t('common.platforms.soundcloud', 'SOUNDCLOUD')}
                       </a>
                     )}
                   </div>
@@ -111,9 +111,9 @@ const MusicPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title="Zen Music Hub | DJ Zen Eyer"
-        description="Stream and download high-energy Brazilian Zouk remixes and sets by DJ Zen Eyer."
-        url="https://djzeneyer.com/music"
+        title={`${t('music_page_title')} | DJ Zen Eyer`}
+        description={t('music_page_meta_desc')}
+        url={`https://djzeneyer.com${currentLang === 'pt' ? '/pt/musica' : '/music'}`}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">
@@ -124,7 +124,7 @@ const MusicPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6"
             >
-              ZEN <span className="text-primary italic">SOUNDS</span>
+              {t('music.hub_title', 'ZEN SOUNDS')}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -178,7 +178,7 @@ const MusicPage: React.FC = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
               >
-                GO STEAL <ExternalLink size={16} />
+                {t('music.steal_cta')} <ExternalLink size={16} />
               </a>
             </motion.div>
 
@@ -200,7 +200,7 @@ const MusicPage: React.FC = () => {
                 to={getRouteForKey('support-the-artist')}
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
               >
-                SUPPORT ARTIST <ExternalLink size={16} />
+                {t('music.support_cta')} <ExternalLink size={16} />
               </Link>
             </motion.div>
           </div>

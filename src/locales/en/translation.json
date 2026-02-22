@@ -85,7 +85,11 @@
     }
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "platforms": {
+      "spotify": "SPOTIFY",
+      "soundcloud": "SOUNDCLOUD"
+    }
   },
   "badge_featured": "Featured",
   "badge_new": "New",
@@ -251,7 +255,9 @@
     "steal_button": "STEAL",
     "steal_desc": "For those who believe music should be free. High-quality files available for direct download.",
     "support_button": "BUY A COFFEE",
-    "support_desc": "Support the production and keep the 'creamy' vibes flowing."
+    "support_desc": "Support the production and keep the 'creamy' vibes flowing.",
+    "steal_cta": "GO STEAL",
+    "support_cta": "SUPPORT ARTIST"
   },
   "shop_page_title": "Shop",
   "shop_page_meta_desc": "Event tickets, exclusive merchandise, and more",
@@ -447,34 +453,6 @@
   "footer_contact": "Contact",
   "footer_privacy": "Privacy Policy",
   "footer_terms": "Terms of Service",
-  "footer_privacy_policy": "Privacy Policy",
-  "footer_terms_of_use": "Terms of Use",
-  "footer_quick_links": "Quick Links",
-  "footer_discover_more": "Discover More",
-  "footer_music_philosophy": "Music Philosophy",
-  "footer_press_kit_booking": "Press Kit / Booking",
-  "footer_support_artist": "Support the Artist",
-  "footer_join_newsletter": "Join the Newsletter",
-  "footer_newsletter_desc": "Get exclusive updates, new releases, and VIP event access directly to your inbox.",
-  "footer_email_placeholder": "Your email address",
-  "footer_subscribe": "Subscribe",
-  "footer_zen_tribe_info": "Zen Tribe Info",
-  "footer_home": "Home",
-  "footer_music": "Music",
-  "footer_events": "Events",
-  "footer_contact_text": "Contact",
-  "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
-  "footer_tagline": "Elevating vibes, one beat at a time.",
-  "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
-  "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. Elevating vibes, one beat at a time.",
-  "footer_legal_name": "Marcelo Eyer Fernandes",
-  "footer_location": "São Paulo, SP - Brazil",
-  "footer_legal_name_label": "Legal Name",
-  "footer_location_label": "Location",
-  "events_categories": "Categories",
-  "events_found": "events found",
-  "error_loading": "Could not load events",
   "media_page": {
     "title": "Media & Press Kit",
     "subtitle": "Official media resources and press information for DJ Zen Eyer",
@@ -725,64 +703,84 @@
     "saved": "Saved!"
   },
   "support": {
-    "seo": {
-      "title": "Support DJ Zen Eyer | Payment Information",
-      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.",
-      "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
+    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
+  },
+  "about": {
+    "hero": {
+      "badge": "MY STORY",
+      "title": "The <1>Journey</1>",
+      "subtitle": "From passion for music to connecting with thousands of souls through Brazilian Zouk"
     },
-    "header": {
-      "title": "Support the Music",
-      "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
+    "stats": {
+      "passion": "Years of passion",
+      "events": "Intimate events",
+      "stories": "Shared stories",
+      "smiles": "Created smiles"
     },
-    "reasons": {
-      "title": "Why Your Support Matters",
-      "music": {
-        "title": "Support New Music",
-        "description": "Help produce and release new Brazilian Zouk tracks"
+    "story": {
+      "p1": "It all started in <strong>Niterói, RJ</strong>, where a young Marcelo Eyer Fernandes discovered that music could be more than sound: it could be <strong>pure emotion</strong>. At age 15, while his friends were listening to rock and pop, he would get lost in the Caribbean and Brazilian rhythms he found on his father's old cassette tapes.",
+      "p2": "The encounter with <strong>Brazilian Zouk</strong> was a turning point. 'I remember it like it was today', Zen Eyer says. 'It was 2012, a small party in Copacabana. When I heard that smooth but pulsing sound, I felt I had found my language.' That night changed everything: he sold his first DJ gear with the money he saved working at a bar.",
+      "p3": "The following years were of <strong>obsessive dedication</strong>. While working during the day, he spent nights studying mixing techniques, music theory, and, above all, <strong>how to make people feel</strong> through music. 'I didn't want to be just another DJ. I wanted to create moments where people forgot everything and just felt', he explains.",
+      "p4": "Recognition came in <strong>2022</strong>, when he became <strong>two-times world champion</strong> of Brazilian Zouk. But what makes him most proud are not the trophies, but the <strong>stories he collects</strong>: the couple who reconnected in one of his sets, the young woman who overcame shyness dancing to his music, the friends who hugged each other crying in the middle of the dance floor.",
+      "p5": "Today, Zen Eyer is known for his <strong>'cremosidade'</strong> - a style that unites impeccable technique with a rare sensitivity. 'Every set I do is like an intimate conversation with whoever is dancing. I want them to leave the floor feeling they lived something unique', he confesses.",
+      "p6": "His mission goes beyond music: 'I want people to remember they are capable of feeling deeply, of connecting, of being vulnerable. Brazilian Zouk is just the soundtrack for that.'"
+    },
+    "timeline": {
+      "title": "Moments that <1>Changed Everything</1>",
+      "m1": {
+        "title": "First Steps",
+        "desc": "Discovered the passion for music at age 15, influenced by Brazilian culture and Caribbean rhythms. Started exploring DJ gear and music production in Niterói, RJ."
       },
-      "community": {
-        "title": "Community Growth",
-        "description": "Support workshops, events, and educational content"
+      "m2": {
+        "title": "Encounter with Zouk",
+        "desc": "Had his first contact with Brazilian Zouk at a local party. It was love at first sight: 'It was as if the music spoke directly to my soul', Zen Eyer recalls."
       },
-      "worldwide": {
-        "title": "Worldwide Presence",
-        "description": "Enable international tours and collaborations"
+      "m3": {
+        "title": "Total Dedication",
+        "desc": "Left his corporate job to dedicate 100% to music. Spent years studying DJ techniques, music production, and the psychology behind dance floors."
+      },
+      "m4": {
+        "title": "World Recognition",
+        "desc": "Won the two-times world championship of Brazilian Zouk, proving that his emotional and technical approach was unique. 'It was the realization of a childhood dream', he says."
       }
     },
-    "payment": {
-      "title": "Payment Methods"
+    "philosophy": {
+      "title": "My <1>Philosophy</1>",
+      "quote": "\"Music is my way of creating a safe space where people can be who they truly are. It doesn't just touch the ears - it touches the soul. Every beat, every transition, every silence is thought so that someone on the dance floor feels: 'This is about me. This is for me.'\""
     },
-    "inter": {
-      "title": "Inter Global Account (Preferred)",
-      "description": "US and Brazil bank accounts for international and local payments",
-      "usa": "United States",
-      "brazil": "Brazil"
+    "cta": {
+      "title": "Let's <1>Talk?</1>",
+      "desc": "If you identified with this story or want to know more about the philosophy behind my music, I love meeting people who also believe in the power of connection through art.",
+      "button": "Share Your Story",
+      "whatsapp_msg": "Hello Zen! I saw your story on the website and would like to share mine as well."
+    }
+  },
+  "philosophy_page": {
+    "title": "My Music Philosophy",
+    "style_title": "Cremosidade",
+    "mission_title": "Mission",
+    "coming_soon_title": "Coming Soon",
+    "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!"
+  },
+  "home": {
+    "shows": {
+      "title": "Upcoming Shows",
+      "cta": "Full schedule"
     },
-    "wise": {
-      "title": "Wise (TransferWise)",
-      "description": "Low-fee international transfers to multiple currencies"
+    "press": {
+      "title": "Press & Media",
+      "desc": "Access photos, bio and assets.",
+      "cta": "DOWNLOAD PRESS KIT"
     },
-    "paypal": {
-      "title": "PayPal",
-      "description": "Quick and easy payments worldwide"
+    "bookers": {
+      "title": "Bookers",
+      "desc": "Bring the 'Zen Experience' to your event.",
+      "cta": "REQUEST BOOKING"
     },
-    "preferred": "Preferred",
-    "accountName": "Account Name",
-    "routingNumber": "Routing Number",
-    "accountNumber": "Account Number",
-    "accountType": "Account Type",
-    "swiftCode": "SWIFT/BIC",
-    "bank": "Bank",
-    "branch": "Branch",
-    "account": "Account",
-    "pixKey": "PIX Key",
-    "email": "Email",
-    "sendPayment": "Send Payment via",
-    "business": {
-      "title": "Event Bookings & Business Inquiries",
-      "description": "For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.",
-      "contact": "Contact for Bookings"
-    },
-    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
+    "verified": "Verified Profiles",
+    "tribe": {
+      "title": "Join the <1>Zen Tribe</1>",
+      "desc": "It's not just about music. It's about the vibe. Join the VIP list."
+    }
   }
 }

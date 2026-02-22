@@ -85,129 +85,73 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-background border-t border-white/10">
-      <div className="container mx-auto px-4 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+    <footer className="bg-background pt-20 pb-10 border-t border-white/5">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col items-center text-center space-y-12">
 
-          {/* 1. Logo, Bio & Social Icons */}
-          <div className="lg:col-span-1">
-            <Link to={getLocalizedRoute('', currentLang)} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
-              <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
-                <Music size={20} className="text-primary" />
-              </div>
-              <span className="text-xl font-display font-bold tracking-wide">
-                <span className="text-primary">DJ</span> Zen Eyer
-              </span>
-            </Link>
-            <p className="text-white/70 mb-4 text-sm leading-relaxed">
-              {t('footer_bio')}
-            </p>
-            <div className="flex space-x-4">
-              <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
-                <Instagram size={22} />
-              </a>
-              <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
-                <Music2 size={22} />
-              </a>
-              <a href={ARTIST.social.youtube.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
-                <Youtube size={22} />
-              </a>
-              <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
-                <FacebookIcon size={22} />
-              </a>
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp">
-                <MessageCircle size={22} />
+          {/* 1. Brand Logo */}
+          <Link
+            to={getLocalizedRoute('', currentLang)}
+            className="flex flex-col items-center group"
+          >
+            <div className="h-16 w-16 mb-6 flex items-center justify-center rounded-full bg-primary/5 border border-primary/10 group-hover:border-primary/30 transition-all duration-500">
+              <Music size={32} className="text-primary" />
+            </div>
+            <h2 className="text-3xl font-display font-black tracking-tighter uppercase italic">
+              <span className="text-primary italic">DJ</span> Zen Eyer
+            </h2>
+          </Link>
+
+          {/* 2. Standard Artist Navigation */}
+          <nav>
+            <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-bold uppercase tracking-widest text-white/50">
+              <li><Link to={getLocalizedRoute('music', currentLang)} className="hover:text-primary transition-colors">{t('footer_music')}</Link></li>
+              <li><Link to={getLocalizedRoute('events', currentLang)} className="hover:text-primary transition-colors">{t('footer_events')}</Link></li>
+              <li><Link to={getLocalizedRoute('work-with-me', currentLang)} className="hover:text-primary transition-colors">{t('footer_work_with_me', 'Booking')}</Link></li>
+              <li><Link to={getLocalizedRoute('shop', currentLang)} className="hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
+              <li><Link to={getLocalizedRoute('media', currentLang)} className="hover:text-primary transition-colors">{t('footer_media', 'Press')}</Link></li>
+            </ul>
+          </nav>
+
+          {/* 3. Social Media - Premium Style */}
+          <div className="flex items-center gap-8">
+            <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white transition-all transform hover:scale-110" aria-label="Instagram">
+              <Instagram size={24} />
+            </a>
+            <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white transition-all transform hover:scale-110" aria-label="SoundCloud">
+              <Music2 size={24} />
+            </a>
+            <a href={ARTIST.social.youtube.url} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white transition-all transform hover:scale-110" aria-label="Youtube">
+              <Youtube size={24} />
+            </a>
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white transition-all transform hover:scale-110" aria-label="WhatsApp">
+              <MessageCircle size={24} />
+            </a>
+          </div>
+
+          {/* 4. Minimal Legal & Copyright */}
+          <div className="pt-12 w-full border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em] text-white/20">
+            <div className="flex items-center gap-4">
+              <p>{t('footer_copyright', { year: currentYear })}</p>
+              <span className="hidden md:block opacity-30">•</span>
+              <p className="hidden md:block italic tracking-widest opacity-40">{t('footer_tagline')}</p>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-white transition-colors">{t('footer_privacy_policy')}</Link>
+              <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-white transition-colors">{t('footer_terms_of_use')}</Link>
+              <a href="https://www.wikidata.org/wiki/Q136551855" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                Authority (Q136551855)
               </a>
             </div>
           </div>
 
-          {/* 2. Quick Links (Foco Comercial / Produto) */}
-          <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
-            <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
-              <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
-              <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
-              <li><Link to={getLocalizedRoute('support-the-artist', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</Link></li>
-            </ul>
-          </div>
-
-          {/* 3. Discover More (Institucional / Autoridade / SEO) */}
-          <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
-            <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
-              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_news', 'News & Blog')}</Link></li>
-              <li><Link to={getLocalizedRoute('my-philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_philosophy', 'My Philosophy')}</Link></li>
-              <li><Link to={getLocalizedRoute('work-with-me', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
-              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
-              <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
-            </ul>
-          </div>
-
-          {/* 4. Newsletter */}
-          <div className="lg:col-span-1">
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
-            <p className="text-white/70 mb-4 text-sm leading-relaxed">
-              {t('footer_newsletter_desc')}
-            </p>
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <div>
-                <label htmlFor="footer-email-subscription" className="sr-only">{t('footer_email_placeholder')}</label>
-                <input
-                  id="footer-email-subscription"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('footer_email_placeholder')}
-                  autoComplete="email"
-                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                disabled={isSubmitting}
-              >
-                <Send size={16} />
-                <span>{isSubmitting ? t('loading') : t('footer_subscribe')}</span>
-              </button>
-            </form>
-            {submitMessage && (
-              <p className={`mt-3 text-sm ${submitSuccess ? 'text-green-400' : 'text-red-400'}`}>
-                {submitMessage}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Bottom Bar (Dados Semânticos para Bots) */}
-        <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
-          <p>{t('footer_copyright', { year: currentYear })}</p>
-
-          <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
-            <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-primary transition-colors">{t('footer_privacy_policy')}</Link>
-            <span>•</span>
-            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('footer_terms_of_use')}</Link>
-          </div>
-          <div className="mt-4 space-y-1">
-            <p><strong>{t('footer_legal_name_label', 'Razão Social')}:</strong> {t('footer_legal_name')}</p>
-            <p><strong>CNPJ:</strong> 44.063.765/0001-46</p>
-            <p><strong>ISNI:</strong> 0000 0005 2893 1015</p>
-            <p><strong>{t('footer_location_label', 'Localização')}:</strong> {t('footer_location')}</p>
-            <p className="mt-2 text-xs">
-              <a href="https://www.wikidata.org/wiki/Q136551855" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                Wikidata
-              </a>
-              {' • '}
-              <a href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                MusicBrainz
-              </a>
-            </p>
+          {/* Extremely Discrete Legal Info (Only for Compliance/SEO) */}
+          <div className="text-[9px] text-white/10 flex flex-wrap justify-center gap-x-4 gap-y-1 max-w-2xl px-4 font-mono uppercase">
+            <span>{t('footer_legal_name')}</span>
+            <span>CNPJ: 44.063.765/0001-46</span>
+            <span>ISNI: 0000000528931015</span>
+            <span>{t('footer_location')}</span>
           </div>
         </div>
       </div>

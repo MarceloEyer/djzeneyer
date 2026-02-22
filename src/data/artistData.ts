@@ -172,6 +172,71 @@ export const ARTIST = {
     },
   },
 
+  // 💰 Pagamentos & Doações (SSOT)
+  payment: {
+    interGlobal: {
+      usd: {
+        accountName: 'MARCELO EYER FERNANDES',
+        accountNumber: '889693163-5',
+        achRouting: '026073150',
+        wireRouting: '026073008',
+        bankName: 'Community Federal Savings Bank',
+        bankAddress: '5 Penn Plaza, New York, NY 10001',
+        beneficiaryBank: 'Banco Inter SA',
+        swiftCode: 'ITEMBRSP',
+        intermediaryBank: {
+          name: 'JP Morgan Chase N.A.',
+          swift: 'CHASUS33',
+          aba: '021000021',
+          account: '360556937',
+        },
+        iban: 'BR9600416968000010007524137C1',
+      },
+      eur: {
+        accountName: 'MARCELO EYER FERNANDES',
+        beneficiaryBank: 'Banco Inter S.A.',
+        swiftCode: 'ITEMBRSP',
+        intermediaryBank: {
+          name: 'J.P.Morgan AG',
+          swift: 'CHASDEFX',
+        },
+        iban: 'BR9600416968000010007524137C1',
+      },
+      gbp: {
+        accountName: 'MARCELO EYER FERNANDES',
+        beneficiaryBank: 'Banco Inter S.A.',
+        swiftCode: 'ITEMBRSP',
+        intermediaryBank: {
+          name: 'JPMORGAN CHASE BANK N.A., LONDON BRANCH',
+          swift: 'CHASGB2L',
+        },
+        iban: 'BR9600416968000010007524137C1',
+      },
+      brazil: {
+        accountName: 'MARCELO EYER FERNANDES',
+        cpf: '113.739.157-06',
+        bank: 'Banco Inter (077)',
+        branch: '0001',
+        account: '752413-7',
+        pixKey: '21987413091',
+      },
+    },
+    wise: {
+      email: 'contato@djzeneyer.com',
+      url: 'https://wise.com/pay/me/marceloe131',
+      eur: {
+        accountName: 'Marcelo Eyer Fernandes',
+        iban: 'BE09967420872757',
+        swiftCode: 'TRWIBEB1XXX',
+        bankName: 'Wise (Brussels, Belgium)',
+      },
+    },
+    paypal: {
+      email: 'contato@djzeneyer.com',
+      me: 'https://paypal.me/djzeneyer',
+    },
+  },
+
   // 💡 Filosofia & Marca
   philosophy: {
     slogan: 'A pressa é inimiga da cremosidade',

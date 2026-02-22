@@ -57,9 +57,9 @@ const FEATURES_DATA = [
 const FESTIVALS_HIGHLIGHT = ARTIST.festivals.slice(0, 6);
 
 const STATS = [
-  { value: '2×', label: 'World Champion', icon: Trophy },
-  { value: `${ARTIST.stats.countriesPlayed}+`, label: 'Countries', icon: Globe },
-  { value: `${ARTIST.stats.yearsActive}+`, label: 'Years Active', icon: Sparkles },
+  { value: '2×', labelKey: 'home_stat_champion', icon: Trophy },
+  { value: `${ARTIST.stats.countriesPlayed}+`, labelKey: 'home_stat_countries', icon: Globe },
+  { value: `${ARTIST.stats.yearsActive}+`, labelKey: 'home_stat_years', icon: Sparkles },
 ];
 
 const CONTAINER_VARIANTS: Variants = {
@@ -277,7 +277,7 @@ const HomePage: React.FC = () => {
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
-              {STATS.map(stat => <StatCard key={stat.label} {...stat} />)}
+              {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as any)} icon={stat.icon} />)}
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
@@ -307,10 +307,14 @@ const HomePage: React.FC = () => {
                 components={[
                   <Link
                     key="events-link"
-                    to={isPortuguese ? '/pt/eventos/' : '/events/'}
+                    to={getLocalizedRoute('events', currentLang)}
                     className="text-primary hover:text-primary/80 underline underline-offset-4"
                   />,
-                  <Link key="work-with-me-link" to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="text-primary hover:text-primary/80 underline underline-offset-4" />
+                  <Link
+                    key="work-with-me-link"
+                    to={getLocalizedRoute('work-with-me', currentLang)}
+                    className="text-primary hover:text-primary/80 underline underline-offset-4"
+                  />
                 ]}
               />
             </motion.p>
@@ -345,7 +349,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div className="max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
-              {isPortuguese ? 'Próximos Shows' : 'Upcoming Shows'}
+              {t('home.shows.title')}
             </motion.h2>
 
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
@@ -355,7 +359,7 @@ const HomePage: React.FC = () => {
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
               <Link to={getLocalizedRoute('events', currentLang)} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
-                <span>{isPortuguese ? 'Agenda completa' : 'Full schedule'}</span>
+                <span>{t('home.shows.cta')}</span>
               </Link>
               <a href={ARTIST.social.bandsintown?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow DJ Zen Eyer on Bandsintown">
                 <ExternalLink size={18} />
@@ -382,12 +386,12 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS} className="text-center">
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-2 font-display">
-              {isPortuguese ? 'Presença Internacional' : 'International Presence'}
+              {currentLang === 'pt' ? 'Presença Internacional' : 'International Presence'}
             </motion.h2>
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
               {FESTIVALS_HIGHLIGHT.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
-                <span>+{isPortuguese ? 'muitos outros' : 'many more'}</span>
+                <span>+{currentLang === 'pt' ? 'muitos outros' : 'many more'}</span>
               </span>
             </motion.div>
           </motion.div>
@@ -400,20 +404,20 @@ const HomePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
-                <Download size={20} className="text-primary" /> {isPortuguese ? 'Imprensa & Mídia' : 'Press & Media'}
+                <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
-              <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Acesse fotos, bio e assets.' : 'Access photos, bio and assets.'}</p>
+              <p className="text-white/70 mb-4 text-sm">{t('home.press.desc')}</p>
               <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
-                {isPortuguese ? 'BAIXAR PRESS KIT' : 'DOWNLOAD PRESS KIT'} →
+                {t('home.press.cta')} →
               </Link>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
-                <Calendar size={20} className="text-green-500" /> {isPortuguese ? 'Contratantes' : 'Bookers'}
+                <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
-              <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Leve o "Zen Experience" para o seu evento.' : 'Bring the "Zen Experience" to your event.'}</p>
+              <p className="text-white/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
               <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
-                {isPortuguese ? 'ORÇAMENTO' : 'REQUEST BOOKING'} →
+                {t('home.bookers.cta')} →
               </Link>
             </motion.div>
           </div>
@@ -424,7 +428,7 @@ const HomePage: React.FC = () => {
       <section className="py-12 bg-background border-t border-white/5">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{isPortuguese ? 'Perfis Verificados' : 'Verified Profiles'}</p>
+            <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
               <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
@@ -440,14 +444,16 @@ const HomePage: React.FC = () => {
 
         <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
           <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
-            {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-primary">Zen Tribe</span>
+            <Trans i18nKey="home.tribe.title">
+              Junte-se à <span className="text-primary">Zen Tribe</span>
+            </Trans>
           </motion.h2>
           <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
-            {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
+            {t('home.tribe.desc')}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
             <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">
-              {isPortuguese ? 'Entrar na Tribo' : 'Join the Tribe'}
+              {t('nav_tribe')}
             </Link>
           </motion.div>
         </motion.div>

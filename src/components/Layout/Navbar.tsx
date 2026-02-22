@@ -1,7 +1,7 @@
 // src/components/Layout/Navbar.tsx
 // Optimized Navbar: SSR Security + UX + Performance
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
