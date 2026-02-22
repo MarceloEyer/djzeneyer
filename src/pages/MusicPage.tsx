@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
+import { useTracksQuery, useTrackBySlug, MusicTrack } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
@@ -153,7 +153,7 @@ const MusicPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTracks.map((track: any) => (
+              {filteredTracks.map((track) => (
                 <motion.div
                   key={track.id}
                   layout
