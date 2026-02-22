@@ -237,6 +237,12 @@ jobs:
           known_hosts: unnecessary
           name: id_rsa
 
+      # --- DIAGNOSTIC ---
+      - name: 🔍 Check Connectivity
+        run: |
+          echo "🔍 Testing connection to ${{ env.SSH_HOST }}:${{ env.SSH_PORT }}..."
+          nc -zv -w 15 ${{ env.SSH_HOST }} ${{ env.SSH_PORT }} || echo "⚠️ Warning: Host unreachable via nc, but continuing..."
+
       # --- BACKUP & CLEANUP ---
       - name: 📦 Backup & Clean dist folder
         uses: appleboy/ssh-action@v1.0.3
@@ -245,6 +251,8 @@ jobs:
           port: ${{ env.SSH_PORT }}
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 60s
+          command_timeout: 15m
           script: |
             set -e
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
