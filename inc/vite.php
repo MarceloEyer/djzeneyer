@@ -29,17 +29,23 @@ class DJZ_Vite_Loader {
         ];
 
         foreach ($paths as $path) {
-            if (file_exists($path)) {
-                $cache_key = 'djz_vite_manifest_v2_' . md5($path);
-                $cached    = get_transient($cache_key);
+            $cache_key = 'djz_vite_manifest_v2_' . md5($path);
+            $cached    = get_transient($cache_key);
 
-                // Check cache validity (Mtime check to be safe, though transient logic should handle hit/miss)
-                // However, we need to compare current file mtime to cached mtime to invalidate on deployment.
-                // To do this without reading the file content, we normally need filemtime.
-                // But the instruction says: "Race Condition... Ler mtime APÓS ler o conteúdo".
-                // If we read content every time to avoid race condition, we defeat the purpose of caching (IO reduction).
-                // Let's optimize: check mtime first for cache hit. If hit, good.
-                // If miss, read content, then read mtime again to store.
+            // Optimization: Trust transient if present to avoid IO (stat calls).
+            // Only trust if NOT in debug mode, to allow easier dev iteration.
+            if (
+                (!defined('WP_DEBUG') || !WP_DEBUG) &&
+                is_array($cached) &&
+                isset($cached['data'])
+            ) {
+                $this->manifest = $cached['data'];
+                return;
+            }
+
+            if (file_exists($path)) {
+                // If we are here, either WP_DEBUG is on, or cache missed.
+                // If WP_DEBUG is on, we check mtime to support hot invalidation.
 
                 $mtime = filemtime($path);
                 if ($mtime === false) $mtime = 0;
