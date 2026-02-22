@@ -70,8 +70,9 @@ const SupportArtistPage = () => {
       icon: CreditCard,
       priority: 3,
       color: 'from-blue-500 to-blue-600',
-      link: ARTIST.payment.paypal.me,
+      link: ARTIST.payment.paypal.donateUrl,
       email: ARTIST.payment.paypal.email,
+      phone: ARTIST.payment.paypal.phone,
     },
   ];
 
@@ -177,6 +178,12 @@ const SupportArtistPage = () => {
                                 <div className="font-mono text-white font-bold">{detail.value}</div>
                               </div>
                             ))}
+                            {(account as any).bankAddress && (
+                              <div className="bg-surface/30 rounded-lg p-4 md:col-span-2">
+                                <div className="text-sm text-white/50 mb-1">{t('support.bankAddress', 'Bank Address')}</div>
+                                <div className="font-mono text-white font-bold">{(account as any).bankAddress}</div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}

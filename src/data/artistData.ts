@@ -229,12 +229,15 @@ export const ARTIST = {
         iban: 'BE09967420872757',
         swiftCode: 'TRWIBEB1XXX',
         bankName: 'Wise (Brussels, Belgium)',
+        bankAddress: 'Rue du Trône 100, 3rd floor, Brussels, 1050, Belgium',
       },
     },
     paypal: {
       email: 'eyer.marcelo@gmail.com',
       phone: '+5521987413091',
+      businessId: '6BBTGNK7ZWUHY',
       me: 'https://paypal.me/djzeneyer',
+      donateUrl: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6BBTGNK7ZWUHY&item_name=Mensagem%20Personalizada&currency_code=BRL&no_recurring=0',
     },
   },
 
