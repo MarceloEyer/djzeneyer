@@ -222,7 +222,7 @@ export const ARTIST = {
       },
     },
     wise: {
-      email: 'contato@djzeneyer.com',
+      email: 'eyer.marcelo@gmail.com',
       url: 'https://wise.com/pay/me/marceloe131',
       eur: {
         accountName: 'Marcelo Eyer Fernandes',
@@ -232,7 +232,8 @@ export const ARTIST = {
       },
     },
     paypal: {
-      email: 'contato@djzeneyer.com',
+      email: 'eyer.marcelo@gmail.com',
+      phone: '+5521987413091',
       me: 'https://paypal.me/djzeneyer',
     },
   },

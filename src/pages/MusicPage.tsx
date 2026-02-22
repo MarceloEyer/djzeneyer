@@ -1,7 +1,7 @@
 // src/pages/MusicPage.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
 import { useTrackBySlug } from '../hooks/useQueries';
@@ -122,9 +122,11 @@ const MusicPage: React.FC = () => {
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6"
+              className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6 uppercase"
             >
-              {t('music.hub_title', 'ZEN SOUNDS')}
+              <Trans i18nKey="music.hub_title_rich">
+                <span className="text-primary">Streaming</span> Hub
+              </Trans>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}

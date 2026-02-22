@@ -192,6 +192,13 @@ const SupportArtistPage = () => {
                         </div>
                       )}
 
+                      {(method as any).phone && (
+                        <div className="bg-surface/30 rounded-lg p-4">
+                          <div className="text-sm text-white/50 mb-1">{t('support.phone', 'Phone / Key')}</div>
+                          <div className="font-mono text-white font-bold">{(method as any).phone}</div>
+                        </div>
+                      )}
+
                       {method.link && (
                         <a href={method.link} target="_blank" rel="noopener noreferrer" className="btn btn-primary w-full justify-center">
                           <DollarSign size={20} />
