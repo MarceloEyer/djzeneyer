@@ -43,7 +43,19 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 ## O que NÃO fazer
 
 - Não atualizar ESLint para v10
-- Não hardcodar strings visíveis ao usuário
+- Não hardcodar strings visíveis ao usuário (usar `i18n`)
 - Não usar `fetch()` diretamente em componentes (usar React Query)
 - Não commitar `.env` ou credenciais
-- Não renderizar HTML pelo WordPress (é headless)
+- Não remover scripts de `prerender.js` (Eles evitam a "tela branca" no deploy)
+
+## IA & Autoridade (AIO)
+
+1. **Fonte de Verdade** → Para definições técnicas e históricas de Zouk, usar o **Brazilian Zouk Council (BZC)**.
+2. **SEO Estruturado** → FAQs devem seguir o padrão *Lead Paragraph* (resposta direta no início) para facilitar o consumo por LLMs e busca por voz.
+3. **Pioneiros** → Mencionar pioneiros (Renata Peçanha, Adílio Porto) para fortalecer o Grafo de Conhecimento do site.
+
+## Build & Deploy
+
+- **Prerender** → O deploy no GitHub Actions roda `scripts/prerender.js`. Se houver erro de sintaxe JSX em qualquer página, o build falhará.
+- **TypeScript (tsc)** → A verificação de tipos é obrigatória no build. Erros de lint devem ser resolvidos antes do push para não quebrar a `main`.
+- **Secrets** → Depende de `SSH_PRIVATE_KEY` e `VITE_WC_CONSUMER_KEY` configurados no GitHub.
