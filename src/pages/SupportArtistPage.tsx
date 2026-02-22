@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { DollarSign, CreditCard, Banknote, Heart, Music, Globe, Building2, CheckCircle2 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST } from '../data/artistData';
 
 const SupportArtistPage = () => {
   const { t, i18n } = useTranslation();
@@ -19,21 +18,21 @@ const SupportArtistPage = () => {
         {
           country: t('support.inter.usa', 'United States'),
           details: [
-            { label: t('support.accountName', 'Account Name'), value: ARTIST.payment.interUs.accountName },
-            { label: t('support.routingNumber', 'Routing Number'), value: ARTIST.payment.interUs.routingNumber },
-            { label: t('support.accountNumber', 'Account Number'), value: ARTIST.payment.interUs.accountNumber },
-            { label: t('support.accountType', 'Account Type'), value: ARTIST.payment.interUs.accountType },
-            { label: t('support.swiftCode', 'SWIFT/BIC'), value: ARTIST.payment.interUs.swiftCode },
+            { label: t('support.accountName', 'Account Name'), value: 'Marcelo Eyer Fernandes' },
+            { label: t('support.routingNumber', 'Routing Number'), value: '084106768' },
+            { label: t('support.accountNumber', 'Account Number'), value: '9100169982' },
+            { label: t('support.accountType', 'Account Type'), value: 'Checking' },
+            { label: t('support.swiftCode', 'SWIFT/BIC'), value: 'CINTUS33XXX' },
           ],
         },
         {
           country: t('support.inter.brazil', 'Brazil'),
           details: [
-            { label: t('support.accountName', 'Account Name'), value: ARTIST.payment.interBr.accountName },
-            { label: t('support.bank', 'Bank'), value: ARTIST.payment.interBr.bankName },
-            { label: t('support.branch', 'Branch'), value: ARTIST.payment.interBr.branch },
-            { label: t('support.account', 'Account'), value: ARTIST.payment.interBr.accountNumber },
-            { label: t('support.pixKey', 'PIX Key'), value: ARTIST.payment.interBr.pixKey },
+            { label: t('support.accountName', 'Account Name'), value: 'Marcelo Eyer Fernandes' },
+            { label: t('support.bank', 'Bank'), value: 'Banco Inter (077)' },
+            { label: t('support.branch', 'Branch'), value: '0001' },
+            { label: t('support.account', 'Account'), value: '94635616-7' },
+            { label: t('support.pixKey', 'PIX Key'), value: 'contato@djzeneyer.com' },
           ],
         },
       ],
@@ -45,8 +44,8 @@ const SupportArtistPage = () => {
       icon: Globe,
       priority: 2,
       color: 'from-green-500 to-green-600',
-      link: ARTIST.payment.wise.link,
-      email: ARTIST.payment.wise.email,
+      link: 'https://wise.com',
+      email: 'contato@djzeneyer.com',
     },
     {
       id: 'paypal',
@@ -55,8 +54,8 @@ const SupportArtistPage = () => {
       icon: CreditCard,
       priority: 3,
       color: 'from-blue-500 to-blue-600',
-      link: ARTIST.payment.paypal.link,
-      email: ARTIST.payment.paypal.email,
+      link: 'https://paypal.me/djzeneyer',
+      email: 'contato@djzeneyer.com',
     },
   ];
 
@@ -196,7 +195,7 @@ const SupportArtistPage = () => {
           <p className="text-white/70 mb-6 max-w-2xl mx-auto">
             {t('support.business.description', 'For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.')}
           </p>
-          <a href={`mailto:${ARTIST.contact.email}?subject=Event Booking Inquiry`} className="btn btn-primary inline-flex items-center gap-2">
+          <a href="mailto:contato@djzeneyer.com?subject=Event Booking Inquiry" className="btn btn-primary inline-flex items-center gap-2">
             <CheckCircle2 size={20} />
             {t('support.business.contact', 'Contact for Bookings')}
           </a>
