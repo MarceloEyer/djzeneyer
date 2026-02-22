@@ -22,6 +22,16 @@ class DJZ_Vite_Loader {
         $this->dist_url  = get_template_directory_uri() . '/dist';
     }
 
+    /**
+     * Load the Vite manifest from disk into $this->manifest and cache it in a transient.
+     *
+     * Searches known manifest locations and, for each path, attempts to reuse a valid transient
+     * (unless WP_DEBUG is enabled). If the cache is missing or stale, reads and decodes the
+     * manifest JSON, assigns the resulting array to $this->manifest, and stores a transient
+     * containing the manifest and the file mtime. Cache duration is 7 days when file mtime is
+     * available, otherwise 5 minutes. On JSON decode or read failures an error is logged and
+     * the method stops further path attempts.
+     */
     private function load_manifest() {
         $paths = [
             $this->dist_path . '/.vite/manifest.json',
