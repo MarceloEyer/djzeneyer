@@ -12,39 +12,12 @@ function djz_is_bot() {
         return false;
     }
 
-    static $pattern = null;
-
-    if ($pattern === null) {
-        $bots = [
-            'googlebot',
-            'bingbot',
-            'slurp',        // Yahoo
-            'duckduckbot',
-            'baiduspider',
-            'yandexbot',
-            'facebookexternalhit',
-            'twitterbot',
-            'linkedinbot',
-            'whatsapp',
-            'telegrambot',
-            // AI Bots
-            'claudebot',    // Anthropic (atual 2026)
-            'claude-web',   // Anthropic (legado, manter para compatibilidade)
-            'anthropic-ai', // Anthropic (legado, manter para compatibilidade)
-            'gptbot',       // OpenAI (crawler de treinamento)
-            'oai-searchbot', // OpenAI (indexação ChatGPT search)
-            'chatgpt-user',  // OpenAI (visitas do ChatGPT)
-            'google-extended', // Google Bard
-            'perplexitybot',
-            'youbot',
-            // SEO tools
-            'ahrefsbot',
-            'semrushbot',
-            'mj12bot',
-            'dotbot',
-        ];
-        $pattern = '/' . implode('|', array_map(function($bot) { return preg_quote($bot, '/'); }, $bots)) . '/i';
-    }
+    // OPTIMIZATION: Use pre-compiled regex to avoid runtime construction overhead.
+    // List includes: googlebot, bingbot, slurp, duckduckbot, baiduspider, yandexbot,
+    // facebookexternalhit, twitterbot, linkedinbot, whatsapp, telegrambot,
+    // claudebot, claude-web, anthropic-ai, gptbot, oai-searchbot, chatgpt-user,
+    // google-extended, perplexitybot, youbot, ahrefsbot, semrushbot, mj12bot, dotbot.
+    static $pattern = '/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|claudebot|claude\-web|anthropic\-ai|gptbot|oai\-searchbot|chatgpt\-user|google\-extended|perplexitybot|youbot|ahrefsbot|semrushbot|mj12bot|dotbot/i';
 
     return (bool) preg_match($pattern, $_SERVER['HTTP_USER_AGENT']);
 }
