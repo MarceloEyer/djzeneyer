@@ -1,75 +1,74 @@
 # 📈 Estratégia de Crescimento — DJ Zen Eyer
 
-Estratégias consolidadas de marketing, crescimento e dicas práticas para o projeto.
+Estratégias de marketing e crescimento focadas no público real: **dançarinos(as) de Zouk Brasileiro** que amam a música do Zen Eyer.
 
 ---
 
 ## 🏆 Diferenciais Únicos (USPs)
 
 1. **"A pressa é inimiga da cremosidade"** — Bordão exclusivo. Explorar em merchandising, reels e assinatura de marca.
-2. **Bicampeão Mundial** — Usar "2× World Champion" em **toda** bio (IG, Spotify, YouTube, Bandsintown). É o principal diferencial competitivo.
-3. **Tribo Zen** — Comunidade exclusiva. Acesso antecipado, grupo Telegram/WhatsApp, recompensas via gamificação do site.
-4. **Bilíngue** — Site em PT + EN alcança a comunidade global de Zouk (Brasil + Europa + EUA + Ásia).
+2. **Bicampeão Mundial de Brazilian Zouk** — Usar "2× World Champion" em **toda** bio (IG, Spotify, YouTube, Bandsintown).
+3. **Tribo Zen** — Comunidade exclusiva. Acesso antecipado, grupo VIP, recompensas via gamificação do site.
+4. **Bilíngue** — PT + EN alcança a comunidade global de Zouk (Brasil + Europa + EUA + Ásia).
 5. **Membro da Mensa** — Diferencial intelectual raro no mundo da música. Usar em press kits.
+
+---
+
+## 🎯 Público-Alvo
+
+- **Perfil:** Majoritariamente feminino, dançarinas de Zouk Brasileiro
+- **O que querem:** Ouvir músicas novas, ver performances ao vivo, sentir a energia
+- **O que NÃO querem:** Tutoriais de como ser DJ, conteúdo técnico de equipamento
+- **O que viraliza:**
+  - 🎵 Trechos de música nova (Track IDs)
+  - 🎹 Tocando instrumento ao vivo
+  - 🔥 **Viradas, mashups e remixes ao vivo em Reels** (maior engajamento)
+  - 💃 Dançarinos reagindo/dançando com a música
 
 ---
 
 ## 📅 Plano de Conteúdo Semanal
 
-**Princípio:** Consistência > Perfeição.
+**Princípio:** Consistência > Perfeição. O conteúdo deve gerar emoção.
 
 | Dia | Plataforma | Tipo | Ideia |
 |-----|-----------|------|-------|
-| **Seg** | Instagram | Reel (15s) | "Você conhece essa música?" (Track ID com Zouk) |
-| **Ter** | YouTube | Short | Trecho de set ao vivo com legenda |
-| **Qua** | Instagram | Carrossel | "3 Dicas para DJs" ou flyer de evento |
-| **Qui** | TikTok | Trend | Participar de trend viral usando Zouk |
-| **Sex** | Spotify | Lançamento | Remix ou track original |
+| **Seg** | Instagram | Reel (15-30s) | Mashup/virada ao vivo com transição surpreendente |
+| **Ter** | TikTok | Trend | Trend viral + Zouk por cima |
+| **Qua** | Instagram | Reel | Trecho de música nova — "Qual vai ser a próxima?" |
+| **Qui** | Instagram | Reel | Tocando instrumento ao vivo (teclado, guitarra) |
+| **Sex** | Spotify/IG | Lançamento | Remix ou track original + Story com trecho |
 | **Sáb** | Instagram | Story | Bastidores do evento (Behind the Scenes) |
 | **Dom** | Email | Newsletter | Resumo semanal da Tribo Zen + links |
+
+### Ideias de Reels de Alto Engajamento
+- **"Adivinha a virada"** — Corta antes da virada, resposta no próximo reel
+- **"3 músicas, 1 mashup"** — Mistura ao vivo de 3 tracks conhecidas
+- **"Antes vs Depois"** — Música original → remix do Zen
+- **"A cremosidade chegou"** — Bordão + transição épica
+- **"Dançarinas reagem"** — Collab com dançarinas ouvindo pela primeira vez
 
 ---
 
 ## 🚀 Estratégias de Crescimento
 
-### Construção de Autoridade
-- **Conteúdo Educacional**: "Como Remixar Zouk" (série YouTube), "Dicas de DJ de um Campeão Mundial" (Reels/TikTok)
-- **MusicBrainz**: Manter todas as faixas registradas — alimenta o Knowledge Graph do Google
-- **Wikidata**: Perfil já criado (Q136551855) — manter atualizado com novas conquistas
-- **ISNI**: Identificador internacional já registrado (0000 0005 2893 1015)
-
-### SEO e Presença Digital
-- **Google Knowledge Panel**: MusicBrainz + Wikidata + ISNI aumentam chances de painel no Google
-- **Spotify for Artists**: Manter bio atualizada, playlists curadas, Canvas nos tracks
-- **Bandsintown**: Sincronizar eventos automaticamente (plugin Zen BIT já integrado no site)
+### Presença Digital
+- **MusicBrainz**: Todas as faixas registradas → alimenta Knowledge Graph do Google
+- **Wikidata**: Perfil criado (Q136551855) → manter atualizado
+- **ISNI**: Identificador internacional (0000 0005 2893 1015)
+- **Spotify for Artists**: Bio atualizada, playlists curadas, Canvas nos tracks
+- **Bandsintown**: Eventos sincronizados automaticamente (plugin Zen BIT)
 
 ### Engajamento e Comunidade
-- **Gamificação no site**: Usuários ganham XP ao ouvir músicas, comprar, participar — já implementado via GamiPress
-- **Newsletter da Tribo Zen**: Email semanal com conteúdo exclusivo via MailPoet
-- **Telegram/WhatsApp**: Grupo VIP com acesso antecipado a remixes
+- **Gamificação no site**: XP ao ouvir músicas, comprar, participar (GamiPress)
+- **Newsletter Tribo Zen**: Email semanal com conteúdo exclusivo
+- **Telegram/WhatsApp VIP**: Grupo com acesso antecipado a remixes
+- **Collabs com dançarinas**: Reels de reação/dança com as músicas
 
----
-
-## 🎵 Dicas Técnicas para o Projeto
-
-### Otimizações Recomendadas
-1. **Lazy Loading de Imagens de Eventos**: Usar `loading="lazy"` em cards de eventos para reduzir LCP
-2. **Prefetch de Rotas**: Next routes que o usuário provavelmente visitará (ex: `/events` → `/events/:slug`)
-3. **Cache de API com staleTime**: Configurado em React Query — dados de eventos/músicas ficam em cache por 5min para evitar fetches desnecessários
-4. **WebP para todas as imagens**: Converter hero images e OG images para WebP (40-50% menor)
-
-### Melhorias Futuras de Alto Impacto
-1. **PWA (Progressive Web App)**: Permitir instalação do site como app — fãs acessam direto da homescreen
-2. **Push Notifications**: Notificar fãs sobre novos lançamentos/eventos diretamente no celular
-3. **Integração Spotify API**: Mostrar top tracks e stats do Spotify direto no site
-4. **Open Graph dinâmico por evento**: Cada evento gera seu próprio OG image automaticamente para compartilhamento nas redes
-
-### SEO Técnico do Site
-1. **SSG já implementado**: Puppeteer pré-renderiza HTML para Google ✅
-2. **Sitemaps automáticos**: Gerados no build ✅
-3. **Hreflang**: Tags EN/PT com reciprocidade ✅
-4. **Schema.org**: JSON-LD para Person, MusicEvent, Product ✅
-5. **Melhoria sugerida**: Adicionar `BreadcrumbList` schema para navegação interna
+### Collabs Estratégicas
+- Parcerias com dançarinas influentes de Zouk para reels duplos
+- Remix de pedidos da comunidade ("Vocês pediram, eu fiz")
+- Live sets em festivais com câmera POV (perspectiva do DJ)
 
 ---
 
@@ -77,13 +76,23 @@ Estratégias consolidadas de marketing, crescimento e dicas práticas para o pro
 
 | Ferramenta | Uso |
 |-----------|-----|
-| **Suno AI / Udio** | Gerar ideias/stems para tracks |
-| **Midjourney** | Cover art de alta qualidade para mixes |
-| **ChatGPT / Gemini** | Captions, emails, variações de bio |
+| **Suno AI / Udio** | Gerar stems e ideias para tracks |
+| **Midjourney** | Cover art de alta qualidade |
+| **ChatGPT / Gemini** | Captions, variações de bio, newsletters |
 | **Canva** | Flyers e stories rápidos |
 | **Buffer / Later** | Agendamento de posts |
-| **Google Search Console** | Monitorar indexação e performance |
-| **Lighthouse CI** | Monitorar Core Web Vitals automaticamente |
+| **Google Search Console** | Monitorar indexação |
+
+---
+
+## 💡 Dicas de Otimização do Site
+
+1. **WebP para todas as imagens**: 40-50% menor que PNG/JPG
+2. **PWA**: Fãs instalam o site como app na homescreen
+3. **Push Notifications**: Notificar sobre lançamentos
+4. **OG dinâmico por evento**: Cada evento gera sua imagem de compartilhamento
+5. **Schema BreadcrumbList**: Melhor navegação no Google
+6. **Integração Spotify API**: Top tracks direto no site
 
 ---
 
