@@ -5,6 +5,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { Trans, useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 import {
   PlayCircle, Calendar, Users, Music, Award, Trophy,
   Globe, Mail, ExternalLink, Sparkles, Download
@@ -331,10 +332,10 @@ const HomePage: React.FC = () => {
             <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
               <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home_bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-white/90">
-                <p dangerouslySetInnerHTML={{ __html: t('home_bio_intro') }} />
+                <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('home_bio_intro')) }} />
               </div>
-              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: t('home_bio_style') }} />
-              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: t('home_bio_mensa') }} />
+              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('home_bio_style')) }} />
+              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('home_bio_mensa')) }} />
             </motion.article>
           </motion.div>
         </div>

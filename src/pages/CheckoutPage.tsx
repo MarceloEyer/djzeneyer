@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { CreditCard, Lock, CheckCircle, AlertCircle } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
@@ -364,7 +365,7 @@ const CheckoutPage: React.FC = () => {
                         />
                         <div>
                           <div className="font-semibold">{method.title}</div>
-                          <div className="text-xs text-white/60 mt-1" dangerouslySetInnerHTML={{ __html: method.description }} />
+                          <div className="text-xs text-white/60 mt-1" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(method.description) }} />
                         </div>
                       </label>
                     ))

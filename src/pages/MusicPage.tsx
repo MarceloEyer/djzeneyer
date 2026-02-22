@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
 import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
@@ -75,7 +76,7 @@ const MusicPage: React.FC = () => {
                 </div>
 
                 <div className="text-center md:text-left flex-1">
-                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: singleTrack.title?.rendered }} />
+                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(singleTrack.title?.rendered) }} />
                   <p className="text-primary font-bold mb-8 tracking-widest uppercase">{t('music.artist_tag')}</p>
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -95,7 +96,7 @@ const MusicPage: React.FC = () => {
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> {t('music.about_track')}</h2>
                 <div
                   className="prose prose-invert max-w-none text-white/60"
-                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "" }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "") }}
                 />
               </div>
             </div>
@@ -179,7 +180,7 @@ const MusicPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold font-display mb-2 truncate" dangerouslySetInnerHTML={{ __html: track.title.rendered }} />
+                    <h3 className="text-xl font-bold font-display mb-2 truncate" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(track.title.rendered) }} />
                     <div className="flex items-center justify-between mt-4">
                       <span className="text-xs text-white/40 font-mono">{t('music.remix_tag')}</span>
                       <div className="flex gap-3">

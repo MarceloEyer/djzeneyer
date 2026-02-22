@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Calendar, Clock, ArrowRight, TrendingUp, Hash, ArrowLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
@@ -101,7 +102,7 @@ const NewsPage: React.FC = () => {
                   <span>•</span>
                   <span>Por {singlePost._embedded?.author?.[0]?.name || 'Zen Eyer'}</span>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: singlePost.title.rendered }} />
+                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(singlePost.title.rendered) }} />
                 
                 {singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
@@ -116,7 +117,7 @@ const NewsPage: React.FC = () => {
 
               <div 
                 className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:font-black prose-a:text-primary hover:prose-a:text-white transition-colors"
-                dangerouslySetInnerHTML={{ __html: singlePost.content?.rendered || "" }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(singlePost.content?.rendered || "") }}
               />
             </article>
           </div>
@@ -197,12 +198,12 @@ const NewsPage: React.FC = () => {
                       </div>
                       <h2 
                         className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors"
-                        dangerouslySetInnerHTML={{ __html: featuredPost.title.rendered }} 
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(featuredPost.title.rendered) }}
                       />
                       <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
                         <p 
                           className="text-lg text-white/80 line-clamp-3"
-                          dangerouslySetInnerHTML={{ __html: stripHtml(featuredPost.excerpt.rendered) }} 
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(stripHtml(featuredPost.excerpt.rendered)) }}
                         />
                       </div>
                       <Link to={`${getRouteForKey('news')}/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-bold text-lg hover:gap-4 transition-all">
@@ -245,12 +246,12 @@ const NewsPage: React.FC = () => {
                       <Link to={`${getRouteForKey('news')}/${post.slug}`}>
                         <h3 
                           className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2"
-                          dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title.rendered) }}
                         />
                       </Link>
                       <p 
                         className="text-white/60 text-sm line-clamp-3 mb-6 flex-1"
-                        dangerouslySetInnerHTML={{ __html: stripHtml(post.excerpt.rendered) }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(stripHtml(post.excerpt.rendered)) }}
                       />
                       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
                         <span className="text-xs text-white/40 font-medium">

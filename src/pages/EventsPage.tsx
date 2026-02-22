@@ -4,6 +4,7 @@
 import { useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHreflangUrls } from '../utils/seo';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
@@ -141,7 +142,7 @@ const EventsPage: React.FC = () => {
                   {t('events_status_upcoming', 'Próximo Evento')}
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-black font-display mb-6" dangerouslySetInnerHTML={{ __html: title }} />
+                <h1 className="text-4xl md:text-5xl font-black font-display mb-6" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(title) }} />
 
                 <div className="space-y-4 mb-10">
                   <div className="flex items-center gap-4 text-white/80">
@@ -167,7 +168,7 @@ const EventsPage: React.FC = () => {
 
                 <div
                   className="prose prose-invert max-w-none mb-10 text-white/70"
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
                 />
 
                 <div className="mt-auto flex flex-col sm:flex-row gap-4">
@@ -272,7 +273,7 @@ const EventsPage: React.FC = () => {
                                 <span className="flex items-center gap-1.5"><CalendarIcon size={14} /> {new Date(date).toLocaleDateString()}</span>
                                 <span className="flex items-center gap-1.5"><MapPin size={14} /> São Paulo, SP</span>
                               </div>
-                              <h3 className="text-2xl md:text-3xl font-black font-display mb-4 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: title }} />
+                              <h3 className="text-2xl md:text-3xl font-black font-display mb-4 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(title) }} />
                             </div>
                             <div className="flex items-center justify-between">
                               <Link to={`${getRouteForKey('events')}/${event.id}`} className="text-sm font-bold flex items-center gap-2 hover:gap-4 transition-all">
