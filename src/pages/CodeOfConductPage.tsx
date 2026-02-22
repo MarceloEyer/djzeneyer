@@ -2,99 +2,101 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Heart, Users, Shield, AlertTriangle, Ban, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const CodeOfConductPage: React.FC = () => {
-  const lastUpdated = "January 2024";
+  const { t } = useTranslation();
+  const lastUpdated = "Janeiro 2024";
 
   const principles = [
     {
       icon: Heart,
-      title: "Respect & Inclusion",
-      description: "Treat everyone with respect, kindness, and empathy. We celebrate diversity and welcome people of all backgrounds, identities, and experiences.",
+      title: t('conduct_page.respect_title'),
+      description: t('conduct_page.respect_desc'),
       examples: [
-        "Use inclusive language",
-        "Be respectful of different viewpoints",
-        "Welcome newcomers warmly",
-        "Celebrate our diverse community"
+        t('conduct_page.respect_inclusive'),
+        t('conduct_page.respect_viewpoints'),
+        t('conduct_page.respect_welcome'),
+        t('conduct_page.respect_celebrate'),
       ]
     },
     {
       icon: Users,
-      title: "Community First",
-      description: "We are a community built on the love of Brazilian Zouk and music. Support each other, share knowledge, and help create a positive environment.",
+      title: t('conduct_page.community_title'),
+      description: t('conduct_page.community_desc'),
       examples: [
-        "Support fellow dancers and artists",
-        "Share knowledge and experiences",
-        "Contribute positively to discussions",
-        "Help maintain a welcoming atmosphere"
+        t('conduct_page.community_support'),
+        t('conduct_page.community_share'),
+        t('conduct_page.community_contribute'),
+        t('conduct_page.community_maintain'),
       ]
     },
     {
       icon: Shield,
-      title: "Safety & Consent",
-      description: "Everyone deserves to feel safe and comfortable. Consent is paramount in all interactions, both online and at events.",
+      title: t('conduct_page.safety_title'),
+      description: t('conduct_page.safety_desc'),
       examples: [
-        "Always ask before physical contact",
-        "Respect personal boundaries",
-        "Speak up if you feel uncomfortable",
-        "Report any concerning behavior"
+        t('conduct_page.safety_ask'),
+        t('conduct_page.safety_boundaries'),
+        t('conduct_page.safety_speak'),
+        t('conduct_page.safety_report'),
       ]
     }
   ];
 
   const prohibitedBehavior = [
     {
-      title: "Harassment & Discrimination",
+      title: t('conduct_page.harassment_title'),
       items: [
-        "Any form of harassment based on race, ethnicity, gender, sexual orientation, disability, age, religion, or any other protected characteristic",
-        "Sexual harassment, unwanted advances, or inappropriate comments",
-        "Bullying, intimidation, or threatening behavior",
-        "Stalking or unwanted persistent contact"
+        t('conduct_page.harassment_1'),
+        t('conduct_page.harassment_2'),
+        t('conduct_page.harassment_3'),
+        t('conduct_page.harassment_4'),
       ]
     },
     {
-      title: "Disruptive Behavior",
+      title: t('conduct_page.disruptive_title'),
       items: [
-        "Spam, trolling, or deliberately derailing conversations",
-        "Sharing false or misleading information",
-        "Promoting hate groups or extremist ideologies",
-        "Engaging in illegal activities or promoting illegal content"
+        t('conduct_page.disruptive_1'),
+        t('conduct_page.disruptive_2'),
+        t('conduct_page.disruptive_3'),
+        t('conduct_page.disruptive_4'),
       ]
     },
     {
-      title: "Privacy Violations",
+      title: t('conduct_page.privacy_title'),
       items: [
-        "Sharing someone's personal information without consent (doxxing)",
-        "Recording or photographing people without permission",
-        "Sharing private conversations publicly",
-        "Impersonating others or creating fake accounts"
+        t('conduct_page.privacy_1'),
+        t('conduct_page.privacy_2'),
+        t('conduct_page.privacy_3'),
+        t('conduct_page.privacy_4'),
       ]
     }
   ];
 
   const consequences = [
     {
-      level: "First Offense (Minor)",
-      action: "Warning",
-      description: "Verbal or written warning with explanation of the violation"
+      level: t('conduct_page.consequence_first'),
+      action: t('conduct_page.consequence_first_action'),
+      description: t('conduct_page.consequence_first_desc'),
     },
     {
-      level: "Repeated or Serious Offense",
-      action: "Temporary Suspension",
-      description: "Temporary removal from events, platform, or community spaces"
+      level: t('conduct_page.consequence_repeated'),
+      action: t('conduct_page.consequence_repeated_action'),
+      description: t('conduct_page.consequence_repeated_desc'),
     },
     {
-      level: "Severe or Persistent Violation",
-      action: "Permanent Ban",
-      description: "Permanent removal from all DJ Zen Eyer events and community spaces"
+      level: t('conduct_page.consequence_severe'),
+      action: t('conduct_page.consequence_severe_action'),
+      description: t('conduct_page.consequence_severe_desc'),
     }
   ];
 
   return (
     <>
       <Helmet>
-        <title>Code of Conduct | DJ Zen Eyer</title>
-        <meta name="description" content="Community Code of Conduct for DJ Zen Eyer events and online spaces. Learn about our expectations and standards for respectful behavior." />
+        <title>{t('conduct_page.title')} | DJ Zen Eyer</title>
+        <meta name="description" content={t('conduct_page.subtitle')} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
@@ -111,10 +113,10 @@ const CodeOfConductPage: React.FC = () => {
               <Heart size={40} className="text-primary" />
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              Code of <span className="text-primary">Conduct</span>
+              {t('conduct_page.title')}
             </h1>
             <p className="text-white/70">
-              Last updated: <span className="text-primary font-semibold">{lastUpdated}</span>
+              {t('conduct_page.last_updated')}: <span className="text-primary font-semibold">{lastUpdated}</span>
             </p>
           </motion.div>
 
@@ -125,15 +127,12 @@ const CodeOfConductPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card p-8 mb-8 border-l-4 border-primary"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">Our Commitment</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">{t('conduct_page.commitment')}</h2>
             <p className="text-lg text-white/80 leading-relaxed mb-4">
-              DJ Zen Eyer is committed to creating a welcoming, safe, and inclusive environment for all
-              members of our community. This Code of Conduct applies to all interactions within our community,
-              including events, online platforms, and any spaces associated with DJ Zen Eyer.
+              {t('conduct_page.commitment_intro')}
             </p>
             <p className="text-white/70 leading-relaxed">
-              By participating in our community, you agree to abide by this Code of Conduct. We expect all
-              community members to help create a positive environment where everyone feels respected and valued.
+              {t('conduct_page.commitment_participation')}
             </p>
           </motion.div>
 
@@ -144,7 +143,7 @@ const CodeOfConductPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-12"
           >
-            <h2 className="text-3xl font-display font-bold mb-8 text-center">Core Principles</h2>
+            <h2 className="text-3xl font-display font-bold mb-8 text-center">{t('conduct_page.principles')}</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {principles.map((principle, index) => (
                 <motion.div
@@ -183,10 +182,10 @@ const CodeOfConductPage: React.FC = () => {
               <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
                 <Ban size={24} className="text-red-400" />
               </div>
-              <h2 className="text-3xl font-display font-bold">Prohibited Behavior</h2>
+              <h2 className="text-3xl font-display font-bold">{t('conduct_page.prohibited')}</h2>
             </div>
             <p className="text-white/70 mb-6">
-              The following behaviors are strictly prohibited and will result in consequences as outlined below:
+              {t('conduct_page.prohibited_intro')}
             </p>
             <div className="space-y-6">
               {prohibitedBehavior.map((category, index) => (
@@ -222,48 +221,47 @@ const CodeOfConductPage: React.FC = () => {
               <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                 <AlertTriangle size={24} className="text-primary" />
               </div>
-              <h2 className="text-2xl font-display font-bold">Reporting Violations</h2>
+              <h2 className="text-2xl font-display font-bold">{t('conduct_page.reporting')}</h2>
             </div>
             <p className="text-white/70 mb-6 leading-relaxed">
-              If you experience or witness behavior that violates this Code of Conduct, please report it
-              immediately. All reports will be treated with confidentiality and seriousness.
+              {t('conduct_page.reporting_intro')}
             </p>
             <div className="space-y-4">
               <div>
-                <h3 className="font-bold text-white mb-2">How to Report:</h3>
+                <h3 className="font-bold text-white mb-2">{t('conduct_page.reporting_how')}</h3>
                 <ul className="space-y-2 text-white/70">
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
-                    <span>At events: Speak to event staff or organizers immediately</span>
+                    <span>{t('conduct_page.reporting_events')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
-                    <span>Online: Use the report function on the platform</span>
+                    <span>{t('conduct_page.reporting_online')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
-                    <span>Email: <a href="mailto:conduct@djzeneyer.com" className="text-primary hover:underline">conduct@djzeneyer.com</a></span>
+                    <span>{t('conduct_page.reporting_email')} <a href="mailto:conduct@djzeneyer.com" className="text-primary hover:underline">conduct@djzeneyer.com</a></span>
                   </li>
                 </ul>
               </div>
               <div className="border-t border-white/10 pt-4">
-                <h3 className="font-bold text-white mb-2">What Happens After a Report:</h3>
+                <h3 className="font-bold text-white mb-2">{t('conduct_page.reporting_after')}</h3>
                 <ul className="space-y-2 text-white/70">
                   <li className="flex items-start gap-2">
                     <span className="text-primary">1.</span>
-                    <span>We will acknowledge receipt within 24-48 hours</span>
+                    <span>{t('conduct_page.reporting_acknowledge')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">2.</span>
-                    <span>We will investigate the incident thoroughly and impartially</span>
+                    <span>{t('conduct_page.reporting_investigate')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">3.</span>
-                    <span>We will take appropriate action based on our findings</span>
+                    <span>{t('conduct_page.reporting_action')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary">4.</span>
-                    <span>We will follow up with you about the outcome (as appropriate)</span>
+                    <span>{t('conduct_page.reporting_followup')}</span>
                   </li>
                 </ul>
               </div>
@@ -277,10 +275,9 @@ const CodeOfConductPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.1 }}
             className="mb-8"
           >
-            <h2 className="text-3xl font-display font-bold mb-6">Enforcement & Consequences</h2>
+            <h2 className="text-3xl font-display font-bold mb-6">{t('conduct_page.enforcement')}</h2>
             <p className="text-white/70 mb-6">
-              Violations of this Code of Conduct may result in the following consequences, depending on
-              the severity and frequency of the violation:
+              {t('conduct_page.enforcement_intro')}
             </p>
             <div className="space-y-4">
               {consequences.map((consequence, index) => (
@@ -311,30 +308,30 @@ const CodeOfConductPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.5 }}
             className="card p-8 mb-8"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">Scope</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">{t('conduct_page.scope')}</h2>
             <p className="text-white/70 leading-relaxed mb-4">
-              This Code of Conduct applies to all spaces managed by DJ Zen Eyer, including but not limited to:
+              {t('conduct_page.scope_intro')}
             </p>
             <ul className="space-y-2 text-white/70">
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                <span>Live events and performances</span>
+                <span>{t('conduct_page.scope_events')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                <span>Online communities and social media groups</span>
+                <span>{t('conduct_page.scope_online')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                <span>Official website and digital platforms</span>
+                <span>{t('conduct_page.scope_website')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                <span>Workshops, classes, and educational content</span>
+                <span>{t('conduct_page.scope_workshops')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                <span>Any space representing DJ Zen Eyer</span>
+                <span>{t('conduct_page.scope_representing')}</span>
               </li>
             </ul>
           </motion.div>
@@ -349,16 +346,16 @@ const CodeOfConductPage: React.FC = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-4">
               <Mail size={32} className="text-primary" />
             </div>
-            <h2 className="text-2xl font-display font-bold mb-4">Questions or Concerns?</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">{t('conduct_page.contact')}</h2>
             <p className="text-white/70 mb-6">
-              If you have questions about this Code of Conduct or need to report a violation:
+              {t('conduct_page.contact_intro')}
             </p>
             <a
               href="mailto:conduct@djzeneyer.com"
               className="btn btn-primary btn-lg inline-flex items-center gap-2"
             >
               <Mail size={20} />
-              Contact Us
+              {t('conduct_page.contact_button')}
             </a>
           </motion.div>
 
@@ -369,9 +366,8 @@ const CodeOfConductPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.7 }}
             className="text-center text-white/50 text-sm mt-8 space-y-2"
           >
-            <p>By participating in our community, you acknowledge that you have read and agree to follow</p>
-            <p>this Code of Conduct and understand the consequences of violations.</p>
-            <p className="pt-4 text-white/70">Together, we create a better community. 💙</p>
+            <p>{t('conduct_page.acknowledgment')}</p>
+            <p className="pt-4 text-white/70">{t('conduct_page.together')} 💙</p>
           </motion.div>
         </div>
       </div>
