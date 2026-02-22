@@ -134,132 +134,166 @@ const EventsPage: React.FC = () => {
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mb-20">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6"
-            >
-              {t('events_experience_title').split(' ')[0]} <span className="text-primary italic">{t('events_experience_title').split(' ').slice(1).join(' ')}</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-xl md:text-2xl text-white/60 font-medium"
-            >
-              {t('events_experience_subtitle')}
-            </motion.p>
-          </div>
-
-          <div className="grid lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-8">
-              <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
-                <h2 className="text-2xl font-display font-bold flex items-center gap-3">
-                  <CalendarIcon className="text-primary" /> {t('events_title')}
-                </h2>
-                <span className="text-white/40 text-sm font-mono">
-                  {!loading && !error ? `${events.length} ${t('events_found')}` : '...'}
-                </span>
-              </div>
-
-              {loading ? (
-                <div className="space-y-6 animate-pulse">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-48 bg-white/5 rounded-3xl w-full" />
-                  ))}
-                </div>
-              ) : error ? (
-                <div className="p-8 rounded-3xl bg-red-500/10 border border-red-500/20 text-center">
-                  <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">{t('error_loading', 'Não foi possível carregar a agenda')}</h3>
-                  <p className="text-white/60">{error.toString()}</p>
-                </div>
-              ) : events.length === 0 ? (
-                <div className="p-8 rounded-3xl bg-white/5 border border-white/10 text-center">
-                  <p className="text-white/60">{t('events_none')}</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {events.map((event, index) => {
-                    const title = event.title?.rendered || (typeof event.title === 'string' ? event.title : 'Evento sem título');
-                    const image = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || event.featured_image_url || event.image || '/images/hero-background.webp';
-                    const date = event.date || event.datetime || new Date().toISOString();
-                    const location = event.venue ? `${event.venue.city}, ${event.venue.region || event.venue.country}` : 'Local a definir';
-
-                    return (
-                      <motion.div
-                        key={event.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                        className="group bg-surface/30 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/40 transition-all duration-500"
-                      >
-                        <div className="flex flex-col md:flex-row p-6 gap-8">
-                          <div className="md:w-48 h-48 rounded-2xl overflow-hidden shrink-0">
-                            <img
-                              src={image}
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                              alt={title}
-                            />
-                          </div>
-                          <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-4 text-primary text-xs font-bold uppercase mb-3">
-                                <span className="flex items-center gap-1.5"><CalendarIcon size={14} /> {new Date(date).toLocaleDateString(i18n.language)}</span>
-                                <span className="flex items-center gap-1.5"><MapPin size={14} /> {location}</span>
-                              </div>
-                              <Link to={`${getRouteForKey('events')}/${event.id}`}>
-                                <h3 className="text-2xl md:text-3xl font-black font-display mb-4 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: title }} />
-                              </Link>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <Link to={`${getRouteForKey('events')}/${event.id}`} className="text-sm font-bold flex items-center gap-2 hover:gap-4 transition-all">
-                                {t('events_details')} <ArrowRight size={16} />
-                              </Link>
-                              <a
-                                href={event.url || event.offers?.[0]?.url || '#'}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn btn-primary px-6 py-2 rounded-full text-xs font-bold"
-                              >
-                                {t('events_tickets', 'TICKETS')}
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <aside className="lg:col-span-4 space-y-12">
-              <div className="bg-primary/10 border border-primary/20 rounded-3xl p-8">
-                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                  <Briefcase className="text-primary" /> {t('footer_work_with_me')}
-                </h3>
-                <p className="text-white/70 text-sm leading-relaxed mb-6">
-                  {t('home_work_with_me_desc', 'Interessado em levar a experiência Zen Eyer para o seu evento? Solicite um orçamento para bookings internacionais.')}
-                </p>
-                <Link to={getRouteForKey('work-with-me')} className="w-full btn btn-primary flex items-center justify-center gap-2 py-3">
-                  {t('contact').toUpperCase()} <Send size={16} />
-                </Link>
-              </div>
-
-              <div className="border border-white/10 rounded-3xl p-8 text-left">
-                <h3 className="text-xl font-display font-bold mb-6">{t('events_categories')}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {['Congressos', 'Workshops', 'Social', 'Online', 'Festivais'].map(cat => (
-                    <span key={cat} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold hover:bg-primary/20 hover:border-primary/40 cursor-pointer transition-colors">
-                      {cat}
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col gap-16">
+              {/* Event Header & List Container */}
+              <div className="space-y-12">
+                <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                  <h2 className="text-3xl font-display font-black flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                      <CalendarIcon className="text-primary" size={24} />
+                    </div>
+                    {t('events_title')}
+                  </h2>
+                  <div className="px-4 py-2 bg-white/5 rounded-full border border-white/10 backdrop-blur-sm">
+                    <span className="text-primary font-mono font-bold">
+                      {!loading && !error ? `${events.length}` : '...'}
                     </span>
-                  ))}
+                    <span className="text-white/40 text-xs font-bold uppercase tracking-widest ml-2">
+                      {t('events_found')}
+                    </span>
+                  </div>
                 </div>
+
+                {loading ? (
+                  <div className="space-y-8">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="h-64 bg-white/5 rounded-[2rem] w-full animate-pulse" />
+                    ))}
+                  </div>
+                ) : error ? (
+                  <div className="p-16 rounded-[2.5rem] bg-red-500/5 border border-red-500/10 text-center backdrop-blur-xl">
+                    <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6 opacity-50" />
+                    <h3 className="text-2xl font-black mb-3">{t('error_loading')}</h3>
+                    <p className="text-white/40 max-w-md mx-auto">{error.toString()}</p>
+                  </div>
+                ) : events.length === 0 ? (
+                  <div className="p-20 rounded-[2.5rem] bg-white/5 border border-white/10 text-center backdrop-blur-xl">
+                    <CalendarIcon className="w-16 h-16 text-white/10 mx-auto mb-6" />
+                    <p className="text-white/40 text-xl font-medium">{t('events_none')}</p>
+                  </div>
+                ) : (
+                  <motion.div
+                    initial="hidden"
+                    animate="show"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      show: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.15 }
+                      }
+                    }}
+                    className="space-y-8"
+                  >
+                    {events.map((event, index) => {
+                      const title = event.title?.rendered || (typeof event.title === 'string' ? event.title : 'Evento sem título');
+                      const image = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || event.featured_image_url || event.image || '/images/hero-background.webp';
+                      const date = event.date || event.datetime || new Date().toISOString();
+                      const location = event.venue ? `${event.venue.city}, ${event.venue.region || event.venue.country}` : 'Local a definir';
+
+                      return (
+                        <motion.div
+                          key={event.id}
+                          variants={{
+                            hidden: { opacity: 0, y: 30 },
+                            show: { opacity: 1, y: 0 }
+                          }}
+                          className="group relative"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-[2.5rem] blur-2xl" />
+                          <div className="relative bg-[#1A1A1A]/40 backdrop-blur-xl border border-white/5 group-hover:border-primary/30 rounded-[2.5rem] overflow-hidden transition-all duration-500 shadow-2xl">
+                            <div className="flex flex-col lg:flex-row h-full">
+                              <div className="lg:w-1/3 aspect-[16/10] lg:aspect-square overflow-hidden relative">
+                                <img
+                                  src={image}
+                                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
+                                  alt={title}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                              </div>
+
+                              <div className="flex-1 p-8 md:p-12 flex flex-col justify-between space-y-8">
+                                <div>
+                                  <div className="flex flex-wrap gap-6 text-primary text-xs font-black uppercase tracking-[0.2em] mb-6">
+                                    <span className="flex items-center gap-2.5 bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
+                                      <CalendarIcon size={16} />
+                                      {new Date(date).toLocaleDateString(i18n.language, { day: '2-digit', month: 'long', year: 'numeric' })}
+                                    </span>
+                                    <span className="flex items-center gap-2.5 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                                      <MapPin size={16} /> {location}
+                                    </span>
+                                  </div>
+                                  <Link to={`${getRouteForKey('events')}/${event.id}`}>
+                                    <h3 className="text-3xl md:text-5xl font-black font-display leading-[1.1] group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: title }} />
+                                  </Link>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-white/5">
+                                  <Link
+                                    to={`${getRouteForKey('events')}/${event.id}`}
+                                    className="text-sm font-black uppercase tracking-widest flex items-center gap-3 text-white/60 hover:text-white transition-all group/link"
+                                  >
+                                    {t('events_details')}
+                                    <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover/link:border-primary group-hover/link:bg-primary/10 transition-all">
+                                      <ArrowRight size={16} />
+                                    </div>
+                                  </Link>
+                                  <a
+                                    href={event.url || event.offers?.[0]?.url || '#'}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full sm:w-auto px-10 py-4 bg-primary hover:bg-white text-black font-black rounded-2xl transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(var(--color-primary-rgb),0.3)]"
+                                  >
+                                    <Ticket size={20} />
+                                    {t('events_tickets', 'GET TICKETS')}
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
+                )}
               </div>
-            </aside>
+
+              {/* Booking Section CTA - Full Width Premium */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="relative mt-12 group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-10 blur-[100px] group-hover:opacity-20 transition-opacity rounded-[3rem]" />
+                <div className="relative bg-[#1A1A1A]/60 backdrop-blur-2xl border border-white/10 rounded-[3rem] p-10 md:p-20 overflow-hidden">
+                  <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
+                    <Briefcase size={400} className="text-white transform translate-x-1/2 -translate-y-1/4" />
+                  </div>
+
+                  <div className="max-w-2xl relative z-10">
+                    <div className="inline-flex items-center gap-3 bg-primary/20 text-primary px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest mb-8">
+                      <Send size={16} /> {t('footer_contact_text', 'CONTACT')}
+                    </div>
+                    <h3 className="text-4xl md:text-6xl font-black font-display mb-8 leading-tight">
+                      {t('home_press_title', 'Bring the Zen Energy to Your City')}
+                    </h3>
+                    <p className="text-lg md:text-xl text-white/50 mb-12 leading-relaxed">
+                      {t('support.business.description')}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-6">
+                      <Link
+                        to={getRouteForKey('work-with-me')}
+                        className="btn btn-primary px-12 py-5 rounded-2xl text-lg font-black group/cta flex items-center justify-center gap-3"
+                      >
+                        {t('contact').toUpperCase()}
+                        <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

@@ -62,14 +62,14 @@ const STATS = [
   { value: `${ARTIST.stats.yearsActive}+`, label: 'Years Active', icon: Sparkles },
 ];
 
-const CONTAINER_VARIANTS: Variants = { 
-  hidden: { opacity: 0 }, 
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } } 
+const CONTAINER_VARIANTS: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
 };
 
-const ITEM_VARIANTS: Variants = { 
-  hidden: { y: 20, opacity: 0 }, 
-  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } } 
+const ITEM_VARIANTS: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
 };
 
 // ============================================================================
@@ -106,7 +106,7 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
-  
+
   const isPortuguese = i18n.language?.startsWith('pt');
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = '/';
@@ -116,7 +116,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     // Tenta pegar a URL da API do ambiente ou usa fallback
     const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
-    
+
     fetch(`${wpRestUrl}/zen-seo/v1/settings`)
       .then(res => res.json())
       .then(response => {
@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
         "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
-        "potentialAction": { 
+        "potentialAction": {
           "@type": "SearchAction",
           "target": `${ARTIST.site.baseUrl}/search?q={search_term_string}`,
           "query-input": "required name=search_term_string"
@@ -162,29 +162,29 @@ const HomePage: React.FC = () => {
           { "@type": "Award", "name": "Best DJ Performance", "description": "Brazilian Zouk World Championships", "dateAwarded": "2022" }
         ],
         "hasOccupation": [
-          { 
-            "@type": "Occupation", 
-            "name": "DJ", 
-            "skills": "Audio Mixing, Playlist Curation, Live Performance", 
-            "occupationalCategory": "27-2099.00" 
+          {
+            "@type": "Occupation",
+            "name": "DJ",
+            "skills": "Audio Mixing, Playlist Curation, Live Performance",
+            "occupationalCategory": "27-2099.00"
           },
-          { 
-            "@type": "Occupation", 
-            "name": "Music Producer", 
-            "skills": "Audio Engineering, Remixing, Mastering" 
+          {
+            "@type": "Occupation",
+            "name": "Music Producer",
+            "skills": "Audio Engineering, Remixing, Mastering"
           },
         ],
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
           "startDate": f.date,
-          "location": { 
-            "@type": "Place", 
+          "location": {
+            "@type": "Place",
             "name": f.country,
-            "address": { 
-               "@type": "PostalAddress", 
-               "addressCountry": f.country 
-            } 
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": f.country
+            }
           },
           "eventStatus": "https://schema.org/EventScheduled",
           "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
@@ -215,22 +215,22 @@ const HomePage: React.FC = () => {
     <>
       <HeadlessSEO
         // Tenta usar dados do Plugin WP, fallback para strings hardcoded
-        title={seoSettings?.real_name 
-          ? `${seoSettings.real_name} | 2× World Champion` 
+        title={seoSettings?.real_name
+          ? `${seoSettings.real_name} | 2× World Champion`
           : "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"}
-        
+
         description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
-        
+
         url={currentUrl}
-        
+
         // Imagem vinda do painel WP ou fallback local
         image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.png`}
-        
+
         isHomepage={true}
         schema={schemaData}
         keywords="DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
-        
-        // CORREÇÃO: Removido o bloco 'preload' para evitar duplicidade de carregamento
+
+      // CORREÇÃO: Removido o bloco 'preload' para evitar duplicidade de carregamento
       />
 
       {/* HERO SECTION */}
@@ -264,8 +264,8 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white mb-4 tracking-tight">
-              DJ Zen Eyer
+            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display mb-4 tracking-tight">
+              <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
             </motion.h1>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
@@ -347,7 +347,7 @@ const HomePage: React.FC = () => {
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
               {isPortuguese ? 'Próximos Shows' : 'Upcoming Shows'}
             </motion.h2>
-            
+
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
               <EventsList limit={3} showTitle={false} variant="compact" />
             </motion.div>
@@ -424,12 +424,12 @@ const HomePage: React.FC = () => {
       <section className="py-12 bg-background border-t border-white/5">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-             <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{isPortuguese ? 'Perfis Verificados' : 'Verified Profiles'}</p>
-             <div className="flex flex-wrap justify-center gap-6 text-sm">
-               <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
-               <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
-               <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
-             </div>
+            <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{isPortuguese ? 'Perfis Verificados' : 'Verified Profiles'}</p>
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
+              <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
+              <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -437,7 +437,7 @@ const HomePage: React.FC = () => {
       {/* FINAL CTA - ZEN TRIBE */}
       <section className="py-24 relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
-        
+
         <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
           <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
             {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-primary">Zen Tribe</span>

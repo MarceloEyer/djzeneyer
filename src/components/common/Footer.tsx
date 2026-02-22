@@ -129,7 +129,7 @@ const Footer: React.FC = () => {
               <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
               <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
-              <li><a href="https://patreon.djzeneyer.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</a></li>
+              <li><Link to={getLocalizedRoute('support-the-artist', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</Link></li>
             </ul>
           </div>
 

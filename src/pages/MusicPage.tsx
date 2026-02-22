@@ -197,7 +197,7 @@ const MusicPage: React.FC = () => {
               </h3>
               <p className="text-white/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
               <Link
-                to={getRouteForKey('support')}
+                to={getRouteForKey('support-the-artist')}
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
               >
                 SUPPORT ARTIST <ExternalLink size={16} />
