@@ -1,15 +1,19 @@
 <?php
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
-class Zen_BIT_Admin {
-    
-    public function __construct() {
+class Zen_BIT_Admin
+{
+
+    public function __construct()
+    {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_post_zen_bit_clear_cache', array($this, 'clear_cache'));
     }
-    
-    public function add_admin_menu() {
+
+    public function add_admin_menu()
+    {
         add_submenu_page(
             'zen-plugins',
             __('Zen BIT Settings', 'zen-bit'),
@@ -19,8 +23,9 @@ class Zen_BIT_Admin {
             array($this, 'render_settings_page')
         );
     }
-    
-    public function register_settings() {
+
+    public function register_settings()
+    {
         register_setting('zen_bit_settings', 'zen_bit_artist_id', array(
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
@@ -44,14 +49,16 @@ class Zen_BIT_Admin {
      * @param mixed $value
      * @return int
      */
-    public function sanitize_cache_time($value) {
+    public function sanitize_cache_time($value)
+    {
         $value = absint($value);
         // Minimum 5 minutes, maximum 24 hours
         return max(300, min(86400, $value));
     }
-    
-    public function render_settings_page() {
-        ?>
+
+    public function render_settings_page()
+    {
+?>
         <div class="wrap">
             <h1><?php _e('Zen BIT - Bandsintown Events', 'zen-bit'); ?></h1>
             
@@ -147,20 +154,21 @@ class Zen_BIT_Admin {
         </div>
         <?php
     }
-    
-    public function clear_cache() {
+
+    public function clear_cache()
+    {
         check_admin_referer('zen_bit_clear_cache');
-        
+
         if (!current_user_can('manage_options')) {
             wp_die(__('Unauthorized', 'zen-bit'));
         }
-        
+
         Zen_BIT_API::clear_cache();
 
         // Use wp_safe_redirect instead of wp_redirect to prevent open redirect vulnerabilities
         wp_safe_redirect(add_query_arg(
             array('page' => 'zen-bit-settings', 'cache_cleared' => '1'),
-            admin_url('options-general.php')
+            admin_url('admin.php')
         ));
         exit;
     }

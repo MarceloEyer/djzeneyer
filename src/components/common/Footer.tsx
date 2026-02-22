@@ -88,7 +88,7 @@ const Footer: React.FC = () => {
     <footer className="bg-background border-t border-white/10">
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-          
+
           {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
             <Link to={getLocalizedRoute('', currentLang)} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
@@ -188,17 +188,17 @@ const Footer: React.FC = () => {
         {/* Bottom Bar (Dados Semânticos para Bots) */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
           <p>{t('footer_copyright', { year: currentYear })}</p>
-          
+
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
-            <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-primary transition-colors">{t('footer_privacy_policy')}</Link>
             <span>•</span>
-            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">Terms of Use</Link>
+            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('footer_terms_of_use')}</Link>
           </div>
           <div className="mt-4 space-y-1">
-            <p><strong>{t('footer_legal_name', 'Razão Social')}:</strong> Marcelo Eyer Fernandes</p>
+            <p><strong>{t('footer_legal_name_label', 'Razão Social')}:</strong> {t('footer_legal_name')}</p>
             <p><strong>CNPJ:</strong> 44.063.765/0001-46</p>
             <p><strong>ISNI:</strong> 0000 0005 2893 1015</p>
-            <p><strong>{t('footer_location', 'Localização')}:</strong> São Paulo, SP - Brasil</p>
+            <p><strong>{t('footer_location_label', 'Localização')}:</strong> {t('footer_location')}</p>
             <p className="mt-2 text-xs">
               <a href="https://www.wikidata.org/wiki/Q136551855" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                 Wikidata

@@ -19,6 +19,8 @@ export const ARTIST = {
     displayTitle: 'Zen Eyer',
     birthDate: '1985-08-20', // Wikidata + MusicBrainz
     nationality: 'Brazilian',
+    legalName: 'Marcelo Eyer Fernandes 44063765000146', // Wikidata CNPJ
+    taxId: '44.063.765/0001-46',
   },
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
@@ -125,8 +127,9 @@ export const ARTIST = {
     discogs: '16872046',
     discogsUrl: 'https://www.discogs.com/artist/16872046',
     residentAdvisor: 'djzeneyer',
-    residentAdvisorUrl: 'https://pt-br.ra.co/dj/djzeneyer',
+    residentAdvisorUrl: 'https://ra.co/dj/djzeneyer',
     danceWikiFandom: 'https://dance.fandom.com/wiki/Zen_Eyer',
+    orcid: '0009-0006-2948-2148',
   },
 
   // 📱 Redes Sociais / Plataformas
@@ -134,14 +137,24 @@ export const ARTIST = {
     instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
     facebook: { handle: 'djzeneyer', url: 'https://facebook.com/djzeneyer' },
     youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
+    tiktok: { handle: '@djzeneyer', url: 'https://www.tiktok.com/@djzeneyer' },
+    twitter: { handle: '@djzeneyer', url: 'https://x.com/djzeneyer' },
+    twitch: { handle: 'djzeneyer', url: 'https://www.twitch.tv/djzeneyer' },
+    linkedin: { handle: 'eyermarcelo', url: 'https://www.linkedin.com/in/eyermarcelo' },
+    telegram: { handle: 'djzeneyer', url: 'https://t.me/djzeneyer' },
     soundcloud: { handle: 'djzeneyer', url: 'https://soundcloud.com/djzeneyer' },
     spotify: {
       id: '68SHKGndTlq3USQ2LZmyLw',
       url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
     },
-    appleMusic: { url: 'https://music.apple.com/us/artist/zen-eyer/1439280950' },
-    bandsintown: { url: 'https://www.bandsintown.com/a/15552355-dj-zen-eyer' },
-    mixcloud: { url: 'https://www.mixcloud.com/zeneyer' },
+    appleMusic: { url: 'https://music.apple.com/artist/1439280950' },
+    deezer: { url: 'https://www.deezer.com/artist/52900762' },
+    bandsintown: { url: 'https://www.bandsintown.com/a/15619775' },
+    mixcloud: { url: 'https://www.mixcloud.com/djzeneyer' },
+    bandcamp: { url: 'https://djzeneyer.bandcamp.com' },
+    lastfm: { url: 'https://www.last.fm/music/Zen+Eyer' },
+    crunchbase: { url: 'https://www.crunchbase.com/organization/zen-eyer' },
+    pinterest: { url: 'https://www.pinterest.com/djzeneyer' },
   } as Record<string, SocialLink>,
 
   // 📍 Contato
