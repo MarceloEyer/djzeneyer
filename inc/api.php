@@ -481,6 +481,20 @@ function djz_get_user_events_attended($user_id) {
     $target_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
 
     if ($orders) {
+        // OPTIMIZATION: Batch prime term cache to avoid N+1 queries
+        $product_ids = [];
+        foreach ($orders as $order) {
+            foreach ($order->get_items() as $item) {
+                if ($pid = $item->get_product_id()) {
+                    $product_ids[] = $pid;
+                }
+            }
+        }
+        if (!empty($product_ids)) {
+            $product_ids = array_unique($product_ids);
+            update_object_term_cache($product_ids, 'product');
+        }
+
         foreach ($orders as $order) {
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
