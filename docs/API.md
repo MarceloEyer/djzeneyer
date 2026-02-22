@@ -1,23 +1,22 @@
-# 📡 DJ Zen Eyer - API Reference
+# 📡 Referência de API — DJ Zen Eyer
 
-This document details the REST API endpoints available for the Headless React frontend.
+Endpoints REST disponíveis para o frontend React headless.
 
-**Base URL:** `https://djzeneyer.com/wp-json/djzeneyer/v1`
+**URL Base:** `https://djzeneyer.com/wp-json/djzeneyer/v1`
 
-**Authentication:**
-Most GET endpoints are public. POST endpoints or user-specific data require authentication (JWT or Nonce).
+**Autenticação:** Endpoints GET são públicos. Endpoints POST ou dados de usuário requerem JWT ou Nonce.
 
 ---
 
-## 🎮 Gamification & Activity
+## 🎮 Gamificação e Atividade
 
-These endpoints provide user statistics, recent activity, and gamification data. They are powered by the **Zen-RA** engine but exposed via the theme's API Dashboard.
+Endpoints de estatísticas, atividade recente e gamificação. Alimentados pelo engine **Zen-RA** e expostos via API do tema.
 
-### 1. User Activity Feed
-Returns a unified feed of recent activities (WooCommerce orders + GamiPress achievements).
+### 1. Feed de Atividade do Usuário
+Retorna feed unificado de atividades recentes (pedidos WooCommerce + conquistas GamiPress).
 
 - **Endpoint:** `GET /activity/{user_id}`
-- **Response:**
+- **Resposta:**
   ```json
   {
     "success": true,
@@ -25,26 +24,17 @@ Returns a unified feed of recent activities (WooCommerce orders + GamiPress achi
       {
         "id": "ord_123",
         "type": "loot",
-        "description": "Order #123",
+        "description": "Pedido #123",
         "xp": 50,
         "timestamp": 1709856000
-      },
-      {
-        "id": "ach_45",
-        "type": "achievement",
-        "description": "First Login",
-        "xp": 10,
-        "timestamp": 1709855000
       }
     ]
   }
   ```
 
-### 2. User Stats (Points & Rank)
-Returns the user's current points, level, and rank progress.
-
+### 2. Estatísticas do Usuário (Pontos e Rank)
 - **Endpoint:** `GET /gamipress/{user_id}`
-- **Response:**
+- **Resposta:**
   ```json
   {
     "success": true,
@@ -59,98 +49,86 @@ Returns the user's current points, level, and rank progress.
   }
   ```
 
-### 3. Login Streak
-Returns the current consecutive login streak count.
-
+### 3. Sequência de Login (Streak)
 - **Endpoint:** `GET /streak/{user_id}`
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "streak": 5
-  }
-  ```
 
-### 4. Purchased Tracks
-Returns purchased products from "Music" category.
-
+### 4. Faixas Compradas
 - **Endpoint:** `GET /tracks/{user_id}`
 
-### 5. Purchased Events
-Returns purchased products from "Events" category.
-
+### 5. Eventos Comprados
 - **Endpoint:** `GET /events/{user_id}`
 
 ---
 
-## 🛍️ E-Commerce & Content
+## 🛍️ E-Commerce e Conteúdo
 
 ### 1. Menu
-Returns the WordPress menu structure.
-
 - **Endpoint:** `GET /menu`
-- **Params:** `?lang=en` (or `pt`)
+- **Parâmetros:** `?lang=en` ou `?lang=pt`
 
-### 2. Products
-Returns WooCommerce products with optimized images.
-
+### 2. Produtos
 - **Endpoint:** `GET /products`
-- **Params:**
-  - `?lang=en`
-  - `?slug={slug}` (fetch single product)
+- **Parâmetros:** `?lang=en`, `?slug={slug}`
 
 ---
 
-## 👤 User & Profile
+## 👤 Usuário e Perfil
 
-### 1. Update Profile
-Updates user profile fields.
-
+### 1. Atualizar Perfil
 - **Endpoint:** `POST /user/update-profile`
-- **Auth:** Required (Cookie/Nonce or JWT)
+- **Auth:** Obrigatória (Cookie/Nonce ou JWT)
 - **Body:**
   ```json
-  {
-    "displayName": "New Name"
-  }
+  { "displayName": "Novo Nome" }
   ```
 
-### 2. Newsletter Subscription
-Subscribes an email to the MailPoet list.
-
+### 2. Inscrição na Newsletter
 - **Endpoint:** `POST /subscribe`
 - **Body:**
   ```json
-  {
-    "email": "user@example.com"
-  }
+  { "email": "usuario@exemplo.com" }
   ```
 
 ---
 
-## ⚠️ Error Handling
+## 🔐 Autenticação (ZenEyer Auth)
 
-- **404 Not Found**: Endpoint does not exist or Resource not found.
-- **500 Internal Server Error**: Server-side error.
-- **Response Structure**:
-  Errors often return a JSON object with `code`, `message`, and `data`.
-  ```json
-  {
-    "code": "invalid_user",
-    "message": "Invalid user ID",
-    "data": { "status": 400 }
-  }
-  ```
-- **Gamification Errors**:
-  The Gamification endpoints (`/activity`, etc.) implement robust `try-catch` blocks. If the underlying engine fails, they return an empty result (e.g., `activities: []`) to prevent crashing the frontend.
+**Namespace:** `zeneyer-auth/v1`
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/login` | Login com email/senha |
+| POST | `/register` | Registro de novo usuário |
+| POST | `/google-login` | Login com Google OAuth |
+| POST | `/refresh` | Renovar JWT |
+| POST | `/logout` | Logout |
+| GET | `/validate` | Validar token JWT |
 
 ---
 
-## 🛠️ Troubleshooting
+## ⚠️ Tratamento de Erros
 
-- **Namespace Error**:
-  ❌ DO NOT use `/zen-ra/v1/*`. This does not exist.
-  ✅ ALWAYS use `/djzeneyer/v1/*`.
+Erros retornam JSON com `code`, `message` e `data`:
+```json
+{
+  "code": "invalid_user",
+  "message": "ID de usuário inválido",
+  "data": { "status": 400 }
+}
+```
 
-- **Cache Issues**:
-  Data is cached for performance (usually 10-15 mins). If changes aren't visible immediately, use the "Clear Cache" button in WP Admin or wait for the TTL to expire.
+Endpoints de gamificação usam `try-catch` e retornam resultado vazio (ex: `activities: []`) em caso de falha para não quebrar o frontend.
+
+---
+
+## 🛠️ Solução de Problemas
+
+- **Namespace errado:**
+  ❌ NÃO use `/zen-ra/v1/*`
+  ✅ SEMPRE use `/djzeneyer/v1/*`
+
+- **Cache:** Dados ficam em cache por 10-15 min. Use "Limpar Cache" no WP Admin ou aguarde o TTL expirar.
+
+---
+
+**Atualizado:** Fevereiro 2026
