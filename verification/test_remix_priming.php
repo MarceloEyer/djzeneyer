@@ -40,15 +40,26 @@ function _prime_post_caches($ids, $update_term_cache = false, $update_meta_cache
 }
 
 // Global mock for REST request
-define('REST_REQUEST', true);
+if (!defined('REST_REQUEST')) {
+    define('REST_REQUEST', true);
+}
 
-// The logic to test
+// The logic to test (Mirrors inc/cpt.php implementation)
 function prime_remix_attachments($posts, $query) {
-    if (empty($posts)) return $posts;
-    if ($query->get('post_type') !== 'remixes') return $posts;
+    // 1. Validate inputs and ensure we are in a REST request context
+    if (empty($posts) || !is_object($query) || !method_exists($query, 'get')) {
+        return $posts;
+    }
 
-    // Only optimize REST requests
-    if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
+    // 2. Only target REST requests (fail fast)
+    if (!defined('REST_REQUEST') || !REST_REQUEST) {
+        return $posts;
+    }
+
+    // 3. Ensure we are modifying the main query for 'remixes'
+    if ($query->get('post_type') !== 'remixes') {
+        return $posts;
+    }
 
     $attachment_ids = [];
     foreach ($posts as $post) {

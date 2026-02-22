@@ -63,6 +63,7 @@ add_action('init', function() {
         'hierarchical' => true,
         'show_in_rest' => true,
         'show_admin_column' => true,
+        'rewrite' => ['slug' => 'genre'],
     ]);
 });
 
@@ -111,11 +112,20 @@ add_action('rest_api_init', function() {
  * Solves N+1 problem for featured_image_src field
  */
 add_filter('the_posts', function($posts, $query) {
-    if (empty($posts)) return $posts;
-    if ($query->get('post_type') !== 'remixes') return $posts;
+    // 1. Validate inputs and ensure we are in a REST request context
+    if (empty($posts) || !is_object($query) || !method_exists($query, 'get')) {
+        return $posts;
+    }
 
-    // Only target REST requests to be safe
-    if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
+    // 2. Only target REST requests (fail fast)
+    if (!defined('REST_REQUEST') || !REST_REQUEST) {
+        return $posts;
+    }
+
+    // 3. Ensure we are modifying the main query for 'remixes'
+    if ($query->get('post_type') !== 'remixes') {
+        return $posts;
+    }
 
     $attachment_ids = [];
     foreach ($posts as $post) {
