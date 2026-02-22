@@ -111,27 +111,38 @@ add_action('rest_api_init', function() {
  * Resolves N+1 query issue when fetching 'remixes' with 'featured_image_src'
  */
 add_filter('the_posts', function($posts, $query) {
-    if (empty($posts) || !is_array($posts)) return $posts;
+    // 1. Ensure it's the main query and we have results
+    if (!$query instanceof WP_Query || !$query->is_main_query() || empty($posts)) {
+        return $posts;
+    }
 
-    // Only target 'remixes' REST API request
-    if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
-    if ($query->get('post_type') !== 'remixes') return $posts;
+    // 2. Robust and strict post_type validation (handles arrays)
+    $post_type = $query->get('post_type');
+    $is_remixes = is_array($post_type) 
+        ? in_array('remixes', $post_type, true) 
+        : 'remixes' === $post_type;
 
-    // Collect thumbnail IDs
-    $img_ids = [];
+    if (!$is_remixes) {
+        return $posts;
+    }
+
+    // 3. Collect thumbnail IDs from the posts
+    $img_ids = array();
     foreach ($posts as $post) {
         if ($post instanceof WP_Post) {
-            $tid = get_post_thumbnail_id($post->ID);
-            if ($tid) {
-                $img_ids[] = $tid;
+            $thumb_id = get_post_thumbnail_id($post->ID);
+            if ($thumb_id) {
+                $img_ids[] = (int) $thumb_id;
             }
         }
     }
 
-    // Batch prime caches
+    // 4. Prime caches in bulk (2 queries total)
     if (!empty($img_ids)) {
         $img_ids = array_unique($img_ids);
+        // Prime metadata cache
         update_meta_cache('post', $img_ids);
+        // Prime post objects cache (3rd param 'false' avoids redundant meta update)
         if (function_exists('_prime_post_caches')) {
             _prime_post_caches($img_ids, false, false);
         }

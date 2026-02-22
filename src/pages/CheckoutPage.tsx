@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { CreditCard, Lock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
@@ -187,8 +187,8 @@ const CheckoutPage: React.FC = () => {
           <p className="text-white/70 mb-8">
             {t('checkout_success_desc', 'Thank you for your purchase. You will receive an email confirmation shortly.')}
           </p>
-            <Link to="/shop" className="btn btn-primary w-full">            {t('checkout_back_shop', 'Return to Shop')}
-            </Link>        </motion.div>
+          <Link to="/shop" className="btn btn-primary w-full">            {t('checkout_back_shop', 'Return to Shop')}
+          </Link>        </motion.div>
       </div>
     );
   }
@@ -348,11 +348,10 @@ const CheckoutPage: React.FC = () => {
                     paymentMethods.map((method) => (
                       <label
                         key={method.id}
-                        className={`p-4 rounded-lg border flex items-start gap-4 cursor-pointer transition-colors ${
-                          selectedPaymentMethod === method.id
-                            ? 'border-primary bg-primary/10'
-                            : 'border-white/10 hover:border-white/30 bg-black/20'
-                        }`}
+                        className={`p-4 rounded-lg border flex items-start gap-4 cursor-pointer transition-colors ${selectedPaymentMethod === method.id
+                          ? 'border-primary bg-primary/10'
+                          : 'border-white/10 hover:border-white/30 bg-black/20'
+                          }`}
                       >
                         <input
                           type="radio"

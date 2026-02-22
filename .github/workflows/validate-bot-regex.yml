@@ -1,0 +1,25 @@
+name: Validate Bot Regex
+
+on:
+  pull_request:
+    paths:
+      - 'inc/ssr-handler.php'
+      - 'verification/generate_regex.php'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Compare Regex
+        run: |
+          GENERATED=$(php verification/generate_regex.php)
+          STATIC=$(grep -oP "\$pattern = '\K[^']+" inc/ssr-handler.php)
+          if [ "$GENERATED" != "$STATIC" ]; then
+            echo "Error: Static regex in inc/ssr-handler.php does not match generator output!"
+            exit 1
+          fi

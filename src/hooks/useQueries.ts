@@ -61,6 +61,19 @@ export interface MusicTrack {
   excerpt?: { rendered: string };
 }
 
+export interface WPPost {
+  id: number;
+  date: string;
+  slug: string;
+  title: { rendered: string };
+  excerpt: { rendered: string };
+  content?: { rendered: string };
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{ source_url: string }>;
+    author?: Array<{ name: string }>;
+  };
+}
+
 // ============================================================================
 // MENU QUERY (PÚBLICO)
 // ============================================================================
@@ -87,12 +100,16 @@ export const useMenuQuery = (lang: string) => {
 export const useEventsQuery = (limit = 10) => {
   return useQuery({
     queryKey: QUERY_KEYS.events.list(limit),
-    queryFn: async (): Promise<BandsintownEvent[]> => {
+    queryFn: async (): Promise<any[]> => {
       const apiUrl = buildApiUrl('zen-bit/v1/events', { limit: String(limit) });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error(`API ${res.status}`);
-      const data: EventsResponse = await res.json();
-      return data.success && Array.isArray(data.events) ? data.events : [];
+      const data = await res.json();
+
+      // Handle both direct array and { success, events } wrapper
+      if (Array.isArray(data)) return data;
+      if (data && typeof data === 'object' && Array.isArray(data.events)) return data.events;
+      return [];
     },
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
@@ -139,6 +156,67 @@ export const useTrackBySlug = (slug?: string) => {
     },
     enabled: !!slug,
     staleTime: STALE_TIME.TRACKS,
+  });
+};
+
+// ============================================================================
+// NEWS QUERY (PÚBLICO)
+// ============================================================================
+
+export const useNewsQuery = (options: { enabled?: boolean } = {}) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.posts.list(),
+    queryFn: async (): Promise<WPPost[]> => {
+      const apiUrl = buildApiUrl('wp/v2/posts', {
+        _embed: 'true',
+        per_page: '10',
+      });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch news posts');
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
+    staleTime: STALE_TIME.POSTS,
+    ...options,
+  });
+};
+
+export const useNewsBySlug = (slug?: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.posts.detail(slug || ''),
+    queryFn: async (): Promise<WPPost | null> => {
+      if (!slug) return null;
+      const apiUrl = buildApiUrl('wp/v2/posts', {
+        slug,
+        _embed: 'true',
+      });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch individual news post');
+      const data = await res.json();
+      return Array.isArray(data) && data.length > 0 ? data[0] : null;
+    },
+    enabled: !!slug,
+    staleTime: STALE_TIME.POSTS,
+  });
+};
+
+// ============================================================================
+// EVENT DETAIL QUERY (PÚBLICO)
+// ============================================================================
+
+export const useEventById = (id?: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.events.detail(id || ''),
+    queryFn: async (): Promise<BandsintownEvent | null> => {
+      if (!id) return null;
+      const apiUrl = buildApiUrl(`zen-bit/v1/events/${id}`);
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error(`Event API ${res.status}`);
+      const data = await res.json();
+      return data || null;
+    },
+    enabled: !!id,
+    staleTime: STALE_TIME.EVENTS,
   });
 };
 

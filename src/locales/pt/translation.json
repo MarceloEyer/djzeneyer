@@ -3,10 +3,11 @@
     "version": "2.1.0",
     "lastUpdated": "2025-12-03",
     "language": "pt-BR",
-    "maintainers": ["Equipe DJ Zen Eyer"],
+    "maintainers": [
+      "Equipe DJ Zen Eyer"
+    ],
     "notes": "Traduções oficiais em português. ARQUIVO LEGADO - Não altere nomes de chaves sem atualizar todos os componentes."
   },
-
   "nav_home": "Início",
   "nav_events": "Eventos",
   "nav_music": "Música",
@@ -17,7 +18,6 @@
   "nav_logout": "Sair",
   "nav_dashboard": "Painel",
   "nav_my_account": "Minha Conta",
-
   "sign_in": "Entrar",
   "join_the_tribe": "Entrar na Tribo",
   "close_menu": "Fechar Menu",
@@ -27,7 +27,6 @@
   "loading": "Carregando...",
   "error": "Erro",
   "success": "Sucesso",
-
   "auth": {
     "welcomeBack": "Bem-vindo de Volta",
     "createAccount": "Criar Conta",
@@ -39,8 +38,8 @@
     "namePlaceholder": "Seu nome",
     "emailPlaceholder": "seu@email.com",
     "orUseEmail": "ou use email",
-    "login": "Entrar",
-    "register": "Criar Conta",
+    "login_btn": "Entrar",
+    "register_btn": "Criar Conta",
     "processing": "Processando...",
     "noAccount": "Não tem uma conta?",
     "hasAccount": "Já tem uma conta?",
@@ -90,29 +89,23 @@
       "loginHere": "Entre aqui"
     }
   },
-
   "common": {
     "close": "Fechar"
   },
-
   "badge_featured": "Destaque",
   "badge_new": "Novo",
   "badge_sale": "Promoção",
-
   "join_now_button": "Entrar na Tribo",
   "explore_music_button": "Explorar Músicas",
   "play_featured_mix": "Ouvir no SoundCloud",
   "upcoming_events": "Próximos Eventos",
-
   "home_page_title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
   "home_page_meta_desc": "DJ Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais.",
-
   "home_headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
   "home_subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
   "home_welcome": "Bem-vindo ao DJ Zen Eyer",
   "home_tagline": "DJ e Produtor de Zouk Brasileiro",
   "home_cta": "Explorar Músicas",
-
   "home_features_title": "Por Que Entrar na Zen Tribe?",
   "home_features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
   "home_feat_exclusive_title": "Música Exclusiva",
@@ -121,15 +114,12 @@
   "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
   "home_feat_community_title": "Comunidade Ativa",
   "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
-
   "home_cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
   "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
-
   "hero_title": "DJ Zen Eyer",
   "hero_subtitle": "Zouk Brasileiro",
   "hero_cta": "Ouvir Agora",
   "hero_cta_secondary": "Ver Eventos",
-
   "home_hero_badge": "Bicampeão Mundial - Zouk World Championships",
   "home_hero_title": "DJ Zen Eyer",
   "home_hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
@@ -163,7 +153,21 @@
   "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é uma referência global no <strong>Brazilian Zouk</strong>. Bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships, ele transforma pistas em experiências imersivas há mais de uma década.",
   "home_bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
   "home_bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Explore a aba <strong>Music</strong> ou <strong>Events</strong>.",
-
+  "news_page_title": "Zen News | Insights & Updates",
+  "news_page_meta_desc": "Notícias oficiais, lançamentos e artigos sobre o universo do Zouk Brasileiro por DJ Zen Eyer.",
+  "news": {
+    "live_feed": "Live Feed",
+    "curatorship": "Curadoria de Conteúdo",
+    "zouk_production": "Zouk Brasileiro & Produção Musical",
+    "back_to_list": "VOLTAR PARA NOTÍCIAS",
+    "by": "Por",
+    "read_full": "LER MATÉRIA COMPLETA",
+    "latest_stories": "Latest Stories",
+    "read_more": "Ler Mais",
+    "end_reached": "Você chegou ao fim das atualizações recentes.",
+    "view_archive": "Ver Arquivo Completo",
+    "featured": "Destaque"
+  },
   "events_page_title": "Eventos",
   "events_page_meta_desc": "Próximos eventos e apresentações do DJ Zen Eyer",
   "events_title": "Próximos Eventos",
@@ -195,14 +199,21 @@
   "event_badge_available": "Disponível",
   "event_badge_members_only": "Apenas Membros",
   "event_get_ticket": "Comprar Ingresso",
-
   "events_loading": "Carregando eventos...",
   "events_no_events": "Nenhum evento agendado no momento. Volte em breve!",
   "events_tickets": "Ingressos",
   "events_view_tickets": "Ver Ingressos",
   "events_ticket_aria_label": "Ver ingressos para {{title}} em {{location}} em {{date}}",
   "events_full_ticket_aria_label": "Comprar ingressos para {{title}} no {{venue}}, {{location}} em {{date}}",
-
+  "events_back_to_list": "Voltar para Eventos",
+  "events_status_upcoming": "Próximo Evento",
+  "events_details": "DETALHES DO EVENTO",
+  "events_date": "Data",
+  "events_location": "Local",
+  "events_found": "EVENTOS ENCONTRADOS",
+  "events_none": "Nenhum evento agendado no momento.",
+  "events_experience_title": "ZEN EXPERIENCE",
+  "events_experience_subtitle": "Acompanhe minha agenda mundial. De workshops intensivos a congressos internacionais.",
   "music_page_title": "Música",
   "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
   "music": {
@@ -241,7 +252,6 @@
     "artist_tag": "DJ Zen Eyer Original",
     "remix_tag": "ZEN EYER REMIX"
   },
-
   "shop_page_title": "Loja",
   "shop_page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
   "shop_title": "Loja Zen Tribe",
@@ -269,7 +279,6 @@
   "shop_back_to_shop": "Voltar para a Loja",
   "shop_product_not_found": "Produto não encontrado",
   "shop_product_details": "Detalhes do produto",
-
   "tribe_page_title": "Zen Tribe",
   "tribe_page_meta_desc": "Junte-se à comunidade Zen Tribe e faça parte da família",
   "zenTribe": {
@@ -415,7 +424,6 @@
       }
     }
   },
-
   "presskit_page_title": "Trabalhe Comigo",
   "presskit_page_meta_desc": "Contrate DJ Zen Eyer para seu evento. Press kit e informações de contato.",
   "presskit_badge": "Press Kit Profissional",
@@ -425,10 +433,8 @@
   "presskit_stat_people": "Pessoas Impactadas",
   "presskit_stat_streams": "Streams",
   "presskit_stat_years": "Anos de Experiência",
-
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
-
   "footer_rights": "Todos os direitos reservados.",
   "footer_about": "Sobre",
   "footer_contact": "Contato",
@@ -453,7 +459,6 @@
   "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
   "footer_subscribe_error": "Falha ao se inscrever. Tente novamente.",
   "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
-
   "media_page": {
     "title": "Mídia & Press Kit",
     "subtitle": "Recursos oficiais de mídia e informações de imprensa para DJ Zen Eyer",
@@ -486,7 +491,6 @@
     "source_performance_history": "Histórico de Performances",
     "year_range": "2020-2024"
   },
-
   "privacy_page": {
     "title": "Política de Privacidade",
     "subtitle": "Saiba como coletamos, usamos e protegemos suas informações pessoais.",
@@ -545,7 +549,6 @@
     "contact_company": "Marcelo Eyer Fernandes",
     "contact_location": "São Paulo, SP - Brasil"
   },
-
   "terms_page": {
     "title": "Termos de Uso",
     "subtitle": "Leia os termos e condições que regem o uso de nossos serviços.",
@@ -598,7 +601,6 @@
     "questions_desc": "Se você tiver alguma dúvida sobre estes Termos de Uso, entre em contato conosco:",
     "acceptance_footer": "Ao usar este site, você reconhece que leu e compreendeu estes Termos de Uso e concorda em estar vinculado a eles."
   },
-
   "conduct_page": {
     "title": "Código de Conduta",
     "subtitle": "Conheça nossas expectativas e padrões de comportamento respeitoso.",
@@ -677,14 +679,12 @@
     "acknowledgment": "Ao participar de nossa comunidade, você reconhece que leu e concorda em seguir este Código de Conduta e compreende as consequências de violações.",
     "together": "Juntos, criamos uma comunidade melhor."
   },
-
   "account_page": {
     "newsletter_toggle": "Receber notícias semanais e agenda",
     "newsletter_desc": "Fique atualizado com eventos exclusivos de Zouk e lançamentos",
     "newsletter_enabled": "Newsletter ativada",
     "newsletter_disabled": "Newsletter desativada"
   },
-
   "profile": {
     "title": "Informações do Perfil",
     "real_name": "Nome Real",
@@ -707,8 +707,7 @@
     "save": "Salvar Perfil",
     "saving": "Salvando...",
     "saved": "Salvo!"
-  }
-,
+  },
   "support": {
     "seo": {
       "title": "Apoie o DJ Zen Eyer | Informações de Pagamento",

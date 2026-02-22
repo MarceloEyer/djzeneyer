@@ -1,8 +1,18 @@
 <?php
 
+if (php_sapi_name() !== 'cli') {
+    header('HTTP/1.1 403 Forbidden');
+    die('This script can only be run from the CLI.');
+}
+
 // Mocks
-function add_action($hook, $callback, $priority = 10, $accepted_args = 1) {}
-function get_stylesheet_directory() { return '/tmp'; }
+function add_action($hook, $callback, $priority = 10, $accepted_args = 1)
+{
+}
+function get_stylesheet_directory()
+{
+    return '/tmp';
+}
 
 // Include the file
 require_once __DIR__ . '/../inc/ssr-handler.php';
@@ -21,6 +31,8 @@ $users = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
 ];
+
+$original_ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
 echo "Testing Bots:\n";
 foreach ($bots as $ua) {
@@ -43,5 +55,7 @@ foreach ($users as $ua) {
         exit(1);
     }
 }
+
+$_SERVER['HTTP_USER_AGENT'] = $original_ua;
 
 echo "\nSUCCESS: All tests passed.\n";
