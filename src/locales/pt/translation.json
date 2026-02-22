@@ -812,8 +812,8 @@
   "footer_music": "Música",
   "footer_events": "Eventos",
   "footer_contact_text": "Contato",
-  "footer_bio": "Bicampeão Mundial de Zouk Brasileiro. A pressa é inimiga da cremosidade ™. Criando experiências de áudio imersivas para mente, corpo e alma.",
-  "footer_tagline": "A pressa é inimiga da cremosidade. Uma batida de cada vez.",
+  "footer_bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
+  "footer_tagline": "A pressa é inimiga da cremosidade.",
   "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
   "about": {
     "hero": {
@@ -894,7 +894,7 @@
     }
   },
   "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
-  "footer_copyright": "© {{year}} Marcelo Eyer Fernandes (DJ Zen Eyer). A pressa é inimiga da cremosidade.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brasil",
   "footer_contact_label": "Contato",
