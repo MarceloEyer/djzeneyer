@@ -226,7 +226,15 @@
       "releaseDate": "Release",
       "playPreview": "Play Preview",
       "pausePreview": "Pause Preview"
-    }
+    },
+    "back": "BACK TO MUSIC",
+    "listen_now": "LISTEN NOW",
+    "about_track": "ABOUT THE TRACK",
+    "remix_description": "Official remixes and original productions for the dance floor.",
+    "search_placeholder": "Search music...",
+    "track_title": "ZEN SOUNDS",
+    "artist_tag": "DJ Zen Eyer Original",
+    "remix_tag": "ZEN EYER REMIX"
   },
 
   "shop_page_title": "Shop",
