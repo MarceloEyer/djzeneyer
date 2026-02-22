@@ -105,3 +105,37 @@ add_action('rest_api_init', function() {
         },
     ]);
 });
+
+/**
+ * Optimization: Batch prime attachment caches for REST API
+ * Resolves N+1 query issue when fetching 'remixes' with 'featured_image_src'
+ */
+add_filter('the_posts', function($posts, $query) {
+    if (empty($posts) || !is_array($posts)) return $posts;
+
+    // Only target 'remixes' REST API request
+    if (!defined('REST_REQUEST') || !REST_REQUEST) return $posts;
+    if ($query->get('post_type') !== 'remixes') return $posts;
+
+    // Collect thumbnail IDs
+    $img_ids = [];
+    foreach ($posts as $post) {
+        if ($post instanceof WP_Post) {
+            $tid = get_post_thumbnail_id($post->ID);
+            if ($tid) {
+                $img_ids[] = $tid;
+            }
+        }
+    }
+
+    // Batch prime caches
+    if (!empty($img_ids)) {
+        $img_ids = array_unique($img_ids);
+        update_meta_cache('post', $img_ids);
+        if (function_exists('_prime_post_caches')) {
+            _prime_post_caches($img_ids, false, false);
+        }
+    }
+
+    return $posts;
+}, 10, 2);

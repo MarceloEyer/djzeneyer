@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) exit;
 
 class DJZ_Vite_Loader {
 
-    private $manifest = [];
+    private $manifest = null;
     private $dist_path;
     private $dist_url;
 
@@ -20,8 +20,6 @@ class DJZ_Vite_Loader {
 
         $this->dist_path = get_theme_file_path('/dist');
         $this->dist_url  = get_template_directory_uri() . '/dist';
-
-        $this->load_manifest();
     }
 
     private function load_manifest() {
@@ -93,6 +91,25 @@ class DJZ_Vite_Loader {
         }
     }
 
+    /**
+     * Get manifest data, lazy-loading if necessary
+     */
+    private function get_manifest() {
+        // Prevent infinite retry loops using null sentinel
+        if ($this->manifest !== null) {
+            return $this->manifest;
+        }
+
+        $this->load_manifest();
+
+        // If still null after attempt, mark as empty array to prevent retries
+        if ($this->manifest === null) {
+            $this->manifest = [];
+        }
+
+        return $this->manifest;
+    }
+
     public function enqueue_assets() {
         // Dev Mode
         if (defined('DJZ_IS_DEV') && DJZ_IS_DEV) {
@@ -101,10 +118,21 @@ class DJZ_Vite_Loader {
             return;
         }
 
-        if (empty($this->manifest)) return;
+        $manifest = $this->get_manifest();
+        if (empty($manifest)) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('DJZ Vite: Manifest is empty or failed to load.');
+            }
+            return;
+        }
 
-        $entry = $this->manifest['index.html'] ?? $this->manifest['src/main.tsx'] ?? null;
-        if (!$entry) return;
+        $entry = $manifest['index.html'] ?? $manifest['src/main.tsx'] ?? null;
+        if (!$entry) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('DJZ Vite: Entry point (index.html or src/main.tsx) not found in manifest.');
+            }
+            return;
+        }
 
         // 1. JS
         if (!empty($entry['file'])) {
@@ -119,14 +147,14 @@ class DJZ_Vite_Loader {
         }
 
         // 3. Preloads
-        add_action('wp_head', function() use ($entry) {
+        add_action('wp_head', function() use ($entry, $manifest) {
             if (!empty($entry['file'])) {
                 echo '<link rel="modulepreload" href="' . esc_url($this->dist_url . '/' . $entry['file']) . '" />' . "\n";
             }
             if (!empty($entry['imports'])) {
                 foreach ($entry['imports'] as $import_key) {
-                    if (isset($this->manifest[$import_key]['file'])) {
-                        $chunk_url = $this->dist_url . '/' . $this->manifest[$import_key]['file'];
+                    if (isset($manifest[$import_key]['file'])) {
+                        $chunk_url = $this->dist_url . '/' . $manifest[$import_key]['file'];
                         echo '<link rel="modulepreload" href="' . esc_url($chunk_url) . '" />' . "\n";
                     }
                 }
@@ -174,4 +202,7 @@ class DJZ_Vite_Loader {
     }
 }
 
-new DJZ_Vite_Loader();
+// Singleton-like guard: Ensure we don't instantiate twice if file is included multiple times
+if (!isset($GLOBALS['djz_vite_loader'])) {
+    $GLOBALS['djz_vite_loader'] = new DJZ_Vite_Loader();
+}
