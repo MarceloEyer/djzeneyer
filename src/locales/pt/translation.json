@@ -991,5 +991,48 @@
     "not_found": "Não achou o que procurava?",
     "cta_whatsapp": "Falar no WhatsApp",
     "cta_email": "Enviar E-mail"
+  },
+  "gamification": {
+    "zenTribe": "Zen Tribe",
+    "yourProgress": "Seu Progresso",
+    "viewAll": "Ver Tudo",
+    "level": "Nível",
+    "totalPoints": "Pontos Totais",
+    "xpToNext": "{{count}} XP para o próximo nível",
+    "maxLevel": "Nível máximo alcançado!",
+    "achievements": "Conquistas",
+    "achievement": "Conquista",
+    "startJourney": "Comece sua jornada para desbloquear conquistas!",
+    "earnMoreXP": "Ganhar Mais XP"
+  },
+  "dashboard": {
+    "loading": "Carregando seu Painel Zen...",
+    "welcomeBack": "Bem-vindo de volta, ",
+    "progressToLevel": "Progresso para o Nível {{level}}",
+    "boostXP": "Turbinar XP",
+    "tracksDownloaded": "Tracks Baixadas",
+    "eventsAttended": "Eventos Participados",
+    "dayStreak": "Dias Seguidos",
+    "dayStreakFire": "Dias Seguidos 🔥",
+    "tribeFriends": "Amigos da Tribo",
+    "recentActivity": "Atividade Recente",
+    "noActivity": "Nenhuma atividade recente.",
+    "quickActions": "Ações Rápidas",
+    "browseMusic": "Explorar Músicas",
+    "viewEvents": "Ver Eventos",
+    "visitShop": "Visitar Loja",
+    "yourAchievements": "Suas Conquistas",
+    "unlocked": "Desbloqueada",
+    "startJourney": "Comece Sua Jornada",
+    "startJourneyDesc": "Complete tarefas como ouvir tracks, participar de eventos ou visitar a loja para desbloquear suas primeiras conquistas!",
+    "startListening": "Começar a Ouvir",
+    "timeAgo": {
+      "years": "{{count}} anos atrás",
+      "months": "{{count}} meses atrás",
+      "days": "{{count}} dias atrás",
+      "hours": "{{count}} horas atrás",
+      "minutes": "{{count}} minutos atrás",
+      "seconds": "{{count}} segundos atrás"
+    }
   }
 }

@@ -983,5 +983,48 @@
     "not_found": "Didn't find what you were looking for?",
     "cta_whatsapp": "Talk on WhatsApp",
     "cta_email": "Send Email"
+  },
+  "gamification": {
+    "zenTribe": "Zen Tribe",
+    "yourProgress": "Your Progress",
+    "viewAll": "View All",
+    "level": "Level",
+    "totalPoints": "Total Points",
+    "xpToNext": "{{count}} XP to next level",
+    "maxLevel": "Max level reached!",
+    "achievements": "Achievements",
+    "achievement": "Achievement",
+    "startJourney": "Start your journey to unlock achievements!",
+    "earnMoreXP": "Earn More XP"
+  },
+  "dashboard": {
+    "loading": "Loading your Zen Dashboard...",
+    "welcomeBack": "Welcome back, ",
+    "progressToLevel": "Progress to Level {{level}}",
+    "boostXP": "Boost XP",
+    "tracksDownloaded": "Tracks Downloaded",
+    "eventsAttended": "Events Attended",
+    "dayStreak": "Day Streak",
+    "dayStreakFire": "Day Streak 🔥",
+    "tribeFriends": "Tribe Friends",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity yet.",
+    "quickActions": "Quick Actions",
+    "browseMusic": "Browse Music",
+    "viewEvents": "View Events",
+    "visitShop": "Visit Shop",
+    "yourAchievements": "Your Achievements",
+    "unlocked": "Unlocked",
+    "startJourney": "Start Your Journey",
+    "startJourneyDesc": "Complete tasks like listening to tracks, attending events, or visiting the shop to unlock your first achievements!",
+    "startListening": "Start Listening",
+    "timeAgo": {
+      "years": "{{count}} years ago",
+      "months": "{{count}} months ago",
+      "days": "{{count}} days ago",
+      "hours": "{{count}} hours ago",
+      "minutes": "{{count}} minutes ago",
+      "seconds": "{{count}} seconds ago"
+    }
   }
 }

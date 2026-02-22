@@ -11,8 +11,6 @@ interface GamiPressContextType extends GamiPressData {
     loading: boolean;
     error: string | null;
     refresh: () => void;
-    streak?: number;
-    streakFire?: boolean;
 }
 
 const GamiPressContext = createContext<GamiPressContextType | undefined>(undefined);

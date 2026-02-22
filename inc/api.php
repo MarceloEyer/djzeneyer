@@ -334,11 +334,18 @@ function djz_update_profile($request)
 }
 
 /**
- * GamiPress User Data (Aggregated)
+ * GamiPress User Data (Aggregated + Cached)
  */
 function djz_get_gamipress_user_data($request)
 {
     $user_id = get_current_user_id();
+
+    // Transient cache per user (uses DJZ_CACHE_GAMIPRESS = 24h)
+    $cache_key = 'djz_gamipress_' . $user_id;
+    $cached = get_transient($cache_key);
+    if ($cached !== false) {
+        return rest_ensure_response($cached);
+    }
 
     // 1. Points
     $points = (int)get_user_meta($user_id, '_gamipress_points_points', true);
@@ -441,7 +448,16 @@ function djz_get_gamipress_user_data($request)
     // 6. Events Attended
     $events_attended = djz_get_user_events_attended($user_id);
 
-    return rest_ensure_response([
+    // 7. Login Streak
+    $streak = (int) get_user_meta($user_id, 'zen_login_streak', true);
+    $last_login = get_user_meta($user_id, 'zen_last_login', true);
+    $streak_fire = false;
+    if ($last_login) {
+        $diff_days = (strtotime('today') - strtotime(date('Y-m-d', strtotime($last_login)))) / 86400;
+        $streak_fire = $diff_days <= 1;
+    }
+
+    $data = [
         'points' => $points,
         'level' => $level,
         'rank' => $rank_title,
@@ -451,7 +467,13 @@ function djz_get_gamipress_user_data($request)
         'achievements' => $achievements,
         'totalTracks' => $total_tracks,
         'eventsAttended' => $events_attended,
-    ]);
+        'streak' => $streak,
+        'streakFire' => $streak_fire,
+    ];
+
+    set_transient($cache_key, $data, DJZ_CACHE_GAMIPRESS);
+
+    return rest_ensure_response($data);
 }
 
 /**
