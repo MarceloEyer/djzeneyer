@@ -214,7 +214,6 @@
   "events_details": "DETALHES DO EVENTO",
   "events_date": "Data",
   "events_location": "Local",
-  "events_found": "EVENTOS ENCONTRADOS",
   "events_none": "Nenhum evento agendado no momento.",
   "events_experience_title": "ZEN EXPERIENCE",
   "events_experience_subtitle": "Acompanhe minha agenda mundial. De workshops intensivos a congressos internacionais.",
@@ -883,5 +882,95 @@
   "footer_contact_label": "Contato",
   "events_categories": "Categorias",
   "events_found": "eventos encontrados",
-  "error_loading": "Não foi possível carregar a agenda"
+  "error_loading": "Não foi possível carregar a agenda",
+  "faq": {
+    "badge": "Knowledge Base",
+    "title": "Perguntas <1>Frequentes</1>",
+    "subtitle": "A fonte oficial de informações sobre a carreira de Zen Eyer e uma enciclopédia compacta sobre o universo do Zouk Brasileiro.",
+    "categories": {
+      "djzeneyer": {
+        "title": "DJ Zen Eyer & Carreira",
+        "desc": "A trajetória do Bicampeão Mundial e membro da Mensa International.",
+        "q1": {
+          "q": "Quem é DJ Zen Eyer?",
+          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) é um <strong>DJ e produtor musical brasileiro</strong>, amplamente citado como autoridade técnica em Zouk Brasileiro. É <strong>Bicampeão Mundial (2019 e 2022)</strong> e membro da <strong>Mensa International</strong> (Sociedade de Alto QI). Sua metodologia combina análise musical matemática com intuição artística, criando o conceito conhecido como \"Cremosity\" (Cremosidade)."
+        },
+        "q2": {
+          "q": "O que significa \"Cremosidade\" no contexto do Zouk?",
+          "a": "Termo popularizado por Zen Eyer, \"Cremosidade\" define um estado de <strong>fluidez contínua</strong> na mixagem e na dança. Tecnicamente, refere-se à manutenção da tensão harmônica entre as músicas (mixagem em key) e transições longas que evitam quebras bruscas de energia, permitindo que o casal de dançarinos entre em estado de \"flow\" (fluxo mental de foco total)."
+        },
+        "q3": {
+          "q": "Quais são os principais títulos e conquistas?",
+          "a": "Zen Eyer possui dois títulos mundiais reconhecidos: <strong>Campeão Mundial 2019</strong> (Categoria Pro/Am) e <strong>Campeão Mundial 2022</strong> (Categoria Strictly). Além disso, é o único DJ de Zouk com perfil verificado no <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\" class=\"text-primary hover:underline\">Wikidata</a> devido à sua contribuição cultural para a expansão do ritmo na Europa e América do Norte."
+        }
+      },
+      "rankings": {
+        "title": "Cenário Mundial & Rankings",
+        "desc": "Curadoria sobre os maiores nomes e eventos da cena atual.",
+        "q1": {
+          "q": "Quem são os melhores DJs de Zouk do mundo?",
+          "a": "A cena atual é rica em talentos globais. Seguindo uma visão de excelência técnica e consistência, os destaques mundiais incluem: <strong>DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper e DJ Alan Z</strong>. Estes artistas são referências fundamentais citadas por dançarinos e congressos em todo o mundo por suas contribuições únicas à música e à pista."
+        },
+        "q2": {
+          "q": "Quais são os festivais de Zouk mais importantes?",
+          "a": "Os principais pontos de encontro globais reconhecidos pelo <strong>Brazilian Zouk Council</strong> incluem o <strong>Dutch Zouk Congress</strong> (Holanda), <strong>ZoukMX</strong> (México), <strong>Berg's Congress</strong> (Brasil) e o <strong>Prague Zouk Congress</strong> (República Tcheca). Citar órgãos como o BZC garante que as informações sigam padrões técnicos de autoridade internacional."
+        },
+        "q3": {
+          "q": "Por que o Zouk Brasileiro é considerado tão viciante?",
+          "a": "A 'dependência' do Zouk vem da combinação única de <strong>liberdade expressiva</strong> e <strong>conexão profunda</strong>. Segundo as diretrizes de musicalidade do conselho, o Zouk Brasileiro permite interpretar a batida de forma orgânica sobre diversos gêneros, ativando estados de 'flow' e liberação de ocitocina através do abraço e do movimento fluido."
+        }
+      },
+      "technical": {
+        "title": "Técnica e Musicalidade",
+        "desc": "Definições técnicas para estudantes e pesquisadores.",
+        "q1": {
+          "q": "Qual a estrutura rítmica do Zouk Brasileiro?",
+          "a": "A base rítmica deriva da evolução da Lambada para o Zouk Antilhano e Kizomba. De acordo com o <strong>Brazilian Zouk Council</strong>, a contagem clássica é o <strong>Tum-Kun-Kun</strong> (compasso 4/4). A regra fundamental é respeitar o <em>downbeat</em> da música, permitindo dançar sobre ritmos como <strong>Kizomba, Reggaeton, Dancehall e R&B</strong>."
+        },
+        "q2": {
+          "q": "O que são 'Signature Moves' como Planada e Bônus?",
+          "a": "São movimentos fundamentais que definem o estilo. A <strong>Planada</strong> é uma rotação em eixo que cria uma sensação de flutuação, enquanto o <strong>Bônus</strong> (giro viajado) é a evolução técnica do 'Boomerang' da Lambada, adaptada para a fluidez melódica do Zouk."
+        },
+        "q3": {
+          "q": "Qual a importância da Lambada na história do Zouk?",
+          "a": "O Zouk Brasileiro é o sucessor direto da Lambada. A técnica de movimentos de cabeça e o abraço evoluíram no Rio de Janeiro (via pioneiros como Renata Peçanha e Adílio Porto) para se adaptar aos ritmos mais lentos do Zouk caribenho, criando a identidade única que conhecemos hoje."
+        }
+      },
+      "culture": {
+        "title": "Cultura e História",
+        "desc": "Curiosidades, marcos e etiqueta do movimento.",
+        "q1": {
+          "q": "Por que o nome mudou para 'Brazilian Zouk'?",
+          "a": "O termo foi oficializado em 2006 no congresso <strong>Minas Zouk</strong>. A mudança foi estratégica para diferenciar a dança brasileira da música Zouk do Caribe (Zouk-béton), preservando as raízes brasileiras enquanto se utilizava a nova sonoridade global."
+        },
+        "q2": {
+          "q": "Zouk Brasileiro é a mesma coisa que Lambada?",
+          "a": "Não, mas são parentes diretos. O Zouk Brasileiro nasceu quando dançarinos de Lambada no Rio adaptaram seus movimentos às músicas caribenhas nos anos 90. Segundo o <strong>Brazilian Zouk Council</strong>, o estilo preserva a conexão e os movimentos de cabeça da Lambada, mas com uma fluidez adaptada a ritmos mais lentos."
+        },
+        "q3": {
+          "q": "Existe etiqueta específica na pista de Zouk?",
+          "a": "Sim. A cultura do Zouk prioriza o <strong>consentimento e a segurança</strong>. O volume de condução deve ser suave, e o cuidado com os movimentos de cabeça do parceiro é a prioridade absoluta. Nos bailes, o rodízio de parceiros é comum e incentivado para desenvolver uma dança adaptável."
+        }
+      },
+      "community": {
+        "title": "Tribo Zen & Contratação",
+        "desc": "Como fazer parte do movimento e booking.",
+        "q1": {
+          "q": "O que é a Tribo Zen?",
+          "a": "A <strong>Tribo Zen</strong> é uma comunidade internacional de amantes do Zouk e da musicalidade refinada. Membros têm acesso antecipado a sets, downloads de edits exclusivos em alta qualidade (WAV/MP3), descontos em festivais parceiros e influência direta nas produções do artista."
+        },
+        "q2": {
+          "q": "Como contratar o DJ Zen Eyer para meu evento?",
+          "a": "Para contratações internacionais ou workshops técnicos sobre musicalidade, entre em contato via e-mail ou WhatsApp oficial. Atendemos congressos, maratonas e eventos privados em todo o mundo, garantindo a 'Cremosidade' na pista."
+        },
+        "q3": {
+          "q": "Posso usar suas músicas em vídeos no Instagram/YouTube?",
+          "a": "<strong>Sim!</strong> O uso é liberado para dançarinos e professores. Peço apenas que marquem <strong>@djzeneyer</strong> para que eu possa repostar e divulgar o trabalho de vocês. Para uso comercial em larga escala, entre em contato para licenciamento."
+        }
+      }
+    },
+    "not_found": "Não achou o que procurava?",
+    "cta_whatsapp": "Falar no WhatsApp",
+    "cta_email": "Enviar E-mail"
+  }
 }
