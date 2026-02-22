@@ -112,7 +112,7 @@ function djz_get_menu($request) {
 function djz_get_products($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     $slug = sanitize_title($request->get_param('slug') ?? '');
-    $cache_key = 'djz_products_' . $lang;
+    $cache_key = 'djz_products_v2_' . $lang;
     
     $cached = get_transient($cache_key);
     if ($cached && empty($slug)) return rest_ensure_response($cached);
@@ -184,6 +184,12 @@ function djz_get_products($request) {
                 array_unshift($img_ids, $product->get_image_id());
             }
             
+            // OPTIMIZATION: In list view (no slug), we only need the featured image
+            // and specific sizes to reduce processing time and payload size.
+            if (empty($slug) && !empty($img_ids)) {
+                $img_ids = array_slice($img_ids, 0, 1);
+            }
+
             foreach ($img_ids as $img_id) {
                 $src = wp_get_attachment_url($img_id);
                 if ($src) {
@@ -193,7 +199,11 @@ function djz_get_products($request) {
                         'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
                     ];
 
-                    $sizes = ['thumbnail', 'medium', 'medium_large', 'large'];
+                    // OPTIMIZATION: Only process necessary sizes for list view
+                    $sizes = empty($slug)
+                        ? ['medium', 'medium_large']
+                        : ['thumbnail', 'medium', 'medium_large', 'large'];
+
                     $img_sizes = [];
                     foreach ($sizes as $size) {
                         $img_src = wp_get_attachment_image_src($img_id, $size);
