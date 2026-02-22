@@ -1,10 +1,20 @@
 // src/pages/ZenLinkPage.tsx
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Music, Instagram, Youtube, Calendar, ShoppingBag, Trophy, Mail, Phone } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
 
-interface LinkItem {
+// ícone TikTok (Lucide não tem, usamos SVG inline)
+const TikTokIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.78a8.18 8.18 0 004.79 1.53V6.86a4.85 4.85 0 01-1.02-.17z" />
+  </svg>
+);
+
+interface ExternalLinkItem {
+  type: 'external';
   title: string;
   subtitle: string;
   url: string;
@@ -13,8 +23,21 @@ interface LinkItem {
   isPrimary?: boolean;
 }
 
+interface InternalLinkItem {
+  type: 'internal';
+  title: string;
+  subtitle: string;
+  to: string;
+  icon: React.ReactNode;
+  gradient: string;
+  isPrimary?: boolean;
+}
+
+type LinkItem = ExternalLinkItem | InternalLinkItem;
+
 const LINKS: LinkItem[] = [
   {
+    type: 'external',
     title: 'Listen on Spotify',
     subtitle: 'My latest tracks & remixes',
     url: ARTIST.social.spotify.url,
@@ -23,21 +46,32 @@ const LINKS: LinkItem[] = [
     isPrimary: true,
   },
   {
+    type: 'internal',
     title: 'Book Me',
     subtitle: 'Festivals, congresses & private events',
-    url: `${ARTIST.site.baseUrl}/work-with-me`,
+    to: '/work-with-me',
     icon: <Calendar className="w-6 h-6" />,
     gradient: 'from-purple-500 to-pink-500',
     isPrimary: true,
   },
   {
+    type: 'external',
+    title: 'TikTok',
+    subtitle: ARTIST.social.tiktok.handle ?? '@djzeneyer',
+    url: ARTIST.social.tiktok.url,
+    icon: <TikTokIcon />,
+    gradient: 'from-black via-gray-800 to-pink-600',
+  },
+  {
+    type: 'external',
     title: 'Instagram',
-    subtitle: '@djzeneyer - Behind the scenes',
+    subtitle: ARTIST.social.instagram.handle + ' — Behind the scenes',
     url: ARTIST.social.instagram.url,
     icon: <Instagram className="w-6 h-6" />,
     gradient: 'from-pink-500 via-red-500 to-yellow-500',
   },
   {
+    type: 'external',
     title: 'YouTube',
     subtitle: 'Live sets & tutorials',
     url: ARTIST.social.youtube.url,
@@ -45,13 +79,15 @@ const LINKS: LinkItem[] = [
     gradient: 'from-red-600 to-red-700',
   },
   {
+    type: 'internal',
     title: 'Shop',
     subtitle: 'Exclusive merch & tracks',
-    url: `${ARTIST.site.baseUrl}/shop`,
+    to: '/shop',
     icon: <ShoppingBag className="w-6 h-6" />,
     gradient: 'from-amber-500 to-orange-600',
   },
   {
+    type: 'external',
     title: 'World Champion Story',
     subtitle: '2× Ilha do Zouk winner',
     url: ARTIST.titles.eventUrl,
@@ -59,6 +95,7 @@ const LINKS: LinkItem[] = [
     gradient: 'from-yellow-400 to-yellow-600',
   },
   {
+    type: 'external',
     title: 'WhatsApp',
     subtitle: 'Direct booking inquiries',
     url: getWhatsAppUrl(),
@@ -66,20 +103,88 @@ const LINKS: LinkItem[] = [
     gradient: 'from-green-400 to-green-600',
   },
   {
+    type: 'external',
     title: 'Email',
-    subtitle: 'booking@djzeneyer.com',
+    subtitle: ARTIST.contact.email,
     url: `mailto:${ARTIST.contact.email}`,
     icon: <Mail className="w-6 h-6" />,
     gradient: 'from-blue-500 to-blue-600',
   },
 ];
 
+const LinkCard = ({ link, index }: { link: LinkItem; index: number }) => {
+  const inner = (
+    <div
+      className={`
+        flex items-center gap-4
+        ${link.isPrimary ? 'bg-gray-900/90 p-6' : 'bg-gray-900/95 p-5'}
+        rounded-2xl backdrop-blur-sm
+      `}
+    >
+      {/* Icon */}
+      <div
+        className={`
+          flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center
+          bg-gradient-to-br ${link.gradient}
+        `}
+      >
+        {link.icon}
+      </div>
+
+      {/* Text */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-white font-semibold text-lg mb-0.5 truncate">{link.title}</h3>
+        <p className="text-gray-400 text-sm truncate">{link.subtitle}</p>
+      </div>
+
+      {/* Arrow */}
+      <svg className="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </div>
+  );
+
+  const motionProps = {
+    key: link.type === 'external' ? link.url : link.to,
+    initial: { opacity: 0, x: -50 },
+    animate: { opacity: 1, x: 0 },
+    transition: { delay: index * 0.08, duration: 0.4 },
+    whileHover: { scale: 1.03, x: 5 },
+    whileTap: { scale: 0.98 },
+    className: `
+      block relative overflow-hidden rounded-2xl
+      ${link.isPrimary ? 'p-[2px]' : 'p-[1px]'}
+      bg-gradient-to-r ${link.gradient}
+      shadow-lg hover:shadow-2xl transition-shadow duration-300
+    `,
+  };
+
+  if (link.type === 'internal') {
+    return (
+      <motion.div {...motionProps}>
+        <Link to={link.to}>{inner}</Link>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.a
+      {...motionProps}
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {inner}
+    </motion.a>
+  );
+};
+
 export const ZenLinkPage = () => {
   return (
     <>
       <HeadlessSEO
-        title="ZenLink - All Links | DJ Zen Eyer"
-        description="Connect with DJ Zen Eyer - 2× World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!"
+        title="ZenLink — All Links | DJ Zen Eyer"
+        description="Connect with DJ Zen Eyer — 2× World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!"
         canonicalUrl={`${ARTIST.site.baseUrl}/zenlink`}
       />
 
@@ -95,17 +200,13 @@ export const ZenLinkPage = () => {
           <motion.div
             whileHover={{ scale: 1.05, rotate: 5 }}
             transition={{ type: 'spring', stiffness: 300 }}
-            className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-gradient shadow-2xl"
-            style={{
-              borderImage: 'linear-gradient(135deg, #8B5CF6, #EC4899) 1',
-            }}
+            className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden ring-4 ring-purple-500/60 shadow-2xl shadow-purple-500/30"
           >
             <img
               src={`${ARTIST.site.baseUrl}/images/zen-eyer-profile.jpg`}
               alt={ARTIST.identity.stageName}
               className="w-full h-full object-cover"
               onError={(e) => {
-                // Fallback to default image if profile pic doesn't exist
                 e.currentTarget.src = `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`;
               }}
             />
@@ -117,7 +218,7 @@ export const ZenLinkPage = () => {
           </h1>
 
           {/* Title */}
-          <p className="text-lg text-purple-300 mb-3">
+          <p className="text-lg text-purple-300 mb-4">
             2× World Champion Brazilian Zouk DJ
           </p>
 
@@ -134,68 +235,10 @@ export const ZenLinkPage = () => {
           </motion.div>
         </motion.div>
 
-        {/* Links Grid */}
+        {/* Links */}
         <div className="max-w-2xl mx-auto space-y-4">
           {LINKS.map((link, index) => (
-            <motion.a
-              key={link.url}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.4 }}
-              whileHover={{ scale: 1.03, x: 5 }}
-              whileTap={{ scale: 0.98 }}
-              className={`
-                block relative overflow-hidden rounded-2xl 
-                ${link.isPrimary ? 'p-[2px]' : 'p-[1px]'}
-                bg-gradient-to-r ${link.gradient}
-                shadow-lg hover:shadow-2xl transition-all duration-300
-              `}
-            >
-              {/* Inner content */}
-              <div
-                className={`
-                  flex items-center gap-4 
-                  ${link.isPrimary ? 'bg-gray-900/90 p-6' : 'bg-gray-900/95 p-5'}
-                  rounded-2xl backdrop-blur-sm
-                `}
-              >
-                {/* Icon */}
-                <div
-                  className={`
-                    flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center
-                    bg-gradient-to-br ${link.gradient}
-                  `}
-                >
-                  {link.icon}
-                </div>
-
-                {/* Text */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-semibold text-lg mb-0.5 truncate">
-                    {link.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm truncate">{link.subtitle}</p>
-                </div>
-
-                {/* Arrow */}
-                <svg
-                  className="w-6 h-6 text-gray-400 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-            </motion.a>
+            <LinkCard key={index} link={link} index={index} />
           ))}
         </div>
 
