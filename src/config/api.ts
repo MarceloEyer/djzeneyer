@@ -160,7 +160,7 @@ export const getAuthHeaders = (token?: string): HeadersInit => {
 // DEBUG HELPERS (apenas em desenvolvimento)
 // ============================================================================
 
-if (import.meta.env.DEV) {
+if (isDevelopment()) {
   console.log('[API Config] 🔧 Modo Desenvolvimento');
   console.log('[API Config] 📍 REST URL:', getRestUrl());
   console.log('[API Config] 🌐 Site URL:', getSiteUrl());

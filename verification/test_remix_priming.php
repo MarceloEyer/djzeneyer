@@ -85,13 +85,16 @@ if (!isset($primed_caches['meta']) || !isset($primed_caches['posts'])) {
 }
 
 $expected = [201, 202];
-$diff1 = array_diff($primed_caches['meta'], $expected);
-$diff2 = array_diff($primed_caches['posts'], $expected);
+sort($expected);
+sort($primed_caches['meta']);
+sort($primed_caches['posts']);
 
-if (empty($diff1) && empty($diff2)) {
+if ($primed_caches['meta'] === $expected && $primed_caches['posts'] === $expected) {
     echo "SUCCESS: Attachment IDs [201, 202] primed correctly.\n";
 } else {
     echo "FAILED: Incorrect IDs primed.\n";
-    print_r($primed_caches);
+    echo "Expected: " . implode(',', $expected) . "\n";
+    echo "Got Meta: " . implode(',', $primed_caches['meta']) . "\n";
+    echo "Got Posts: " . implode(',', $primed_caches['posts']) . "\n";
     exit(1);
 }

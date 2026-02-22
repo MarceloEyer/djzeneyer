@@ -1,6 +1,8 @@
+// ESLint configuration updated for modern JavaScript standards
 import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -9,19 +11,18 @@ export default tseslint.config(
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 2024,
-      globals: globals.browser,
+ecmaVersion: 2024, // Updated to support latest ES2024 features      globals: globals.browser,
     },
     plugins: {
       'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'no-empty': 'warn',
-      'no-case-declarations': 'warn',
-      'no-useless-escape': 'warn',
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
     },
   }
 );

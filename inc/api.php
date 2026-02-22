@@ -112,7 +112,7 @@ function djz_get_menu($request) {
 function djz_get_products($request) {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     $slug = sanitize_title($request->get_param('slug') ?? '');
-    $cache_key = 'djz_products_v2_' . $lang;
+    $cache_key = 'djz_products_' . $lang;
     
     $cached = get_transient($cache_key);
     if ($cached && empty($slug)) return rest_ensure_response($cached);
@@ -184,12 +184,6 @@ function djz_get_products($request) {
                 array_unshift($img_ids, $product->get_image_id());
             }
             
-            // OPTIMIZATION: In list view (no slug), we only need the featured image
-            // and specific sizes to reduce processing time and payload size.
-            if (empty($slug) && !empty($img_ids)) {
-                $img_ids = array_slice($img_ids, 0, 1);
-            }
-
             foreach ($img_ids as $img_id) {
                 $src = wp_get_attachment_url($img_id);
                 if ($src) {
@@ -199,11 +193,7 @@ function djz_get_products($request) {
                         'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
                     ];
 
-                    // OPTIMIZATION: Only process necessary sizes for list view
-                    $sizes = empty($slug)
-                        ? ['medium', 'medium_large']
-                        : ['thumbnail', 'medium', 'medium_large', 'large'];
-
+                    $sizes = ['thumbnail', 'medium', 'medium_large', 'large'];
                     $img_sizes = [];
                     foreach ($sizes as $size) {
                         $img_src = wp_get_attachment_image_src($img_id, $size);
@@ -424,12 +414,6 @@ function djz_get_gamipress_user_data($request) {
         }
     }
 
-    // 5. Total Tracks
-    $total_tracks = djz_get_user_total_tracks($user_id);
-
-    // 6. Events Attended
-    $events_attended = djz_get_user_events_attended($user_id);
-
     return rest_ensure_response([
         'points' => $points,
         'level' => $level,
@@ -438,92 +422,8 @@ function djz_get_gamipress_user_data($request) {
         'nextLevelPoints' => $next_level_points,
         'progressToNextLevel' => $progress,
         'achievements' => $achievements,
-        'totalTracks' => $total_tracks,
-        'eventsAttended' => $events_attended,
     ]);
 }
-
-/**
- * Get User Total Tracks (Cached 24h)
- */
-function djz_get_user_total_tracks($user_id) {
-    $cache_key = 'djz_user_tracks_' . $user_id;
-    $cached = get_transient($cache_key);
-    if ($cached !== false) return (int) $cached;
-
-    $count = 0;
-    if (function_exists('wc_get_customer_available_downloads')) {
-        $downloads = wc_get_customer_available_downloads($user_id);
-        $count = count($downloads);
-    }
-
-    set_transient($cache_key, $count, DAY_IN_SECONDS);
-    return $count;
-}
-
-/**
- * Get User Events Attended (Cached 24h)
- */
-function djz_get_user_events_attended($user_id) {
-    $cache_key = 'djz_user_events_' . $user_id;
-    $cached = get_transient($cache_key);
-    if ($cached !== false) return (int) $cached;
-
-    $args = [
-        'customer_id' => $user_id,
-        'limit' => -1,
-        'status' => ['completed', 'processing'],
-        'type' => 'shop_order',
-    ];
-
-    $orders = wc_get_orders($args);
-    $count = 0;
-    $target_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
-
-    if ($orders) {
-        foreach ($orders as $order) {
-            foreach ($order->get_items() as $item) {
-                $product_id = $item->get_product_id();
-                if ($product_id) {
-                    $terms = get_the_terms($product_id, 'product_cat');
-                    if ($terms && !is_wp_error($terms)) {
-                        foreach ($terms as $term) {
-                            if (in_array($term->slug, $target_slugs)) {
-                                $count += $item->get_quantity();
-                                break 2; // Count order only once? Or per item? Using quantity for accuracy.
-                                // Actually, break 2 implies we only count once per order if ANY match is found.
-                                // Let's simplify: 1 event per matching order line item quantity.
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    set_transient($cache_key, $count, DAY_IN_SECONDS);
-    return $count;
-}
-
-/**
- * Clear User Events Cache
- */
-function djz_clear_user_events_cache($order_id) {
-    $order = wc_get_order($order_id);
-    if (!$order) return;
-
-    $user_id = $order->get_user_id();
-    if ($user_id) {
-        delete_transient('djz_user_events_' . $user_id);
-        delete_transient('djz_user_tracks_' . $user_id);
-    }
-}
-
-// Hooks to clear cache on order status change
-add_action('woocommerce_order_status_completed', 'djz_clear_user_events_cache');
-add_action('woocommerce_order_status_processing', 'djz_clear_user_events_cache');
-add_action('woocommerce_order_status_refunded', 'djz_clear_user_events_cache');
-add_action('woocommerce_order_status_cancelled', 'djz_clear_user_events_cache');
 
 /**
  * Clear cache on menu update

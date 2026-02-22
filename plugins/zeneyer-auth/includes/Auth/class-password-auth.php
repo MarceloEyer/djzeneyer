@@ -11,7 +11,6 @@ namespace ZenEyer\Auth\Auth;
 use WP_Error;
 
 class Password_Auth {
-    use Username_Generator;
     
     /**
      * Login with email and password
@@ -328,4 +327,23 @@ class Password_Auth {
         return true;
     }
     
+    /**
+     * Generate unique username from email
+     *
+     * @param string $email
+     * @return string
+     */
+    private static function generate_username($email) {
+        $username = sanitize_user(substr($email, 0, strpos($email, '@')));
+
+        $original = $username;
+        $counter = 1;
+
+        while (username_exists($username)) {
+            $username = $original . $counter;
+            $counter++;
+        }
+
+        return $username;
+    }
 }

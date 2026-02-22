@@ -56,9 +56,7 @@ const MyAccountPage: React.FC = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
 
-  if (import.meta.env.DEV) {
-    console.log('[MyAccountPage] User:', user);
-  }
+  console.log('[MyAccountPage] User:', user);
 
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS
   const userStats: UserStats = useMemo(() => {
@@ -106,9 +104,7 @@ const MyAccountPage: React.FC = () => {
   // Redirect se não logado
   useEffect(() => {
     if (!loading && !user?.isLoggedIn) {
-      if (import.meta.env.DEV) {
-        console.log('[MyAccountPage] ❌ Usuário não logado, redirecionando...');
-      }
+      console.log('[MyAccountPage] ❌ Usuário não logado, redirecionando...');
       navigate('/');
     }
   }, [user, loading, navigate]);
@@ -233,9 +229,7 @@ const MyAccountPage: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    if (import.meta.env.DEV) {
-      console.log('[MyAccountPage] 🚪 Logout iniciado');
-    }
+    console.log('[MyAccountPage] 🚪 Logout iniciado');
     try {
       await logout();
       navigate('/');

@@ -16,19 +16,17 @@ declare global {
   }
 }
 
-if (import.meta.env.DEV) {
-  console.log('[Main] 🚀 Inicializando aplicação DJ Zen Eyer...');
+console.log('[Main] 🚀 Inicializando aplicação DJ Zen Eyer...');
 
-  // Verifica se wpData está disponível
-  if (window.wpData) {
-    console.log('[Main] ✅ wpData encontrado:', {
-      siteUrl: window.wpData.siteUrl,
-      restUrl: window.wpData.restUrl,
-      hasNonce: !!window.wpData.nonce,
-    });
-  } else {
-    console.warn('[Main] ⚠️ wpData não encontrado no window');
-  }
+// Verifica se wpData está disponível
+if (window.wpData) {
+  console.log('[Main] ✅ wpData encontrado:', {
+    siteUrl: window.wpData.siteUrl,
+    restUrl: window.wpData.restUrl,
+    hasNonce: !!window.wpData.nonce
+  });
+} else {
+  console.warn('[Main] ⚠️ wpData não encontrado no window');
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -41,6 +39,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>
 );
 
-if (import.meta.env.DEV) {
-  console.log('[Main] ✅ Aplicação montada com sucesso');
-}
+console.log('[Main] ✅ Aplicação montada com sucesso');

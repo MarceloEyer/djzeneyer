@@ -9,11 +9,3 @@
 ## 2025-02-21 - Batch Cache Priming for Attachments
 **Learning:** Functions like `wp_get_attachment_url()` inside loops trigger N+1 queries because they require the attachment post object and its meta, which aren't automatically primed by the parent query.
 **Action:** When iterating over posts to get their thumbnails, collect all attachment IDs first and use `update_meta_cache('post', $ids)` and `_prime_post_caches($ids)` to batch fetch the data in constant time.
-
-## 2025-02-22 - Eager Loading Vite Manifest in WordPress
-**Learning:** Instantiating classes that perform file I/O in `__construct` (like loading a Vite manifest) adds overhead to every WordPress request, including REST API and Admin AJAX. This is especially impactful for high-frequency endpoints.
-**Action:** Always lazy-load resource-intensive configuration files. Only load them when the specific action (like `wp_enqueue_scripts`) is actually fired.
-
-## 2025-02-23 - Conditional Image Processing in REST API
-**Learning:** Iterating through all images and sizes in a list view API response adds significant CPU overhead and payload size, even when the frontend only displays a single thumbnail. For 100 items, this can result in thousands of unnecessary function calls.
-**Action:** Implement conditional logic in API endpoints to detect "list view" vs "detail view" contexts. In list views, restrict image processing to only the primary image and essential sizes.
