@@ -6,7 +6,6 @@
 
 import React, { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import DOMPurify from 'dompurify';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
 import { ChevronDown, HelpCircle, Users, Award, Globe, Brain, Disc, Mic2, Star, BookOpen, HeartPulse } from 'lucide-react';
@@ -207,7 +206,7 @@ const FAQItem = memo<{
         >
           <div 
             className="px-6 pb-6 text-white/80 leading-relaxed prose prose-invert max-w-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-white border-t border-white/5 pt-4" 
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(answer) }}
+            dangerouslySetInnerHTML={{ __html: answer }}
           />
         </motion.div>
       )}

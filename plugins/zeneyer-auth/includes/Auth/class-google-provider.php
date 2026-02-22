@@ -11,6 +11,7 @@ namespace ZenEyer\Auth\Auth;
 use WP_Error;
 
 class Google_Provider {
+    use Username_Generator;
     
     /**
      * Login with Google ID token
@@ -137,6 +138,11 @@ class Google_Provider {
         $username = self::generate_username($email);
         $password = wp_generate_password(20, true, true);
         
+        // ✅ SALVA-VIDAS: Define que este cadastro é legítimo para a "Guilhotina" não deletar
+        if ( ! defined('ZEN_AUTH_VALIDATED') ) {
+            define('ZEN_AUTH_VALIDATED', true);
+        }
+
         $user_id = wp_create_user($username, $password, $email);
         
         if (is_wp_error($user_id)) {
@@ -161,24 +167,4 @@ class Google_Provider {
         return get_user_by('id', $user_id);
     }
     
-    /**
-     * Generate unique username from email
-     *
-     * @param string $email
-     * @return string
-     */
-    private static function generate_username($email) {
-        $username = sanitize_user(substr($email, 0, strpos($email, '@')));
-        
-        // Ensure uniqueness
-        $original = $username;
-        $counter = 1;
-        
-        while (username_exists($username)) {
-            $username = $original . $counter;
-            $counter++;
-        }
-        
-        return $username;
-    }
 }

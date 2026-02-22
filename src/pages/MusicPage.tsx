@@ -2,10 +2,9 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import DOMPurify from 'dompurify';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
+import { useTracksQuery, useTrackBySlug, MusicTrack } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 
@@ -22,15 +21,22 @@ const MusicPage: React.FC = () => {
   const [activeTag, setActiveTag] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  // MOVED UP to satisfy React Hook rules (must be called unconditionally)
-  const tags = useMemo(() => ['Todos', ...new Set(listTracks.flatMap((track: MusicTrack) => track.tag_names || []))], [listTracks]);
+  // --- RENDERIZAÇÃO DA LISTA ---
+  // Optimization: Pre-calculate values outside of memo/render loop if possible
+  const lowercasedSearch = useMemo(() => searchQuery.toLowerCase(), [searchQuery]);
 
-  const filteredTracks = useMemo(() => listTracks.filter((track: MusicTrack) => {
-    const matchesTag = activeTag === 'Todos' || track.tag_names?.includes(activeTag);
-    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTag && matchesSearch;
-  }), [listTracks, activeTag, searchQuery]);
+  const tags = useMemo(() => [
+    t('music.tags.all', 'Todos'),
+    ...new Set(listTracks.flatMap((track: MusicTrack) => track.tag_names || []))
+  ], [listTracks, t]);
+
+  const filteredTracks = useMemo(() => {
+    return listTracks.filter((track: MusicTrack) => {
+      const matchesTag = activeTag === t('music.tags.all', 'Todos') || track.tag_names?.includes(activeTag);
+      const matchesSearch = track.title.rendered.toLowerCase().includes(lowercasedSearch);
+      return matchesTag && matchesSearch;
+    });
+  }, [listTracks, activeTag, lowercasedSearch, t]);
 
   // Helper para rotas localizadas
   const getRouteForKey = (key: string): string => {
@@ -76,7 +82,7 @@ const MusicPage: React.FC = () => {
                 </div>
 
                 <div className="text-center md:text-left flex-1">
-                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(singleTrack.title?.rendered) }} />
+                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: singleTrack.title?.rendered }} />
                   <p className="text-primary font-bold mb-8 tracking-widest uppercase">{t('music.artist_tag')}</p>
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -96,7 +102,7 @@ const MusicPage: React.FC = () => {
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> {t('music.about_track')}</h2>
                 <div
                   className="prose prose-invert max-w-none text-white/60"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "") }}
+                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "" }}
                 />
               </div>
             </div>
@@ -108,7 +114,7 @@ const MusicPage: React.FC = () => {
 
   return (
     <>
-      <HeadlessSEO 
+      <HeadlessSEO
         title="Zen Music | High-Energy Zouk Remixes"
         description="Explore as produções musicais, remixes e sets originais de DJ Zen Eyer."
         url="https://djzeneyer.com/music"
@@ -129,17 +135,16 @@ const MusicPage: React.FC = () => {
                   type="button"
                   key={tag}
                   onClick={() => setActiveTag(tag)}
-                  className={`px-6 py-2 rounded-full text-sm font-bold border transition-all ${
-                    activeTag === tag ? 'bg-primary border-primary text-black' : 'bg-white/5 border-white/10 hover:border-primary/50'
-                  }`}
+                  className={`px-6 py-2 rounded-full text-sm font-bold border transition-all ${activeTag === tag ? 'bg-primary border-primary text-black' : 'bg-white/5 border-white/10 hover:border-primary/50'
+                    }`}
                 >
                   {tag}
                 </button>
               ))}
             </div>
             <div className="relative w-full md:w-80">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder={t('music.search_placeholder')}
                 className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
                 value={searchQuery}
@@ -150,11 +155,11 @@ const MusicPage: React.FC = () => {
 
           {listLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
-              {[1,2,3,4,5,6].map(i => <div key={i} className="h-80 bg-white/5 rounded-3xl" />)}
+              {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-80 bg-white/5 rounded-3xl" />)}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTracks.map((track: MusicTrack) => (
+              {filteredTracks.map((track: MusicTrack, index: number) => (
                 <motion.div
                   key={track.id}
                   layout
@@ -163,15 +168,15 @@ const MusicPage: React.FC = () => {
                   className="bg-surface/30 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/40 transition-all group"
                 >
                   <div className="aspect-square relative overflow-hidden">
-                    <img 
+                    <img
                       src={track.featured_image_src || '/images/hero-background.webp'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       alt={track.title.rendered}
-                      loading="lazy"
+                      loading={index < 3 ? 'eager' : 'lazy'}
                       decoding="async"
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                      <Link 
+                      <Link
                         to={`${getRouteForKey('music')}/${track.slug}`}
                         className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform"
                       >
@@ -180,12 +185,16 @@ const MusicPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold font-display mb-2 truncate" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(track.title.rendered) }} />
+                    <h3 className="text-xl font-bold font-display mb-2 truncate" dangerouslySetInnerHTML={{ __html: track.title.rendered }} />
                     <div className="flex items-center justify-between mt-4">
                       <span className="text-xs text-white/40 font-mono">{t('music.remix_tag')}</span>
                       <div className="flex gap-3">
-                        <Youtube size={18} className="text-white/20 hover:text-primary cursor-pointer" />
-                        <Cloud size={18} className="text-white/20 hover:text-primary cursor-pointer" />
+                        <button type="button" aria-label="YouTube" className="text-white/20 hover:text-primary transition-colors">
+                          <Youtube size={18} />
+                        </button>
+                        <button type="button" aria-label="SoundCloud" className="text-white/20 hover:text-primary transition-colors">
+                          <Cloud size={18} />
+                        </button>
                       </div>
                     </div>
                   </div>

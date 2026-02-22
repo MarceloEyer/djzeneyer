@@ -1,152 +1,112 @@
-# ⚙️ Master Configuration Guide
+# ⚙️ Configuração do Servidor
 
-This document consolidates all technical configurations for the DJ Zen Eyer project, including WordPress, Server (.htaccess), LiteSpeed Cache, and Cloudflare.
+Configurações consolidadas para WordPress, .htaccess, LiteSpeed Cache e Cloudflare.
 
 ---
 
-## 1. WordPress Configuration
-
-### General Settings
-- **Permalinks**: Must be set to **Post name** (`/%postname%/`).
-- **Discussion**: Disable comments (Headless site).
-- **Reading**: Search Engine Visibility OFF (Allow indexing).
-
-### `wp-config.php` Optimization
-Add these lines to `wp-config.php`:
+## 1. WordPress (`wp-config.php`)
 
 ```php
-// Headless URLs
+// Modo Headless
+define('HEADLESS_MODE_ENABLED', true);
+define('FORCE_SSL_ADMIN', true);
+define('DISALLOW_FILE_EDIT', true);
+
+// URLs
 define('WP_HOME', 'https://djzeneyer.com');
 define('WP_SITEURL', 'https://djzeneyer.com');
 
-// Performance & Security
+// Segurança
+define('JWT_AUTH_SECRET_KEY', 'SUA_CHAVE_SECRETA_AQUI');
+define('AUTH_SALT', '...');
+
+// Performance
 define('WP_MEMORY_LIMIT', '256M');
 define('WP_MAX_MEMORY_LIMIT', '512M');
-define('DISALLOW_FILE_EDIT', true);
-define('WP_POST_REVISIONS', 5);
-define('AUTOSAVE_INTERVAL', 300);
-
-// JWT Secret (for ZenEyer Auth)
-define('ZENEYER_JWT_SECRET', 'your-long-secure-secret-key');
 ```
 
 ---
 
-## 2. Server Configuration (.htaccess)
-
-Use this **Version 5 Optimized** `.htaccess` for LiteSpeed servers. It includes security headers, CORS for the headless app, and cache rules.
+## 2. .htaccess
 
 ```apache
-# ==============================================================================
-# DJ ZEN EYER - PRODUCTION .htaccess v5.0 OPTIMIZED
-# ==============================================================================
-
-# 1. LITESPEED CACHE START
-<IfModule LiteSpeed>
-RewriteEngine on
-CacheLookup on
-RewriteRule .* - [E=Cache-Control:no-autoflush]
-RewriteRule litespeed/debug/.*\.log$ - [F,L]
-RewriteRule \.litespeed_conf\.dat - [F,L]
-
-# Cache Exclusions for Dynamic Headless Routes
-CacheDisable /wp-admin
-CacheDisable /wp-login.php
-CacheDisable /cart
-CacheDisable /checkout
-CacheDisable /my-account
-CacheDisable /wp-json/zeneyer-auth/
-
-# Mobile & WebP Support
-RewriteCond %{HTTP_USER_AGENT} Mobile|Android|Silk/|Kindle|BlackBerry|Opera\ Mini|Opera\ Mobi [NC]
-RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+ismobile]
-
-RewriteCond %{HTTP_ACCEPT} image/webp [OR]
-RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
-RewriteCond %{HTTP_USER_AGENT} Firefox/([6-9][0-9]|[1-9][0-9]{2,})
-RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+webp]
-</IfModule>
-# LITESPEED CACHE END
-
-# 2. SECURITY HEADERS & CORS
-<IfModule mod_headers.c>
-    # Security Headers
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set X-XSS-Protection "1; mode=block"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-
-    # CORS (Allow Frontend)
-    SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
-    Header always set Access-Control-Allow-Origin "%{ALLOWED_ORIGIN}e" env=ALLOWED_ORIGIN
-    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce"
-    Header always set Access-Control-Allow-Credentials "true"
-</IfModule>
-
-# 3. WORDPRESS REWRITES
-<IfModule mod_rewrite.c>
+# Forçar HTTPS
 RewriteEngine On
-RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-RewriteBase /
-RewriteRule ^index\.php$ - [L]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Segurança
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+# CORS para API headless
+<IfModule mod_headers.c>
+  SetEnvIf Origin "https://djzeneyer\.com$" CORS_ORIGIN=$0
+  Header set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
+  Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+  Header set Access-Control-Allow-Headers "Authorization, Content-Type, X-WP-Nonce"
+  Header set Access-Control-Allow-Credentials "true"
+</IfModule>
+
+# SPA Fallback (React Router)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.php [L]
-</IfModule>
+RewriteCond %{REQUEST_URI} !^/wp-
+RewriteCond %{REQUEST_URI} !^/wp-json/
+RewriteRule ^(.*)$ /index.html [L]
 ```
 
 ---
 
-## 3. LiteSpeed Cache Settings
+## 3. LiteSpeed Cache
 
-Configure in **WP Admin > LiteSpeed Cache > Settings**:
+| Configuração | Valor |
+|-------------|-------|
+| TTL Público | 604800 (7 dias) |
+| TTL Privado | 1800 (30 min) |
+| Cache REST API | ✅ Ativado |
+| ESI | ❌ Desativado (SPA) |
+| Minificação CSS/JS | ✅ Ativado |
+| Otimização de Imagens | ✅ WebP |
 
-### General
-- **Enable Cache**: ON
-- **Cache Logged-in Users**: OFF (Critical for headless!)
-- **Cache REST API**: ON (TTL: 3600s)
-
-### Excludes (Do Not Cache)
-- `/wp-json/zeneyer-auth/*`
-- `/cart/`
-- `/checkout/`
-- `/my-account/`
-
-### Optimization
-- **CSS/JS Minify**: OFF (Let Vite handle this)
-- **Image Optimization**: OFF (Let Vite/NextGen tools handle this)
-- **HTML Minify**: ON
+### Purge Rules
+- **Publicar/atualizar post:** Purge da home + feed
+- **Deploy:** Purge total via script CI/CD
 
 ---
 
-## 4. Cloudflare Configuration
+## 4. Cloudflare
 
-**Plan**: Free is sufficient.
+| Configuração | Valor |
+|-------------|-------|
+| SSL | Full (Strict) |
+| Minificação | JS + CSS + HTML |
+| Cache | Standard |
+| Page Rules | `wp-admin/*` → Bypass Cache |
+| Page Rules | `wp-json/*` → Bypass Cache |
+| Firewall | Rate limiting ativo |
 
 ### DNS
-- Proxy status: **Proxied (Orange Cloud)** for `A` and `CNAME` records.
-
-### SSL/TLS
-- Mode: **Full (Strict)**
-
-### Page Rules (Limit 3 on Free)
-1. **Cache Everything (Assets)**:
-   - URL: `djzeneyer.com/wp-content/themes/djzeneyer/dist/*`
-   - Setting: Cache Level: Cache Everything, Edge Cache TTL: 1 month.
-2. **Bypass Cache (API)**:
-   - URL: `djzeneyer.com/wp-json/*`
-   - Setting: Cache Level: Bypass.
-3. **Security (Admin)**:
-   - URL: `djzeneyer.com/wp-admin/*`
-   - Setting: Cache Level: Bypass, Security Level: High.
-
-### Speed
-- **Auto Minify**: HTML, CSS, JS (Checked).
-- **Rocket Loader**: **OFF** (Breaks React hydration).
-- **Brotli**: ON.
+```
+Tipo    Nome              Valor                 Proxy
+A       djzeneyer.com     IP_DO_SERVIDOR        ☁️ Proxied
+CNAME   www               djzeneyer.com         ☁️ Proxied
+```
 
 ---
 
-**Last Updated:** January 2026
+## 5. Variáveis de Ambiente (Frontend)
+
+```env
+# .env (desenvolvimento local)
+VITE_WP_REST_URL=https://djzeneyer.com/wp-json
+VITE_SITE_URL=https://djzeneyer.com
+```
+
+> ⚠️ **Importante:** `.env` **nunca** deve ser commitado. Está no `.gitignore`.
+
+---
+
+**Atualizado:** Fevereiro 2026
