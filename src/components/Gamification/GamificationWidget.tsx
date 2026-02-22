@@ -2,11 +2,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, Award, Zap, TrendingUp } from 'lucide-react';
-import { useGamiPress } from '../../hooks/useGamiPress';
+import { useGamiPressContext } from '../../contexts/GamiPressContext';
 import { Link } from 'react-router-dom';
 
 const GamificationWidget: React.FC = () => {
-  const { points, rank, level, achievements, loading } = useGamiPress();
+  const { points, rank, level, achievements, loading } = useGamiPressContext();
 
   if (loading) {
     return (
@@ -50,7 +50,7 @@ const GamificationWidget: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Level */}
-        <motion.div 
+        <motion.div
           whileHover={{ scale: 1.05 }}
           className="bg-black/30 rounded-lg p-4 border border-primary/20"
         >
@@ -63,7 +63,7 @@ const GamificationWidget: React.FC = () => {
         </motion.div>
 
         {/* Points */}
-        <motion.div 
+        <motion.div
           whileHover={{ scale: 1.05 }}
           className="bg-black/30 rounded-lg p-4 border border-secondary/20"
         >
@@ -106,7 +106,7 @@ const GamificationWidget: React.FC = () => {
             {earnedAchievements}/{totalAchievements}
           </span>
         </div>
-        
+
         {/* Achievement Icons */}
         {safeAchievements.length > 0 ? (
           <div className="flex gap-2 flex-wrap">
@@ -114,16 +114,15 @@ const GamificationWidget: React.FC = () => {
               <motion.div
                 key={achievement?.id || index}
                 whileHover={{ scale: 1.1, rotate: 5 }}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  achievement?.earned
-                    ? 'bg-gradient-to-br from-primary to-secondary' 
+                className={`w-10 h-10 rounded-lg flex items-center justify-center ${achievement?.earned
+                    ? 'bg-gradient-to-br from-primary to-secondary'
                     : 'bg-white/5 opacity-40'
-                }`}
+                  }`}
                 title={achievement?.title || 'Achievement'}
               >
                 {achievement?.image ? (
-                  <img 
-                    src={achievement.image} 
+                  <img
+                    src={achievement.image}
                     alt={achievement.title || 'Achievement'}
                     className="w-6 h-6 object-contain"
                   />

@@ -5,17 +5,17 @@ import { useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useUser } from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Award, Music, Calendar, Clock, Zap, Users, Trophy, 
-  Target, Gift, Loader2, TrendingUp, Star 
+import {
+  Award, Music, Calendar, Clock, Zap, Users, Trophy,
+  Target, Gift, Loader2, TrendingUp, Star
 } from 'lucide-react';
 import GamificationWidget from '../components/Gamification/GamificationWidget';
-import { useGamiPress, Achievement } from '../hooks/useGamiPress';
+import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 
 // --- HELPER: Formatação de Tempo (Ex: "2 hours ago") ---
 function getTimeAgo(timestamp: number): string {
   const seconds = Math.floor((new Date().getTime() - timestamp * 1000) / 1000);
-  
+
   let interval = seconds / 31536000;
   if (interval > 1) return Math.floor(interval) + " years ago";
   interval = seconds / 2592000;
@@ -38,12 +38,12 @@ interface SafeAchievement {
   earned: boolean;
 }
 
-const DashboardPage = () => {
+const DashboardContent = () => {
   const { user } = useUser();
   const navigate = useNavigate();
-  
-  // Hook de Dados Reais
-  const gamipress = useGamiPress();
+
+  // Hook de Dados Reais — consumido do GamiPressContext (singleton)
+  const gamipress = useGamiPressContext();
 
   useEffect(() => {
     if (user?.name) {
@@ -67,7 +67,7 @@ const DashboardPage = () => {
     eventsAttended: 0, // Placeholder: WooCommerce hook removed
     streakDays: gamipress.streak,
     streakFire: gamipress.streakFire,
-    tribeFriends: 0 
+    tribeFriends: 0
   }), [gamipress]);
 
   const safeAchievements = useMemo<SafeAchievement[]>(() => {
@@ -88,29 +88,29 @@ const DashboardPage = () => {
   }, [gamipress.achievements]);
 
   const recentActivities = useMemo(() => {
-      if (!gamipress.achievements) return [];
-      return [...gamipress.achievements]
-          .filter(a => a.earned && a.date_earned)
-          .sort((a, b) => new Date(b.date_earned!).getTime() - new Date(a.date_earned!).getTime())
-          .slice(0, 10)
-          .map(a => ({
-              id: `ach_${a.id}`,
-              type: 'achievement',
-              description: a.title || 'Achievement',
-              xp: 0, // XP unknown in this context without extra fetch
-              timestamp: new Date(a.date_earned!).getTime() / 1000
-          }));
+    if (!gamipress.achievements) return [];
+    return [...gamipress.achievements]
+      .filter(a => a.earned && a.date_earned)
+      .sort((a, b) => new Date(b.date_earned!).getTime() - new Date(a.date_earned!).getTime())
+      .slice(0, 10)
+      .map(a => ({
+        id: `ach_${a.id}`,
+        type: 'achievement',
+        description: a.title || 'Achievement',
+        xp: 0, // XP unknown in this context without extra fetch
+        timestamp: new Date(a.date_earned!).getTime() / 1000
+      }));
   }, [gamipress.achievements]);
 
   const unlockedCount = safeAchievements.length;
 
-  const containerVariants = { 
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }, 
-    hidden: { opacity: 0 } 
+  const containerVariants = {
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+    hidden: { opacity: 0 }
   };
-  const itemVariants = { 
-    visible: { opacity: 1, y: 0 }, 
-    hidden: { opacity: 0, y: 20 } 
+  const itemVariants = {
+    visible: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, y: 20 }
   };
 
   if (gamipress.loading) {
@@ -129,18 +129,18 @@ const DashboardPage = () => {
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="container mx-auto px-4">
-        
+
         {/* HEADER */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-12">
           <div className="bg-gradient-to-r from-primary/20 via-accent/20 to-success/20 rounded-2xl p-6 md:p-8 border border-primary/30 backdrop-blur-sm">
             <div className="flex items-center gap-6 flex-wrap">
               <div className="relative">
-                <img 
-                  src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`} 
+                <img
+                  src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
                   alt={user.name}
                   className="w-24 h-24 rounded-full border-4 border-primary shadow-xl object-cover"
                 />
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3, type: 'spring' }}
                   className="absolute -bottom-2 -right-2 bg-gradient-to-br from-primary to-secondary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold shadow-xl ring-4 ring-background"
                 >
@@ -162,8 +162,8 @@ const DashboardPage = () => {
                     <span className="text-primary font-bold">{userStats.currentXP}/{userStats.nextLevelXP} XP</span>
                   </div>
                   <div className="h-3 bg-background/50 rounded-full overflow-hidden backdrop-blur-sm">
-                    <motion.div 
-                      initial={{ width: 0 }} animate={{ width: `${userStats.progress}%` }} 
+                    <motion.div
+                      initial={{ width: 0 }} animate={{ width: `${userStats.progress}%` }}
                       transition={{ duration: 1.2, ease: 'easeOut', delay: 0.2 }}
                       className="h-full bg-gradient-to-r from-primary via-secondary to-accent rounded-full relative"
                     >
@@ -173,7 +173,7 @@ const DashboardPage = () => {
                 </div>
               </div>
 
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/shop')}
                 className="btn btn-primary flex items-center gap-2 whitespace-nowrap shadow-xl"
               >
@@ -202,7 +202,7 @@ const DashboardPage = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          
+
           {/* ✅ REAL ACTIVITY FEED */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="lg:col-span-2">
             <div className="card p-6 h-full min-h-[400px]">
@@ -212,13 +212,13 @@ const DashboardPage = () => {
                 </h2>
                 <button onClick={() => navigate('/my-account')} className="text-primary hover:underline text-sm transition-all hover:scale-105">View All →</button>
               </div>
-              
+
               <div className="space-y-4">
                 {gamipress.loading ? (
-                   // Loading State
-                   <div className="flex flex-col gap-4">
-                     {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />)}
-                   </div>
+                  // Loading State
+                  <div className="flex flex-col gap-4">
+                    {[1, 2, 3].map(i => <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />)}
+                  </div>
                 ) : recentActivities.length > 0 ? (
                   // ✅ Renderização da Atividade Real
                   recentActivities.map((act, i) => {
@@ -229,14 +229,14 @@ const DashboardPage = () => {
                     const actionLabel = isLoot ? 'Looted' : 'Unlocked';
 
                     return (
-                      <motion.div key={act.id || i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} 
+                      <motion.div key={act.id || i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
                         className="flex items-center gap-4 p-4 bg-surface/50 rounded-lg hover:bg-surface/80 transition-all cursor-pointer border border-transparent hover:border-primary/30 group"
                       >
                         {/* Ícone */}
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 border border-white/5 group-hover:scale-110 transition-transform ${colorClass}`}>
                           {icon}
                         </div>
-                        
+
                         {/* Texto */}
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold truncate text-white/90">
@@ -247,12 +247,12 @@ const DashboardPage = () => {
                             <Clock size={12} /> {getTimeAgo(act.timestamp)}
                           </div>
                         </div>
-                        
+
                         {/* XP Badge */}
                         {act.xp > 0 && (
-                            <div className="text-success font-bold text-sm flex-shrink-0 flex items-center gap-1 bg-success/10 px-3 py-1 rounded-full border border-success/20">
+                          <div className="text-success font-bold text-sm flex-shrink-0 flex items-center gap-1 bg-success/10 px-3 py-1 rounded-full border border-success/20">
                             <Star size={14} className="fill-success" /> +{act.xp} XP
-                            </div>
+                          </div>
                         )}
                       </motion.div>
                     );
@@ -297,13 +297,13 @@ const DashboardPage = () => {
               <h2 className="text-xl md:text-2xl font-bold font-display flex items-center gap-2"><Award className="text-primary" size={28} /> Your Achievements</h2>
               <div className="text-white/70 flex items-center gap-2"><Trophy className="text-warning" size={20} /> <span className="text-primary font-bold text-xl">{unlockedCount}</span> <span>Unlocked</span></div>
             </div>
-            
+
             {safeAchievements.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {safeAchievements.map((achievement, i) => (
                   <motion.div key={achievement.id || i} whileHover={{ scale: 1.05 }} className="bg-surface/50 rounded-lg p-4 text-center transition-all border border-primary/30 hover:bg-surface/70 hover:border-primary cursor-pointer shadow-lg hover:shadow-primary/20">
                     <div className="text-4xl md:text-5xl mb-3 h-16 w-16 mx-auto flex items-center justify-center">
-                        {achievement.image ? <img src={achievement.image} alt={achievement.title} className="w-full h-full object-contain drop-shadow-md" /> : (achievement.emoji || '🏆')}
+                      {achievement.image ? <img src={achievement.image} alt={achievement.title} className="w-full h-full object-contain drop-shadow-md" /> : (achievement.emoji || '🏆')}
                     </div>
                     <div className="font-bold text-sm mb-1 line-clamp-1">{achievement.title}</div>
                     <div className="text-xs text-white/60 line-clamp-2 min-h-[2rem]">{achievement.description}</div>
@@ -327,5 +327,11 @@ const DashboardPage = () => {
     </div>
   );
 };
+
+const DashboardPage = () => (
+  <GamiPressProvider>
+    <DashboardContent />
+  </GamiPressProvider>
+);
 
 export default DashboardPage;
