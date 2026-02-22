@@ -62,6 +62,18 @@ const SupportArtistPage = () => {
       color: 'from-green-500 to-green-600',
       link: ARTIST.payment.wise.url,
       email: ARTIST.payment.wise.email,
+      accounts: [
+        {
+          country: t('support.wise.eur', 'Euro Bank Account (EUR - Wise)'),
+          details: [
+            { label: t('support.accountName', 'Account Name'), value: ARTIST.payment.wise.eur.accountName },
+            { label: t('support.iban', 'IBAN'), value: ARTIST.payment.wise.eur.iban },
+            { label: t('support.swiftCode', 'SWIFT/BIC Code'), value: ARTIST.payment.wise.eur.swiftCode },
+            { label: t('support.bank', 'Bank Name'), value: ARTIST.payment.wise.eur.bankName },
+            { label: t('support.bankAddress', 'Bank Address'), value: ARTIST.payment.wise.eur.bankAddress },
+          ],
+        },
+      ],
     },
     {
       id: 'paypal',
@@ -163,7 +175,7 @@ const SupportArtistPage = () => {
                 </div>
 
                 <div className="p-6">
-                  {method.id === 'inter' && method.accounts && (
+                  {(method.id === 'inter' || method.id === 'wise') && method.accounts && (
                     <div className="space-y-6">
                       {method.accounts.map((account, accountIndex) => (
                         <div key={accountIndex} className={accountIndex > 0 ? 'pt-6 border-t border-white/10' : ''}>

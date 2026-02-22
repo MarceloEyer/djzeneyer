@@ -752,6 +752,7 @@
     "wise": {
       "title": "Wise (TransferWise)",
       "description": "Transferências internacionais com taxas baixas para múltiplas moedas",
+      "eur": "Conta Euro (EUR - Wise)",
       "sepa": "Transferência SEPA (Europa)"
     },
     "paypal": {

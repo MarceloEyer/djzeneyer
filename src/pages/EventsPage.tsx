@@ -1,6 +1,6 @@
 import React, { memo, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage, getLocalizedRoute } from '../config/routes';
@@ -12,7 +12,6 @@ import {
   ArrowRight,
   ArrowLeft,
   AlertCircle,
-  Sparkles,
   Music,
   Search,
   Share2,
@@ -203,76 +202,60 @@ const EventsPage: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-6xl mx-auto">
-            {/* --- HERO SECTION --- */}
+          <div className="max-w-7xl mx-auto">
+            {/* --- HERO SECTION --- (Refined) */}
             <motion.section
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="text-center py-20 md:py-32"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center py-16 md:py-24"
             >
-              <div className="inline-flex items-center gap-3 px-6 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-black uppercase tracking-[0.3em] mb-10 shadow-lg shadow-black/20">
-                <Sparkles size={16} className="animate-pulse" />
-                {t('events_hero_badge')}
+              <div className="inline-block mb-4">
+                <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-1.5 text-primary font-bold uppercase tracking-wider text-xs">
+                  {t('events_hero_badge', 'Live Experiences')}
+                </div>
               </div>
-              <h1 className="text-6xl md:text-9xl font-black font-display mb-10 tracking-tighter leading-[0.85] uppercase">
-                <Trans i18nKey="events_title_rich">
-                  Next <span className="text-gradient">Events</span>
-                </Trans>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 font-display uppercase tracking-tighter">
+                {t('events_page_title', 'Next Events')}
               </h1>
-              <p className="text-xl md:text-3xl text-white/40 max-w-2xl mx-auto leading-relaxed font-light italic">
-                {t('home_subheadline')}
+              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto font-light leading-relaxed">
+                {t('events_experience_subtitle', 'Follow my world sheep. From intensive workshops to international congresses.')}
               </p>
             </motion.section>
 
-            {/* --- SEARCH & FILTERS --- */}
-            <div className="mb-20">
-              <div className="relative max-w-2xl mx-auto space-y-4">
-                <div className="relative group">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors" size={24} />
-                  <input
-                    type="text"
-                    placeholder={t('events_filter_placeholder')}
-                    className="w-full bg-[#1A1A1A]/50 backdrop-blur-3xl border border-white/10 rounded-[2rem] py-6 pl-16 pr-8 text-lg focus:outline-none focus:border-primary/50 transition-all shadow-2xl"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-6 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
-                    >
-                      CLEAR
-                    </button>
-                  )}
-                </div>
-                {searchQuery && filteredEvents.length > 0 && (
-                  <p className="text-center text-white/40 text-sm font-bold uppercase tracking-widest">
-                    {t('events_search_results')} "{searchQuery}": <span className="text-primary">{filteredEvents.length}</span>
-                  </p>
-                )}
+            {/* --- SEARCH & FILTERS --- (Refined) */}
+            <div className="mb-16">
+              <div className="relative max-w-xl mx-auto">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={20} />
+                <input
+                  type="text"
+                  placeholder={t('events_filter_placeholder', 'Search city or country...')}
+                  className="w-full bg-surface/50 backdrop-blur-md border border-white/10 rounded-full py-4 pl-14 pr-6 text-base focus:outline-none focus:border-primary/50 transition-all shadow-lg"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
             </div>
 
-            <div className="space-y-32">
+            <div className="space-y-24">
               {loading ? (
-                <div className="grid gap-12">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-80 bg-white/5 rounded-[3rem] w-full animate-pulse border border-white/5" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[1, 2, 3, 4, 5, 6].map(i => (
+                    <div key={i} className="h-[450px] bg-white/5 rounded-3xl w-full animate-pulse border border-white/5" />
                   ))}
                 </div>
               ) : error ? (
-                <div className="p-20 rounded-[4rem] bg-red-500/5 border border-red-500/10 text-center backdrop-blur-3xl">
-                  <AlertCircle className="w-20 h-20 text-red-500 mx-auto mb-8 opacity-50" />
-                  <h3 className="text-3xl font-black mb-4">{t('error_loading')}</h3>
-                  <p className="text-white/40 max-w-md mx-auto text-lg">{error.toString()}</p>
+                <div className="p-16 rounded-3xl bg-red-500/5 border border-red-500/10 text-center">
+                  <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6 opacity-50" />
+                  <h3 className="text-2xl font-bold mb-3">{t('error_loading')}</h3>
+                  <p className="text-white/40 max-w-md mx-auto">{error.toString()}</p>
                 </div>
               ) : filteredEvents.length === 0 ? (
-                <div className="p-32 rounded-[4rem] bg-white/5 border border-white/10 text-center backdrop-blur-3xl">
-                  <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-10">
-                    <Filter className="w-10 h-10 text-white/20" />
-                  </div>
-                  <p className="text-white/20 text-3xl font-display uppercase tracking-widest">{searchQuery ? t('events_no_results') : t('events_none')}</p>
+                <div className="p-20 rounded-3xl bg-surface/30 border border-white/5 text-center backdrop-blur-sm">
+                  <Filter className="w-12 h-12 text-white/20 mx-auto mb-6" />
+                  <p className="text-white/40 text-xl font-display uppercase tracking-widest">
+                    {searchQuery ? t('events_no_results') : t('events_none')}
+                  </p>
                 </div>
               ) : (
                 groupedEvents.map(([monthKey, monthEvents]) => {
@@ -280,81 +263,76 @@ const EventsPage: React.FC = () => {
                   const monthName = t(`events_month_${new Date(Number(year), Number(month) - 1).toLocaleString('en', { month: 'short' }).toLowerCase()}`);
 
                   return (
-                    <section key={monthKey} className="relative">
-                      {/* Sticky Month Label */}
-                      <div className="flex items-center gap-8 mb-16">
-                        <div className="flex flex-col">
-                          <span className="text-7xl md:text-8xl font-black font-display leading-none text-white/5 select-none">{year}</span>
-                          <span className="text-4xl md:text-5xl font-black font-display -mt-8 text-primary shadow-primary/50 uppercase tracking-tighter">{monthName}</span>
-                        </div>
+                    <section key={monthKey}>
+                      {/* Section Header */}
+                      <div className="flex items-center gap-6 mb-10">
+                        <h2 className="text-2xl md:text-3xl font-bold font-display uppercase tracking-wider text-primary">
+                          {monthName} <span className="text-white/20 ml-2">{year}</span>
+                        </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
                       </div>
 
-                      <div className="grid gap-12">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <AnimatePresence mode="popLayout">
                           {monthEvents.map((event, idx) => {
                             const title = event.title?.rendered || (typeof event.title === 'string' ? event.title : 'Evento');
                             const image = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || event.featured_image_url || event.image || '/images/hero-background.webp';
                             const date = new Date(event.date || event.datetime || new Date().toISOString());
                             const location = event.venue ? `${event.venue.city}, ${event.venue.country}` : 'TBA';
-                            const venueName = event.venue?.name || t('events_venue');
 
                             return (
                               <motion.div
                                 key={event.id}
-                                initial={{ opacity: 0, y: 50 }}
+                                initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: idx * 0.1, duration: 0.8 }}
-                                className="group relative"
+                                transition={{ delay: idx * 0.05, duration: 0.5 }}
+                                className="group"
                               >
-                                <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-[3.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                                <div className="relative bg-[#0D0D0D] border border-white/5 group-hover:border-primary/40 rounded-[3rem] overflow-hidden transition-all duration-700 shadow-2xl flex flex-col lg:flex-row min-h-[400px]">
-                                  {/* Poster Section */}
-                                  <div className="lg:w-[40%] overflow-hidden relative">
+                                <div className="card h-full bg-surface/50 backdrop-blur-sm border border-white/5 rounded-3xl overflow-hidden flex flex-col glow transition-all duration-300 hover:scale-[1.02] hover:border-primary/20">
+                                  {/* Poster */}
+                                  <div className="aspect-[4/5] relative overflow-hidden">
                                     <img
                                       src={image}
-                                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out"
+                                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                       alt={title}
                                     />
-                                    {/* Date Badge over image */}
-                                    <div className="absolute top-8 left-8 w-20 h-24 bg-black/8 backdrop-blur-3xl border border-white/20 rounded-2xl flex flex-col items-center justify-center shadow-2xl">
-                                      <span className="text-3xl font-black text-primary leading-none">{date.getDate()}</span>
-                                      <span className="text-xs font-black uppercase tracking-widest text-white/60">{monthName}</span>
+                                    {/* Subtle Date Overlay */}
+                                    <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md border border-white/10 px-3 py-2 rounded-xl text-center min-w-[50px]">
+                                      <div className="text-xl font-bold text-primary leading-none">{date.getDate()}</div>
+                                      <div className="text-[10px] uppercase font-bold text-white/60 tracking-widest mt-0.5">{monthName}</div>
                                     </div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                                   </div>
 
-                                  {/* Content Section */}
-                                  <div className="flex-1 p-10 md:p-16 flex flex-col justify-between relative">
-                                    <div className="space-y-8">
-                                      <div className="flex flex-wrap items-center gap-4">
-                                        <span className="flex items-center gap-2 text-primary font-black uppercase text-xs tracking-widest">
-                                          <MapPin size={16} /> {location}
-                                        </span>
-                                        <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-                                        <span className="text-white/40 font-bold uppercase text-xs tracking-widest">{venueName}</span>
-                                      </div>
-
-                                      <Link to={`${getLocalizedRoute('events', normalizeLanguage(i18n.language))}/${event.id}`}>
-                                        <h3 className="text-4xl md:text-6xl font-black font-display leading-[1] text-white group-hover:text-primary transition-colors duration-500 uppercase tracking-tighter" dangerouslySetInnerHTML={{ __html: title }} />
-                                      </Link>
+                                  {/* Content */}
+                                  <div className="p-6 flex flex-col flex-1">
+                                    <div className="flex items-center gap-2 text-primary font-bold uppercase text-[10px] tracking-widest mb-3">
+                                      <MapPin size={12} /> {location}
                                     </div>
 
-                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-10 pt-16">
-                                      <div className="flex items-center gap-4">
-                                        <Link
-                                          to={`${getLocalizedRoute('events', normalizeLanguage(i18n.language))}/${event.id}`}
-                                          className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center hover:border-primary hover:bg-primary/10 transition-all duration-500 group/arrow"
-                                        >
-                                          <ArrowRight size={24} className="group-hover/arrow:translate-x-1 transition-transform" />
-                                        </Link>
+                                    <Link
+                                      to={`${getLocalizedRoute('events', normalizeLanguage(i18n.language))}/${event.id}`}
+                                      className="block mb-6"
+                                    >
+                                      <h3 className="text-xl font-bold font-display uppercase tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-2" dangerouslySetInnerHTML={{ __html: title }} />
+                                    </Link>
+
+                                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+                                      <div className="flex items-center gap-2">
                                         <button
                                           onClick={() => shareEvent(event)}
-                                          className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center hover:border-primary hover:bg-primary/10 transition-all duration-500"
+                                          className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors"
+                                          title={t('events_share', 'Share')}
                                         >
-                                          <Share2 size={24} />
+                                          <Share2 size={16} />
+                                        </button>
+                                        <button
+                                          onClick={() => window.open(formatGoogleCalendarUrl(event), '_blank')}
+                                          className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors"
+                                          title={t('events_add_to_calendar', 'Add to Calendar')}
+                                        >
+                                          <CalendarPlus size={16} />
                                         </button>
                                       </div>
 
@@ -362,10 +340,9 @@ const EventsPage: React.FC = () => {
                                         href={event.url || event.offers?.[0]?.url || '#'}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-full sm:w-auto btn btn-primary px-16 py-6 rounded-2xl flex items-center justify-center gap-6 shadow-2xl shadow-primary/20 transition-all duration-500 scale-100 group-hover:scale-105"
+                                        className="btn btn-primary px-6 py-2 rounded-xl text-xs font-bold flex items-center gap-2"
                                       >
-                                        <Ticket size={28} />
-                                        <span className="text-lg font-black uppercase tracking-[0.2em]">{t('events_tickets')}</span>
+                                        <Ticket size={16} /> {t('events_tickets', 'Tickets').toUpperCase()}
                                       </a>
                                     </div>
                                   </div>
@@ -381,35 +358,28 @@ const EventsPage: React.FC = () => {
               )}
             </div>
 
-            {/* --- BOOKING CTAs --- */}
+            {/* --- BOOKING CTA (Refined) --- */}
             <motion.div
-              initial={{ opacity: 0, y: 100 }}
+              initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-48 relative group"
+              className="mt-32 card p-12 md:p-20 text-center bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/20 rounded-[3rem] relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-transparent blur-[120px] rounded-[5rem] group-hover:scale-110 transition-transform duration-1000" />
-              <div className="relative bg-[#0A0A0A] border border-white/10 rounded-[5rem] p-16 md:p-32 overflow-hidden">
-                <Music className="absolute -right-40 -bottom-40 text-white/5 pointer-events-none w-[600px] h-[600px] rotate-12" />
-
-                <div className="max-w-3xl relative z-10">
-                  <div className="inline-block px-6 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-xs font-black uppercase tracking-[0.4em] mb-12">
-                    {t('footer_contact_text')}
-                  </div>
-                  <h2 className="text-5xl md:text-8xl font-black font-display mb-12 leading-[0.9] uppercase text-white">
-                    {t('home_press_title')}
-                  </h2>
-                  <p className="text-2xl text-white/40 mb-16 leading-relaxed font-light italic">
-                    {t('events_experience_subtitle')}
-                  </p>
-                  <Link
-                    to={getLocalizedRoute('work-with-me', normalizeLanguage(i18n.language))}
-                    className="btn btn-outline border-primary/30 text-primary px-16 py-8 rounded-3xl text-xl font-black group/cta flex items-center justify-center w-fit gap-6 hover:bg-primary hover:text-black transition-all duration-700"
-                  >
-                    {t('contact').toUpperCase()}
-                    <ArrowRight size={28} className="group-hover:translate-x-3 transition-transform duration-500" />
-                  </Link>
-                </div>
+              <Music className="absolute -right-16 -bottom-16 text-white/5 w-64 h-64 rotate-12" />
+              <div className="relative z-10 max-w-2xl mx-auto font-display">
+                <h2 className="text-3xl md:text-5xl font-bold mb-6 uppercase tracking-tight">
+                  {t('home_press_title', 'Bring the Zen Experience')}
+                </h2>
+                <p className="text-lg text-white/60 mb-10 font-light leading-relaxed">
+                  {t('events_experience_subtitle', 'Follow my agenda and workshops. Available for international bookings.')}
+                </p>
+                <Link
+                  to={getLocalizedRoute('work-with-me', normalizeLanguage(i18n.language))}
+                  className="btn btn-primary px-10 py-4 rounded-2xl text-lg font-bold inline-flex items-center gap-3 hover:scale-105 transition-transform"
+                >
+                  {t('contact', 'Contact for Booking').toUpperCase()}
+                  <ArrowRight size={20} />
+                </Link>
               </div>
             </motion.div>
           </div>
