@@ -17,27 +17,27 @@ All npm dependencies, dev dependencies, and PHP packages have been updated to th
 ### Internationalization
 - **i18next**: 25.8.0 → 25.8.11
   - Stability improvements and bug fixes
-  
+
 - **i18next-browser-languagedetector**: 8.2.0 → 8.2.1
   - Language detection enhancements
-  
+
 - **react-i18next**: 16.5.1 → 16.5.4
   - React integration improvements
 
 ### Navigation & API
 - **react-router-dom**: 7.0.0 → 7.13.0
   - Routing stability improvements
-  
+
 - **@tanstack/react-query**: 5.90.14 → 5.90.21
   - Query caching optimizations
 
 ### Authentication & UI
 - **@marsidev/react-turnstile**: 1.4.1 → 1.4.2
   - CAPTCHA integration improvements
-  
+
 - **@react-oauth/google**: 0.13.1 → 0.13.4
   - OAuth improvements
-  
+
 - **@types/react**: 18.3.27 → 18.3.28
   - TypeScript type improvements
 
@@ -117,5 +117,5 @@ No negative performance impact expected. Some improvements likely.
 
 ---
 
-**Updated**: 2026-02-18  
+**Updated**: 2026-02-18
 **Status**: Ready for deployment
