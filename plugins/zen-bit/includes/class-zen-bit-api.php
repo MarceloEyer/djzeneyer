@@ -183,6 +183,30 @@ class Zen_BIT_API {
         );
     }
 
+    private static function filter_upcoming_events(array $events): array {
+        $now = current_time('timestamp');
+        $today = strtotime('today', $now);
+
+        $filtered = array_filter($events, function ($event) use ($today) {
+            if (!is_array($event)) return false;
+            $date_str = '';
+            if (!empty($event['datetime_iso']) && is_string($event['datetime_iso'])) {
+                $date_str = $event['datetime_iso'];
+            } elseif (!empty($event['datetime']) && is_string($event['datetime'])) {
+                $date_str = $event['datetime'];
+            }
+
+            if ($date_str === '') return false;
+
+            $event_ts = strtotime($date_str);
+            if (!$event_ts) return false;
+
+            return $event_ts >= $today;
+        });
+
+        return array_values($filtered);
+    }
+
     // =========================
     // FETCH + CACHE
     // =========================
@@ -261,6 +285,8 @@ class Zen_BIT_API {
             if (!is_array($raw)) continue;
             $normalized[] = self::normalize_event($raw);
         }
+
+        $normalized = self::filter_upcoming_events($normalized);
 
         // Cacheia tudo normalizado
         set_transient($cache_key, $normalized, self::get_cache_time());
