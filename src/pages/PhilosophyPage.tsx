@@ -50,7 +50,7 @@ const PhilosophyPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="card p-12 bg-white/5 border border-dashed border-white/10 rounded-3xl">
+            <div className="card p-12 bg-white/5 border border-dashed border-white/10 rounded-3xl mb-12">
               <h2 className="text-2xl font-display font-bold mb-4">
                 {t('philosophy_page.coming_soon_title')}
               </h2>
@@ -58,36 +58,33 @@ const PhilosophyPage: React.FC = () => {
                 {t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
               </p>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold mb-3">Missão</h2>
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-3">{t('philosophy_page.mission_title')}</h2>
               <p className="text-white/80 leading-relaxed">
                 {ARTIST.philosophy.mission}
               </p>
             </div>
-        </div>
-      </motion.div>
+          </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="bg-white/5 rounded-2xl p-8 border border-white/10"
-      >
-        <div className="flex items-start gap-4 mb-4">
-          <Sparkles size={32} className="text-primary flex-shrink-0" />
-          <div>
-            <h2 className="text-2xl font-bold mb-3">Em Breve</h2>
-            <p className="text-white/80 leading-relaxed">
-              Mais conteúdo sobre a filosofia musical de {ARTIST.identity.stageName} será
-              adicionado em breve. Acompanhe nas redes sociais para não perder novidades!
-            </p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-white/5 rounded-2xl p-8 border border-white/10 text-left"
+          >
+            <div className="flex items-start gap-4 mb-4">
+              <Sparkles size={32} className="text-primary flex-shrink-0" />
+              <div>
+                <h2 className="text-2xl font-bold mb-3">{t('philosophy_page.coming_soon_title')}</h2>
+                <p className="text-white/80 leading-relaxed">
+                  {t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-    </div >
-          </motion.div >
-        </section >
-      </div >
+      </div>
     </>
   );
 };
