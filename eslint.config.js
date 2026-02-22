@@ -17,11 +17,11 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-empty': 'off',
-      'no-case-declarations': 'off',
-      'no-useless-escape': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-empty': 'warn',
+      'no-case-declarations': 'warn',
+      'no-useless-escape': 'warn',
     },
   }
 );
