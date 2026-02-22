@@ -122,12 +122,12 @@ class CORS_Handler {
                 // 1. Quote the string to escape all regex special characters
                 $pattern = preg_quote($allowed_host, '/');
 
-                // 2. Replace the escaped wildcard (\*) with regex wildcard (.*)
-                // This ensures ONLY the original '*' acts as a wildcard, while other chars like '?' or '[]' are treated literally.
-                $pattern = str_replace('\*', '.*', $pattern);
+                // 2. Replace the escaped wildcard (\*) with regex wildcard for single DNS label ([^.]+)
+                // This ensures ONLY the original '*' acts as a wildcard, and forbids dots (matches "foo.example.com" but NOT "foo.bar.example.com").
+                $pattern = str_replace('\*', '[^.]+', $pattern);
 
-                // 3. Anchor the pattern to ensure full host match
-                if (preg_match('/^' . $pattern . '$/', $origin_host)) {
+                // 3. Anchor the pattern to ensure full host match, and use 'i' for case-insensitivity
+                if (preg_match('/^' . $pattern . '$/i', $origin_host)) {
                     return true;
                 }
             }
