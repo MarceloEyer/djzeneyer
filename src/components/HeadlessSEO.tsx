@@ -97,23 +97,23 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
     const currentFullUrl = ensureTrailingSlash(`${siteUrlClean}${currentPathNormalized}`);
 
     links.push({
-        lang: currentLang === 'pt' ? 'pt-BR' : 'en',
-        url: currentFullUrl
+      lang: currentLang === 'pt' ? 'pt-BR' : 'en',
+      url: currentFullUrl
     });
 
     // Add alternates
     try {
       const alternates = getAlternateLinks(location.pathname, currentLang);
       Object.entries(alternates).forEach(([lang, path]) => {
-          // Normalize path to ensure it starts with /
-          const safePath = path.startsWith('/') ? path : `/${path}`;
-          const url = ensureTrailingSlash(`${siteUrlClean}${safePath}`);
+        // Normalize path to ensure it starts with /
+        const safePath = path.startsWith('/') ? path : `/${path}`;
+        const url = ensureTrailingSlash(`${siteUrlClean}${safePath}`);
 
-          if (lang === 'x-default') {
-               links.push({ lang: 'x-default', url });
-          } else {
-               links.push({ lang: lang === 'pt' ? 'pt-BR' : 'en', url });
-          }
+        if (lang === 'x-default') {
+          links.push({ lang: 'x-default', url });
+        } else {
+          links.push({ lang: lang === 'pt' ? 'pt-BR' : 'en', url });
+        }
       });
     } catch (err) {
       console.error('Error generating alternate links:', err);
@@ -125,17 +125,17 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   // 2. Fallbacks
   const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
   const finalDescription = data?.desc || description || ARTIST.site.defaultDescription;
-  
+
   const truncatedDesc = finalDescription.length > 160
-      ? `${finalDescription.substring(0, 157)}...`
-      : finalDescription;
+    ? `${finalDescription.substring(0, 157)}...`
+    : finalDescription;
 
   const finalUrlRaw = data?.canonical || url || baseUrl;
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
   const finalUrl = ensureTrailingSlash(absoluteUrl);
 
   // FIX: Imagem padrão robusta se nada for passado
-  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`; // Certifique-se que essa imagem existe na pasta public/images/
+  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`;
   const finalImage = ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl);
 
   const shouldNoIndex = data?.noindex || noindex;
@@ -226,13 +226,13 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={truncatedDesc} />
       <meta property="og:url" content={finalUrl} />
-      
+
       {/* FIX: Garante que as imagens sempre apareçam */}
       <meta property="og:image" content={finalImage} />
       <meta property="og:image:secure_url" content={finalImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      
+
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
       {isProfileType && (

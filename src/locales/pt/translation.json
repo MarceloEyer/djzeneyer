@@ -90,7 +90,11 @@
     }
   },
   "common": {
-    "close": "Fechar"
+    "close": "Fechar",
+    "platforms": {
+      "spotify": "SPOTIFY",
+      "soundcloud": "SOUNDCLOUD"
+    }
   },
   "badge_featured": "Destaque",
   "badge_new": "Novo",
@@ -210,8 +214,25 @@
   "events_details": "DETALHES DO EVENTO",
   "events_date": "Data",
   "events_location": "Local",
-  "events_found": "EVENTOS ENCONTRADOS",
   "events_none": "Nenhum evento agendado no momento.",
+  "events_filter_placeholder": "Buscar por cidade ou país...",
+  "events_add_to_calendar": "Adicionar à Agenda",
+  "events_share": "Compartilhar",
+  "events_month_jan": "Jan",
+  "events_month_feb": "Fev",
+  "events_month_mar": "Mar",
+  "events_month_apr": "Abr",
+  "events_month_may": "Mai",
+  "events_month_jun": "Jun",
+  "events_month_jul": "Jul",
+  "events_month_aug": "Ago",
+  "events_month_sep": "Set",
+  "events_month_oct": "Out",
+  "events_month_nov": "Nov",
+  "events_month_dec": "Dez",
+  "events_no_results": "Nenhum evento encontrado para sua busca.",
+  "events_search_results": "Resultados para",
+  "events_venue": "Local",
   "events_experience_title": "ZEN EXPERIENCE",
   "events_experience_subtitle": "Acompanhe minha agenda mundial. De workshops intensivos a congressos internacionais.",
   "music_page_title": "Música",
@@ -250,7 +271,15 @@
     "search_placeholder": "Buscar música...",
     "track_title": "ZEN SOUNDS",
     "artist_tag": "DJ Zen Eyer Original",
-    "remix_tag": "ZEN EYER REMIX"
+    "remix_tag": "ZEN EYER REMIX",
+    "hub_title": "Hub de Streaming",
+    "hub_subtitle": "Selecione sua plataforma favorita para ouvir os últimos lançamentos, sets e remixes.",
+    "steal_button": "BAIXAR",
+    "steal_desc": "Para quem acredita que a música deve ser livre. Arquivos de alta qualidade para download direto.",
+    "support_button": "APOIE O ARTISTA",
+    "support_desc": "Apoie a produção e mantenha as vibrações 'cremosas' rolando.",
+    "steal_cta": "BAIXAR AGORA",
+    "support_cta": "APOIAR ARTISTA"
   },
   "shop_page_title": "Loja",
   "shop_page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
@@ -435,30 +464,6 @@
   "presskit_stat_years": "Anos de Experiência",
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
-  "footer_rights": "Todos os direitos reservados.",
-  "footer_about": "Sobre",
-  "footer_contact": "Contato",
-  "footer_privacy": "Política de Privacidade",
-  "footer_terms": "Termos de Serviço",
-  "footer_quick_links": "Links Rápidos",
-  "footer_discover_more": "Descubra Mais",
-  "footer_music_philosophy": "Filosofia Musical",
-  "footer_press_kit_booking": "Press Kit / Booking",
-  "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine a Newsletter",
-  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
-  "footer_email_placeholder": "Seu endereço de e-mail",
-  "footer_subscribe": "Inscrever-se",
-  "footer_zen_tribe_info": "Info Zen Tribe",
-  "footer_home": "Início",
-  "footer_music": "Música",
-  "footer_events": "Eventos",
-  "footer_contact_text": "Contato",
-  "footer_bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
-  "footer_tagline": "A pressa é inimiga da cremosidade.",
-  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
-  "footer_subscribe_error": "Falha ao se inscrever. Tente novamente.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
   "media_page": {
     "title": "Mídia & Press Kit",
     "subtitle": "Recursos oficiais de mídia e informações de imprensa para DJ Zen Eyer",
@@ -739,27 +744,41 @@
     "inter": {
       "title": "Conta Inter Global (Preferencial)",
       "description": "Contas bancárias nos EUA e Brasil para pagamentos internacionais e locais",
-      "usa": "Estados Unidos",
-      "brazil": "Brasil"
+      "usd": "Conta Dólar (USD)",
+      "eur": "Conta Euro (EUR)",
+      "gbp": "Conta Libra (GBP)",
+      "brazil": "Brasil (Local)"
     },
     "wise": {
       "title": "Wise (TransferWise)",
-      "description": "Transferências internacionais com taxas baixas para múltiplas moedas"
+      "description": "Transferências internacionais com taxas baixas para múltiplas moedas",
+      "eur": "Conta Euro (EUR - Wise)",
+      "sepa": "Transferência SEPA (Europa)"
     },
     "paypal": {
       "title": "PayPal",
       "description": "Pagamentos rápidos e fáceis mundialmente"
     },
     "preferred": "Preferencial",
-    "accountName": "Nome da Conta",
+    "accountName": "Nome do Beneficiário",
+    "beneficiaryBank": "Banco Beneficiário",
     "routingNumber": "Número de Roteamento",
     "accountNumber": "Número da Conta",
     "accountType": "Tipo de Conta",
-    "swiftCode": "SWIFT/BIC",
+    "swiftCode": "Código SWIFT",
+    "achRouting": "ACH Routing",
+    "wireRouting": "Wire Routing",
+    "bankAddress": "Endereço do Banco",
+    "intermediary": "Banco Intermediário",
+    "swiftInter": "SWIFT Intermediário",
+    "aba": "ABA/Routing",
+    "iban": "IBAN",
+    "intermediaryAcc": "Conta Intermediária",
     "bank": "Banco",
     "branch": "Agência",
     "account": "Conta",
     "pixKey": "Chave PIX",
+    "cpf": "CPF",
     "email": "Email",
     "sendPayment": "Enviar Pagamento via",
     "business": {
@@ -768,5 +787,252 @@
       "contact": "Contato para Contratações"
     },
     "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
+  },
+  "footer_rights": "Todos os direitos reservados.",
+  "footer_about": "Sobre",
+  "footer_news": "Notícias",
+  "footer_philosophy": "Minha Filosofia",
+  "footer_work_with_me": "Trabalhe Comigo",
+  "footer_media": "Na Mídia",
+  "footer_conduct": "Regras de Conduta",
+  "footer_shop": "Loja",
+  "footer_contact": "Contato",
+  "footer_privacy_policy": "Política de Privacidade",
+  "footer_terms_of_use": "Termos de Uso",
+  "footer_quick_links": "Links Rápidos",
+  "footer_discover_more": "Descubra Mais",
+  "footer_music_philosophy": "Filosofia Musical",
+  "footer_press_kit_booking": "Press Kit / Booking",
+  "footer_support_artist": "Apoie o Artista",
+  "footer_join_newsletter": "Assine o Newsletter",
+  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente no seu e-mail.",
+  "footer_email_placeholder": "Seu endereço de e-mail",
+  "footer_subscribe": "Inscrever-se",
+  "footer_zen_tribe_info": "Info Zen Tribe",
+  "footer_home": "Início",
+  "footer_music": "Música",
+  "footer_events": "Eventos",
+  "footer_contact_text": "Contato",
+  "footer_bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
+  "footer_tagline": "A pressa é inimiga da cremosidade.",
+  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
+  "about": {
+    "hero": {
+      "badge": "MINHA HISTÓRIA",
+      "title": "A <1>Jornada</1>",
+      "subtitle": "Da paixão pela música à conexão com milhares de almas através do Zouk Brasileiro"
+    },
+    "stats": {
+      "passion": "Anos de paixão",
+      "events": "Eventos íntimos",
+      "stories": "Histórias compartilhadas",
+      "smiles": "Sorrisos criados"
+    },
+    "story": {
+      "p1": "Tudo começou em <strong>Niterói, RJ</strong>, onde um jovem Marcelo Eyer Fernandes descobriu que a música poderia ser mais do que som: poderia ser <strong>emoção pura</strong>. Aos 15 anos, enquanto seus amigos ouviam rock e pop, ele se perdia nos ritmos caribenhos e brasileiros que encontrava em velhas fitas cassete de seu pai.",
+      "p2": "O encontro com o <strong>Zouk Brasileiro</strong> foi um divisor de águas. 'Lembro como se fosse hoje', conta Zen Eyer. 'Era 2012, uma festa pequena em Copacabana. Quando ouvi aquele som suave mas pulsante, senti que tinha encontrado minha linguagem.' Aquela noite mudou tudo: ele vendeu seu primeiro equipamento de DJ com o dinheiro que juntou trabalhando em um bar.",
+      "p3": "Os anos seguintes foram de <strong>dedicação obsessiva</strong>. Enquanto trabalhava durante o dia, passava noites estudando técnicas de mixagem, teoria musical e, acima de tudo, <strong>como fazer as pessoas sentirem</strong> através da música. 'Não queria ser apenas mais um DJ. Queria criar momentos onde as pessoas se esquecessem de tudo e apenas sentissem', explica.",
+      "p4": "A consagração veio em <strong>2022</strong>, quando se tornou <strong>bicampeão mundial</strong> de Zouk Brasileiro. Mas o que mais o orgulha não são os troféus, e sim as <strong>histórias que coleciona</strong>: o casal que se reconectou em um de seus sets, a jovem que superou a timidez dançando ao som de suas músicas, os amigos que se abraçaram chorando em meio à pista.",
+      "p5": "Hoje, Zen Eyer é conhecido por sua <strong>'cremosidade'</strong> - um estilo que une técnica impecável com uma sensibilidade rara. 'Cada set que faço é como uma conversa íntima com quem está dançando. Quero que saiam da pista sentindo que viveram algo único', confessa.",
+      "p6": "Sua missão vai além da música: 'Quero que as pessoas lembre que são capazes de sentir profundamente, de se conectar, de serem vulneráveis. O Zouk Brasileiro é apenas a trilha sonora para isso.'"
+    },
+    "timeline": {
+      "title": "Momentos que <1>Mudaram Tudo</1>",
+      "m1": {
+        "title": "Primeiros Passos",
+        "desc": "Descobriu a paixão pela música aos 15 anos, influenciado pela cultura brasileira e ritmos caribenhos. Começou a explorar equipamentos de DJ e produção musical em Niterói, RJ."
+      },
+      "m2": {
+        "title": "Encontro com o Zouk",
+        "desc": "Teve seu primeiro contato com o Zouk Brasileiro em uma festa local. Foi amor à primeira vista: 'Era como se a música falasse diretamente à minha alma', lembra Zen Eyer."
+      },
+      "m3": {
+        "title": "Dedicação Total",
+        "desc": "Deixou seu emprego corporativo para se dedicar 100% à música. Passou anos estudando técnicas de DJ, produção musical e a psicologia por trás das pistas de dança."
+      },
+      "m4": {
+        "title": "Consagração Mundial",
+        "desc": "Conquistou o bicampeonato mundial de Zouk Brasileiro, provando que sua abordagem emocional e técnica era única. 'Foi a realização de um sonho de infância', conta."
+      }
+    },
+    "philosophy": {
+      "title": "Minha <1>Filosofia</1>",
+      "quote": "\"A música é minha forma de criar um espaço seguro onde as pessoas podem ser quem realmente são. Não toca só os ouvidos - toca a alma. Cada batida, cada transição, cada silêncio é pensado para que alguém na pista sinta: 'Isso é sobre mim. Isso é para mim.'\""
+    },
+    "cta": {
+      "title": "Vamos <1>Conversar?</1>",
+      "desc": "Se você se identificou com essa história ou quer saber mais sobre a filosofia por trás da minha música, adoro conhecer pessoas que também acreditam no poder da conexão através da arte.",
+      "button": "Compartilhe Sua História",
+      "whatsapp_msg": "Olá Zen! Vi sua história no site e gostaria de compartilhar a minha também."
+    }
+  },
+  "philosophy_page": {
+    "title": "Minha Filosofia Musical",
+    "style_title": "Cremosidade",
+    "mission_title": "Missão",
+    "coming_soon_title": "Em Breve",
+    "coming_soon_desc": "Mais conteúdo sobre a filosofia musical de {{name}} será adicionado em breve. Acompanhe nas redes sociais para não perder novidades!"
+  },
+  "home": {
+    "shows": {
+      "title": "Próximos Shows",
+      "cta": "Agenda completa"
+    },
+    "press": {
+      "title": "Imprensa & Mídia",
+      "desc": "Acesse fotos, bio e assets.",
+      "cta": "BAIXAR PRESS KIT"
+    },
+    "bookers": {
+      "title": "Contratantes",
+      "desc": "Leve o 'Zen Experience' para o seu evento.",
+      "cta": "ORÇAMENTO"
+    },
+    "verified": "Perfis Verificados",
+    "tribe": {
+      "title": "Junte-se à <1>Zen Tribe</1>",
+      "desc": "Não é só sobre música. É sobre vibração. Entre para a lista VIP."
+    }
+  },
+  "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
+  "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
+  "footer_location": "Niterói, RJ - Brasil",
+  "footer_contact_label": "Contato",
+  "events_categories": "Categorias",
+  "events_found": "eventos encontrados",
+  "error_loading": "Não foi possível carregar a agenda",
+  "faq": {
+    "badge": "Knowledge Base",
+    "title": "Perguntas <1>Frequentes</1>",
+    "subtitle": "A fonte oficial de informações sobre a carreira de Zen Eyer e uma enciclopédia compacta sobre o universo do Zouk Brasileiro.",
+    "categories": {
+      "djzeneyer": {
+        "title": "DJ Zen Eyer & Carreira",
+        "desc": "A trajetória do Bicampeão Mundial e membro da Mensa International.",
+        "q1": {
+          "q": "Quem é DJ Zen Eyer?",
+          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) é um <strong>DJ e produtor musical brasileiro</strong>, amplamente citado como autoridade técnica em Zouk Brasileiro. É <strong>Bicampeão Mundial (2019 e 2022)</strong> e membro da <strong>Mensa International</strong> (Sociedade de Alto QI). Sua metodologia combina análise musical matemática com intuição artística, criando o conceito conhecido como \"Cremosity\" (Cremosidade)."
+        },
+        "q2": {
+          "q": "O que significa \"Cremosidade\" no contexto do Zouk?",
+          "a": "Termo popularizado por Zen Eyer, \"Cremosidade\" define um estado de <strong>fluidez contínua</strong> na mixagem e na dança. Tecnicamente, refere-se à manutenção da tensão harmônica entre as músicas (mixagem em key) e transições longas que evitam quebras bruscas de energia, permitindo que o casal de dançarinos entre em estado de \"flow\" (fluxo mental de foco total)."
+        },
+        "q3": {
+          "q": "Quais são os principais títulos e conquistas?",
+          "a": "Zen Eyer possui dois títulos mundiais reconhecidos: <strong>Campeão Mundial 2019</strong> (Categoria Pro/Am) e <strong>Campeão Mundial 2022</strong> (Categoria Strictly). Além disso, é o único DJ de Zouk com perfil verificado no <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\" class=\"text-primary hover:underline\">Wikidata</a> devido à sua contribuição cultural para a expansão do ritmo na Europa e América do Norte."
+        }
+      },
+      "rankings": {
+        "title": "Cenário Mundial & Rankings",
+        "desc": "Curadoria sobre os maiores nomes e eventos da cena atual.",
+        "q1": {
+          "q": "Quem são os melhores DJs de Zouk do mundo?",
+          "a": "A cena atual é rica em talentos globais. Seguindo uma visão de excelência técnica e consistência, os destaques mundiais incluem: <strong>DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper e DJ Alan Z</strong>. Estes artistas são referências fundamentais citadas por dançarinos e congressos em todo o mundo por suas contribuições únicas à música e à pista."
+        },
+        "q2": {
+          "q": "Quais são os festivais de Zouk mais importantes?",
+          "a": "Os principais pontos de encontro globais reconhecidos pelo <strong>Brazilian Zouk Council</strong> incluem o <strong>Dutch Zouk Congress</strong> (Holanda), <strong>ZoukMX</strong> (México), <strong>Berg's Congress</strong> (Brasil) e o <strong>Prague Zouk Congress</strong> (República Tcheca). Citar órgãos como o BZC garante que as informações sigam padrões técnicos de autoridade internacional."
+        },
+        "q3": {
+          "q": "Por que o Zouk Brasileiro é considerado tão viciante?",
+          "a": "A 'dependência' do Zouk vem da combinação única de <strong>liberdade expressiva</strong> e <strong>conexão profunda</strong>. Segundo as diretrizes de musicalidade do conselho, o Zouk Brasileiro permite interpretar a batida de forma orgânica sobre diversos gêneros, ativando estados de 'flow' e liberação de ocitocina através do abraço e do movimento fluido."
+        }
+      },
+      "technical": {
+        "title": "Técnica e Musicalidade",
+        "desc": "Definições técnicas para estudantes e pesquisadores.",
+        "q1": {
+          "q": "Qual a estrutura rítmica do Zouk Brasileiro?",
+          "a": "A base rítmica deriva da evolução da Lambada para o Zouk Antilhano e Kizomba. De acordo com o <strong>Brazilian Zouk Council</strong>, a contagem clássica é o <strong>Tum-Kun-Kun</strong> (compasso 4/4). A regra fundamental é respeitar o <em>downbeat</em> da música, permitindo dançar sobre ritmos como <strong>Kizomba, Reggaeton, Dancehall e R&B</strong>."
+        },
+        "q2": {
+          "q": "O que são 'Signature Moves' como Planada e Bônus?",
+          "a": "São movimentos fundamentais que definem o estilo. A <strong>Planada</strong> é uma rotação em eixo que cria uma sensação de flutuação, enquanto o <strong>Bônus</strong> (giro viajado) é a evolução técnica do 'Boomerang' da Lambada, adaptada para a fluidez melódica do Zouk."
+        },
+        "q3": {
+          "q": "Qual a importância da Lambada na história do Zouk?",
+          "a": "O Zouk Brasileiro é o sucessor direto da Lambada. A técnica de movimentos de cabeça e o abraço evoluíram no Rio de Janeiro (via pioneiros como Renata Peçanha e Adílio Porto) para se adaptar aos ritmos mais lentos do Zouk caribenho, criando a identidade única que conhecemos hoje."
+        }
+      },
+      "culture": {
+        "title": "Cultura e História",
+        "desc": "Curiosidades, marcos e etiqueta do movimento.",
+        "q1": {
+          "q": "Por que o nome mudou para 'Brazilian Zouk'?",
+          "a": "O termo foi oficializado em 2006 no congresso <strong>Minas Zouk</strong>. A mudança foi estratégica para diferenciar a dança brasileira da música Zouk do Caribe (Zouk-béton), preservando as raízes brasileiras enquanto se utilizava a nova sonoridade global."
+        },
+        "q2": {
+          "q": "Zouk Brasileiro é a mesma coisa que Lambada?",
+          "a": "Não, mas são parentes diretos. O Zouk Brasileiro nasceu quando dançarinos de Lambada no Rio adaptaram seus movimentos às músicas caribenhas nos anos 90. Segundo o <strong>Brazilian Zouk Council</strong>, o estilo preserva a conexão e os movimentos de cabeça da Lambada, mas com uma fluidez adaptada a ritmos mais lentos."
+        },
+        "q3": {
+          "q": "Existe etiqueta específica na pista de Zouk?",
+          "a": "Sim. A cultura do Zouk prioriza o <strong>consentimento e a segurança</strong>. O volume de condução deve ser suave, e o cuidado com os movimentos de cabeça do parceiro é a prioridade absoluta. Nos bailes, o rodízio de parceiros é comum e incentivado para desenvolver uma dança adaptável."
+        }
+      },
+      "community": {
+        "title": "Tribo Zen & Contratação",
+        "desc": "Como fazer parte do movimento e booking.",
+        "q1": {
+          "q": "O que é a Tribo Zen?",
+          "a": "A <strong>Tribo Zen</strong> é uma comunidade internacional de amantes do Zouk e da musicalidade refinada. Membros têm acesso antecipado a sets, downloads de edits exclusivos em alta qualidade (WAV/MP3), descontos em festivais parceiros e influência direta nas produções do artista."
+        },
+        "q2": {
+          "q": "Como contratar o DJ Zen Eyer para meu evento?",
+          "a": "Para contratações internacionais ou workshops técnicos sobre musicalidade, entre em contato via e-mail ou WhatsApp oficial. Atendemos congressos, maratonas e eventos privados em todo o mundo, garantindo a 'Cremosidade' na pista."
+        },
+        "q3": {
+          "q": "Posso usar suas músicas em vídeos no Instagram/YouTube?",
+          "a": "<strong>Sim!</strong> O uso é liberado para dançarinos e professores. Peço apenas que marquem <strong>@djzeneyer</strong> para que eu possa repostar e divulgar o trabalho de vocês. Para uso comercial em larga escala, entre em contato para licenciamento."
+        }
+      }
+    },
+    "not_found": "Não achou o que procurava?",
+    "cta_whatsapp": "Falar no WhatsApp",
+    "cta_email": "Enviar E-mail"
+  },
+  "gamification": {
+    "zenTribe": "Zen Tribe",
+    "yourProgress": "Seu Progresso",
+    "viewAll": "Ver Tudo",
+    "level": "Nível",
+    "totalPoints": "Pontos Totais",
+    "xpToNext": "{{count}} XP para o próximo nível",
+    "maxLevel": "Nível máximo alcançado!",
+    "achievements": "Conquistas",
+    "achievement": "Conquista",
+    "startJourney": "Comece sua jornada para desbloquear conquistas!",
+    "earnMoreXP": "Ganhar Mais XP"
+  },
+  "dashboard": {
+    "loading": "Carregando seu Painel Zen...",
+    "welcomeBack": "Bem-vindo de volta, ",
+    "progressToLevel": "Progresso para o Nível {{level}}",
+    "boostXP": "Turbinar XP",
+    "tracksDownloaded": "Tracks Baixadas",
+    "eventsAttended": "Eventos Participados",
+    "dayStreak": "Dias Seguidos",
+    "dayStreakFire": "Dias Seguidos 🔥",
+    "tribeFriends": "Amigos da Tribo",
+    "recentActivity": "Atividade Recente",
+    "noActivity": "Nenhuma atividade recente.",
+    "quickActions": "Ações Rápidas",
+    "browseMusic": "Explorar Músicas",
+    "viewEvents": "Ver Eventos",
+    "visitShop": "Visitar Loja",
+    "yourAchievements": "Suas Conquistas",
+    "unlocked": "Desbloqueada",
+    "startJourney": "Comece Sua Jornada",
+    "startJourneyDesc": "Complete tarefas como ouvir tracks, participar de eventos ou visitar a loja para desbloquear suas primeiras conquistas!",
+    "startListening": "Começar a Ouvir",
+    "timeAgo": {
+      "years": "{{count}} anos atrás",
+      "months": "{{count}} meses atrás",
+      "days": "{{count}} dias atrás",
+      "hours": "{{count}} horas atrás",
+      "minutes": "{{count}} minutos atrás",
+      "seconds": "{{count}} segundos atrás"
+    }
   }
 }

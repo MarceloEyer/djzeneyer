@@ -11,87 +11,79 @@ const PhilosophyPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={`${t('footer_music_philosophy')} | ${ARTIST.identity.stageName}`}
-        description={`${ARTIST.philosophy.slogan}. ${ARTIST.philosophy.styleDefinition}`}
-        path="/my-philosophy"
-        type="article"
+        title={`${t('philosophy_page.title')} | ${ARTIST.identity.stageName}`}
+        description={t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
       />
 
-      <div className="min-h-screen bg-background text-white">
-        <section className="container mx-auto px-4 py-20 md:py-28">
+      <div className="min-h-screen pt-24 pb-16 px-4">
+        <div className="container mx-auto max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto"
+            transition={{ duration: 0.8 }}
           >
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
-                <Brain size={40} className="text-primary" />
+            <Sparkles className="w-16 h-16 mx-auto mb-6 text-primary" />
+            <h1 className="text-4xl md:text-6xl font-black font-display mb-8">
+              {t('philosophy_page.title')}
+            </h1>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-16">
+              <div className="card p-8 bg-surface/50 border border-white/10 hover:border-primary/50 transition-all">
+                <Music2 className="w-10 h-10 text-primary mb-4" />
+                <h2 className="text-xl font-bold mb-4 uppercase tracking-widest text-primary">
+                  {t('philosophy_page.style_title')}
+                </h2>
+                <p className="text-white/80 leading-relaxed italic">
+                  "{t('about.philosophy.quote')}"
+                </p>
+                <div className="mt-4 text-sm text-white/50">— {ARTIST.identity.stageName}</div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black mb-4">
-                {t('footer_music_philosophy')}
-              </h1>
-              <p className="text-xl text-white/70 italic">
-                "{ARTIST.philosophy.slogan}"
+
+              <div className="card p-8 bg-surface/50 border border-white/10 hover:border-accent/50 transition-all">
+                <Heart className="w-10 h-10 text-accent mb-4" />
+                <h2 className="text-xl font-bold mb-4 uppercase tracking-widest text-accent">
+                  {t('philosophy_page.mission_title')}
+                </h2>
+                <p className="text-white/80 leading-relaxed">
+                  {t('about.hero.subtitle')}
+                </p>
+              </div>
+            </div>
+
+            <div className="card p-12 bg-white/5 border border-dashed border-white/10 rounded-3xl mb-12">
+              <h2 className="text-2xl font-display font-bold mb-4">
+                {t('philosophy_page.coming_soon_title')}
+              </h2>
+              <p className="text-white/60 max-w-2xl mx-auto">
+                {t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
               </p>
             </div>
 
-            <div className="space-y-12">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white/5 rounded-2xl p-8 border border-white/10"
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <Music2 size={32} className="text-primary flex-shrink-0" />
-                  <div>
-                    <h2 className="text-2xl font-bold mb-3">Cremosidade</h2>
-                    <p className="text-white/80 leading-relaxed">
-                      {ARTIST.philosophy.styleDefinition}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white/5 rounded-2xl p-8 border border-white/10"
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <Heart size={32} className="text-primary flex-shrink-0" />
-                  <div>
-                    <h2 className="text-2xl font-bold mb-3">Missão</h2>
-                    <p className="text-white/80 leading-relaxed">
-                      {ARTIST.philosophy.mission}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="bg-white/5 rounded-2xl p-8 border border-white/10"
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <Sparkles size={32} className="text-primary flex-shrink-0" />
-                  <div>
-                    <h2 className="text-2xl font-bold mb-3">Em Breve</h2>
-                    <p className="text-white/80 leading-relaxed">
-                      Mais conteúdo sobre a filosofia musical de {ARTIST.identity.stageName} será
-                      adicionado em breve. Acompanhe nas redes sociais para não perder novidades!
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-3">{t('philosophy_page.mission_title')}</h2>
+              <p className="text-white/80 leading-relaxed">
+                {ARTIST.philosophy.mission}
+              </p>
             </div>
           </motion.div>
-        </section>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-white/5 rounded-2xl p-8 border border-white/10 text-left"
+          >
+            <div className="flex items-start gap-4 mb-4">
+              <Sparkles size={32} className="text-primary flex-shrink-0" />
+              <div>
+                <h2 className="text-2xl font-bold mb-3">{t('philosophy_page.coming_soon_title')}</h2>
+                <p className="text-white/80 leading-relaxed">
+                  {t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </>
   );

@@ -85,7 +85,11 @@
     }
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "platforms": {
+      "spotify": "SPOTIFY",
+      "soundcloud": "SOUNDCLOUD"
+    }
   },
   "badge_featured": "Featured",
   "badge_new": "New",
@@ -245,7 +249,15 @@
     "search_placeholder": "Search music...",
     "track_title": "ZEN SOUNDS",
     "artist_tag": "DJ Zen Eyer Original",
-    "remix_tag": "ZEN EYER REMIX"
+    "remix_tag": "ZEN EYER REMIX",
+    "hub_title": "Streaming Hub",
+    "hub_subtitle": "Select your favorite platform to listen to the latest releases, sets and remixes.",
+    "steal_button": "STEAL",
+    "steal_desc": "For those who believe music should be free. High-quality files available for direct download.",
+    "support_button": "BUY A COFFEE",
+    "support_desc": "Support the production and keep the 'creamy' vibes flowing.",
+    "steal_cta": "GO STEAL",
+    "support_cta": "SUPPORT ARTIST"
   },
   "shop_page_title": "Shop",
   "shop_page_meta_desc": "Event tickets, exclusive merchandise, and more",
@@ -430,30 +442,6 @@
   "presskit_stat_years": "Years Experience",
   "dashboard_page_title": "Dashboard",
   "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
-  "footer_rights": "All rights reserved.",
-  "footer_about": "About",
-  "footer_contact": "Contact",
-  "footer_privacy": "Privacy Policy",
-  "footer_terms": "Terms of Service",
-  "footer_quick_links": "Quick Links",
-  "footer_discover_more": "Discover More",
-  "footer_music_philosophy": "Music Philosophy",
-  "footer_press_kit_booking": "Press Kit / Booking",
-  "footer_support_artist": "Support the Artist",
-  "footer_join_newsletter": "Join the Newsletter",
-  "footer_newsletter_desc": "Get exclusive updates, new releases, and VIP event access directly to your inbox.",
-  "footer_email_placeholder": "Your email address",
-  "footer_subscribe": "Subscribe",
-  "footer_zen_tribe_info": "Zen Tribe Info",
-  "footer_home": "Home",
-  "footer_music": "Music",
-  "footer_events": "Events",
-  "footer_contact_text": "Contact",
-  "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
-  "footer_tagline": "Elevating vibes, one beat at a time.",
-  "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
-  "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. Elevating vibes, one beat at a time.",
   "media_page": {
     "title": "Media & Press Kit",
     "subtitle": "Official media resources and press information for DJ Zen Eyer",
@@ -706,7 +694,7 @@
   "support": {
     "seo": {
       "title": "Support DJ Zen Eyer | Payment Information",
-      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.",
+      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise and PayPal.",
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
@@ -721,7 +709,7 @@
       },
       "community": {
         "title": "Community Growth",
-        "description": "Support workshops, events, and educational content"
+        "description": "Support workshops, events and educational content"
       },
       "worldwide": {
         "title": "Worldwide Presence",
@@ -734,28 +722,43 @@
     "inter": {
       "title": "Inter Global Account (Preferred)",
       "description": "US and Brazil bank accounts for international and local payments",
-      "usa": "United States",
-      "brazil": "Brazil"
+      "usd": "Dollar Account (USD)",
+      "eur": "Euro Account (EUR)",
+      "gbp": "Pound Account (GBP)",
+      "brazil": "Brazil (Local)"
     },
     "wise": {
       "title": "Wise (TransferWise)",
-      "description": "Low-fee international transfers to multiple currencies"
+      "description": "Low-fee international transfers to multiple currencies",
+      "eur": "Euro Account (EUR - Wise)",
+      "sepa": "SEPA Transfer (Europe)"
     },
     "paypal": {
       "title": "PayPal",
       "description": "Quick and easy payments worldwide"
     },
     "preferred": "Preferred",
-    "accountName": "Account Name",
+    "accountName": "Beneficiary Name",
+    "beneficiaryBank": "Beneficiary Bank",
     "routingNumber": "Routing Number",
     "accountNumber": "Account Number",
     "accountType": "Account Type",
-    "swiftCode": "SWIFT/BIC",
+    "swiftCode": "SWIFT/BIC Code",
+    "achRouting": "ACH Routing",
+    "wireRouting": "Wire Routing",
+    "bankAddress": "Bank Address",
+    "intermediary": "Intermediary Bank",
+    "swiftInter": "Intermediary SWIFT",
+    "aba": "ABA/Routing",
+    "iban": "IBAN",
+    "intermediaryAcc": "Intermediary Account",
     "bank": "Bank",
     "branch": "Branch",
     "account": "Account",
     "pixKey": "PIX Key",
+    "cpf": "CPF",
     "email": "Email",
+    "phone": "Phone / Key",
     "sendPayment": "Send Payment via",
     "business": {
       "title": "Event Bookings & Business Inquiries",
@@ -763,5 +766,265 @@
       "contact": "Contact for Bookings"
     },
     "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
+  },
+  "footer_rights": "All rights reserved.",
+  "footer_about": "About",
+  "footer_news": "News",
+  "footer_philosophy": "My Philosophy",
+  "footer_work_with_me": "Work With Me",
+  "footer_media": "Media",
+  "footer_conduct": "Code of Conduct",
+  "footer_shop": "Shop",
+  "footer_contact": "Contact",
+  "footer_privacy_policy": "Privacy Policy",
+  "footer_terms_of_use": "Terms of Use",
+  "footer_quick_links": "Quick Links",
+  "footer_discover_more": "Discover More",
+  "footer_music_philosophy": "Music Philosophy",
+  "footer_press_kit_booking": "Press Kit / Booking",
+  "footer_support_artist": "Support Artist",
+  "footer_join_newsletter": "Join Newsletter",
+  "footer_newsletter_desc": "Get exclusive updates, new releases and VIP access to events directly in your email.",
+  "footer_email_placeholder": "Your email address",
+  "footer_subscribe": "Subscribe",
+  "footer_zen_tribe_info": "Zen Tribe Info",
+  "footer_home": "Home",
+  "footer_music": "Music",
+  "footer_events": "Events",
+  "footer_contact_text": "Contact",
+  "events_filter_placeholder": "Search city or country...",
+  "events_add_to_calendar": "Add to Calendar",
+  "events_share": "Share",
+  "events_month_jan": "Jan",
+  "events_month_feb": "Feb",
+  "events_month_mar": "Mar",
+  "events_month_apr": "Apr",
+  "events_month_may": "May",
+  "events_month_jun": "Jun",
+  "events_month_jul": "Jul",
+  "events_month_aug": "Aug",
+  "events_month_sep": "Sep",
+  "events_month_oct": "Oct",
+  "events_month_nov": "Nov",
+  "events_month_dec": "Dec",
+  "events_no_results": "No events found for your search.",
+  "events_search_results": "Results for",
+  "events_venue": "Venue",
+  "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
+  "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
+  "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
+  "footer_subscribe_error": "Failed to subscribe. Please try again.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. Elevating vibes, one beat at a time.",
+  "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
+  "about": {
+    "hero": {
+      "badge": "MY STORY",
+      "title": "The <1>Journey</1>",
+      "subtitle": "From passion for music to connecting with thousands of souls through Brazilian Zouk"
+    },
+    "stats": {
+      "passion": "Years of passion",
+      "events": "Intimate events",
+      "stories": "Shared stories",
+      "smiles": "Created smiles"
+    },
+    "story": {
+      "p1": "It all started in <strong>Niterói, RJ</strong>, where a young Marcelo Eyer Fernandes discovered that music could be more than sound: it could be <strong>pure emotion</strong>. At age 15, while his friends were listening to rock and pop, he would get lost in the Caribbean and Brazilian rhythms he found on his father's old cassette tapes.",
+      "p2": "The encounter with <strong>Brazilian Zouk</strong> was a turning point. 'I remember it like it was today', Zen Eyer says. 'It was 2012, a small party in Copacabana. When I heard that smooth but pulsing sound, I felt I had found my language.' That night changed everything: he sold his first DJ gear with the money he saved working at a bar.",
+      "p3": "The following years were of <strong>obsessive dedication</strong>. While working during the day, he spent nights studying mixing techniques, music theory, and, above all, <strong>how to make people feel</strong> through music. 'I didn't want to be just another DJ. I wanted to create moments where people forgot everything and just felt', he explains.",
+      "p4": "Recognition came in <strong>2022</strong>, when he became <strong>two-times world champion</strong> of Brazilian Zouk. But what makes him most proud are not the trophies, but the <strong>stories he collects</strong>: the couple who reconnected in one of his sets, the young woman who overcame shyness dancing to his music, the friends who hugged each other crying in the middle of the dance floor.",
+      "p5": "Today, Zen Eyer is known for his <strong>'cremosidade'</strong> - a style that unites impeccable technique with a rare sensitivity. 'Every set I do is like an intimate conversation with whoever is dancing. I want them to leave the floor feeling they lived something unique', he confesses.",
+      "p6": "His mission goes beyond music: 'I want people to remember they are capable of feeling deeply, of connecting, of being vulnerable. Brazilian Zouk is just the soundtrack for that.'"
+    },
+    "timeline": {
+      "title": "Moments that <1>Changed Everything</1>",
+      "m1": {
+        "title": "First Steps",
+        "desc": "Discovered the passion for music at age 15, influenced by Brazilian culture and Caribbean rhythms. Started exploring DJ gear and music production in Niterói, RJ."
+      },
+      "m2": {
+        "title": "Encounter with Zouk",
+        "desc": "Had his first contact with Brazilian Zouk at a local party. It was love at first sight: 'It was as if the music spoke directly to my soul', Zen Eyer recalls."
+      },
+      "m3": {
+        "title": "Total Dedication",
+        "desc": "Left his corporate job to dedicate 100% to music. Spent years studying DJ techniques, music production, and the psychology behind dance floors."
+      },
+      "m4": {
+        "title": "World Recognition",
+        "desc": "Won the two-times world championship of Brazilian Zouk, proving that his emotional and technical approach was unique. 'It was the realization of a childhood dream', he says."
+      }
+    },
+    "philosophy": {
+      "title": "My <1>Philosophy</1>",
+      "quote": "\"Music is my way of creating a safe space where people can be who they truly are. It doesn't just touch the ears - it touches the soul. Every beat, every transition, every silence is thought so that someone on the dance floor feels: 'This is about me. This is for me.'\""
+    },
+    "cta": {
+      "title": "Let's <1>Talk?</1>",
+      "desc": "If you identified with this story or want to know more about the philosophy behind my music, I love meeting people who also believe in the power of connection through art.",
+      "button": "Share Your Story",
+      "whatsapp_msg": "Hello Zen! I saw your story on the website and would like to share mine as well."
+    }
+  },
+  "philosophy_page": {
+    "title": "My Music Philosophy",
+    "style_title": "Cremosidade",
+    "mission_title": "Mission",
+    "coming_soon_title": "Coming Soon",
+    "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!"
+  },
+  "home": {
+    "shows": {
+      "title": "Upcoming Shows",
+      "cta": "Full schedule"
+    },
+    "press": {
+      "title": "Press & Media",
+      "desc": "Access photos, bio and assets.",
+      "cta": "DOWNLOAD PRESS KIT"
+    },
+    "bookers": {
+      "title": "Bookers",
+      "desc": "Bring the 'Zen Experience' to your event.",
+      "cta": "REQUEST BOOKING"
+    },
+    "verified": "Verified Profiles",
+    "tribe": {
+      "title": "Join the <1>Zen Tribe</1>",
+      "desc": "It's not just about music. It's about the vibe. Join the VIP list."
+    }
+  },
+  "faq": {
+    "badge": "Knowledge Base",
+    "title": "Frequent <1>Questions</1>",
+    "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
+    "categories": {
+      "djzeneyer": {
+        "title": "DJ Zen Eyer & Career",
+        "desc": "The journey of the Two-Time World Champion and Mensa International member.",
+        "q1": {
+          "q": "Who is DJ Zen Eyer?",
+          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and music producer</strong>, widely cited as a technical authority in Brazilian Zouk. He is a <strong>Two-Time World Champion (2019 and 2022)</strong> and a member of <strong>Mensa International</strong> (High IQ Society). His methodology combines mathematical musical analysis with artistic intuition, creating the concept known as \"Cremosity\" (Cremosidade)."
+        },
+        "q2": {
+          "q": "What does \"Cremosidade\" (Cremosity) mean in the context of Zouk?",
+          "a": "A term popularized by Zen Eyer, \"Cremosidade\" defines a state of <strong>continuous fluidity</strong> in mixing and dancing. Technically, it refers to maintaining harmonic tension between songs (mixing in key) and long transitions that avoid sudden energy breaks, allowing the dance couple to enter a state of \"flow\" (total focus mental state)."
+        },
+        "q3": {
+          "q": "What are the main titles and achievements?",
+          "a": "Zen Eyer has two recognized world titles: <strong>2019 World Champion</strong> (Pro/Am Category) and <strong>2022 World Champion</strong> (Strictly Category). Additionally, he is the only Zouk DJ with a verified profile on <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\" class=\"text-primary hover:underline\">Wikidata</a> due to his cultural contribution to the rhythmic expansion in Europe and North America."
+        }
+      },
+      "rankings": {
+        "title": "World Scene & Rankings",
+        "desc": "Curatorship about the biggest names and events in the current scene.",
+        "q1": {
+          "q": "Who are the best Zouk DJs in the world?",
+          "a": "The current scene is rich in global talent. Following a vision of technical excellence and consistency, world-class highlights include: <strong>DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, and DJ Alan Z</strong>. These artists are fundamental references cited by dancers and congresses worldwide for their unique contributions to music and the dance floor."
+        },
+        "q2": {
+          "q": "What are the most important Zouk festivals?",
+          "a": "Major global meeting points recognized by the <strong>Brazilian Zouk Council</strong> include the <strong>Dutch Zouk Congress</strong> (Netherlands), <strong>ZoukMX</strong> (Mexico), <strong>Berg's Congress</strong> (Brazil), and the <strong>Prague Zouk Congress</strong> (Czech Republic). Referencing bodies like the BZDC ensures that information follows technical standards of international authority."
+        },
+        "q3": {
+          "q": "Why is Brazilian Zouk considered so addictive?",
+          "a": "Zouk's 'addictiveness' comes from the unique combination of <strong>expressive freedom</strong> and <strong>deep connection</strong>. According to the council's musicality guidelines, Brazilian Zouk allows for organic beat interpretation across various genres, activating 'flow' states and oxytocin release through the embrace and fluid movement."
+        }
+      },
+      "technical": {
+        "title": "Technique and Musicality",
+        "desc": "Technical definitions for students and researchers.",
+        "q1": {
+          "q": "What is the rhythmic structure of Brazilian Zouk?",
+          "a": "The rhythmic base derives from the evolution of Lambada into Caribbean Zouk and Kizomba. According to the <strong>Brazilian Zouk Council</strong>, the classic count is <strong>Tum-Kun-Kun</strong> (4/4 time). The fundamental rule is to respect the <em>downbeat</em> of the music, allowing it to be danced over varied rhythms such as <strong>Kizomba, Reggaeton, Dancehall, and R&B</strong>."
+        },
+        "q2": {
+          "q": "What are 'Signature Moves' like Planada and Bônus?",
+          "a": "These are foundational movements that define the style. <strong>Planada</strong> is an axial rotation creating a floating sensation, while the <strong>Bônus</strong> (traveled turn) is the technical evolution of the Lambada 'Boomerang', adapted for Zouk's melodic fluidity."
+        },
+        "q3": {
+          "q": "How important is Lambada in Zouk's history?",
+          "a": "Brazilian Zouk is the direct successor to Lambada. Head movement techniques and the embrace evolved in Rio de Janeiro (via pioneers like Renata Peçanha and Adílio Porto) to adapt to the slower rhythms of Caribbean Zouk, creating the unique identity we know today."
+        }
+      },
+      "culture": {
+        "title": "Culture and History",
+        "desc": "Curiosities, milestones and etiquette of the movement.",
+        "q1": {
+          "q": "Why did the name change to 'Brazilian Zouk'?",
+          "a": "The term was officialized in 2006 at the <strong>Minas Zouk</strong> congress. The change was strategic to differentiate the Brazilian dance from Caribbean Zouk music (Zouk-béton), preserving Brazilian roots while utilizing the new global sound."
+        },
+        "q2": {
+          "q": "Is Brazilian Zouk the same as Lambada?",
+          "a": "No, but they are direct relatives. Brazilian Zouk was born when Lambada dancers in Rio adapted their movements to Caribbean rhythms in the 90s. According to the <strong>Brazilian Zouk Council</strong>, the style preserves Lambada's connection and head movements but with a fluidity adapted to slower tempos."
+        },
+        "q3": {
+          "q": "Is there specific etiquette on the Zouk floor?",
+          "a": "Yes. Zouk culture prioritizes <strong>consent and safety</strong>. Leading pressure should be gentle, and partner head movement safety is the absolute priority. In social dances, rotating partners is common and encouraged to develop an adaptable dance."
+        }
+      },
+      "community": {
+        "title": "Zen Tribe & Booking",
+        "desc": "How to join the movement and booking info.",
+        "q1": {
+          "q": "What is the Zen Tribe?",
+          "a": "The <strong>Zen Tribe</strong> is an international community of Zouk lovers and refined musicality enthusiasts. Members have early access to sets, high-quality exclusive edit downloads (WAV/MP3), discounts at partner festivals, and direct influence on the artist's productions."
+        },
+        "q2": {
+          "q": "How to book DJ Zen Eyer for my event?",
+          "a": "For international bookings or technical musicality workshops, contact via email or official WhatsApp. We serve congresses, marathons, and private events worldwide, ensuring 'Cremosidade' on the floor."
+        },
+        "q3": {
+          "q": "Can I use your music in Instagram/YouTube videos?",
+          "a": "<strong>Yes!</strong> Usage is free for dancers and teachers. I just ask that you tag <strong>@djzeneyer</strong> so I can repost and promote your work. For large-scale commercial use, please contact for licensing."
+        }
+      }
+    },
+    "not_found": "Didn't find what you were looking for?",
+    "cta_whatsapp": "Talk on WhatsApp",
+    "cta_email": "Send Email"
+  },
+  "gamification": {
+    "zenTribe": "Zen Tribe",
+    "yourProgress": "Your Progress",
+    "viewAll": "View All",
+    "level": "Level",
+    "totalPoints": "Total Points",
+    "xpToNext": "{{count}} XP to next level",
+    "maxLevel": "Max level reached!",
+    "achievements": "Achievements",
+    "achievement": "Achievement",
+    "startJourney": "Start your journey to unlock achievements!",
+    "earnMoreXP": "Earn More XP"
+  },
+  "dashboard": {
+    "loading": "Loading your Zen Dashboard...",
+    "welcomeBack": "Welcome back, ",
+    "progressToLevel": "Progress to Level {{level}}",
+    "boostXP": "Boost XP",
+    "tracksDownloaded": "Tracks Downloaded",
+    "eventsAttended": "Events Attended",
+    "dayStreak": "Day Streak",
+    "dayStreakFire": "Day Streak 🔥",
+    "tribeFriends": "Tribe Friends",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity yet.",
+    "quickActions": "Quick Actions",
+    "browseMusic": "Browse Music",
+    "viewEvents": "View Events",
+    "visitShop": "Visit Shop",
+    "yourAchievements": "Your Achievements",
+    "unlocked": "Unlocked",
+    "startJourney": "Start Your Journey",
+    "startJourneyDesc": "Complete tasks like listening to tracks, attending events, or visiting the shop to unlock your first achievements!",
+    "startListening": "Start Listening",
+    "timeAgo": {
+      "years": "{{count}} years ago",
+      "months": "{{count}} months ago",
+      "days": "{{count}} days ago",
+      "hours": "{{count}} hours ago",
+      "minutes": "{{count}} minutes ago",
+      "seconds": "{{count}} seconds ago"
+    }
   }
 }

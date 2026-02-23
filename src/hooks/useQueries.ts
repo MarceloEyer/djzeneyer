@@ -267,20 +267,27 @@ export const useCartQuery = () => {
 };
 
 // ============================================================================
-// USER GAMIPRESS QUERY (DASHBOARD - API FACADE, SEM AUTH)
+// USER GAMIPRESS QUERY (DASHBOARD - AUTHENTICATED)
 // ============================================================================
 
-export const useGamipressQuery = (userId?: number) => {
+export const useGamipressQuery = (userId?: number, token?: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.user.gamipress(userId!),
     queryFn: async () => {
       if (!userId) return null;
-      const apiUrl = buildApiUrl(`djzeneyer/v1/gamipress/${userId}`);
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch gamipress');
+      const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/user-data');
+
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const wpData = (window as any).wpData || {};
+      if (wpData.nonce) headers['X-WP-Nonce'] = wpData.nonce;
+
+      const res = await fetch(apiUrl, { headers, credentials: 'include' });
+      if (!res.ok) throw new Error(`Failed to fetch gamipress: ${res.status}`);
       return res.json();
     },
     staleTime: STALE_TIME.GAMIPRESS,
+    refetchInterval: 60_000,
     enabled: Boolean(userId),
   });
 };

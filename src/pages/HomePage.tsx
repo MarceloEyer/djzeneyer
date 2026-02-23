@@ -57,19 +57,19 @@ const FEATURES_DATA = [
 const FESTIVALS_HIGHLIGHT = ARTIST.festivals.slice(0, 6);
 
 const STATS = [
-  { value: '2×', label: 'World Champion', icon: Trophy },
-  { value: `${ARTIST.stats.countriesPlayed}+`, label: 'Countries', icon: Globe },
-  { value: `${ARTIST.stats.yearsActive}+`, label: 'Years Active', icon: Sparkles },
+  { value: '2×', labelKey: 'home_stat_champion', icon: Trophy },
+  { value: `${ARTIST.stats.countriesPlayed}+`, labelKey: 'home_stat_countries', icon: Globe },
+  { value: `${ARTIST.stats.yearsActive}+`, labelKey: 'home_stat_years', icon: Sparkles },
 ];
 
-const CONTAINER_VARIANTS: Variants = { 
-  hidden: { opacity: 0 }, 
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } } 
+const CONTAINER_VARIANTS: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
 };
 
-const ITEM_VARIANTS: Variants = { 
-  hidden: { y: 20, opacity: 0 }, 
-  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } } 
+const ITEM_VARIANTS: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
 };
 
 // ============================================================================
@@ -106,7 +106,7 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
-  
+
   const isPortuguese = i18n.language?.startsWith('pt');
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = '/';
@@ -116,7 +116,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     // Tenta pegar a URL da API do ambiente ou usa fallback
     const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
-    
+
     fetch(`${wpRestUrl}/zen-seo/v1/settings`)
       .then(res => res.json())
       .then(response => {
@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
         "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
-        "potentialAction": { 
+        "potentialAction": {
           "@type": "SearchAction",
           "target": `${ARTIST.site.baseUrl}/search?q={search_term_string}`,
           "query-input": "required name=search_term_string"
@@ -162,29 +162,29 @@ const HomePage: React.FC = () => {
           { "@type": "Award", "name": "Best DJ Performance", "description": "Brazilian Zouk World Championships", "dateAwarded": "2022" }
         ],
         "hasOccupation": [
-          { 
-            "@type": "Occupation", 
-            "name": "DJ", 
-            "skills": "Audio Mixing, Playlist Curation, Live Performance", 
-            "occupationalCategory": "27-2099.00" 
+          {
+            "@type": "Occupation",
+            "name": "DJ",
+            "skills": "Audio Mixing, Playlist Curation, Live Performance",
+            "occupationalCategory": "27-2099.00"
           },
-          { 
-            "@type": "Occupation", 
-            "name": "Music Producer", 
-            "skills": "Audio Engineering, Remixing, Mastering" 
+          {
+            "@type": "Occupation",
+            "name": "Music Producer",
+            "skills": "Audio Engineering, Remixing, Mastering"
           },
         ],
         "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
           "@type": "MusicEvent",
           "name": f.name,
           "startDate": f.date,
-          "location": { 
-            "@type": "Place", 
+          "location": {
+            "@type": "Place",
             "name": f.country,
-            "address": { 
-               "@type": "PostalAddress", 
-               "addressCountry": f.country 
-            } 
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": f.country
+            }
           },
           "eventStatus": "https://schema.org/EventScheduled",
           "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
@@ -215,22 +215,22 @@ const HomePage: React.FC = () => {
     <>
       <HeadlessSEO
         // Tenta usar dados do Plugin WP, fallback para strings hardcoded
-        title={seoSettings?.real_name 
-          ? `${seoSettings.real_name} | 2× World Champion` 
+        title={seoSettings?.real_name
+          ? `${seoSettings.real_name} | 2× World Champion`
           : "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"}
-        
+
         description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
-        
+
         url={currentUrl}
-        
+
         // Imagem vinda do painel WP ou fallback local
         image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.png`}
-        
+
         isHomepage={true}
         schema={schemaData}
         keywords="DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
-        
-        // CORREÇÃO: Removido o bloco 'preload' para evitar duplicidade de carregamento
+
+      // CORREÇÃO: Removido o bloco 'preload' para evitar duplicidade de carregamento
       />
 
       {/* HERO SECTION */}
@@ -264,8 +264,8 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display text-white mb-4 tracking-tight">
-              DJ Zen Eyer
+            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display mb-4 tracking-tight">
+              <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
             </motion.h1>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
@@ -277,7 +277,7 @@ const HomePage: React.FC = () => {
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
-              {STATS.map(stat => <StatCard key={stat.label} {...stat} />)}
+              {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as any)} icon={stat.icon} />)}
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
@@ -307,10 +307,14 @@ const HomePage: React.FC = () => {
                 components={[
                   <Link
                     key="events-link"
-                    to={isPortuguese ? '/pt/eventos/' : '/events/'}
+                    to={getLocalizedRoute('events', currentLang)}
                     className="text-primary hover:text-primary/80 underline underline-offset-4"
                   />,
-                  <Link key="work-with-me-link" to={isPortuguese ? '/pt/contrate' : '/work-with-me'} className="text-primary hover:text-primary/80 underline underline-offset-4" />
+                  <Link
+                    key="work-with-me-link"
+                    to={getLocalizedRoute('work-with-me', currentLang)}
+                    className="text-primary hover:text-primary/80 underline underline-offset-4"
+                  />
                 ]}
               />
             </motion.p>
@@ -345,9 +349,9 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div className="max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
-              {isPortuguese ? 'Próximos Shows' : 'Upcoming Shows'}
+              {t('home.shows.title')}
             </motion.h2>
-            
+
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
               <EventsList limit={3} showTitle={false} variant="compact" />
             </motion.div>
@@ -355,7 +359,7 @@ const HomePage: React.FC = () => {
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
               <Link to={getLocalizedRoute('events', currentLang)} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
-                <span>{isPortuguese ? 'Agenda completa' : 'Full schedule'}</span>
+                <span>{t('home.shows.cta')}</span>
               </Link>
               <a href={ARTIST.social.bandsintown?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow DJ Zen Eyer on Bandsintown">
                 <ExternalLink size={18} />
@@ -382,12 +386,12 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS} className="text-center">
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-2 font-display">
-              {isPortuguese ? 'Presença Internacional' : 'International Presence'}
+              {currentLang === 'pt' ? 'Presença Internacional' : 'International Presence'}
             </motion.h2>
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
               {FESTIVALS_HIGHLIGHT.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
-                <span>+{isPortuguese ? 'muitos outros' : 'many more'}</span>
+                <span>+{currentLang === 'pt' ? 'muitos outros' : 'many more'}</span>
               </span>
             </motion.div>
           </motion.div>
@@ -400,20 +404,20 @@ const HomePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
-                <Download size={20} className="text-primary" /> {isPortuguese ? 'Imprensa & Mídia' : 'Press & Media'}
+                <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
-              <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Acesse fotos, bio e assets.' : 'Access photos, bio and assets.'}</p>
+              <p className="text-white/70 mb-4 text-sm">{t('home.press.desc')}</p>
               <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
-                {isPortuguese ? 'BAIXAR PRESS KIT' : 'DOWNLOAD PRESS KIT'} →
+                {t('home.press.cta')} →
               </Link>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
-                <Calendar size={20} className="text-green-500" /> {isPortuguese ? 'Contratantes' : 'Bookers'}
+                <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
-              <p className="text-white/70 mb-4 text-sm">{isPortuguese ? 'Leve o "Zen Experience" para o seu evento.' : 'Bring the "Zen Experience" to your event.'}</p>
+              <p className="text-white/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
               <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
-                {isPortuguese ? 'ORÇAMENTO' : 'REQUEST BOOKING'} →
+                {t('home.bookers.cta')} →
               </Link>
             </motion.div>
           </div>
@@ -424,12 +428,12 @@ const HomePage: React.FC = () => {
       <section className="py-12 bg-background border-t border-white/5">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-             <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{isPortuguese ? 'Perfis Verificados' : 'Verified Profiles'}</p>
-             <div className="flex flex-wrap justify-center gap-6 text-sm">
-               <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
-               <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
-               <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
-             </div>
+            <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
+              <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
+              <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -437,17 +441,19 @@ const HomePage: React.FC = () => {
       {/* FINAL CTA - ZEN TRIBE */}
       <section className="py-24 relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
-        
+
         <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
           <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
-            {isPortuguese ? 'Junte-se à ' : 'Join the '}<span className="text-primary">Zen Tribe</span>
+            <Trans i18nKey="home.tribe.title">
+              Junte-se à <span className="text-primary">Zen Tribe</span>
+            </Trans>
           </motion.h2>
           <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
-            {isPortuguese ? 'Não é só sobre música. É sobre vibração. Entre para a lista VIP.' : 'It\'s not just about music. It\'s about the vibe. Join the VIP list.'}
+            {t('home.tribe.desc')}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
             <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">
-              {isPortuguese ? 'Entrar na Tribo' : 'Join the Tribe'}
+              {t('nav_tribe')}
             </Link>
           </motion.div>
         </motion.div>

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { DollarSign, CreditCard, Banknote, Heart, Music, Globe, Building2, CheckCircle2 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { ARTIST } from '../data/artistData';
 
 const SupportArtistPage = () => {
   const { t, i18n } = useTranslation();
@@ -13,26 +14,41 @@ const SupportArtistPage = () => {
       description: t('support.inter.description', 'US and Brazil bank accounts for international and local payments'),
       icon: Building2,
       priority: 1,
+      isPreferred: true,
       color: 'from-orange-500 to-orange-600',
       accounts: [
+        // International Channels
+        ...(['usd', 'eur', 'gbp'] as const).map((currency) => {
+          const acc = ARTIST.payment.interGlobal[currency];
+          return {
+            country: t(`support.inter.${currency}`, `${currency.toUpperCase()} Bank Account`),
+            details: currency === 'usd' ? [
+              { label: t('support.accountName', 'Beneficiary Name'), value: acc.accountName },
+              { label: t('support.bank', 'Bank'), value: (acc as any).bankName },
+              { label: t('support.accountNumber', 'Account Number'), value: (acc as any).accountNumber },
+              { label: t('support.achRouting', 'ACH Routing'), value: (acc as any).achRouting },
+              { label: t('support.wireRouting', 'Wire Routing'), value: (acc as any).wireRouting },
+              { label: t('support.bankAddress', 'Bank Address'), value: (acc as any).bankAddress },
+            ] : [
+              { label: t('support.accountName', 'Account Name'), value: acc.accountName },
+              { label: t('support.beneficiaryBank', 'Beneficiary Bank'), value: acc.beneficiaryBank },
+              { label: t('support.swiftCode', 'SWIFT Code'), value: acc.swiftCode },
+              { label: t('support.intermediary', 'Intermediary Bank'), value: acc.intermediaryBank.name },
+              { label: t('support.swiftInter', 'Intermediary SWIFT'), value: acc.intermediaryBank.swift },
+              { label: t('support.iban', 'IBAN'), value: acc.iban },
+            ],
+          };
+        }),
+        // Local Brazil
         {
-          country: t('support.inter.usa', 'United States'),
+          country: t('support.inter.brazil', 'Brazil (Local)'),
           details: [
-            { label: t('support.accountName', 'Account Name'), value: 'Marcelo Eyer Fernandes' },
-            { label: t('support.routingNumber', 'Routing Number'), value: '084106768' },
-            { label: t('support.accountNumber', 'Account Number'), value: '9100169982' },
-            { label: t('support.accountType', 'Account Type'), value: 'Checking' },
-            { label: t('support.swiftCode', 'SWIFT/BIC'), value: 'CINTUS33XXX' },
-          ],
-        },
-        {
-          country: t('support.inter.brazil', 'Brazil'),
-          details: [
-            { label: t('support.accountName', 'Account Name'), value: 'Marcelo Eyer Fernandes' },
-            { label: t('support.bank', 'Bank'), value: 'Banco Inter (077)' },
-            { label: t('support.branch', 'Branch'), value: '0001' },
-            { label: t('support.account', 'Account'), value: '94635616-7' },
-            { label: t('support.pixKey', 'PIX Key'), value: 'contato@djzeneyer.com' },
+            { label: t('support.accountName', 'Account Name'), value: ARTIST.payment.interGlobal.brazil.accountName },
+            { label: t('support.cpf', 'CPF'), value: ARTIST.payment.interGlobal.brazil.cpf },
+            { label: t('support.bank', 'Bank'), value: ARTIST.payment.interGlobal.brazil.bank },
+            { label: t('support.branch', 'Branch'), value: ARTIST.payment.interGlobal.brazil.branch },
+            { label: t('support.account', 'Account'), value: ARTIST.payment.interGlobal.brazil.account },
+            { label: t('support.pixKey', 'PIX Key'), value: ARTIST.payment.interGlobal.brazil.pixKey },
           ],
         },
       ],
@@ -44,8 +60,20 @@ const SupportArtistPage = () => {
       icon: Globe,
       priority: 2,
       color: 'from-green-500 to-green-600',
-      link: 'https://wise.com',
-      email: 'contato@djzeneyer.com',
+      link: ARTIST.payment.wise.url,
+      email: ARTIST.payment.wise.email,
+      accounts: [
+        {
+          country: t('support.wise.eur', 'Euro Bank Account (EUR - Wise)'),
+          details: [
+            { label: t('support.accountName', 'Account Name'), value: ARTIST.payment.wise.eur.accountName },
+            { label: t('support.iban', 'IBAN'), value: ARTIST.payment.wise.eur.iban },
+            { label: t('support.swiftCode', 'SWIFT/BIC Code'), value: ARTIST.payment.wise.eur.swiftCode },
+            { label: t('support.bank', 'Bank Name'), value: ARTIST.payment.wise.eur.bankName },
+            { label: t('support.bankAddress', 'Bank Address'), value: ARTIST.payment.wise.eur.bankAddress },
+          ],
+        },
+      ],
     },
     {
       id: 'paypal',
@@ -54,8 +82,9 @@ const SupportArtistPage = () => {
       icon: CreditCard,
       priority: 3,
       color: 'from-blue-500 to-blue-600',
-      link: 'https://paypal.me/djzeneyer',
-      email: 'contato@djzeneyer.com',
+      link: ARTIST.payment.paypal.donateUrl,
+      email: ARTIST.payment.paypal.email,
+      phone: ARTIST.payment.paypal.phone,
     },
   ];
 
@@ -146,7 +175,7 @@ const SupportArtistPage = () => {
                 </div>
 
                 <div className="p-6">
-                  {method.id === 'inter' && method.accounts && (
+                  {(method.id === 'inter' || method.id === 'wise') && method.accounts && (
                     <div className="space-y-6">
                       {method.accounts.map((account, accountIndex) => (
                         <div key={accountIndex} className={accountIndex > 0 ? 'pt-6 border-t border-white/10' : ''}>
@@ -161,6 +190,12 @@ const SupportArtistPage = () => {
                                 <div className="font-mono text-white font-bold">{detail.value}</div>
                               </div>
                             ))}
+                            {(account as any).bankAddress && (
+                              <div className="bg-surface/30 rounded-lg p-4 md:col-span-2">
+                                <div className="text-sm text-white/50 mb-1">{t('support.bankAddress', 'Bank Address')}</div>
+                                <div className="font-mono text-white font-bold">{(account as any).bankAddress}</div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -175,6 +210,14 @@ const SupportArtistPage = () => {
                           <div className="font-mono text-white font-bold">{method.email}</div>
                         </div>
                       )}
+
+                      {(method as any).phone && (
+                        <div className="bg-surface/30 rounded-lg p-4">
+                          <div className="text-sm text-white/50 mb-1">{t('support.phone', 'Phone / Key')}</div>
+                          <div className="font-mono text-white font-bold">{(method as any).phone}</div>
+                        </div>
+                      )}
+
                       {method.link && (
                         <a href={method.link} target="_blank" rel="noopener noreferrer" className="btn btn-primary w-full justify-center">
                           <DollarSign size={20} />

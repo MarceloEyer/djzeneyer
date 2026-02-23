@@ -70,7 +70,7 @@ const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
 const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
 const TicketsPage = lazy(() => import('../pages/TicketsPage'));
 const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
-const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage'));
+const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
 const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 

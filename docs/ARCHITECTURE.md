@@ -1,6 +1,6 @@
-# Architecture Overview
+# Visão Geral da Arquitetura
 
-**DJ Zen Eyer Website - Technical Architecture**
+**DJ Zen Eyer — Arquitetura Técnica**
 
 ---
 
@@ -148,51 +148,56 @@ DashboardPage.tsx
 
 ```
 src/
-├── App.tsx                    # Root component (Routes)
-├── main.tsx                   # Entry point
+├── App.tsx                    # Componente raiz (Rotas)
+├── main.tsx                   # Ponto de entrada
 │
 ├── components/
-│   ├── AppRoutes.tsx         # Route configuration
-│   ├── HeadlessSEO.tsx       # SEO manager (critical!)
+│   ├── AppRoutes.tsx         # Configuração de rotas
+│   ├── HeadlessSEO.tsx       # Gerenciador de SEO (crítico!)
 │   │
-│   ├── auth/
-│   │   └── AuthModal.tsx     # Login/Register modal
+│   ├── Layout/
+│   │   └── Navbar.tsx        # Navegação principal
 │   │
 │   ├── common/
-│   │   ├── Navbar.tsx        # Header navigation
-│   │   ├── Footer.tsx        # Footer
-│   │   └── UserMenu.tsx      # User dropdown
+│   │   ├── Footer.tsx        # Rodapé
+│   │   └── UserMenu.tsx      # Menu do usuário
+│   │
+│   ├── auth/
+│   │   └── AuthModal.tsx     # Modal Login/Registro
 │   │
 │   └── account/
 │       ├── UserStatsCards.tsx
 │       ├── OrdersList.tsx
 │       └── RecentActivity.tsx
 │
-├── pages/                     # Lazy-loaded pages
+├── pages/                     # Páginas (lazy-loaded)
 │   ├── HomePage.tsx
 │   ├── ShopPage.tsx
 │   ├── EventsPage.tsx
+│   ├── MusicPage.tsx
+│   ├── NewsPage.tsx
 │   ├── DashboardPage.tsx
 │   └── ...
 │
-├── contexts/                  # Global state
-│   ├── UserContext.tsx       # Auth state
-│   ├── CartContext.tsx       # WooCommerce cart
+├── contexts/                  # Estado global
+│   ├── UserContext.tsx       # Autenticação
+│   ├── CartContext.tsx       # Carrinho WooCommerce
 │   └── MusicPlayerContext.tsx
 │
-├── hooks/                     # Custom hooks
-│   ├── useQueries.ts         # React Query hooks
-│   ├── useUserEvents.ts
-│   └── useGamiPress.ts
+├── hooks/                     # Hooks centralizados
+│   └── useQueries.ts         # TODOS os hooks React Query
 │
-├── locales/                   # i18n translations
+├── layouts/
+│   └── MainLayout.tsx        # Layout principal (Navbar+Footer+Auth)
+│
+├── locales/                   # Traduções i18n
 │   ├── en/translation.json
 │   └── pt/translation.json
 │
 └── config/
-    ├── api.ts                # API URLs
-    ├── routes.ts             # Route map
-    └── siteConfig.ts         # Site config
+    ├── api.ts                # URLs da API (fonte de verdade)
+    ├── routes.ts             # Mapa de rotas EN/PT
+    └── siteConfig.ts         # Configuração do site
 ```
 
 ### Lazy Loading Strategy
@@ -553,7 +558,7 @@ on:
 
 jobs:
   1. Checkout code
-  2. Setup Node.js 18
+  2. Setup Node.js 20
   3. npm ci (install)
   4. npm run build (compile)
   5. rsync dist/ → Hostinger VPS
@@ -593,5 +598,5 @@ jobs:
 
 ---
 
-**Last Updated:** January 2026
-**Version:** 1.0.0
+**Atualizado:** Fevereiro 2026
+**Versão:** 2.2.0

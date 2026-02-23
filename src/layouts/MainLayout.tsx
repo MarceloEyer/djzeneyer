@@ -4,6 +4,7 @@ import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/common/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import ScrollToTop from '../components/ScrollToTop';
 
 const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -18,6 +19,7 @@ const MainLayout: React.FC = () => {
 
   return (
     <>
+      <ScrollToTop />
       {/* Default SEO for all pages using this layout.
           Individual pages can override this by rendering HeadlessSEO themselves. */}
       <HeadlessSEO />

@@ -28,13 +28,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const navigate = useNavigate();
   // ATENÇÃO: Verifique se o seu useUser() já aceita o 4º argumento (token) no register
   const { login, register, googleLogin, googleClientId } = useUser();
-  
+
   // Estados do Formulário
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  
+
   // Estados de Segurança
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [honeypot, setHoneypot] = useState(''); // Campo armadilha para bots
@@ -49,7 +49,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     // Validação de Email
     if (!email) {
       errors.email = 'Email é obrigatório';
@@ -104,14 +104,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         // Certifique-se que sua função register no UserContext aceita esse argumento
         await register(username.trim(), email, password, turnstileToken);
       }
-      
+
       if (onSuccess) onSuccess();
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro:', err);
       // Se der erro, reseta o token para forçar nova verificação
-      setTurnstileToken(''); 
+      setTurnstileToken('');
       setError(err.message || 'Erro ao autenticar. Verifique suas credenciais.');
     } finally {
       setLoading(false);
@@ -126,7 +126,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
     setLoading(true);
     setError('');
-    
+
     try {
       await googleLogin(credentialResponse.credential);
       if (onSuccess) onSuccess();
@@ -185,10 +185,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         >
           {/* Efeito de Brilho de Fundo */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-3xl blur-xl" />
-          
+
           {/* Card Principal */}
           <div className="relative bg-surface/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
-            
+
             {/* Botão Fechar */}
             <button
               onClick={onClose}
@@ -234,7 +234,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         theme="filled_black"
                         size="large"
                         text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                        width="100%"
+                        width={368}
                         logo_alignment="center"
                       />
                     </div>
@@ -258,7 +258,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
               {/* Formulário */}
               <form onSubmit={handleSubmit} className="space-y-4">
-                
+
                 {/* --- CAMPO ARMADILHA (HONEYPOT) - Invisível --- */}
                 <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} aria-hidden="true">
                   <label htmlFor="user_website_trap">Se você é humano, não preencha este campo</label>
@@ -286,9 +286,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                           setUsername(e.target.value);
                           if (formErrors.username) setFormErrors({ ...formErrors, username: undefined });
                         }}
-                        className={`w-full bg-black/40 text-white border ${
-                          formErrors.username ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                        className={`w-full bg-black/40 text-white border ${formErrors.username ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
+                          } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                         placeholder="Como devemos te chamar?"
                         disabled={loading}
                       />
@@ -309,9 +308,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setEmail(e.target.value);
                         if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                       }}
-                      className={`w-full bg-black/40 text-white border ${
-                        formErrors.email ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                      } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                      className={`w-full bg-black/40 text-white border ${formErrors.email ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
+                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                       placeholder="seu@email.com"
                       disabled={loading}
                     />
@@ -324,7 +322,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   <div className="flex justify-between items-center mb-1.5 ml-1">
                     <label className="text-xs font-bold uppercase text-white/50">Senha</label>
                     {mode === 'login' && (
-                      <button 
+                      <button
                         type="button"
                         onClick={handleForgotPassword}
                         className="text-xs text-primary hover:text-primary/80 transition-colors"
@@ -342,9 +340,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setPassword(e.target.value);
                         if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
                       }}
-                      className={`w-full bg-black/40 text-white border ${
-                        formErrors.password ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                      } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                      className={`w-full bg-black/40 text-white border ${formErrors.password ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
+                        } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                       placeholder="••••••••"
                       disabled={loading}
                     />
@@ -363,7 +360,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 {/* CLOUDFLARE TURNSTILE (Apenas no Registro) */}
                 {mode === 'register' && (
                   <div className="flex justify-center py-2">
-                    <Turnstile 
+                    <Turnstile
                       siteKey={getTurnstileSiteKey()}
                       onSuccess={(token) => setTurnstileToken(token)}
                       options={{ theme: 'dark' }}

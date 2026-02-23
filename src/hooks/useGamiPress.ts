@@ -1,9 +1,8 @@
 // src/hooks/useGamiPress.ts
-// v7.2 - OPTIMIZED GAMIPRESS API AGGREGATION
+// v8.0 - REACT QUERY MIGRATION (replaces manual fetch + useState + setInterval)
 
-import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
-import { buildApiUrl } from '../config/api';
+import { useGamipressQuery } from './useQueries';
 
 /* =========================
  * INTERFACES
@@ -26,6 +25,10 @@ export interface GamiPressData {
   nextLevelPoints: number;
   progressToNextLevel: number;
   achievements: Achievement[];
+  totalTracks: number;
+  eventsAttended: number;
+  streak: number;
+  streakFire: boolean;
 }
 
 interface GamiPressHookResponse extends GamiPressData {
@@ -36,103 +39,50 @@ interface GamiPressHookResponse extends GamiPressData {
 }
 
 /* =========================
+ * DEFAULTS
+ * ========================= */
+
+const FALLBACK: GamiPressData = {
+  points: 0,
+  level: 1,
+  rank: 'Zen Novice',
+  rankId: 0,
+  nextLevelPoints: 100,
+  progressToNextLevel: 0,
+  achievements: [],
+  totalTracks: 0,
+  eventsAttended: 0,
+  streak: 0,
+  streakFire: false,
+};
+
+/* =========================
  * HOOK
  * ========================= */
 
 export const useGamiPress = (): GamiPressHookResponse => {
   const { user } = useUser();
+  const { data, isLoading, error, refetch } = useGamipressQuery(user?.id, user?.token);
 
-  const [data, setData] = useState<GamiPressData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchGamiPressData = useCallback(async () => {
-    if (!user?.id || !user?.token) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const wpData = (window as any).wpData || {};
-      const endpoint = buildApiUrl('djzeneyer/v1/gamipress/user-data');
-
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`,
-      };
-
-      if (wpData.nonce) {
-        headers['X-WP-Nonce'] = wpData.nonce;
-      }
-
-      const response = await fetch(endpoint, {
-        headers,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-            console.error('[useGamiPress] ❌ 401 Unauthorized');
-        }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const newData = await response.json();
-      setData(newData);
-
-    } catch (err) {
-      console.error('[useGamiPress]', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      
-      // Set fallback data on error
-      setData({
-        points: 0,
-        level: 1,
-        rank: 'Zen Novice',
-        rankId: 0,
-        nextLevelPoints: 100,
-        progressToNextLevel: 0,
-        achievements: [],
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id, user?.token]);
-
-  useEffect(() => {
-    fetchGamiPressData();
-  }, [fetchGamiPressData]);
-
-  useEffect(() => {
-    if (!user?.id) return;
-    const interval = setInterval(fetchGamiPressData, 60000);
-    return () => clearInterval(interval);
-  }, [user?.id, fetchGamiPressData]);
-
-  const fallback: GamiPressData = {
-    points: 0,
-    level: 1,
-    rank: 'Zen Novice',
-    rankId: 0,
-    nextLevelPoints: 100,
-    progressToNextLevel: 0,
-    achievements: [],
-  };
+  const resolved: GamiPressData = data ?? FALLBACK;
 
   return {
-    points: data?.points ?? fallback.points,
-    level: data?.level ?? fallback.level,
-    rank: data?.rank ?? fallback.rank,
-    rankId: data?.rankId ?? fallback.rankId,
-    nextLevelPoints: data?.nextLevelPoints ?? fallback.nextLevelPoints,
-    progressToNextLevel: data?.progressToNextLevel ?? fallback.progressToNextLevel,
-    achievements: data?.achievements ?? fallback.achievements,
-    data,
-    loading,
-    error,
-    refresh: fetchGamiPressData,
+    // Spread all fields for backward-compatible destructuring
+    points: resolved.points,
+    level: resolved.level,
+    rank: resolved.rank,
+    rankId: resolved.rankId,
+    nextLevelPoints: resolved.nextLevelPoints,
+    progressToNextLevel: resolved.progressToNextLevel,
+    achievements: resolved.achievements,
+    totalTracks: resolved.totalTracks,
+    eventsAttended: resolved.eventsAttended,
+    streak: resolved.streak,
+    streakFire: resolved.streakFire,
+    // Hook meta
+    data: data ?? null,
+    loading: isLoading,
+    error: error ? (error as Error).message : null,
+    refresh: () => { refetch(); },
   };
 };
