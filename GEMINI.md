@@ -9,7 +9,7 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 
 ## Sobre o Projeto
 
-- **Arquitetura:** WordPress Headless (REST API) + React 18 SPA (Vite 5)
+- **Arquitetura:** WordPress Headless (REST API) + React 18 SPA (Vite 7)
 - **Frontend:** React 18, TypeScript, Tailwind CSS, Framer Motion, React Query, React Router 7, i18next (PT/EN)
 - **Backend:** WordPress 6.0+, PHP 8.0+, WooCommerce, GamiPress, plugins customizados
 - **Infra:** Hostinger VPS (LiteSpeed), Cloudflare CDN, GitHub Actions CI/CD
@@ -32,7 +32,7 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 
 ## Convenções
 
-1. **Data fetching** → Sempre via React Query em `useQueries.ts`, nunca `fetch()` solto em componentes
+1. **Data fetching** → Sempre via React Query em `useQueries.ts`, nunca `fetch()` solto em componentes. Priorizar campos (`_fields`) em vez de frames pesados.
 2. **Strings** → Sempre internacionalizadas via `t('chave')`, nunca hardcoded
 3. **Páginas** → Sempre lazy-loaded com `React.lazy()`
 4. **PHP** → Namespaced, prepared statements, sanitizado

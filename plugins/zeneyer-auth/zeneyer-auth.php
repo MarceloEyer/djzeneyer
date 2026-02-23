@@ -3,9 +3,9 @@
  * Plugin Name:       ZenEyer Auth Pro
  * Plugin URI:        https://djzeneyer.com
  * Description:       Enterprise-grade JWT Authentication for Headless WordPress + React. Secure, fast, and production-ready. Includes Anti-Bot Security Shield.
- * Version:           2.2.0
+ * Version:           2.3.0
  * Requires at least: 6.0
- * Requires PHP:      7.4
+ * Requires PHP:      8.0
  * Author:            DJ Zen Eyer
  * Author URI:        https://djzeneyer.com
  * License:           GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('ZENEYER_AUTH_VERSION', '2.2.0'); // JWT now works with native WP endpoints
+define('ZENEYER_AUTH_VERSION', '2.3.0'); // JWT now works with native WP endpoints
 define('ZENEYER_AUTH_PATH', plugin_dir_path(__FILE__));
 define('ZENEYER_AUTH_URL', plugin_dir_url(__FILE__));
 define('ZENEYER_AUTH_BASENAME', plugin_basename(__FILE__));

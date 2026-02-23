@@ -26,7 +26,7 @@ const MusicPage: React.FC = () => {
   const streamingPlatforms = [
     {
       name: 'Spotify',
-      icon: <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" alt="Spotify" className="h-6" />,
+      icon: <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Icon_RGB_Green.png" alt="Spotify" className="h-6 w-6 object-contain" />,
       url: ARTIST.social.spotify.url,
       color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50'
     },
@@ -200,7 +200,7 @@ const MusicPage: React.FC = () => {
               <p className="text-white/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
               <Link
                 to={getRouteForKey('support-the-artist')}
-                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/80 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
               >
                 {t('music.support_cta')} <ExternalLink size={16} />
               </Link>

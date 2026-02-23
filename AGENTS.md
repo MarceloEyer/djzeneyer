@@ -18,7 +18,7 @@ Site e plataforma digital do **DJ Zen Eyer** (Marcelo Eyer Fernandes), bicampeã
 
 ### Frontend
 - **React 18** + TypeScript
-- **Vite 5** (build tool)
+- **Vite 7** (build tool)
 - **Tailwind CSS** + Framer Motion (animações)
 - **React Query** (TanStack Query v5) para data fetching
 - **React Router 7** para navegação SPA

@@ -98,8 +98,8 @@ class Zen_Plugins_Overview {
                     array(
                         'name' => 'ZenEyer Auth Pro',
                         'path' => 'zeneyer-auth/zeneyer-auth.php', 
-                        'version' => '2.0.0',
-                        'desc' => 'Secure JWT Authentication provider with Google OAuth 2.0 handling.',
+                        'version' => '2.3.0',
+                        'desc' => 'Secure JWT Authentication provider with Google OAuth 2.0. Optimized for PHP 8.0+.',
                         'icon' => 'dashicons-shield',
                         'menu' => 'zeneyer-auth' 
                     ),
