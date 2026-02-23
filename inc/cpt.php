@@ -89,7 +89,8 @@ add_action('rest_api_init', function() {
     register_rest_field('remixes', 'type_name', ['get_callback' => $get_type_callback]);
     register_rest_field('remixes', 'category_name', ['get_callback' => $get_type_callback]);
 
-    register_rest_field('remixes', 'featured_image_src', [
+    // Optimized Image Fields (Shared by remixes and post)
+    register_rest_field(['remixes', 'post'], 'featured_image_src', [
         'get_callback' => function($object) {
             $img_id = get_post_thumbnail_id($object['id']);
             if (!$img_id) return null;
@@ -98,17 +99,24 @@ add_action('rest_api_init', function() {
         },
     ]);
 
-    register_rest_field('remixes', 'featured_image_src_full', [
+    register_rest_field(['remixes', 'post'], 'featured_image_src_full', [
         'get_callback' => function($object) {
             $img_id = get_post_thumbnail_id($object['id']);
             return $img_id ? wp_get_attachment_url($img_id) : null;
+        },
+    ]);
+
+    // Author Name (Optimized for post)
+    register_rest_field('post', 'author_name', [
+        'get_callback' => function($object) {
+            return get_the_author_meta('display_name', $object['author']);
         },
     ]);
 });
 
 /**
  * Optimization: Batch prime attachment caches for REST API
- * Resolves N+1 query issue when fetching 'remixes' with 'featured_image_src'
+ * Resolves N+1 query issue when fetching 'remixes' or 'post' with 'featured_image_src'
  */
 add_filter('the_posts', function($posts, $query) {
     // 1. Ensure it's the main query and we have results
@@ -118,11 +126,16 @@ add_filter('the_posts', function($posts, $query) {
 
     // 2. Robust and strict post_type validation (handles arrays)
     $post_type = $query->get('post_type');
-    $is_remixes = is_array($post_type) 
-        ? in_array('remixes', $post_type, true) 
-        : 'remixes' === $post_type;
+    $valid_types = ['remixes', 'post'];
 
-    if (!$is_remixes) {
+    $is_valid = false;
+    if (is_array($post_type)) {
+        $is_valid = !empty(array_intersect($post_type, $valid_types));
+    } else {
+        $is_valid = in_array($post_type, $valid_types, true);
+    }
+
+    if (!$is_valid) {
         return $posts;
     }
 

@@ -68,6 +68,9 @@ export interface WPPost {
   title: { rendered: string };
   excerpt: { rendered: string };
   content?: { rendered: string };
+  featured_image_src?: string | null;
+  featured_image_src_full?: string | null;
+  author_name?: string | null;
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url: string }>;
     author?: Array<{ name: string }>;
@@ -168,7 +171,8 @@ export const useNewsQuery = (options: { enabled?: boolean } = {}) => {
     queryKey: QUERY_KEYS.posts.list(),
     queryFn: async (): Promise<WPPost[]> => {
       const apiUrl = buildApiUrl('wp/v2/posts', {
-        _embed: 'true',
+        // OPTIMIZATION: Use _fields instead of _embed to reduce payload and backend processing
+        _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
         per_page: '10',
       });
       const res = await fetch(apiUrl);
@@ -188,7 +192,8 @@ export const useNewsBySlug = (slug?: string) => {
       if (!slug) return null;
       const apiUrl = buildApiUrl('wp/v2/posts', {
         slug,
-        _embed: 'true',
+        // OPTIMIZATION: Use _fields instead of _embed to reduce payload and backend processing
+        _fields: 'id,date,slug,title,content,excerpt,featured_image_src_full,author_name',
       });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error('Failed to fetch individual news post');
