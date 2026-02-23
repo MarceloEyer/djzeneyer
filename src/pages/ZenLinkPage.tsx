@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Youtube, Calendar, ShoppingBag, Mail, Phone,
@@ -26,7 +27,7 @@ const AppleMusicIcon = () => (
 
 const SoundCloudIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.098.101.098.05 0 .09-.04.099-.098l.255-2.105-.27-2.154c-.009-.06-.05-.1-.1-.1m-.899.828c-.06 0-.091.037-.104.094L0 14.479l.172 1.308c.013.06.045.094.09.094.051 0 .089-.037.104-.09l.2-1.308-.2-1.334c-.016-.06-.053-.09-.091-.09m1.833-1.681c-.065 0-.107.054-.114.12l-.229 2.986.229 2.802c.007.066.049.12.114.12.063 0 .108-.054.116-.12l.26-2.802-.26-2.986c-.008-.066-.053-.12-.116-.12m.867-.463c-.074 0-.124.06-.131.134l-.217 3.449.217 2.938c.007.074.057.134.131.134.07 0 .124-.06.131-.134l.245-2.938-.245-3.449c-.007-.074-.06-.134-.131-.134m.885-.139c-.084 0-.138.07-.145.15l-.195 3.588.195 2.963c.007.083.06.15.145.15.08 0 .14-.067.145-.15l.226-2.963-.226-3.588c-.006-.08-.066-.15-.145-.15m.912-.216c-.094 0-.148.078-.155.168l-.182 3.804.182 2.965c.007.09.061.168.155.168.09 0 .15-.078.157-.168l.21-2.965-.21-3.804c-.008-.09-.067-.168-.157-.168m.919-.076c-.104 0-.162.086-.168.186l-.17 3.88.17 2.956c.006.1.064.186.168.186.1 0 .164-.086.17-.186l.197-2.956-.196-3.88c-.007-.1-.071-.186-.171-.186m.928.057c-.081 0-.168.094-.175.2l-.156 3.823.156 2.93c.007.11.094.2.175.2.084 0 .168-.09.178-.2l.18-2.93-.18-3.823c-.01-.106-.094-.2-.178-.2m.93.124c-.09 0-.178.103-.184.215l-.144 3.7.144 2.894c.006.116.094.215.184.215.094 0 .178-.099.188-.215l.168-2.894-.168-3.7c-.01-.112-.094-.215-.188-.215m.93-.004c-.098 0-.186.105-.19.224l-.136 3.704.135 2.855c.005.12.093.224.19.224.1 0 .186-.105.194-.224l.156-2.855-.156-3.704c-.008-.12-.094-.224-.194-.224m4.088-.66c-.239 0-.47.024-.694.066A5.612 5.612 0 0012.2 7.594c-.253-.104-.462-.11-.55-.055-.087.054-.131.169-.131.34v9.474c0 .18.102.335.268.384.022.007.045.013.068.016h5.52c1.92 0 3.476-1.52 3.476-3.394 0-1.874-1.556-3.394-3.476-3.394" />
+    <path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.098.101.098.05 0 .09-.04.099-.098l.255-2.105-.27-2.154c-.009-.04-.05-.1-.1-.1m-.899.828c-.06 0-.091.037-.104.094L0 14.479l.172 1.308c.013.06.045.094.09.094.051 0 .089-.037.104-.09l.2-1.308-.2-1.334c-.016-.06-.053-.09-.091-.09m1.833-1.681c-.065 0-.107.054-.114.12l-.229 2.986.229 2.802c.007.066.049.12.114.12.063 0 .108-.054.116-.12l.26-2.802-.26-2.986c-.008-.066-.053-.12-.116-.12m.867-.463c-.074 0-.124.06-.131.134l-.217 3.449.217 2.938c.007.074.057.134.131.134.07 0 .124-.06.131-.134l.245-2.938-.245-3.449c-.007-.074-.06-.134-.131-.134m.885-.139c-.084 0-.138.07-.145.15l-.195 3.588.195 2.963c.007.083.06.15.145.15.08 0 .14-.067.145-.15l.226-2.963-.226-3.588c-.006-.08-.066-.15-.145-.15m.912-.216c-.094 0-.148.078-.155.168l-.182 3.804.182 2.965c.007.09.061.168.155.168.09 0 .15-.078.157-.168l.21-2.965-.21-3.804c-.008-.09-.067-.168-.157-.168m.919-.076c-.104 0-.162.086-.168.186l-.17 3.88.17 2.956c.006.1.064.186.168.186.1 0 .164-.086.17-.186l.197-2.956-.196-3.88c-.007-.1-.071-.186-.171-.186m.928.057c-.081 0-.168.094-.175.2l-.156 3.823.156 2.93c.007.11.094.2.175.2.084 0 .168-.09.178-.2l.18-2.93-.18-3.823c-.01-.106-.094-.2-.178-.2m.93.124c-.09 0-.178.103-.184.215l-.144 3.7.144 2.894c.006.116.094.215.184.215.094 0 .178-.099.188-.215l.168-2.894-.168-3.7c-.01-.112-.094-.215-.188-.215m.93-.004c-.098 0-.186.105-.19.224l-.136 3.704.135 2.855c.005.12.093.224.19.224.1 0 .186-.105.194-.224l.156-2.855-.156-3.704c-.008-.12-.094-.224-.194-.224m4.088-.66c-.239 0-.47.024-.694.066A5.612 5.612 0 0012.2 7.594c-.253-.104-.462-.11-.55-.055-.087.054-.131.169-.131.34v9.474c0 .18.102.335.268.384.022.007.045.013.068.016h5.52c1.92 0 3.476-1.52 3.476-3.394 0-1.874-1.556-3.394-3.476-3.394" />
   </svg>
 );
 
@@ -70,8 +71,8 @@ const MUSIC_PLATFORMS = [
 
 // --- Main links ---
 interface LinkItemBase {
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   icon: React.ReactNode;
   gradient: string;
 }
@@ -83,32 +84,32 @@ type LinkItem = ExternalLink | InternalLink;
 const LINKS: LinkItem[] = [
   {
     type: 'external',
-    title: 'SoundCloud',
-    subtitle: 'Sets & Remixes',
+    titleKey: 'nav_music', // existing key "Música"
+    subtitleKey: 'zenlink.soundcloud_subtitle',
     url: ARTIST.social.soundcloud.url,
     icon: <SoundCloudIcon />,
     gradient: 'from-orange-500 to-orange-600',
   },
   {
     type: 'external',
-    title: 'YouTube',
-    subtitle: 'Live sets & tutorials',
+    titleKey: 'social.youtube',
+    subtitleKey: 'zenlink.youtube_subtitle',
     url: ARTIST.social.youtube.url,
     icon: <Youtube className="w-5 h-5" />,
     gradient: 'from-red-600 to-red-700',
   },
   {
     type: 'internal',
-    title: 'Book Me',
-    subtitle: 'Festivals, congresses & private events',
+    titleKey: 'zenlink.book_title',
+    subtitleKey: 'zenlink.book_subtitle',
     to: '/work-with-me',
     icon: <Calendar className="w-5 h-5" />,
     gradient: 'from-purple-500 to-pink-500',
   },
   {
     type: 'internal',
-    title: 'Shop',
-    subtitle: 'Exclusive merch & tracks',
+    titleKey: 'nav_shop',
+    subtitleKey: 'zenlink.shop_subtitle',
     to: '/shop',
     icon: <ShoppingBag className="w-5 h-5" />,
     gradient: 'from-amber-500 to-orange-600',
@@ -117,6 +118,7 @@ const LINKS: LinkItem[] = [
 
 // --- Smart Music Card Component ---
 const SmartMusicCard = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -139,8 +141,8 @@ const SmartMusicCard = () => {
               <Headphones className="w-5 h-5 text-white" />
             </div>
             <div className="text-left">
-              <h3 className="text-white font-bold text-lg">Listen Now</h3>
-              <p className="text-gray-400 text-sm">Choose your platform</p>
+              <h3 className="text-white font-bold text-lg">{t('zenlink.listen_now')}</h3>
+              <p className="text-gray-400 text-sm">{t('zenlink.choose_platform')}</p>
             </div>
           </div>
           <motion.div
@@ -203,14 +205,15 @@ const SmartMusicCard = () => {
 
 // --- Link Card Component ---
 const LinkCard = ({ link }: { link: LinkItem }) => {
+  const { t } = useTranslation();
   const inner = (
     <div className="flex items-center gap-4 bg-gray-900/95 backdrop-blur-xl rounded-2xl p-5">
       <div className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center bg-gradient-to-br ${link.gradient}`}>
         {link.icon}
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="text-white font-bold text-lg truncate">{link.title}</h3>
-        <p className="text-gray-400 text-sm truncate">{link.subtitle}</p>
+        <h3 className="text-white font-bold text-lg truncate">{t(link.titleKey)}</h3>
+        <p className="text-gray-400 text-sm truncate">{t(link.subtitleKey)}</p>
       </div>
       <svg className="w-5 h-5 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -242,11 +245,12 @@ const LinkCard = ({ link }: { link: LinkItem }) => {
 
 // --- Main Page ---
 export const ZenLinkPage = () => {
+  const { t } = useTranslation();
   return (
     <>
       <HeadlessSEO
-        title="ZenLink — All Links | DJ Zen Eyer"
-        description="Connect with DJ Zen Eyer — 2× World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!"
+        title={`ZenLink — All Links | ${ARTIST.identity.stageName}`}
+        description={t('zenlink.seo_description')}
         canonicalUrl={`${ARTIST.site.baseUrl}/zenlink`}
       />
 

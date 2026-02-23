@@ -96,6 +96,22 @@
       "soundcloud": "SOUNDCLOUD"
     }
   },
+  "zenlink": {
+    "listen_now": "Ouça Agora",
+    "choose_platform": "Escolha sua plataforma",
+    "seo_description": "Conecte-se com DJ Zen Eyer — 2× Campeão Mundial de Brazilian Zouk. Ouça, reserve e siga a cremosidade!",
+    "soundcloud_subtitle": "Sets e Remixes",
+    "youtube_subtitle": "Live sets e tutoriais",
+    "book_title": "Contrate-me",
+    "book_subtitle": "Festivais, congressos e eventos privados",
+    "shop_subtitle": "Merchandising e tracks exclusivas"
+  },
+  "social": {
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
+    "soundcloud": "SoundCloud"
+  },
   "badge_featured": "Destaque",
   "badge_new": "Novo",
   "badge_sale": "Promoção",
