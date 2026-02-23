@@ -8,7 +8,7 @@
  * - Queries de dashboard via API façade (sem nonce)
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { buildApiUrl } from '../config/api';
 import { QUERY_KEYS, STALE_TIME } from '../config/queryClient';
 
@@ -289,5 +289,26 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
     staleTime: STALE_TIME.GAMIPRESS,
     refetchInterval: 60_000,
     enabled: Boolean(userId),
+  });
+};
+
+// ============================================================================
+// SUBSCRIPTION MUTATION
+// ============================================================================
+
+export const useSubscriptionMutation = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const apiUrl = buildApiUrl('djzeneyer/v1/subscribe');
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Subscription failed');
+      return data;
+    },
   });
 };

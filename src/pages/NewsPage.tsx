@@ -6,6 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 import { useNewsQuery, useNewsBySlug, WPPost } from '../hooks/useQueries';
+import { stripHtml } from '../utils/text';
 
 // ============================================================================
 // HELPERS
@@ -18,10 +19,7 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const stripHtml = (html: string) => {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent || "";
-};
+// ============================================================================
 
 // ============================================================================
 // COMPONENT

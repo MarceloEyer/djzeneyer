@@ -5,6 +5,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
+import { stripHtml } from '../utils/text';
 import {
   Calendar as CalendarIcon,
   MapPin,
@@ -20,11 +21,6 @@ import {
 } from 'lucide-react';
 
 // --- UTILS ---
-const stripHtml = (html: string) => {
-  if (!html) return "";
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent || "";
-};
 const formatGoogleCalendarUrl = (event: any) => {
   const title = encodeURIComponent(event.title?.rendered || event.title);
   const start = new Date(event.date || event.datetime).toISOString().replace(/-|:|\.\d\d\d/g, "");

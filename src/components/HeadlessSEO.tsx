@@ -92,16 +92,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
     const links: HrefLang[] = [];
     const siteUrlClean = baseUrl.replace(/\/$/, '');
 
-    // Add current page
-    const currentPathNormalized = location.pathname.startsWith('/') ? location.pathname : `/${location.pathname}`;
-    const currentFullUrl = ensureTrailingSlash(`${siteUrlClean}${currentPathNormalized}`);
-
-    links.push({
-      lang: currentLang === 'pt' ? 'pt-BR' : 'en',
-      url: currentFullUrl
-    });
-
-    // Add alternates
+    // Add alternates (which include current and x-default)
     try {
       const alternates = getAlternateLinks(location.pathname, currentLang);
       Object.entries(alternates).forEach(([lang, path]) => {

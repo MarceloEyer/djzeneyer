@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
 import { ARTIST } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { useSubscriptionMutation } from '../../hooks/useQueries';
 
 const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 20, className = "" }) => (
   <svg
@@ -27,52 +28,34 @@ const Footer: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
   const currentLang = normalizeLanguage(i18n.language);
 
-  const handleSubscribe = async (e: React.FormEvent) => {
+  const { mutate: subscribe, isPending: isSubmitting } = useSubscriptionMutation();
+
+  const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setSubmitMessage(null);
     setSubmitSuccess(null);
 
     if (!email) {
       setSubmitMessage(t('auth.errors.invalidEmail'));
       setSubmitSuccess(false);
-      setIsSubmitting(false);
       return;
     }
 
-    try {
-      // @ts-ignore - wpData is injected by WordPress
-      const restUrl = window.wpData?.restUrl || '/wp-json/';
-      const response = await fetch(`${restUrl}djzeneyer/v1/subscribe`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
+    subscribe(email, {
+      onSuccess: (data) => {
         setSubmitMessage(data.message || t('footer_subscribe_success'));
         setSubmitSuccess(true);
         setEmail('');
-      } else {
-        const errorMessage = data.message || t('footer_subscribe_error');
-        setSubmitMessage(errorMessage);
+      },
+      onError: (err: any) => {
+        setSubmitMessage(err.message || t('footer_subscribe_error'));
         setSubmitSuccess(false);
-      }
-    } catch (err: any) {
-      setSubmitMessage(err.message || t('footer_subscribe_error'));
-      setSubmitSuccess(false);
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+    });
   };
 
   const whatsappLink = `https://wa.me/${ARTIST.contact.whatsapp.number}`;
