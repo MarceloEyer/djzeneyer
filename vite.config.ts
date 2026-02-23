@@ -17,9 +17,9 @@ export default defineConfig(({ command, mode }) => {
         deleteOriginFile: false,
       }),
     ].filter(Boolean),
-    
+
     publicDir: false,
-    
+
     // 🚨 CORREÇÃO CRÍTICA AQUI 🚨
     // Mudamos para '/' absoluto. 
     // Isso permite que o 'vite preview' no GitHub Actions encontre os arquivos JS/CSS.
@@ -37,24 +37,24 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
-      
+
       // 🔒 PULO DO GATO ANTI-EVAL
       minify: 'terser',
       sourcemap: false,
-      
+
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true,
           // Segurança
-          evaluate: false, 
+          evaluate: false,
           unsafe: false,
         },
-        output: {
+        format: {
           comments: false,
         },
       },
-      
+
       rollupOptions: {
         output: {
           assetFileNames: 'assets/[name]-[hash].[ext]',
