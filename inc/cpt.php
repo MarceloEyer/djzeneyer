@@ -89,19 +89,30 @@ add_action('rest_api_init', function() {
     register_rest_field('remixes', 'type_name', ['get_callback' => $get_type_callback]);
     register_rest_field('remixes', 'category_name', ['get_callback' => $get_type_callback]);
 
-    register_rest_field('remixes', 'featured_image_src', [
+    // Featured images (Medium & Full) for remixes and posts
+    register_rest_field(['remixes', 'post'], 'featured_image_src', [
         'get_callback' => function($object) {
             $img_id = get_post_thumbnail_id($object['id']);
             if (!$img_id) return null;
             $src = wp_get_attachment_image_src($img_id, 'medium_large');
-            return $src ? $src[0] : wp_get_attachment_url($img_id);
+            $url = $src ? $src[0] : wp_get_attachment_url($img_id);
+            return $url ?: null; // Coerce false to null
         },
     ]);
 
-    register_rest_field('remixes', 'featured_image_src_full', [
+    register_rest_field(['remixes', 'post'], 'featured_image_src_full', [
         'get_callback' => function($object) {
             $img_id = get_post_thumbnail_id($object['id']);
-            return $img_id ? wp_get_attachment_url($img_id) : null;
+            if (!$img_id) return null;
+            return wp_get_attachment_url($img_id) ?: null; // Coerce false to null
+        },
+    ]);
+
+    // Author Name for posts (to avoid _embed)
+    register_rest_field('post', 'author_name', [
+        'get_callback' => function($object) {
+            $author_id = $object['author'] ?? get_post_field('post_author', $object['id']);
+            return get_the_author_meta('display_name', $author_id) ?: 'Zen Eyer';
         },
     ]);
 });
@@ -111,18 +122,29 @@ add_action('rest_api_init', function() {
  * Resolves N+1 query issue when fetching 'remixes' with 'featured_image_src'
  */
 add_filter('the_posts', function($posts, $query) {
-    // 1. Ensure it's the main query and we have results
-    if (!$query instanceof WP_Query || !$query->is_main_query() || empty($posts)) {
+    // 1. Context check: is_main_query() is false for REST requests.
+    // We target REST context or main query for standard pages.
+    $is_rest = defined('REST_REQUEST') && REST_REQUEST;
+    if (!$query instanceof WP_Query || empty($posts)) {
+        return $posts;
+    }
+    
+    if (!$is_rest && !$query->is_main_query()) {
         return $posts;
     }
 
-    // 2. Robust and strict post_type validation (handles arrays)
+    // 2. Validate post types (remixes and post)
     $post_type = $query->get('post_type');
-    $is_remixes = is_array($post_type) 
-        ? in_array('remixes', $post_type, true) 
-        : 'remixes' === $post_type;
+    $target_types = ['remixes', 'post'];
+    
+    $has_target_type = false;
+    if (is_array($post_type)) {
+        $has_target_type = !empty(array_intersect($target_types, $post_type));
+    } else {
+        $has_target_type = in_array($post_type, $target_types, true);
+    }
 
-    if (!$is_remixes) {
+    if (!$has_target_type) {
         return $posts;
     }
 
