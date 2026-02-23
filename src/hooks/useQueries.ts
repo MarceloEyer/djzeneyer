@@ -173,7 +173,7 @@ export const useNewsQuery = (options: { enabled?: boolean } = {}) => {
       const apiUrl = buildApiUrl('wp/v2/posts', {
         per_page: '10',
         // OPTIMIZATION: Replaced _embed=true with targeted fields
-        _fields: 'id,date,slug,title,excerpt,featured_image_src,author_name',
+        _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
       });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error('Failed to fetch news posts');

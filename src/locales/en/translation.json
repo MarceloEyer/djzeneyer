@@ -183,7 +183,8 @@
     "read_more": "Read More",
     "end_reached": "You've reached the end of recent updates.",
     "view_archive": "View Full Archive",
-    "featured": "Featured"
+    "featured": "Featured",
+    "default_author": "Zen Eyer"
   },
   "events_page_title": "Events",
   "events_page_meta_desc": "Upcoming events and performances by DJ Zen Eyer",

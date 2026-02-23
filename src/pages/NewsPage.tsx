@@ -63,7 +63,7 @@ const NewsPage: React.FC = () => {
                 <div className="flex items-center justify-center gap-4 text-white/50 text-sm mb-4 font-mono uppercase tracking-widest">
                   <span className="flex items-center gap-1.5"><Calendar size={14} /> {formatDate(singlePost.date)}</span>
                   <span>•</span>
-                  <span>{t('news.by')} {singlePost.author_name || singlePost._embedded?.author?.[0]?.name || 'Zen Eyer'}</span>
+                  <span>{t('news.by')} {singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')}</span>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: singlePost.title.rendered }} />
 
@@ -142,7 +142,7 @@ const NewsPage: React.FC = () => {
                   <Link to={`${getRouteForKey('news')}/${featuredPost.slug}`}>
                     <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                       <img
-                        src={featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                        src={featuredPost.featured_image_src_full || featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
                         alt={featuredPost.title.rendered}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         loading="eager"
