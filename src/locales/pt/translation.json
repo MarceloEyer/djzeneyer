@@ -103,8 +103,10 @@
     "soundcloud_subtitle": "Sets e Remixes",
     "youtube_subtitle": "Live sets e tutoriais",
     "book_title": "Contrate-me",
-    "book_subtitle": "Festivais, congressos e eventos privados",
-    "shop_subtitle": "Merchandising e tracks exclusivas"
+    "book_subtitle": "Festival, congressos e eventos privados",
+    "shop_subtitle": "Merchandising e tracks exclusivas",
+    "tiktok_subtitle": "Cremosidade em 15 segundos",
+    "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro"
   },
   "social": {
     "youtube": "YouTube",
@@ -796,6 +798,7 @@
     "pixKey": "Chave PIX",
     "cpf": "CPF",
     "email": "Email",
+    "phone": "Telefone / Chave",
     "sendPayment": "Enviar Pagamento via",
     "business": {
       "title": "Contratações para Eventos & Consultas Comerciais",
@@ -936,7 +939,7 @@
         },
         "q3": {
           "q": "Quais são os principais títulos e conquistas?",
-          "a": "Zen Eyer possui dois títulos mundiais reconhecidos: <strong>Campeão Mundial 2019</strong> (Categoria Pro/Am) e <strong>Campeão Mundial 2022</strong> (Categoria Strictly). Além disso, é o único DJ de Zouk com perfil verificado no <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\" class=\"text-primary hover:underline\">Wikidata</a> devido à sua contribuição cultural para a expansão do ritmo na Europa e América do Norte."
+          "a": "Zen Eyer possui dois títulos mundiais reconhecidos: <strong>Campeão Mundial 2019</strong> (Categoria Pro/Am) e <strong>Campeão Mundial 2022</strong> (Categoria Strictly). Além disso, é o único DJ de Zouk com perfil verificado no <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\">Wikidata</a> devido à sua contribuição cultural para a expansão do ritmo na Europa e América do Norte."
         }
       },
       "rankings": {
@@ -1022,8 +1025,8 @@
     "earnMoreXP": "Ganhar Mais XP"
   },
   "dashboard": {
-    "loading": "Carregando seu Painel Zen...",
-    "welcomeBack": "Bem-vindo de volta, ",
+    "loading": "Carregando seu Zen Dashboard...",
+    "welcomeBack": "Bem-vindo de volta, {{name}}!",
     "progressToLevel": "Progresso para o Nível {{level}}",
     "boostXP": "Turbinar XP",
     "tracksDownloaded": "Tracks Baixadas",

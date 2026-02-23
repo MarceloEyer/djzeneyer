@@ -99,7 +99,9 @@
     "youtube_subtitle": "Live sets & tutorials",
     "book_title": "Book Me",
     "book_subtitle": "Festivals, congresses & private events",
-    "shop_subtitle": "Exclusive merch & tracks"
+    "shop_subtitle": "Exclusive merch & tracks",
+    "tiktok_subtitle": "Cremosidade in 15 seconds",
+    "hero_subtitle": "Brazilian Zouk Two-Time World Champion"
   },
   "social": {
     "youtube": "YouTube",
@@ -225,7 +227,6 @@
   "events_details": "EVENT DETAILS",
   "events_date": "Date",
   "events_location": "Location",
-  "events_found": "EVENTS FOUND",
   "events_none": "No events scheduled at the moment.",
   "events_experience_title": "ZEN EXPERIENCE",
   "events_experience_subtitle": "Follow my worldwide schedule. From intensive workshops to international congresses.",
@@ -822,7 +823,8 @@
   "events_month_sep": "Sep",
   "events_month_oct": "Oct",
   "events_month_nov": "Nov",
-  "events_month_dec": "Dec",
+  "events_found": "events found",
+  "error_loading": "Could not load the schedule",
   "events_no_results": "No events found for your search.",
   "events_search_results": "Results for",
   "events_venue": "Venue",
@@ -830,7 +832,7 @@
   "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. Elevating vibes, one beat at a time.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. Haste is the enemy of cremosity.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "about": {
     "hero": {
@@ -910,6 +912,9 @@
       "desc": "It's not just about music. It's about the vibe. Join the VIP list."
     }
   },
+  "footer_location": "Niterói, RJ - Brazil",
+  "footer_contact_label": "Contact",
+  "events_categories": "Categories",
   "faq": {
     "badge": "Knowledge Base",
     "title": "Frequent <1>Questions</1>",
@@ -928,7 +933,7 @@
         },
         "q3": {
           "q": "What are the main titles and achievements?",
-          "a": "Zen Eyer has two recognized world titles: <strong>2019 World Champion</strong> (Pro/Am Category) and <strong>2022 World Champion</strong> (Strictly Category). Additionally, he is the only Zouk DJ with a verified profile on <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\" class=\"text-primary hover:underline\">Wikidata</a> due to his cultural contribution to the rhythmic expansion in Europe and North America."
+          "a": "Zen Eyer has two recognized world titles: <strong>2019 World Champion</strong> (Pro/Am Category) and <strong>2022 World Champion</strong> (Strictly Category). Additionally, he is the only Zouk DJ with a verified profile on <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\">Wikidata</a> due to his cultural contribution to the rhythmic expansion in Europe and North America."
         }
       },
       "rankings": {
@@ -1015,7 +1020,7 @@
   },
   "dashboard": {
     "loading": "Loading your Zen Dashboard...",
-    "welcomeBack": "Welcome back, ",
+    "welcomeBack": "Welcome back, {{name}}!",
     "progressToLevel": "Progress to Level {{level}}",
     "boostXP": "Boost XP",
     "tracksDownloaded": "Tracks Downloaded",

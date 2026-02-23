@@ -1,13 +1,14 @@
 // src/pages/ZenLinkPage.tsx
 // v2.0 — Premium link-in-bio redesign (glassmorphism + smart music card)
 
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Youtube, Calendar, ShoppingBag, Mail, Phone,
-  Headphones, ChevronDown, ExternalLink,
+  Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
+  Music,
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
@@ -71,9 +72,10 @@ const MUSIC_PLATFORMS = [
 
 // --- Main links ---
 interface LinkItemBase {
+  id: string;
   titleKey: string;
   subtitleKey: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   gradient: string;
 }
 
@@ -83,6 +85,7 @@ type LinkItem = ExternalLink | InternalLink;
 
 const LINKS: LinkItem[] = [
   {
+    id: 'music-soundcloud',
     type: 'external',
     titleKey: 'nav_music', // existing key "Música"
     subtitleKey: 'zenlink.soundcloud_subtitle',
@@ -91,6 +94,7 @@ const LINKS: LinkItem[] = [
     gradient: 'from-orange-500 to-orange-600',
   },
   {
+    id: 'social-youtube',
     type: 'external',
     titleKey: 'social.youtube',
     subtitleKey: 'zenlink.youtube_subtitle',
@@ -99,6 +103,7 @@ const LINKS: LinkItem[] = [
     gradient: 'from-red-600 to-red-700',
   },
   {
+    id: 'internal-book',
     type: 'internal',
     titleKey: 'zenlink.book_title',
     subtitleKey: 'zenlink.book_subtitle',
@@ -107,12 +112,22 @@ const LINKS: LinkItem[] = [
     gradient: 'from-purple-500 to-pink-500',
   },
   {
+    id: 'internal-shop',
     type: 'internal',
     titleKey: 'nav_shop',
     subtitleKey: 'zenlink.shop_subtitle',
     to: '/shop',
     icon: <ShoppingBag className="w-5 h-5" />,
     gradient: 'from-amber-500 to-orange-600',
+  },
+  {
+    id: 'social-tiktok',
+    type: 'external',
+    titleKey: 'social.tiktok',
+    subtitleKey: 'zenlink.tiktok_subtitle',
+    url: ARTIST.social.tiktok.url,
+    icon: <Music className="w-5 h-5" />,
+    gradient: 'from-zinc-800 to-zinc-900',
   },
 ];
 
@@ -128,6 +143,8 @@ const SmartMusicCard = () => {
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
+        aria-expanded={isOpen}
+        aria-controls="platforms-panel"
         className={`
           w-full relative overflow-hidden rounded-2xl
           p-[2px] bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500
@@ -158,6 +175,8 @@ const SmartMusicCard = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id="platforms-panel"
+            role="region"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -192,7 +211,7 @@ const SmartMusicCard = () => {
                     </div>
                     <span className="text-white font-medium">{platform.name}</span>
                   </div>
-                  <ExternalLink className="w-4 h-4 text-gray-500" />
+                  <ExternalLinkIcon className="w-4 h-4 text-gray-500" />
                 </motion.a>
               ))}
             </div>
@@ -231,14 +250,28 @@ const LinkCard = ({ link }: { link: LinkItem }) => {
   if (link.type === 'internal') {
     return (
       <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
-        <Link to={link.to} className={className}>{inner}</Link>
+        <Link
+          to={link.to}
+          className={className}
+          aria-label={`${t(link.titleKey)}: ${t(link.subtitleKey)}`}
+        >
+          {inner}
+        </Link>
       </motion.div>
     );
   }
 
   return (
     <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
-      <a href={link.url} target="_blank" rel="noopener noreferrer" className={className}>{inner}</a>
+      <a
+        href={link.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        aria-label={`${t(link.titleKey)}: ${t(link.subtitleKey)} (opens in new tab)`}
+      >
+        {inner}
+      </a>
     </motion.div>
   );
 };
@@ -288,6 +321,7 @@ export const ZenLinkPage = () => {
                   alt={ARTIST.identity.stageName}
                   className="w-full h-full object-cover"
                   onError={(e) => {
+                    e.currentTarget.onerror = null; // Guard against infinite loop
                     e.currentTarget.src = `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`;
                   }}
                 />
@@ -301,7 +335,7 @@ export const ZenLinkPage = () => {
 
             {/* Title */}
             <p className="text-sm text-purple-300/80 font-medium mb-4">
-              2× World Champion Brazilian Zouk DJ
+              {t('zenlink.hero_subtitle')}
             </p>
 
             {/* Slogan badge */}
@@ -328,8 +362,8 @@ export const ZenLinkPage = () => {
             <SmartMusicCard />
 
             {/* Regular links */}
-            {LINKS.map((link, i) => (
-              <LinkCard key={i} link={link} />
+            {LINKS.map((link) => (
+              <LinkCard key={link.id} link={link} />
             ))}
 
             {/* Contact row */}

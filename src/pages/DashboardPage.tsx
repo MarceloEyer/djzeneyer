@@ -152,7 +152,7 @@ const DashboardContent = () => {
 
               <div className="flex-1 min-w-[300px]">
                 <h1 className="text-3xl md:text-4xl font-black font-display mb-2">
-                  {t('dashboard.welcomeBack', { name: '' })}<span className="text-primary">{user.name}</span>!
+                  {t('dashboard.welcomeBack', { name: user.name })}
                 </h1>
                 <p className="text-white/70 text-lg mb-4 flex items-center gap-2">
                   <Trophy className="text-warning" size={20} />
