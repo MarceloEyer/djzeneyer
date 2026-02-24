@@ -405,6 +405,23 @@ function djz_get_gamipress_user_data($request)
         'post_status' => 'publish'
     ]);
 
+    // OPTIMIZATION: Batch prime caches for achievement thumbnails to prevent N+1 queries
+    $thumbnail_ids = [];
+    foreach ($all_achievements as $post) {
+        $tid = get_post_thumbnail_id($post->ID);
+        if ($tid) {
+            $thumbnail_ids[] = (int) $tid;
+        }
+    }
+
+    if (!empty($thumbnail_ids)) {
+        $thumbnail_ids = array_unique($thumbnail_ids);
+        update_meta_cache('post', $thumbnail_ids);
+        if (function_exists('_prime_post_caches')) {
+            _prime_post_caches($thumbnail_ids, false, false);
+        }
+    }
+
     foreach ($all_achievements as $post) {
         $earned = false;
         $date_earned = '';

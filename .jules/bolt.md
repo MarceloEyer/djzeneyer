@@ -17,3 +17,7 @@
 ## 2025-02-23 - Conditional Image Processing in REST API
 **Learning:** Iterating through all images and sizes in a list view API response adds significant CPU overhead and payload size, even when the frontend only displays a single thumbnail. For 100 items, this can result in thousands of unnecessary function calls.
 **Action:** Implement conditional logic in API endpoints to detect "list view" vs "detail view" contexts. In list views, restrict image processing to only the primary image and essential sizes.
+
+## 2025-02-24 - GamiPress User Data N+1 Optimization
+**Learning:** Third-party plugin functions like `gamipress_get_points_types` and `get_posts` for custom types (achievements) often do not prime related object caches (thumbnails), causing severe N+1 queries in custom REST endpoints.
+**Action:** Always manually batch-prime attachment caches when iterating over plugin entities that display images.
