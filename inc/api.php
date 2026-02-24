@@ -171,9 +171,10 @@ function djz_get_products($request)
         // Batch prime caches for all images
         if (!empty($all_img_ids)) {
             $all_img_ids = array_unique($all_img_ids);
-            update_meta_cache('post', $all_img_ids);
             if (function_exists('_prime_post_caches')) {
-                _prime_post_caches($all_img_ids, false, false);
+                _prime_post_caches($all_img_ids, false, true);
+            } else {
+                update_meta_cache('post', $all_img_ids);
             }
         }
 
@@ -363,9 +364,10 @@ function djz_get_gamipress_user_data($request)
         }
         if (!empty($pt_thumb_ids)) {
             $pt_thumb_ids = array_unique($pt_thumb_ids);
-            update_meta_cache('post', $pt_thumb_ids);
             if (function_exists('_prime_post_caches')) {
-                _prime_post_caches($pt_thumb_ids, false, false);
+                _prime_post_caches($pt_thumb_ids, false, true);
+            } else {
+                update_meta_cache('post', $pt_thumb_ids);
             }
         }
 
@@ -433,9 +435,10 @@ function djz_get_gamipress_user_data($request)
 
     if (!empty($thumbnail_ids)) {
         $thumbnail_ids = array_unique($thumbnail_ids);
-        update_meta_cache('post', $thumbnail_ids);
         if (function_exists('_prime_post_caches')) {
-            _prime_post_caches($thumbnail_ids, false, false);
+            _prime_post_caches($thumbnail_ids, false, true);
+        } else {
+            update_meta_cache('post', $thumbnail_ids);
         }
     }
 
