@@ -34,13 +34,13 @@ add_action('rest_api_init', function () {
     register_rest_route($ns, '/user/update-profile', [
         'methods' => 'POST',
         'callback' => 'djz_update_profile',
-        'permission_callback' => 'is_user_logged_in',
+        'permission_callback' => '__return_true', // Token validation handled in callback
     ]);
 
     register_rest_route($ns, '/gamipress/user-data', [
         'methods' => 'GET',
         'callback' => 'djz_get_gamipress_user_data',
-        'permission_callback' => 'is_user_logged_in',
+        'permission_callback' => '__return_true', // Token validation handled in callback
     ]);
 
     // Register Custom User Meta for REST
