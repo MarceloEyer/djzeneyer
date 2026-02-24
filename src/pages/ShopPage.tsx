@@ -6,25 +6,20 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import DOMPurify from 'dompurify'; // Recomendo instalar: npm install dompurify @types/dompurify
-import { 
-  Loader2, 
-  ShoppingCart, 
-  AlertCircle, 
-  ChevronLeft, 
-  ChevronRight, 
-  Star, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  Users, 
-  Heart, 
-  Play, 
-  Info, 
-  Truck, 
-  Shield, 
-  Gift, 
-  Zap
+import DOMPurify from 'dompurify';
+import { useProductsQuery } from '../hooks/useQueries';
+import {
+  Loader2,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Info,
+  Truck,
+  Shield,
+  Gift,
+  Zap,
+  Plus
 } from 'lucide-react';
 
 import { ProductImage, ProductCategory } from '../types/product';
@@ -46,26 +41,217 @@ interface Product {
 }
 
 // --- Componente de Carrossel Horizontal ---
-const ProductCarousel: React.FC<{
+// --- Netflix-style Paging Indicator ---
+interface PagingIndicatorProps {
+  count: number;
+  active: number;
+}
+
+const PagingIndicator = ({ count, active }: PagingIndicatorProps) => (
+  <div className="flex gap-1 ml-4 self-center h-0.5">
+    {Array.from({ length: count }).map((_, i) => (
+      <div
+        key={i}
+        className={`h-full w-4 rounded-full transition-all duration-300 ${i === active ? 'bg-primary w-8' : 'bg-white/20'}`}
+      />
+    ))}
+  </div>
+);
+
+// --- ShopHero (Cinematic Billboard) ---
+interface ShopHeroProps {
+  product: Product;
+  onAddToCart: (id: number) => void;
+  addingToCart: number | null;
+  formatPrice: (price: string) => string;
+  productBasePath: string;
+}
+
+const ShopHero = ({ product, onAddToCart, addingToCart, formatPrice, productBasePath }: ShopHeroProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="relative h-[80vh] w-full group overflow-hidden">
+      <div className="absolute inset-0">
+        <img
+          src={product.images[0]?.src || 'https://placehold.co/1200x675/0D96FF/FFFFFF'}
+          alt={product.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#141414] to-transparent" />
+      </div>
+
+      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-20 pb-24 md:pb-32">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-3xl space-y-4 md:space-y-6"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-6 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(13,150,255,0.5)]" />
+            <span className="text-white font-black tracking-tighter text-sm md:text-base uppercase flex items-center gap-2">
+              DJ ZEN EYER <span className="text-white/40">ORIGINAL</span>
+            </span>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black font-display text-white leading-[0.9] drop-shadow-2xl">
+            {product.name}
+          </h1>
+
+          <div className="flex items-center gap-4 text-sm md:text-lg">
+            <span className="text-primary font-bold">{t('shop_match_score')}</span>
+            <span className="text-white/60">2024</span>
+            <span className="border border-white/40 px-1.5 py-0.5 text-xs text-white/80 rounded">
+              {t('shop_cremosidade_level')}
+            </span>
+            <span className="text-white/60">HD</span>
+          </div>
+
+          {product.short_description && (
+            <div
+              className="text-lg md:text-xl text-white/80 line-clamp-3 md:line-clamp-2 drop-shadow-lg max-w-2xl font-light leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.short_description) }}
+            />
+          )}
+
+          <div className="flex items-center gap-3 md:gap-4 pt-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onAddToCart(product.id)}
+              className="flex items-center gap-2 bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-white/90 transition-colors shadow-xl"
+              disabled={addingToCart === product.id}
+            >
+              {addingToCart === product.id ? <Loader2 className="animate-spin" /> : <Play className="fill-black" size={24} />}
+              {t('shop_buy_now')}
+            </motion.button>
+
+            <Link
+              to={`${productBasePath}/${product.slug}`}
+              className="flex items-center gap-2 bg-white/20 text-white px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg backdrop-blur-md hover:bg-white/30 transition-colors border border-white/10"
+            >
+              <Info size={24} />
+              {t('events_more_info')}
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+// --- ProductCard (Expandable on Hover) ---
+interface ProductCardProps {
+  key?: number | string;
+  product: Product;
+  formatPrice: (price: string) => string;
+  onAddToCart: (id: number) => void;
+  addingToCart: number | null;
+  productBasePath: string;
+}
+
+const ProductCard = ({ product, formatPrice, onAddToCart, addingToCart, productBasePath }: ProductCardProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <motion.div
+      className="flex-shrink-0 w-[240px] md:w-[300px] lg:w-[350px] relative z-10 transition-all duration-300"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{
+        scale: 1.15,
+        zIndex: 50,
+        y: -10,
+        transition: { type: 'spring', stiffness: 300, damping: 20 }
+      }}
+    >
+      <div className="card-outer bg-surface border border-white/5 rounded-md overflow-hidden shadow-2xl group/card h-full">
+        <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
+          <img
+            src={product.images[0]?.src || 'https://placehold.co/640x360/0D96FF/FFFFFF'}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20 group-hover/card:bg-transparent transition-colors" />
+          {product.on_sale && (
+            <div className="absolute top-2 right-2 bg-error text-white px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter">
+              {t('badge_sale')}
+            </div>
+          )}
+        </Link>
+
+        <div className="p-4 bg-surface opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-100 border-t border-white/5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => { e.preventDefault(); onAddToCart(product.id); }}
+                className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/80 transition-colors"
+                title={t('shop_add_to_cart')}
+              >
+                {addingToCart === product.id ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} className="fill-black" />}
+              </button>
+              <Link
+                to={`${productBasePath}/${product.slug}`}
+                className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
+                title={t('events_more_info')}
+              >
+                <Plus size={16} />
+              </Link>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-primary">
+              {formatPrice(product.price)}
+            </div>
+          </div>
+
+          <h3 className="text-sm md:text-base font-bold text-white mb-2 line-clamp-1">
+            {product.name}
+          </h3>
+
+          <div className="flex items-center gap-2 text-[10px] md:text-xs text-white/60">
+            <span className="text-green-500 font-bold">{t('shop_match_score')}</span>
+            <span className="border border-white/30 px-1 rounded-sm uppercase tracking-tighter scale-90 origin-left">
+              {t('shop_cremosidade_level')}
+            </span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-1">
+            {product.categories?.slice(0, 2).map((cat, idx) => (
+              <span key={idx} className="text-[9px] text-white/40 after:content-['•'] after:ml-1 last:after:content-none whitespace-nowrap">
+                {cat.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// --- ProductRow (Netflix-style Carousel) ---
+interface ProductRowProps {
   title: string;
   products: Product[];
   onAddToCart: (id: number) => void;
   addingToCart: number | null;
   formatPrice: (price: string) => string;
   productBasePath: string;
-}> = ({ title, products, onAddToCart, addingToCart, formatPrice, productBasePath }) => {
-  const { t } = useTranslation();
+}
+
+const ProductRow = ({ title, products, onAddToCart, addingToCart, formatPrice, productBasePath }: ProductRowProps) => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [activePageIndex, setActivePageIndex] = useState(0);
 
-  // Debounce para o evento de scroll
   const checkScroll = useCallback(() => {
     if (carouselRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      // Pequena margem de erro (10px) para garantir que o botão desapareça no fim
+      setCanScrollLeft(scrollLeft > 10);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+      setActivePageIndex(Math.round(scrollLeft / clientWidth));
     }
   }, []);
 
@@ -80,9 +266,8 @@ const ProductCarousel: React.FC<{
 
   const scroll = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.clientWidth * 0.8;
       carouselRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        left: direction === 'left' ? -carouselRef.current.clientWidth : carouselRef.current.clientWidth,
         behavior: 'smooth'
       });
     }
@@ -91,12 +276,16 @@ const ProductCarousel: React.FC<{
   if (products.length === 0) return null;
 
   return (
-    <div className="mb-12 relative group px-4 md:px-8">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 font-display text-white">
-        {title}
-      </h2>
+    <div className="mb-12 relative group z-20">
+      <div className="flex items-center justify-between px-6 md:px-12 lg:px-20 mb-4">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold font-display text-white group-hover:text-primary transition-colors cursor-default">
+          {title}
+          <ChevronRight className="inline-block ml-2 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" size={24} />
+        </h2>
+        <PagingIndicator count={Math.ceil(products.length / 4)} active={activePageIndex} />
+      </div>
 
-      <div className="relative">
+      <div className="relative overflow-visible">
         <AnimatePresence>
           {canScrollLeft && (
             <motion.button
@@ -104,120 +293,39 @@ const ProductCarousel: React.FC<{
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => scroll('left')}
-              aria-label="Scroll left"
-              className="absolute left-0 top-0 bottom-0 z-20 bg-black/50 hover:bg-black/70 p-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-12"
+              className="absolute left-0 top-0 bottom-0 z-40 bg-black/40 hover:bg-black/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
-              <ChevronLeft size={40} className="text-white" />
+              <ChevronLeft size={48} className="text-white group-hover/btn:scale-125 transition-transform" />
             </motion.button>
           )}
-          
+
           {canScrollRight && (
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => scroll('right')}
-              aria-label="Scroll right"
-              className="absolute right-0 top-0 bottom-0 z-20 bg-black/50 hover:bg-black/70 p-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-12"
+              className="absolute right-0 top-0 bottom-0 z-40 bg-black/40 hover:bg-black/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
-              <ChevronRight size={40} className="text-white" />
+              <ChevronRight size={48} className="text-white group-hover/btn:scale-125 transition-transform" />
             </motion.button>
           )}
         </AnimatePresence>
 
-        <div 
+        <div
           ref={carouselRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide py-4 scroll-smooth"
+          className="flex gap-2 overflow-x-auto scrollbar-hide px-6 md:px-12 lg:px-20 py-10 -my-10 scroll-smooth items-stretch"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {products.map((product) => (
-            <motion.div
+            <ProductCard
               key={product.id}
-              className="flex-shrink-0 w-64 md:w-72 lg:w-80 relative group/card"
-              whileHover={{ scale: 1.05, zIndex: 10, transition: { duration: 0.3 } }}
-            >
-              <div className="card overflow-hidden shadow-xl bg-surface border border-white/5 rounded-lg h-full flex flex-col">
-                <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
-                  <img 
-                    src={product.images[0]?.sizes?.medium || product.images[0]?.src || 'https://placehold.co/640x360/0D96FF/FFFFFF?text=Event'}
-                    alt={product.images[0]?.alt || product.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
-                    loading="lazy"
-                  />
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-                  
-                  {product.on_sale && (
-                    <div className="absolute top-2 right-2 bg-error text-white px-2 py-1 rounded text-xs font-bold uppercase shadow-sm">
-                      {t('badge_sale')}
-                    </div>
-                  )}
-                </Link>
-
-                <div className="p-4 flex flex-col flex-grow">
-                  <Link to={`${productBasePath}/${product.slug}`}>
-                    <h3 className="text-base font-bold mb-1 text-white line-clamp-1 hover:text-primary transition-colors">
-                      {product.name}
-                    </h3>
-                  </Link>
-
-                  {/* Informações Rápidas */}
-                  <div className="flex items-center justify-between text-xs text-white/60 mb-3">
-                    <span className="flex items-center gap-1">
-                      <Star size={12} className="text-yellow-500 fill-yellow-500" /> 4.9
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock size={12} /> 1h 45m
-                    </span>
-                  </div>
-
-                  {/* Categorias (Exemplo) */}
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {product.categories?.slice(0, 2).map((cat, idx) => (
-                      <span key={idx} className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/5">
-                        {cat.name}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Preço e Ação */}
-                  <div className="mt-auto flex items-center justify-between pt-3 border-t border-white/10">
-                    <div className="flex flex-col">
-                      {product.on_sale && product.regular_price && (
-                        <span className="text-xs text-white/40 line-through">
-                          {formatPrice(product.regular_price)}
-                        </span>
-                      )}
-                      <span className="text-lg font-bold text-primary">
-                        {formatPrice(product.price)}
-                      </span>
-                    </div>
-
-                    {product.stock_status === 'instock' ? (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          onAddToCart(product.id);
-                        }}
-                        disabled={addingToCart === product.id}
-                        className="p-2 bg-white/10 hover:bg-primary hover:text-white rounded-full transition-colors disabled:opacity-50"
-                        aria-label={t('shop_buy_button')}
-                      >
-                        {addingToCart === product.id ? (
-                          <Loader2 size={18} className="animate-spin" />
-                        ) : (
-                          <ShoppingCart size={18} />
-                        )}
-                      </button>
-                    ) : (
-                      <span className="text-xs text-white/30 uppercase font-bold border border-white/10 px-2 py-1 rounded">
-                        {t('shop_out_of_stock')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              product={product}
+              formatPrice={formatPrice}
+              onAddToCart={onAddToCart}
+              addingToCart={addingToCart}
+              productBasePath={productBasePath}
+            />
           ))}
         </div>
       </div>
@@ -232,36 +340,8 @@ const ShopPage: React.FC = () => {
   const isPortuguese = i18n.language.startsWith('pt');
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: products = [], isLoading: loading, error, refetch } = useProductsQuery(currentLang);
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
-
-  // Busca produtos (Memoizado)
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    // Garante URL correta mesmo se wpData falhar
-    const baseUrl = (window as any).wpData?.restUrl || `${window.location.origin}/wp-json/`;
-    const apiUrl = `${baseUrl}djzeneyer/v1/products?lang=${currentLang}`;
-    
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`${t('shop_error_fetch')}: ${response.status}`);
-      const data = await response.json();
-      setProducts(data);
-    } catch (err: any) {
-      console.error('Error fetching products:', err);
-      setError(err.message || t('shop_error_unknown'));
-    } finally {
-      setLoading(false);
-    }
-  }, [currentLang, t]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
 
   // Função para adicionar ao carrinho
   const addToCart = async (productId: number) => {
@@ -269,9 +349,9 @@ const ShopPage: React.FC = () => {
     try {
       const response = await fetch('/wp-json/wc/store/cart/add-item', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': (window as any).wpData?.nonce || '' 
+          'X-WP-Nonce': (window as any).wpData?.nonce || ''
         },
         credentials: 'include',
         body: JSON.stringify({ id: productId, quantity: 1 })
@@ -293,150 +373,107 @@ const ShopPage: React.FC = () => {
     if (!price) return 'R$ 0,00';
     const numPrice = parseFloat(price);
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
-    return isNaN(numPrice) 
-      ? price 
+    return isNaN(numPrice)
+      ? price
       : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
   };
 
-  // Filtros de categorias para as seções
-  const featuredProduct = products.find(p => p.categories?.some(c => c.name.toLowerCase() === 'featured')) || products[0];
-  const upcomingProducts = products.filter(p => p.id !== featuredProduct?.id).slice(0, 8);
-  const popularProducts = products.slice(8, 16);
+  // Filtros de categorias para as seções (Estilo Netflix)
+  const featuredProduct = products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0];
+  const newReleases = products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10);
+  const bestSellers = products.filter((p: Product) => p.on_sale).slice(0, 10);
+  const curatedSelection = [...products].reverse().slice(0, 10);
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-white">
+    <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
     </div>
   );
 
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-white p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white p-4">
       <div className="text-center max-w-md">
         <AlertCircle className="mx-auto mb-4 text-error" size={48} />
         <h2 className="text-2xl font-bold mb-2">Error loading shop</h2>
-        <p className="opacity-70">{error}</p>
-        <button onClick={fetchProducts} className="mt-4 btn btn-primary">Try Again</button>
+        <p className="opacity-70">{error instanceof Error ? error.message : String(error)}</p>
+        <button onClick={() => refetch()} className="mt-4 btn btn-primary">Try Again</button>
       </div>
     </div>
   );
 
   return (
-    <>
+    <div className="min-h-screen bg-[#141414] text-white">
       <Helmet>
         <title>{t('shop_page_title')} | DJ Zen Eyer</title>
         <meta name="description" content={t('shop_page_meta_desc')} />
       </Helmet>
 
-      <div className="min-h-screen pb-20 bg-background text-white">
-        {/* --- Hero Section (Destaque Principal) --- */}
-        {featuredProduct && (
-          <div className="relative h-[60vh] md:h-[80vh] w-full mb-8">
-            <div className="absolute inset-0">
-              <img 
-                src={featuredProduct.images[0]?.src || 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer'} 
-                alt={featuredProduct.name}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
-            </div>
+      {/* --- Billboard (Netflix Hero) --- */}
+      {featuredProduct && (
+        <ShopHero
+          product={featuredProduct}
+          onAddToCart={addToCart}
+          addingToCart={addingToCart}
+          formatPrice={formatPrice}
+          productBasePath={productBasePath}
+        />
+      )}
 
-            <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 lg:p-16 flex flex-col justify-end h-full pointer-events-none">
-              <div className="max-w-3xl pointer-events-auto">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="bg-primary text-black font-bold px-2 py-1 text-xs uppercase tracking-wide rounded">
-                    Featured Event
-                  </span>
-                  {featuredProduct.on_sale && (
-                    <span className="bg-error text-white font-bold px-2 py-1 text-xs uppercase tracking-wide rounded">
-                      Sale
-                    </span>
-                  )}
-                </div>
+      {/* --- Netflix-style Lists (Rows) --- */}
+      <div className="relative z-20 pb-20 -mt-16 md:-mt-24 lg:-mt-32 space-y-12 md:space-y-16">
+        <ProductRow
+          title={t('shop_new_releases')}
+          products={newReleases}
+          onAddToCart={addToCart}
+          addingToCart={addingToCart}
+          formatPrice={formatPrice}
+          productBasePath={productBasePath}
+        />
 
-                <h1 className="text-4xl md:text-6xl font-black mb-4 font-display leading-tight drop-shadow-lg">
-                  {featuredProduct.name}
-                </h1>
+        <ProductRow
+          title={t('badge_sale')}
+          products={bestSellers}
+          onAddToCart={addToCart}
+          addingToCart={addingToCart}
+          formatPrice={formatPrice}
+          productBasePath={productBasePath}
+        />
 
-                {featuredProduct.short_description && (
-                  <div 
-                    className="text-lg md:text-xl text-white/90 mb-6 line-clamp-3 drop-shadow-md max-w-2xl"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(featuredProduct.short_description) }} 
-                  />
-                )}
-
-                <div className="flex items-center gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => addToCart(featuredProduct.id)}
-                    className="btn btn-primary btn-lg px-8 flex items-center gap-2"
-                    disabled={addingToCart === featuredProduct.id}
-                  >
-                    {addingToCart === featuredProduct.id ? <Loader2 className="animate-spin" /> : <ShoppingCart />}
-                    {t('shop_buy_now')} - {formatPrice(featuredProduct.price)}
-                  </motion.button>
-                  
-                  <Link 
-                    to={`${productBasePath}/${featuredProduct.slug}`}
-                    className="btn btn-outline btn-lg px-8 flex items-center gap-2 bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20"
-                  >
-                    <Info size={20} />
-                    {t('events_more_info')}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- Seções de Produtos --- */}
-        <div className="space-y-4 md:-mt-24 relative z-10">
-          <ProductCarousel 
-            title={t('shop_hot_near_you')} 
-            products={upcomingProducts} 
-            onAddToCart={addToCart}
-            addingToCart={addingToCart}
-            formatPrice={formatPrice}
-            productBasePath={productBasePath}
-          />
-
-          <ProductCarousel 
-            title={t('shop_featured_title')} 
-            products={popularProducts} 
-            onAddToCart={addToCart}
-            addingToCart={addingToCart}
-            formatPrice={formatPrice}
-            productBasePath={productBasePath}
-          />
-        </div>
-
-        {/* --- Benefícios (Rodapé da Loja) --- */}
-        <section className="container mx-auto px-6 py-16 mt-12 border-t border-white/10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { icon: Truck, title: "Instant Delivery", desc: "Tickets sent to your email immediately" },
-              { icon: Shield, title: "Secure Payment", desc: "100% secure payment processing" },
-              { icon: Gift, title: "Exclusive Perks", desc: "Bonuses for Zen Tribe members" },
-              { icon: Zap, title: "Fast Support", desc: "24/7 customer support via WhatsApp" },
-            ].map((item, idx) => (
-              <div key={idx} className="flex flex-col items-center text-center">
-                <div className="p-3 bg-white/5 rounded-full mb-4 text-primary">
-                  <item.icon size={32} />
-                </div>
-                <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-                <p className="text-sm text-white/60">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ProductRow
+          title={t('shop_top_picks')}
+          products={curatedSelection}
+          onAddToCart={addToCart}
+          addingToCart={addingToCart}
+          formatPrice={formatPrice}
+          productBasePath={productBasePath}
+        />
       </div>
+
+      {/* --- Netflix-style Footer Section (Benefits) --- */}
+      <section className="px-6 md:px-12 lg:px-20 py-20 bg-background border-t border-white/5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+          {[
+            { icon: Truck, title: "Entrega Instantânea", desc: "Tickets e acessos digitais enviados na hora" },
+            { icon: Shield, title: "Pagamento Blindado", desc: "Segurança total no processamento" },
+            { icon: Gift, title: "Vantagens Tribe", desc: "Descontos exclusivos para membros" },
+            { icon: Zap, title: "Suporte VIP", desc: "Atendimento direto via WhatsApp 24/7" },
+          ].map((item, idx) => (
+            <div key={idx} className="flex flex-col space-y-3 group cursor-default">
+              <div className="text-primary group-hover:scale-110 transition-transform duration-300 w-fit">
+                <item.icon size={32} />
+              </div>
+              <h3 className="font-bold text-lg md:text-xl text-white group-hover:text-primary transition-colors">{item.title}</h3>
+              <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <style>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
-    </>
+    </div>
   );
 };
 
