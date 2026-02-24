@@ -410,3 +410,23 @@ export const useUpdateNewsletterMutation = (token?: string) => {
     },
   });
 };
+// ============================================================================
+// SUBSCRIPTION MUTATION
+// ============================================================================
+
+export const useSubscriptionMutation = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const apiUrl = buildApiUrl('djzeneyer/v1/subscribe');
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Subscription failed');
+      return data;
+    },
+  });
+};
