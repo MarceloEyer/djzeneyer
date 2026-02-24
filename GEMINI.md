@@ -60,3 +60,10 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 - **Prerender** → O deploy no GitHub Actions roda `scripts/prerender.js`. Se houver erro de sintaxe JSX em qualquer página, o build falhará.
 - **TypeScript (tsc)** → A verificação de tipos é obrigatória no build. Erros de lint devem ser resolvidos antes do push para não quebrar a `main`.
 - **Secrets** → Depende de `SSH_PRIVATE_KEY` e `VITE_WC_CONSUMER_KEY` configurados no GitHub.
+
+## Contexto Técnico & Preferências
+
+1. **Escala** → O site é voltado para um público nichado e de baixo volume. Não há necessidade de otimizações para "milhões de usuários".
+2. **Infraestrutura** → Hospedagem simples (vps/compartilhada). Priorizar economia de CPU e memória.
+3. **Caching** → Como os dados (conquistas, pontos) não mudam com alta frequência, **preferir cache persistente (transients) mais longos** (ex: 24h ou mais) em vez de requisições frequentes ao banco de dados.
+4. **Simplicidade** → Soluções simples e robustas são melhores que arquiteturas complexas de alta performance.
