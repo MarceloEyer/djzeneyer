@@ -1,6 +1,6 @@
 <?php
 /**
- * REST API Endpoints
+ * REST API Endpoints - Gold Standard v3.0
  * GamiPress, WooCommerce, Menu, Newsletter
  */
 
