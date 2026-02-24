@@ -352,6 +352,23 @@ function djz_get_gamipress_user_data($request)
     $point_data = [];
     if (function_exists('gamipress_get_points_types')) {
         $point_types = gamipress_get_points_types();
+
+        // OPTIMIZATION: Batch prime caches for point type thumbnails
+        $pt_thumb_ids = [];
+        foreach ($point_types as $pt) {
+            if (!empty($pt['ID'])) {
+                $tid = get_post_thumbnail_id($pt['ID']);
+                if ($tid) $pt_thumb_ids[] = (int) $tid;
+            }
+        }
+        if (!empty($pt_thumb_ids)) {
+            $pt_thumb_ids = array_unique($pt_thumb_ids);
+            update_meta_cache('post', $pt_thumb_ids);
+            if (function_exists('_prime_post_caches')) {
+                _prime_post_caches($pt_thumb_ids, false, false);
+            }
+        }
+
         foreach ($point_types as $slug => $pt) {
             $point_data[$slug] = [
                 'name' => $pt['plural_name'],
@@ -422,16 +439,30 @@ function djz_get_gamipress_user_data($request)
         }
     }
 
+    // OPTIMIZATION: Batch fetch user earnings to prevent O(N) queries
+    $earned_achievements_map = [];
+    if (function_exists('gamipress_get_user_earnings')) {
+        $user_earnings = gamipress_get_user_earnings($user_id, [
+            'post_type' => 'achievement',
+            'limit' => -1, // Get all
+        ]);
+
+        // gamipress_get_user_earnings returns an array of objects with post_id
+        if ($user_earnings) {
+            foreach ($user_earnings as $earning) {
+                // Map achievement ID to earning data
+                $earned_achievements_map[$earning->post_id] = $earning;
+            }
+        }
+    }
+
     foreach ($all_achievements as $post) {
         $earned = false;
         $date_earned = '';
         
-        if (function_exists('gamipress_has_user_earned_achievement')) {
-            $earned_obj = gamipress_has_user_earned_achievement($post->ID, $user_id);
-            if ($earned_obj) {
-                $earned = true;
-                $date_earned = $earned_obj->date;
-            }
+        if (isset($earned_achievements_map[$post->ID])) {
+            $earned = true;
+            $date_earned = $earned_achievements_map[$post->ID]->date;
         }
 
         $achievements[] = [
