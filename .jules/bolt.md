@@ -26,4 +26,4 @@
 ## 2025-02-24 - GamiPress User Data N+1 Optimization
 
 **Learning:** Third-party plugin functions like `gamipress_get_points_types` and `get_posts` for custom types (achievements) often do not prime related object caches (thumbnails), causing severe N+1 queries in custom REST endpoints.
-**Action:** Always manually batch-prime attachment caches when iterating over plugin entities that display images.
+**Action:** Always manually batch-prime attachment caches when iterating over plugin entities that display images. Resolution: Fixed in PR.
