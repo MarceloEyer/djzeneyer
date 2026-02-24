@@ -148,6 +148,7 @@ export const ARTIST = {
       url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
     },
     appleMusic: { url: 'https://music.apple.com/artist/1439280950' },
+    youtubeMusic: { url: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg' },
     deezer: { url: 'https://www.deezer.com/artist/52900762' },
     bandsintown: { url: 'https://www.bandsintown.com/a/15619775' },
     mixcloud: { url: 'https://www.mixcloud.com/djzeneyer' },
