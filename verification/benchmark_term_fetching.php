@@ -1,4 +1,8 @@
 <?php
+if (PHP_SAPI !== 'cli') {
+    die('This script can only be run from the command line.');
+}
+
 // Mock WP Environment
 $db_queries = 0;
 $term_cache = [];

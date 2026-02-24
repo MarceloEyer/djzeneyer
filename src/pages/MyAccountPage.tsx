@@ -8,9 +8,10 @@ import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones, Instagram, Facebook, Save } from 'lucide-react';
-import { UserStatsCards } from '../components/account/UserStatsCards'; // Importação corrigida
-import { OrdersList } from '../components/account/OrdersList'; // Importação corrigida
-import { RecentActivity } from '../components/account/RecentActivity'; // Importação corrigida
+import { UserStatsCards } from '../components/account/UserStatsCards';
+import { OrdersList } from '../components/account/OrdersList';
+import { RecentActivity } from '../components/account/RecentActivity';
+import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
 
 // Interfaces
 interface Order {
@@ -41,9 +42,7 @@ const MyAccountPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  const [newsletterEnabled, setNewsletterEnabled] = useState(false);
-  const [savingNewsletter, setSavingNewsletter] = useState(false);
-  
+
   // Profile form state
   const [profileForm, setProfileForm] = useState({
     realName: user?.name || '',
@@ -76,10 +75,10 @@ const MyAccountPage: React.FC = () => {
     // ✅ DADOS REAIS DO GAMIPRESS
     const totalPoints = user.gamipress_points || 0;
     const currentRank = user.gamipress_rank || 'Zen Novice';
-    
+
     // Calcular level baseado em pontos (cada 100 pontos = 1 level)
     const level = Math.floor(totalPoints / 100) + 1;
-    
+
     // Calcular XP para próximo rank
     let xpToNext = 0;
     if (totalPoints < 100) {
@@ -113,90 +112,40 @@ const MyAccountPage: React.FC = () => {
     }
   }, [user, loading, navigate]);
 
-  // Fetch orders, profile, and newsletter status
+  // React Query Hooks
+  const { data: profileData, isLoading: loadingProfile } = useProfileQuery(user?.token);
+  const { data: newsletterEnabled } = useNewsletterStatusQuery(user?.token);
+  const updateProfile = useUpdateProfileMutation(user?.token);
+  const updateNewsletter = useUpdateNewsletterMutation(user?.token);
+
+  // Sync profile data to form state
+  useEffect(() => {
+    if (profileData) {
+      setProfileForm({
+        realName: profileData.real_name || user?.name || '',
+        preferredName: profileData.preferred_name || '',
+        facebookUrl: profileData.facebook_url || '',
+        instagramUrl: profileData.instagram_url || '',
+        danceRole: profileData.dance_role || [],
+        gender: profileData.gender || '',
+      });
+    }
+  }, [profileData, user?.name]);
+
+  // Fetch orders
   useEffect(() => {
     if (user?.isLoggedIn) {
       fetchOrders();
-      fetchProfile();
-      fetchNewsletterStatus();
     }
   }, [user]);
 
-  // Fetch profile data
-  const fetchProfile = async () => {
-    if (!user?.token) return;
-    
-    try {
-      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.data) {
-          setProfileForm({
-            realName: data.data.real_name || user.name || '',
-            preferredName: data.data.preferred_name || '',
-            facebookUrl: data.data.facebook_url || '',
-            instagramUrl: data.data.instagram_url || '',
-            danceRole: data.data.dance_role || [],
-            gender: data.data.gender || '',
-          });
-        }
-      }
-    } catch (error) {
-      console.error('[MyAccountPage] Error fetching profile:', error);
-    }
-  };
-
-  // Fetch newsletter status
-  const fetchNewsletterStatus = async () => {
-    if (!user?.token) return;
-    
-    try {
-      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setNewsletterEnabled(data.subscribed);
-        }
-      }
-    } catch (error) {
-      console.error('[MyAccountPage] Error fetching newsletter status:', error);
-    }
-  };
 
   // Toggle newsletter subscription
   const handleNewsletterToggle = async (enabled: boolean) => {
-    if (!user?.token) return;
-    
-    setSavingNewsletter(true);
     try {
-      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
-        },
-        body: JSON.stringify({ enabled }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setNewsletterEnabled(data.subscribed);
-      }
+      await updateNewsletter.mutateAsync(enabled);
     } catch (error) {
       console.error('[MyAccountPage] Error toggling newsletter:', error);
-    } finally {
-      setSavingNewsletter(false);
     }
   };
 
@@ -205,14 +154,14 @@ const MyAccountPage: React.FC = () => {
       setLoadingOrders(false);
       return;
     }
-    
+
     const wpData = (window as any).wpData || { restUrl: '', nonce: '' };
     if (!wpData.restUrl) {
       console.error('[MyAccountPage] WordPress data not available');
       setLoadingOrders(false);
       return;
     }
-    
+
     try {
       const response = await fetch(`${wpData.restUrl}wc/v3/orders?customer=${user.id}`, {
         headers: {
@@ -220,7 +169,7 @@ const MyAccountPage: React.FC = () => {
           'X-WP-Nonce': wpData.nonce,
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setOrders(data.slice(0, 5));
@@ -308,12 +257,12 @@ const MyAccountPage: React.FC = () => {
                 {userStats.totalAchievements} unlocked
               </div>
             </div>
-            
+
             {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {user.gamipress_achievements.map((achievement: any) => (
-                  <motion.div 
-                    key={achievement.id} 
+                  <motion.div
+                    key={achievement.id}
                     className="bg-surface/50 rounded-lg p-5 border border-white/10 hover:border-primary/50 transition-all hover:scale-105"
                     whileHover={{ y: -4 }}
                   >
@@ -358,21 +307,20 @@ const MyAccountPage: React.FC = () => {
                       <span>{userStats.rank}</span>
                       <span>
                         {userStats.xp < 100 ? 'Zen Apprentice' :
-                         userStats.xp < 500 ? 'Zen Voyager' : 'Zen Master'}
+                          userStats.xp < 500 ? 'Zen Voyager' : 'Zen Master'}
                       </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                      <motion.div 
+                      <motion.div
                         className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full"
                         initial={{ width: 0 }}
-                        animate={{ 
-                          width: `${
-                            userStats.xp < 100 
+                        animate={{
+                          width: `${userStats.xp < 100
                               ? (userStats.xp / 100) * 100
                               : userStats.xp < 500
-                              ? ((userStats.xp - 100) / 400) * 100
-                              : ((userStats.xp - 500) / 1000) * 100
-                          }%`
+                                ? ((userStats.xp - 100) / 400) * 100
+                                : ((userStats.xp - 500) / 1000) * 100
+                            }%`
                         }}
                         transition={{ duration: 1, ease: "easeOut" }}
                       />
@@ -429,30 +377,16 @@ const MyAccountPage: React.FC = () => {
         const handleSaveProfile = async () => {
           setSavingProfile(true);
           try {
-            const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.token}`,
-              },
-              body: JSON.stringify({
-                real_name: profileForm.realName,
-                preferred_name: profileForm.preferredName,
-                facebook_url: profileForm.facebookUrl,
-                instagram_url: profileForm.instagramUrl,
-                dance_role: profileForm.danceRole,
-                gender: profileForm.gender,
-              }),
+            await updateProfile.mutateAsync({
+              real_name: profileForm.realName,
+              preferred_name: profileForm.preferredName,
+              facebook_url: profileForm.facebookUrl,
+              instagram_url: profileForm.instagramUrl,
+              dance_role: profileForm.danceRole,
+              gender: profileForm.gender,
             });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-              setProfileSaved(true);
-              setTimeout(() => setProfileSaved(false), 3000);
-            } else {
-              console.error('[MyAccountPage] Error saving profile:', data.message);
-            }
+            setProfileSaved(true);
+            setTimeout(() => setProfileSaved(false), 3000);
           } catch (error) {
             console.error('[MyAccountPage] Error saving profile:', error);
           } finally {
@@ -561,22 +495,20 @@ const MyAccountPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleDanceRoleToggle('leader')}
-                      className={`px-5 py-2.5 rounded-lg border transition-all ${
-                        profileForm.danceRole.includes('leader')
+                      className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.danceRole.includes('leader')
                           ? 'bg-primary border-primary text-white'
                           : 'border-white/20 text-white/70 hover:border-white/40'
-                      }`}
+                        }`}
                     >
                       {t('profile.leader')}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDanceRoleToggle('follower')}
-                      className={`px-5 py-2.5 rounded-lg border transition-all ${
-                        profileForm.danceRole.includes('follower')
+                      className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.danceRole.includes('follower')
                           ? 'bg-secondary border-secondary text-white'
                           : 'border-white/20 text-white/70 hover:border-white/40'
-                      }`}
+                        }`}
                     >
                       {t('profile.follower')}
                     </button>
@@ -596,11 +528,10 @@ const MyAccountPage: React.FC = () => {
                         key={option.value}
                         type="button"
                         onClick={() => handleProfileChange('gender', option.value)}
-                        className={`px-5 py-2.5 rounded-lg border transition-all ${
-                          profileForm.gender === option.value
+                        className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.gender === option.value
                             ? 'bg-accent border-accent text-white'
                             : 'border-white/20 text-white/70 hover:border-white/40'
-                        }`}
+                          }`}
                       >
                         {t(option.labelKey)}
                       </button>
@@ -610,7 +541,7 @@ const MyAccountPage: React.FC = () => {
 
                 {/* Save Button */}
                 <div className="pt-4 border-t border-white/10">
-                  <button 
+                  <button
                     onClick={handleSaveProfile}
                     disabled={savingProfile}
                     className="btn btn-primary flex items-center gap-2"
@@ -664,8 +595,8 @@ const MyAccountPage: React.FC = () => {
                           name="notify-newsletter"
                           type="checkbox"
                           className="w-5 h-5"
-                          checked={newsletterEnabled}
-                          disabled={savingNewsletter}
+                          checked={newsletterEnabled || false}
+                          disabled={updateNewsletter.isPending}
                           onChange={(e) => handleNewsletterToggle(e.target.checked)}
                         />
                         <span className="font-semibold">{t('account_page.newsletter_toggle')}</span>
@@ -674,17 +605,16 @@ const MyAccountPage: React.FC = () => {
                         {t('account_page.newsletter_desc')}
                       </p>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full ${
-                      savingNewsletter 
-                        ? 'bg-white/10 text-white/60' 
-                        : newsletterEnabled 
-                          ? 'bg-success/20 text-success' 
+                    <span className={`text-xs px-3 py-1 rounded-full ${updateNewsletter.isPending
+                        ? 'bg-white/10 text-white/60'
+                        : newsletterEnabled
+                          ? 'bg-success/20 text-success'
                           : 'bg-white/10 text-white/60'
-                    }`}>
-                      {savingNewsletter 
-                        ? '...' 
-                        : newsletterEnabled 
-                          ? t('account_page.newsletter_enabled') 
+                      }`}>
+                      {updateNewsletter.isPending
+                        ? '...'
+                        : newsletterEnabled
+                          ? t('account_page.newsletter_enabled')
                           : t('account_page.newsletter_disabled')
                       }
                     </span>
@@ -714,7 +644,7 @@ const MyAccountPage: React.FC = () => {
               <p className="text-sm text-white/70 mb-4">
                 Once you log out, you'll need to sign in again to access your account.
               </p>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="btn bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
               >
@@ -762,8 +692,8 @@ const MyAccountPage: React.FC = () => {
                   <div className="text-center mb-6 pb-6 border-b border-white/10">
                     <div className="relative mb-4">
                       {user.avatar ? (
-                        <img 
-                          src={user.avatar} 
+                        <img
+                          src={user.avatar}
                           alt={user.name}
                           className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-primary/30"
                         />
@@ -788,11 +718,10 @@ const MyAccountPage: React.FC = () => {
                         <button
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
-                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-semibold transition-all ${
-                            activeTab === tab.id
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-semibold transition-all ${activeTab === tab.id
                               ? 'bg-primary text-white shadow-lg'
                               : 'text-white/70 hover:text-white hover:bg-white/5'
-                          }`}
+                            }`}
                         >
                           <Icon size={20} />
                           <span>{tab.label}</span>

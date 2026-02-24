@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
-import { useProductsQuery } from '../hooks/useQueries';
+import { useProductsQuery, useAddToCartMutation } from '../hooks/useQueries';
 import {
   Loader2,
   AlertCircle,
@@ -341,30 +341,26 @@ const ShopPage: React.FC = () => {
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
   const { data: products = [], isLoading: loading, error, refetch } = useProductsQuery(currentLang);
-  const [addingToCart, setAddingToCart] = useState<number | null>(null);
+  const addToCartMutation = useAddToCartMutation();
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Auto-hide toast
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   // Função para adicionar ao carrinho
   const addToCart = async (productId: number) => {
-    setAddingToCart(productId);
     try {
-      const response = await fetch('/wp-json/wc/store/cart/add-item', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': (window as any).wpData?.nonce || ''
-        },
-        credentials: 'include',
-        body: JSON.stringify({ id: productId, quantity: 1 })
-      });
-
-      if (response.ok) {
-        // Feedback visual ou toast aqui seria ideal
-        console.log('Product added to cart');
-      }
+      await addToCartMutation.mutateAsync({ productId, quantity: 1 });
+      setToast({ message: t('shop_added_to_cart') || 'Added to cart!', type: 'success' });
+      console.log('Product added to cart');
     } catch (error) {
+      setToast({ message: 'Error adding to cart', type: 'error' });
       console.error('Error adding to cart:', error);
-    } finally {
-      setAddingToCart(null);
     }
   };
 
@@ -408,12 +404,32 @@ const ShopPage: React.FC = () => {
         <meta name="description" content={t('shop_page_meta_desc')} />
       </Helmet>
 
+      {/* --- Toast Notification --- */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            className={`fixed bottom-10 left-1/2 z-[100] px-6 py-3 rounded-full font-bold shadow-2xl backdrop-blur-md border ${toast.type === 'success'
+                ? 'bg-primary/90 text-white border-primary/20'
+                : 'bg-error/90 text-white border-error/20'
+              }`}
+          >
+            <div className="flex items-center gap-2">
+              <Zap size={18} className={toast.type === 'success' ? 'fill-white' : ''} />
+              {toast.message}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* --- Billboard (Netflix Hero) --- */}
       {featuredProduct && (
         <ShopHero
           product={featuredProduct}
           onAddToCart={addToCart}
-          addingToCart={addingToCart}
+          addingToCart={addToCartMutation.isPending ? Number((addToCartMutation.variables as any)?.productId) : null}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
@@ -425,7 +441,7 @@ const ShopPage: React.FC = () => {
           title={t('shop_new_releases')}
           products={newReleases}
           onAddToCart={addToCart}
-          addingToCart={addingToCart}
+          addingToCart={addToCartMutation.isPending ? Number((addToCartMutation.variables as any)?.productId) : null}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
@@ -434,7 +450,7 @@ const ShopPage: React.FC = () => {
           title={t('badge_sale')}
           products={bestSellers}
           onAddToCart={addToCart}
-          addingToCart={addingToCart}
+          addingToCart={addToCartMutation.isPending ? Number((addToCartMutation.variables as any)?.productId) : null}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
@@ -443,7 +459,7 @@ const ShopPage: React.FC = () => {
           title={t('shop_top_picks')}
           products={curatedSelection}
           onAddToCart={addToCart}
-          addingToCart={addingToCart}
+          addingToCart={addToCartMutation.isPending ? Number((addToCartMutation.variables as any)?.productId) : null}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />

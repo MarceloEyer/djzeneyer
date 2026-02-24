@@ -10,7 +10,7 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { buildApiUrl } from '../config/api';
-import { QUERY_KEYS, STALE_TIME } from '../config/queryClient';
+import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
 
 // ============================================================================
 // TYPES
@@ -271,6 +271,32 @@ export const useCartQuery = () => {
   });
 };
 
+export const useAddToCartMutation = () => {
+  return useMutation({
+    mutationFn: async ({ productId, quantity }: { productId: number; quantity: number }) => {
+      const apiUrl = buildApiUrl('wc/store/v1/cart/add-item');
+      const nonce = (window as any).wpData?.nonce || '';
+
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': nonce,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ id: productId, quantity }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to add item to cart');
+      return data;
+    },
+    onSuccess: () => {
+      invalidateQueries.cart();
+    },
+  });
+};
+
 // ============================================================================
 // USER GAMIPRESS QUERY (DASHBOARD - AUTHENTICATED)
 // ============================================================================
@@ -302,21 +328,84 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
 };
 
 // ============================================================================
-// SUBSCRIPTION MUTATION
+// USER PROFILE & NEWSLETTER (AUTHENTICATED)
 // ============================================================================
 
-export const useSubscriptionMutation = () => {
+export const useProfileQuery = (token?: string) => {
+  return useQuery({
+    queryKey: ['user', 'profile', token],
+    queryFn: async () => {
+      if (!token) return null;
+      const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
+      const res = await fetch(apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error('Failed to fetch profile');
+      const data = await res.json();
+      return data.success ? data.data : null;
+    },
+    enabled: !!token,
+    staleTime: STALE_TIME.USER_DATA || 5 * 60 * 1000,
+  });
+};
+
+export const useUpdateProfileMutation = (token?: string) => {
   return useMutation({
-    mutationFn: async (email: string) => {
-      const apiUrl = buildApiUrl('djzeneyer/v1/subscribe');
+    mutationFn: async (profileData: any) => {
+      if (!token) throw new Error('No token provided');
+      const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
       const res = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
       });
-
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Subscription failed');
+      if (!res.ok) throw new Error(data.message || 'Update failed');
+      return data;
+    },
+  });
+};
+
+export const useNewsletterStatusQuery = (token?: string) => {
+  return useQuery({
+    queryKey: ['user', 'newsletter', token],
+    queryFn: async () => {
+      if (!token) return null;
+      const apiUrl = buildApiUrl('zeneyer-auth/v1/newsletter');
+      const res = await fetch(apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error('Failed to fetch newsletter status');
+      const data = await res.json();
+      return data.success ? data.subscribed : false;
+    },
+    enabled: !!token,
+    staleTime: STALE_TIME.USER_DATA || 5 * 60 * 1000,
+  });
+};
+
+export const useUpdateNewsletterMutation = (token?: string) => {
+  return useMutation({
+    mutationFn: async (enabled: boolean) => {
+      if (!token) throw new Error('No token provided');
+      const apiUrl = buildApiUrl('zeneyer-auth/v1/newsletter');
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ enabled }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Update failed');
       return data;
     },
   });

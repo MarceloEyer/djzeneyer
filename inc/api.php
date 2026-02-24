@@ -170,11 +170,7 @@ function djz_get_products($request)
 
         // Batch prime caches for all images
         if (!empty($all_img_ids)) {
-            $all_img_ids = array_unique($all_img_ids);
-            update_meta_cache('post', $all_img_ids);
-            if (function_exists('_prime_post_caches')) {
-                _prime_post_caches($all_img_ids, false, false);
-            }
+            djz_prime_thumbnails_cache($all_img_ids);
         }
 
         // Batch prime caches for terms
@@ -376,11 +372,7 @@ function djz_get_gamipress_user_data($request)
             if ($tid) $pt_thumb_ids[] = (int) $tid;
         }
         if (!empty($pt_thumb_ids)) {
-            $pt_thumb_ids = array_unique($pt_thumb_ids);
-            if (function_exists('update_meta_cache')) update_meta_cache('post', $pt_thumb_ids);
-            // Usamos a função interna _prime_post_caches (com guard) para priming eficiente via IDs.
-            // Alternativa pública update_post_caches exigiria instanciar os objetos post.
-            if (function_exists('_prime_post_caches')) _prime_post_caches($pt_thumb_ids, false, true);
+            djz_prime_thumbnails_cache($pt_thumb_ids);
         }
 
         foreach ($point_types as $slug => $pt) {
@@ -444,16 +436,17 @@ function djz_get_gamipress_user_data($request)
             if ($tid) $ach_thumb_ids[] = (int) $tid;
         }
         if (!empty($ach_thumb_ids)) {
-            $ach_thumb_ids = array_unique($ach_thumb_ids);
-            if (function_exists('update_meta_cache')) update_meta_cache('post', $ach_thumb_ids);
-            // Priming focado apenas no post object cache para performance máxima.
-            if (function_exists('_prime_post_caches')) _prime_post_caches($ach_thumb_ids, false, true);
+            djz_prime_thumbnails_cache($ach_thumb_ids);
         }
 
         // Batch fetch de todas as conquistas ganhas (Elimina N+1)
         $user_earnings = [];
         if (function_exists('gamipress_get_user_earnings')) {
-            $earnings_list = gamipress_get_user_earnings($user_id, 'achievement');
+            $earnings_list = gamipress_get_user_earnings([
+                'user_id' => $user_id,
+                'post_type' => 'achievement',
+                'limit' => -1
+            ]);
             foreach ($earnings_list as $earned_obj) {
                 // Mapeia por ID do post para busca O(1)
                 $user_earnings[$earned_obj->post_id] = $earned_obj;
@@ -467,7 +460,7 @@ function djz_get_gamipress_user_data($request)
             $achievements[] = [
                 'id' => $post->ID,
                 'title' => $post->post_title,
-                'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
+                'description' => $post->post_excerpt ? wp_kses_post($post->post_excerpt) : strip_tags(wp_trim_words($post->post_content, 20)),
                 'image' => get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
                 'earned' => $earned,
                 'date_earned' => $date_earned,
@@ -641,6 +634,15 @@ add_action('save_post_product', function () {
 });
 
 /**
+ * Clear achievements cache on update
+ */
+add_action('save_post_achievement', function () {
+    global $wpdb;
+    // Clears gamipress data for all users as it contains achievement titles/descriptions
+    $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_gamipress_%'");
+});
+
+/**
  * Admin: Clear Cache Button
  */
 add_action('admin_bar_menu', function ($wp_admin_bar) {
@@ -664,3 +666,20 @@ add_action('admin_init', function () {
     wp_redirect(remove_query_arg('djz_clear_cache'));
     exit;
 });
+/**
+ * Helper to prime thumbnail caches efficiently
+ */
+function djz_prime_thumbnails_cache($ids) {
+    if (empty($ids)) return;
+    $ids = array_unique(array_map('intval', $ids));
+    
+    if (function_exists('update_meta_cache')) {
+        update_meta_cache('post', $ids);
+    }
+    
+    // _prime_post_caches is an internal function since WP 6.1
+    // We use version_compare or function_exists for safety.
+    if (function_exists('_prime_post_caches')) {
+        _prime_post_caches($ids, false, true);
+    }
+}

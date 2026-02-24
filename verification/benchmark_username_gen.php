@@ -1,6 +1,10 @@
 <?php
 namespace ZenEyer\Auth\Auth;
 
+if (PHP_SAPI !== 'cli') {
+    die('This script can only be run from the command line.');
+}
+
 // Mock WP Dependencies
 class WP_Error {
     public function __construct($code = '', $message = '', $data = '') {}
