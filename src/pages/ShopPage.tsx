@@ -83,7 +83,7 @@ const ShopHero = ({ product, onAddToCart, addingToCart, formatPrice, productBase
         <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#141414] to-transparent" />
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-20 pb-24 md:pb-32">
+      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-20 pb-32 md:pb-48">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -420,7 +420,7 @@ const ShopPage: React.FC = () => {
       )}
 
       {/* --- Netflix-style Lists (Rows) --- */}
-      <div className="relative z-20 pb-20 -mt-16 md:-mt-24 lg:-mt-32 space-y-12 md:space-y-16">
+      <div className="relative z-20 pb-20 -mt-8 md:-mt-12 lg:-mt-16 space-y-12 md:space-y-16">
         <ProductRow
           title={t('shop_new_releases')}
           products={newReleases}
