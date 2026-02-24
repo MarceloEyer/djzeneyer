@@ -339,6 +339,22 @@ function djz_update_profile($request)
 function djz_get_gamipress_user_data($request)
 {
     $user_id = get_current_user_id();
+
+    // Fallback manual: Se get_current_user_id() falhar (comum em LiteSpeed/Headless), 
+    // tentamos extrair o token do header manualmente.
+    if (!$user_id) {
+        $auth_header = $request->get_header('Authorization');
+        if ($auth_header && preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
+            $token = trim($matches[1]);
+            if (class_exists('\ZenEyer\Auth\Core\JWT_Manager')) {
+                $decoded = \ZenEyer\Auth\Core\JWT_Manager::validate_token($token);
+                if (!is_wp_error($decoded) && isset($decoded->data->user_id)) {
+                    $user_id = (int) $decoded->data->user_id;
+                }
+            }
+        }
+    }
+
     if (!$user_id) return new WP_Error('no_user', 'User not authenticated', ['status' => 401]);
 
     // Transient cache per user (24h)
