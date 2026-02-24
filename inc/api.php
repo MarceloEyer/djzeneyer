@@ -368,6 +368,21 @@ function djz_get_gamipress_user_data($request)
     $point_data = [];
     if (function_exists('gamipress_get_points_types')) {
         $point_types = gamipress_get_points_types();
+        
+        // Batch prime caches para thumbnails de point types
+        $pt_thumb_ids = [];
+        foreach ($point_types as $pt) {
+            $tid = get_post_thumbnail_id($pt['ID']);
+            if ($tid) $pt_thumb_ids[] = (int) $tid;
+        }
+        if (!empty($pt_thumb_ids)) {
+            $pt_thumb_ids = array_unique($pt_thumb_ids);
+            if (function_exists('update_meta_cache')) update_meta_cache('post', $pt_thumb_ids);
+            // Usamos a função interna _prime_post_caches (com guard) para priming eficiente via IDs.
+            // Alternativa pública update_post_caches exigiria instanciar os objetos post.
+            if (function_exists('_prime_post_caches')) _prime_post_caches($pt_thumb_ids, false, true);
+        }
+
         foreach ($point_types as $slug => $pt) {
             $point_data[$slug] = [
                 'name' => $pt['plural_name'],
@@ -421,26 +436,43 @@ function djz_get_gamipress_user_data($request)
         'post_status' => 'publish'
     ]);
 
-    foreach ($all_achievements as $post) {
-        $earned = false;
-        $date_earned = '';
-        
-        if (function_exists('gamipress_has_user_earned_achievement')) {
-            $earned_obj = gamipress_has_user_earned_achievement($post->ID, $user_id);
-            if ($earned_obj) {
-                $earned = true;
-                $date_earned = $earned_obj->date;
+    if (!empty($all_achievements)) {
+        // Batch prime caches para thumbnails de achievements
+        $ach_thumb_ids = [];
+        foreach ($all_achievements as $post) {
+            $tid = get_post_thumbnail_id($post->ID);
+            if ($tid) $ach_thumb_ids[] = (int) $tid;
+        }
+        if (!empty($ach_thumb_ids)) {
+            $ach_thumb_ids = array_unique($ach_thumb_ids);
+            if (function_exists('update_meta_cache')) update_meta_cache('post', $ach_thumb_ids);
+            // Priming focado apenas no post object cache para performance máxima.
+            if (function_exists('_prime_post_caches')) _prime_post_caches($ach_thumb_ids, false, true);
+        }
+
+        // Batch fetch de todas as conquistas ganhas (Elimina N+1)
+        $user_earnings = [];
+        if (function_exists('gamipress_get_user_earnings')) {
+            $earnings_list = gamipress_get_user_earnings($user_id, 'achievement');
+            foreach ($earnings_list as $earned_obj) {
+                // Mapeia por ID do post para busca O(1)
+                $user_earnings[$earned_obj->post_id] = $earned_obj;
             }
         }
 
-        $achievements[] = [
-            'id' => $post->ID,
-            'title' => $post->post_title,
-            'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
-            'image' => get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
-            'earned' => $earned,
-            'date_earned' => $date_earned,
-        ];
+        foreach ($all_achievements as $post) {
+            $earned = isset($user_earnings[$post->ID]);
+            $date_earned = $earned ? $user_earnings[$post->ID]->date : '';
+
+            $achievements[] = [
+                'id' => $post->ID,
+                'title' => $post->post_title,
+                'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
+                'image' => get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
+                'earned' => $earned,
+                'date_earned' => $date_earned,
+            ];
+        }
     }
 
     // --- 4. Logs de Atividade (Feed) ---

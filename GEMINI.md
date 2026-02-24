@@ -39,6 +39,7 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 5. **Commits** → Prefixos semânticos: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
 6. **ESLint** → Manter na versão 9 (plugins React não suportam v10)
 7. **Navbar** → Está em `components/Layout/`, não em `components/common/`
+8. **Primatize CLI** → Sempre preferir ferramentas de linha de comando (`gh`, `git`, `npm`) em vez de agentes de navegador para interações externas (GitHub, etc). Isso reduz o uso de créditos e é mais performático.
 
 ## O que NÃO fazer
 
