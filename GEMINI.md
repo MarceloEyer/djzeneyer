@@ -67,3 +67,13 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 2. **Infraestrutura** → Hospedagem simples (vps/compartilhada). Priorizar economia de CPU e memória.
 3. **Caching** → Como os dados (conquistas, pontos) não mudam com alta frequência, **preferir cache persistente (transients) mais longos** (ex: 24h ou mais) em vez de requisições frequentes ao banco de dados.
 4. **Simplicidade** → Soluções simples e robustas são melhores que arquiteturas complexas de alta performance.
+
+## Infraestrutura & Diagnóstico (Snapshot 2026-02-24)
+
+- **WordPress:** 6.9.1 | **PHP:** 8.3.30 (LiteSpeed) | **DB:** MariaDB 11.8.3
+- **Paths:** `/home/u790739895/domains/djzeneyer.com/public_html`
+- **Polylang:** 3.7.8 configurado com diretórios (`/pt/`), Inglês como padrão (hide prefix), e sincronização de metadados (`_thumbnail_id`) ativa.
+- **Plugins Ativos:** GamiPress 7.6.8, WooCommerce 10.5.2, ZenEyer Auth Pro 2.3.0, LiteSpeed Cache 7.7.
+- **Cache:** `WP_CACHE` ativo.
+- **Limites PHP:** `memory_limit: 1536M`, `max_input_vars: 5000`.
+- **Debug:** `WP_DEBUG` e `WP_DEBUG_LOG` estão ativos (atentar para desativar display em prod).

@@ -26,6 +26,8 @@ interface UserContextType {
   register: (name: string, email: string, password: string, turnstileToken?: string) => Promise<void>;
   googleLogin: (idToken: string) => Promise<void>;
   logout: () => void;
+  requestPasswordReset: (email: string) => Promise<void>;
+  resetPassword: (key: string, login: string, password: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -247,6 +249,55 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     clearAllCache();
   };
 
+  // ========================================================================
+  // PASSWORD RESET
+  // ========================================================================
+  const requestPasswordReset = async (email: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/auth/password/reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const json = await res.json();
+      if (!json.success) {
+        throw new Error(json.message || 'Erro ao solicitar reset de senha');
+      }
+    } catch (err: any) {
+      console.error('[UserContext] ❌ Erro ao solicitar reset:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (key: string, login: string, password: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/auth/password/set`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, login, password })
+      });
+
+      const json = await res.json();
+      if (!json.success) {
+        throw new Error(json.message || 'Erro ao definir nova senha');
+      }
+    } catch (err: any) {
+      console.error('[UserContext] ❌ Erro ao resetar senha:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearError = () => setError(null);
 
   // ========================================================================
@@ -264,6 +315,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       register,
       googleLogin,
       logout,
+      requestPasswordReset,
+      resetPassword,
       clearError
     }}>
       {children}

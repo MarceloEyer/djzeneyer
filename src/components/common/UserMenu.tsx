@@ -4,13 +4,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, 
-  Settings, 
-  LogOut, 
-  ShoppingBag, 
-  Award, 
-  ChevronDown 
+import {
+  User,
+  Settings,
+  LogOut,
+  ShoppingBag,
+  Award,
+  ChevronDown
 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
@@ -49,22 +49,22 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
   // ✅ FIX 2: Click Outside com lógica segura
   useEffect(() => {
     if (!isOpen) return;
-    
+
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-    
+
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setIsOpen(false);
     };
-    
+
     const timeoutId = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscKey);
     }, 10);
-    
+
     return () => {
       clearTimeout(timeoutId);
       document.removeEventListener('mousedown', handleClickOutside);
@@ -75,7 +75,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
   const handleLogout = async () => {
     setIsOpen(false);
     await logout();
-    navigate('/');
+    const homePath = i18n.language.startsWith('pt') ? '/pt/' : '/';
+    navigate(homePath);
   };
 
   if (!user) return null;
@@ -88,14 +89,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
           {user.avatar ? (
             <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-primary object-cover" />
           ) : (
-            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary"/></div>
+            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary" /></div>
           )}
           <div className="overflow-hidden">
             <div className="font-bold text-sm text-white truncate">{user.name}</div>
             <div className="text-xs text-white/50 truncate">{user.email}</div>
           </div>
         </div>
-        
+
         <Link to={getRouteForKey('dashboard')} className="btn btn-primary w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
           <User size={18} /> <span>Dashboard</span>
         </Link>
@@ -121,9 +122,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
         aria-label="User menu"
       >
         {user.avatar ? (
-          <img 
-            src={user.avatar} 
-            alt={user.name} 
+          <img
+            src={user.avatar}
+            alt={user.name}
             className="w-8 h-8 rounded-full object-cover border border-primary/50"
           />
         ) : (
@@ -131,8 +132,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
             <User className="text-primary" size={16} />
           </div>
         )}
-        <ChevronDown 
-          size={14} 
+        <ChevronDown
+          size={14}
           className={`text-white/70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
@@ -157,30 +158,30 @@ const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
             <div className="py-2 flex flex-col">
               <Link to={getRouteForKey('dashboard')} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <User size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">Dashboard</span>
+                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_dashboard', 'Dashboard')}</span>
               </Link>
               <Link to={getRouteForKey('my-account')} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <Settings size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">My Account</span>
+                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_account', 'My Account')}</span>
               </Link>
               <Link to={`${getRouteForKey('my-account')}?tab=orders`} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <ShoppingBag size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">My Orders</span>
+                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_orders', 'My Orders')}</span>
               </Link>
               <Link to={`${getRouteForKey('my-account')}?tab=achievements`} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
                 <Award size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">Achievements</span>
+                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_achievements', 'Achievements')}</span>
               </Link>
             </div>
 
             {/* Footer */}
             <div className="border-t border-white/10 p-2 bg-white/5">
-              <button 
-                onClick={handleLogout} 
+              <button
+                onClick={handleLogout}
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-semibold"
               >
                 <LogOut size={16} />
-                <span>Sign Out</span>
+                <span>{t('sign_out', 'Sign Out')}</span>
               </button>
             </div>
           </motion.div>

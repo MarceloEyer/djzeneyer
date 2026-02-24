@@ -70,6 +70,7 @@ const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
 const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
 const TicketsPage = lazy(() => import('../pages/TicketsPage'));
 const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
+const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
 const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
@@ -232,13 +233,19 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Zen Link (Linktree Style)
   {
     component: ZenLinkPage,
-    paths: { en: ['links', 'zenlink'], pt: ['links', 'zenlink'] },
+    paths: { en: ['links', 'zenlink'], pt: 'biolink' },
   },
 
   // Zouk Persona Quiz
   {
     component: ZoukPersonaQuizPage,
-    paths: { en: 'quiz', pt: 'quiz-zouk' },
+    paths: { en: 'quiz', pt: 'perguntas' },
+  },
+
+  // Password Reset
+  {
+    component: ResetPasswordPage,
+    paths: { en: 'reset-password', pt: 'recuperar-senha' },
   },
 ];
 
