@@ -117,7 +117,7 @@ const SupportArtistPage = () => {
 
       <div className="container mx-auto px-4">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-black font-display mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white drop-shadow-2xl">
             {t('support.header.title', 'Support the Music')}
           </h1>
           <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">

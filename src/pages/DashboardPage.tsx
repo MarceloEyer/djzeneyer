@@ -111,7 +111,7 @@ const DashboardContent = () => {
               </div>
 
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-4xl md:text-5xl font-black font-display mb-2 drop-shadow-lg bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                <h1 className="text-4xl md:text-5xl font-black font-display mb-2 drop-shadow-lg text-white">
                   {t('dashboard.welcomeBack', { name: user.name })}
                 </h1>
                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mb-6">
@@ -327,8 +327,8 @@ const DashboardContent = () => {
                   key={ach.id}
                   whileHover={{ scale: 1.05, y: -5 }}
                   className={`relative p-5 rounded-3xl border transition-all cursor-default text-center group ${ach.earned
-                      ? 'bg-gradient-to-br from-surface to-surface/50 border-primary/20 shadow-xl shadow-primary/5'
-                      : 'bg-white/2 opacity-40 border-white/5 border-dashed'
+                    ? 'bg-gradient-to-br from-surface to-surface/50 border-primary/20 shadow-xl shadow-primary/5'
+                    : 'bg-white/2 opacity-40 border-white/5 border-dashed'
                     }`}
                 >
                   {!ach.earned && <div className="absolute top-2 right-2 text-white/20"><Zap size={10} /></div>}
