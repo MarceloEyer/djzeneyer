@@ -22,7 +22,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
   const { user, logout } = useUser();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();

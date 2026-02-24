@@ -70,10 +70,10 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 
 ## Infraestrutura & Diagnóstico (Snapshot 2026-02-24)
 
-- **WordPress:** 6.9.1 | **PHP:** 8.3.30 (LiteSpeed) | **DB:** MariaDB 11.8.3
-- **Paths:** `/home/u790739895/domains/djzeneyer.com/public_html`
-- **Polylang:** 3.7.8 configurado com diretórios (`/pt/`), Inglês como padrão (hide prefix), e sincronização de metadados (`_thumbnail_id`) ativa.
-- **Plugins Ativos:** GamiPress 7.6.8, WooCommerce 10.5.2, ZenEyer Auth Pro 2.3.0, LiteSpeed Cache 7.7.
-- **Cache:** `WP_CACHE` ativo.
-- **Limites PHP:** `memory_limit: 1536M`, `max_input_vars: 5000`.
-- **Debug:** `WP_DEBUG` e `WP_DEBUG_LOG` estão ativos (atentar para desativar display em prod).
+- **WordPress:** 6.9.1 (Custom/Beta?) | **PHP:** 8.3.30 (LiteSpeed) | **DB:** MariaDB 11.8.3
+- **Paths:** `/home/u790739895/domains/djzeneyer/public_html`
+- **Limites PHP:** `memory_limit servidor: 1536M`, `memory_limit WP: 2GB` (conforme WC Report).
+- **Cache:** `WP_CACHE` ativo via LiteSpeed Cache. **Redis:** Inacessível. **OPcache:** Ativo.
+- **Plugins Ativos (10):** GamiPress, LiteSpeed Cache, MailPoet, PagBank, Polylang, WooCommerce, Zen BIT, Zen Plugins Overview, Zen SEO Lite Pro, ZenEyer Auth Pro.
+- **E-commerce:** WooCommerce 10.5.2 com HPOS ativo (High-Performance Order Storage).
+- **Tráfego:** Baixo volume. Foco em cache persistente (transients) e compressão Gzip/Brotli via `.htaccess`.
