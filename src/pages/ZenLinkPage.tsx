@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Youtube, Calendar, ShoppingBag, Mail, Phone,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
-  Instagram,
+  Instagram, Sparkles,
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
@@ -102,6 +102,15 @@ const LINKS: LinkItem[] = [
     to: '/events',
     icon: <Calendar className="w-5 h-5" />,
     gradient: 'from-blue-500 to-indigo-600',
+  },
+  {
+    id: 'internal-quiz',
+    type: 'internal',
+    titleKey: 'zenlink.quiz_title',
+    subtitleKey: 'zenlink.quiz_subtitle',
+    to: '/quiz',
+    icon: <Sparkles className="w-5 h-5" />,
+    gradient: 'from-yellow-400 via-orange-500 to-red-500',
   },
   {
     id: 'internal-book',
