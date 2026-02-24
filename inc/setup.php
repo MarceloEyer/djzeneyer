@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) exit;
  */
 define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS);
 define('DJZ_CACHE_PRODUCTS', 30 * MINUTE_IN_SECONDS);
-define('DJZ_CACHE_GAMIPRESS', 24 * HOUR_IN_SECONDS);
+define('DJZ_CACHE_GAMIPRESS', 48 * HOUR_IN_SECONDS);
 
 /**
  * GamiPress helper: resolve points type slug with fallback.
