@@ -277,13 +277,16 @@ export const useCartQuery = () => {
 
 export const useGamipressQuery = (userId?: number, token?: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.user.gamipress(userId!),
+    queryKey: [...QUERY_KEYS.user.gamipress(userId!), token],
     queryFn: async () => {
-      if (!userId) return null;
+      if (!userId || !token) return null;
       const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/user-data');
 
-      const headers: HeadersInit = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+
       const wpData = (window as any).wpData || {};
       if (wpData.nonce) headers['X-WP-Nonce'] = wpData.nonce;
 
@@ -293,7 +296,8 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
     },
     staleTime: STALE_TIME.GAMIPRESS,
     refetchInterval: 60_000,
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && Boolean(token),
+    retry: false,
   });
 };
 

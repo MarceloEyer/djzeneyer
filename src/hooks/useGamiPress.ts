@@ -17,25 +17,46 @@ export interface Achievement {
   date_earned: string;
 }
 
-export interface GamiPressData {
-  points: number;
-  level: number;
-  rank: string;
-  rankId: number;
-  nextLevelPoints: number;
-  progressToNextLevel: number;
-  achievements: Achievement[];
-  totalTracks: number;
-  eventsAttended: number;
-  streak: number;
-  streakFire: boolean;
+export interface PointType {
+  name: string;
+  amount: number;
+  image: string;
 }
 
-interface GamiPressHookResponse extends GamiPressData {
-  data: GamiPressData | null;
+export interface LogEntry {
+  id: number;
+  type: string;
+  description: string;
+  date: string;
+  points: number;
+}
+
+export interface GamiPressData {
+  points: Record<string, PointType>;
+  rank: {
+    current: { id: number; title: string; image: string };
+    next: { id: number; title: string; image: string } | null;
+    progress: number;
+  };
+  achievements: Achievement[];
+  logs: LogEntry[];
+  stats: {
+    totalTracks: number;
+    eventsAttended: number;
+    streak: number;
+    streakFire: boolean;
+  };
+  lastUpdate: string;
+}
+
+interface GamiPressHookResponse {
+  data: GamiPressData;
   loading: boolean;
   error: string | null;
   refresh: () => void;
+  // Legacy helpers for easier migration
+  mainPoints: number;
+  currentRank: string;
 }
 
 /* =========================
@@ -43,17 +64,23 @@ interface GamiPressHookResponse extends GamiPressData {
  * ========================= */
 
 const FALLBACK: GamiPressData = {
-  points: 0,
-  level: 1,
-  rank: 'Zen Novice',
-  rankId: 0,
-  nextLevelPoints: 100,
-  progressToNextLevel: 0,
+  points: {
+    points: { name: 'XP', amount: 0, image: '' }
+  },
+  rank: {
+    current: { id: 0, title: 'Zen Novice', image: '' },
+    next: null,
+    progress: 0
+  },
   achievements: [],
-  totalTracks: 0,
-  eventsAttended: 0,
-  streak: 0,
-  streakFire: false,
+  logs: [],
+  stats: {
+    totalTracks: 0,
+    eventsAttended: 0,
+    streak: 0,
+    streakFire: false,
+  },
+  lastUpdate: '',
 };
 
 /* =========================
@@ -64,25 +91,15 @@ export const useGamiPress = (): GamiPressHookResponse => {
   const { user } = useUser();
   const { data, isLoading, error, refetch } = useGamipressQuery(user?.id, user?.token);
 
-  const resolved: GamiPressData = data ?? FALLBACK;
+  const resolved: GamiPressData = (data as GamiPressData) ?? FALLBACK;
 
   return {
-    // Spread all fields for backward-compatible destructuring
-    points: resolved.points,
-    level: resolved.level,
-    rank: resolved.rank,
-    rankId: resolved.rankId,
-    nextLevelPoints: resolved.nextLevelPoints,
-    progressToNextLevel: resolved.progressToNextLevel,
-    achievements: resolved.achievements,
-    totalTracks: resolved.totalTracks,
-    eventsAttended: resolved.eventsAttended,
-    streak: resolved.streak,
-    streakFire: resolved.streakFire,
-    // Hook meta
-    data: data ?? null,
+    data: resolved,
     loading: isLoading,
     error: error ? (error as Error).message : null,
     refresh: () => { refetch(); },
+    // Legacy mapping
+    mainPoints: resolved.points.points?.amount ?? 0,
+    currentRank: resolved.rank.current.title,
   };
 };

@@ -339,117 +339,116 @@ function djz_update_profile($request)
 function djz_get_gamipress_user_data($request)
 {
     $user_id = get_current_user_id();
+    if (!$user_id) return new WP_Error('no_user', 'User not authenticated', ['status' => 401]);
 
-    // Transient cache per user (uses DJZ_CACHE_GAMIPRESS = 24h)
-    $cache_key = 'djz_gamipress_' . $user_id;
+    // Transient cache per user (24h)
+    $cache_key = 'djz_gamipress_v3_' . $user_id;
     $cached = get_transient($cache_key);
     if ($cached !== false) {
         return rest_ensure_response($cached);
     }
 
-    // 1. Points
-    $points = (int)get_user_meta($user_id, '_gamipress_points_points', true);
+    // --- 1. Múltiplos Tipos de Pontos ---
+    $point_data = [];
+    if (function_exists('gamipress_get_points_types')) {
+        $point_types = gamipress_get_points_types();
+        foreach ($point_types as $slug => $pt) {
+            $point_data[$slug] = [
+                'name' => $pt['plural_name'],
+                'amount' => (int)gamipress_get_user_points($user_id, $slug),
+                'image' => get_the_post_thumbnail_url($pt['ID'], 'thumbnail') ?: ''
+            ];
+        }
+    } else {
+        // Fallback para XP básico se o plugin não estiver carregado corretamente
+        $point_data['points'] = [
+            'name' => 'XP',
+            'amount' => (int)get_user_meta($user_id, '_gamipress_points_points', true),
+            'image' => ''
+        ];
+    }
 
-    // 2. Rank
-    $rank_id = (int)get_user_meta($user_id, '_gamipress_rank_rank', true);
-    $rank_title = 'Zen Novice';
-    if ($rank_id > 0) {
-        $rank_post = get_post($rank_id);
-        if ($rank_post) {
-            $rank_title = $rank_post->post_title;
+    // --- 2. Rank & Progressão Real ---
+    $rank_info = [
+        'current' => ['title' => 'Zen Novice', 'id' => 0, 'image' => ''],
+        'next' => null,
+        'progress' => 0
+    ];
+
+    if (function_exists('gamipress_get_user_rank')) {
+        // Assume 'rank' como tipo padrão, pode ser filtrado se houver múltiplos
+        $current_rank = gamipress_get_user_rank($user_id, 'rank');
+        if ($current_rank) {
+            $rank_info['current'] = [
+                'id' => $current_rank->ID,
+                'title' => $current_rank->post_title,
+                'image' => get_the_post_thumbnail_url($current_rank->ID, 'thumbnail') ?: ''
+            ];
+
+            $next_rank = gamipress_get_next_rank($current_rank->ID);
+            if ($next_rank) {
+                $rank_info['next'] = [
+                    'id' => $next_rank->ID,
+                    'title' => $next_rank->post_title,
+                    'image' => get_the_post_thumbnail_url($next_rank->ID, 'thumbnail') ?: ''
+                ];
+                // Idealmente teríamos os requisitos aqui, mas para o MVP usaremos a lógica de XP
+            }
         }
     }
 
-    // 3. Level Calculation
-    $level = floor($points / 100) + 1;
-    $next_level_points = $level * 100;
-    $progress = min(100, (($points % 100) / 100) * 100);
-
-    // 4. Achievements
+    // --- 3. Conquistas (Earned + Locked para motivação) ---
     $achievements = [];
+    $all_achievements = get_posts([
+        'post_type' => 'achievement',
+        'numberposts' => -1,
+        'post_status' => 'publish'
+    ]);
 
-    if (function_exists('gamipress_get_user_earnings')) {
-        $earnings = gamipress_get_user_earnings($user_id, [
-            'limit' => 100,
+    foreach ($all_achievements as $post) {
+        $earned = false;
+        $date_earned = '';
+        
+        if (function_exists('gamipress_has_user_earned_achievement')) {
+            $earned_obj = gamipress_has_user_earned_achievement($post->ID, $user_id);
+            if ($earned_obj) {
+                $earned = true;
+                $date_earned = $earned_obj->date;
+            }
+        }
+
+        $achievements[] = [
+            'id' => $post->ID,
+            'title' => $post->post_title,
+            'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
+            'image' => get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
+            'earned' => $earned,
+            'date_earned' => $date_earned,
+        ];
+    }
+
+    // --- 4. Logs de Atividade (Feed) ---
+    $logs = [];
+    if (function_exists('gamipress_get_logs')) {
+        $raw_logs = gamipress_get_logs([
+            'user_id' => $user_id,
+            'limit' => 10,
             'orderby' => 'date',
-            'order' => 'DESC',
-            'post_type' => 'achievement',
+            'order' => 'DESC'
         ]);
-
-        if (!empty($earnings)) {
-            $achievement_ids = [];
-            $earning_map = []; // achievement_id => earning_date
-
-            foreach ($earnings as $earning) {
-                // Support both object and array return types just in case
-                $e_obj = (object)$earning;
-                $a_id = $e_obj->post_id ?? 0;
-
-                if ($a_id) {
-                    $achievement_ids[] = $a_id;
-                    if (!isset($earning_map[$a_id])) {
-                        $earning_map[$a_id] = $e_obj->date ?? '';
-                    }
-                }
-            }
-
-            $achievement_ids = array_unique($achievement_ids);
-
-            if (!empty($achievement_ids)) {
-                $posts = get_posts([
-                    'post_type' => 'any',
-                    'include' => $achievement_ids,
-                    'numberposts' => -1,
-                ]);
-
-                // Batch prime caches for images
-                $img_ids = [];
-                foreach ($posts as $post) {
-                    $tid = get_post_thumbnail_id($post->ID);
-                    if ($tid) {
-                        $img_ids[] = $tid;
-                    }
-                }
-
-                if (!empty($img_ids)) {
-                    $img_ids = array_unique($img_ids);
-                    update_meta_cache('post', $img_ids);
-                    if (function_exists('_prime_post_caches')) {
-                        _prime_post_caches($img_ids, false, false);
-                    }
-                }
-
-                foreach ($posts as $post) {
-                    $img_id = get_post_thumbnail_id($post->ID);
-                    $img_url = $img_id ? wp_get_attachment_url($img_id) : '';
-
-                    // Cleanup content
-                    $description = strip_tags($post->post_content);
-                    if (empty($description)) {
-                        $description = $post->post_excerpt;
-                    }
-
-                    $achievements[] = [
-                        'id' => $post->ID,
-                        'title' => $post->post_title,
-                        'description' => trim($description),
-                        'image' => $img_url,
-                        'earned' => true,
-                        'date_earned' => $earning_map[$post->ID] ?? '',
-                    ];
-                }
-            }
+        foreach ($raw_logs as $log) {
+            $logs[] = [
+                'id' => $log->log_id,
+                'type' => $log->type,
+                'description' => $log->title,
+                'date' => $log->date,
+                'points' => (int)$log->points
+            ];
         }
     }
 
-    // 5. Total Tracks
-    $total_tracks = djz_get_user_total_tracks($user_id);
-
-    // 6. Events Attended
-    $events_attended = djz_get_user_events_attended($user_id);
-
-    // 7. Login Streak
-    $streak = (int) get_user_meta($user_id, 'zen_login_streak', true);
+    // --- 5. Custom Metas (Existentes) ---
+    $streak = (int)get_user_meta($user_id, 'zen_login_streak', true);
     $last_login = get_user_meta($user_id, 'zen_last_login', true);
     $streak_fire = false;
     if ($last_login) {
@@ -458,21 +457,20 @@ function djz_get_gamipress_user_data($request)
     }
 
     $data = [
-        'points' => $points,
-        'level' => $level,
-        'rank' => $rank_title,
-        'rankId' => $rank_id,
-        'nextLevelPoints' => $next_level_points,
-        'progressToNextLevel' => $progress,
+        'points' => $point_data,
+        'rank' => $rank_info,
         'achievements' => $achievements,
-        'totalTracks' => $total_tracks,
-        'eventsAttended' => $events_attended,
-        'streak' => $streak,
-        'streakFire' => $streak_fire,
+        'logs' => $logs,
+        'stats' => [
+            'totalTracks' => djz_get_user_total_tracks($user_id),
+            'eventsAttended' => djz_get_user_events_attended($user_id),
+            'streak' => $streak,
+            'streakFire' => $streak_fire,
+        ],
+        'lastUpdate' => current_time('mysql')
     ];
 
     set_transient($cache_key, $data, DJZ_CACHE_GAMIPRESS);
-
     return rest_ensure_response($data);
 }
 
