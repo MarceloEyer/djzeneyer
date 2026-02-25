@@ -14,8 +14,8 @@
         "firebase/php-jwt": "^7.0"
     },
     "autoload": {
-        "psr-4": {
-            "ZenEyer\\Auth\\": "includes/"
-        }
+        "classmap": [
+            "includes/"
+        ]
     }
 }
