@@ -293,16 +293,16 @@ const MyAccountContent: React.FC = () => {
               </div>
             )}
 
-            {/* Progress bar para próximo rank */}
-            {userStats.xpToNext > 0 && (
+            {/* Progress bar para próximo rank (Sync com regra de 1000pt) */}
+            {gamipress.rank.next && (
               <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                <h3 className="text-lg font-semibold mb-4">Next Rank Progress</h3>
+                <h3 className="text-lg font-semibold mb-4">{t('dashboard.nextRank')}</h3>
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <div className="flex justify-between text-sm mb-2 text-white/80">
-                      <span>{userStats.rank}</span>
+                      <span>{gamipress.rank.current.title}</span>
                       <span>
-                        {gamipress.rank.next?.title || 'Max Rank'}
+                        {gamipress.rank.next.title}
                       </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
@@ -316,7 +316,7 @@ const MyAccountContent: React.FC = () => {
                       />
                     </div>
                     <p className="text-xs text-white/60 mt-2">
-                      <strong>{userStats.xpToNext} XP</strong> needed for next rank
+                      <strong>{1000 - (gamipress.points.points?.amount % 1000)} XP</strong> {t('dashboard.nextRank')}
                     </p>
                   </div>
                 </div>

@@ -120,31 +120,6 @@ const DashboardContent = () => {
                         <div className="absolute inset-0 bg-white/20 animate-pulse" />
                       </motion.div>
                     </div>
-
-                    {/* Rank Next Steps (Requirements) */}
-                    {gamipress.rank.requirements && gamipress.rank.requirements.length > 0 && (
-                      <div className="mt-4">
-                        <h4 className="text-[10px] font-black uppercase text-white/30 mb-3 tracking-widest">{t('dashboard.nextSteps')}</h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-2 duration-700">
-                          {gamipress.rank.requirements.map((req, i) => (
-                            <div key={i} className="bg-white/5 border border-white/5 p-2 rounded-xl flex flex-col gap-1">
-                              <div className="flex justify-between items-center text-[9px] font-black uppercase text-white/40 leading-none">
-                                <span className="truncate pr-2">{req.title}</span>
-                                <span className={req.percent >= 100 ? 'text-success' : 'text-primary'}>
-                                  {req.percent >= 100 ? '✓' : `${Math.round(req.percent)}%`}
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-end">
-                                <span className="text-xs font-black text-white/90">{req.current} <span className="text-[10px] opacity-30">/ {req.required}</span></span>
-                                <div className="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
-                                  <div className={`h-full ${getProgressColor(req.percent)}`} style={{ width: `${Math.min(100, req.percent)}%` }} />
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -345,8 +320,8 @@ const DashboardContent = () => {
           </div>
         </motion.div>
 
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

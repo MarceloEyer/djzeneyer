@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) exit;
 
 class ZenGame {
     private static $instance = null;
-    const CACHE_VERSION = 'v6';
+    const CACHE_VERSION = 'v7';
     const CACHE_TTL = 86400; // 24 hours
 
     public static function get_instance() {
@@ -387,68 +387,23 @@ class ZenGame {
                                     'image' => get_the_post_thumbnail_url($next_rank->ID, 'thumbnail') ?: ''
                                 ];
 
-                                // Calculate progress from requirements
-                                $requirements = function_exists('gamipress_get_ranks') 
-                                    ? gamipress_get_ranks([
-                                        'post_type' => 'rank-requirement',
-                                        'children_of' => $next_rank_id,
-                                        'numberposts' => -1
-                                    ]) 
-                                    : [];
+                                // Calculate progress based on simplified 1000pt rule
+                                // rule: 1000 pts per rank, max at 4000
+                                $u_points = function_exists('gamipress_get_user_points')
+                                    ? (int)gamipress_get_user_points($user_id, $main_pt_slug)
+                                    : 0;
 
-                                if (!empty($requirements)) {
-                                    $total_req_progress = 0;
-                                    foreach ($requirements as $req_post) {
-                                        if (function_exists('gamipress_get_requirement_object')) {
-                                            $req = gamipress_get_requirement_object($req_post->ID);
-                                            $req_data = [
-                                                'title' => $req_post->post_title,
-                                                'current' => 0,
-                                                'required' => 0,
-                                                'percent' => 0
-                                            ];
-                                            
-                                            // Points requirement
-                                            if (!empty($req['points_required']) && $req['points_required'] > 0) {
-                                                $points_type = isset($req['points_type_required']) 
-                                                    ? $req['points_type_required'] 
-                                                    : $main_pt_slug;
-                                                $u_points = function_exists('gamipress_get_user_points')
-                                                    ? (int)gamipress_get_user_points($user_id, $points_type)
-                                                    : 0;
-                                                    
-                                                $req_data['current'] = $u_points;
-                                                $req_data['required'] = (int)$req['points_required'];
-                                                $req_data['percent'] = $req['points_required'] > 0 
-                                                    ? min(100, ($u_points / $req['points_required']) * 100)
-                                                    : 0;
-                                            } 
-                                            // Count requirement (triggers/achievements)
-                                            else if (!empty($req['count']) && $req['count'] > 0) {
-                                                $earned_times = 0;
-                                                if (function_exists('gamipress_get_earnings_count')) {
-                                                    $earned_times = (int)gamipress_get_earnings_count([
-                                                        'user_id' => $user_id,
-                                                        'post_id' => $req_post->ID
-                                                    ]);
-                                                }
-                                                
-                                                $req_data['current'] = $earned_times;
-                                                $req_data['required'] = (int)$req['count'];
-                                                $req_data['percent'] = $req['count'] > 0
-                                                    ? min(100, ($earned_times / $req['count']) * 100)
-                                                    : 0;
-                                            }
-                                            
-                                            $total_req_progress += $req_data['percent'];
-                                            $rank_info['requirements'][] = $req_data;
-                                        }
-                                    }
-                                    
-                                    $rank_info['progress'] = !empty($requirements) 
-                                        ? round($total_req_progress / count($requirements))
-                                        : 0;
-                                }
+                                // Progress within current rank (0-1000)
+                                $progress_relative = $u_points % 1000;
+                                $rank_info['progress'] = min(100, round(($progress_relative / 1000) * 100));
+
+                                // Add a Virtual Requirement for UI consistency
+                                $rank_info['requirements'][] = [
+                                    'title' => 'Zen Points',
+                                    'current' => $u_points,
+                                    'required' => 4000,
+                                    'percent' => min(100, round(($u_points / 4000) * 100))
+                                ];
                             }
                         }
                     }
