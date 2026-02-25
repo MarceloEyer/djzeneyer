@@ -13,16 +13,18 @@ const __dirname = path.dirname(__filename);
 
 const BASE_URL = 'https://djzeneyer.com';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
-const ROUTES_DATA = path.resolve(__dirname, 'routes-config.json');
+const ROUTES_DATA_PATH = path.resolve(__dirname, 'routes-data.json');
 
-console.log('🗺️  Sitemap Generator v7.0 - SIMPLIFIED\n');
+console.log('🗺️  Sitemap Generator v7.1 - MULTI-SLUG\n');
 
-function buildUrlEntry(route, date) {
-  const cleanPath = route === '/' ? '' : route.replace(/^\/+/, '');
-  const enUrl = cleanPath === '' ? `${BASE_URL}/` : `${BASE_URL}/${cleanPath}`;
-  const ptUrl = cleanPath === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${cleanPath}`;
+function buildUrlEntry(routeEntry, date) {
+  const enSlug = routeEntry.en === '' ? '' : routeEntry.en.replace(/^\/+/, '');
+  const ptSlug = routeEntry.pt === '' ? '' : routeEntry.pt.replace(/^\/+/, '');
 
-  const priority = cleanPath === '' ? '1.0' : '0.8';
+  const enUrl = enSlug === '' ? `${BASE_URL}/` : `${BASE_URL}/${enSlug}/`;
+  const ptUrl = ptSlug === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${ptSlug}/`;
+
+  const priority = enSlug === '' ? '1.0' : '0.8';
 
   return `
   <url>
@@ -31,13 +33,21 @@ function buildUrlEntry(route, date) {
     <changefreq>weekly</changefreq>
     <priority>${priority}</priority>
     <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />
-    <xhtml:link rel="alternate" hreflang="pt" href="${ptUrl}" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="${ptUrl}" />
+  </url>
+  <url>
+    <loc>${ptUrl}</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${priority}</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="${ptUrl}" />
   </url>`;
 }
 
 function generateSitemaps() {
   try {
-    const routesData = JSON.parse(fs.readFileSync(ROUTES_DATA, 'utf-8'));
+    const routesData = JSON.parse(fs.readFileSync(ROUTES_DATA_PATH, 'utf-8'));
     const date = new Date().toISOString();
 
     let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
