@@ -145,11 +145,10 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
 
 // --- ProductCard (Expandable on Hover) ---
 interface ProductCardProps {
-  key?: number | string;
   product: Product;
   formatPrice: (price: string) => string;
   onAddToCart: (id: number) => void;
-  isAddingToCart: boolean; // OPTIMIZATION: Use boolean instead of ID
+  isAddingToCart: boolean;
   productBasePath: string;
 }
 
@@ -187,8 +186,15 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
           <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2">
               <button
-                onClick={(e) => { e.preventDefault(); onAddToCart(product.id); }}
-                className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/80 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isAddingToCart) onAddToCart(product.id);
+                }}
+                disabled={isAddingToCart}
+                aria-busy={isAddingToCart}
+                aria-label={t('shop_add_to_cart')}
+                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
+                  }`}
                 title={t('shop_add_to_cart')}
               >
                 {isAddingToCart ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} className="fill-black" />}
@@ -235,12 +241,13 @@ interface ProductRowProps {
   title: string;
   products: Product[];
   onAddToCart: (id: number) => void;
-  addingToCart: number | null; // Keeps ID to pass relevant boolean to children
+  isAdding: boolean; // OPTIMIZATION: Use boolean to prevent all rows re-rendering
+  activeProductId: number | null;
   formatPrice: (price: string) => string;
   productBasePath: string;
 }
 
-const ProductRow = memo(({ title, products, onAddToCart, addingToCart, formatPrice, productBasePath }: ProductRowProps) => {
+const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProductId, formatPrice, productBasePath }: ProductRowProps) => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -260,7 +267,11 @@ const ProductRow = memo(({ title, products, onAddToCart, addingToCart, formatPri
     const carousel = carouselRef.current;
     if (carousel) {
       carousel.addEventListener('scroll', checkScroll);
-      return () => carousel.removeEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll); // OPTIMIZATION: Resync on resize
+      return () => {
+        carousel.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
     }
   }, [products, checkScroll]);
 
@@ -323,7 +334,7 @@ const ProductRow = memo(({ title, products, onAddToCart, addingToCart, formatPri
               product={product}
               formatPrice={formatPrice}
               onAddToCart={onAddToCart}
-              isAddingToCart={addingToCart === product.id} // OPTIMIZATION: Pass boolean
+              isAddingToCart={isAdding && activeProductId === product.id} // OPTIMIZATION: Only compute if row is loading
               productBasePath={productBasePath}
             />
           ))}
@@ -360,12 +371,13 @@ const ShopPage: React.FC = () => {
 
   // Utilitário de formatação de preço (OPTIMIZATION: useCallback)
   const formatPrice = useCallback((price: string) => {
-    if (!price) return 'R$ 0,00';
+    if (!price) return isPortuguese ? 'R$ 0,00' : '$ 0.00';
     const numPrice = parseFloat(price);
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
+    const currency = isPortuguese ? 'BRL' : 'USD'; // OPTIMIZATION: Dynamic currency symbol
     return isNaN(numPrice)
       ? price
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
+      : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
   // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: useMemo)
@@ -385,7 +397,7 @@ const ShopPage: React.FC = () => {
   );
 
   const curatedSelection = useMemo(() =>
-    [...products].reverse().slice(0, 10),
+    products.slice(-10).reverse(), // OPTIMIZATION: Slice first, then reverse
     [products]
   );
 
@@ -435,7 +447,8 @@ const ShopPage: React.FC = () => {
           title={t('shop_new_releases')}
           products={newReleases}
           onAddToCart={handleAddToCart}
-          addingToCart={addingToCart}
+          isAdding={newReleases.some(p => p.id === addingToCart)}
+          activeProductId={addingToCart}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
@@ -444,7 +457,8 @@ const ShopPage: React.FC = () => {
           title={t('badge_sale')}
           products={bestSellers}
           onAddToCart={handleAddToCart}
-          addingToCart={addingToCart}
+          isAdding={bestSellers.some(p => p.id === addingToCart)}
+          activeProductId={addingToCart}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
@@ -453,7 +467,8 @@ const ShopPage: React.FC = () => {
           title={t('shop_top_picks')}
           products={curatedSelection}
           onAddToCart={handleAddToCart}
-          addingToCart={addingToCart}
+          isAdding={curatedSelection.some(p => p.id === addingToCart)}
+          activeProductId={addingToCart}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
