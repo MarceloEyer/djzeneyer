@@ -34,9 +34,10 @@ class ZenGame {
     }
 
     public function add_settings_page() {
+        // null as parent hides it from the sidebar menu but keeps it accessible via URL
         add_submenu_page(
-            'zen-control',
-            __('ZenGame Settings', 'zengame'),
+            null, 
+            __('ZenGame Diagnosis', 'zengame'),
             __('ZenGame', 'zengame'),
             'manage_options',
             'zengame-settings',
@@ -45,11 +46,68 @@ class ZenGame {
     }
 
     public function render_settings_page() {
+        if (!current_user_can('manage_options')) return;
+
+        // Handle Cache Clearing Action
+        if (isset($_GET['action']) && $_GET['action'] === 'clear_cache') {
+            check_admin_referer('zengame_clear_cache');
+            $this->clear_all_gamipress_cache();
+            echo '<div class="notice notice-success is-dismissible"><p>ZenGame Cache cleared successfully!</p></div>';
+        }
+
+        $point_types = function_exists('gamipress_get_points_types') ? gamipress_get_points_types() : [];
+        $rank_types = function_exists('gamipress_get_rank_types') ? gamipress_get_rank_types() : [];
         ?>
-        <div class="wrap">
-            <h1>ZenGame // System Status</h1>
-            <p>Gaming & Activity Bridge is active. Handling REST API requests for GamiPress data.</p>
+        <div class="wrap zen-diag-wrap">
+            <h1 class="wp-heading-inline">ZenGame // System Diagnosis</h1>
+            <hr class="wp-header-end">
+
+            <div class="card" style="max-width: 800px; margin-top: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <h2 style="border-bottom: 1px solid #edf2f7; padding-bottom: 15px; margin-top: 0;">Operational Status</h2>
+                
+                <table class="widefat striped" style="border: none;">
+                    <tr>
+                        <td><strong>API Service</strong></td>
+                        <td><span style="color: #10b981; font-weight: bold;">● ONLINE</span> (v1.0.0)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Endpoint</strong></td>
+                        <td><code>/wp-json/djzeneyer/v1/gamipress/user-data</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>GamiPress Core</strong></td>
+                        <td><?php echo defined('GAMIPRESS_VERSION') ? '<span style="color: #10b981;">Active (v' . GAMIPRESS_VERSION . ')</span>' : '<span style="color: #ef4444;">Inactive</span>'; ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Point Types Detected</strong></td>
+                        <td><?php echo count($point_types); ?> (<?php echo implode(', ', array_keys($point_types)); ?>)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rank Types Detected</strong></td>
+                        <td><?php echo count($rank_types); ?> (<?php echo implode(', ', array_keys($rank_types)); ?>)</td>
+                    </tr>
+                </table>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #edf2f7;">
+                    <h3>Advanced Actions</h3>
+                    <p class="description">Forcefully invalidate all GamiPress transients for all users.</p>
+                    <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=zengame-settings&action=clear_cache'), 'zengame_clear_cache'); ?>" 
+                       class="button button-secondary" style="border-color: #ef4444; color: #ef4444;">
+                        Clear All ZenGame Cache
+                    </a>
+                </div>
+            </div>
+
+            <p style="margin-top: 20px; color: #64748b;">
+                <span class="dashicons dashicons-arrow-left-alt2" style="font-size: 14px; margin-top: 2px;"></span>
+                <a href="<?php echo admin_url('admin.php?page=zen-control'); ?>" style="text-decoration: none; color: inherit;">Return to Zen Control</a>
+            </p>
         </div>
+        <style>
+            .zen-diag-wrap { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; }
+            .zen-diag-wrap h1 { font-weight: 800; letter-spacing: -0.5px; }
+            .zen-diag-wrap .card { padding: 30px; }
+        </style>
         <?php
     }
 
