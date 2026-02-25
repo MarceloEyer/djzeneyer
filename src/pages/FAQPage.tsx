@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
@@ -38,22 +38,20 @@ const FAQItem = memo<{
       </motion.div>
     </button>
 
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="overflow-hidden"
-        >
-          <div
-            className="px-6 pb-6 text-white/80 leading-relaxed prose prose-invert max-w-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-white border-t border-white/5 pt-4"
-            dangerouslySetInnerHTML={{ __html: answer }}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <motion.div
+      initial={false}
+      animate={{
+        height: isOpen ? 'auto' : 0,
+        opacity: isOpen ? 1 : 0
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="overflow-hidden"
+    >
+      <div
+        className="px-6 pb-6 text-white/80 leading-relaxed prose prose-invert max-w-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-white border-t border-white/5 pt-4"
+        dangerouslySetInnerHTML={{ __html: answer }}
+      />
+    </motion.div>
   </motion.div>
 ));
 FAQItem.displayName = 'FAQItem';

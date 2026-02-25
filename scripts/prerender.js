@@ -59,7 +59,7 @@ function startDevServer() {
           console.log('✅ Servidor OK.');
           return resolve();
         }
-      } catch (e) {}
+      } catch (e) { }
       await wait(1000);
       process.stdout.write('.');
     }
@@ -112,8 +112,13 @@ async function prerender() {
 
         // Tenta esperar o React montar
         try {
-          await page.waitForSelector('#root div', { timeout: 5000 }); // Espera algo DENTRO do root
-        } catch (e) {}
+          // Espera um elemento real de conteúdo (ex: h1, h2 ou o footer)
+          await page.waitForSelector('#root h1, #root h2, #root main', { timeout: 8000 });
+          // Pequeno respiro para garantir que o i18n e React terminaram o ciclo de render
+          await wait(500);
+        } catch (e) {
+          console.warn(`⚠️ Warning: Timeout waiting for specific content on ${route}. Proceeding with current HTML.`);
+        }
 
         const html = await page.content();
 
