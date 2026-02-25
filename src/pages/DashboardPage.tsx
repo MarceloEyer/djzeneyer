@@ -313,8 +313,15 @@ const DashboardContent = () => {
                       <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center grayscale opacity-30 shrink-0">
                         {quest.image ? <img src={quest.image} className="w-6 h-6 object-contain" /> : <Star size={18} />}
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-sm font-black text-white/80 truncate leading-none mb-1">{quest.title}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex justify-between items-start mb-1">
+                          <div className="text-sm font-black text-white/80 truncate leading-none">{quest.title}</div>
+                          {quest.points_awarded > 0 && (
+                            <span className="text-[9px] font-black text-accent bg-accent/10 px-1.5 py-0.5 rounded-md border border-accent/20 flex-shrink-0">
+                              +{quest.points_awarded} XP
+                            </span>
+                          )}
+                        </div>
                         <div className="text-[10px] text-white/40 line-clamp-2 leading-tight uppercase font-bold">{quest.description}</div>
                       </div>
                     </div>
@@ -338,12 +345,12 @@ const DashboardContent = () => {
                 {t('gamification.viewAll')}
               </button>
             </div>
-          </div >
+          </div>
 
-        </div >
+        </div>
 
         {/* --- ACHIEVEMENTS GALLERY --- */}
-        < motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12" >
+        <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12" >
           <div className="card p-8 border-white/5">
             <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
               <h2 className="text-2xl font-black font-display flex items-center gap-4">
@@ -378,11 +385,18 @@ const DashboardContent = () => {
                   <div className={`text-xs font-black mb-1 line-clamp-1 truncate uppercase ${ach.earned ? 'text-white' : 'text-white/40'}`}>
                     {ach.title}
                   </div>
-                  {ach.earned && (
-                    <div className="text-[8px] font-black text-success uppercase tracking-widest flex items-center justify-center gap-1">
-                      <Award size={8} /> {t('dashboard.unlocked')}
-                    </div>
-                  )}
+                  <div className="flex items-center justify-center gap-2">
+                    {ach.earned && (
+                      <div className="text-[8px] font-black text-success uppercase tracking-widest flex items-center justify-center gap-1">
+                        <Award size={8} /> {t('dashboard.unlocked')}
+                      </div>
+                    )}
+                    {ach.points_awarded > 0 && (
+                      <div className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/5 border ${ach.earned ? 'text-primary border-primary/20' : 'text-white/20 border-white/5'}`}>
+                        +{ach.points_awarded} XP
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>

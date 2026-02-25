@@ -14,6 +14,7 @@ export interface Achievement {
   description: string;
   image: string;
   earned: boolean;
+  points_awarded: number;
   date_earned: string;
 }
 
