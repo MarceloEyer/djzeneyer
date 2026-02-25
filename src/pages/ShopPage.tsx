@@ -1,7 +1,7 @@
 // src/pages/ShopPage.tsx
 // Visual inspirado em Netflix para venda de ingressos de eventos
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -63,12 +63,11 @@ const PagingIndicator = ({ count, active }: PagingIndicatorProps) => (
 interface ShopHeroProps {
   product: Product;
   onAddToCart: (id: number) => void;
-  addingToCart: number | null;
-  formatPrice: (price: string) => string;
+  isAddingToCart: boolean; // OPTIMIZATION: Use boolean instead of ID
   productBasePath: string;
 }
 
-const ShopHero = ({ product, onAddToCart, addingToCart, formatPrice, productBasePath }: ShopHeroProps) => {
+const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }: ShopHeroProps) => {
   const { t } = useTranslation();
 
   return (
@@ -124,9 +123,9 @@ const ShopHero = ({ product, onAddToCart, addingToCart, formatPrice, productBase
               whileTap={{ scale: 0.95 }}
               onClick={() => onAddToCart(product.id)}
               className="flex items-center gap-2 bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-white/90 transition-colors shadow-xl"
-              disabled={addingToCart === product.id}
+              disabled={isAddingToCart}
             >
-              {addingToCart === product.id ? <Loader2 className="animate-spin" /> : <Play className="fill-black" size={24} />}
+              {isAddingToCart ? <Loader2 className="animate-spin" /> : <Play className="fill-black" size={24} />}
               {t('shop_buy_now')}
             </motion.button>
 
@@ -142,19 +141,18 @@ const ShopHero = ({ product, onAddToCart, addingToCart, formatPrice, productBase
       </div>
     </div>
   );
-};
+});
 
 // --- ProductCard (Expandable on Hover) ---
 interface ProductCardProps {
-  key?: number | string;
   product: Product;
   formatPrice: (price: string) => string;
   onAddToCart: (id: number) => void;
-  addingToCart: number | null;
+  isAddingToCart: boolean;
   productBasePath: string;
 }
 
-const ProductCard = ({ product, formatPrice, onAddToCart, addingToCart, productBasePath }: ProductCardProps) => {
+const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, productBasePath }: ProductCardProps) => {
   const { t } = useTranslation();
 
   return (
@@ -188,11 +186,18 @@ const ProductCard = ({ product, formatPrice, onAddToCart, addingToCart, productB
           <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2">
               <button
-                onClick={(e) => { e.preventDefault(); onAddToCart(product.id); }}
-                className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/80 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isAddingToCart) onAddToCart(product.id);
+                }}
+                disabled={isAddingToCart}
+                aria-busy={isAddingToCart}
+                aria-label={t('shop_add_to_cart')}
+                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
+                  }`}
                 title={t('shop_add_to_cart')}
               >
-                {addingToCart === product.id ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} className="fill-black" />}
+                {isAddingToCart ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} className="fill-black" />}
               </button>
               <Link
                 to={`${productBasePath}/${product.slug}`}
@@ -229,19 +234,20 @@ const ProductCard = ({ product, formatPrice, onAddToCart, addingToCart, productB
       </div>
     </motion.div>
   );
-};
+});
 
 // --- ProductRow (Netflix-style Carousel) ---
 interface ProductRowProps {
   title: string;
   products: Product[];
   onAddToCart: (id: number) => void;
-  addingToCart: number | null;
+  isAdding: boolean; // OPTIMIZATION: Use boolean to prevent all rows re-rendering
+  activeProductId: number | null;
   formatPrice: (price: string) => string;
   productBasePath: string;
 }
 
-const ProductRow = ({ title, products, onAddToCart, addingToCart, formatPrice, productBasePath }: ProductRowProps) => {
+const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProductId, formatPrice, productBasePath }: ProductRowProps) => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -261,7 +267,11 @@ const ProductRow = ({ title, products, onAddToCart, addingToCart, formatPrice, p
     const carousel = carouselRef.current;
     if (carousel) {
       carousel.addEventListener('scroll', checkScroll);
-      return () => carousel.removeEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll); // OPTIMIZATION: Resync on resize
+      return () => {
+        carousel.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
     }
   }, [products, checkScroll]);
 
@@ -324,7 +334,7 @@ const ProductRow = ({ title, products, onAddToCart, addingToCart, formatPrice, p
               product={product}
               formatPrice={formatPrice}
               onAddToCart={onAddToCart}
-              addingToCart={addingToCart}
+              isAddingToCart={isAdding && activeProductId === product.id} // OPTIMIZATION: Only compute if row is loading
               productBasePath={productBasePath}
             />
           ))}
@@ -332,7 +342,7 @@ const ProductRow = ({ title, products, onAddToCart, addingToCart, formatPrice, p
       </div>
     </div>
   );
-};
+});
 
 // --- Componente Principal da Página ---
 const ShopPage: React.FC = () => {
@@ -346,8 +356,8 @@ const ShopPage: React.FC = () => {
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
 
-  // Função para adicionar ao carrinho
-  const handleAddToCart = async (productId: number) => {
+  // Função para adicionar ao carrinho (OPTIMIZATION: useCallback)
+  const handleAddToCart = useCallback(async (productId: number) => {
     setAddingToCart(productId);
     try {
       await addToCartMutation.mutateAsync({ productId, quantity: 1 });
@@ -357,23 +367,39 @@ const ShopPage: React.FC = () => {
     } finally {
       setAddingToCart(null);
     }
-  };
+  }, [addToCartMutation]);
 
-  // Utilitário de formatação de preço
-  const formatPrice = (price: string) => {
-    if (!price) return 'R$ 0,00';
+  // Utilitário de formatação de preço (OPTIMIZATION: useCallback)
+  const formatPrice = useCallback((price: string) => {
+    if (!price) return isPortuguese ? 'R$ 0,00' : '$ 0.00';
     const numPrice = parseFloat(price);
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
+    const currency = isPortuguese ? 'BRL' : 'USD'; // OPTIMIZATION: Dynamic currency symbol
     return isNaN(numPrice)
       ? price
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
-  };
+      : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
+  }, [isPortuguese]);
 
-  // Filtros de categorias para as seções (Estilo Netflix)
-  const featuredProduct = products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0];
-  const newReleases = products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10);
-  const bestSellers = products.filter((p: Product) => p.on_sale).slice(0, 10);
-  const curatedSelection = [...products].reverse().slice(0, 10);
+  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: useMemo)
+  const featuredProduct = useMemo(() =>
+    products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0],
+    [products]
+  );
+
+  const newReleases = useMemo(() =>
+    products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10),
+    [products]
+  );
+
+  const bestSellers = useMemo(() =>
+    products.filter((p: Product) => p.on_sale).slice(0, 10),
+    [products]
+  );
+
+  const curatedSelection = useMemo(() =>
+    products.slice(-10).reverse(), // OPTIMIZATION: Slice first, then reverse
+    [products]
+  );
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
@@ -410,8 +436,7 @@ const ShopPage: React.FC = () => {
         <ShopHero
           product={featuredProduct}
           onAddToCart={handleAddToCart}
-          addingToCart={addingToCart}
-          formatPrice={formatPrice}
+          isAddingToCart={addingToCart === featuredProduct.id} // OPTIMIZATION: Pass boolean
           productBasePath={productBasePath}
         />
       )}
@@ -422,7 +447,8 @@ const ShopPage: React.FC = () => {
           title={t('shop_new_releases')}
           products={newReleases}
           onAddToCart={handleAddToCart}
-          addingToCart={addingToCart}
+          isAdding={newReleases.some(p => p.id === addingToCart)}
+          activeProductId={addingToCart}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
@@ -431,7 +457,8 @@ const ShopPage: React.FC = () => {
           title={t('badge_sale')}
           products={bestSellers}
           onAddToCart={handleAddToCart}
-          addingToCart={addingToCart}
+          isAdding={bestSellers.some(p => p.id === addingToCart)}
+          activeProductId={addingToCart}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
@@ -440,7 +467,8 @@ const ShopPage: React.FC = () => {
           title={t('shop_top_picks')}
           products={curatedSelection}
           onAddToCart={handleAddToCart}
-          addingToCart={addingToCart}
+          isAdding={curatedSelection.some(p => p.id === addingToCart)}
+          activeProductId={addingToCart}
           formatPrice={formatPrice}
           productBasePath={productBasePath}
         />
