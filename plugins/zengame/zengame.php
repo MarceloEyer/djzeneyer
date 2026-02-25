@@ -92,6 +92,11 @@ class ZenGame {
                     'image' => get_the_post_thumbnail_url($pt['ID'], 'thumbnail') ?: ''
                 ];
             }
+            // Ensure a 'points' key exists for the frontend helper even if slug is different
+            if (!isset($point_data['points']) && !empty($point_data)) {
+                $first_pt = reset($point_data);
+                $point_data['points'] = $first_pt;
+            }
         }
 
         // --- 2. Rank — FIX: Detect real rank type ---
