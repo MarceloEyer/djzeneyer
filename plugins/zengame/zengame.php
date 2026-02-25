@@ -67,8 +67,8 @@ class ZenGame {
                 
                 <table class="widefat striped" style="border: none;">
                     <tr>
-                        <td><strong>API Service</strong></td>
-                        <td><span style="color: #10b981; font-weight: bold;">● ONLINE</span> (v1.0.0)</td>
+                        <td style="width: 200px;"><strong>API Service</strong></td>
+                        <td><span style="color: #10b981; font-weight: bold;">● ONLINE</span> (v1.1.0)</td>
                     </tr>
                     <tr>
                         <td><strong>Endpoint</strong></td>
@@ -78,21 +78,59 @@ class ZenGame {
                         <td><strong>GamiPress Core</strong></td>
                         <td><?php echo defined('GAMIPRESS_VERSION') ? '<span style="color: #10b981;">Active (v' . GAMIPRESS_VERSION . ')</span>' : '<span style="color: #ef4444;">Inactive</span>'; ?></td>
                     </tr>
-                    <tr>
-                        <td><strong>Point Types Detected</strong></td>
-                        <td><?php echo count($point_types); ?> (<?php echo implode(', ', array_keys($point_types)); ?>)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Rank Types Detected</strong></td>
-                        <td><?php echo count($rank_types); ?> (<?php echo implode(', ', array_keys($rank_types)); ?>)</td>
-                    </tr>
                 </table>
 
+                <div style="margin-top: 30px;">
+                    <h3 style="border-bottom: 2px solid #primary; padding-bottom: 5px;">Active Point Types</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <?php foreach ($point_types as $slug => $pt): ?>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                            <img src="<?php echo get_the_post_thumbnail_url($pt['ID'], 'thumbnail') ?: ''; ?>" style="width: 32px; height: 32px; border-radius: 4px; background: #fff;">
+                            <div>
+                                <div style="font-weight: 800; font-size: 14px;"><?php echo $pt['plural_name']; ?></div>
+                                <code style="font-size: 10px; color: #64748b;"><?php echo $slug; ?></code>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3 style="border-bottom: 2px solid #primary; padding-bottom: 5px;">Rank Hierarchy & Requirements</h3>
+                    <p class="description">How ZenGame calculates progress using GamiPress native requirements logic:</p>
+                    <div style="background: #1e293b; color: #cbd5e1; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 12px; margin-top: 10px;">
+                        <span style="color: #38bdf8;">// Logic Flow:</span><br>
+                        1. gamipress_get_user_rank() -> Detect current level<br>
+                        2. gamipress_get_next_rank_id() -> Identify target<br>
+                        3. gamipress_get_ranks(['post_type' => 'rank-requirement']) -> Fetch official children<br>
+                        4. gamipress_get_requirement_object() -> Parse Points or Count triggers<br>
+                        5. min(100, (current / required) * 100) -> Percentage per requirement<br>
+                        6. round(sum / total) -> Final progress bar value
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3 style="border-bottom: 2px solid #primary; padding-bottom: 5px; color: #6366f1;">Developer Quick Reference</h3>
+                    <p class="description">Useful snippets for future custom implementations:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; border-left: 4px solid #6366f1;">
+                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 5px;">POINTS</strong>
+                            <code style="font-size: 10px; break-all;">gamipress_award_points_to_user($uid, 100, 'points');</code><br>
+                            <code style="font-size: 10px; break-all;">gamipress_deduct_points_to_user($uid, 50, 'points');</code>
+                        </div>
+                        <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; border-left: 4px solid #ec4899;">
+                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 5px;">ACHIEVEMENTS</strong>
+                            <code style="font-size: 10px; break-all;">gamipress_award_achievement_to_user($aid, $uid);</code><br>
+                            <code style="font-size: 10px; break-all;">gamipress_has_user_earned_achievement($aid, $uid);</code>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #edf2f7;">
-                    <h3>Advanced Actions</h3>
+                    <h3 style="color: #ef4444;">Maintenance</h3>
                     <p class="description">Forcefully invalidate all GamiPress transients for all users.</p>
                     <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=zengame-settings&action=clear_cache'), 'zengame_clear_cache'); ?>" 
-                       class="button button-secondary" style="border-color: #ef4444; color: #ef4444;">
+                       class="button button-secondary" style="border-color: #ef4444; color: #ef4444; border-radius: 6px; padding: 5px 20px;">
                         Clear All ZenGame Cache
                     </a>
                 </div>
@@ -190,16 +228,26 @@ class ZenGame {
                                 'numberposts' => -1
                             ]) : [];
 
+                            $rank_info['requirements'] = [];
+
                             if (!empty($requirements)) {
                                 $total_req_progress = 0;
                                 foreach ($requirements as $req_post) {
                                     if (function_exists('gamipress_get_requirement_object')) {
                                         $req = gamipress_get_requirement_object($req_post->ID);
+                                        $req_data = [
+                                            'title' => $req_post->post_title,
+                                            'current' => 0,
+                                            'required' => 0,
+                                            'percent' => 0
+                                        ];
                                         
                                         // Points requirement
                                         if (!empty($req['points_required']) && $req['points_required'] > 0) {
                                             $u_points = (int)gamipress_get_user_points($user_id, $req['points_type_required'] ?: $main_pt_slug);
-                                            $total_req_progress += min(100, ($u_points / $req['points_required']) * 100);
+                                            $req_data['current'] = $u_points;
+                                            $req_data['required'] = (int)$req['points_required'];
+                                            $req_data['percent'] = min(100, ($u_points / $req['points_required']) * 100);
                                         } 
                                         // Count requirement (triggers)
                                         else if (!empty($req['count']) && $req['count'] > 0) {
@@ -207,9 +255,13 @@ class ZenGame {
                                                 'user_id' => $user_id,
                                                 'post_id' => $req_post->ID
                                             ]) : 0;
-                                            $total_req_progress += min(100, ($earned_times / $req['count']) * 100);
+                                            $req_data['current'] = $earned_times;
+                                            $req_data['required'] = (int)$req['count'];
+                                            $req_data['percent'] = min(100, ($earned_times / $req['count']) * 100);
                                         }
-                                        // Default to 0 if not points/count
+                                        
+                                        $total_req_progress += $req_data['percent'];
+                                        $rank_info['requirements'][] = $req_data;
                                     }
                                 }
                                 $rank_info['progress'] = round($total_req_progress / count($requirements));

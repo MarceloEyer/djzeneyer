@@ -24,6 +24,13 @@ export interface PointType {
   image: string;
 }
 
+export interface RankRequirement {
+  title: string;
+  current: number;
+  required: number;
+  percent: number;
+}
+
 export interface LogEntry {
   id: number;
   type: string;
@@ -38,6 +45,7 @@ export interface GamiPressData {
     current: { id: number; title: string; image: string };
     next: { id: number; title: string; image: string } | null;
     progress: number;
+    requirements?: RankRequirement[];
   };
   achievements: Achievement[];
   logs: LogEntry[];
