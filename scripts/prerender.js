@@ -126,10 +126,13 @@ async function prerender() {
         if (html.length < 1000) {
           console.warn(`❌ ${route} VAZIO (${html.length}b). Erro de JS ou 404?`);
         } else {
-          const finalHtml = html.replace(
-            '<head>',
-            `<head>\n<meta name="prerender-generated" content="true">`
-          );
+          // Só adiciona a meta se ela já não estiver lá (evita duplicação no re-build)
+          const finalHtml = html.includes('name="prerender-generated"')
+            ? html
+            : html.replace(
+              '<head>',
+              `<head>\n<meta name="prerender-generated" content="true">`
+            );
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
           successCount++;

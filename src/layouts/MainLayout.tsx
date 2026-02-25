@@ -20,8 +20,6 @@ const MainLayout: React.FC = () => {
   return (
     <>
       <ScrollToTop />
-      {/* Default SEO for all pages using this layout.
-          Individual pages can override this by rendering HeadlessSEO themselves. */}
       <HeadlessSEO />
 
       <div className="flex flex-col min-h-screen bg-background text-white">

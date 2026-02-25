@@ -172,6 +172,8 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       ],
     };
   } else if (!finalSchema) {
+    // Basic WebPage schema for other pages
+    // Using finalUrl which is ensured absolute and has trailing slash
     finalSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -180,6 +182,10 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       url: finalUrl,
     };
   }
+
+  // Identificador para o script do schema para evitar duplicidade
+  // react-helmet-async não remove scripts duplicados se não tiverem uma chave única
+  const schemaId = isHomepage ? 'homepage-schema' : `schema-${location.pathname.replace(/\//g, '-')}`;
 
   return (
     <Helmet>
@@ -249,7 +255,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
       {/* Schema JSON-LD */}
       {finalSchema && (
-        <script type="application/ld+json">
+        <script key={schemaId} type="application/ld+json">
           {JSON.stringify(finalSchema).replace(/</g, '\\u003c')}
         </script>
       )}

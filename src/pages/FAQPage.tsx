@@ -2,7 +2,6 @@ import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getHrefLangUrls } from '../utils/seo';
 import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen, HeartPulse } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 
@@ -67,8 +66,7 @@ const FAQPage: React.FC = () => {
     setOpenIndex(openIndex === id ? null : id);
   };
 
-  const currentPath = '/faq';
-  const currentUrl = `https://djzeneyer.com${currentPath}`;
+
 
   // Categorias mapeadas dinamicamente das traduções
   const categories = ['djzeneyer', 'rankings', 'technical', 'culture', 'community'];
@@ -88,55 +86,55 @@ const FAQPage: React.FC = () => {
     }))
   }));
 
-  // Schema JSON-LD dinâmico baseado no idioma atual
-  const faqSchema = {
-    "@type": "FAQPage",
-    "@id": `${currentUrl}#faqpage`,
-    "mainEntity": faqData.flatMap(category =>
-      category.questions.map(q => ({
-        "@type": "Question",
-        "name": q.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": q.answer.replace(/<[^>]*>/g, '') // Texto limpo para robots/LLMs
-        }
-      }))
-    )
-  };
+  // SSR/Prerender context
+  const currentUrl = `${ARTIST.site.baseUrl}${location.pathname.endsWith('/') ? location.pathname : location.pathname + '/'}`;
 
-  const breadcrumbSchema = {
-    "@type": "BreadcrumbList",
-    "@id": `${currentUrl}#breadcrumb`,
-    "itemListElement": [
+  // FAQ Schema JSON-LD
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
       {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://djzeneyer.com"
+        "@type": "FAQPage",
+        "@id": `${currentUrl}#faqpage`,
+        "mainEntity": faqData.flatMap(category =>
+          category.questions.map(q => ({
+            "@type": "Question",
+            "name": q.question,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": q.answer.replace(/<[^>]*>/g, '') // Texto limpo para robots/LLMs
+            }
+          }))
+        )
       },
       {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "FAQ",
-        "item": currentUrl
+        "@type": "BreadcrumbList",
+        "@id": `${currentUrl}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": ARTIST.site.baseUrl
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "FAQ",
+            "item": currentUrl
+          }
+        ]
       }
     ]
   };
 
-  const combinedSchema = {
-    "@context": "https://schema.org",
-    "@graph": [faqSchema, breadcrumbSchema]
-  };
-
   return (
-    <>
+    <div className="min-h-screen bg-background text-white pt-24 pb-20">
       <HeadlessSEO
-        title={`${t('faq.badge')} | DJ Zen Eyer`}
-        description={t('faq.subtitle')}
+        title={t('faq.title')}
+        description={t('faq.description', "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.")}
         url={currentUrl}
-        ogType="website"
-        schema={combinedSchema}
-        hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
+        schema={faqSchema}
         keywords="Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adílio porto, lambada history"
       />
 
@@ -225,7 +223,7 @@ const FAQPage: React.FC = () => {
 
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
