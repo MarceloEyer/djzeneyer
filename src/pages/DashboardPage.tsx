@@ -170,7 +170,7 @@ const DashboardContent = () => {
                 <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-yellow-400 to-orange-600 text-black font-black rounded-full w-10 h-10 flex items-center justify-center shadow-2xl scale-125 border-4 border-black">
                   {earnedAchievements.length}
                 </div>
-              </div >
+              </div>
 
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg">
@@ -204,9 +204,11 @@ const DashboardContent = () => {
                       </motion.div>
                     </div>
 
-                    {/* Próximos Passos (Requirements) */}
+                    {/* Rank Next Steps (Requirements) */}
                     {gamipress.rank.requirements && gamipress.rank.requirements.length > 0 && (
-                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                      <div className="mt-4">
+                        <h4 className="text-[10px] font-black uppercase text-white/30 mb-3 tracking-widest">{t('dashboard.nextSteps')}</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-2 duration-700">
                         {gamipress.rank.requirements.map((req, i) => (
                           <div key={i} className="bg-white/5 border border-white/5 p-2 rounded-xl flex flex-col gap-1">
                             <div className="flex justify-between items-center text-[9px] font-black uppercase text-white/40 leading-none">
@@ -235,17 +237,17 @@ const DashboardContent = () => {
               >
                 {t('dashboard.boostXP')}
               </motion.button>
-            </div >
-          </div >
-        </motion.div >
+            </div>
+            </div>
+        </motion.div>
 
         {/* --- MAIN GRID --- */}
-        < div className="grid lg:grid-cols-4 gap-6" >
+        <div className="grid lg:grid-cols-4 gap-6">
 
           {/* LEFT COL: Points & Stats */}
-          < div className="lg:col-span-1 space-y-6" >
+          <div className="lg:col-span-1 space-y-6">
             {/* Wallet / Points Card */}
-            < div className="card p-6 border-white/5 overflow-hidden relative" >
+            <div className="card p-6 border-white/5 overflow-hidden relative">
               <div className="absolute top-0 right-0 p-4 opacity-10"><Zap size={48} /></div>
               <h3 className="text-sm font-black text-white/40 uppercase tracking-widest mb-6">{t('dashboard.yourWallet')}</h3>
               <div className="space-y-6">
@@ -300,7 +302,7 @@ const DashboardContent = () => {
           </div >
 
           {/* CENTER COL: Activity Feed */}
-          < div className="lg:col-span-2 space-y-6" >
+          <div className="lg:col-span-2 space-y-6">
             <div className="card h-full min-h-[600px] flex flex-col p-6 border-white/5 bg-gradient-to-b from-surface/20 to-transparent">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black font-display flex items-center gap-3">
@@ -318,7 +320,7 @@ const DashboardContent = () => {
           </div >
 
           {/* RIGHT COL: Quests / Locked Achievements */}
-          < div className="lg:col-span-1 space-y-6" >
+          <div className="lg:col-span-1 space-y-6">
             <div className="card p-6 border-white/5 h-full flex flex-col">
               <h2 className="text-xl font-black font-display mb-6 flex items-center gap-3">
                 <Target className="text-accent" size={24} /> {t('dashboard.pendingQuests')}
@@ -372,7 +374,7 @@ const DashboardContent = () => {
         </div>
 
         {/* --- ACHIEVEMENTS GALLERY --- */}
-        <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12" >
+        <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12">
           <div className="card p-8 border-white/5">
             <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
               <h2 className="text-2xl font-black font-display flex items-center gap-4">
@@ -423,10 +425,10 @@ const DashboardContent = () => {
               ))}
             </div>
           </div>
-        </motion.div >
+        </motion.div>
 
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 

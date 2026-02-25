@@ -91,6 +91,59 @@
       "meta_desc": "Quem é você na pista de dança? Faça o Quiz de Persona do Zouk e descubra se você é um Lambadeiro, Técnico ou o Cremoso!"
     }
   },
+  "gamification": {
+    "zenTribe": "Zen Tribe",
+    "yourProgress": "Seu Progresso",
+    "viewAll": "Ver Tudo",
+    "level": "Nível",
+    "totalPoints": "Pontos Totais",
+    "xpToNext": "{{count}} XP para o próximo nível",
+    "maxLevel": "Nível máximo alcançado!",
+    "achievements": "Conquistas",
+    "achievement": "Conquista",
+    "startJourney": "Comece sua jornada para desbloquear conquistas!",
+    "earnMoreXP": "Ganhar Mais XP"
+  },
+  "dashboard": {
+    "loading": "Carregando seu Zen Dashboard...",
+    "welcomeBack": "Bem-vindo de volta, {{name}}!",
+    "progressToLevel": "Progresso para o Nível {{level}}",
+    "boostXP": "Turbinar XP",
+    "tracksDownloaded": "Tracks Baixadas",
+    "eventsAttended": "Eventos Atendidos",
+    "dayStreak": "Dias Seguidos",
+    "dayStreakFire": "Dias Seguidos 🔥",
+    "tribeFriends": "Amigos da Tribo",
+    "recentActivity": "Histórico de Atividade",
+    "noActivity": "Nenhuma atividade recente.",
+    "nextRank": "Próximo Rank",
+    "yourWallet": "Sua Carteira",
+    "pendingQuests": "Desafios Pendentes",
+    "allCleared": "Tudo Concluído!",
+    "nextSteps": "Próximos Passos",
+    "quickActions": "Ações Rápidas",
+    "table": {
+      "activity": "Atividade",
+      "points": "Pontos",
+      "date": "Data"
+    },
+    "browseMusic": "Explorar Músicas",
+    "viewEvents": "Ver Eventos",
+    "visitShop": "Visitar Loja",
+    "yourAchievements": "Suas Conquistas",
+    "unlocked": "Desbloqueada",
+    "startJourney": "Comece Sua Jornada",
+    "startJourneyDesc": "Complete tarefas como ouvir tracks, participar de eventos ou visitar a loja para desbloquear suas primeiras conquistas!",
+    "startListening": "Começar a Ouvir",
+    "timeAgo": {
+      "years": "{{count}} anos atrás",
+      "months": "{{count}} meses atrás",
+      "days": "{{count}} dias atrás",
+      "hours": "{{count}} horas atrás",
+      "minutes": "{{count}} minutos atrás",
+      "seconds": "{{count}} segundos atrás"
+    }
+  },
   "_meta": {
     "version": "2.1.0",
     "lastUpdated": "2025-12-03",
@@ -1110,55 +1163,5 @@
       }
     },
     "not_found": "Não achou o que procurava?",
-    "cta_whatsapp": "Falar no WhatsApp",
-    "cta_email": "Enviar E-mail"
-  },
-  "gamification": {
-    "zenTribe": "Zen Tribe",
-    "yourProgress": "Seu Progresso",
-    "viewAll": "Ver Tudo",
-    "level": "Nível",
-    "totalPoints": "Pontos Totais",
-    "xpToNext": "{{count}} XP para o próximo nível",
-    "maxLevel": "Nível máximo alcançado!",
-    "achievements": "Conquistas",
-    "achievement": "Conquista",
-    "startJourney": "Comece sua jornada para desbloquear conquistas!",
-    "earnMoreXP": "Ganhar Mais XP"
-  },
-  "dashboard": {
-    "loading": "Carregando seu Zen Dashboard...",
-    "welcomeBack": "Bem-vindo de volta, {{name}}!",
-    "progressToLevel": "Progresso para o Nível {{level}}",
-    "boostXP": "Turbinar XP",
-    "tracksDownloaded": "Tracks Baixadas",
-    "eventsAttended": "Eventos Atendidos",
-    "dayStreak": "Dias Seguidos",
-    "dayStreakFire": "Dias Seguidos 🔥",
-    "tribeFriends": "Amigos da Tribo",
-    "recentActivity": "Histórico de Atividade",
-    "noActivity": "Nenhuma atividade recente.",
-    "quickActions": "Ações Rápidas",
-    "table": {
-      "activity": "Atividade",
-      "points": "Pontos",
-      "date": "Data"
-    },
-    "browseMusic": "Explorar Músicas",
-    "viewEvents": "Ver Eventos",
-    "visitShop": "Visitar Loja",
-    "yourAchievements": "Suas Conquistas",
-    "unlocked": "Desbloqueada",
-    "startJourney": "Comece Sua Jornada",
-    "startJourneyDesc": "Complete tarefas como ouvir tracks, participar de eventos ou visitar a loja para desbloquear suas primeiras conquistas!",
-    "startListening": "Começar a Ouvir",
-    "timeAgo": {
-      "years": "{{count}} anos atrás",
-      "months": "{{count}} meses atrás",
-      "days": "{{count}} dias atrás",
-      "hours": "{{count}} horas atrás",
-      "minutes": "{{count}} minutos atrás",
-      "seconds": "{{count}} segundos atrás"
-    }
   }
 }
