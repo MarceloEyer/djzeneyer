@@ -11,6 +11,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { buildApiUrl } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
+import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
 
 // ============================================================================
 // TYPES
@@ -303,15 +304,22 @@ export const useAddToCartMutation = () => {
 
 export const useGamipressQuery = (userId?: number, token?: string) => {
   return useQuery({
-    queryKey: [...QUERY_KEYS.user.gamipress(userId!), token],
-    queryFn: async () => {
-      if (!userId || !token) return null;
-      const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/user-data');
+    // Use 0 or -1 as a placeholder for "self" in the query key if userId is not provided
+    queryKey: [...QUERY_KEYS.user.gamipress(userId || 0), token],
+    queryFn: async (): Promise<ZenGameUserData | null> => {
+      if (!token && !userId) return null;
 
+      const params: Record<string, string> = {};
+      if (userId) params.user_id = String(userId);
+
+      const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/user-data', params);
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
       };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
       const wpData = (window as any).wpData || {};
       if (wpData.nonce) headers['X-WP-Nonce'] = wpData.nonce;
@@ -322,9 +330,41 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
     },
     staleTime: STALE_TIME.GAMIPRESS,
     refetchInterval: 60_000,
-    enabled: Boolean(userId) && Boolean(token),
+    enabled: Boolean(token) || Boolean(userId),
     retry: false,
   });
+};
+
+/**
+ * Hook alias for ZenGame v1.1.0 logic
+ * Optimized for self-profile fetching with JWT
+ */
+export const useZenGameUserData = (token?: string) => {
+  return useGamipressQuery(undefined, token);
+};
+
+// ============================================================================
+// LEADERBOARD QUERY (PÚBLICO)
+// ============================================================================
+
+export const useLeaderboardQuery = (limit = 10) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.user.leaderboard(limit),
+    queryFn: async (): Promise<ZenGameLeaderboard> => {
+      const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/leaderboard', { limit: String(limit) });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error(`Leaderboard API Error: ${res.status}`);
+      return res.json();
+    },
+    staleTime: STALE_TIME.GAMIPRESS, // Reuse gamipress stale time
+  });
+};
+
+/**
+ * Hook alias for ZenGame v1.1.0 logic (Leaderboard)
+ */
+export const useZenGameLeaderboard = (limit = 10) => {
+  return useLeaderboardQuery(limit);
 };
 
 // ============================================================================
@@ -347,7 +387,7 @@ export const useProfileQuery = (token?: string) => {
       return data.success ? data.data : null;
     },
     enabled: !!token,
-    staleTime: STALE_TIME.USER_DATA || 5 * 60 * 1000,
+    staleTime: STALE_TIME.USER_PROFILE || 5 * 60 * 1000,
   });
 };
 
@@ -387,7 +427,7 @@ export const useNewsletterStatusQuery = (token?: string) => {
       return data.success ? data.subscribed : false;
     },
     enabled: !!token,
-    staleTime: STALE_TIME.USER_DATA || 5 * 60 * 1000,
+    staleTime: STALE_TIME.USER_PROFILE || 5 * 60 * 1000,
   });
 };
 

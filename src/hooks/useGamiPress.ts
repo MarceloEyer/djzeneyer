@@ -3,61 +3,9 @@
 
 import { useUser } from '../contexts/UserContext';
 import { useGamipressQuery } from './useQueries';
+import type { ZenGameUserData } from '../types/gamification';
 
-/* =========================
- * INTERFACES
- * ========================= */
-
-export interface Achievement {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  earned: boolean;
-  points_awarded: number;
-  date_earned: string;
-}
-
-export interface PointType {
-  name: string;
-  amount: number;
-  image: string;
-}
-
-export interface RankRequirement {
-  title: string;
-  current: number;
-  required: number;
-  percent: number;
-}
-
-export interface LogEntry {
-  id: number;
-  type: string;
-  description: string;
-  date: string;
-  points: number;
-}
-
-export interface GamiPressData {
-  points: Record<string, PointType>;
-  rank: {
-    current: { id: number; title: string; image: string };
-    next: { id: number; title: string; image: string } | null;
-    progress: number;
-    requirements?: RankRequirement[];
-  };
-  achievements: Achievement[];
-  logs: LogEntry[];
-  stats: {
-    totalTracks: number;
-    eventsAttended: number;
-    streak: number;
-    streakFire: boolean;
-  };
-  main_points_slug: string;
-  lastUpdate: string;
-}
+export type GamiPressData = ZenGameUserData;
 
 interface GamiPressHookResponse {
   data: GamiPressData;
@@ -74,13 +22,19 @@ interface GamiPressHookResponse {
  * ========================= */
 
 const FALLBACK: GamiPressData = {
+  user_id: 0,
   points: {
     points: { name: 'XP', amount: 0, image: '' }
   },
   rank: {
-    current: { id: 0, title: 'Zen Novice', image: '' },
-    next: null,
-    progress: 0
+    current: {
+      id: 0,
+      title: 'Zen Novice',
+      image: '',
+    },
+    progress: 0,
+    requirements: [],
+    next: null
   },
   achievements: [],
   logs: [],
@@ -92,6 +46,7 @@ const FALLBACK: GamiPressData = {
   },
   main_points_slug: 'points',
   lastUpdate: '',
+  version: '1.1.0'
 };
 
 /* =========================

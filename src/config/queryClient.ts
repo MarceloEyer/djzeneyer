@@ -163,6 +163,7 @@ export const QUERY_KEYS = {
   user: {
     profile: (userId?: number) => ['user', 'profile', userId] as const,
     gamipress: (userId: number) => ['user', 'gamipress', userId] as const,
+    leaderboard: (limit?: number) => ['user', 'leaderboard', limit] as const,
   },
 } as const;
 
@@ -182,6 +183,7 @@ export const invalidateQueries = {
   posts: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.posts.all }),
   cart: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.cart.current }),
   user: () => queryClient.invalidateQueries({ queryKey: ['user'] }),
+  leaderboard: () => queryClient.invalidateQueries({ queryKey: ['user', 'leaderboard'] }),
 };
 
 /**

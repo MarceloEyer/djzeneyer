@@ -12,23 +12,9 @@ import {
 } from 'lucide-react';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { Helmet } from 'react-helmet-async';
+import { getLogTypeLabel, getProgressColor, formatLogDate } from '../utils/gamification';
+import type { ZenGameLog } from '../types/gamification';
 
-// --- HELPER: Formatação de Tempo com i18n ---
-function getTimeAgo(timestamp: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
-  const seconds = Math.floor((new Date().getTime() - timestamp * 1000) / 1000);
-
-  let interval = seconds / 31536000;
-  if (interval > 1) return t('dashboard.timeAgo.years', { count: Math.floor(interval) });
-  interval = seconds / 2592000;
-  if (interval > 1) return t('dashboard.timeAgo.months', { count: Math.floor(interval) });
-  interval = seconds / 86400;
-  if (interval > 1) return t('dashboard.timeAgo.days', { count: Math.floor(interval) });
-  interval = seconds / 3600;
-  if (interval > 1) return t('dashboard.timeAgo.hours', { count: Math.floor(interval) });
-  interval = seconds / 60;
-  if (interval > 1) return t('dashboard.timeAgo.minutes', { count: Math.floor(interval) });
-  return t('dashboard.timeAgo.seconds', { count: Math.floor(seconds) });
-}
 
 interface Achievement {
   id?: number;
@@ -40,7 +26,7 @@ interface Achievement {
 }
 
 // --- COMPONENT: Activity Table ---
-const ActivityTable = ({ logs, t }: { logs: any[], t: any }) => {
+const ActivityTable = ({ logs, t }: { logs: ZenGameLog[], t: any }) => {
   if (logs.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center opacity-20 py-20">
@@ -77,6 +63,9 @@ const ActivityTable = ({ logs, t }: { logs: any[], t: any }) => {
                   <span className="text-sm font-bold text-white/90 truncate max-w-[150px] sm:max-w-none">
                     {log.description}
                   </span>
+                  <span className="text-[10px] text-white/30 truncate">
+                    {getLogTypeLabel(log.type)}
+                  </span>
                 </div>
               </td>
               <td className="py-4 text-center border-y border-white/5 group-hover:border-primary/20">
@@ -93,7 +82,7 @@ const ActivityTable = ({ logs, t }: { logs: any[], t: any }) => {
               </td>
               <td className="py-4 text-right pr-4 rounded-r-2xl border-y border-r border-white/5 group-hover:border-primary/20">
                 <span className="text-[10px] font-black text-white/30 uppercase tracking-tighter">
-                  {getTimeAgo(new Date(log.date).getTime() / 1000, t)}
+                  {formatLogDate(log.date)}
                 </span>
               </td>
             </motion.tr>
@@ -220,7 +209,7 @@ const DashboardContent = () => {
                               <div className="flex justify-between items-end">
                                 <span className="text-xs font-black text-white/90">{req.current} <span className="text-[10px] opacity-30">/ {req.required}</span></span>
                                 <div className="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
-                                  <div className="h-full bg-primary" style={{ width: `${Math.min(100, req.percent)}%` }} />
+                                  <div className={`h-full ${getProgressColor(req.percent)}`} style={{ width: `${Math.min(100, req.percent)}%` }} />
                                 </div>
                               </div>
                             </div>

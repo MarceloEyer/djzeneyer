@@ -1,15 +1,22 @@
 <?php
 /**
  * Plugin Name: ZenGame
- * Description: Gaming & Activity Bridge for DJ Zen Eyer. Centralizes GamiPress logic for Headless API.
- * Version: 1.0.0
+ * Description: Gaming & Activity Bridge for DJ Zen Eyer. Centralizes GamiPress logic for Headless API + SEO optimization.
+ * Version: 1.1.0
  * Author: DJ Zen Eyer
+ * License: GPL v2 or later
+ * Text Domain: zengame
+ * Domain Path: /languages
+ * Requires PHP: 7.4
+ * Requires Plugins: gamipress
  */
 
 if (!defined('ABSPATH')) exit;
 
 class ZenGame {
     private static $instance = null;
+    const CACHE_VERSION = 'v5';
+    const CACHE_TTL = 86400; // 24 hours
 
     public static function get_instance() {
         if (null === self::$instance) {
@@ -22,19 +29,104 @@ class ZenGame {
         add_action('rest_api_init', array($this, 'register_routes'));
         $this->init_cache_hooks();
         add_action('admin_menu', array($this, 'add_settings_page'));
+        
+        // SEO: Allow search engines to crawl API endpoints
+        add_filter('wp_robots', array($this, 'allow_api_indexing'));
     }
 
+    /**
+     * Register REST API routes
+     */
     public function register_routes() {
         $ns = 'djzeneyer/v1';
+        
+        // User Gamification Data
         register_rest_route($ns, '/gamipress/user-data', [
             'methods' => 'GET',
             'callback' => array($this, 'get_gamipress_user_data'),
             'permission_callback' => '__return_true',
+            'args' => [
+                'user_id' => [
+                    'type' => 'integer',
+                    'description' => 'User ID (optional, uses current user if not provided)',
+                    'required' => false,
+                ]
+            ]
+        ]);
+
+        // Public leaderboard endpoint (for SEO visibility)
+        register_rest_route($ns, '/gamipress/leaderboard', [
+            'methods' => 'GET',
+            'callback' => array($this, 'get_leaderboard'),
+            'permission_callback' => '__return_true',
+            'args' => [
+                'limit' => [
+                    'type' => 'integer',
+                    'default' => 10,
+                    'required' => false,
+                ]
+            ]
         ]);
     }
 
+    /**
+     * Allow search engines to index API data (helps with discoverability)
+     */
+    public function allow_api_indexing($robots) {
+        // Allow GET endpoints to be crawled
+        $robots['googlebot'] = 'index, follow';
+        return $robots;
+    }
+
+    /**
+     * Public leaderboard (great for SEO and user engagement)
+     */
+    public function get_leaderboard($request) {
+        $limit = absint($request->get_param('limit')) ?: 10;
+        $cache_key = 'djz_gamipress_' . self::CACHE_VERSION . '_leaderboard_' . $limit;
+        
+        $cached = get_transient($cache_key);
+        if ($cached !== false) {
+            return rest_ensure_response($cached);
+        }
+
+        $leaderboard = [];
+        
+        if (function_exists('gamipress_get_points_types')) {
+            $point_types = gamipress_get_points_types();
+            
+            foreach ($point_types as $slug => $pt) {
+                // Get top users by points
+                global $wpdb;
+                $results = $wpdb->get_results($wpdb->prepare(
+                    "SELECT user_id, points FROM {$wpdb->prefix}gamipress_user_points 
+                     WHERE points_type = %s 
+                     ORDER BY points DESC 
+                     LIMIT %d",
+                    $slug,
+                    $limit
+                ));
+
+                $leaderboard[$slug] = [];
+                foreach ($results as $row) {
+                    $user = get_user_by('id', $row->user_id);
+                    if ($user) {
+                        $leaderboard[$slug][] = [
+                            'user_id' => $row->user_id,
+                            'display_name' => $user->display_name,
+                            'points' => (int)$row->points,
+                            'avatar' => get_avatar_url($row->user_id, ['size' => 96])
+                        ];
+                    }
+                }
+            }
+        }
+
+        set_transient($cache_key, $leaderboard, self::CACHE_TTL);
+        return rest_ensure_response($leaderboard);
+    }
+
     public function add_settings_page() {
-        // null as parent hides it from the sidebar menu but keeps it accessible via URL
         add_submenu_page(
             null, 
             __('ZenGame Diagnosis', 'zengame'),
@@ -57,6 +149,7 @@ class ZenGame {
 
         $point_types = function_exists('gamipress_get_points_types') ? gamipress_get_points_types() : [];
         $rank_types = function_exists('gamipress_get_rank_types') ? gamipress_get_rank_types() : [];
+        $gamipress_active = defined('GAMIPRESS_VER');
         ?>
         <div class="wrap zen-diag-wrap">
             <h1 class="wp-heading-inline">ZenGame // System Diagnosis</h1>
@@ -71,98 +164,147 @@ class ZenGame {
                         <td><span style="color: #10b981; font-weight: bold;">● ONLINE</span> (v1.1.0)</td>
                     </tr>
                     <tr>
-                        <td><strong>Endpoint</strong></td>
-                        <td><code>/wp-json/djzeneyer/v1/gamipress/user-data</code></td>
+                        <td><strong>Endpoints</strong></td>
+                        <td>
+                            <code>/wp-json/djzeneyer/v1/gamipress/user-data</code><br>
+                            <code style="margin-top: 5px; display: block;">/wp-json/djzeneyer/v1/gamipress/leaderboard</code>
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>GamiPress Core</strong></td>
-                        <td><?php echo defined('GAMIPRESS_VER') ? '<span style="color: #10b981;">Active (v' . GAMIPRESS_VER . ')</span>' : '<span style="color: #ef4444;">Inactive</span>'; ?></td>
+                        <td><?php echo $gamipress_active ? '<span style="color: #10b981;">✓ Active (v' . GAMIPRESS_VER . ')</span>' : '<span style="color: #ef4444;">✗ Inactive</span>'; ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cache Strategy</strong></td>
+                        <td><code><?php echo self::CACHE_VERSION; ?></code> • TTL: 24h</td>
                     </tr>
                 </table>
 
                 <div style="margin-top: 30px;">
-                    <h3 style="border-bottom: 2px solid #primary; padding-bottom: 5px;">Active Point Types</h3>
+                    <h3 style="border-bottom: 2px solid #6366f1; padding-bottom: 5px;">Active Point Types</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
                         <?php foreach ($point_types as $slug => $pt): 
                             $thumb_url = get_the_post_thumbnail_url($pt['ID'], 'thumbnail');
                         ?>
                         <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
                             <?php if ($thumb_url): ?>
-                                <img src="<?php echo $thumb_url; ?>" style="width: 32px; height: 32px; border-radius: 4px; background: #fff;">
+                                <img src="<?php echo esc_attr($thumb_url); ?>" alt="<?php echo esc_attr($pt['plural_name']); ?>" style="width: 32px; height: 32px; border-radius: 4px; background: #fff; object-fit: cover;">
                             <?php else: ?>
                                 <div style="width: 32px; height: 32px; border-radius: 4px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b;">
                                     <span class="dashicons dashicons-money-alt" style="font-size: 18px;"></span>
                                 </div>
                             <?php endif; ?>
                             <div>
-                                <div style="font-weight: 800; font-size: 14px;"><?php echo $pt['plural_name']; ?></div>
-                                <code style="font-size: 10px; color: #64748b;"><?php echo $slug; ?></code>
+                                <div style="font-weight: 800; font-size: 14px;"><?php echo esc_html($pt['plural_name']); ?></div>
+                                <code style="font-size: 10px; color: #64748b;"><?php echo esc_html($slug); ?></code>
                             </div>
                         </div>
                         <?php endforeach; ?>
                     </div>
+                    <?php if (empty($point_types)): ?>
+                    <p style="color: #ef4444; font-size: 13px; margin-top: 10px;">⚠️ No point types configured</p>
+                    <?php endif; ?>
                 </div>
 
                 <div style="margin-top: 30px;">
-                    <h3 style="border-bottom: 2px solid #primary; padding-bottom: 5px;">Rank Hierarchy & Requirements</h3>
-                    <p class="description">How ZenGame calculates progress using GamiPress native requirements logic:</p>
-                    <div style="background: #1e293b; color: #cbd5e1; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 12px; margin-top: 10px;">
+                    <h3 style="border-bottom: 2px solid #6366f1; padding-bottom: 5px;">Rank Hierarchy & Requirements</h3>
+                    <p class="description">How ZenGame calculates progress using GamiPress native requirements:</p>
+                    <div style="background: #1e293b; color: #cbd5e1; padding: 20px; border-radius: 8px; font-family: 'Monaco', 'Courier New', monospace; font-size: 12px; margin-top: 10px; line-height: 1.6;">
                         <span style="color: #38bdf8;">// Logic Flow:</span><br>
-                        1. gamipress_get_user_rank() -> Detect current level<br>
-                        2. gamipress_get_next_rank_id() -> Identify target<br>
-                        3. gamipress_get_ranks(['post_type' => 'rank-requirement']) -> Fetch official children<br>
-                        4. gamipress_get_requirement_object() -> Parse Points or Count triggers<br>
-                        5. min(100, (current / required) * 100) -> Percentage per requirement<br>
-                        6. round(sum / total) -> Final progress bar value
+                        <span style="color: #94a3b8;">1. gamipress_get_user_rank()</span> → Detect current level<br>
+                        <span style="color: #94a3b8;">2. gamipress_get_next_rank_id()</span> → Identify target<br>
+                        <span style="color: #94a3b8;">3. gamipress_get_ranks()</span> → Fetch rank requirements<br>
+                        <span style="color: #94a3b8;">4. gamipress_get_requirement_object()</span> → Parse requirements<br>
+                        <span style="color: #94a3b8;">5. gamipress_get_earnings_count()</span> → Count achievements<br>
+                        <span style="color: #94a3b8;">6. min(100, (current / required) × 100)</span> → Calc %<br>
+                        <span style="color: #94a3b8;">7. round(sum / total)</span> → Final progress
                     </div>
                 </div>
 
                 <div style="margin-top: 30px;">
-                    <h3 style="border-bottom: 2px solid #primary; padding-bottom: 5px; color: #6366f1;">Developer Quick Reference</h3>
-                    <p class="description">Useful snippets for future custom implementations:</p>
+                    <h3 style="border-bottom: 2px solid #6366f1; padding-bottom: 5px; color: #6366f1;">Function Reference</h3>
+                    <p class="description">Core GamiPress functions used:</p>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
                         <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; border-left: 4px solid #6366f1;">
-                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 5px;">POINTS</strong>
-                            <code style="font-size: 10px; break-all;">gamipress_award_points_to_user($uid, 100, 'points');</code><br>
-                            <code style="font-size: 10px; break-all;">gamipress_deduct_points_to_user($uid, 50, 'points');</code>
+                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 8px;">POINTS</strong>
+                            <code style="font-size: 10px; display: block; margin-bottom: 4px; word-break: break-all;">gamipress_get_user_points($uid, 'slug')</code>
+                            <code style="font-size: 10px; display: block; word-break: break-all;">gamipress_award_points_to_user($uid, 100, 'slug')</code>
                         </div>
                         <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; border-left: 4px solid #ec4899;">
-                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 5px;">ACHIEVEMENTS</strong>
-                            <code style="font-size: 10px; break-all;">gamipress_award_achievement_to_user($aid, $uid);</code><br>
-                            <code style="font-size: 10px; break-all;">gamipress_has_user_earned_achievement($aid, $uid);</code>
+                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 8px;">ACHIEVEMENTS</strong>
+                            <code style="font-size: 10px; display: block; margin-bottom: 4px; word-break: break-all;">gamipress_get_user_achievements($args)</code>
+                            <code style="font-size: 10px; display: block; word-break: break-all;">gamipress_get_earnings_count($args)</code>
+                        </div>
+                        <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 8px;">RANKS</strong>
+                            <code style="font-size: 10px; display: block; margin-bottom: 4px; word-break: break-all;">gamipress_get_user_rank($uid, 'type')</code>
+                            <code style="font-size: 10px; display: block; word-break: break-all;">gamipress_get_next_rank_id($rank_id)</code>
+                        </div>
+                        <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; border-left: 4px solid #10b981;">
+                            <strong style="font-size: 11px; color: #475569; display: block; margin-bottom: 8px;">LOGS</strong>
+                            <code style="font-size: 10px; display: block; margin-bottom: 4px; word-break: break-all;">gamipress_query_logs($args)</code>
+                            <code style="font-size: 10px; display: block; word-break: break-all;">limit, order_by, order</code>
                         </div>
                     </div>
                 </div>
 
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #edf2f7;">
-                    <h3 style="color: #ef4444;">Maintenance</h3>
-                    <p class="description">Forcefully invalidate all GamiPress transients for all users.</p>
+                    <h3 style="color: #ef4444;">⚙️ Maintenance</h3>
+                    <p class="description">Clear all cached user data and refresh from GamiPress core:</p>
                     <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=zengame-settings&action=clear_cache'), 'zengame_clear_cache'); ?>" 
-                       class="button button-secondary" style="border-color: #ef4444; color: #ef4444; border-radius: 6px; padding: 5px 20px;">
-                        Clear All ZenGame Cache
+                       class="button button-secondary" style="border-color: #ef4444; color: #ef4444; border-radius: 6px; padding: 8px 20px; font-weight: 600;">
+                        🔄 Clear All ZenGame Cache
                     </a>
                 </div>
             </div>
 
-            <p style="margin-top: 20px; color: #64748b;">
-                <span class="dashicons dashicons-arrow-left-alt2" style="font-size: 14px; margin-top: 2px;"></span>
-                <a href="<?php echo admin_url('admin.php?page=zen-control'); ?>" style="text-decoration: none; color: inherit;">Return to Zen Control</a>
+            <p style="margin-top: 20px; color: #64748b; font-size: 13px;">
+                <span class="dashicons dashicons-info" style="font-size: 14px; margin-right: 5px;"></span>
+                Version 1.1.0 • Built for Zen Eyer • <a href="<?php echo admin_url('admin.php?page=zen-control'); ?>" style="color: #6366f1; text-decoration: none;">← Back to Zen Control</a>
             </p>
         </div>
         <style>
-            .zen-diag-wrap { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; }
-            .zen-diag-wrap h1 { font-weight: 800; letter-spacing: -0.5px; }
-            .zen-diag-wrap .card { padding: 30px; }
+            .zen-diag-wrap { 
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; 
+                color: #1e293b;
+            }
+            .zen-diag-wrap h1 { 
+                font-weight: 800; 
+                letter-spacing: -0.5px;
+                color: #1e293b;
+            }
+            .zen-diag-wrap h2,
+            .zen-diag-wrap h3 {
+                color: #1e293b;
+            }
+            .zen-diag-wrap code {
+                background: #f1f5f9;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 12px;
+            }
+            .zen-diag-wrap .card { 
+                padding: 30px;
+                background: #fff;
+            }
         </style>
         <?php
     }
 
     /**
-     * GamiPress User Data (Aggregated + Cached)
+     * Main endpoint: GamiPress User Data (Aggregated + Cached)
+     * 
+     * Returns:
+     * - Points balance across all types
+     * - Current and next rank with progress
+     * - Earned achievements
+     * - Recent activity logs
+     * - User stats (tracks, events attended)
      */
     public function get_gamipress_user_data($request) {
         $user_id = get_current_user_id();
 
+        // JWT Bearer token fallback
         if (!$user_id) {
             $auth_header = $request->get_header('Authorization');
             if ($auth_header && preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
@@ -176,33 +318,46 @@ class ZenGame {
             }
         }
 
-        if (!$user_id) return new WP_Error('no_user', 'User not authenticated', ['status' => 401]);
+        // Optional user_id parameter (for admins viewing other users)
+        $param_user_id = $request->get_param('user_id');
+        if ($param_user_id && current_user_can('manage_options')) {
+            $user_id = (int) $param_user_id;
+        }
 
-        // Transient cache per user (v4 for forced invalidation)
-        $cache_key = 'djz_gamipress_v4_' . $user_id;
+        if (!$user_id) {
+            return new WP_Error('no_user', 'User not authenticated', ['status' => 401]);
+        }
+
+        // Transient cache per user
+        $cache_key = 'djz_gamipress_' . self::CACHE_VERSION . '_' . $user_id;
         $cached = get_transient($cache_key);
         if ($cached !== false) {
             return rest_ensure_response($cached);
         }
 
-        // --- 1. Point types ---
+        // --- 1. POINTS ---
         $point_data = [];
         if (function_exists('gamipress_get_points_types')) {
             $point_types = gamipress_get_points_types();
             foreach ($point_types as $slug => $pt) {
+                $amount = function_exists('gamipress_get_user_points') 
+                    ? (int)gamipress_get_user_points($user_id, $slug)
+                    : 0;
+                    
                 $point_data[$slug] = [
                     'name' => $pt['plural_name'],
-                    'amount' => (int)gamipress_get_user_points($user_id, $slug),
+                    'amount' => $amount,
                     'image' => get_the_post_thumbnail_url($pt['ID'], 'thumbnail') ?: ''
                 ];
             }
         }
 
-        // --- 2. Rank — FIX: Detect real rank type and requirements ---
+        // --- 2. RANK WITH REQUIREMENTS ---
         $rank_info = [
-            'current' => ['title' => 'Zen Novice', 'id' => 0, 'image' => ''],
+            'current' => ['title' => 'Beginner', 'id' => 0, 'image' => ''],
             'next' => null,
-            'progress' => 0
+            'progress' => 0,
+            'requirements' => []
         ];
 
         $main_pt_slug = !empty($point_data) ? array_key_first($point_data) : 'points';
@@ -212,6 +367,7 @@ class ZenGame {
             if (!empty($rank_types)) {
                 $rank_type_slug = array_key_first($rank_types);
                 $current_rank = gamipress_get_user_rank($user_id, $rank_type_slug);
+                
                 if ($current_rank) {
                     $rank_info['current'] = [
                         'id' => $current_rank->ID,
@@ -219,96 +375,80 @@ class ZenGame {
                         'image' => get_the_post_thumbnail_url($current_rank->ID, 'thumbnail') ?: ''
                     ];
 
+                    // Get next rank
                     if (function_exists('gamipress_get_next_rank_id')) {
                         $next_rank_id = gamipress_get_next_rank_id($current_rank->ID);
                         if ($next_rank_id) {
                             $next_rank = get_post($next_rank_id);
-                            $rank_info['next'] = [
-                                'id' => $next_rank->ID,
-                                'title' => $next_rank->post_title,
-                                'image' => get_the_post_thumbnail_url($next_rank->ID, 'thumbnail') ?: ''
-                            ];
+                            if ($next_rank) {
+                                $rank_info['next'] = [
+                                    'id' => $next_rank->ID,
+                                    'title' => $next_rank->post_title,
+                                    'image' => get_the_post_thumbnail_url($next_rank->ID, 'thumbnail') ?: ''
+                                ];
 
-                            // --- OFFICIAL PROGRESS CALCULATION ---
-                            $requirements = function_exists('gamipress_get_rank_requirements') 
-                                ? gamipress_get_rank_requirements($next_rank_id) 
-                                : [];
+                                // Calculate progress from requirements
+                                $requirements = function_exists('gamipress_get_ranks') 
+                                    ? gamipress_get_ranks([
+                                        'post_type' => 'rank-requirement',
+                                        'children_of' => $next_rank_id,
+                                        'numberposts' => -1
+                                    ]) 
+                                    : [];
 
-                            $rank_info['requirements'] = [];
-
-                            if (!empty($requirements)) {
-                                $total_req_progress = 0;
-                                foreach ($requirements as $req_post) {
-                                    if (function_exists('gamipress_get_requirement_object')) {
-                                        // GamiPress core gamipress_get_requirement_object only takes 1 argument
-                                        $req = gamipress_get_requirement_object($req_post->ID);
-                                        
-                                        $req_data = [
-                                            'title' => $req_post->post_title,
-                                            'current' => 0,
-                                            'required' => 0,
-                                            'percent' => 0
-                                        ];
-                                        
-                                        // Trigger Type determine how to fetch user data
-                                        $trigger_type = get_post_meta($req_post->ID, '_gamipress_trigger_type', true);
-
-
-                                        // 1. Points Trigger
-                                        if (in_array($trigger_type, ['points_awarded', 'points_deducted'])) {
-                                            $points_type = get_post_meta($req_post->ID, '_gamipress_points_type', true);
-                                            $points_required = (int)get_post_meta($req_post->ID, '_gamipress_points_to_earn', true);
+                                if (!empty($requirements)) {
+                                    $total_req_progress = 0;
+                                    foreach ($requirements as $req_post) {
+                                        if (function_exists('gamipress_get_requirement_object')) {
+                                            $req = gamipress_get_requirement_object($req_post->ID);
+                                            $req_data = [
+                                                'title' => $req_post->post_title,
+                                                'current' => 0,
+                                                'required' => 0,
+                                                'percent' => 0
+                                            ];
                                             
-                                            $u_points = (int)gamipress_get_user_points($user_id, $points_type ?: $main_pt_slug);
-                                            $req_data['current'] = $u_points;
-                                            $req_data['required'] = $points_required;
-                                            $req_data['percent'] = ($points_required > 0) ? min(100, ($u_points / $points_required) * 100) : 100;
-                                        } 
-                                        // 2. Activity / Step Trigger
-                                        else if ($trigger_type === 'activity_completed') {
-                                            $count_req = (int)get_post_meta($req_post->ID, '_gamipress_activity_completed_to_earn', true);
-                                            $current_count = function_exists('gamipress_get_activity_count') ? gamipress_get_activity_count($user_id, $req_post->ID) : 0;
+                                            // Points requirement
+                                            if (!empty($req['points_required']) && $req['points_required'] > 0) {
+                                                $points_type = isset($req['points_type_required']) 
+                                                    ? $req['points_type_required'] 
+                                                    : $main_pt_slug;
+                                                $u_points = function_exists('gamipress_get_user_points')
+                                                    ? (int)gamipress_get_user_points($user_id, $points_type)
+                                                    : 0;
+                                                    
+                                                $req_data['current'] = $u_points;
+                                                $req_data['required'] = (int)$req['points_required'];
+                                                $req_data['percent'] = $req['points_required'] > 0 
+                                                    ? min(100, ($u_points / $req['points_required']) * 100)
+                                                    : 0;
+                                            } 
+                                            // Count requirement (triggers/achievements)
+                                            else if (!empty($req['count']) && $req['count'] > 0) {
+                                                $earned_times = 0;
+                                                if (function_exists('gamipress_get_earnings_count')) {
+                                                    $earned_times = (int)gamipress_get_earnings_count([
+                                                        'user_id' => $user_id,
+                                                        'post_id' => $req_post->ID
+                                                    ]);
+                                                }
+                                                
+                                                $req_data['current'] = $earned_times;
+                                                $req_data['required'] = (int)$req['count'];
+                                                $req_data['percent'] = $req['count'] > 0
+                                                    ? min(100, ($earned_times / $req['count']) * 100)
+                                                    : 0;
+                                            }
                                             
-                                            $req_data['current'] = $current_count;
-                                            $req_data['required'] = $count_req;
-                                            $req_data['percent'] = ($count_req > 0) ? min(100, ($current_count / $count_req) * 100) : 100;
+                                            $total_req_progress += $req_data['percent'];
+                                            $rank_info['requirements'][] = $req_data;
                                         }
-                                        // 3. Achievement Unlocked Trigger
-                                        else if ($trigger_type === 'achievement_unlocked') {
-                                            $count_req = (int)get_post_meta($req_post->ID, '_gamipress_achievement_unlocked_to_earn', true);
-                                            $current_count = function_exists('gamipress_get_user_achievement_count') ? gamipress_get_user_achievement_count($user_id, $req_post->ID) : 0;
-                                            
-                                            $req_data['current'] = $current_count;
-                                            $req_data['required'] = $count_req;
-                                            $req_data['percent'] = ($count_req > 0) ? min(100, ($current_count / $count_req) * 100) : 100;
-                                        }
-                                        // 4. Rank Earned Trigger
-                                        else if ($trigger_type === 'rank_earned') {
-                                            $count_req = (int)get_post_meta($req_post->ID, '_gamipress_rank_earned_to_earn', true);
-                                            $current_count = function_exists('gamipress_get_user_rank_count') ? gamipress_get_user_rank_count($user_id, $req_post->ID) : 0;
-                                            
-                                            $req_data['current'] = $current_count;
-                                            $req_data['required'] = $count_req;
-                                            $req_data['percent'] = ($count_req > 0) ? min(100, ($current_count / $count_req) * 100) : 100;
-                                        }
-                                        // Fallback
-                                        else {
-                                            $earned_times = function_exists('gamipress_get_earnings_count') ? gamipress_get_earnings_count([
-                                                'user_id' => $user_id,
-                                                'post_id' => $req_post->ID
-                                            ]) : 0;
-                                            $count_req = (int)get_post_meta($req_post->ID, '_gamipress_count', true);
-                                            
-                                            $req_data['current'] = $earned_times;
-                                            $req_data['required'] = $count_req;
-                                            $req_data['percent'] = ($count_req > 0) ? min(100, ($earned_times / $count_req) * 100) : 100;
-                                        }
-                                        
-                                        $total_req_progress += $req_data['percent'];
-                                        $rank_info['requirements'][] = $req_data;
                                     }
+                                    
+                                    $rank_info['progress'] = !empty($requirements) 
+                                        ? round($total_req_progress / count($requirements))
+                                        : 0;
                                 }
-                                $rank_info['progress'] = round($total_req_progress / count($requirements));
                             }
                         }
                     }
@@ -316,10 +456,14 @@ class ZenGame {
             }
         }
 
-        // --- 3. Achievements — FIX: Use real post types ---
+        // --- 3. ACHIEVEMENTS ---
         $achievements = [];
-        $achievement_types = function_exists('gamipress_get_achievement_types') ? gamipress_get_achievement_types() : [];
-        $achievement_post_types = !empty($achievement_types) ? array_keys($achievement_types) : ['badge'];
+        $achievement_types = function_exists('gamipress_get_achievement_types') 
+            ? gamipress_get_achievement_types() 
+            : [];
+        $achievement_post_types = !empty($achievement_types) 
+            ? array_keys($achievement_types) 
+            : ['badge'];
 
         $all_achievements = get_posts([
             'post_type' => $achievement_post_types,
@@ -336,8 +480,10 @@ class ZenGame {
                     'achievement_type' => $achievement_post_types,
                     'limit' => -1
                 ]);
-                foreach ($earnings_list as $earned_obj) {
-                    $user_earnings[$earned_obj->post_id] = $earned_obj;
+                if ($earnings_list) {
+                    foreach ($earnings_list as $earned_obj) {
+                        $user_earnings[$earned_obj->post_id] = $earned_obj;
+                    }
                 }
             }
 
@@ -357,29 +503,34 @@ class ZenGame {
             }
         }
 
-        // --- 4. Logs — Verified Core Logic ---
+        // --- 4. ACTIVITY LOGS ---
         $logs = [];
         if (function_exists('gamipress_query_logs')) {
             $raw_logs = gamipress_query_logs([
                 'user_id' => $user_id,
-                'limit'   => 10,
+                'limit' => 10,
                 'order_by' => 'l.date',
-                'order'   => 'DESC'
+                'order' => 'DESC'
             ]);
-            foreach ($raw_logs as $log) {
-                $logs[] = [
-                    'id'          => $log->log_id,
-                    'type'        => $log->type,
-                    'description' => $log->title, // Transformed pattern result
-                    'date'        => $log->date,
-                    'points'      => (int)($log->points ?? 0)
-                ];
+            
+            if ($raw_logs) {
+                foreach ($raw_logs as $log) {
+                    $logs[] = [
+                        'id' => $log->log_id,
+                        'type' => $log->type,
+                        'description' => $log->title,
+                        'date' => $log->date,
+                        'points' => (int)($log->points ?? 0)
+                    ];
+                }
             }
         }
 
+        // --- 5. USER STATS ---
         $streak = (int)get_user_meta($user_id, 'zen_login_streak', true);
         $last_login = get_user_meta($user_id, 'zen_last_login', true);
         $streak_fire = false;
+        
         if ($last_login) {
             $diff_days = (strtotime('today') - strtotime(date('Y-m-d', strtotime($last_login)))) / 86400;
             $streak_fire = $diff_days <= 1;
@@ -393,30 +544,48 @@ class ZenGame {
         ];
 
         $data = [
+            'user_id' => $user_id,
             'points' => $point_data,
             'rank' => $rank_info,
             'achievements' => $achievements,
             'logs' => $logs,
             'stats' => $stats,
             'main_points_slug' => $main_pt_slug,
-            'lastUpdate' => current_time('mysql')
+            'lastUpdate' => current_time('mysql'),
+            'version' => '1.1.0'
         ];
 
-        set_transient($cache_key, $data, 86400); // 24h
+        set_transient($cache_key, $data, self::CACHE_TTL);
         return rest_ensure_response($data);
     }
 
+    /**
+     * Get total downloadable products (music/tracks)
+     */
     private function get_user_total_tracks($user_id) {
-        if (!function_exists('wc_get_customer_available_downloads')) return 0;
+        if (!function_exists('wc_get_customer_available_downloads')) {
+            return 0;
+        }
         $downloads = wc_get_customer_available_downloads($user_id);
         return count($downloads);
     }
 
+    /**
+     * Count attended events based on WooCommerce order categories
+     */
     private function get_user_events_attended($user_id) {
-        if (!function_exists('wc_get_orders')) return 0;
-        $orders = wc_get_orders(['customer_id' => $user_id, 'status' => ['completed', 'processing']]);
+        if (!function_exists('wc_get_orders')) {
+            return 0;
+        }
+        
+        $orders = wc_get_orders([
+            'customer_id' => $user_id,
+            'status' => ['completed', 'processing']
+        ]);
+        
         $count = 0;
         $target_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
+        
         foreach ($orders as $order) {
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
@@ -433,39 +602,57 @@ class ZenGame {
                 }
             }
         }
+        
         return $count;
     }
 
+    /**
+     * Initialize cache invalidation hooks
+     */
     private function init_cache_hooks() {
-        // WooCommerce
+        // WooCommerce events
         add_action('woocommerce_order_status_completed', array($this, 'clear_user_gamipress_cache'));
         
-        // GamiPress Hooks for real-time invalidation
+        // GamiPress real-time invalidation
         add_action('gamipress_award_points_to_user', function($user_id) {
-            delete_transient('djz_gamipress_v4_' . $user_id);
+            delete_transient('djz_gamipress_' . self::CACHE_VERSION . '_' . $user_id);
         });
+        
         add_action('gamipress_award_achievement', function($user_id) {
-            delete_transient('djz_gamipress_v4_' . $user_id);
+            delete_transient('djz_gamipress_' . self::CACHE_VERSION . '_' . $user_id);
         });
+        
         add_action('gamipress_set_user_rank', function($user_id) {
-            delete_transient('djz_gamipress_v4_' . $user_id);
+            delete_transient('djz_gamipress_' . self::CACHE_VERSION . '_' . $user_id);
         });
 
         // Global invalidation on content change
         add_action('save_post_achievement', array($this, 'clear_all_gamipress_cache'));
+        add_action('save_post_rank', array($this, 'clear_all_gamipress_cache'));
     }
 
+    /**
+     * Clear cache for specific user after order completion
+     */
     public function clear_user_gamipress_cache($order_id) {
         $order = wc_get_order($order_id);
         if ($order && ($user_id = $order->get_user_id())) {
-            delete_transient('djz_gamipress_v4_' . $user_id);
+            delete_transient('djz_gamipress_' . self::CACHE_VERSION . '_' . $user_id);
+            delete_transient('djz_gamipress_' . self::CACHE_VERSION . '_leaderboard_10');
         }
     }
 
+    /**
+     * Clear all ZenGame cache (called from admin panel)
+     */
     public function clear_all_gamipress_cache() {
         global $wpdb;
-        $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_gamipress_%'");
+        $wpdb->query($wpdb->prepare(
+            "DELETE FROM $wpdb->options WHERE option_name LIKE %s",
+            '%_transient_djz_gamipress_%'
+        ));
     }
 }
 
+// Initialize singleton
 ZenGame::get_instance();
