@@ -171,12 +171,15 @@ class ZenGame {
 
             foreach ($all_achievements as $post) {
                 $earned = isset($user_earnings[$post->ID]);
+                $points_awarded = (int)get_post_meta($post->ID, '_gamipress_points_awarded', true);
+                
                 $achievements[] = [
                     'id' => $post->ID,
                     'title' => $post->post_title,
                     'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
                     'image' => get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
                     'earned' => $earned,
+                    'points_awarded' => $points_awarded,
                     'date_earned' => $earned ? $user_earnings[$post->ID]->date : '',
                 ];
             }
@@ -259,7 +262,21 @@ class ZenGame {
     }
 
     private function init_cache_hooks() {
+        // WooCommerce
         add_action('woocommerce_order_status_completed', array($this, 'clear_user_gamipress_cache'));
+        
+        // GamiPress Hooks for real-time invalidation
+        add_action('gamipress_award_points_to_user', function($user_id) {
+            delete_transient('djz_gamipress_v4_' . $user_id);
+        });
+        add_action('gamipress_award_achievement', function($user_id) {
+            delete_transient('djz_gamipress_v4_' . $user_id);
+        });
+        add_action('gamipress_set_user_rank', function($user_id) {
+            delete_transient('djz_gamipress_v4_' . $user_id);
+        });
+
+        // Global invalidation on content change
         add_action('save_post_achievement', array($this, 'clear_all_gamipress_cache'));
     }
 
