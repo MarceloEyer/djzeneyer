@@ -173,8 +173,8 @@ const DashboardContent = () => {
               </div >
 
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-4xl md:text-5xl font-black font-display mb-2 drop-shadow-lg text-white">
-                  {t('dashboard.welcomeBack', { name: user.name })}
+                <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg">
+                  {t('dashboard.welcomeBack', { name: user?.display_name || user?.name || t('common.friend') })}
                 </h1>
                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mb-6">
                   <div className="flex items-center gap-2 bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-sm font-bold">

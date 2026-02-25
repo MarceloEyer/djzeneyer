@@ -150,19 +150,16 @@ class ZenGame {
                     'image' => get_the_post_thumbnail_url($pt['ID'], 'thumbnail') ?: ''
                 ];
             }
-            // Ensure a 'points' key exists for the frontend helper even if slug is different
-            if (!isset($point_data['points']) && !empty($point_data)) {
-                $first_pt = reset($point_data);
-                $point_data['points'] = $first_pt;
-            }
         }
 
-        // --- 2. Rank — FIX: Detect real rank type ---
+        // --- 2. Rank — FIX: Detect real rank type and requirements ---
         $rank_info = [
             'current' => ['title' => 'Zen Novice', 'id' => 0, 'image' => ''],
             'next' => null,
             'progress' => 0
         ];
+
+        $main_pt_slug = !empty($point_data) ? array_key_first($point_data) : 'points';
 
         if (function_exists('gamipress_get_user_rank') && function_exists('gamipress_get_rank_types')) {
             $rank_types = gamipress_get_rank_types();
@@ -187,10 +184,14 @@ class ZenGame {
                             ];
 
                             // Progress calculation based on XP
-                            $main_pt_slug = array_key_first($point_data) ?: 'points';
                             $user_points = $point_data[$main_pt_slug]['amount'] ?? 0;
-                            $curr_req = (int)get_post_meta($current_rank->ID, '_gamipress_points', true);
-                            $next_req = (int)get_post_meta($next_rank_id, '_gamipress_points', true);
+                            
+                            // Try multiple meta keys for requirements (GamiPress behavior varies)
+                            $curr_req = (int)get_post_meta($current_rank->ID, "_gamipress_{$main_pt_slug}_points", true);
+                            if (!$curr_req) $curr_req = (int)get_post_meta($current_rank->ID, '_gamipress_points', true);
+                            
+                            $next_req = (int)get_post_meta($next_rank_id, "_gamipress_{$main_pt_slug}_points", true);
+                            if (!$next_req) $next_req = (int)get_post_meta($next_rank_id, '_gamipress_points', true);
 
                             if ($next_req > $curr_req) {
                                 $progress = (($user_points - $curr_req) / ($next_req - $curr_req)) * 100;
@@ -271,17 +272,20 @@ class ZenGame {
             $streak_fire = $diff_days <= 1;
         }
 
+        $stats = [
+            'totalTracks' => $this->get_user_total_tracks($user_id),
+            'eventsAttended' => $this->get_user_events_attended($user_id),
+            'streak' => $streak,
+            'streakFire' => $streak_fire,
+        ];
+
         $data = [
             'points' => $point_data,
             'rank' => $rank_info,
             'achievements' => $achievements,
             'logs' => $logs,
-            'stats' => [
-                'totalTracks' => $this->get_user_total_tracks($user_id),
-                'eventsAttended' => $this->get_user_events_attended($user_id),
-                'streak' => $streak,
-                'streakFire' => $streak_fire,
-            ],
+            'stats' => $stats,
+            'main_points_slug' => $main_pt_slug,
             'lastUpdate' => current_time('mysql')
         ];
 

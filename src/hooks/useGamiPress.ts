@@ -47,6 +47,7 @@ export interface GamiPressData {
     streak: number;
     streakFire: boolean;
   };
+  main_points_slug: string;
   lastUpdate: string;
 }
 
@@ -81,6 +82,7 @@ const FALLBACK: GamiPressData = {
     streak: 0,
     streakFire: false,
   },
+  main_points_slug: 'points',
   lastUpdate: '',
 };
 
@@ -99,8 +101,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
     loading: isLoading,
     error: error ? (error as Error).message : null,
     refresh: () => { refetch(); },
-    // Legacy mapping
-    mainPoints: resolved.points.points?.amount ?? 0,
+    // Legacy mapping (uses dynamic slug from backend)
+    mainPoints: resolved.points[resolved.main_points_slug]?.amount ?? 0,
     currentRank: resolved.rank.current.title,
   };
 };
