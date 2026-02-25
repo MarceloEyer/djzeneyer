@@ -305,15 +305,27 @@ const MyAccountContent: React.FC = () => {
                         {gamipress.rank.next.title}
                       </span>
                     </div>
-                    <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+                    {/* Fighting Game Style Power Bar (Synced with Dashboard) */}
+                    <div className="h-4 bg-black/40 border border-white/10 relative overflow-hidden -skew-x-12 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] mb-2">
+                      {/* Segmented Background */}
+                      <div className="absolute inset-0 opacity-5 flex gap-1">
+                        {[...Array(10)].map((_, i) => (
+                          <div key={i} className="flex-1 border-r border-white/20" />
+                        ))}
+                      </div>
                       <motion.div
-                        className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full"
                         initial={{ width: 0 }}
-                        animate={{
-                          width: `${gamipress.rank.progress}%`
-                        }}
+                        animate={{ width: `${gamipress.rank.progress}%` }}
+                        className="h-full bg-gradient-to-r from-primary via-accent to-white relative shadow-[0_0_20px_rgba(99,102,241,0.6)]"
                         transition={{ duration: 1, ease: "easeOut" }}
-                      />
+                      >
+                        {/* Animated Stripe Overlay */}
+                        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.05)_10px,rgba(255,255,255,0.05)_20px)]" />
+
+                        {/* Leading Edge Sparkle */}
+                        <div className="absolute top-0 right-0 h-full w-4 bg-white/30 blur-md" />
+                        <div className="absolute top-0 right-0 h-full w-1 bg-white animate-pulse" />
+                      </motion.div>
                     </div>
                     <p className="text-xs text-white/60 mt-2">
                       <strong>{1000 - (gamipress.points.points?.amount % 1000)} XP</strong> {t('dashboard.nextRank')}

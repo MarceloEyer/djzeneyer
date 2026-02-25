@@ -7,24 +7,15 @@ import { motion } from 'framer-motion';
 import { useUser } from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import {
-  Award, TrendingUp, Music, Calendar, Clock,
-  Zap, Trophy, Target, Gift, Loader2, Star
+  Award, Music, Calendar, Clock,
+  Zap, Trophy, Loader2, Star,
+  Gift, Target
 } from 'lucide-react';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { Helmet } from 'react-helmet-async';
-import { getProgressColor } from '../utils/gamification';
-import type { ZenGameLog } from '../types/gamification';
 import { RecentActivity } from '../components/account';
 
 
-interface Achievement {
-  id?: number;
-  title: string;
-  description: string;
-  image?: string;
-  emoji?: string;
-  earned: boolean;
-}
 
 // --- Activity Table replaced by shared RecentActivity component ---
 
@@ -111,13 +102,25 @@ const DashboardContent = () => {
                       <span className="text-sm font-bold text-white/50">{t('dashboard.nextRank')}: <span className="text-white">{gamipress.rank.next.title}</span></span>
                       <span className="text-primary font-black text-lg">{gamipress.rank.progress}%</span>
                     </div>
-                    <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 p-0.5">
+                    {/* Fighting Game Style Power Bar */}
+                    <div className="h-4 bg-black/40 border border-white/10 relative overflow-hidden -skew-x-12 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+                      {/* Segmented Background */}
+                      <div className="absolute inset-0 opacity-5 flex gap-1">
+                        {[...Array(10)].map((_, i) => (
+                          <div key={i} className="flex-1 border-r border-white/20" />
+                        ))}
+                      </div>
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${gamipress.rank.progress}%` }}
-                        className="h-full bg-gradient-to-r from-primary to-accent rounded-full relative shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+                        className="h-full bg-gradient-to-r from-primary via-accent to-white relative shadow-[0_0_20px_rgba(99,102,241,0.6)]"
                       >
-                        <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                        {/* Animated Stripe Overlay */}
+                        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.05)_10px,rgba(255,255,255,0.05)_20px)]" />
+
+                        {/* Leading Edge Sparkle */}
+                        <div className="absolute top-0 right-0 h-full w-4 bg-white/30 blur-md" />
+                        <div className="absolute top-0 right-0 h-full w-1 bg-white animate-pulse" />
                       </motion.div>
                     </div>
                   </div>
@@ -158,19 +161,6 @@ const DashboardContent = () => {
               </div>
             </div >
 
-            {/* Other Stats */}
-            < div className="grid grid-cols-2 gap-4" >
-              <div className="card p-4 space-y-1">
-                <Music className="text-primary" size={20} />
-                <div className="text-2xl font-black">{gamipress.stats.totalTracks}</div>
-                <div className="text-[10px] uppercase font-black text-white/40 leading-none">{t('dashboard.tracksDownloaded')}</div>
-              </div>
-              <div className="card p-4 space-y-1">
-                <Calendar className="text-success" size={20} />
-                <div className="text-2xl font-black">{gamipress.stats.eventsAttended}</div>
-                <div className="text-[10px] uppercase font-black text-white/40 leading-none">{t('dashboard.eventsAttended')}</div>
-              </div>
-            </div >
 
             {/* Quick Actions */}
             < div className="card p-6 bg-primary/5 border-primary/20" >
