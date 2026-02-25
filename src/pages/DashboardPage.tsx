@@ -1,17 +1,17 @@
 // src/pages/DashboardPage.tsx
 // v19.0 - REACT QUERY + i18n + REAL API DATA
 
-import { useMemo, useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useUser } from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import {
-  Award, Music, Calendar, Clock, Zap, Users, Trophy,
-  Target, Gift, Loader2, TrendingUp, Star
+  Award, TrendingUp, Music, Calendar, Clock,
+  Zap, Trophy, Target, Gift, Loader2, Star
 } from 'lucide-react';
-import GamificationWidget from '../components/Gamification/GamificationWidget';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
+import { Helmet } from 'react-helmet-async';
 
 // --- HELPER: Formatação de Tempo com i18n ---
 function getTimeAgo(timestamp: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
@@ -30,7 +30,7 @@ function getTimeAgo(timestamp: number, t: (key: string, opts?: Record<string, un
   return t('dashboard.timeAgo.seconds', { count: Math.floor(seconds) });
 }
 
-interface SafeAchievement {
+interface Achievement {
   id?: number;
   title: string;
   description: string;
@@ -82,9 +82,9 @@ const ActivityTable = ({ logs, t }: { logs: any[], t: any }) => {
               <td className="py-4 text-center border-y border-white/5 group-hover:border-primary/20">
                 {log.points !== 0 ? (
                   <span className={`px-2 py-1 rounded-lg text-[10px] font-black border ${log.points > 0
-                      ? 'bg-success/10 text-success border-success/20'
-                      : 'bg-red-500/10 text-red-500 border-red-500/20'
-                    }`}>
+                    ? 'bg-success/10 text-success border-success/20'
+                    : 'bg-red-500/10 text-red-500 border-red-500/20'
+                    } `}>
                     {log.points > 0 ? `+${log.points}` : log.points} XP
                   </span>
                 ) : (
@@ -113,13 +113,7 @@ const DashboardContent = () => {
   // Agora retorna o novo payload enriquecido v3
   const { data: gamipress, loading } = useGamiPressContext();
 
-  useEffect(() => {
-    if (user?.name) {
-      document.title = `Dashboard - ${user.name} | DJ Zen Eyer`;
-    }
-  }, [user?.name]);
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (!user?.isLoggedIn) {
       navigate('/', { replace: true });
     }
@@ -153,6 +147,9 @@ const DashboardContent = () => {
 
   return (
     <div className="pt-24 pb-16 min-h-screen bg-black">
+      <Helmet>
+        <title>{`Dashboard - ${user.name} | DJ Zen Eyer`}</title>
+      </Helmet>
       <div className="container mx-auto px-4 max-w-7xl">
 
         {/* --- HERO HEADER / RANK CARD --- */}
@@ -173,7 +170,7 @@ const DashboardContent = () => {
                 <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-yellow-400 to-orange-600 text-black font-black rounded-full w-10 h-10 flex items-center justify-center shadow-2xl scale-125 border-4 border-black">
                   {earnedAchievements.length}
                 </div>
-              </div>
+              </div >
 
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-4xl md:text-5xl font-black font-display mb-2 drop-shadow-lg text-white">
@@ -216,17 +213,17 @@ const DashboardContent = () => {
               >
                 {t('dashboard.boostXP')}
               </motion.button>
-            </div>
-          </div>
-        </motion.div>
+            </div >
+          </div >
+        </motion.div >
 
         {/* --- MAIN GRID --- */}
-        <div className="grid lg:grid-cols-4 gap-6">
+        < div className="grid lg:grid-cols-4 gap-6" >
 
           {/* LEFT COL: Points & Stats */}
-          <div className="lg:col-span-1 space-y-6">
+          < div className="lg:col-span-1 space-y-6" >
             {/* Wallet / Points Card */}
-            <div className="card p-6 border-white/5 overflow-hidden relative">
+            < div className="card p-6 border-white/5 overflow-hidden relative" >
               <div className="absolute top-0 right-0 p-4 opacity-10"><Zap size={48} /></div>
               <h3 className="text-sm font-black text-white/40 uppercase tracking-widest mb-6">{t('dashboard.yourWallet')}</h3>
               <div className="space-y-6">
@@ -242,10 +239,10 @@ const DashboardContent = () => {
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </div >
 
             {/* Other Stats */}
-            <div className="grid grid-cols-2 gap-4">
+            < div className="grid grid-cols-2 gap-4" >
               <div className="card p-4 space-y-1">
                 <Music className="text-primary" size={20} />
                 <div className="text-2xl font-black">{gamipress.stats.totalTracks}</div>
@@ -256,10 +253,10 @@ const DashboardContent = () => {
                 <div className="text-2xl font-black">{gamipress.stats.eventsAttended}</div>
                 <div className="text-[10px] uppercase font-black text-white/40 leading-none">{t('dashboard.eventsAttended')}</div>
               </div>
-            </div>
+            </div >
 
             {/* Quick Actions */}
-            <div className="card p-6 bg-primary/5 border-primary/20">
+            < div className="card p-6 bg-primary/5 border-primary/20" >
               <h3 className="text-xs font-black uppercase tracking-tighter mb-4 text-primary">{t('dashboard.quickActions')}</h3>
               <div className="space-y-2">
                 {[
@@ -277,11 +274,11 @@ const DashboardContent = () => {
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
+            </div >
+          </div >
 
           {/* CENTER COL: Activity Feed */}
-          <div className="lg:col-span-2 space-y-6">
+          < div className="lg:col-span-2 space-y-6" >
             <div className="card h-full min-h-[600px] flex flex-col p-6 border-white/5 bg-gradient-to-b from-surface/20 to-transparent">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black font-display flex items-center gap-3">
@@ -296,10 +293,10 @@ const DashboardContent = () => {
                 <ActivityTable logs={gamipress.logs} t={t} />
               </div>
             </div>
-          </div>
+          </div >
 
           {/* RIGHT COL: Quests / Locked Achievements */}
-          <div className="lg:col-span-1 space-y-6">
+          < div className="lg:col-span-1 space-y-6" >
             <div className="card p-6 border-white/5 h-full flex flex-col">
               <h2 className="text-xl font-black font-display mb-6 flex items-center gap-3">
                 <Target className="text-accent" size={24} /> {t('dashboard.pendingQuests')}
@@ -341,12 +338,12 @@ const DashboardContent = () => {
                 {t('gamification.viewAll')}
               </button>
             </div>
-          </div>
+          </div >
 
-        </div>
+        </div >
 
         {/* --- ACHIEVEMENTS GALLERY --- */}
-        <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12">
+        < motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12" >
           <div className="card p-8 border-white/5">
             <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
               <h2 className="text-2xl font-black font-display flex items-center gap-4">
@@ -390,10 +387,10 @@ const DashboardContent = () => {
               ))}
             </div>
           </div>
-        </motion.div>
+        </motion.div >
 
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

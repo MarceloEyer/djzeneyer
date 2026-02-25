@@ -1130,6 +1130,11 @@
     "dayStreak": "Day Streak",
     "dayStreakFire": "Day Streak 🔥",
     "tribeFriends": "Tribe Friends",
+    "table": {
+      "activity": "Activity",
+      "points": "Points",
+      "date": "Date"
+    },
     "recentActivity": "Recent Activity",
     "noActivity": "No recent activity yet.",
     "quickActions": "Quick Actions",
