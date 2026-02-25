@@ -138,90 +138,88 @@ const FAQPage: React.FC = () => {
         keywords="Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adílio porto, lambada history"
       />
 
-      <div className="min-h-screen bg-background text-white pt-24 pb-20">
-        <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4">
 
-          {/* Header */}
-          <motion.div
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 text-sm font-bold tracking-widest uppercase">
-              <BookOpen size={16} /> {t('faq.badge')}
-            </div>
-            <h1 className="text-4xl md:text-6xl font-black font-display mb-6">
-              <Trans i18nKey="faq.title">
-                Perguntas <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">Frequentes</span>
-              </Trans>
-            </h1>
-            <p className="text-xl text-white/50 max-w-2xl mx-auto">
-              {t('faq.subtitle')}
-            </p>
-          </motion.div>
-
-          {/* Conteúdo do FAQ */}
-          <div className="max-w-4xl mx-auto space-y-16">
-            {faqData.map((category, catIndex) => (
-              <motion.div
-                key={category.category}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: catIndex * 0.1 }}
-              >
-                <div className="flex items-start gap-4 mb-8">
-                  <div className="p-3 bg-surface rounded-xl text-primary border border-white/10 shadow-lg shadow-primary/5">
-                    {category.icon}
-                  </div>
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold font-display text-white mb-2">
-                      {category.title}
-                    </h2>
-                    {category.description && (
-                      <p className="text-white/50 text-sm">{category.description}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {category.questions.map((q, qIndex) => {
-                    const uniqueId = `${category.category}-${qIndex}`;
-                    return (
-                      <FAQItem
-                        key={uniqueId}
-                        question={q.question}
-                        answer={q.answer}
-                        isOpen={openIndex === uniqueId}
-                        onToggle={() => handleToggle(uniqueId)}
-                      />
-                    );
-                  })}
-                </div>
-              </motion.div>
-            ))}
+        {/* Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 text-sm font-bold tracking-widest uppercase">
+            <BookOpen size={16} /> {t('faq.badge')}
           </div>
+          <h1 className="text-4xl md:text-6xl font-black font-display mb-6">
+            <Trans i18nKey="faq.title">
+              Perguntas <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">Frequentes</span>
+            </Trans>
+          </h1>
+          <p className="text-xl text-white/50 max-w-2xl mx-auto">
+            {t('faq.subtitle')}
+          </p>
+        </motion.div>
 
-          {/* CTA Footer */}
-          <motion.div
-            className="mt-24 text-center border-t border-white/10 pt-16"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-2xl font-display font-bold mb-6">{t('faq.not_found')}</h3>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <a href={`https://wa.me/5521987413091?text=${encodeURIComponent(t('about.cta.whatsapp_msg'))}`} className="btn btn-primary px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105">
-                <Mic2 size={18} /> {t('faq.cta_whatsapp')}
-              </a>
-              <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 border border-white/30 hover:bg-white/10 transition-transform hover:scale-105">
-                <Globe size={18} /> {t('faq.cta_email')}
-              </a>
-            </div>
-          </motion.div>
+        {/* Conteúdo do FAQ */}
+        <div className="max-w-4xl mx-auto space-y-16">
+          {faqData.map((category, catIndex) => (
+            <motion.div
+              key={category.category}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: catIndex * 0.1 }}
+            >
+              <div className="flex items-start gap-4 mb-8">
+                <div className="p-3 bg-surface rounded-xl text-primary border border-white/10 shadow-lg shadow-primary/5">
+                  {category.icon}
+                </div>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold font-display text-white mb-2">
+                    {category.title}
+                  </h2>
+                  {category.description && (
+                    <p className="text-white/50 text-sm">{category.description}</p>
+                  )}
+                </div>
+              </div>
 
+              <div className="space-y-4">
+                {category.questions.map((q, qIndex) => {
+                  const uniqueId = `${category.category}-${qIndex}`;
+                  return (
+                    <FAQItem
+                      key={uniqueId}
+                      question={q.question}
+                      answer={q.answer}
+                      isOpen={openIndex === uniqueId}
+                      onToggle={() => handleToggle(uniqueId)}
+                    />
+                  );
+                })}
+              </div>
+            </motion.div>
+          ))}
         </div>
+
+        {/* CTA Footer */}
+        <motion.div
+          className="mt-24 text-center border-t border-white/10 pt-16"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          <h3 className="text-2xl font-display font-bold mb-6">{t('faq.not_found')}</h3>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <a href={`https://wa.me/5521987413091?text=${encodeURIComponent(t('about.cta.whatsapp_msg'))}`} className="btn btn-primary px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105">
+              <Mic2 size={18} /> {t('faq.cta_whatsapp')}
+            </a>
+            <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 border border-white/30 hover:bg-white/10 transition-transform hover:scale-105">
+              <Globe size={18} /> {t('faq.cta_email')}
+            </a>
+          </div>
+        </motion.div>
+
       </div>
     </div>
   );

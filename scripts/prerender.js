@@ -116,12 +116,15 @@ async function prerender() {
         // as the API might be offline during build.
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-        // Tenta esperar o React montar
+        // Tenta esperar o React montar e o componente lazy carregar
         try {
-          // Espera um elemento real de conteúdo (ex: h1, h2 ou o footer)
-          await page.waitForSelector('#root h1, #root h2, #root main', { timeout: 8000 });
-          // Pequeno respiro para garantir que o i18n e React terminaram o ciclo de render
-          await wait(500);
+          // Esperamos o h1 que existe em quase todas as páginas principais
+          // Aumentamos o timeout para lidar com componentes lazy
+          await page.waitForSelector('#root h1', { timeout: 15000 });
+
+          // Pequeno respiro extra para garantir que o i18n e React terminaram o ciclo de render
+          // 1500ms é mais seguro para i18n switching e animações iniciais do Framer Motion
+          await wait(1500);
         } catch (e) {
           console.warn(`⚠️ Warning: Timeout waiting for specific content on ${route}. Proceeding with current HTML.`);
         }

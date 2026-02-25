@@ -47,18 +47,19 @@ const AppRoutes = () => {
   const NotFound = NOT_FOUND_COMPONENT;
 
   const element = useRoutes([
+    // 🇧🇷 Rotas em Português (Raiz /pt)
+    // Movido para cima para garantir prioridade na detecção
+    {
+      path: '/pt',
+      element: <MainLayout />,
+      children: generateRoutes('pt'),
+    },
+
     // 🇬🇧 Rotas em Inglês (Raiz /)
     {
       path: '/',
       element: <MainLayout />,
       children: generateRoutes('en'),
-    },
-
-    // 🇧🇷 Rotas em Português (Raiz /pt)
-    {
-      path: '/pt',
-      element: <MainLayout />,
-      children: generateRoutes('pt'),
     },
 
     // 🔗 ZenLink — página independente (sem Navbar/Footer)
