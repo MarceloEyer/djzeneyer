@@ -84,8 +84,9 @@
       "complete": "{{percent}}% Concluído",
       "you_are": "Você é...",
       "share_result": "Compartilhar Resultado",
-      "take_again": "Refazer Quiz",
-      "copied": "Resultado copiado para a área de transferência!",
+      "take_again": "Fazer Novamente",
+      "take_quiz_at": "Faça o quiz em:",
+      "copied": "Link copiado!",
       "meta_title": "Quiz: Qual seu Persona? | {{stageName}}",
       "meta_desc": "Quem é você na pista de dança? Faça o Quiz de Persona do Zouk e descubra se você é um Lambadeiro, Técnico ou o Cremoso!"
     }

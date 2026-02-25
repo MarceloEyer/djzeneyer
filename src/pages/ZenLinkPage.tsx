@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -288,7 +289,19 @@ const LinkCard = ({ link }: { link: LinkItem }) => {
 
 // --- Main Page ---
 export const ZenLinkPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
+
+  const localizedLinks = LINKS.map(link => {
+    if (link.type === 'internal') {
+      return {
+        ...link,
+        to: getLocalizedRoute(link.to, currentLang)
+      };
+    }
+    return link;
+  });
+
   return (
     <>
       <HeadlessSEO
@@ -372,7 +385,7 @@ export const ZenLinkPage = () => {
             <SmartMusicCard />
 
             {/* Regular links */}
-            {LINKS.map((link) => (
+            {localizedLinks.map((link) => (
               <LinkCard key={link.id} link={link} />
             ))}
 

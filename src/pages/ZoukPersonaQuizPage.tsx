@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Share2, RefreshCw, ChevronRight, Music, Heart, Zap, Sparkles, Coffee } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // ============================================================================
 // DATA & LOGIC
@@ -136,7 +137,10 @@ const QUESTIONS: Question[] = [
 // ============================================================================
 
 const ZoukPersonaQuizPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
+  const quizUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('quiz', currentLang)}`;
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [scores, setScores] = useState<Record<PersonaType, number>>({
     lambadeiro: 0,
@@ -184,14 +188,14 @@ const ZoukPersonaQuizPage: React.FC = () => {
   const shareResult = async () => {
     if (!result) return;
     const shareText = t(`quiz.personas.${result.id}.shareText`);
-    const text = `${shareText} Take the quiz at ${ARTIST.site.baseUrl}/quiz`;
+    const text = `${shareText} ${t('quiz.ui.take_quiz_at')} ${quizUrl}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: t('quiz.ui.meta_title', { stageName: ARTIST.identity.stageName }),
           text: text,
-          url: `${ARTIST.site.baseUrl}/quiz`
+          url: quizUrl
         });
       } catch (err) {
         console.error('Share failed', err);

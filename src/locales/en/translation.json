@@ -85,7 +85,8 @@
       "you_are": "You are...",
       "share_result": "Share Result",
       "take_again": "Take Again",
-      "copied": "Result copied to clipboard!",
+      "take_quiz_at": "Take the quiz at:",
+      "copied": "Link copied!",
       "meta_title": "Zouk Persona Quiz | {{stageName}}",
       "meta_desc": "Who are you on the dance floor? Take the Zouk Persona Quiz to find out if you're a Lambadeiro, Technician, or the Creamy One!"
     }
