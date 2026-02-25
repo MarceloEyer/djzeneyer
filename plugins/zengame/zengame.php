@@ -183,19 +183,36 @@ class ZenGame {
                                 'image' => get_the_post_thumbnail_url($next_rank->ID, 'thumbnail') ?: ''
                             ];
 
-                            // Progress calculation based on XP
-                            $user_points = $point_data[$main_pt_slug]['amount'] ?? 0;
-                            
-                            // Try multiple meta keys for requirements (GamiPress behavior varies)
-                            $curr_req = (int)get_post_meta($current_rank->ID, "_gamipress_{$main_pt_slug}_points", true);
-                            if (!$curr_req) $curr_req = (int)get_post_meta($current_rank->ID, '_gamipress_points', true);
-                            
-                            $next_req = (int)get_post_meta($next_rank_id, "_gamipress_{$main_pt_slug}_points", true);
-                            if (!$next_req) $next_req = (int)get_post_meta($next_rank_id, '_gamipress_points', true);
+                            // --- OFFICIAL PROGRESS CALCULATION ---
+                            $requirements = function_exists('gamipress_get_ranks') ? gamipress_get_ranks([
+                                'post_type' => 'rank-requirement',
+                                'children_of' => $next_rank_id,
+                                'numberposts' => -1
+                            ]) : [];
 
-                            if ($next_req > $curr_req) {
-                                $progress = (($user_points - $curr_req) / ($next_req - $curr_req)) * 100;
-                                $rank_info['progress'] = max(0, min(100, round($progress)));
+                            if (!empty($requirements)) {
+                                $total_req_progress = 0;
+                                foreach ($requirements as $req_post) {
+                                    if (function_exists('gamipress_get_requirement_object')) {
+                                        $req = gamipress_get_requirement_object($req_post->ID);
+                                        
+                                        // Points requirement
+                                        if (!empty($req['points_required']) && $req['points_required'] > 0) {
+                                            $u_points = (int)gamipress_get_user_points($user_id, $req['points_type_required'] ?: $main_pt_slug);
+                                            $total_req_progress += min(100, ($u_points / $req['points_required']) * 100);
+                                        } 
+                                        // Count requirement (triggers)
+                                        else if (!empty($req['count']) && $req['count'] > 0) {
+                                            $earned_times = function_exists('gamipress_get_earnings_count') ? gamipress_get_earnings_count([
+                                                'user_id' => $user_id,
+                                                'post_id' => $req_post->ID
+                                            ]) : 0;
+                                            $total_req_progress += min(100, ($earned_times / $req['count']) * 100);
+                                        }
+                                        // Default to 0 if not points/count
+                                    }
+                                }
+                                $rank_info['progress'] = round($total_req_progress / count($requirements));
                             }
                         }
                     }
@@ -217,11 +234,11 @@ class ZenGame {
 
         if (!empty($all_achievements)) {
             $user_earnings = [];
-            if (function_exists('gamipress_get_user_earnings')) {
-                $earnings_list = gamipress_get_user_earnings([
+            if (function_exists('gamipress_get_user_achievements')) {
+                $earnings_list = gamipress_get_user_achievements([
                     'user_id' => $user_id,
-                    'post_type' => implode(',', $achievement_post_types),
-                    'number' => -1 // FIX: 'number' not 'limit'
+                    'achievement_type' => $achievement_post_types,
+                    'limit' => -1
                 ]);
                 foreach ($earnings_list as $earned_obj) {
                     $user_earnings[$earned_obj->post_id] = $earned_obj;
