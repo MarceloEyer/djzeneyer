@@ -54,7 +54,7 @@ class ZenGame {
     }
 
     /**
-     * GamiPress User Data (Migrated from theme)
+     * GamiPress User Data (Aggregated + Cached)
      */
     public function get_gamipress_user_data($request) {
         $user_id = get_current_user_id();
@@ -74,12 +74,14 @@ class ZenGame {
 
         if (!$user_id) return new WP_Error('no_user', 'User not authenticated', ['status' => 401]);
 
-        $cache_key = 'djz_gamipress_v3_' . $user_id;
+        // Transient cache per user (v4 for forced invalidation)
+        $cache_key = 'djz_gamipress_v4_' . $user_id;
         $cached = get_transient($cache_key);
         if ($cached !== false) {
             return rest_ensure_response($cached);
         }
 
+        // --- 1. Point types ---
         $point_data = [];
         if (function_exists('gamipress_get_points_types')) {
             $point_types = gamipress_get_points_types();
@@ -92,37 +94,61 @@ class ZenGame {
             }
         }
 
+        // --- 2. Rank — FIX: Detect real rank type ---
         $rank_info = [
             'current' => ['title' => 'Zen Novice', 'id' => 0, 'image' => ''],
             'next' => null,
             'progress' => 0
         ];
 
-        if (function_exists('gamipress_get_user_rank')) {
-            $current_rank = gamipress_get_user_rank($user_id, 'rank');
-            if ($current_rank) {
-                $rank_info['current'] = [
-                    'id' => $current_rank->ID,
-                    'title' => $current_rank->post_title,
-                    'image' => get_the_post_thumbnail_url($current_rank->ID, 'thumbnail') ?: ''
-                ];
-
-                $next_rank = gamipress_get_next_rank($current_rank->ID);
-                if ($next_rank) {
-                    $rank_info['next'] = [
-                        'id' => $next_rank->ID,
-                        'title' => $next_rank->post_title,
-                        'image' => get_the_post_thumbnail_url($next_rank->ID, 'thumbnail') ?: ''
+        if (function_exists('gamipress_get_user_rank') && function_exists('gamipress_get_rank_types')) {
+            $rank_types = gamipress_get_rank_types();
+            if (!empty($rank_types)) {
+                $rank_type_slug = array_key_first($rank_types);
+                $current_rank = gamipress_get_user_rank($user_id, $rank_type_slug);
+                if ($current_rank) {
+                    $rank_info['current'] = [
+                        'id' => $current_rank->ID,
+                        'title' => $current_rank->post_title,
+                        'image' => get_the_post_thumbnail_url($current_rank->ID, 'thumbnail') ?: ''
                     ];
+
+                    if (function_exists('gamipress_get_next_rank_id')) {
+                        $next_rank_id = gamipress_get_next_rank_id($current_rank->ID);
+                        if ($next_rank_id) {
+                            $next_rank = get_post($next_rank_id);
+                            $rank_info['next'] = [
+                                'id' => $next_rank->ID,
+                                'title' => $next_rank->post_title,
+                                'image' => get_the_post_thumbnail_url($next_rank->ID, 'thumbnail') ?: ''
+                            ];
+
+                            // Progress calculation based on XP
+                            $main_pt_slug = array_key_first($point_data) ?: 'points';
+                            $user_points = $point_data[$main_pt_slug]['amount'] ?? 0;
+                            $curr_req = (int)get_post_meta($current_rank->ID, '_gamipress_points', true);
+                            $next_req = (int)get_post_meta($next_rank_id, '_gamipress_points', true);
+
+                            if ($next_req > $curr_req) {
+                                $progress = (($user_points - $curr_req) / ($next_req - $curr_req)) * 100;
+                                $rank_info['progress'] = max(0, min(100, round($progress)));
+                            }
+                        }
+                    }
                 }
             }
         }
 
+        // --- 3. Achievements — FIX: Use real post types ---
         $achievements = [];
+        $achievement_types = function_exists('gamipress_get_achievement_types') ? gamipress_get_achievement_types() : [];
+        $achievement_post_types = !empty($achievement_types) ? array_keys($achievement_types) : ['badge'];
+
         $all_achievements = get_posts([
-            'post_type' => 'achievement',
+            'post_type' => $achievement_post_types,
             'numberposts' => -1,
-            'post_status' => 'publish'
+            'post_status' => 'publish',
+            'no_found_rows' => true
         ]);
 
         if (!empty($all_achievements)) {
@@ -130,8 +156,8 @@ class ZenGame {
             if (function_exists('gamipress_get_user_earnings')) {
                 $earnings_list = gamipress_get_user_earnings([
                     'user_id' => $user_id,
-                    'post_type' => 'achievement',
-                    'limit' => -1
+                    'post_type' => implode(',', $achievement_post_types),
+                    'number' => -1 // FIX: 'number' not 'limit'
                 ]);
                 foreach ($earnings_list as $earned_obj) {
                     $user_earnings[$earned_obj->post_id] = $earned_obj;
@@ -151,11 +177,12 @@ class ZenGame {
             }
         }
 
+        // --- 4. Logs — FIX: 'number' parameter ---
         $logs = [];
         if (function_exists('gamipress_get_logs')) {
             $raw_logs = gamipress_get_logs([
                 'user_id' => $user_id,
-                'limit' => 10,
+                'number' => 10, // FIX: 'number' not 'limit'
                 'orderby' => 'date',
                 'order' => 'DESC'
             ]);
@@ -165,7 +192,7 @@ class ZenGame {
                     'type' => $log->type,
                     'description' => $log->title,
                     'date' => $log->date,
-                    'points' => (int)$log->points
+                    'points' => (int)($log->points ?? 0)
                 ];
             }
         }
@@ -234,7 +261,7 @@ class ZenGame {
     public function clear_user_gamipress_cache($order_id) {
         $order = wc_get_order($order_id);
         if ($order && ($user_id = $order->get_user_id())) {
-            delete_transient('djz_gamipress_v3_' . $user_id);
+            delete_transient('djz_gamipress_v4_' . $user_id);
         }
     }
 
