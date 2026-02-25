@@ -12,8 +12,9 @@ import {
 } from 'lucide-react';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { Helmet } from 'react-helmet-async';
-import { getLogTypeLabel, getProgressColor, formatLogDate } from '../utils/gamification';
+import { getProgressColor } from '../utils/gamification';
 import type { ZenGameLog } from '../types/gamification';
+import { RecentActivity } from '../components/account';
 
 
 interface Achievement {
@@ -25,73 +26,7 @@ interface Achievement {
   earned: boolean;
 }
 
-// --- COMPONENT: Activity Table ---
-const ActivityTable = ({ logs, t }: { logs: ZenGameLog[], t: any }) => {
-  if (logs.length === 0) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center opacity-20 py-20">
-        <Clock size={64} className="mb-4" />
-        <p className="font-black uppercase tracking-widest text-sm">{t('dashboard.noActivity')}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="overflow-x-auto -mx-6 sm:mx-0">
-      <table className="w-full text-left border-separate border-spacing-y-2 px-6 sm:px-0">
-        <thead>
-          <tr className="text-[10px] font-black uppercase tracking-widest text-white/30">
-            <th className="pb-2 pl-4">{t('dashboard.table.activity')}</th>
-            <th className="pb-2 text-center">{t('dashboard.table.points')}</th>
-            <th className="pb-2 text-right pr-4">{t('dashboard.table.date')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((log, i) => (
-            <motion.tr
-              key={log.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="group bg-white/5 hover:bg-white/10 transition-colors"
-            >
-              <td className="py-4 pl-4 rounded-l-2xl border-y border-l border-white/5 group-hover:border-primary/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-110 transition-transform shrink-0">
-                    {log.type === 'points_earn' ? <TrendingUp size={14} /> : <Award size={14} />}
-                  </div>
-                  <span className="text-sm font-bold text-white/90 truncate max-w-[150px] sm:max-w-none">
-                    {log.description}
-                  </span>
-                  <span className="text-[10px] text-white/30 truncate">
-                    {getLogTypeLabel(log.type)}
-                  </span>
-                </div>
-              </td>
-              <td className="py-4 text-center border-y border-white/5 group-hover:border-primary/20">
-                {log.points !== 0 ? (
-                  <span className={`px-2 py-1 rounded-lg text-[10px] font-black border ${log.points > 0
-                    ? 'bg-success/10 text-success border-success/20'
-                    : 'bg-red-500/10 text-red-500 border-red-500/20'
-                    } `}>
-                    {log.points > 0 ? `+${log.points}` : log.points} XP
-                  </span>
-                ) : (
-                  <span className="text-white/20">—</span>
-                )}
-              </td>
-              <td className="py-4 text-right pr-4 rounded-r-2xl border-y border-r border-white/5 group-hover:border-primary/20">
-                <span className="text-[10px] font-black text-white/30 uppercase tracking-tighter">
-                  {formatLogDate(log.date)}
-                </span>
-              </td>
-            </motion.tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+// --- Activity Table replaced by shared RecentActivity component ---
 
 const DashboardContent = () => {
   const { t } = useTranslation();
@@ -125,14 +60,7 @@ const DashboardContent = () => {
   const earnedAchievements = gamipress.achievements.filter(a => a.earned);
   const lockedAchievements = gamipress.achievements.filter(a => !a.earned);
 
-  const containerVariants = {
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-    hidden: { opacity: 0 }
-  };
-  const itemVariants = {
-    visible: { opacity: 1, y: 0 },
-    hidden: { opacity: 0, y: 20 }
-  };
+  // Animation variants removed (unused after cleanup)
 
   return (
     <div className="pt-24 pb-16 min-h-screen bg-black">
@@ -304,7 +232,7 @@ const DashboardContent = () => {
               </div>
 
               <div className="flex-1">
-                <ActivityTable logs={gamipress.logs} t={t} />
+                <RecentActivity logs={gamipress.logs} hideHeader={true} />
               </div>
             </div>
           </div >

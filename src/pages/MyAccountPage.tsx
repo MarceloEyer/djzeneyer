@@ -8,10 +8,9 @@ import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones, Instagram, Facebook, Save } from 'lucide-react';
-import { UserStatsCards } from '../components/account/UserStatsCards';
-import { OrdersList } from '../components/account/OrdersList';
-import { RecentActivity } from '../components/account/RecentActivity';
+import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
+import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 
 // Interfaces
 interface Order {
@@ -35,7 +34,7 @@ interface UserStats {
   recentAchievements: number;
 }
 
-const MyAccountPage: React.FC = () => {
+const MyAccountContent: React.FC = () => {
   const { t } = useTranslation();
   const { user, loading, logout } = useUser();
   const navigate = useNavigate();
@@ -59,9 +58,11 @@ const MyAccountPage: React.FC = () => {
     console.log('[MyAccountPage] User:', user);
   }
 
+  const { data: gamipress, loading: loadingGP } = useGamiPressContext();
+
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS
   const userStats: UserStats = useMemo(() => {
-    if (!user) {
+    if (!user || !gamipress) {
       return {
         level: 0,
         xp: 0,
@@ -72,35 +73,30 @@ const MyAccountPage: React.FC = () => {
       };
     }
 
-    // ✅ DADOS REAIS DO GAMIPRESS
-    const totalPoints = user.gamipress_points || 0;
-    const currentRank = user.gamipress_rank || 'Zen Novice';
+    // ✅ DADOS REAIS DO GAMIPRESS v1.1.0
+    const mainPoints = gamipress.points.points?.amount || 0;
+    const currentRank = gamipress.rank.current.title || 'Zen Novice';
+    const progress = gamipress.rank.progress || 0;
 
     // Calcular level baseado em pontos (cada 100 pontos = 1 level)
-    const level = Math.floor(totalPoints / 100) + 1;
+    const level = Math.floor(mainPoints / 100) + 1;
 
-    // Calcular XP para próximo rank
-    let xpToNext = 0;
-    if (totalPoints < 100) {
-      xpToNext = 100 - totalPoints; // Para Zen Apprentice
-    } else if (totalPoints < 500) {
-      xpToNext = 500 - totalPoints; // Para Zen Voyager
-    } else if (totalPoints < 1500) {
-      xpToNext = 1500 - totalPoints; // Para Zen Master
-    }
+    // XP para o próximo nível (100 - resto da divisão por 100)
+    const xpToNext = 100 - (mainPoints % 100);
 
-    const totalAchievements = user.gamipress_achievements?.length || 0;
-    const recentAchievements = user.gamipress_achievements?.slice(-2).length || 0;
+    const totalAchievements = gamipress.achievements.length;
+    const earnedAchievements = gamipress.achievements.filter(a => a.earned);
+    const recentAchievements = earnedAchievements.slice(-2).length;
 
     return {
       level,
-      xp: totalPoints,
+      xp: mainPoints,
       rank: currentRank,
-      xpToNext,
+      xpToNext: gamipress.rank.next ? xpToNext : 0, // Se não houver próximo rank, assume 0
       totalAchievements,
       recentAchievements
     };
-  }, [user]);
+  }, [user, gamipress]);
 
   // Redirect se não logado
   useEffect(() => {
@@ -208,7 +204,7 @@ const MyAccountPage: React.FC = () => {
     </motion.div>
   );
 
-  if (loading) {
+  if (loading || (user?.isLoggedIn && loadingGP)) {
     return <LoadingSpinner message="Loading your Zen account..." />;
   }
 
@@ -232,16 +228,16 @@ const MyAccountPage: React.FC = () => {
             {/* Welcome Section */}
             <div className="bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl p-6 border border-white/10">
               <h2 className="text-2xl font-bold mb-2">
-                Welcome back, {user.name}! 👋
+                {t('dashboard.welcomeBack', { name: user.name })} 👋
               </h2>
-              <p className="text-white/70">Ready to dive into your Zen journey today?</p>
+              <p className="text-white/70">{t('dashboard.journeyBegins')}</p>
             </div>
 
             {/* Quick Stats */}
             <UserStatsCards stats={userStats} />
 
-            {/* Recent Activity */}
-            <RecentActivity achievements={user.gamipress_achievements} />
+            {/* Recent Activity - Pass REAL LOGS from GamiPress context */}
+            <RecentActivity logs={gamipress.logs} />
           </div>
         );
 
@@ -252,15 +248,15 @@ const MyAccountPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Your Achievements</h2>
+              <h2 className="text-2xl font-bold">{t('dashboard.yourAchievements')}</h2>
               <div className="text-sm text-white/60 bg-white/5 px-4 py-2 rounded-full">
-                {userStats.totalAchievements} unlocked
+                {userStats.totalAchievements} {t('dashboard.unlocked')}
               </div>
             </div>
 
-            {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
+            {gamipress.achievements && gamipress.achievements.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {user.gamipress_achievements.map((achievement: any) => (
+                {gamipress.achievements.map((achievement: any) => (
                   <motion.div
                     key={achievement.id}
                     className="bg-surface/50 rounded-lg p-5 border border-white/10 hover:border-primary/50 transition-all hover:scale-105"
@@ -276,9 +272,9 @@ const MyAccountPage: React.FC = () => {
                       </p>
                     )}
                     <div className="text-center">
-                      <span className="inline-flex items-center text-xs bg-success/20 text-success px-3 py-1 rounded-full font-semibold">
+                      <span className={`inline-flex items-center text-xs px-3 py-1 rounded-full font-semibold ${achievement.earned ? 'bg-success/20 text-success' : 'bg-white/10 text-white/40'}`}>
                         <Award size={12} className="mr-1" />
-                        Unlocked
+                        {achievement.earned ? t('dashboard.unlocked') : 'Locked'}
                       </span>
                     </div>
                   </motion.div>
@@ -306,8 +302,7 @@ const MyAccountPage: React.FC = () => {
                     <div className="flex justify-between text-sm mb-2 text-white/80">
                       <span>{userStats.rank}</span>
                       <span>
-                        {userStats.xp < 100 ? 'Zen Apprentice' :
-                          userStats.xp < 500 ? 'Zen Voyager' : 'Zen Master'}
+                        {gamipress.rank.next?.title || 'Max Rank'}
                       </span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
@@ -315,12 +310,7 @@ const MyAccountPage: React.FC = () => {
                         className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full"
                         initial={{ width: 0 }}
                         animate={{
-                          width: `${userStats.xp < 100
-                              ? (userStats.xp / 100) * 100
-                              : userStats.xp < 500
-                                ? ((userStats.xp - 100) / 400) * 100
-                                : ((userStats.xp - 500) / 1000) * 100
-                            }%`
+                          width: `${gamipress.rank.progress}%`
                         }}
                         transition={{ duration: 1, ease: "easeOut" }}
                       />
@@ -496,8 +486,8 @@ const MyAccountPage: React.FC = () => {
                       type="button"
                       onClick={() => handleDanceRoleToggle('leader')}
                       className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.danceRole.includes('leader')
-                          ? 'bg-primary border-primary text-white'
-                          : 'border-white/20 text-white/70 hover:border-white/40'
+                        ? 'bg-primary border-primary text-white'
+                        : 'border-white/20 text-white/70 hover:border-white/40'
                         }`}
                     >
                       {t('profile.leader')}
@@ -506,8 +496,8 @@ const MyAccountPage: React.FC = () => {
                       type="button"
                       onClick={() => handleDanceRoleToggle('follower')}
                       className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.danceRole.includes('follower')
-                          ? 'bg-secondary border-secondary text-white'
-                          : 'border-white/20 text-white/70 hover:border-white/40'
+                        ? 'bg-secondary border-secondary text-white'
+                        : 'border-white/20 text-white/70 hover:border-white/40'
                         }`}
                     >
                       {t('profile.follower')}
@@ -529,8 +519,8 @@ const MyAccountPage: React.FC = () => {
                         type="button"
                         onClick={() => handleProfileChange('gender', option.value)}
                         className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.gender === option.value
-                            ? 'bg-accent border-accent text-white'
-                            : 'border-white/20 text-white/70 hover:border-white/40'
+                          ? 'bg-accent border-accent text-white'
+                          : 'border-white/20 text-white/70 hover:border-white/40'
                           }`}
                       >
                         {t(option.labelKey)}
@@ -606,10 +596,10 @@ const MyAccountPage: React.FC = () => {
                       </p>
                     </div>
                     <span className={`text-xs px-3 py-1 rounded-full ${updateNewsletter.isPending
-                        ? 'bg-white/10 text-white/60'
-                        : newsletterEnabled
-                          ? 'bg-success/20 text-success'
-                          : 'bg-white/10 text-white/60'
+                      ? 'bg-white/10 text-white/60'
+                      : newsletterEnabled
+                        ? 'bg-success/20 text-success'
+                        : 'bg-white/10 text-white/60'
                       }`}>
                       {updateNewsletter.isPending
                         ? '...'
@@ -719,8 +709,8 @@ const MyAccountPage: React.FC = () => {
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
                           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-semibold transition-all ${activeTab === tab.id
-                              ? 'bg-primary text-white shadow-lg'
-                              : 'text-white/70 hover:text-white hover:bg-white/5'
+                            ? 'bg-primary text-white shadow-lg'
+                            : 'text-white/70 hover:text-white hover:bg-white/5'
                             }`}
                         >
                           <Icon size={20} />
@@ -743,6 +733,14 @@ const MyAccountPage: React.FC = () => {
         </div>
       </motion.div>
     </>
+  );
+};
+
+const MyAccountPage: React.FC = () => {
+  return (
+    <GamiPressProvider>
+      <MyAccountContent />
+    </GamiPressProvider>
   );
 };
 

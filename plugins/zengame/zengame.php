@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) exit;
 
 class ZenGame {
     private static $instance = null;
-    const CACHE_VERSION = 'v5';
+    const CACHE_VERSION = 'v6';
     const CACHE_TTL = 86400; // 24 hours
 
     public static function get_instance() {
@@ -508,8 +508,8 @@ class ZenGame {
         if (function_exists('gamipress_query_logs')) {
             $raw_logs = gamipress_query_logs([
                 'user_id' => $user_id,
-                'limit' => 10,
-                'order_by' => 'l.date',
+                'limit' => 20,
+                'order_by' => 'date',
                 'order' => 'DESC'
             ]);
             

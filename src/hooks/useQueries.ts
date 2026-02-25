@@ -387,7 +387,7 @@ export const useProfileQuery = (token?: string) => {
       return data.success ? data.data : null;
     },
     enabled: !!token,
-    staleTime: STALE_TIME.USER_PROFILE || 5 * 60 * 1000,
+    staleTime: STALE_TIME.USER_PROFILE,
   });
 };
 
@@ -427,7 +427,7 @@ export const useNewsletterStatusQuery = (token?: string) => {
       return data.success ? data.subscribed : false;
     },
     enabled: !!token,
-    staleTime: STALE_TIME.USER_PROFILE || 5 * 60 * 1000,
+    staleTime: STALE_TIME.USER_PROFILE,
   });
 };
 

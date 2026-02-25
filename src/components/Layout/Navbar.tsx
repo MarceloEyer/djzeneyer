@@ -35,17 +35,17 @@ const sanitizePath = (path: string): string => {
 const getLinkVisuals = (url: string) => {
     const path = url.toLowerCase();
     if (path.includes('event'))
-        return { icon: <Calendar size={20} />, color: 'text-orange-400', bg: 'bg-orange-500/10' };
+        return { icon: <Calendar size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     if (path.includes('shop') || path.includes('loja'))
-        return { icon: <ShoppingBag size={20} />, color: 'text-emerald-400', bg: 'bg-emerald-500/10' };
+        return { icon: <ShoppingBag size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     if (path.includes('tribe') || path.includes('tribo'))
         return { icon: <Users size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
-    if (path.includes('music') || path.includes('música'))
-        return { icon: <Music size={20} />, color: 'text-purple-400', bg: 'bg-purple-500/10' };
+    if (path.includes('music') || path.includes('música') || path.includes('musica'))
+        return { icon: <Music size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     if (path.includes('work') || path.includes('trabalhe'))
-        return { icon: <Briefcase size={20} />, color: 'text-blue-400', bg: 'bg-blue-500/10' };
+        return { icon: <Briefcase size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     if (path.includes('about') || path.includes('sobre'))
-        return { icon: <Info size={20} />, color: 'text-pink-400', bg: 'bg-pink-500/10' };
+        return { icon: <Info size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     return { icon: <Home size={20} />, color: 'text-white/70', bg: 'bg-white/5' };
 };
 
@@ -197,6 +197,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             };
         });
     }, [menuItems, currentLang]);
+
 
     return (
         <>
