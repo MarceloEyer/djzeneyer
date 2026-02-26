@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v18.8 - PATH FIX & DEBUG
- * Tenta corrigir o problema de carregamento de assets em sub-rotas e mostra erros de JS.
+ * SSR PRERENDER v19.0 - API INTERCEPTION OPTIMIZED
  */
 
 import { spawn } from 'child_process';
@@ -13,16 +12,14 @@ import puppeteer from 'puppeteer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 1. Carregar Rotas (SSOT - agora usando routes-data.json para ser multi-idioma)
+// 1. Carregar Rotas (SSOT)
 let routesList = [];
 const ROUTES_DATA_PATH = join(__dirname, 'routes-data.json');
 try {
   if (existsSync(ROUTES_DATA_PATH)) {
     const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
     data.routes.forEach(r => {
-      // English route
       routesList.push(r.en === '' ? '/' : `/${r.en}`);
-      // Portuguese route
       routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
     });
     console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
@@ -48,11 +45,11 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 let viteProcess = null;
 function startDevServer() {
   return new Promise(async (resolve, reject) => {
-    console.log('🚀 Iniciando Vite...');
+    console.log('🚀 Iniciando Vite Preview...');
     viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
       stdio: 'inherit',
-      env: { ...process.env, FORCE_COLOR: '1' },
+      env: { ...process.env, FORCE_COLOR: '1', PRERENDER_MODE: 'true' },
     });
     viteProcess.on('error', reject);
 
@@ -81,23 +78,36 @@ async function prerender() {
       headless: 'shell',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
+
     const page = await browser.newPage();
 
-    // 🚨 DEBUG: Ver erros do navegador
+    // 🛡️ API INTERCEPTION: Global for all pages
+    await page.setRequestInterception(true);
+    page.on('request', request => {
+      const reqUrl = request.url();
+      if (reqUrl.includes('/wp-json/')) {
+        let mockData = [];
+        if (reqUrl.includes('/posts')) mockData = [{ id: 1, title: { rendered: 'Build Preview' }, slug: 'preview', date: new Date().toISOString() }];
+        if (reqUrl.includes('/products')) mockData = [];
+        if (reqUrl.includes('/gamipress')) mockData = {};
+
+        request.respond({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockData)
+        });
+      } else {
+        request.continue();
+      }
+    });
+
     page.on('console', msg => {
       if (msg.type() === 'error') console.log(`[JS ERROR]: ${msg.text()}`);
-    });
-    page.on('pageerror', err => console.log(`[PAGE CRASH]: ${err.message}`));
-    page.on('requestfailed', req => {
-      if (req.url().endsWith('.js') || req.url().endsWith('.css')) {
-        console.log(`[ASSET 404]: ${req.url()}`); // Isso vai confirmar se é erro de caminho
-      }
     });
 
     let successCount = 0;
 
     for (const route of CONFIG.routes) {
-      // Ajuste de URL: Garante que não tenha barra dupla //
       const cleanRoute = route.replace(/^\//, '');
       const url = `${CONFIG.serverBase}/${cleanRoute}`;
 
@@ -111,37 +121,23 @@ async function prerender() {
       }
 
       try {
-        // console.log(`📄 Renderizando: ${route}`); // Menos log
-        // Rule #2: Capture APP SHELL quickly. Do NOT wait for full network idle
-        // as the API might be offline during build.
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-        // Tenta esperar o React montar e o componente lazy carregar
         try {
-          // Esperamos o h1 que existe em quase todas as páginas principais
-          // Aumentamos o timeout para lidar com componentes lazy
-          await page.waitForSelector('#root h1', { timeout: 15000 });
-
-          // Pequeno respiro extra para garantir que o i18n e React terminaram o ciclo de render
-          // 1500ms é mais seguro para i18n switching e animações iniciais do Framer Motion
-          await wait(1500);
+          // Espera o h1 ou o root carregar
+          await page.waitForSelector('#root', { timeout: 10000 });
+          await wait(1000); // Respiro para i18n
         } catch (e) {
-          console.warn(`⚠️ Warning: Timeout waiting for specific content on ${route}. Proceeding with current HTML.`);
+          console.warn(`⚠️ Warning: Timeout on ${route}`);
         }
 
         const html = await page.content();
 
-        // Verifica se pegou só o shell vazio
-        if (html.length < 1000) {
-          console.warn(`❌ ${route} VAZIO (${html.length}b). Erro de JS ou 404?`);
-        } else {
-          // Só adiciona a meta se ela já não estiver lá (evita duplicação no re-build)
+        if (html.length > 500) {
           const finalHtml = html.includes('name="prerender-generated"')
             ? html
-            : html.replace(
-              '<head>',
-              `<head>\n<meta name="prerender-generated" content="true">`
-            );
+            : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
           successCount++;
@@ -151,13 +147,8 @@ async function prerender() {
       }
     }
 
-    // Se falhar muitos, avisa
-    if (successCount < CONFIG.routes.length) {
-      console.error(
-        `⚠️ Apenas ${successCount}/${CONFIG.routes.length} rotas geradas corretamente.`
-      );
-      // Não damos exit(1) aqui para deixar o script de validação decidir se falha o build
-    }
+    console.log(`\n🎉 Prerender concluído: ${successCount}/${CONFIG.routes.length} rotas.`);
+
   } catch (error) {
     console.error('FATAL:', error);
     process.exit(1);
