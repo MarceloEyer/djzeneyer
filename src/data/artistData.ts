@@ -130,6 +130,8 @@ export const ARTIST = {
     residentAdvisorUrl: 'https://ra.co/dj/djzeneyer',
     danceWikiFandom: 'https://dance.fandom.com/wiki/Zen_Eyer',
     orcid: '0009-0006-2948-2148',
+    knowledgeGraphId: '/g/11ff3mhh10',
+    knowledgeGraphUrl: 'https://www.google.com/search?kgmid=/g/11ff3mhh10',
   },
 
   // 📱 Redes Sociais / Plataformas
@@ -154,6 +156,8 @@ export const ARTIST = {
     mixcloud: { url: 'https://www.mixcloud.com/djzeneyer' },
     bandcamp: { url: 'https://djzeneyer.bandcamp.com' },
     lastfm: { url: 'https://www.last.fm/music/Zen+Eyer' },
+    songkick: { url: 'https://www.songkick.com/artists/8815204-zen-eyer' },
+    tidal: { url: 'https://tidal.com/artist/10492592' },
     crunchbase: { url: 'https://www.crunchbase.com/organization/zen-eyer' },
     pinterest: { url: 'https://www.pinterest.com/djzeneyer' },
   } as Record<string, SocialLink>,
@@ -289,6 +293,7 @@ const getSocialUrls = () => Object.values(ARTIST.social).map(s => s.url);
 
 const getVerificationUrls = () => [
   ARTIST.identifiers.wikidataUrl,
+  ARTIST.identifiers.knowledgeGraphUrl,
   ARTIST.identifiers.musicbrainzUrl,
   `https://isni.org/isni/${ARTIST.identifiers.isni}`,
   `https://orcid.org/${ARTIST.identifiers.orcid}`,
