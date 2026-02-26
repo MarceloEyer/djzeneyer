@@ -2,7 +2,7 @@
 /**
  * AI LLM Strategy Module
  * Exposes structured data for AI crawlers (Perplexity, GPTBot, etc.)
- * @version 3.0.0 (Authority Boost + SSOT Alignment)
+ * @version 6.1.0 (Exhaustive Wikidata Linking)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -177,15 +177,23 @@ class DJZ_AI_Authority {
                         "https://instagram.com/djzeneyer",
                         "https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw",
                         "https://music.apple.com/artist/1439280950",
+                        "https://music.amazon.com/artists/B07JKCDCG8",
                         "https://tidal.com/artist/10492592",
                         "https://www.youtube.com/@djzeneyer",
                         "https://www.tiktok.com/@djzeneyer",
                         "https://www.bandsintown.com/a/15619775",
                         "https://www.songkick.com/artists/8815204-zen-eyer",
+                        "https://genius.com/artists/Zen-eyer",
+                        "https://www.musixmatch.com/pt/artista/Zen-Eyer",
                         "https://soundcloud.com/djzeneyer",
                         "https://www.mixcloud.com/djzeneyer",
                         "https://djzeneyer.bandcamp.com",
-                        "https://www.last.fm/music/Zen+Eyer"
+                        "https://www.last.fm/music/Zen+Eyer",
+                        "https://audiomack.com/djzeneyer",
+                        "https://www.boomplay.com/artists/35157982",
+                        "https://us.napster.com/artist/art.626690096",
+                        "https://www.qobuz.com/artist/7501129",
+                        "https://www.reddit.com/user/djzeneyer"
                     ]
                 ],
                 "metadata" => [
