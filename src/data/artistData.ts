@@ -290,22 +290,27 @@ const getSocialUrls = () => Object.values(ARTIST.social).map(s => s.url);
 const getVerificationUrls = () => [
   ARTIST.identifiers.wikidataUrl,
   ARTIST.identifiers.musicbrainzUrl,
+  `https://isni.org/isni/${ARTIST.identifiers.isni}`,
+  `https://orcid.org/${ARTIST.identifiers.orcid}`,
   ARTIST.identifiers.discogsUrl,
   ARTIST.identifiers.residentAdvisorUrl,
   ARTIST.identifiers.danceWikiFandom,
 ];
 
-// Schema.org Person base
+// Schema.org MusicGroup base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_BASE = {
-  '@type': 'Person',
+  '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: ARTIST.identity.stageName,
   alternateName: [ARTIST.identity.shortName, ARTIST.identity.fullName],
-  jobTitle: 'Brazilian Zouk DJ and music producer',
-  description: `${ARTIST.titles.primary}. Member of ${ARTIST.mensa.organization}. Known for the "${ARTIST.philosophy.style}" musical style.`,
-  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+  description: `${ARTIST.titles.primary}. Known for the "${ARTIST.philosophy.style}" musical style.`,
+  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Electronic'],
   knowsAbout: ['Brazilian Zouk', 'DJing', 'Music Production', 'Remixing', 'Festival Performance'],
   url: ARTIST.site.baseUrl,
+  foundingLocation: {
+    '@type': 'Place',
+    name: `${ARTIST.contact.location.city}, ${ARTIST.contact.location.country}`,
+  },
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],
   award: [

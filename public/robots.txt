@@ -45,6 +45,9 @@ User-agent: *
 # Permitir acesso total ao site
 Allow: /
 
+# [AIO] Permitir que QUALQUER bot de IA (Grok, QWEN, etc.) acesse o contexto estruturado
+Allow: /wp-json/djzeneyer/v1/ai-context
+
 # Bloquear WordPress Admin e áreas privadas
 Disallow: /wp-admin/
 Disallow: /wp-login.php
