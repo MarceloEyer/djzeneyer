@@ -102,10 +102,10 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
           </h1>
 
           <div className="flex items-center gap-4 text-sm md:text-lg">
-            <span className="text-primary font-bold">{t('shop_match_score')}</span>
+            <span className="text-primary font-bold">{t('shop.match_score')}</span>
             <span className="text-white/60">2024</span>
             <span className="border border-white/40 px-1.5 py-0.5 text-xs text-white/80 rounded">
-              {t('shop_cremosidade_level')}
+              {t('shop.cremosidade_level')}
             </span>
             <span className="text-white/60">HD</span>
           </div>
@@ -126,7 +126,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
               disabled={isAddingToCart}
             >
               {isAddingToCart ? <Loader2 className="animate-spin" /> : <Play className="fill-black" size={24} />}
-              {t('shop_buy_now')}
+              {t('shop.buy_now')}
             </motion.button>
 
             <Link
@@ -134,7 +134,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
               className="flex items-center gap-2 bg-white/20 text-white px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg backdrop-blur-md hover:bg-white/30 transition-colors border border-white/10"
             >
               <Info size={24} />
-              {t('events_more_info')}
+              {t('nav.about')}
             </Link>
           </div>
         </motion.div>
@@ -192,17 +192,17 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
                 }}
                 disabled={isAddingToCart}
                 aria-busy={isAddingToCart}
-                aria-label={t('shop_add_to_cart')}
+                aria-label={t('shop.add_to_cart')}
                 className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
                   }`}
-                title={t('shop_add_to_cart')}
+                title={t('shop.add_to_cart')}
               >
                 {isAddingToCart ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} className="fill-black" />}
               </button>
               <Link
                 to={`${productBasePath}/${product.slug}`}
                 className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
-                title={t('events_more_info')}
+                title={t('nav.about')}
               >
                 <Plus size={16} />
               </Link>
@@ -217,9 +217,9 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
           </h3>
 
           <div className="flex items-center gap-2 text-[10px] md:text-xs text-white/60">
-            <span className="text-green-500 font-bold">{t('shop_match_score')}</span>
+            <span className="text-green-500 font-bold">{t('shop.match_score')}</span>
             <span className="border border-white/30 px-1 rounded-sm uppercase tracking-tighter scale-90 origin-left">
-              {t('shop_cremosidade_level')}
+              {t('shop.cremosidade_level')}
             </span>
           </div>
 
@@ -421,12 +421,12 @@ const ShopPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#141414] text-white">
       <Helmet>
-        <title>{t('shop_page_title')} | DJ Zen Eyer</title>
+        <title>{t('shop_page_title')} | {t('common.artist_name')}</title>
         <meta name="description" content={t('shop_page_meta_desc')} />
       </Helmet>
 
       <Toast
-        message={t('shop_product_added') || "Product added to cart!"}
+        message={t('shop.product_added')}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />
@@ -444,7 +444,7 @@ const ShopPage: React.FC = () => {
       {/* --- Netflix-style Lists (Rows) --- */}
       <div className="relative z-20 pb-20 -mt-8 md:-mt-12 lg:-mt-16 space-y-12 md:space-y-16">
         <ProductRow
-          title={t('shop_new_releases')}
+          title={t('shop.new_releases')}
           products={newReleases}
           onAddToCart={handleAddToCart}
           isAdding={newReleases.some(p => p.id === addingToCart)}
@@ -464,7 +464,7 @@ const ShopPage: React.FC = () => {
         />
 
         <ProductRow
-          title={t('shop_top_picks')}
+          title={t('shop.top_picks')}
           products={curatedSelection}
           onAddToCart={handleAddToCart}
           isAdding={curatedSelection.some(p => p.id === addingToCart)}
@@ -478,10 +478,10 @@ const ShopPage: React.FC = () => {
       <section className="px-6 md:px-12 lg:px-20 py-20 bg-background border-t border-white/5">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {[
-            { icon: Truck, title: "Entrega Instantânea", desc: "Tickets e acessos digitais enviados na hora" },
-            { icon: Shield, title: "Pagamento Blindado", desc: "Segurança total no processamento" },
-            { icon: Gift, title: "Vantagens Tribe", desc: "Descontos exclusivos para membros" },
-            { icon: Zap, title: "Suporte VIP", desc: "Atendimento direto via WhatsApp 24/7" },
+            { icon: Truck, title: t('shop.benefits.instant_delivery'), desc: t('shop.benefits.instant_delivery_desc') },
+            { icon: Shield, title: t('shop.benefits.secure_payment'), desc: t('shop.benefits.secure_payment_desc') },
+            { icon: Gift, title: t('shop.benefits.tribe_perks'), desc: t('shop.benefits.tribe_perks_desc') },
+            { icon: Zap, title: t('shop.benefits.vip_support'), desc: t('shop.benefits.vip_support_desc') },
           ].map((item, idx) => (
             <div key={idx} className="flex flex-col space-y-3 group cursor-default">
               <div className="text-primary group-hover:scale-110 transition-transform duration-300 w-fit">

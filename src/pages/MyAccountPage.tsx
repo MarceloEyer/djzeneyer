@@ -191,7 +191,7 @@ const MyAccountContent: React.FC = () => {
   };
 
   // Loading spinner
-  const LoadingSpinner = ({ message = "Loading..." }: { message?: string }) => (
+  const LoadingSpinner = ({ message }: { message?: string }) => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -199,13 +199,13 @@ const MyAccountContent: React.FC = () => {
     >
       <div className="text-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary mx-auto mb-4"></div>
-        <p className="text-xl font-semibold">{message}</p>
+        <p className="text-xl font-semibold">{message || t('loading')}</p>
       </div>
     </motion.div>
   );
 
   if (loading || (user?.isLoggedIn && loadingGP)) {
-    return <LoadingSpinner message="Loading your Zen account..." />;
+    return <LoadingSpinner message={t('account.loading')} />;
   }
 
   if (!user?.isLoggedIn) {
@@ -213,11 +213,11 @@ const MyAccountContent: React.FC = () => {
   }
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: User },
-    { id: 'orders', label: 'Orders', icon: ShoppingBag },
-    { id: 'achievements', label: 'Achievements', icon: Award },
-    { id: 'music', label: 'My Music', icon: Music },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'overview', label: t('account.tabs.overview'), icon: User },
+    { id: 'orders', label: t('account.tabs.orders'), icon: ShoppingBag },
+    { id: 'achievements', label: t('account.tabs.achievements'), icon: Award },
+    { id: 'music', label: t('account.tabs.music'), icon: Music },
+    { id: 'settings', label: t('account.tabs.settings'), icon: Settings },
   ];
 
   const renderTabContent = () => {
@@ -274,7 +274,7 @@ const MyAccountContent: React.FC = () => {
                     <div className="text-center">
                       <span className={`inline-flex items-center text-xs px-3 py-1 rounded-full font-semibold ${achievement.earned ? 'bg-success/20 text-success' : 'bg-white/10 text-white/40'}`}>
                         <Award size={12} className="mr-1" />
-                        {achievement.earned ? t('dashboard.unlocked') : 'Locked'}
+                        {achievement.earned ? t('dashboard.unlocked') : t('account.locked')}
                       </span>
                     </div>
                   </motion.div>
@@ -283,12 +283,12 @@ const MyAccountContent: React.FC = () => {
             ) : (
               <div className="text-center py-20">
                 <Award className="mx-auto mb-4 text-white/30" size={64} />
-                <h3 className="text-2xl font-semibold mb-3">No achievements yet</h3>
+                <h3 className="text-2xl font-semibold mb-3">{t('account.no_achievements')}</h3>
                 <p className="text-white/60 mb-8 max-w-md mx-auto">
-                  Start exploring and engaging to unlock your first achievements!
+                  {t('account.no_achievements_desc')}
                 </p>
                 <Link to="/dashboard/" className="btn btn-primary btn-lg">
-                  Start Your Journey
+                  {t('account.start_journey')}
                 </Link>
               </div>
             )}
@@ -341,20 +341,20 @@ const MyAccountContent: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">My Music Collection</h2>
+              <h2 className="text-2xl font-bold">{t('account.music.title')}</h2>
               <Link to="/music/" className="btn btn-primary">
-                Browse Music
+                {t('account.music.browse')}
               </Link>
             </div>
 
             <div className="text-center py-20">
               <Headphones className="mx-auto mb-4 text-white/30" size={64} />
-              <h3 className="text-2xl font-semibold mb-3">Your music library</h3>
+              <h3 className="text-2xl font-semibold mb-3">{t('account.music.empty_title')}</h3>
               <p className="text-white/60 mb-8 max-w-md mx-auto">
-                Access exclusive tracks, mixes, and playlists curated by DJ Zen Eyer
+                {t('account.music.empty_desc')}
               </p>
               <Link to="/music/" className="btn btn-primary btn-lg">
-                Explore Music
+                {t('account.music.explore')}
               </Link>
             </div>
           </div>
@@ -573,20 +573,20 @@ const MyAccountContent: React.FC = () => {
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <Bell className="text-secondary" size={24} />
-                <h3 className="text-xl font-semibold">Notifications</h3>
+                <h3 className="text-xl font-semibold">{t('account.notifications.title')}</h3>
               </div>
               <div className="space-y-3">
                 <label htmlFor="notify-events" className="flex items-center gap-3 cursor-pointer">
                   <input id="notify-events" name="notify-events" type="checkbox" className="w-5 h-5" defaultChecked />
-                  <span>Email notifications for new events</span>
+                  <span>{t('account.notifications.events')}</span>
                 </label>
                 <label htmlFor="notify-achievements" className="flex items-center gap-3 cursor-pointer">
                   <input id="notify-achievements" name="notify-achievements" type="checkbox" className="w-5 h-5" defaultChecked />
-                  <span>Achievement updates</span>
+                  <span>{t('account.notifications.achievements')}</span>
                 </label>
                 <label htmlFor="notify-marketing" className="flex items-center gap-3 cursor-pointer">
                   <input id="notify-marketing" name="notify-marketing" type="checkbox" className="w-5 h-5" />
-                  <span>Marketing emails</span>
+                  <span>{t('account.notifications.marketing')}</span>
                 </label>
                 <div className="pt-3 border-t border-white/10">
                   <label htmlFor="notify-newsletter" className="flex items-center justify-between cursor-pointer">
@@ -629,11 +629,11 @@ const MyAccountContent: React.FC = () => {
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <Shield className="text-accent" size={24} />
-                <h3 className="text-xl font-semibold">Security</h3>
+                <h3 className="text-xl font-semibold">{t('account.security.title')}</h3>
               </div>
               <button className="btn btn-outline flex items-center gap-2">
                 <Lock size={16} />
-                Change Password
+                {t('account.security.change_password')}
               </button>
             </div>
 
@@ -641,17 +641,17 @@ const MyAccountContent: React.FC = () => {
             <div className="bg-red-500/10 rounded-lg p-6 border border-red-500/50">
               <div className="flex items-center gap-3 mb-4">
                 <AlertCircle className="text-red-500" size={24} />
-                <h3 className="text-xl font-semibold text-red-400">Danger Zone</h3>
+                <h3 className="text-xl font-semibold text-red-400">{t('account.danger.title')}</h3>
               </div>
               <p className="text-sm text-white/70 mb-4">
-                Once you log out, you'll need to sign in again to access your account.
+                {t('account.danger.desc')}
               </p>
               <button
                 onClick={handleLogout}
                 className="btn bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
               >
                 <LogOut size={16} />
-                Logout
+                {t('account.danger.logout')}
               </button>
             </div>
           </div>
@@ -665,8 +665,8 @@ const MyAccountContent: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>My Account | DJ Zen Eyer</title>
-        <meta name="description" content="Manage your Zen Tribe account, orders, and achievements" />
+        <title>{t('account.meta_title', { stageName: t('common.artist_name') })}</title>
+        <meta name="description" content={t('account.meta_desc')} />
       </Helmet>
 
       <motion.div
@@ -679,10 +679,10 @@ const MyAccountContent: React.FC = () => {
             {/* Header */}
             <div className="mb-12 text-center">
               <h1 className="text-4xl md:text-5xl font-black font-display mb-4">
-                My Zen Account
+                {t('account.page_title')}
               </h1>
               <p className="text-xl text-white/70">
-                Manage your profile, orders, and Zen Tribe membership
+                {t('account.page_subtitle')}
               </p>
             </div>
 

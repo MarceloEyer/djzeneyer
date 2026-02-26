@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 const CodeOfConductPage: React.FC = () => {
   const { t } = useTranslation();
-  const lastUpdated = "Janeiro 2024";
+  const lastUpdated = "Janeiro 2024"; // TODO: Localize this properly if needed, but keeping for now as it was manually set
 
   const principles = [
     {
@@ -95,7 +95,7 @@ const CodeOfConductPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{t('conduct_page.title')} | DJ Zen Eyer</title>
+        <title>{t('conduct_page.title')} | {t('common.artist_name')}</title>
         <meta name="description" content={t('conduct_page.subtitle')} />
         <meta name="robots" content="index, follow" />
       </Helmet>

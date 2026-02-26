@@ -102,7 +102,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate }) => {
                 href={safeUrl}
                 target={target || '_self'}
                 rel={isBlank ? 'noopener noreferrer' : undefined}
-                aria-label={isBlank ? `${safeTitle} (${t('common.opens_in_new_tab', 'abre em nova aba')})` : safeTitle}
+                aria-label={isBlank ? `${safeTitle} (${t('common.opens_in_new_tab')})` : safeTitle}
                 className={commonClass}
                 onClick={onNavigate}
             >
@@ -215,7 +215,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         <LanguageSelector />
                         {user?.isLoggedIn ? <UserMenu /> : (
                             <button onClick={handleLoginButtonClick} className="btn btn-primary btn-sm flex items-center gap-2 shadow-lg shadow-primary/20">
-                                <LogIn size={16} /> <span>{t('sign_in')}</span>
+                                <LogIn size={16} /> <span>{t('nav.sign_in')}</span>
                             </button>
                         )}
                     </div>
@@ -235,9 +235,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                                 {processedMenuItems.map(item => <MenuItem key={item.ID} item={item} isMobile={true} onNavigate={() => setIsMenuOpen(false)} />)}
                             </nav>
                             <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
-                                {user?.isLoggedIn ? <UserMenu orientation="vertical" /> : (
+                                {user?.isLoggedIn ? <UserMenu /> : (
                                     <button onClick={handleLoginButtonClick} className="w-full btn btn-primary py-3 flex items-center justify-center space-x-2 shadow-lg shadow-primary/20">
-                                        <LogIn size={18} /> <span className="font-bold">{t('join_the_tribe')}</span>
+                                        <LogIn size={18} /> <span className="font-bold">{t('nav.join_the_tribe')}</span>
                                     </button>
                                 )}
                                 <div className="flex justify-center"><LanguageSelector /></div>

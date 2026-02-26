@@ -22,46 +22,6 @@ import { ARTIST_SCHEMA_BASE, ARTIST, getWhatsAppUrl } from '../data/artistData';
 // SCHEMA.ORG PARA A PÁGINA ABOUT
 // ============================================================================
 
-const ABOUT_SCHEMA = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      ...ARTIST_SCHEMA_BASE,
-    },
-    {
-      '@type': 'WebPage',
-      '@id': `${ARTIST.site.baseUrl}/about#webpage`,
-      url: `${ARTIST.site.baseUrl}/about`,
-      name: 'About DJ Zen Eyer',
-      description:
-        'Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his "cremosidade" musical style.',
-      isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
-      about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
-      breadcrumb: {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: `${ARTIST.site.baseUrl}/`,
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'About',
-            item: `${ARTIST.site.baseUrl}/about`,
-          },
-        ],
-      },
-    },
-  ],
-};
-
-// ============================================================================
-// DADOS DE CONTEÚDO
-// ============================================================================
-
 // ============================================================================
 // COMPONENTE PRINCIPAL
 // ============================================================================
@@ -70,6 +30,42 @@ const AboutPage: React.FC = () => {
   const { t } = useTranslation();
   const currentPath = '/about';
   const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
+
+  // SCHEMA.ORG PARA A PÁGINA ABOUT
+  const ABOUT_SCHEMA = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        ...ARTIST_SCHEMA_BASE,
+      },
+      {
+        '@type': 'WebPage',
+        '@id': `${ARTIST.site.baseUrl}/about#webpage`,
+        url: `${ARTIST.site.baseUrl}/about`,
+        name: t('about.seo.name'),
+        description: t('about.seo.description'),
+        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+        about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: t('nav.home'),
+              item: `${ARTIST.site.baseUrl}/`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: t('nav.about'),
+              item: `${ARTIST.site.baseUrl}/about`,
+            },
+          ],
+        },
+      },
+    ],
+  };
 
   const MILESTONES = [
     {
@@ -105,22 +101,22 @@ const AboutPage: React.FC = () => {
   const ACHIEVEMENTS_DATA = [
     {
       label: t('about.stats.passion'),
-      value: '15+',
+      value: t('about.stats.passion_value'),
       icon: <Heart className="w-8 h-8 mx-auto mb-4 text-primary" />,
     },
     {
       label: t('about.stats.events'),
-      value: '200+',
+      value: t('about.stats.events_value'),
       icon: <Users className="w-8 h-8 mx-auto mb-4 text-primary" />,
     },
     {
       label: t('about.stats.stories'),
-      value: '10K+',
+      value: t('about.stats.stories_value'),
       icon: <Globe className="w-8 h-8 mx-auto mb-4 text-primary" />,
     },
     {
       label: t('about.stats.smiles'),
-      value: '∞',
+      value: t('about.stats.smiles_value'),
       icon: <Star className="w-8 h-8 mx-auto mb-4 text-primary" />,
     },
   ];
@@ -129,8 +125,8 @@ const AboutPage: React.FC = () => {
     <>
       {/* SEO centralizado */}
       <HeadlessSEO
-        title="About DJ Zen Eyer | Brazilian Zouk DJ & Producer"
-        description="Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his signature cremosidade style."
+        title={t('about.seo.title')}
+        description={t('about.seo.description')}
         url={currentUrl}
         image={`${ARTIST.site.baseUrl}/images/zen-eyer-about-emotional.jpg`}
         type="profile"

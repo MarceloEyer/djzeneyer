@@ -33,7 +33,7 @@ const ResetPasswordPage: React.FC = () => {
         e.preventDefault();
         setFieldError('');
         if (!email) {
-            setFieldError('Email é obrigatório');
+            setFieldError(t('auth.reset_password.error_email_required'));
             return;
         }
         try {
@@ -49,11 +49,11 @@ const ResetPasswordPage: React.FC = () => {
         setFieldError('');
 
         if (password.length < 6) {
-            setFieldError('A senha deve ter pelo menos 6 caracteres');
+            setFieldError(t('auth.reset_password.error_password_length'));
             return;
         }
         if (password !== confirmPassword) {
-            setFieldError('As senhas não coincidem');
+            setFieldError(t('auth.reset_password.error_password_mismatch'));
             return;
         }
 
@@ -71,7 +71,7 @@ const ResetPasswordPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
             <HeadlessSEO
-                title={isSettingNewPassword ? "Definir Nova Senha | DJ Zen Eyer" : "Recuperar Senha | DJ Zen Eyer"}
+                title={`${isSettingNewPassword ? t('auth.reset_password.title_set') : t('auth.reset_password.title_request')} | DJ Zen Eyer`}
                 noindex={true}
             />
 
@@ -92,12 +92,12 @@ const ResetPasswordPage: React.FC = () => {
                         </h1>
                     </Link>
                     <h2 className="text-3xl font-black text-white mb-2 font-display tracking-tight">
-                        {isSettingNewPassword ? t('auth.reset_password.title_set') || 'Nova Senha' : t('auth.reset_password.title_request') || 'Recuperar Acesso'}
+                        {isSettingNewPassword ? t('auth.reset_password.title_set') : t('auth.reset_password.title_request')}
                     </h2>
                     <p className="text-white/60 text-sm">
                         {isSettingNewPassword
-                            ? 'Escolha uma senha forte para sua segurança'
-                            : 'Enviaremos um link de recuperação para o seu email'}
+                            ? t('auth.reset_password.subtitle_set')
+                            : t('auth.reset_password.subtitle_request')}
                     </p>
                 </div>
 
@@ -113,18 +113,18 @@ const ResetPasswordPage: React.FC = () => {
                                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/30">
                                     <CheckCircle className="text-green-500" size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-3">Tudo pronto!</h3>
+                                <h3 className="text-xl font-bold text-white mb-3">{t('auth.reset_password.success_title')}</h3>
                                 <p className="text-white/60 mb-6 underline-offset-4 decoration-primary/50">
                                     {isSettingNewPassword
-                                        ? 'Sua senha foi alterada com sucesso. Você será redirecionado em instantes.'
-                                        : 'Se o email existir em nossa base, você receberá o link em breve. Verifique também sua caixa de spam.'}
+                                        ? t('auth.reset_password.success_set')
+                                        : t('auth.reset_password.success_request')}
                                 </p>
                                 <Link
                                     to={i18n.language.startsWith('pt') ? '/pt/' : '/'}
                                     className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors font-bold"
                                 >
                                     <ArrowLeft size={18} />
-                                    Voltar ao início
+                                    {t('auth.reset_password.back_home')}
                                 </Link>
                             </motion.div>
                         ) : (
@@ -139,7 +139,7 @@ const ResetPasswordPage: React.FC = () => {
                                 {!isSettingNewPassword ? (
                                     <form onSubmit={handleRequestReset} className="space-y-6">
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">Email Cadastrado</label>
+                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.email_label')}</label>
                                             <div className="relative group">
                                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
@@ -147,7 +147,7 @@ const ResetPasswordPage: React.FC = () => {
                                                     required
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
-                                                    placeholder="seu@email.com"
+                                                    placeholder={t('auth.reset_password.email_placeholder')}
                                                     className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                                                 />
                                             </div>
@@ -158,13 +158,13 @@ const ResetPasswordPage: React.FC = () => {
                                             disabled={loading}
                                             className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50"
                                         >
-                                            {loading ? <Loader2 className="animate-spin" size={20} /> : 'Enviar Link de Reset'}
+                                            {loading ? <Loader2 className="animate-spin" size={20} /> : t('auth.reset_password.submit_request')}
                                         </button>
                                     </form>
                                 ) : (
                                     <form onSubmit={handleSetPassword} className="space-y-6">
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">Nova Senha</label>
+                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.password_label')}</label>
                                             <div className="relative group">
                                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
@@ -172,7 +172,7 @@ const ResetPasswordPage: React.FC = () => {
                                                     required
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
-                                                    placeholder="Mínimo 6 caracteres"
+                                                    placeholder={t('auth.reset_password.password_placeholder')}
                                                     className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-12 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                                                 />
                                                 <button
@@ -186,7 +186,7 @@ const ResetPasswordPage: React.FC = () => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">Confirmar Senha</label>
+                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.confirm_label')}</label>
                                             <div className="relative group">
                                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
@@ -194,7 +194,7 @@ const ResetPasswordPage: React.FC = () => {
                                                     required
                                                     value={confirmPassword}
                                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                                    placeholder="Repita a nova senha"
+                                                    placeholder={t('auth.reset_password.confirm_placeholder')}
                                                     className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                                                 />
                                             </div>
@@ -205,14 +205,14 @@ const ResetPasswordPage: React.FC = () => {
                                             disabled={loading}
                                             className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50"
                                         >
-                                            {loading ? <Loader2 className="animate-spin" size={20} /> : 'Salvar Nova Senha'}
+                                            {loading ? <Loader2 className="animate-spin" size={20} /> : t('auth.reset_password.submit_set')}
                                         </button>
                                     </form>
                                 )}
 
                                 <div className="mt-8 text-center pt-6 border-t border-white/5">
                                     <Link to={i18n.language.startsWith('pt') ? '/pt/' : '/'} className="text-white/40 hover:text-white transition-colors text-sm font-medium">
-                                        Voltar para o Login
+                                        {t('auth.reset_password.back_login')}
                                     </Link>
                                 </div>
                             </motion.div>

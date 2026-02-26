@@ -1,192 +1,134 @@
-// src/components/common/UserMenu.tsx
-// v3.0 - DIAMOND MASTER: Route Listener Fix & Event Safety + i18n Routes
+/**
+ * UserMenu Component - Account & Auth Navigation
+ * 
+ * Exibe informações do usuário logado e links de navegação da conta.
+ * Integrado com UserContext para estado de autenticação.
+ */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   User,
-  Settings,
   LogOut,
+  ChevronDown,
   ShoppingBag,
-  Award,
-  ChevronDown
+  LayoutDashboard,
+  Settings,
+  HelpCircle
 } from 'lucide-react';
-import { useUser } from '../../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../../config/routes';
+import { useUser } from '../../contexts/UserContext';
+import { useLanguage } from '../../hooks/useLanguage';
 
-interface UserMenuProps {
-  orientation?: 'horizontal' | 'vertical';
-}
-
-const UserMenu: React.FC<UserMenuProps> = ({ orientation = 'horizontal' }) => {
+const UserMenu: React.FC = () => {
+  const { t } = useTranslation();
   const { user, logout } = useUser();
-  const { t, i18n } = useTranslation();
+  const { currentLang, getLocalizedRoute } = useLanguage();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  // Helper para criar link localizado
-  const getRouteForKey = (key: string): string => {
-    const route = ROUTES_CONFIG.find(r => {
-      const pathEn = getLocalizedPaths(r, 'en')[0];
-      return pathEn === key;
-    });
-    if (!route) return `/${key}`;
-    const normalizedLanguage = normalizeLanguage(i18n.language);
-    const localizedPath = getLocalizedPaths(route, normalizedLanguage)[0];
-    return buildFullPath(localizedPath, normalizedLanguage);
-  };
-
-  // ✅ FIX 1: O segredo para não travar. 
-  // Sempre que a Rota (URL) mudar, fecha o menu automaticamente.
+  // Fechar menu ao clicar fora
   useEffect(() => {
-    setIsOpen(false);
-  }, [location]);
-
-  // ✅ FIX 2: Click Outside com lógica segura
-  useEffect(() => {
-    if (!isOpen) return;
-
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsOpen(false);
-    };
-
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscKey);
-    }, 10);
-
-    return () => {
-      clearTimeout(timeoutId);
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [isOpen]);
-
-  const handleLogout = async () => {
-    setIsOpen(false);
-    await logout();
-    const homePath = i18n.language.startsWith('pt') ? '/pt/' : '/';
-    navigate(homePath);
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!user) return null;
 
-  // --- VERSÃO MOBILE (VERTICAL) ---
-  if (orientation === 'vertical') {
-    return (
-      <div className="flex flex-col gap-2 w-full pt-2 border-t border-white/10 mt-2">
-        <div className="flex items-center gap-3 px-2 py-2 mb-2">
-          {user.avatar ? (
-            <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border border-primary object-cover" />
-          ) : (
-            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"><User size={20} className="text-primary" /></div>
-          )}
-          <div className="overflow-hidden">
-            <div className="font-bold text-sm text-white truncate">{user.name}</div>
-            <div className="text-xs text-white/50 truncate">{user.email}</div>
-          </div>
-        </div>
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsOpen(false);
+      navigate(getLocalizedRoute('', currentLang));
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
-        <Link to={getRouteForKey('dashboard')} className="btn btn-primary w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
-          <User size={18} /> <span>Dashboard</span>
-        </Link>
-        <button onClick={handleLogout} className="btn btn-outline w-full flex items-center justify-center gap-2 text-red-400 hover:bg-red-950/30 border border-red-500/30 py-2 rounded-lg mt-2 transition-colors">
-          <LogOut size={18} /> <span>Logout</span>
-        </button>
-      </div>
-    );
-  }
+  const menuLinks = [
+    {
+      to: getLocalizedRoute('dashboard', currentLang),
+      label: t('nav.dashboard'),
+      icon: <LayoutDashboard size={18} />
+    },
+    {
+      to: getLocalizedRoute('my-account', currentLang),
+      label: t('nav.my_account'),
+      icon: <User size={18} />
+    },
+    {
+      to: getLocalizedRoute('my-account/orders', currentLang),
+      label: t('account.orders.title'),
+      icon: <ShoppingBag size={18} />
+    },
+    {
+      to: getLocalizedRoute('my-account/settings', currentLang),
+      label: t('account.tabs.settings'),
+      icon: <Settings size={18} />
+    },
+  ];
 
-  // --- VERSÃO DESKTOP (HORIZONTAL / DROPDOWN) ---
   return (
     <div className="relative" ref={menuRef}>
-      {/* Trigger Button */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
-        className={`flex items-center gap-2 px-2 py-1.5 rounded-full border transition-all duration-200 ${isOpen ? 'bg-white/10 border-primary/50' : 'border-transparent hover:bg-white/5'}`}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        aria-label="User menu"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 p-1 pl-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors border border-white/10"
       >
-        {user.avatar ? (
-          <img
-            src={user.avatar}
-            alt={user.name}
-            className="w-8 h-8 rounded-full object-cover border border-primary/50"
-          />
-        ) : (
-          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center border border-primary/20">
-            <User className="text-primary" size={16} />
-          </div>
-        )}
+        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+          <User size={16} className="text-primary" />
+        </div>
+        <span className="hidden md:block text-sm font-medium mr-1 max-w-[100px] truncate">
+          {user.name || user.email.split('@')[0]}
+        </span>
         <ChevronDown
-          size={14}
-          className={`text-white/70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          size={16}
+          className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {/* Dropdown Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, type: "spring", stiffness: 300, damping: 25 }}
-            className="absolute right-0 top-full mt-3 w-64 bg-[#0f0f0f] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100]"
-          >
-            {/* Header */}
-            <div className="px-5 py-4 bg-white/5 border-b border-white/5">
-              <p className="font-bold text-white truncate text-base">{user.name}</p>
-              <p className="text-xs text-white/50 truncate font-mono mt-0.5">{user.email}</p>
-            </div>
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-56 bg-surface border border-white/10 rounded-2xl shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+          {/* User Info Section */}
+          <div className="px-4 py-3 border-b border-white/5 mb-2">
+            <p className="text-sm font-bold truncate">{user.name}</p>
+            <p className="text-xs text-white/40 truncate">{user.email}</p>
+          </div>
 
-            {/* Links - Rotas dinâmicas agora */}
-            <div className="py-2 flex flex-col">
-              <Link to={getRouteForKey('dashboard')} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
-                <User size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_dashboard', 'Dashboard')}</span>
-              </Link>
-              <Link to={getRouteForKey('my-account')} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
-                <Settings size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_account', 'My Account')}</span>
-              </Link>
-              <Link to={`${getRouteForKey('my-account')}?tab=orders`} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
-                <ShoppingBag size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_orders', 'My Orders')}</span>
-              </Link>
-              <Link to={`${getRouteForKey('my-account')}?tab=achievements`} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors group">
-                <Award size={18} className="text-white/60 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-medium text-white/80 group-hover:text-white">{t('nav_achievements', 'Achievements')}</span>
-              </Link>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-white/10 p-2 bg-white/5">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-semibold"
+          {/* Links */}
+          <div className="space-y-1 px-2">
+            {menuLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
               >
-                <LogOut size={16} />
-                <span>{t('sign_out', 'Sign Out')}</span>
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <span className="text-white/40 group-hover:text-primary transition-colors">
+                  {link.icon}
+                </span>
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-white/5 px-2">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-400/10 rounded-xl transition-colors text-left"
+            >
+              <LogOut size={18} />
+              <span>{t('nav.logout')}</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

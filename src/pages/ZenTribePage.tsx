@@ -25,27 +25,27 @@ import { useUser } from '../contexts/UserContext';
 /**
  * Schema.org Organization (Tribo Zen)
  */
-const ORGANIZATION_SCHEMA = {
+const getOrganizationSchema = (t: any) => ({
   "@type": "Organization",
   "@id": "https://djzeneyer.com/zentribe#organization",
-  "name": "Zen Tribe - Comunidade Global de Zouk Brasileiro",
+  "name": t('zenTribe.schema.organization_name'),
   "alternateName": "Tribo Zen",
   "url": "https://djzeneyer.com/zentribe",
   "founder": {
     "@id": "https://djzeneyer.com/#artist"
   },
-  "description": "Comunidade exclusiva para amantes do Zouk Brasileiro, oferecendo acesso antecipado a músicas, eventos VIP e sistema de recompensas gamificado.",
+  "description": t('zenTribe.schema.organization_desc'),
   "areaServed": {
     "@type": "Place",
     "name": "Worldwide"
   },
-  "slogan": "Conectando almas através do Zouk Brasileiro",
+  "slogan": t('zenTribe.schema.organization_slogan'),
   "knowsAbout": ["Brazilian Zouk Community", "DJ Zen Eyer Music", "Zouk Dance Culture"],
   "memberOf": {
     "@type": "Organization",
     "name": "International Brazilian Zouk Community"
   }
-};
+});
 
 /**
  * Animation variants
@@ -80,13 +80,13 @@ const ACHIEVEMENTS_DATA = [
 /**
  * BenefitCard - Card de benefícios
  */
-const BenefitCard = memo<{ 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
+const BenefitCard = memo<{
+  icon: React.ReactNode;
+  title: string;
+  description: string;
   color: string;
 }>(({ icon, title, description, color }) => (
-  <motion.div 
+  <motion.div
     className="card p-6 glow transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
     variants={{
       hidden: { y: 20, opacity: 0 },
@@ -109,15 +109,14 @@ BenefitCard.displayName = 'BenefitCard';
 /**
  * MembershipCard - Card de tier de membership
  */
-const MembershipCard = memo<{ 
-  tier: any; 
-  user: any; 
+const MembershipCard = memo<{
+  tier: any;
+  user: any;
   t: any;
 }>(({ tier, user, t }) => (
-  <motion.div 
-    className={`card overflow-hidden relative transition-all duration-300 hover:shadow-lg ${
-      tier.popular ? 'border-2 border-secondary' : ''
-    }`}
+  <motion.div
+    className={`card overflow-hidden relative transition-all duration-300 hover:shadow-lg ${tier.popular ? 'border-2 border-secondary' : ''
+      }`}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: tier.popular ? 0 : 0.1 }}
@@ -149,7 +148,7 @@ const MembershipCard = memo<{
           </li>
         ))}
       </ul>
-      <button 
+      <button
         className={`w-full btn ${tier.popular ? 'btn-secondary' : 'btn-outline'} transition-all duration-300 hover:scale-[1.02]`}
         aria-label={`Join ${tier.name} membership`}
       >
@@ -163,11 +162,11 @@ MembershipCard.displayName = 'MembershipCard';
 /**
  * AchievementCard - Card de conquista
  */
-const AchievementCard = memo<{ 
-  emoji: string; 
-  title: string; 
-  description: string; 
-  unlocked: boolean; 
+const AchievementCard = memo<{
+  emoji: string;
+  title: string;
+  description: string;
+  unlocked: boolean;
   t: any;
 }>(({ emoji, title, description, unlocked, t }) => (
   <div className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 ${unlocked ? 'hover:bg-surface/70' : 'opacity-60'}`}>
@@ -262,7 +261,7 @@ const ZenTribePage: React.FC = () => {
         url={currentUrl}
         image="https://djzeneyer.com/images/zen-tribe-og.jpg"
         ogType="website"
-        schema={ORGANIZATION_SCHEMA}
+        schema={getOrganizationSchema(t)}
         keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, DJ Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
       />
 
@@ -270,7 +269,7 @@ const ZenTribePage: React.FC = () => {
       {/* CONTEÚDO DA PÁGINA */}
       {/* ====================================================================== */}
       <div className="pt-24 min-h-screen">
-        
+
         {/* Page Header */}
         <div className="bg-surface py-12 md:py-16" id="tribe-intro">
           <div className="container mx-auto px-4">
@@ -285,27 +284,27 @@ const ZenTribePage: React.FC = () => {
                   {t('zenTribe.badge')}
                 </div>
               </div>
-              
+
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
                 {t('zenTribe.welcome')} <span className="text-primary">{t('zenTribe.tribe')}</span>
               </h1>
-              
+
               <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
                 {t('zenTribe.subtitle')}
               </p>
-              
+
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <button
                   className="btn btn-primary transition-all duration-300 hover:scale-105"
                   onClick={() => scrollToSection('membership-tiers')}
-                  aria-label="View membership options"
+                  aria-label={t('zenTribe.aria.viewMemberships')}
                 >
                   {t('zenTribe.viewMemberships')}
                 </button>
                 <button
                   className="btn btn-outline transition-all duration-300 hover:scale-105"
                   onClick={() => scrollToSection('tribe-benefits')}
-                  aria-label="Learn more about tribe benefits"
+                  aria-label={t('zenTribe.aria.learnMore')}
                 >
                   {t('zenTribe.learnMore')}
                 </button>
@@ -399,7 +398,7 @@ const ZenTribePage: React.FC = () => {
                 <p className="text-lg text-white/70 mb-8">
                   {t('zenTribe.levelUpDesc')}
                 </p>
-                
+
                 <div className="space-y-8">
                   <div className="flex items-start">
                     <TrendingUp className="text-primary mr-4 mt-1" size={24} />
@@ -455,7 +454,7 @@ const ZenTribePage: React.FC = () => {
                     />
                   ))}
                 </div>
-                
+
                 <div className="mt-8">
                   <div className="flex justify-between items-center mb-2">
                     <h4 className="text-xl font-display">{t('zenTribe.currentLevel')}</h4>

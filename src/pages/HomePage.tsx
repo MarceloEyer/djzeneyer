@@ -214,23 +214,19 @@ const HomePage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        // Tenta usar dados do Plugin WP, fallback para strings hardcoded
         title={seoSettings?.real_name
-          ? `${seoSettings.real_name} | 2× World Champion`
-          : "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer"}
+          ? `${seoSettings.real_name} | ${t('home.stat_champion')}`
+          : t('home.seo.title')}
 
-        description={`DJ Zen Eyer, two-time world champion. Creator of "${ARTIST.philosophy.slogan}".`}
+        description={t('home.seo.description')}
 
         url={currentUrl}
 
-        // Imagem vinda do painel WP ou fallback local
         image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.png`}
 
         isHomepage={true}
         schema={schemaData}
-        keywords="DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
-
-      // CORREÇÃO: Removido o bloco 'preload' para evitar duplicidade de carregamento
+        keywords={t('home.seo.keywords')}
       />
 
       {/* HERO SECTION */}
@@ -306,13 +302,8 @@ const HomePage: React.FC = () => {
                 i18nKey="home_hero_cta_text"
                 components={[
                   <Link
-                    key="events-link"
-                    to={getLocalizedRoute('events', currentLang)}
-                    className="text-primary hover:text-primary/80 underline underline-offset-4"
-                  />,
-                  <Link
-                    key="work-with-me-link"
-                    to={getLocalizedRoute('work-with-me', currentLang)}
+                    key="music-link"
+                    to={getLocalizedRoute('music', currentLang)}
                     className="text-primary hover:text-primary/80 underline underline-offset-4"
                   />
                 ]}
@@ -386,12 +377,12 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS} className="text-center">
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-2 font-display">
-              {currentLang === 'pt' ? 'Presença Internacional' : 'International Presence'}
+              {t('home.festivals.presence')}
             </motion.h2>
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
               {FESTIVALS_HIGHLIGHT.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
-                <span>+{currentLang === 'pt' ? 'muitos outros' : 'many more'}</span>
+                <span>+{t('home.festivals.many_more')}</span>
               </span>
             </motion.div>
           </motion.div>

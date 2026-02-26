@@ -40,7 +40,7 @@ const ProductPage: React.FC = () => {
 
   const fetchProduct = useCallback(async () => {
     if (!slug) {
-      setError(t('shop_product_not_found'));
+      setError(t('shop.product_not_found'));
       setLoading(false);
       return;
     }
@@ -53,18 +53,18 @@ const ProductPage: React.FC = () => {
 
     try {
       const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`${t('shop_error_fetch')}: ${response.status}`);
+      if (!response.ok) throw new Error(`${t('shop.generic_error')}: ${response.status}`);
       const data = await response.json();
       const nextProduct = Array.isArray(data) ? data[0] : null;
       if (!nextProduct) {
-        setError(t('shop_product_not_found'));
+        setError(t('shop.product_not_found'));
       } else {
         setProduct(nextProduct);
         setActiveImage(nextProduct.images?.[0]?.src || null);
       }
     } catch (err: any) {
       console.error('Error fetching product:', err);
-      setError(err.message || t('shop_error_unknown'));
+      setError(err.message || t('shop.generic_error'));
     } finally {
       setLoading(false);
     }
@@ -124,11 +124,11 @@ const ProductPage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-background text-white p-6">
         <div className="text-center max-w-md">
           <AlertCircle className="mx-auto mb-4 text-error" size={48} />
-          <h2 className="text-2xl font-bold mb-2">{t('shop_product_not_found')}</h2>
+          <h2 className="text-2xl font-bold mb-2">{t('shop.product_not_found')}</h2>
           <p className="opacity-70">{error}</p>
           <Link to={shopPath} className="mt-6 btn btn-primary inline-flex items-center gap-2">
             <ArrowLeft size={18} />
-            {t('shop_back_to_shop')}
+            {t('checkout.back_shop')}
           </Link>
         </div>
       </div>
@@ -144,7 +144,7 @@ const ProductPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{product.name} | DJ Zen Eyer</title>
+        <title>{product.name} | {t('common.artist_name')}</title>
         <meta
           name="description"
           content={product.short_description || product.description || product.name}
@@ -155,7 +155,7 @@ const ProductPage: React.FC = () => {
         <div className="container mx-auto px-4 py-10">
           <Link to={shopPath} className="inline-flex items-center gap-2 text-white/70 hover:text-primary mb-6">
             <ArrowLeft size={18} />
-            {t('shop_back_to_shop')}
+            {t('checkout.back_shop')}
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -224,17 +224,17 @@ const ProductPage: React.FC = () => {
                   className="btn btn-primary btn-lg flex items-center gap-2 mb-6"
                 >
                   {addingToCart ? <Loader2 className="animate-spin" /> : <ShoppingCart />}
-                  {t('shop_buy_now')}
+                  {t('shop.buy_now')}
                 </button>
               ) : (
                 <span className="text-xs text-white/40 uppercase font-bold border border-white/10 px-3 py-2 rounded">
-                  {t('shop_out_of_stock')}
+                  {t('shop.out_of_stock')}
                 </span>
               )}
 
               {product.description && (
                 <div className="prose prose-invert max-w-none mt-8">
-                  <h2 className="text-2xl font-bold mb-4">{t('shop_product_details')}</h2>
+                  <h2 className="text-2xl font-bold mb-4">{t('shop.product_details')}</h2>
                   <div
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }}
                   />

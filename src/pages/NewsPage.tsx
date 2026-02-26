@@ -11,8 +11,8 @@ import { stripHtml } from '../utils/text';
 // ============================================================================
 // HELPERS
 // ============================================================================
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('pt-BR', {
+const formatDate = (dateString: string, lang: string = 'pt-BR') => {
+  return new Date(dateString).toLocaleDateString(lang, {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
@@ -48,7 +48,7 @@ const NewsPage: React.FC = () => {
     return (
       <>
         <HeadlessSEO
-          title={`${stripHtml(singlePost.title.rendered)} | Zen News`}
+          title={`${stripHtml(singlePost.title.rendered)} | ${t('news.title')}`}
           description={stripHtml(singlePost.excerpt.rendered)}
           url={`https://djzeneyer.com/news/${singlePost.slug}`}
         />
@@ -61,7 +61,7 @@ const NewsPage: React.FC = () => {
             <article>
               <header className="mb-10 text-center">
                 <div className="flex items-center justify-center gap-4 text-white/50 text-sm mb-4 font-mono uppercase tracking-widest">
-                  <span className="flex items-center gap-1.5"><Calendar size={14} /> {formatDate(singlePost.date)}</span>
+                  <span className="flex items-center gap-1.5"><Calendar size={14} /> {formatDate(singlePost.date, i18n.language)}</span>
                   <span>•</span>
                   <span>{t('news.by')} {singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')}</span>
                 </div>
@@ -114,7 +114,7 @@ const NewsPage: React.FC = () => {
                 {t('news.live_feed')}
               </motion.div>
               <h1 className="text-5xl md:text-7xl font-black font-display tracking-tight text-white">
-                ZEN <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">NEWS</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">{t('news.title')}</span>
               </h1>
             </div>
             <div className="text-right text-white/50 text-sm hidden md:block">
@@ -155,7 +155,7 @@ const NewsPage: React.FC = () => {
                             {t('news.featured')}
                           </span>
                           <span className="flex items-center gap-2 text-white/80 text-sm">
-                            <Calendar size={14} /> {formatDate(featuredPost.date)}
+                            <Calendar size={14} /> {formatDate(featuredPost.date, i18n.language)}
                           </span>
                         </div>
                         <h2
@@ -200,12 +200,12 @@ const NewsPage: React.FC = () => {
                         loading="lazy"
                       />
                       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white border border-white/10">
-                        <Clock size={12} className="inline mr-1" /> 3 min read
+                        <Clock size={12} className="inline mr-1" /> {t('news.read_time', { min: 3 })}
                       </div>
                     </Link>
                     <div className="p-6 flex-1 flex flex-col">
                       <div className="text-xs text-primary mb-3 font-bold uppercase tracking-wider flex items-center gap-2">
-                        <Hash size={12} /> News
+                        <Hash size={12} /> {t('news.label')}
                       </div>
                       <Link to={`${getRouteForKey('news')}/${post.slug}`}>
                         <h3
@@ -219,7 +219,7 @@ const NewsPage: React.FC = () => {
                       />
                       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
                         <span className="text-xs text-white/40 font-medium">
-                          {formatDate(post.date)}
+                          {formatDate(post.date, i18n.language)}
                         </span>
                         <Link to={`${getRouteForKey('news')}/${post.slug}`} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
                           {t('news.read_more')}

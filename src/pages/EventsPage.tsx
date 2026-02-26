@@ -256,7 +256,8 @@ const EventsPage: React.FC = () => {
               ) : (
                 groupedEvents.map(([monthKey, monthEvents]) => {
                   const [year, month] = monthKey.split('-');
-                  const monthName = t(`events_month_${new Date(Number(year), Number(month) - 1).toLocaleString('en', { month: 'short' }).toLowerCase()}`);
+                  const dateObj = new Date(Number(year), Number(month) - 1);
+                  const monthName = t(`events_month_${dateObj.toLocaleString('en', { month: 'short' }).toLowerCase()}`);
 
                   return (
                     <section key={monthKey}>

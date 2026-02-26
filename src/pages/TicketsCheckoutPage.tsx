@@ -10,8 +10,8 @@ const TicketsCheckoutPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={t('tickets_checkout_title', 'Secure Checkout - Tickets')}
-        description={t('checkout_desc', 'Complete your ticket purchase.')}
+        title={t('checkout.tickets_title')}
+        description={t('checkout.description')}
         isHomepage={false}
       />
       {/*

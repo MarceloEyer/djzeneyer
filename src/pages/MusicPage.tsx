@@ -62,8 +62,8 @@ const MusicPage: React.FC = () => {
     return (
       <>
         <HeadlessSEO
-          title={`${singleTrack.title?.rendered || 'Music'} | Zen Music`}
-          description={singleTrack.excerpt?.rendered || "Listen to the latest productions by DJ Zen Eyer."}
+          title={`${singleTrack.title?.rendered || t('music.pageTitle')} | Zen Music`}
+          description={singleTrack.excerpt?.rendered || t('music.pageDesc')}
           url={`https://djzeneyer.com/music/${slug}`}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">

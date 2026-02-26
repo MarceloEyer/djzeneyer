@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { Brain, Heart, Music2, Sparkles } from 'lucide-react';
+import { Heart, Music2, Sparkles } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { useTranslation } from 'react-i18next';
 
@@ -11,11 +11,11 @@ const PhilosophyPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={`${t('philosophy_page.title')} | ${ARTIST.identity.stageName}`}
-        description={t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
+        title={`${t('philosophy.page_title')} | ${ARTIST.identity.stageName}`}
+        description={t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
       />
 
-      <div className="min-h-screen pt-24 pb-16 px-4">
+      <div className="min-h-screen pt-24 pb-16 px-4 bg-background text-white">
         <div className="container mx-auto max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -24,14 +24,14 @@ const PhilosophyPage: React.FC = () => {
           >
             <Sparkles className="w-16 h-16 mx-auto mb-6 text-primary" />
             <h1 className="text-4xl md:text-6xl font-black font-display mb-8">
-              {t('philosophy_page.title')}
+              {t('philosophy.page_title')}
             </h1>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-16">
-              <div className="card p-8 bg-surface/50 border border-white/10 hover:border-primary/50 transition-all">
+            <div className="grid md:grid-cols-2 gap-8 mb-16 text-left">
+              <div className="card p-8 bg-surface/50 border border-white/10 hover:border-primary/50 transition-all rounded-2xl">
                 <Music2 className="w-10 h-10 text-primary mb-4" />
                 <h2 className="text-xl font-bold mb-4 uppercase tracking-widest text-primary">
-                  {t('philosophy_page.style_title')}
+                  {t('philosophy.style_title')}
                 </h2>
                 <p className="text-white/80 leading-relaxed italic">
                   "{t('about.philosophy.quote')}"
@@ -39,10 +39,10 @@ const PhilosophyPage: React.FC = () => {
                 <div className="mt-4 text-sm text-white/50">— {ARTIST.identity.stageName}</div>
               </div>
 
-              <div className="card p-8 bg-surface/50 border border-white/10 hover:border-accent/50 transition-all">
+              <div className="card p-8 bg-surface/50 border border-white/10 hover:border-accent/50 transition-all rounded-2xl">
                 <Heart className="w-10 h-10 text-accent mb-4" />
                 <h2 className="text-xl font-bold mb-4 uppercase tracking-widest text-accent">
-                  {t('philosophy_page.mission_title')}
+                  {t('philosophy.mission_title')}
                 </h2>
                 <p className="text-white/80 leading-relaxed">
                   {t('about.hero.subtitle')}
@@ -52,35 +52,11 @@ const PhilosophyPage: React.FC = () => {
 
             <div className="card p-12 bg-white/5 border border-dashed border-white/10 rounded-3xl mb-12">
               <h2 className="text-2xl font-display font-bold mb-4">
-                {t('philosophy_page.coming_soon_title')}
+                {t('philosophy.coming_soon_title')}
               </h2>
               <p className="text-white/60 max-w-2xl mx-auto">
-                {t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
+                {t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
               </p>
-            </div>
-
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-3">{t('philosophy_page.mission_title')}</h2>
-              <p className="text-white/80 leading-relaxed">
-                {ARTIST.philosophy.mission}
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-white/5 rounded-2xl p-8 border border-white/10 text-left"
-          >
-            <div className="flex items-start gap-4 mb-4">
-              <Sparkles size={32} className="text-primary flex-shrink-0" />
-              <div>
-                <h2 className="text-2xl font-bold mb-3">{t('philosophy_page.coming_soon_title')}</h2>
-                <p className="text-white/80 leading-relaxed">
-                  {t('philosophy_page.coming_soon_desc', { name: ARTIST.identity.stageName })}
-                </p>
-              </div>
             </div>
           </motion.div>
         </div>

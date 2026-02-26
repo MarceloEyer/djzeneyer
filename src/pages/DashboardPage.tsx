@@ -192,7 +192,7 @@ const DashboardContent = () => {
                   <Clock className="text-primary" size={24} /> {t('dashboard.recentActivity')}
                 </h2>
                 <div className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-black uppercase text-white/40 border border-white/10 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> Live Feed
+                  <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> {t('dashboard.live_feed')}
                 </div>
               </div>
 

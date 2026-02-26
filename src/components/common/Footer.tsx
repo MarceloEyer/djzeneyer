@@ -158,9 +158,9 @@ const Footer: React.FC = () => {
           <p>{t('footer_copyright', { year: currentYear })}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
-            <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
             <span>•</span>
-            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">Terms of Use</Link>
+            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
           </div>
 
           <div className="mt-4 text-xs opacity-30 flex justify-center gap-4">
