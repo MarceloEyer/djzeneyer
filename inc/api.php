@@ -157,7 +157,13 @@ function djz_get_products($request)
 
             $img_ids = $product->get_gallery_image_ids();
             if ($product->get_image_id()) {
-                $img_ids[] = $product->get_image_id();
+                // Ensure featured image is first to match processing order
+                array_unshift($img_ids, $product->get_image_id());
+            }
+
+            // OPTIMIZATION: In list view (no slug), only prime the first image
+            if (empty($slug) && !empty($img_ids)) {
+                $img_ids = array_slice($img_ids, 0, 1);
             }
 
             if (!empty($img_ids)) {
