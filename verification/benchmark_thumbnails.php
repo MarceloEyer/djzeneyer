@@ -43,7 +43,9 @@ foreach ($products as $product) {
 }
 
 $count_original = count(array_unique($all_img_ids_original));
+$elapsed_original = microtime(true) - $start;
 echo "Total Unique IDs Primed: $count_original\n";
+echo "Time Elapsed: " . number_format($elapsed_original * 1000, 4) . "ms\n";
 
 // Scenario 2: Optimized Logic (Targeted fetching)
 echo "\nScenario 2: Optimized Logic (List View)\n";
@@ -71,7 +73,9 @@ foreach ($products as $product) {
 }
 
 $count_optimized = count(array_unique($all_img_ids_optimized));
+$elapsed_optimized = microtime(true) - $start;
 echo "Total Unique IDs Primed: $count_optimized\n";
+echo "Time Elapsed: " . number_format($elapsed_optimized * 1000, 4) . "ms\n";
 
 $reduction = $count_original - $count_optimized;
 echo "\nReduction in Cached IDs: $reduction (" . round(($reduction / $count_original) * 100, 1) . "%)\n";

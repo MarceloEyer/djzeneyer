@@ -155,17 +155,7 @@ function djz_get_products($request)
             $product_objects[] = $product;
             $product_ids[] = $product->get_id();
 
-            $img_ids = $product->get_gallery_image_ids();
-            if ($product->get_image_id()) {
-                // Ensure featured image is first to match processing order
-                array_unshift($img_ids, $product->get_image_id());
-            }
-
-            // OPTIMIZATION: In list view (no slug), only prime the first image
-            if (empty($slug) && !empty($img_ids)) {
-                $img_ids = array_slice($img_ids, 0, 1);
-            }
-
+            $img_ids = djz_get_product_image_ids($product, empty($slug));
             if (!empty($img_ids)) {
                 $all_img_ids = array_merge($all_img_ids, $img_ids);
             }
@@ -182,19 +172,9 @@ function djz_get_products($request)
         }
 
         foreach ($product_objects as $product) {
-            $id = $product->get_id(); // Fix: Update ID for current loop iteration
+            $id = $product->get_id();
             $images = [];
-            $img_ids = $product->get_gallery_image_ids();
-
-            if ($product->get_image_id()) {
-                array_unshift($img_ids, $product->get_image_id());
-            }
-
-            // OPTIMIZATION: In list view (no slug), we only need the featured image
-            // and specific sizes to reduce processing time and payload size.
-            if (empty($slug) && !empty($img_ids)) {
-                $img_ids = array_slice($img_ids, 0, 1);
-            }
+            $img_ids = djz_get_product_image_ids($product, empty($slug));
 
             foreach ($img_ids as $img_id) {
                 $src = wp_get_attachment_url($img_id);
@@ -385,6 +365,33 @@ add_action('admin_init', function () {
     wp_redirect(remove_query_arg('djz_clear_cache'));
     exit;
 });
+/**
+ * Get product image IDs with optimization for list views
+ * 
+ * @param WC_Product $product
+ * @param bool $is_list_view
+ * @return array
+ */
+function djz_get_product_image_ids($product, $is_list_view = false) {
+    if (!$product) return [];
+    
+    $img_ids = $product->get_gallery_image_ids();
+    $featured_id = $product->get_image_id();
+    
+    if ($featured_id) {
+        // Ensure featured image is first and unique
+        array_unshift($img_ids, $featured_id);
+        $img_ids = array_unique($img_ids);
+    }
+    
+    // OPTIMIZATION: In list view, only return the first image (usually featured)
+    if ($is_list_view && !empty($img_ids)) {
+        $img_ids = array_slice($img_ids, 0, 1);
+    }
+    
+    return $img_ids;
+}
+
 /**
  * Helper to prime thumbnail caches efficiently
  */
