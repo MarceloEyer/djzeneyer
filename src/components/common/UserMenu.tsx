@@ -13,17 +13,16 @@ import {
   ChevronDown,
   ShoppingBag,
   LayoutDashboard,
-  Settings,
-  HelpCircle
+  Settings
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../../contexts/UserContext';
-import { useLanguage } from '../../hooks/useLanguage';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 
 const UserMenu: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, logout } = useUser();
-  const { currentLang, getLocalizedRoute } = useLanguage();
+  const currentLang = normalizeLanguage(i18n.language);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

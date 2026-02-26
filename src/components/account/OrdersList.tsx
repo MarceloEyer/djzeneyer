@@ -9,7 +9,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useLanguage } from '../../hooks/useLanguage';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 
 interface Order {
   id: number;
@@ -29,8 +29,8 @@ interface OrdersListProps {
 }
 
 export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
-  const { t } = useTranslation();
-  const { currentLang, getLocalizedRoute } = useLanguage();
+  const { t, i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
 
   const getOrderStatusClass = (status: string) => {
     switch (status) {
