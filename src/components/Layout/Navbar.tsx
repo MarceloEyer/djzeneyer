@@ -91,7 +91,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate }) => {
     const isBlank = target === '_blank';
 
     const commonClass = isMobile
-        ? `group flex items-center justify-between p-3 rounded-xl transition-all duration-300 border border-transparent`
+        ? `group flex items-center justify-between p-4 rounded-xl transition-all duration-300 border border-transparent`
         : `relative group nav-link py-2 text-white/80 hover:text-white transition-colors`;
 
     const activeMobileClass = "bg-primary/10 border-white/5";
@@ -231,7 +231,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                     <>
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMenuOpen(false)} className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden" />
                         <motion.div initial={{ y: '-100%' }} animate={{ y: 0 }} exit={{ y: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-white/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto">
-                            <nav className="flex flex-col space-y-2 mb-6">
+                            <nav className="flex flex-col space-y-3 mb-6">
                                 {processedMenuItems.map(item => <MenuItem key={item.ID} item={item} isMobile={true} onNavigate={() => setIsMenuOpen(false)} />)}
                             </nav>
                             <div className="pt-6 border-t border-white/10 flex flex-col gap-4">

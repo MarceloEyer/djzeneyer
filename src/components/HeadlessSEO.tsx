@@ -46,6 +46,7 @@ interface HeadlessSEOProps {
   isHomepage?: boolean;
   preload?: PreloadItem[];
   locale?: 'en_US' | 'pt_BR'; // NOVO: Controle explícito de locale
+  leadAnswer?: string; // NOVO: Resposta direta para AIO (Lead Paragraph)
 }
 
 // ============================================================================
@@ -78,6 +79,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   isHomepage = false,
   preload = [],
   locale,
+  leadAnswer,
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
   const { i18n } = useTranslation();
@@ -114,8 +116,13 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   }, [hrefLang, location.pathname, currentLang, baseUrl]);
 
   // 2. Fallbacks
+  const rawDescription = data?.desc || description || ARTIST.site.defaultDescription;
   const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
-  const finalDescription = data?.desc || description || ARTIST.site.defaultDescription;
+
+  // AIO Enhancement: Lead Answer logic
+  const finalDescription = leadAnswer
+    ? `${leadAnswer.trim()}${leadAnswer.endsWith('.') ? '' : '.'} ${rawDescription}`
+    : rawDescription;
 
   const truncatedDesc = finalDescription.length > 160
     ? `${finalDescription.substring(0, 157)}...`

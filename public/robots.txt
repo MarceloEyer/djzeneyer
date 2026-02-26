@@ -197,11 +197,13 @@ Allow: /
 # PERPLEXITY AI
 User-agent: PerplexityBot
 Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 
 # COHERE AI
 User-agent: cohere-ai
 Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 
 # ==============================================================================
