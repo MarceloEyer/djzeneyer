@@ -421,8 +421,8 @@ const ShopPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#141414] text-white">
       <Helmet>
-        <title>{t('shop_page_title')} | {t('common.artist_name')}</title>
-        <meta name="description" content={t('shop_page_meta_desc')} />
+        <title>{t('shop.page_title')} | {t('common.artist_name')}</title>
+        <meta name="description" content={t('shop.page_meta_desc')} />
       </Helmet>
 
       <Toast
