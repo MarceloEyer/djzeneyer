@@ -10,7 +10,7 @@
     "build": "tsc && vite build",
     "build:full": "npm run generate-sitemaps && npm run build && npm run prerender",
     "preview": "vite preview",
-    "lint": "eslint . --fix",
+    "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -52,10 +52,9 @@
     "vite-plugin-compression": "^0.5.1"
   },
   "overrides": {
-    "minimatch": "^10.2.1",
-    "ajv": "^8.18.0"
+    "minimatch": "^10.2.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

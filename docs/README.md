@@ -28,7 +28,7 @@ Documentação técnica completa do projeto DJ Zen Eyer.
 
 | Camada | Tecnologias |
 |--------|-------------|
-| **Frontend** | React 18, TypeScript, Vite 5, Tailwind CSS, React Query 5, i18next |
+| **Frontend** | React 18, TypeScript, Vite 7, Tailwind CSS, React Query 5, i18next |
 | **Backend** | WordPress 6.0+ (Headless), PHP 8.0+, WooCommerce, GamiPress |
 | **Infra** | Hostinger VPS (LiteSpeed), Cloudflare CDN, GitHub Actions |
 
