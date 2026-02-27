@@ -28,8 +28,9 @@ import { getLocalizedRoute, normalizeLanguage, getAlternateLinks } from '../../c
 // ============================================================================
 const sanitizePath = (path: string): string => {
     if (!path) return '/';
-    // Fast sanitization: allow valid URL characters and remove double slashes
-    return path.replace(/[^\w\-\.\/\?\=\&\#\%]/g, '').replace(/\/\//g, '/');
+    // Remove qualquer tentativa de protocolo (ex: javascript:, http:) para evitar redirecionamentos externos não intencionais
+    const cleanPath = path.replace(/^[a-zA-Z]+:/g, '').replace(/[^\w\-\.\/\?\=\&\#\%]/g, '').replace(/\/\//g, '/');
+    return cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath;
 };
 
 const getLinkVisuals = (url: string) => {

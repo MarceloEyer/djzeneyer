@@ -135,7 +135,7 @@ class Rate_Limiter {
      * @return string
      */
     private static function get_transient_key($ip, $action) {
-        return 'zeneyer_rate_limit_' . md5($ip . $action);
+        return 'zeneyer_rate_limit_' . hash('sha256', $ip . $action);
     }
     
     /**

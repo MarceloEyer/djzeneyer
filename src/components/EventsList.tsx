@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
 import { useEventsQuery } from '../hooks/useQueries';
+import { safeUrl } from '../utils/sanitize';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -43,7 +44,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
 
   // React Query: cache automático + deduplicação
   const { data: events = [], isLoading: loading, error } = useEventsQuery(limit);
-  
+
   // Log de erro
   if (error) {
     console.error('Error fetching events:', error);
@@ -67,7 +68,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     const eventDate = new Date(event.datetime);
     // Fallback: Se não tiver data final, assume 4 horas de duração
     const endDate = new Date(eventDate.getTime() + (4 * 60 * 60 * 1000));
-    
+
     // Garantia de Localização (Nunca undefined)
     const venueName = event.venue?.name || 'Local a definir';
     const city = event.venue?.city || 'City';
@@ -80,16 +81,16 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     return {
       // SEO: Imagem é recomendada/obrigatória para Rich Cards
       image: event.image || '/images/event-default.svg',
-      
+
       // SEO: Descrição é recomendada. Geramos uma automática se faltar.
       description: event.description || `DJ Zen Eyer performing live Brazilian Zouk set at ${venueName} in ${city}, ${country}.`,
-      
+
       endDate: endDate.toISOString(),
       locationName: venueName,
       city: city,
       region: region,
       country: country,
-      
+
       // SEO: Offers é recomendado
       price: '0',
       priceCurrency: currency
@@ -129,9 +130,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           genre: 'Brazilian Zouk',
           url: 'https://djzeneyer.com',
           sameAs: [
-             'https://www.instagram.com/djzeneyer/',
-             'https://soundcloud.com/djzeneyer',
-             'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw'
+            'https://www.instagram.com/djzeneyer/',
+            'https://soundcloud.com/djzeneyer',
+            'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw'
           ]
         },
         organizer: {
@@ -199,12 +200,12 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           const completeData = getCompleteEventData(event);
           const ticketUrl = event.offers?.[0]?.url || event.url;
           const eventLocation = `${completeData.city}, ${completeData.country}`;
-          
+
           const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' });
           const formattedTime = formatTime(eventDate);
-          
-          const ariaLabel = t('events.ticketAriaLabel', 
-            'View tickets for {{title}} at {{location}}', 
+
+          const ariaLabel = t('events.ticketAriaLabel',
+            'View tickets for {{title}} at {{location}}',
             { title: event.title, location: eventLocation }
           );
 
@@ -227,8 +228,8 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">{event.title}</h3>
                     <div className="space-y-1 text-sm text-white/70">
                       <div className="flex items-center gap-2">
-                         <MapPin size={14} className="flex-shrink-0" />
-                         <span className="truncate">{completeData.locationName}</span>
+                        <MapPin size={14} className="flex-shrink-0" />
+                        <span className="truncate">{completeData.locationName}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="flex-shrink-0" />
@@ -237,10 +238,10 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     </div>
                   </div>
                   <div>
-                    <a 
-                      href={ticketUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={safeUrl(ticketUrl, '#')}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-sm btn-primary flex-shrink-0 flex items-center gap-2"
                       aria-label={ariaLabel}
                     >
@@ -265,15 +266,15 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
                 {event.image ? (
-                   <img
-                     src={event.image}
-                     alt=""
-                     className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
-                     loading="lazy"
-                     decoding="async"
-                   />
+                  <img
+                    src={safeUrl(event.image, '/images/event-default.svg')}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 ) : null}
-                
+
                 <time dateTime={event.datetime} className="relative z-10 text-center drop-shadow-lg">
                   <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
                   <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' })}</div>
@@ -302,10 +303,10 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 </div>
 
                 <div>
-                  <a 
-                    href={ticketUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={safeUrl(ticketUrl, '#')}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="btn btn-primary w-full flex items-center justify-center gap-2 group/btn"
                     aria-label={ariaLabel}
                   >

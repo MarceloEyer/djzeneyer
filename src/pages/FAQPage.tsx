@@ -4,6 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen, HeartPulse } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
+import { sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
 // COMPONENTE FAQITEM
@@ -48,7 +49,7 @@ const FAQItem = memo<{
     >
       <div
         className="px-6 pb-6 text-white/80 leading-relaxed prose prose-invert max-w-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-white border-t border-white/5 pt-4"
-        dangerouslySetInnerHTML={{ __html: answer }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(answer) }}
       />
     </motion.div>
   </motion.div>

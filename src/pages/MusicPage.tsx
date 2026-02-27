@@ -8,6 +8,7 @@ import { useTrackBySlug } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -76,24 +77,24 @@ const MusicPage: React.FC = () => {
               <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
                 <div className="w-64 h-64 rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
                   <img
-                    src={singleTrack.featured_image_src_full || singleTrack.featured_image_src || '/images/hero-background.webp'}
+                    src={safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp')}
                     className="w-full h-full object-cover"
                     alt={singleTrack.title?.rendered}
                   />
                 </div>
 
                 <div className="text-center md:text-left flex-1">
-                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: singleTrack.title?.rendered }} />
+                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singleTrack.title?.rendered) }} />
                   <p className="text-primary font-bold mb-8 tracking-widest uppercase">{t('music.artist_tag')}</p>
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     {singleTrack.links?.spotify && (
-                      <a href={singleTrack.links.spotify} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2">
+                      <a href={safeUrl(singleTrack.links.spotify)} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2">
                         <Play fill="currentColor" size={18} /> {t('common.platforms.spotify', 'SPOTIFY')}
                       </a>
                     )}
                     {singleTrack.links?.soundcloud && (
-                      <a href={singleTrack.links.soundcloud} target="_blank" rel="noopener noreferrer" className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20">
+                      <a href={safeUrl(singleTrack.links.soundcloud)} target="_blank" rel="noopener noreferrer" className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20">
                         <Cloud size={18} /> {t('common.platforms.soundcloud', 'SOUNDCLOUD')}
                       </a>
                     )}
@@ -105,7 +106,7 @@ const MusicPage: React.FC = () => {
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Music2 size={18} className="text-primary" /> {t('music.about_track')}</h2>
                 <div
                   className="prose prose-invert max-w-none text-white/60"
-                  dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "" }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "") }}
                 />
               </div>
             </div>
@@ -149,7 +150,7 @@ const MusicPage: React.FC = () => {
             {streamingPlatforms.map((platform, index) => (
               <motion.a
                 key={platform.name}
-                href={platform.url}
+                href={safeUrl(platform.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}

@@ -14,6 +14,7 @@ import { getHrefLangUrls } from '../utils/seo';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
 // 1. INTERFACES (Type Safety)
@@ -326,10 +327,10 @@ const HomePage: React.FC = () => {
             <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
               <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home_bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-white/90">
-                <p dangerouslySetInnerHTML={{ __html: t('home_bio_intro') }} />
+                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_intro')) }} />
               </div>
-              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: t('home_bio_style') }} />
-              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: t('home_bio_mensa') }} />
+              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_style')) }} />
+              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_mensa')) }} />
             </motion.article>
           </motion.div>
         </div>

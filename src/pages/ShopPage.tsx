@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import DOMPurify from 'dompurify';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useProductsQuery, useAddToCartMutation } from '../hooks/useQueries';
 import { Toast } from '../components/common/Toast';
 import {
@@ -74,7 +74,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
     <div className="relative h-[80vh] w-full group overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src={product.images[0]?.src || 'https://placehold.co/1200x675/0D96FF/FFFFFF'}
+          src={safeUrl(product.images[0]?.src, 'https://placehold.co/1200x675/0D96FF/FFFFFF')}
           alt={product.name}
           className="w-full h-full object-cover"
         />
@@ -113,7 +113,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
           {product.short_description && (
             <div
               className="text-lg md:text-xl text-white/80 line-clamp-3 md:line-clamp-2 drop-shadow-lg max-w-2xl font-light leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.short_description) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.short_description) }}
             />
           )}
 
@@ -170,7 +170,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
       <div className="card-outer bg-surface border border-white/5 rounded-md overflow-hidden shadow-2xl group/card h-full">
         <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
           <img
-            src={product.images[0]?.src || 'https://placehold.co/640x360/0D96FF/FFFFFF'}
+            src={safeUrl(product.images[0]?.src, 'https://placehold.co/640x360/0D96FF/FFFFFF')}
             alt={product.name}
             className="w-full h-full object-cover"
           />

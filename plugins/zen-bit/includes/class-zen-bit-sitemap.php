@@ -79,7 +79,7 @@ class Zen_BIT_Sitemap {
         if (!empty($event['id'])) return (string)$event['id'];
 
         $seed = (string)($event['url'] ?? '') . '|' . (string)($event['datetime'] ?? '');
-        return md5($seed);
+        return hash('sha256', $seed);
     }
 
     private function build_event_internal_url($event_id) {

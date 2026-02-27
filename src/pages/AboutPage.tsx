@@ -17,6 +17,7 @@ import {
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation, Trans } from 'react-i18next';
 import { ARTIST_SCHEMA_BASE, ARTIST, getWhatsAppUrl } from '../data/artistData';
+import { sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
 // SCHEMA.ORG PARA A PÁGINA ABOUT
@@ -201,12 +202,12 @@ const AboutPage: React.FC = () => {
               viewport={{ once: true }}
               className="space-y-6 text-lg text-white/80 leading-relaxed"
             >
-              <p dangerouslySetInnerHTML={{ __html: t('about.story.p1') }} />
-              <p dangerouslySetInnerHTML={{ __html: t('about.story.p2') }} />
-              <p dangerouslySetInnerHTML={{ __html: t('about.story.p3') }} />
-              <p dangerouslySetInnerHTML={{ __html: t('about.story.p4') }} />
-              <p dangerouslySetInnerHTML={{ __html: t('about.story.p5') }} />
-              <p className="text-primary font-semibold" dangerouslySetInnerHTML={{ __html: t('about.story.p6') }} />
+              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p1')) }} />
+              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p2')) }} />
+              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p3')) }} />
+              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p4')) }} />
+              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p5')) }} />
+              <p className="text-primary font-semibold" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p6')) }} />
             </motion.div>
           </div>
         </section>

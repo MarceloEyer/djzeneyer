@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { getAlternateLinks, Language, normalizeLanguage } from '../config/routes';
 import { ensureTrailingSlash, HrefLang } from '../utils/seo';
+import { safeUrl } from '../utils/sanitize';
 
 // ============================================================================
 // 1. INTERFACES
@@ -130,11 +131,11 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
   const finalUrlRaw = data?.canonical || url || baseUrl;
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
-  const finalUrl = ensureTrailingSlash(absoluteUrl);
+  const finalUrl = safeUrl(ensureTrailingSlash(absoluteUrl));
 
   // FIX: Imagem padrão robusta se nada for passado
   const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`;
-  const finalImage = ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl);
+  const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl));
 
   const shouldNoIndex = data?.noindex || noindex;
 
@@ -258,7 +259,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
       {/* Hreflang Tags */}
       {computedHrefLang.map(({ lang, url: hrefUrl }) => (
-        <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
+        <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl)} />
       ))}
 
       {/* Schema JSON-LD */}

@@ -58,7 +58,7 @@ class Zen_BIT_Shortcode {
         if (!empty($event['id'])) return (string)$event['id'];
 
         $seed = (string)($event['url'] ?? '') . '|' . (string)($event['datetime'] ?? '');
-        return md5($seed);
+        return hash('sha256', $seed);
     }
 
     private function get_internal_event_url($event) {

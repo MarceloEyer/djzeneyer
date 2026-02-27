@@ -6,6 +6,7 @@ import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { stripHtml } from '../utils/text';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import {
   Calendar as CalendarIcon,
   MapPin,
@@ -119,7 +120,7 @@ const EventsPage: React.FC = () => {
               >
                 <div className="rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl relative">
                   <img
-                    src={image}
+                    src={safeUrl(image)}
                     className="w-full aspect-[4/5] object-cover"
                     alt={title}
                   />
@@ -137,7 +138,7 @@ const EventsPage: React.FC = () => {
                   {t('events_status_upcoming')}
                 </div>
 
-                <h1 className="text-4xl md:text-6xl font-black font-display mb-8 tracking-tighter leading-none" dangerouslySetInnerHTML={{ __html: title }} />
+                <h1 className="text-4xl md:text-6xl font-black font-display mb-8 tracking-tighter leading-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(title) }} />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                   <div className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem] hover:border-primary/30 transition-colors group">
@@ -155,7 +156,7 @@ const EventsPage: React.FC = () => {
 
                 <div
                   className="prose prose-invert max-w-none mb-12 text-white/70 leading-relaxed text-lg"
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
                 />
 
                 <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -290,7 +291,7 @@ const EventsPage: React.FC = () => {
                                   {/* Poster */}
                                   <div className="aspect-[4/5] relative overflow-hidden">
                                     <img
-                                      src={image}
+                                      src={safeUrl(image)}
                                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                       alt={title}
                                     />
@@ -312,7 +313,7 @@ const EventsPage: React.FC = () => {
                                       to={`${getLocalizedRoute('events', normalizeLanguage(i18n.language))}/${event.id}`}
                                       className="block mb-6"
                                     >
-                                      <h3 className="text-xl font-bold font-display uppercase tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-2" dangerouslySetInnerHTML={{ __html: title }} />
+                                      <h3 className="text-xl font-bold font-display uppercase tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-2" dangerouslySetInnerHTML={{ __html: sanitizeHtml(title) }} />
                                     </Link>
 
                                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">

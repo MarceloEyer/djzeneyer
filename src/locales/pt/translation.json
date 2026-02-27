@@ -1403,6 +1403,9 @@
       "music": "Minhas Músicas",
       "settings": "Configurações"
     },
+    "orders": {
+      "title": "Meus Pedidos"
+    },
     "loading": "Carregando sua conta Zen...",
     "no_achievements": "Nenhuma conquista ainda",
     "no_achievements_desc": "Comece a explorar e interagir para desbloquear suas primeiras conquistas!",
@@ -1494,7 +1497,7 @@
       "request_title": "4. Como solicitar um reembolso",
       "request_text": "Para iniciar uma solicitação de devolução ou reembolso, envie um e-mail para",
       "request_text_2": "com o número do seu pedido e detalhes do problema.",
-      "last_updated": "Última atualização: Janeiro de 2024"
+      "last_updated": "Última atualização: Janeiro 2024"
     }
   }
 }

@@ -6,6 +6,7 @@ import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 
 interface PaymentMethod {
   id: string;
@@ -137,7 +138,7 @@ const CheckoutPage: React.FC = () => {
 
       // Handle redirect or success
       if (data.payment_result?.redirect_url) {
-        window.location.href = data.payment_result.redirect_url;
+        window.location.href = safeUrl(data.payment_result.redirect_url, '/shop');
       } else {
         // Defensive clear to guarantee local cart consistency in non-redirect payments
         await clearCart();
@@ -363,7 +364,7 @@ const CheckoutPage: React.FC = () => {
                         />
                         <div>
                           <div className="font-semibold">{method.title}</div>
-                          <div className="text-xs text-white/60 mt-1" dangerouslySetInnerHTML={{ __html: method.description }} />
+                          <div className="text-xs text-white/60 mt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(method.description) }} />
                         </div>
                       </label>
                     ))

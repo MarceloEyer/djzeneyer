@@ -62,12 +62,12 @@ const UserMenu: React.FC = () => {
       icon: <User size={18} />
     },
     {
-      to: getLocalizedRoute('my-account/orders', currentLang),
+      to: `${getLocalizedRoute('my-account', currentLang)}?tab=orders`,
       label: t('account.orders.title'),
       icon: <ShoppingBag size={18} />
     },
     {
-      to: getLocalizedRoute('my-account/settings', currentLang),
+      to: `${getLocalizedRoute('my-account', currentLang)}?tab=settings`,
       label: t('account.tabs.settings'),
       icon: <Settings size={18} />
     },

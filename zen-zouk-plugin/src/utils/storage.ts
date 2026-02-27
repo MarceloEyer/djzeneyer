@@ -56,7 +56,9 @@ export const addBadge = (badgeId: string): void => {
 export const exportJournal = (): void => {
   const data = loadData();
   const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  // Basic sanitization to prevent potential injection in JSON viewers if re-imported or viewed
+  const safeJson = json.replace(/<(?:.|\n)*?>/gm, '');
+  const blob = new Blob([safeJson], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
 import { useNewsQuery, useNewsBySlug, WPPost } from '../hooks/useQueries';
 import { stripHtml } from '../utils/text';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 
 // ============================================================================
 // HELPERS
@@ -65,12 +66,12 @@ const NewsPage: React.FC = () => {
                   <span>•</span>
                   <span>{t('news.by')} {singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')}</span>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: singlePost.title.rendered }} />
+                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost.title.rendered) }} />
 
                 {singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
                     <img
-                      src={singlePost.featured_image_src_full || singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url}
+                      src={safeUrl(singlePost.featured_image_src_full || singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url)}
                       className="w-full h-full object-cover"
                       alt={singlePost.title.rendered}
                     />
@@ -80,7 +81,7 @@ const NewsPage: React.FC = () => {
 
               <div
                 className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:font-black prose-a:text-primary hover:prose-a:text-white transition-colors"
-                dangerouslySetInnerHTML={{ __html: singlePost.content?.rendered || "" }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost.content?.rendered || "") }}
               />
             </article>
           </div>
@@ -142,7 +143,7 @@ const NewsPage: React.FC = () => {
                   <Link to={`${getRouteForKey('news')}/${featuredPost.slug}`}>
                     <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                       <img
-                        src={featuredPost.featured_image_src_full || featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                        src={safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
                         alt={featuredPost.title.rendered}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         loading="eager"
@@ -160,12 +161,12 @@ const NewsPage: React.FC = () => {
                         </div>
                         <h2
                           className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors text-white"
-                          dangerouslySetInnerHTML={{ __html: featuredPost.title.rendered }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(featuredPost.title.rendered) }}
                         />
                         <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
                           <p
                             className="text-lg text-white/80 line-clamp-3"
-                            dangerouslySetInnerHTML={{ __html: stripHtml(featuredPost.excerpt.rendered) }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(featuredPost.excerpt.rendered)) }}
                           />
                         </div>
                         <div className="inline-flex items-center gap-2 text-white font-bold text-lg hover:gap-4 transition-all">
@@ -194,7 +195,7 @@ const NewsPage: React.FC = () => {
                   >
                     <Link to={`${getRouteForKey('news')}/${post.slug}`} className="block h-56 overflow-hidden relative">
                       <img
-                        src={post.featured_image_src || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp'}
+                        src={safeUrl(post.featured_image_src || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
                         alt={post.title.rendered}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         loading="lazy"
@@ -210,12 +211,12 @@ const NewsPage: React.FC = () => {
                       <Link to={`${getRouteForKey('news')}/${post.slug}`}>
                         <h3
                           className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2 text-white"
-                          dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.title.rendered) }}
                         />
                       </Link>
                       <p
                         className="text-white/60 text-sm line-clamp-3 mb-6 flex-1"
-                        dangerouslySetInnerHTML={{ __html: stripHtml(post.excerpt.rendered) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(post.excerpt.rendered)) }}
                       />
                       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
                         <span className="text-xs text-white/40 font-medium">

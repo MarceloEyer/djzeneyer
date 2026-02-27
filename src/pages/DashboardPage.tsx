@@ -14,6 +14,7 @@ import {
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { Helmet } from 'react-helmet-async';
 import { RecentActivity } from '../components/account';
+import { safeUrl } from '../utils/sanitize';
 
 
 
@@ -71,7 +72,7 @@ const DashboardContent = () => {
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse" />
                 <img
-                  src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
+                  src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
                   alt={user.name}
                   className="relative w-32 h-32 rounded-full border-2 border-white/20 object-cover shadow-2xl"
                 />
@@ -150,7 +151,7 @@ const DashboardContent = () => {
                 {pointTypes.map(([slug, pt]) => (
                   <motion.div key={slug} whileHover={{ x: 5 }} className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
-                      {pt.image ? <img src={pt.image} className="w-8 h-8 object-contain" /> : <Star className="text-yellow-500" fill="currentColor" />}
+                      {pt.image ? <img src={safeUrl(pt.image)} className="w-8 h-8 object-contain" /> : <Star className="text-yellow-500" fill="currentColor" />}
                     </div>
                     <div>
                       <div className="text-2xl font-black">{pt.amount}</div>
@@ -218,7 +219,7 @@ const DashboardContent = () => {
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center grayscale opacity-30 shrink-0">
-                        {quest.image ? <img src={quest.image} className="w-6 h-6 object-contain" /> : <Star size={18} />}
+                        {quest.image ? <img src={safeUrl(quest.image)} className="w-6 h-6 object-contain" /> : <Star size={18} />}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex justify-between items-start mb-1">
@@ -282,7 +283,7 @@ const DashboardContent = () => {
                   {!ach.earned && <div className="absolute top-2 right-2 text-white/20"><Zap size={10} /></div>}
                   <div className={`w-20 h-20 mx-auto mb-4 flex items-center justify-center transition-all ${ach.earned ? 'drop-shadow-[0_0_10px_rgba(99,102,241,0.3)] group-hover:scale-110' : 'grayscale brightness-50'}`}>
                     {ach.image ? (
-                      <img src={ach.image} alt={ach.title} className="w-full h-full object-contain" />
+                      <img src={safeUrl(ach.image)} alt={ach.title} className="w-full h-full object-contain" />
                     ) : (
                       <div className="w-full h-full rounded-2xl bg-white/5 flex items-center justify-center text-4xl">
                         {ach.earned ? '🏆' : '🔒'}

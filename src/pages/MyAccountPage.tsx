@@ -7,10 +7,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones, Instagram, Facebook, Save } from 'lucide-react';
 import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
+import { useSearchParams } from 'react-router-dom';
 
 // Interfaces
 interface Order {
@@ -40,7 +42,23 @@ const MyAccountContent: React.FC = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'overview';
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  // Sync state correctly if parameter changes externally while page is mounted
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Handle manual tab switching and URL update
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    setSearchParams({ tab: tabId });
+  };
 
   // Profile form state
   const [profileForm, setProfileForm] = useState({
@@ -719,7 +737,7 @@ const MyAccountContent: React.FC = () => {
                       return (
                         <button
                           key={tab.id}
-                          onClick={() => setActiveTab(tab.id)}
+                          onClick={() => handleTabChange(tab.id)}
                           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-semibold transition-all ${activeTab === tab.id
                             ? 'bg-primary text-white shadow-lg'
                             : 'text-white/70 hover:text-white hover:bg-white/5'

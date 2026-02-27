@@ -4,7 +4,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import DOMPurify from 'dompurify';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
 import { ProductImage, ProductCategory } from '../types/product';
@@ -162,7 +162,7 @@ const ProductPage: React.FC = () => {
             <div>
               <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
                 <img
-                  src={mainImage}
+                  src={safeUrl(mainImage)}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -176,7 +176,7 @@ const ProductPage: React.FC = () => {
                       onClick={() => setActiveImage(img.src)}
                       className={`rounded-lg overflow-hidden border ${activeImage === img.src ? 'border-primary' : 'border-white/10'}`}
                     >
-                      <img src={img.sizes?.thumbnail || img.src} alt={img.alt || product.name} className="w-full h-full object-cover" />
+                      <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -202,7 +202,7 @@ const ProductPage: React.FC = () => {
               {product.short_description && (
                 <div
                   className="text-white/80 text-lg mb-6"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.short_description) }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.short_description) }}
                 />
               )}
 
@@ -236,7 +236,7 @@ const ProductPage: React.FC = () => {
                 <div className="prose prose-invert max-w-none mt-8">
                   <h2 className="text-2xl font-bold mb-4">{t('shop.product_details')}</h2>
                   <div
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }}
                   />
                 </div>
               )}

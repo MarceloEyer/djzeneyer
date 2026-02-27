@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Star, Award, Zap, TrendingUp } from 'lucide-react';
 import { useGamiPressContext } from '../../contexts/GamiPressContext';
 import { Link } from 'react-router-dom';
+import { safeUrl } from '../../utils/sanitize';
 
 const GamificationWidget: React.FC = () => {
   const { t } = useTranslation();
@@ -120,7 +121,7 @@ const GamificationWidget: React.FC = () => {
               >
                 {achievement?.image ? (
                   <img
-                    src={achievement.image}
+                    src={safeUrl(achievement.image)}
                     alt={achievement.title || t('gamification.achievement')}
                     className="w-6 h-6 object-contain"
                   />

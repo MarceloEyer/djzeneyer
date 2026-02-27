@@ -33,7 +33,7 @@ class DJZ_Vite_Loader
         ];
 
         foreach ($paths as $path) {
-            $cache_key = 'djz_vite_manifest_v2_' . md5($path);
+            $cache_key = 'djz_vite_manifest_v2_' . hash('sha256', $path);
             $cached = get_transient($cache_key);
 
             // OPTIMIZATION: In production, trust the transient cache without filesystem checks
@@ -149,10 +149,10 @@ class DJZ_Vite_Loader
             wp_enqueue_script('djz-react-main', $this->dist_url . '/' . $entry['file'], [], null, true);
         }
 
-        // 2. CSS (Com Hash MD5)
+        // 2. CSS (Com Hash SHA-256)
         if (!empty($entry['css'])) {
             foreach ($entry['css'] as $css_file) {
-                wp_enqueue_style('djz-react-style-' . md5($css_file), $this->dist_url . '/' . $css_file, [], null);
+                wp_enqueue_style('djz-react-style-' . hash('sha256', $css_file), $this->dist_url . '/' . $css_file, [], null);
             }
         }
 

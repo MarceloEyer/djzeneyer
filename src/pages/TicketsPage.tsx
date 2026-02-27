@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { ProductImage, ProductCategory } from '../types/product';
 
 interface Product {
@@ -100,7 +101,7 @@ const TicketsPage: React.FC = () => {
                 >
                   <Link to={isPortuguese ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`} className="block relative aspect-video overflow-hidden">
                     <img
-                      src={ticket.images[0]?.src || 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event'}
+                      src={safeUrl(ticket.images[0]?.src, 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event')}
                       alt={ticket.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -116,7 +117,7 @@ const TicketsPage: React.FC = () => {
 
                   <div className="p-6">
                     <p className="text-white/60 line-clamp-2 mb-6 text-sm">
-                      {ticket.short_description?.replace(/<[^>]*>/g, '') || t('event_desc_fallback', 'Join us for an unforgettable experience.')}
+                      {sanitizeHtml(ticket.short_description).replace(/<[^>]*>/g, '') || t('event_desc_fallback', 'Join us for an unforgettable experience.')}
                     </p>
 
                     <div className="flex items-center justify-between mt-auto">

@@ -1,9 +1,11 @@
+```typescript
 import React, { memo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
+import { sanitizeHtml } from '../utils/sanitize';
 import {
   Download,
   Phone,
@@ -214,9 +216,9 @@ const PressKitPage: React.FC = () => {
                   </h2>
 
                   <div className="space-y-4 text-lg text-white/80 leading-relaxed">
-                    <p dangerouslySetInnerHTML={{ __html: t('presskit.bio.p1') }} />
-                    <p dangerouslySetInnerHTML={{ __html: t('presskit.bio.p2') }} />
-                    <p dangerouslySetInnerHTML={{ __html: t('presskit.bio.p3') }} />
+                    <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p1')) }} />
+                    <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p2')) }} />
+                    <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p3')) }} />
                   </div>
 
                   <div className="mt-8 grid grid-cols-2 gap-4">

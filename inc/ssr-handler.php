@@ -82,20 +82,19 @@ if (isset($_GET['debug_ssr'])) {
     add_action('wp_footer', function () {
         echo "\n<!-- SSR Debug Info:\n";
         echo "Is Bot: " . (djz_is_bot() ? 'YES' : 'NO') . "\n";
-        echo "User Agent: " . ($_SERVER['HTTP_USER_AGENT'] ?? 'None') . "\n";
-        echo "Request URI: " . ($_SERVER['REQUEST_URI'] ?? 'None') . "\n";
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        echo "User Agent: " . esc_html($_SERVER['HTTP_USER_AGENT'] ?? 'None') . "\n";
+        echo "Request URI: " . esc_html($_SERVER['REQUEST_URI'] ?? 'None') . "\n";
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
         $clean_path = trim($path, '/');
-        echo "Path: " . $path . "\n";
+        echo "Path: " . esc_html($path) . "\n";
 
         $theme_path = get_stylesheet_directory();
         if (empty($clean_path)) {
             $ssr_file = $theme_path . '/dist/index.html';
-        }
-        else {
+        } else {
             $ssr_file = $theme_path . '/dist/' . $clean_path . '/index.html';
         }
-        echo "SSR File: " . $ssr_file . "\n";
+        echo "SSR File: " . esc_html($ssr_file) . "\n";
         echo "SSR Exists: " . (file_exists($ssr_file) ? 'YES' : 'NO') . "\n";
         echo "-->\n";
     });
