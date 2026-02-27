@@ -22,13 +22,38 @@ import {
 } from 'lucide-react';
 
 // --- UTILS ---
-const formatGoogleCalendarUrl = (event: any) => {
-  const title = encodeURIComponent(event.title?.rendered || event.title);
+const downloadICS = (event: any) => {
+  const title = event.title?.rendered || event.title || 'Evento';
   const start = new Date(event.date || event.datetime).toISOString().replace(/-|:|\.\d\d\d/g, "");
+  // Padronizar duração para 4 horas caso não venha da API
   const end = new Date(new Date(event.date || event.datetime).getTime() + 4 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "");
-  const location = encodeURIComponent(event.venue ? `${event.venue.name}, ${event.venue.city}, ${event.venue.country}` : "TBA");
-  const details = encodeURIComponent(stripHtml(event.content?.rendered || "").substring(0, 500));
-  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}&sf=true&output=xml`;
+  const location = event.venue ? `${event.venue.name}, ${event.venue.city}, ${event.venue.country}` : "TBA";
+  const details = stripHtml(event.content?.rendered || "").substring(0, 500);
+
+  const icsContent = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//DJ Zen Eyer//Events//PT",
+    "BEGIN:VEVENT",
+    `UID:${event.id}@djzeneyer.com`,
+    `DTSTAMP:${new Date().toISOString().replace(/-|:|\.\d\d\d/g, "")}`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${details}`,
+    `LOCATION:${location}`,
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\r\n");
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 const EventsPage: React.FC = () => {
@@ -169,7 +194,7 @@ const EventsPage: React.FC = () => {
                     <Ticket size={24} /> {t('events_view_tickets').toUpperCase()}
                   </a>
                   <button
-                    onClick={() => window.open(formatGoogleCalendarUrl(singleEvent), '_blank')}
+                    onClick={() => downloadICS(singleEvent)}
                     className="btn btn-outline flex items-center justify-center gap-3 py-5 text-lg rounded-2xl hover:bg-white/5"
                   >
                     <CalendarPlus size={24} /> {t('events_add_to_calendar').toUpperCase()}
@@ -200,7 +225,7 @@ const EventsPage: React.FC = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
-            {/* --- HERO SECTION --- (Refined) */}
+            {/* --- HERO SECTION --- */}
             <motion.section
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -212,33 +237,33 @@ const EventsPage: React.FC = () => {
                   {t('events_hero_badge', 'Live Experiences')}
                 </div>
               </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 font-display uppercase tracking-tighter">
-                {t('events_page_title', 'Next Events')}
+              <h1 className="text-4xl md:text-6xl lg:text-8xl font-black mb-6 font-display uppercase tracking-tighter leading-none">
+                {t('events_page_title', 'Tour Agenda')}
               </h1>
               <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto font-light leading-relaxed">
-                {t('events_experience_subtitle', 'Follow my world sheep. From intensive workshops to international congresses.')}
+                {t('events_experience_subtitle', 'Join the tribe. From intensive workshops to international congresses.')}
               </p>
             </motion.section>
 
-            {/* --- SEARCH & FILTERS --- (Refined) */}
+            {/* --- SEARCH & FILTERS --- */}
             <div className="mb-16">
-              <div className="relative max-w-xl mx-auto">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" size={20} />
+              <div className="relative max-w-xl mx-auto group">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-primary transition-colors" size={20} />
                 <input
                   type="text"
                   placeholder={t('events_filter_placeholder', 'Search city or country...')}
-                  className="w-full bg-surface/50 backdrop-blur-md border border-white/10 rounded-full py-4 pl-14 pr-6 text-base focus:outline-none focus:border-primary/50 transition-all shadow-lg"
+                  className="w-full bg-surface/50 backdrop-blur-md border border-white/10 rounded-full py-5 pl-14 pr-6 text-base focus:outline-none focus:border-primary/50 transition-all shadow-2xl"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
 
-            <div className="space-y-24">
+            <div className="space-y-16">
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {[1, 2, 3, 4, 5, 6].map(i => (
-                    <div key={i} className="h-[450px] bg-white/5 rounded-3xl w-full animate-pulse border border-white/5" />
+                <div className="space-y-4">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="h-24 bg-white/5 rounded-2xl w-full animate-pulse border border-white/5" />
                   ))}
                 </div>
               ) : error ? (
@@ -261,88 +286,90 @@ const EventsPage: React.FC = () => {
                   const monthName = t(`events_month_${dateObj.toLocaleString('en', { month: 'short' }).toLowerCase()}`);
 
                   return (
-                    <section key={monthKey}>
-                      {/* Section Header */}
-                      <div className="flex items-center gap-6 mb-10">
-                        <h2 className="text-2xl md:text-3xl font-bold font-display uppercase tracking-wider text-primary">
+                    <section key={monthKey} className="relative">
+                      {/* Section Header - Sticky-ready */}
+                      <div className="sticky top-24 z-20 flex items-center gap-6 mb-8 py-4 bg-background/80 backdrop-blur-sm -mx-4 px-4">
+                        <h2 className="text-2xl md:text-3xl font-black font-display uppercase tracking-wider text-primary">
                           {monthName} <span className="text-white/20 ml-2">{year}</span>
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      <div className="space-y-4">
                         <AnimatePresence mode="popLayout">
                           {monthEvents.map((event, idx) => {
                             const title = event.title?.rendered || (typeof event.title === 'string' ? event.title : 'Evento');
-                            const image = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || event.featured_image_url || event.image || '/images/hero-background.webp';
                             const date = new Date(event.date || event.datetime || new Date().toISOString());
-                            const location = event.venue ? `${event.venue.city}, ${event.venue.country}` : 'TBA';
+                            const isBrazil = (event.venue?.country || '').toLowerCase().includes('brazil') || (event.venue?.country || '').toLowerCase().includes('brasil');
+                            const locationStr = event.venue
+                              ? `${event.venue.city}, ${isBrazil ? (event.venue.region || 'BR') : (event.venue.country || 'INTL')}`
+                              : 'TBA';
 
                             return (
                               <motion.div
                                 key={event.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: idx * 0.05, duration: 0.5 }}
-                                className="group"
+                                transition={{ delay: idx * 0.03, duration: 0.4 }}
+                                className="group relative"
                               >
-                                <div className="card h-full bg-surface/50 backdrop-blur-sm border border-white/5 rounded-3xl overflow-hidden flex flex-col glow transition-all duration-300 hover:scale-[1.02] hover:border-primary/20">
-                                  {/* Poster */}
-                                  <div className="aspect-[4/5] relative overflow-hidden">
-                                    <img
-                                      src={safeUrl(image)}
-                                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                      alt={title}
-                                    />
-                                    {/* Subtle Date Overlay */}
-                                    <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md border border-white/10 px-3 py-2 rounded-xl text-center min-w-[50px]">
-                                      <div className="text-xl font-bold text-primary leading-none">{date.getDate()}</div>
-                                      <div className="text-[10px] uppercase font-bold text-white/60 tracking-widest mt-0.5">{monthName}</div>
+                                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 p-6 md:p-8 bg-surface/30 hover:bg-surface/50 backdrop-blur-sm border border-white/5 rounded-2xl md:rounded-[2rem] transition-all duration-300 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5">
+
+                                  {/* Date Column */}
+                                  <div className="flex md:flex-col items-center md:items-start gap-4 md:gap-0 min-w-[100px]">
+                                    <span className="text-4xl md:text-5xl font-black text-white leading-none font-display">
+                                      {String(date.getDate()).padStart(2, '0')}
+                                    </span>
+                                    <div className="flex flex-col">
+                                      <span className="text-primary font-bold uppercase text-xs tracking-[0.2em]">
+                                        {date.toLocaleDateString(i18n.language, { weekday: 'short' })}
+                                      </span>
+                                      <span className="md:hidden text-white/40 text-xs font-bold uppercase tracking-widest">
+                                        / {monthName}
+                                      </span>
                                     </div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                                   </div>
 
-                                  {/* Content */}
-                                  <div className="p-6 flex flex-col flex-1">
-                                    <div className="flex items-center gap-2 text-primary font-bold uppercase text-[10px] tracking-widest mb-3">
-                                      <MapPin size={12} /> {location}
+                                  {/* Info Column */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 text-primary font-bold uppercase text-[10px] tracking-widest mb-1 opacity-80">
+                                      <MapPin size={12} /> {locationStr}
                                     </div>
-
                                     <Link
                                       to={`${getLocalizedRoute('events', normalizeLanguage(i18n.language))}/${event.id}`}
-                                      className="block mb-6"
+                                      className="block"
                                     >
-                                      <h3 className="text-xl font-bold font-display uppercase tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-2" dangerouslySetInnerHTML={{ __html: sanitizeHtml(title) }} />
+                                      <h3 className="text-xl md:text-2xl font-bold font-display uppercase tracking-tight leading-tight group-hover:text-primary transition-colors truncate" dangerouslySetInnerHTML={{ __html: sanitizeHtml(title) }} />
                                     </Link>
+                                  </div>
 
-                                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
-                                      <div className="flex items-center gap-2">
-                                        <button
-                                          onClick={() => shareEvent(event)}
-                                          className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors"
-                                          title={t('events_share', 'Share')}
-                                        >
-                                          <Share2 size={16} />
-                                        </button>
-                                        <button
-                                          onClick={() => window.open(formatGoogleCalendarUrl(event), '_blank')}
-                                          className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors"
-                                          title={t('events_add_to_calendar', 'Add to Calendar')}
-                                        >
-                                          <CalendarPlus size={16} />
-                                        </button>
-                                      </div>
+                                  {/* Actions Column */}
+                                  <div className="flex items-center gap-3 mt-4 md:mt-0">
+                                    <button
+                                      onClick={() => downloadICS(event)}
+                                      className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
+                                      title={t('events_add_to_calendar', 'Add to Calendar')}
+                                    >
+                                      <CalendarPlus size={20} className="group-hover/btn:scale-110 transition-transform" />
+                                    </button>
 
-                                      <a
-                                        href={safeUrl(event.url || event.offers?.[0]?.url, '#')}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn btn-primary px-6 py-2 rounded-xl text-xs font-bold flex items-center gap-2"
-                                      >
-                                        <Ticket size={16} /> {t('events_tickets', 'Tickets').toUpperCase()}
-                                      </a>
-                                    </div>
+                                    <button
+                                      onClick={() => shareEvent(event)}
+                                      className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
+                                      title={t('events_share', 'Share')}
+                                    >
+                                      <Share2 size={20} className="group-hover/btn:scale-110 transition-transform" />
+                                    </button>
+
+                                    <a
+                                      href={safeUrl(event.url || event.offers?.[0]?.url, '#')}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="btn btn-primary h-12 px-8 rounded-xl text-xs font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-primary/10"
+                                    >
+                                      <Ticket size={16} /> {t('events_tickets', 'Tickets').toUpperCase()}
+                                    </a>
                                   </div>
                                 </div>
                               </motion.div>
@@ -356,28 +383,38 @@ const EventsPage: React.FC = () => {
               )}
             </div>
 
-            {/* --- BOOKING CTA (Refined) --- */}
+            {/* --- BOOKING CTA --- */}
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-32 card p-12 md:p-20 text-center bg-gradient-to-br from-primary/10 to-accent/5 border border-primary/20 rounded-[3rem] relative overflow-hidden"
+              className="mt-40 p-12 md:p-24 text-center bg-gradient-to-br from-primary/10 via-background to-accent/10 border border-white/5 rounded-[3rem] relative overflow-hidden group shadow-3xl"
             >
-              <Music className="absolute -right-16 -bottom-16 text-white/5 w-64 h-64 rotate-12" />
-              <div className="relative z-10 max-w-2xl mx-auto font-display">
-                <h2 className="text-3xl md:text-5xl font-bold mb-6 uppercase tracking-tight">
+              <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-[0.03] grayscale invert group-hover:opacity-[0.05] transition-opacity" />
+              <Music className="absolute -right-16 -bottom-16 text-white/5 w-96 h-96 rotate-12" />
+
+              <div className="relative z-10 max-w-3xl mx-auto font-display">
+                <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter">
                   {t('home_press_title', 'Bring the Zen Experience')}
                 </h2>
-                <p className="text-lg text-white/60 mb-10 font-light leading-relaxed">
-                  {t('events_experience_subtitle', 'Follow my agenda and workshops. Available for international bookings.')}
+                <p className="text-xl text-white/60 mb-12 font-light leading-relaxed">
+                  {t('events_experience_subtitle', 'Follow my agenda and workshops. Available for international bookings and intensive training.')}
                 </p>
-                <Link
-                  to={getLocalizedRoute('work-with-me', normalizeLanguage(i18n.language))}
-                  className="btn btn-primary px-10 py-4 rounded-2xl text-lg font-bold inline-flex items-center gap-3 hover:scale-105 transition-transform"
-                >
-                  {t('contact', 'Contact for Booking').toUpperCase()}
-                  <ArrowRight size={20} />
-                </Link>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                  <Link
+                    to={getLocalizedRoute('work-with-me', normalizeLanguage(i18n.language))}
+                    className="btn btn-primary px-12 py-5 rounded-2xl text-lg font-bold inline-flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-primary/20"
+                  >
+                    {t('contact', 'Contact for Booking').toUpperCase()}
+                    <ArrowRight size={20} />
+                  </Link>
+                  <Link
+                    to={getLocalizedRoute('press-kit', normalizeLanguage(i18n.language))}
+                    className="btn btn-outline border-white/10 px-12 py-5 rounded-2xl text-lg font-bold inline-flex items-center gap-3 hover:bg-white/5 transition-all"
+                  >
+                    {t('press_kit', 'Press Kit').toUpperCase()}
+                  </Link>
+                </div>
               </div>
             </motion.div>
           </div>
