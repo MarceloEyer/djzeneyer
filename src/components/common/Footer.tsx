@@ -2,27 +2,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Instagram, Youtube, Music2, MessageCircle, Send } from 'lucide-react';
+import { Music, Instagram, Youtube, Music2, MessageCircle, Send, Facebook } from 'lucide-react';
 import { ARTIST } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { useSubscriptionMutation } from '../../hooks/useQueries';
 
-const FacebookIcon: React.FC<{ size?: number, className?: string }> = ({ size = 20, className = "" }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-  </svg>
-);
 
 const Footer: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -89,7 +73,7 @@ const Footer: React.FC = () => {
                 <Youtube size={22} />
               </a>
               <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
-                <FacebookIcon size={22} />
+                <Facebook size={22} />
               </a>
               <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp">
                 <MessageCircle size={22} />
