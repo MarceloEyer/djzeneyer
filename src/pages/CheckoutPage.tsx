@@ -138,7 +138,7 @@ const CheckoutPage: React.FC = () => {
 
       // Handle redirect or success
       if (data.payment_result?.redirect_url) {
-        window.location.href = safeUrl(data.payment_result.redirect_url, '/shop');
+        window.location.href = safeRedirect(data.payment_result.redirect_url, '/shop');
       } else {
         // Defensive clear to guarantee local cart consistency in non-redirect payments
         await clearCart();

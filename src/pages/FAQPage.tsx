@@ -134,7 +134,7 @@ const FAQPage: React.FC = () => {
       <HeadlessSEO
         title={t('faq.title')}
         description={t('faq.subtitle')}
-        url={safeUrl(currentUrl)}
+        url={safeUrl(currentUrl, ARTIST.site.baseUrl)}
         schema={faqSchema}
         keywords="Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adílio porto, lambada history"
       />

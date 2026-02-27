@@ -61,22 +61,16 @@ export const exportJournal = (): void => {
   const blob = new Blob([safeJson], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
 
-  // SEGURANÇA: Gatilho de download controlado
+  // SEGURANÇA: Gatilho de download controlado sem appendChild dinâmico (Evita DOM XSS)
   const a = document.createElement('a');
-  a.style.display = 'none';
   a.href = url;
   a.download = `zen-zouk-journal-${new Date().toISOString().split('T')[0]}.json`;
 
-  document.body.appendChild(a);
-  a.click();
+  // Dispara o clique sem adicionar ao DOM
+  a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
 
-  // Cleanup assíncrono para garantir que o download foi disparado em todos os browsers
-  setTimeout(() => {
-    if (document.body.contains(a)) {
-      document.body.removeChild(a);
-    }
-    URL.revokeObjectURL(url);
-  }, 100);
+  // Revogação imediata do objeto URL após o evento de clique ser processado
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
 export const resetData = (): void => {

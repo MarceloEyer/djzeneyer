@@ -21,6 +21,25 @@ import {
   Filter
 } from 'lucide-react';
 
+// --- CUSTOM BRAND ICONS ---
+const GoogleCalendarLogo = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#4285F4" d="M45 12V36C45 38.2091 43.2091 40 41 40H7C4.79086 40 3 38.2091 3 36V12C3 9.79086 4.79086 8 7 8H41C43.2091 8 45 9.79086 45 12Z" />
+    <path fill="#FBBC05" d="M9 13H15V19H9V13Z" />
+    <path fill="#34A853" d="M17 13H23V19H17V13Z" />
+    <path fill="#EA4335" d="M25 13H31V19H25V13Z" />
+    <path fill="#4285F4" d="M33 13H39V19H33V13Z" />
+    <path fill="white" d="M31 24H17V33H31V24Z" />
+    <path fill="#4285F4" d="M26 26H22V31H26V26Z" />
+  </svg>
+);
+
+const AppleLogo = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.05 20.28c-.96.95-2.04 1.72-3.23 1.72-1.16 0-1.54-.71-2.91-.71-1.39 0-1.8.71-2.91.71-1.18 0-2.31-.83-3.29-1.8C2.71 18.23 1.35 15.11 1.35 12.11c0-3.07 1.94-4.7 3.84-4.7 1 0 1.86.64 2.64.64.75 0 1.75-.7 2.89-.7 1.48 0 2.58.74 3.19 1.63-3.07 1.83-2.58 5.76.5 7-.65 1.58-1.5 3.32-2.36 4.3zM12.03 7.25c-.02-2.31 1.83-4.21 4.14-4.25.04 2.29-1.89 4.29-4.14 4.25z" />
+  </svg>
+);
+
 // --- UTILS ---
 const downloadICS = (event: any) => {
   const title = event.title?.rendered || event.title || 'Evento';
@@ -48,12 +67,17 @@ const downloadICS = (event: any) => {
 
   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
   const url = window.URL.createObjectURL(blob);
+
+  // Usar dispatch de evento customizado ou um elemento estático oculto
+  // Aqui optamos por disparar um evento para um componente pai ou usar um ref
+  // Para simplicidade e segurança sem manipulação direta de appendChild no corpo:
   const link = document.createElement('a');
   link.href = url;
   link.setAttribute('download', `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`);
-  document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
+
+  // Limpar o objeto URL após o clique
+  setTimeout(() => window.URL.revokeObjectURL(url), 100);
 };
 
 const getGoogleCalendarUrl = (event: any) => {
@@ -201,13 +225,13 @@ const EventsPage: React.FC = () => {
                     rel="noopener noreferrer"
                     className="btn btn-primary flex items-center justify-center gap-3 py-5 text-lg rounded-2xl shadow-xl shadow-primary/20"
                   >
-                    <CalendarIcon size={24} /> GOOGLE CALENDAR
+                    <GoogleCalendarLogo size={28} /> GOOGLE CALENDAR
                   </a>
                   <button
                     onClick={() => downloadICS(singleEvent)}
                     className="btn btn-outline flex items-center justify-center gap-3 py-5 text-lg rounded-2xl hover:bg-white/5"
                   >
-                    <CalendarPlus size={24} /> APPLE / iPHONE
+                    <AppleLogo size={28} /> APPLE / iPHONE
                   </button>
                   <button
                     onClick={() => shareEvent(singleEvent)}
@@ -369,15 +393,15 @@ const EventsPage: React.FC = () => {
                                       className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
                                       title="Google Calendar"
                                     >
-                                      <CalendarIcon size={18} className="group-hover/btn:scale-110 transition-transform" />
+                                      <GoogleCalendarLogo size={18} />
                                     </a>
 
                                     <button
                                       onClick={() => downloadICS(event)}
-                                      className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
+                                      className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn text-white/70"
                                       title="Apple / iPhone"
                                     >
-                                      <CalendarPlus size={18} className="group-hover/btn:scale-110 transition-transform" />
+                                      <AppleLogo size={18} />
                                     </button>
 
                                     <button

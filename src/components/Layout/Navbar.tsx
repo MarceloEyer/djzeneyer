@@ -74,7 +74,9 @@ const LanguageSelector: React.FC = React.memo(() => {
             if (newLang === currentLang) return;
             const alternates = getAlternateLinks(location.pathname, currentLang);
             const targetPath = alternates[newLang] || (newLang === 'pt' ? '/pt/' : '/');
-            navigate(sanitizePath(targetPath) + (location.search || '') + (location.hash || ''));
+            // Usamos safeRedirect para garantir que o path resultante seja interno e seguro
+            const finalPath = safeRedirect(sanitizePath(targetPath) + (location.search || '') + (location.hash || ''), '/');
+            navigate(finalPath);
         },
         [currentLang, location, navigate]
     );
