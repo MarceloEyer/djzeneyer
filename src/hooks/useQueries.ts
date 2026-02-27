@@ -40,11 +40,6 @@ interface BandsintownEvent {
   offers?: Array<{ url: string }>;
 }
 
-interface EventsResponse {
-  success: boolean;
-  events: BandsintownEvent[];
-}
-
 export interface MusicTrack {
   id: number;
   title: { rendered: string };
@@ -79,19 +74,70 @@ export interface WPPost {
 }
 
 // ============================================================================
+// EXPORTED FETCH FUNCTIONS (PREFETCH READY)
+// ============================================================================
+
+export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
+  const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch menu');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
+
+export const fetchEventsFn = async (limit = 10): Promise<any[]> => {
+  const apiUrl = buildApiUrl('zen-bit/v1/events', { limit: String(limit) });
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  const data = await res.json();
+
+  // Handle both direct array and { success, events } wrapper
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === 'object' && Array.isArray(data.events)) return data.events;
+  return [];
+};
+
+export const fetchTracksFn = async (): Promise<MusicTrack[]> => {
+  const apiUrl = buildApiUrl('wp/v2/remixes', {
+    per_page: '100',
+    // OPTIMIZATION: Limit fields to reduce payload size
+    _fields: 'id,title,category_name,tag_names,links,featured_image_src,slug',
+  });
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch tracks');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
+
+export const fetchNewsFn = async (): Promise<WPPost[]> => {
+  const apiUrl = buildApiUrl('wp/v2/posts', {
+    per_page: '10',
+    // OPTIMIZATION: Replaced _embed=true with targeted fields
+    _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
+  });
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch news posts');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
+
+export const fetchProductsFn = async (lang?: string) => {
+  const params: Record<string, string> = { per_page: '100' };
+  if (lang) params.lang = lang;
+  const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch products');
+  return res.json();
+};
+
+// ============================================================================
 // MENU QUERY (PÚBLICO)
 // ============================================================================
 
 export const useMenuQuery = (lang: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.menu.list(lang),
-    queryFn: async (): Promise<MenuItem[]> => {
-      const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch menu');
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    },
+    queryFn: () => fetchMenuFn(lang),
     staleTime: STALE_TIME.MENU,
     retry: 1,
   });
@@ -104,17 +150,7 @@ export const useMenuQuery = (lang: string) => {
 export const useEventsQuery = (limit = 10) => {
   return useQuery({
     queryKey: QUERY_KEYS.events.list(limit),
-    queryFn: async (): Promise<any[]> => {
-      const apiUrl = buildApiUrl('zen-bit/v1/events', { limit: String(limit) });
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error(`API ${res.status}`);
-      const data = await res.json();
-
-      // Handle both direct array and { success, events } wrapper
-      if (Array.isArray(data)) return data;
-      if (data && typeof data === 'object' && Array.isArray(data.events)) return data.events;
-      return [];
-    },
+    queryFn: () => fetchEventsFn(limit),
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
   });
@@ -127,17 +163,7 @@ export const useEventsQuery = (limit = 10) => {
 export const useTracksQuery = (options: { enabled?: boolean } = {}) => {
   return useQuery({
     queryKey: QUERY_KEYS.tracks.list(),
-    queryFn: async (): Promise<MusicTrack[]> => {
-      const apiUrl = buildApiUrl('wp/v2/remixes', {
-        per_page: '100',
-        // OPTIMIZATION: Limit fields to reduce payload size
-        _fields: 'id,title,category_name,tag_names,links,featured_image_src,slug',
-      });
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch tracks');
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    },
+    queryFn: fetchTracksFn,
     staleTime: STALE_TIME.TRACKS,
     gcTime: 15 * 60 * 1000,
     ...options,
@@ -170,17 +196,7 @@ export const useTrackBySlug = (slug?: string) => {
 export const useNewsQuery = (options: { enabled?: boolean } = {}) => {
   return useQuery({
     queryKey: QUERY_KEYS.posts.list(),
-    queryFn: async (): Promise<WPPost[]> => {
-      const apiUrl = buildApiUrl('wp/v2/posts', {
-        per_page: '10',
-        // OPTIMIZATION: Replaced _embed=true with targeted fields
-        _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
-      });
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch news posts');
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    },
+    queryFn: fetchNewsFn,
     staleTime: STALE_TIME.POSTS,
     ...options,
   });
@@ -233,14 +249,7 @@ export const useEventById = (id?: string) => {
 export const useProductsQuery = (lang?: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.products.list(lang),
-    queryFn: async () => {
-      const params: Record<string, string> = { per_page: '100' };
-      if (lang) params.lang = lang;
-      const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch products');
-      return res.json();
-    },
+    queryFn: () => fetchProductsFn(lang),
     staleTime: STALE_TIME.PRODUCTS,
   });
 };

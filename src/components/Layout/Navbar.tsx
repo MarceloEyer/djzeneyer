@@ -22,6 +22,8 @@ import { useUser } from '../../contexts/UserContext';
 import UserMenu from '../common/UserMenu';
 import { useMenu } from '../../hooks/useMenu';
 import { getLocalizedRoute, normalizeLanguage, getAlternateLinks } from '../../config/routes';
+import { queryClient, QUERY_KEYS } from '../../config/queryClient';
+import { fetchEventsFn, fetchTracksFn, fetchNewsFn, fetchProductsFn } from '../../hooks/useQueries';
 
 // ============================================================================
 // SECURITY: Robust Path Sanitization
@@ -83,9 +85,10 @@ interface MenuItemProps {
     item: any;
     isMobile: boolean;
     onNavigate: () => void;
+    onPrefetch?: (url: string) => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate, onPrefetch }) => {
     const { t } = useTranslation();
     const { safeUrl, safeTitle, visuals, target } = item;
     const isExternal = safeUrl.startsWith('http');
@@ -96,6 +99,12 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate }) => {
         : `relative group nav-link py-2 text-white/80 hover:text-white transition-colors`;
 
     const activeMobileClass = "bg-primary/10 border-white/5";
+
+    const handleMouseEnter = () => {
+        if (onPrefetch && !isExternal) {
+            onPrefetch(safeUrl);
+        }
+    };
 
     if (isExternal) {
         return (
@@ -121,6 +130,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate }) => {
             to={safeUrl}
             end
             onClick={onNavigate}
+            onMouseEnter={handleMouseEnter}
             className={({ isActive }) => `${commonClass} ${isMobile && isActive ? activeMobileClass : ''} ${!isMobile && isActive ? 'text-primary font-medium' : ''}`}
         >
             {({ isActive }) => (
@@ -177,6 +187,45 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         onLoginClick();
     }, [onLoginClick]);
 
+    /**
+     * OPTIMIZATION: Prefetch data on hover
+     * Identifies the page type from URL and triggers React Query prefetch
+     */
+    const handlePrefetch = useCallback((url: string) => {
+        const lowerUrl = url.toLowerCase();
+
+        // Events Page
+        if (lowerUrl.includes('event')) {
+            queryClient.prefetchQuery({
+                queryKey: QUERY_KEYS.events.list(10),
+                queryFn: () => fetchEventsFn(10)
+            });
+        }
+        // Music Page
+        else if (lowerUrl.includes('music') || lowerUrl.includes('musica') || lowerUrl.includes('música')) {
+            queryClient.prefetchQuery({
+                queryKey: QUERY_KEYS.tracks.list(),
+                queryFn: fetchTracksFn
+            });
+        }
+        // News Page
+        else if (lowerUrl.includes('news') || lowerUrl.includes('noticias')) {
+            queryClient.prefetchQuery({
+                queryKey: QUERY_KEYS.posts.list(),
+                queryFn: fetchNewsFn
+            });
+        }
+        // Shop Page
+        else if (lowerUrl.includes('shop') || lowerUrl.includes('loja')) {
+            // Determine lang from URL prefix or fallback to current
+            const lang = lowerUrl.startsWith('/pt') ? 'pt' : 'en';
+            queryClient.prefetchQuery({
+                queryKey: QUERY_KEYS.products.list(lang),
+                queryFn: () => fetchProductsFn(lang)
+            });
+        }
+    }, []);
+
     const processedMenuItems = useMemo(() => {
         if (!menuItems?.length) return [];
         return menuItems.map(item => {
@@ -209,7 +258,15 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                     </Link>
 
                     <nav className="hidden md:flex items-center space-x-8">
-                        {processedMenuItems.map(item => <MenuItem key={item.ID} item={item} isMobile={false} onNavigate={() => { }} />)}
+                        {processedMenuItems.map(item => (
+                            <MenuItem
+                                key={item.ID}
+                                item={item}
+                                isMobile={false}
+                                onNavigate={() => { }}
+                                onPrefetch={handlePrefetch}
+                            />
+                        ))}
                     </nav>
 
                     <div className="hidden md:flex items-center gap-4">
@@ -233,7 +290,15 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMenuOpen(false)} className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden" />
                         <motion.div initial={{ y: '-100%' }} animate={{ y: 0 }} exit={{ y: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-white/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto">
                             <nav className="flex flex-col space-y-3 mb-6">
-                                {processedMenuItems.map(item => <MenuItem key={item.ID} item={item} isMobile={true} onNavigate={() => setIsMenuOpen(false)} />)}
+                                {processedMenuItems.map(item => (
+                                    <MenuItem
+                                        key={item.ID}
+                                        item={item}
+                                        isMobile={true}
+                                        onNavigate={() => setIsMenuOpen(false)}
+                                        onPrefetch={handlePrefetch}
+                                    />
+                                ))}
                             </nav>
                             <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
                                 {user?.isLoggedIn ? <UserMenu /> : (
