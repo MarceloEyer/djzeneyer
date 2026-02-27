@@ -24,6 +24,7 @@ import { useMenu } from '../../hooks/useMenu';
 import { getLocalizedRoute, normalizeLanguage, getAlternateLinks } from '../../config/routes';
 import { queryClient, QUERY_KEYS } from '../../config/queryClient';
 import { fetchEventsFn, fetchTracksFn, fetchNewsFn, fetchProductsFn } from '../../hooks/useQueries';
+import { safeRedirect } from '../../utils/sanitize';
 
 // ============================================================================
 // SECURITY: Robust Path Sanitization

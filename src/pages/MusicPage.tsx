@@ -79,7 +79,7 @@ const MusicPage: React.FC = () => {
                   <img
                     src={safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp')}
                     className="w-full h-full object-cover"
-                    alt={singleTrack.title?.rendered}
+                    alt={singleTrack.title?.rendered || ''}
                   />
                 </div>
 

@@ -6,7 +6,7 @@ import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
-import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { sanitizeHtml, safeUrl, safeRedirect } from '../utils/sanitize';
 
 interface PaymentMethod {
   id: string;
@@ -138,6 +138,7 @@ const CheckoutPage: React.FC = () => {
 
       // Handle redirect or success
       if (data.payment_result?.redirect_url) {
+        // Garantimos que o redirecionamento seja seguro
         window.location.href = safeRedirect(data.payment_result.redirect_url, '/shop');
       } else {
         // Defensive clear to guarantee local cart consistency in non-redirect payments

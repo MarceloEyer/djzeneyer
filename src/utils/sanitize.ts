@@ -40,6 +40,20 @@ const TRUSTED_DOMAINS = [
 ];
 
 /**
+ * Verifica se uma URL ou caminho é interno ao site.
+ */
+export const isInternalPath = (path: string | undefined | null): boolean => {
+    if (!path) return false;
+    const trimmed = path.trim();
+    // Caminhos que começam com / mas não com // (que o navegador trata como protocolo atual)
+    return (trimmed.startsWith('/') && !trimmed.startsWith('//')) ||
+        trimmed.startsWith('./') ||
+        trimmed.startsWith('../') ||
+        trimmed === '#' ||
+        trimmed.startsWith('#');
+};
+
+/**
  * Valida se uma URL é segura para uso em atributos href ou src.
  * Bloqueia javascript:, data: e outros esquemas perigosos.
  * Valida o domínio contra uma whitelist para links sensíveis.
@@ -53,16 +67,18 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
     const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
 
     try {
-        // Se for um caminho relativo ou âncora, consideramos seguro
-        if (trimmedUrl.startsWith('/') || trimmedUrl.startsWith('#') || trimmedUrl.startsWith('./') || trimmedUrl.startsWith('../')) {
-            // Prevenção de caminhos do tipo //evil.com que o navegador interpreta como protocolo atual
-            if (trimmedUrl.startsWith('//')) {
-                const domain = trimmedUrl.substring(2).split('/')[0].split(':')[0].toLowerCase();
-                if (!TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
-                    return fallback;
-                }
-            }
+        // Se for um caminho interno, consideramos seguro (desde que não seja um //esquema)
+        if (isInternalPath(trimmedUrl)) {
             return trimmedUrl;
+        }
+
+        // Se começar com //, verificamos o domínio
+        if (trimmedUrl.startsWith('//')) {
+            const domain = trimmedUrl.substring(2).split('/')[0].split(':')[0].toLowerCase();
+            if (TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
+                return trimmedUrl;
+            }
+            return fallback;
         }
 
         const parsed = new URL(trimmedUrl);
@@ -70,48 +86,51 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
             return fallback;
         }
 
-        // Validação de Domínio (opcional para links gerais, mas boa prática para segurança profunda)
+        // Validação de Domínio
         const domain = parsed.hostname.toLowerCase();
-        const isTrusted = TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted));
+        TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted));
 
-        // Se não for um domínio confiável, ainda permitimos se for HTTPS (para evitar quebrar links externos legítimos),
-        // mas bloqueamos protocolos de dados e scripts.
-        if (!isTrusted && (parsed.protocol === 'http:' || parsed.protocol === 'https:')) {
-            // Opcional: Logar domínios não confiáveis se necessário
-        }
+        // Para links externos, permitimos se for HTTPS (legítimo), mas bloqueamos domínios suspeitos
+        // se necessário no futuro. Por enquanto, permitimos domínios externos via HTTPS/HTTP
+        // mas o safelist é prioritário para componentes sensíveis.
 
         return trimmedUrl;
     } catch (e) {
-        // Se não for uma URL válida, mas contém esquemas perigosos, bloqueamos
+        // Se não for uma URL válida (ex: caminhos internos complexos), mas contém esquemas perigosos, bloqueamos
         if (/^(javascript|data|vbscript|file|about):/i.test(trimmedUrl)) {
             return fallback;
         }
-        return trimmedUrl;
+        // Se falhar o parse mas for algo como "tel:" ou "mailto:" que o URL() às vezes rejeita sem host
+        if (allowedProtocols.some(proto => trimmedUrl.toLowerCase().startsWith(proto))) {
+            return trimmedUrl;
+        }
+        return isInternalPath(trimmedUrl) ? trimmedUrl : fallback;
     }
 };
 
 /**
  * Garante que um redirecionamento seja para uma rota interna ou domínio confiável.
+ * Previne ataques de Open Redirect (CWE-601).
  */
 export const safeRedirect = (url: string | undefined | null, fallback: string = '/'): string => {
-    const safe = safeUrl(url, fallback);
+    if (!url) return fallback;
 
-    // Se a safeUrl retornou o fallback, não é seguro
-    if (safe === fallback) return fallback;
-
-    try {
-        // Se for URL absoluta, verificamos se o host é confiável
-        if (safe.startsWith('http')) {
-            const parsed = new URL(safe);
-            const domain = parsed.hostname.toLowerCase();
-            if (TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
-                return safe;
-            }
-            return fallback;
-        }
-    } catch (e) {
-        return fallback;
+    // 1. Se for um caminho interno puro (começa com /), é seguro
+    if (isInternalPath(url)) {
+        return url;
     }
 
-    return safe;
+    // 2. Se for uma URL absoluta, verificamos se o host é confiável
+    try {
+        const parsed = new URL(url);
+        const domain = parsed.hostname.toLowerCase();
+
+        if (TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
+            return url;
+        }
+    } catch (e) {
+        // Se o parse falhar e não for interno, por segurança retornamos o fallback
+    }
+
+    return fallback;
 };

@@ -163,7 +163,7 @@ const ProductPage: React.FC = () => {
               <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
                 <img
                   src={safeUrl(mainImage)}
-                  alt={product.name}
+                  alt={product.name || ''}
                   className="w-full h-full object-cover"
                 />
               </div>

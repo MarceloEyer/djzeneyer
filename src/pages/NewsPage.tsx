@@ -73,7 +73,7 @@ const NewsPage: React.FC = () => {
                     <img
                       src={safeUrl(singlePost.featured_image_src_full || singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url)}
                       className="w-full h-full object-cover"
-                      alt={singlePost.title.rendered}
+                      alt={stripHtml(singlePost.title.rendered)}
                     />
                   </div>
                 )}
@@ -196,7 +196,7 @@ const NewsPage: React.FC = () => {
                     <Link to={`${getRouteForKey('news')}/${post.slug}`} className="block h-56 overflow-hidden relative">
                       <img
                         src={safeUrl(post.featured_image_src || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
-                        alt={post.title.rendered}
+                        alt={stripHtml(post.title.rendered)}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         loading="lazy"
                       />

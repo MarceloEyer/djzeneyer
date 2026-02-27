@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
 import { useEventsQuery } from '../hooks/useQueries';
-import { safeUrl } from '../utils/sanitize';
+import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -225,7 +225,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' })}</div>
                   </time>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">{event.title}</h3>
+                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
                     <div className="space-y-1 text-sm text-white/70">
                       <div className="flex items-center gap-2">
                         <MapPin size={14} className="flex-shrink-0" />
@@ -283,7 +283,7 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white">{event.title}</h3>
+                <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
                 <div className="space-y-2 mb-4 text-sm text-white/70">
                   <div className="flex items-start gap-2">
                     <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
