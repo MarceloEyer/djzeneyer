@@ -22,17 +22,17 @@ Verificação de sincronização entre rotas do frontend React e slugs do WordPr
 
 | Rota React | Componente | Status |
 |-----------|-----------|--------|
-| `/news/:slug` | `NewsPage.tsx` | ⚠️ Pendente — Slug individual não renderiza conteúdo |
-| `/events/:id` | `EventsPage.tsx` | ⚠️ Pendente — ID individual não renderiza conteúdo |
+| `/news/:slug` | `NewsPage.tsx` | ✅ OK — Renderização por slug implementada |
+| `/events/:id` | `EventsPage.tsx` | ✅ OK — Renderização por ID implementada |
 | `/shop/:slug` | `ShopPage.tsx` | ✅ OK |
-| `/music/:slug` | `MusicPage.tsx` | ⚠️ Pendente |
+| `/music/:slug` | `MusicPage.tsx` | ✅ OK — Renderização por slug implementada |
 
 ## Próximos Passos
 
-1. Implementar renderização de conteúdo individual em `NewsPage.tsx` baseado no parâmetro `:slug`
-2. Implementar renderização de evento individual em `EventsPage.tsx` baseado no `:id`
-3. Implementar renderização de música individual em `MusicPage.tsx` baseado no `:slug`
+1. Validar canonical/alternate links específicos nas páginas dinâmicas (`news/:slug`, `events/:id`, `music/:slug`)
+2. Adicionar testes automatizados de roteamento para evitar regressão em PT/EN
+3. Monitorar erro 404 de slugs inválidos via observabilidade (frontend + WP logs)
 
 ---
 
-**Atualizado:** Fevereiro 2026
+**Atualizado:** Fevereiro 2026 (revisão pós-auditoria técnica)

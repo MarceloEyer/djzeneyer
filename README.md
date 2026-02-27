@@ -2,7 +2,7 @@
 
 ![Status](https://img.shields.io/badge/status-ativo-success.svg)
 ![React](https://img.shields.io/badge/React-18-blue)
-![Vite](https://img.shields.io/badge/Vite-5-purple)
+![Vite](https://img.shields.io/badge/Vite-7-purple)
 ![WordPress](https://img.shields.io/badge/WordPress-Headless-21759b)
 ![Licença](https://img.shields.io/badge/licença-GPLv2-green)
 
@@ -16,7 +16,7 @@
 
 ## ✨ Funcionalidades
 
-- **🚀 Ultra Rápido:** React 18 + Vite 5, navegação quase instantânea.
+- **🚀 Ultra Rápido:** React 18 + Vite 7, navegação quase instantânea.
 - **🌍 Bilíngue:** Suporte nativo a **Inglês** e **Português** via `i18next`.
 - **🛍️ E-Commerce:** Integração completa com **WooCommerce** para venda de músicas e ingressos.
 - **🎮 Gamificação:** XP, Ranks e Conquistas (via **Zen-RA**) ao ouvir músicas e comprar.
@@ -29,7 +29,7 @@
 
 ### Frontend
 - **Framework:** React 18 + TypeScript
-- **Build:** Vite 5
+- **Build:** Vite 7
 - **Estilo:** Tailwind CSS + Framer Motion
 - **Estado:** React Query (TanStack Query v5) + Context API
 - **Roteamento:** React Router 7
