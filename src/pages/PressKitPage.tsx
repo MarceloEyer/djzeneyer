@@ -1,4 +1,3 @@
-```typescript
 import React, { memo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { motion } from 'framer-motion';
