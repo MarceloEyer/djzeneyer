@@ -56,6 +56,16 @@ const downloadICS = (event: any) => {
   document.body.removeChild(link);
 };
 
+const getGoogleCalendarUrl = (event: any) => {
+  const title = encodeURIComponent(event.title?.rendered || event.title || 'Evento');
+  const start = new Date(event.date || event.datetime).toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const end = new Date(new Date(event.date || event.datetime).getTime() + 4 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "");
+  const location = encodeURIComponent(event.venue ? `${event.venue.name}, ${event.venue.city}, ${event.venue.country}` : "TBA");
+  const details = encodeURIComponent(stripHtml(event.content?.rendered || "").substring(0, 500));
+
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
+};
+
 const EventsPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const { t, i18n } = useTranslation();
@@ -186,18 +196,24 @@ const EventsPage: React.FC = () => {
 
                 <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <a
-                    href={safeUrl(singleEvent.url || singleEvent.offers?.[0]?.url, '#')}
+                    href={getGoogleCalendarUrl(singleEvent)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-primary flex items-center justify-center gap-3 py-5 text-lg rounded-2xl shadow-xl shadow-primary/20"
                   >
-                    <Ticket size={24} /> {t('events_view_tickets').toUpperCase()}
+                    <CalendarIcon size={24} /> GOOGLE CALENDAR
                   </a>
                   <button
                     onClick={() => downloadICS(singleEvent)}
                     className="btn btn-outline flex items-center justify-center gap-3 py-5 text-lg rounded-2xl hover:bg-white/5"
                   >
-                    <CalendarPlus size={24} /> {t('events_add_to_calendar').toUpperCase()}
+                    <CalendarPlus size={24} /> APPLE / iPHONE
+                  </button>
+                  <button
+                    onClick={() => shareEvent(singleEvent)}
+                    className="btn btn-outline border-white/10 sm:col-span-2 flex items-center justify-center gap-3 py-5 text-lg rounded-2xl hover:bg-white/5"
+                  >
+                    <Share2 size={24} /> {t('events_share', 'Share').toUpperCase()}
                   </button>
                 </div>
               </motion.div>
@@ -345,31 +361,32 @@ const EventsPage: React.FC = () => {
                                   </div>
 
                                   {/* Actions Column */}
-                                  <div className="flex items-center gap-3 mt-4 md:mt-0">
+                                  <div className="flex items-center gap-2 mt-4 md:mt-0">
+                                    <a
+                                      href={getGoogleCalendarUrl(event)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
+                                      title="Google Calendar"
+                                    >
+                                      <CalendarIcon size={18} className="group-hover/btn:scale-110 transition-transform" />
+                                    </a>
+
                                     <button
                                       onClick={() => downloadICS(event)}
-                                      className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
-                                      title={t('events_add_to_calendar', 'Add to Calendar')}
+                                      className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
+                                      title="Apple / iPhone"
                                     >
-                                      <CalendarPlus size={20} className="group-hover/btn:scale-110 transition-transform" />
+                                      <CalendarPlus size={18} className="group-hover/btn:scale-110 transition-transform" />
                                     </button>
 
                                     <button
                                       onClick={() => shareEvent(event)}
-                                      className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
+                                      className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all group/btn"
                                       title={t('events_share', 'Share')}
                                     >
-                                      <Share2 size={20} className="group-hover/btn:scale-110 transition-transform" />
+                                      <Share2 size={18} className="group-hover/btn:scale-110 transition-transform" />
                                     </button>
-
-                                    <a
-                                      href={safeUrl(event.url || event.offers?.[0]?.url, '#')}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="btn btn-primary h-12 px-8 rounded-xl text-xs font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-primary/10"
-                                    >
-                                      <Ticket size={16} /> {t('events_tickets', 'Tickets').toUpperCase()}
-                                    </a>
                                   </div>
                                 </div>
                               </motion.div>
