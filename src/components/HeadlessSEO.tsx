@@ -207,7 +207,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
       {/* Preloads */}
       {preload.map((item, index) => (
-        <link key={`preload-${index}`} rel="preload" {...item} />
+        <link key={`preload-${index}`} rel="preload" {...item} href={safeUrl(item.href)} />
       ))}
 
       {/* Basic SEO */}

@@ -60,13 +60,23 @@ export const exportJournal = (): void => {
   const safeJson = json.replace(/<(?:.|\n)*?>/gm, '');
   const blob = new Blob([safeJson], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
+
+  // SEGURANÇA: Gatilho de download controlado
   const a = document.createElement('a');
+  a.style.display = 'none';
   a.href = url;
   a.download = `zen-zouk-journal-${new Date().toISOString().split('T')[0]}.json`;
+
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+
+  // Cleanup assíncrono para garantir que o download foi disparado em todos os browsers
+  setTimeout(() => {
+    if (document.body.contains(a)) {
+      document.body.removeChild(a);
+    }
+    URL.revokeObjectURL(url);
+  }, 100);
 };
 
 export const resetData = (): void => {

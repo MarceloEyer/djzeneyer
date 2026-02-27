@@ -44,17 +44,19 @@ function djz_serve_ssr()
     $path = parse_url($request_uri, PHP_URL_PATH);
 
     // Normalizar o path para encontrar o arquivo gerado pelo prerender.js
-    // O prerender.js cria pastas para cada rota e um index.html dentro.
-    // Ex: /about -> /dist/about/index.html
-    // Ex: /      -> /dist/index.html
     $clean_path = trim($path, '/');
+
+    // SEGURANÇA: Bloquear Path Traversal
+    // 1. Remover qualquer tentativa de ".." ou caminhos absolutos
+    $clean_path = str_replace(['..', './'], '', $clean_path);
+    // 2. Permitir apenas caracteres seguros (alfanumérico, barra, traço, underscore)
+    $clean_path = preg_replace('/[^a-zA-Z0-9\/\-_]/', '', $clean_path);
 
     $theme_path = get_stylesheet_directory();
     if (empty($clean_path)) {
         $ssr_file = $theme_path . '/dist/index.html';
         $display_filename = 'index.html';
-    }
-    else {
+    } else {
         $ssr_file = $theme_path . '/dist/' . $clean_path . '/index.html';
         $display_filename = $clean_path . '/index.html';
     }
@@ -82,11 +84,11 @@ if (isset($_GET['debug_ssr'])) {
     add_action('wp_footer', function () {
         echo "\n<!-- SSR Debug Info:\n";
         echo "Is Bot: " . (djz_is_bot() ? 'YES' : 'NO') . "\n";
-        echo "User Agent: " . esc_html($_SERVER['HTTP_USER_AGENT'] ?? 'None') . "\n";
-        echo "Request URI: " . esc_html($_SERVER['REQUEST_URI'] ?? 'None') . "\n";
+        echo "User Agent: " . htmlspecialchars($_SERVER['HTTP_USER_AGENT'] ?? 'None') . "\n";
+        echo "Request URI: " . htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'None') . "\n";
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
         $clean_path = trim($path, '/');
-        echo "Path: " . esc_html($path) . "\n";
+        echo "Path: " . htmlspecialchars($path) . "\n";
 
         $theme_path = get_stylesheet_directory();
         if (empty($clean_path)) {
@@ -94,7 +96,7 @@ if (isset($_GET['debug_ssr'])) {
         } else {
             $ssr_file = $theme_path . '/dist/' . $clean_path . '/index.html';
         }
-        echo "SSR File: " . esc_html($ssr_file) . "\n";
+        echo "SSR File: " . htmlspecialchars($ssr_file) . "\n";
         echo "SSR Exists: " . (file_exists($ssr_file) ? 'YES' : 'NO') . "\n";
         echo "-->\n";
     });

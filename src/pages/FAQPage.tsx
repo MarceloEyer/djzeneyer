@@ -4,7 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen, HeartPulse } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
-import { sanitizeHtml } from '../utils/sanitize';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 
 // ============================================================================
 // COMPONENTE FAQITEM
@@ -14,7 +14,7 @@ const FAQItem = memo<{
   answer: string;
   isOpen: boolean;
   onToggle: () => void;
-}>(({ question, answer, isOpen, onToggle }) => (
+}>(({ question, answer, isOpen, onToggle }: { question: string; answer: string; isOpen: boolean; onToggle: () => void }) => (
   <motion.div
     className="bg-surface/30 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-primary/30 transition-all duration-300"
     initial={{ opacity: 0, y: 10 }}
@@ -134,7 +134,7 @@ const FAQPage: React.FC = () => {
       <HeadlessSEO
         title={t('faq.title')}
         description={t('faq.subtitle')}
-        url={currentUrl}
+        url={safeUrl(currentUrl)}
         schema={faqSchema}
         keywords="Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adílio porto, lambada history"
       />

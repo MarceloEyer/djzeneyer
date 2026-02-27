@@ -161,7 +161,7 @@ const EventsPage: React.FC = () => {
 
                 <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <a
-                    href={singleEvent.url || singleEvent.offers?.[0]?.url || '#'}
+                    href={safeUrl(singleEvent.url || singleEvent.offers?.[0]?.url, '#')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-primary flex items-center justify-center gap-3 py-5 text-lg rounded-2xl shadow-xl shadow-primary/20"
@@ -335,7 +335,7 @@ const EventsPage: React.FC = () => {
                                       </div>
 
                                       <a
-                                        href={event.url || event.offers?.[0]?.url || '#'}
+                                        href={safeUrl(event.url || event.offers?.[0]?.url, '#')}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn btn-primary px-6 py-2 rounded-xl text-xs font-bold flex items-center gap-2"
