@@ -1,7 +1,7 @@
 // src/components/EventsList.tsx
 // ARQUITETURA DEFINITIVA: VISUAL LIMPO + JSON-LD ROBUSTO + REACT QUERY CACHE
 
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
@@ -38,7 +38,12 @@ interface EventsListProps {
 // 2. COMPONENT
 // ============================================================================
 
-export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary re-renders.
+// Since `EventsList` mostly receives primitive props (`limit`, `showTitle`, `variant`),
+// `memo` effectively prevents it from re-rendering when its parent components re-render.
+// This is especially beneficial because the component does complex DOM generation and
+// JSON-LD stringification internally.
+export const EventsList = memo(function EventsList({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
@@ -330,4 +335,4 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
       )}
     </div>
   );
-}
+});
