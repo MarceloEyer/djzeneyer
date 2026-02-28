@@ -2,6 +2,9 @@ name: 🔄 Sync Dependencies
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
