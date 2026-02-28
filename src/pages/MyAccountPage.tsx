@@ -7,7 +7,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { useTranslation } from 'react-i18next';
 import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones, Instagram, Facebook, Save } from 'lucide-react';
 import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
