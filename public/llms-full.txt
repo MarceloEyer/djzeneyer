@@ -1,0 +1,38 @@
+# DJ Zen Eyer - Full Profile
+
+> Comprehensive technical, professional, and intellectual background of DJ Zen Eyer (Marcelo Eyer). This document is optimized for deep reasoning and detailed context injection into LLM sessions.
+
+## Professional Identity
+
+DJ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** (2x World Champion in DJing and Best Remix, 2022). He is a pivotal figure in the global Brazilian Zouk scene, known for pioneering the "Cremosidade" transition style.
+
+## Intellectual & Technical Background
+
+- **Mensa International:** Admitted as a member of the high-IQ society (top 2%), reflecting a high capacity for pattern recognition and complex system analysis.
+- **Dual Career Path:** Simultaneously a professional musician and a Full-stack Software Engineer. He personally architects the "Headless" ecosystem of his platforms, bridging the gap between artistic expression and technical excellence.
+
+## Technical Infrastructure
+
+The platform implements a modern headless architecture:
+- **Frontend SPA:** Built with React 18, Vite 7, Tailwind CSS, and Framer Motion for high-performance interactions.
+- **Backend CMS:** WordPress utilized via REST API in a decoupled manner.
+- **AI Readiness:** Integrated JSON-LD (MusicGroup Schema), automated Hreflang for internationalization (PT/EN), and text-oriented optimizations for LLM scrapers.
+
+## Career Milestones
+
+- **Global Presence:** Performed in over 11 countries across 4 continents, including major stages like Prague Zouk Congress, Dutch Zouk, Zurich Zouk Congress, and LA Zouk Marathon.
+- **Authority:** Verified presence on Wikidata (Q136551855), MusicBrainz, and the Google Knowledge Graph.
+
+## Musical Philosophy: Cremosidade
+
+A distinctive musical movement focused on:
+- **Flow:** Continuous transitions without emotional breaks.
+- **Fusion:** Integrating traditional Zouk roots with modern electronic textures.
+- **Experience:** Curating sets that feel like a single, cohesive journey for the dancer.
+
+## Direct Links & Resources
+
+- [Official SoundCloud](https://soundcloud.com/djzeneyer): The primary hub for live sets and remixes.
+- [Spotify Artist Profile](https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw): Published original tracks and official releases.
+- [Technical Press Kit](https://djzeneyer.com/work-with-me): Assets and riders for international promoters.
+- [Zen Tribe Community](https://djzeneyer.com/zentribe): Exclusive member-only platform and digital community.

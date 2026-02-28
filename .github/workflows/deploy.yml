@@ -355,7 +355,7 @@ jobs:
           mkdir -p temp_public
           
           # Arquivos básicos
-          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
+          SAFE_FILES=(".htaccess" "robots.txt" "ai-bots.txt" "llms.txt" "llms-full.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
           for file in "${SAFE_FILES[@]}"; do
             if [ -f "public/$file" ]; then cp "public/$file" temp_public/; fi
           done
