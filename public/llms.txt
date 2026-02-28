@@ -1,0 +1,28 @@
+# DJ Zen Eyer - Official Website (Technical & Career Summary)
+
+DJ Zen Eyer is a 2x World Champion Brazilian Zouk DJ and music producer, known for his innovative style and contribution to the global dance scene.
+
+## Core Information
+- **Name:** Zen Eyer (Marcelo Eyer)
+- **Roles:** DJ, Music Producer, Technical Full-stack Engineer.
+- **Achievements:** 2x Brazilian Zouk World Champion DJ.
+- **Expertise:** Music Production (Ableton, Logic), Brazilian Zouk history (BZC), Web Development (React, WordPress Headless).
+
+## Key Website Sections
+- **Home:** [https://djzeneyer.com/](https://djzeneyer.com/)
+- **About:** [https://djzeneyer.com/about](https://djzeneyer.com/about) (Career history & bio)
+- **Events:** [https://djzeneyer.com/events](https://djzeneyer.com/events) (Tour dates and schedules)
+- **Music:** [https://djzeneyer.com/music](https://djzeneyer.com/music) (Exclusive remixes, singles, and albums)
+- **Shop:** [https://djzeneyer.com/shop](https://djzeneyer.com/shop) (Digital products and official merch)
+- **Zen Tribe:** [https://djzeneyer.com/zentribe](https://djzeneyer.com/zentribe) (Community and membership)
+- **Press Kit:** [https://djzeneyer.com/work-with-me](https://djzeneyer.com/work-with-me) (Technical rider, booking, and bio)
+
+## Developer Resources & API
+- **AI Data Endpoint:** [https://djzeneyer.com/wp-json/djz/v1/ai-data](https://djzeneyer.com/wp-json/djz/v1/ai-data) (Aggregated data for LLMs)
+- **REST API:** [https://djzeneyer.com/wp-json/wp/v2/](https://djzeneyer.com/wp-json/wp/v2/) (Standard WordPress endpoints)
+
+## External Links & Authority
+- **SoundCloud:** [https://soundcloud.com/djzeneyer](https://soundcloud.com/djzeneyer)
+- **Spotify:** [https://open.spotify.com/artist/04C...](https://open.spotify.com/artist/04Cw3hN89O77oYqjS2o8u6)
+- **Wikidata:** [https://www.wikidata.org/wiki/Q110821557](https://www.wikidata.org/wiki/Q110821557)
+- **MusicBrainz:** [https://musicbrainz.org/artist/f64...](https://musicbrainz.org/artist/f64483a6-574f-4d3f-91fb-5517e5a7ef64)
