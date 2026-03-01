@@ -1,200 +1,220 @@
 // src/pages/MusicPage.tsx
-import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getHreflangUrls } from '../utils/seo';
-import { Download, Music2, Filter, Youtube, Cloud, Play, ArrowLeft } from 'lucide-react';
-import { useTracksQuery, useTrackBySlug } from '../hooks/useQueries';
+import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
+import { useTrackBySlug } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
 import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
+import { ARTIST } from '../data/artistData';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+
+// --- SVG Icons for music platforms ---
+const SpotifyIcon = () => (
+  <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+  </svg>
+);
 
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
-  // OPTIMIZATION: Avoid fetching the full list if we are viewing a single track
-  const { data: tracks = [], isLoading: loading, error } = useTracksQuery({ enabled: !slug });
+  const currentLang = normalizeLanguage(i18n.language);
+
   const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
-  const [activeTag, setActiveTag] = useState<string>('Todos');
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Helper para rotas localizadas
   const getRouteForKey = (key: string): string => {
     const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
     if (!route) return `/${key}`;
-    const normalizedLanguage = normalizeLanguage(i18n.language);
-    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
+    return buildFullPath(getLocalizedPaths(route, currentLang)[0], currentLang);
   };
 
-  if (error) {
-    console.error('Error fetching tracks:', error);
-  }
+  const streamingPlatforms = [
+    {
+      name: 'Spotify',
+      icon: <SpotifyIcon />,
+      url: ARTIST.social.spotify.url,
+      color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50'
+    },
+    {
+      name: 'Apple Music',
+      icon: <Music2 className="text-[#FA243C]" />,
+      url: ARTIST.social.appleMusic.url,
+      color: 'hover:bg-[#FA243C]/20 border-[#FA243C]/20 hover:border-[#FA243C]/50'
+    },
+    {
+      name: 'SoundCloud',
+      icon: <Cloud className="text-[#FF5500]" />,
+      url: ARTIST.social.soundcloud.url,
+      color: 'hover:bg-[#FF5500]/20 border-[#FF5500]/20 hover:border-[#FF5500]/50'
+    },
+    {
+      name: 'YouTube',
+      icon: <Youtube className="text-[#FF0000]" />,
+      url: ARTIST.social.youtube.url,
+      color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50'
+    }
+  ];
 
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
-  if (slug) {
-    if (singleLoading) {
-       return (
+  if (!singleLoading && slug && singleTrack) {
+    return (
+      <>
+        <HeadlessSEO
+          title={`${singleTrack.title?.rendered || t('music.pageTitle')} | Zen Music`}
+          description={singleTrack.excerpt?.rendered || t('music.pageDesc')}
+          url={`https://djzeneyer.com/music/${slug}`}
+        />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
-             <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-white/40 mb-10 font-bold">
-              <ArrowLeft size={20} /> VOLTAR PARA MÚSICAS
+            <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
+              <ArrowLeft size={20} /> {t('music.back')}
             </Link>
-            <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 h-96 animate-pulse"></div>
-          </div>
-        </div>
-       )
-    }
 
-    if (singleTrack) {
-      return (
-        <>
-          <HeadlessSEO
-            title={`${singleTrack.title?.rendered || 'Music'} | Zen Music`}
-            description={singleTrack.excerpt?.rendered || "Ouça as últimas produções de DJ Zen Eyer."}
-            url={`https://djzeneyer.com/music/${slug}`}
-          />
-          <div className="min-h-screen bg-background text-white pt-24 pb-20">
-            <div className="container mx-auto px-4 max-w-4xl">
-              <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
-                <ArrowLeft size={20} /> VOLTAR PARA MÚSICAS
-              </Link>
-
-              <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative group">
-                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Music2 size={200} />
-                </div>
-
-                <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
-                  <div className="w-64 h-64 rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
-                    <img
-                      src={singleTrack.featured_image_src || '/images/hero-background.webp'}
-                      className="w-full h-full object-cover"
-                      alt={singleTrack.title?.rendered}
-                    />
-                  </div>
-
-                  <div className="text-center md:text-left flex-1">
-                    <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: singleTrack.title?.rendered }} />
-                    <p className="text-primary font-bold mb-8 tracking-widest uppercase">DJ Zen Eyer Original</p>
-
-                    <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                      <button className="btn btn-primary px-10 py-4 rounded-full flex items-center gap-3 text-lg font-bold">
-                        <Play fill="currentColor" size={20} /> OUVIR AGORA
-                      </button>
-                      <a href={singleTrack.links?.soundcloud || singleTrack.acf?.soundcloud_url} target="_blank" rel="noopener" className="btn btn-outline px-8 py-4 rounded-full flex items-center gap-2">
-                        <Cloud size={20} /> SOUNDCLOUD
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-16 border-t border-white/5 pt-10">
-                  <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Filter size={18} className="text-primary" /> SOBRE A FAIXA</h2>
-                  <div
-                    className="prose prose-invert max-w-none text-white/60"
-                    dangerouslySetInnerHTML={{ __html: singleTrack.content?.rendered || "" }}
+            <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative group">
+              <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
+                <div className="w-64 h-64 rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
+                  <img
+                    src={safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp')}
+                    className="w-full h-full object-cover"
+                    alt={singleTrack.title?.rendered || ''}
                   />
                 </div>
+
+                <div className="text-center md:text-left flex-1">
+                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singleTrack.title?.rendered) }} />
+                  <p className="text-primary font-bold mb-8 tracking-widest uppercase">{t('music.artist_tag')}</p>
+
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    {singleTrack.links?.spotify && (
+                      <a href={safeUrl(singleTrack.links.spotify)} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2">
+                        <Play fill="currentColor" size={18} /> {t('common.platforms.spotify', 'SPOTIFY')}
+                      </a>
+                    )}
+                    {singleTrack.links?.soundcloud && (
+                      <a href={safeUrl(singleTrack.links.soundcloud)} target="_blank" rel="noopener noreferrer" className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20">
+                        <Cloud size={18} /> {t('common.platforms.soundcloud', 'SOUNDCLOUD')}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-16 border-t border-white/5 pt-10">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Music2 size={18} className="text-primary" /> {t('music.about_track')}</h2>
+                <div
+                  className="prose prose-invert max-w-none text-white/60"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "") }}
+                />
               </div>
             </div>
           </div>
-        </>
-      );
-    }
+        </div>
+      </>
+    );
   }
-
-  // --- RENDERIZAÇÃO DA LISTA (Original logic maintained with i18n links) ---
-  const tags = ['Todos', ...new Set(tracks.flatMap((t: any) => t.tags_names || []))];
-  const filteredTracks = tracks.filter((track: any) => {
-    const matchesTag = activeTag === 'Todos' || track.tags_names?.includes(activeTag);
-    const matchesSearch = track.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTag && matchesSearch;
-  });
 
   return (
     <>
-      <HeadlessSEO 
-        title="Zen Music | High-Energy Zouk Remixes"
-        description="Explore as produções musicais, remixes e sets originais de DJ Zen Eyer."
-        url="https://djzeneyer.com/music"
+      <HeadlessSEO
+        title={`${t('music_page_title')} | DJ Zen Eyer`}
+        description={t('music_page_meta_desc')}
+        url={`https://djzeneyer.com${currentLang === 'pt' ? '/pt/musica' : '/music'}`}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mb-16">
-            <h1 className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6">
-              ZEN <span className="text-primary italic">SOUNDS</span>
-            </h1>
-            <p className="text-xl text-white/60">Remixes oficiais e produções originais para a pista.</p>
+        <div className="container mx-auto px-4 max-w-5xl">
+
+          <div className="text-center mb-16">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6 uppercase"
+            >
+              <Trans i18nKey="music.hub_title_rich">
+                <span className="text-primary">Streaming</span> Hub
+              </Trans>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-xl text-white/60"
+            >
+              {t('music.hub_subtitle')}
+            </motion.p>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8 mb-12 items-center justify-between">
-            <div className="flex flex-wrap gap-2">
-              {tags.map(tag => (
-                <button
-                  key={tag}
-                  onClick={() => setActiveTag(tag)}
-                  className={`px-6 py-2 rounded-full text-sm font-bold border transition-all ${
-                    activeTag === tag ? 'bg-primary border-primary text-black' : 'bg-white/5 border-white/10 hover:border-primary/50'
-                  }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-            <div className="relative w-full md:w-80">
-              <input 
-                type="text" 
-                placeholder="Buscar música..." 
-                className="w-full bg-white/5 border border-white/10 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-primary"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            {streamingPlatforms.map((platform, index) => (
+              <motion.a
+                key={platform.name}
+                href={safeUrl(platform.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 + 0.3 }}
+                className={`flex items-center justify-between p-6 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 flex justify-center">{platform.icon}</div>
+                  <span className="text-xl font-bold font-display uppercase tracking-wider">{platform.name}</span>
+                </div>
+                <ExternalLink size={20} className="text-white/20 group-hover:text-white/60 transition-colors" />
+              </motion.a>
+            ))}
           </div>
 
-          {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
-              {[1,2,3,4,5,6].map(i => <div key={i} className="h-80 bg-white/5 rounded-3xl" />)}
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTracks.map((track: any) => (
-                <motion.div
-                  key={track.id}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="bg-surface/30 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/40 transition-all group"
-                >
-                  <div className="aspect-square relative overflow-hidden">
-                    <img 
-                      src={track.featured_image_src || '/images/hero-background.webp'}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      alt={track.title.rendered}
-                    />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                      <Link 
-                        to={`${getRouteForKey('music')}/${track.slug}`}
-                        className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform"
-                      >
-                        <Play fill="currentColor" size={20} />
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold font-display mb-2 truncate" dangerouslySetInnerHTML={{ __html: track.title.rendered }} />
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-xs text-white/40 font-mono">ZEN EYER REMIX</span>
-                      <div className="flex gap-3">
-                        <Youtube size={18} className="text-white/20 hover:text-primary cursor-pointer" />
-                        <Cloud size={18} className="text-white/20 hover:text-primary cursor-pointer" />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Download / Steal Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="bg-red-500/5 border border-red-500/10 rounded-3xl p-8 relative overflow-hidden group"
+            >
+              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Download size={160} />
+              </div>
+              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
+                <Download className="text-red-500" /> {t('music.steal_button')}
+              </h3>
+              <p className="text-white/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
+              <a
+                href="https://download.djzeneyer.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
+              >
+                {t('music.steal_cta')} <ExternalLink size={16} />
+              </a>
+            </motion.div>
+
+            {/* Support / Coffee Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="bg-primary/5 border border-primary/10 rounded-3xl p-8 relative overflow-hidden group"
+            >
+              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Coffee size={160} />
+              </div>
+              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
+                <Coffee className="text-primary" /> {t('music.support_button')}
+              </h3>
+              <p className="text-white/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
+              <Link
+                to={getRouteForKey('support-the-artist')}
+                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+              >
+                {t('music.support_cta')} <ExternalLink size={16} />
+              </Link>
+            </motion.div>
+          </div>
+
         </div>
       </div>
     </>

@@ -1,122 +1,76 @@
-# Documentation
+# 📖 Documentação — DJ Zen Eyer
 
-Complete documentation for DJ Zen Eyer website.
-
----
-
-## 📖 Documentation Index
-
-### Getting Started
-
-- **[Architecture Overview](ARCHITECTURE.md)** - Technical architecture and data flow
-- **[Setup Guide](setup/)** - Installation and configuration instructions
-
-### Configuration
-
-- **[WordPress Configuration](guides/WORDPRESS-CONFIG.md)** - WordPress settings and optimization
-- **[Cloudflare Setup](guides/CLOUDFLARE.md)** - CDN and security configuration
-- **[LiteSpeed Cache](guides/LITESPEED-CACHE.md)** - Server-side caching setup
-- **[.htaccess Rules](guides/HTACCESS.md)** - Server configuration and URL rewriting
-
-### Custom Plugins
-
-- **[Plugins Guide](plugins/PLUGINS-GUIDE.md)** - Overview of all custom plugins
-- **[Zen SEO Lite](plugins/ZEN-SEO.md)** - SEO optimization plugin
-- **[ZenEyer Auth](../plugins/zeneyer-auth/README.md)** - Authentication plugin
-- **[Zen BIT](../plugins/zen-bit/README.md)** - Bandsintown events integration
-- **[Zen-RA](../plugins/zen-ra/README.md)** - Recent activity API
-
-### Troubleshooting
-
-- **[Common Issues](troubleshooting/COMMON-ISSUES.md)** - Frequently encountered problems and solutions
-- **[Cloudflare + Google Login Fix](troubleshooting/CLOUDFLARE-FIX-GOOGLE-LOGIN.md)** - Fix OAuth issues with Cloudflare
-
-### Marketing & Growth
-
-- **[Marketing Strategies](guides/MARKETING.md)** - Growth and promotion tactics
-- **[Black Hat SEO](guides/BLACKHAT.md)** - Aggressive growth techniques (use with caution)
+Documentação técnica completa do projeto DJ Zen Eyer.
 
 ---
 
-## 🏗️ Quick Reference
+## Índice
 
-### Tech Stack
+### Início Rápido
+- **[Arquitetura](ARCHITECTURE.md)** — Visão geral da arquitetura e fluxo de dados
+- **[Setup](SETUP.md)** — Guia de instalação e configuração
 
-**Frontend:**
-- React 18 + TypeScript + Vite 5
-- Tailwind CSS 3.4
-- React Query 5.90
-- i18next 25.7 (EN/PT)
+### Referência Técnica
+- **[API](API.md)** — Endpoints REST do tema e plugins
+- **[Configuração](CONFIGURATION.md)** — WordPress, .htaccess, LiteSpeed, Cloudflare
+- **[Guia do Desenvolvedor](DEV_GUIDE.md)** — Como estender o projeto
 
-**Backend:**
-- WordPress 6.0+ (Headless)
-- PHP 8.0+
-- MySQL 5.7+
-- WooCommerce + GamiPress + Polylang
+### Análises e Auditorias
+- **[Auditoria de Rotas](ROUTE_AUDIT.md)** — Sincronização de rotas Frontend ↔ WordPress
+- **[Análise ESLint](ESLINT_ANALYSIS.md)** — Por que ficar no ESLint 9
+- **[Marketing](MARKETING.md)** — Estratégias de crescimento
 
-**Infrastructure:**
-- LiteSpeed Server
-- Cloudflare CDN
-- Hostinger VPS
-- GitHub Actions CI/CD
+---
 
-### Directory Structure
+## Referência Rápida
+
+### Stack
+
+| Camada | Tecnologias |
+|--------|-------------|
+| **Frontend** | React 18, TypeScript, Vite 7, Tailwind CSS, React Query 5, i18next |
+| **Backend** | WordPress 6.0+ (Headless), PHP 8.0+, WooCommerce, GamiPress |
+| **Infra** | Hostinger VPS (LiteSpeed), Cloudflare CDN, GitHub Actions |
+
+### Estrutura Principal
 
 ```
 djzeneyer/
-├── src/                   # React frontend
-├── inc/                   # WordPress theme PHP
-├── plugins/               # Custom WP plugins
-├── scripts/               # Build scripts
-├── docs/                  # Documentation (you are here)
-└── dist/                  # Production build
+├── src/                   # Frontend React
+├── inc/                   # PHP do tema WordPress
+├── plugins/               # Plugins customizados
+├── scripts/               # Scripts de build
+├── docs/                  # Documentação (você está aqui)
+└── .github/workflows/     # CI/CD
 ```
 
-### Key Concepts
+### Conceitos-Chave
 
-**Headless WordPress:**
-- WordPress serves only as REST API
-- No WordPress theme rendering
-- React handles 100% of frontend
+**WordPress Headless:** WordPress serve apenas como REST API. React renderiza 100% do frontend.
 
-**Static Site Generation (SSG):**
-- HTML pre-rendered during build
-- Perfect SEO (Google sees complete HTML)
-- Fast initial load (LCP < 1.8s)
+**SSG (Static Site Generation):** HTML pré-renderizado no build para SEO perfeito.
 
-**Bilingual Routing:**
-- English: `/about`, `/shop`, `/events`
-- Portuguese: `/pt/about`, `/pt/shop`, `/pt/events`
-- Auto-detection based on browser language
+**Roteamento Bilíngue:** Inglês: `/about`, `/shop` | Português: `/pt/sobre`, `/pt/loja`
 
 ---
 
-## 🚀 Quick Start
+## Início Rápido
 
 ```bash
-# Install dependencies
-npm install
-
-# Development
-npm run dev
-
-# Build for production
-npm run build
-
-# Deploy (automatic via GitHub Actions)
-git push origin main
+npm install        # Instalar dependências
+npm run dev        # Desenvolvimento
+npm run build      # Build de produção
+git push origin main   # Deploy automático
 ```
 
 ---
 
-## 📞 Support
+## Suporte
 
-**Issues?** Check [troubleshooting](troubleshooting/) first.
-
-**Developer:** Marcelo Eyer Fernandes
-**Website:** [djzeneyer.com](https://djzeneyer.com)
+**Desenvolvedor:** Marcelo Eyer Fernandes  
+**Site:** [djzeneyer.com](https://djzeneyer.com)  
 **Email:** contato@djzeneyer.com
 
 ---
 
-**Last Updated:** January 2026
+**Atualizado:** Fevereiro 2026

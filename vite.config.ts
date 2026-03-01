@@ -17,14 +17,13 @@ export default defineConfig(({ command, mode }) => {
         deleteOriginFile: false,
       }),
     ].filter(Boolean),
-    
+
     publicDir: false,
-    
-    // 🚨 CORREÇÃO CRÍTICA AQUI 🚨
-    // Mudamos para '/' absoluto. 
-    // Isso permite que o 'vite preview' no GitHub Actions encontre os arquivos JS/CSS.
-    // O caminho antigo (/wp-content/...) causava 404 no Prerender.
-    base: '/',
+
+    // 🚀 BASE PATH: Importante para o Headless WordPress
+    // Em produção, os assets ficam na pasta do tema.
+    // Durante o Prerender no CI, usamos '/' para o Vite Preview funcionar.
+    base: process.env.PRERENDER_MODE === 'true' ? '/' : '/wp-content/themes/zentheme/dist/',
 
     resolve: {
       alias: {
@@ -37,24 +36,24 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
-      
+
       // 🔒 PULO DO GATO ANTI-EVAL
       minify: 'terser',
       sourcemap: false,
-      
+
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true,
           // Segurança
-          evaluate: false, 
+          evaluate: false,
           unsafe: false,
         },
-        output: {
+        format: {
           comments: false,
         },
       },
-      
+
       rollupOptions: {
         output: {
           assetFileNames: 'assets/[name]-[hash].[ext]',

@@ -1,5 +1,6 @@
 // src/contexts/UserContext.tsx - VERSÃO ATUALIZADA COM TURNSTILE
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { clearAllCache } from '../config/queryClient';
 
 interface WordPressUser {
   id: number;
@@ -19,12 +20,14 @@ interface UserContextType {
   loading: boolean;
   loadingInitial: boolean;
   error: string | null;
-  
+
   login: (email: string, password: string) => Promise<void>;
   // ATUALIZADO: Agora aceita o token do Cloudflare (opcional)
   register: (name: string, email: string, password: string, turnstileToken?: string) => Promise<void>;
   googleLogin: (idToken: string) => Promise<void>;
   logout: () => void;
+  requestPasswordReset: (email: string) => Promise<void>;
+  resetPassword: (key: string, login: string, password: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -48,7 +51,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // 1. Busca Google Client ID
         const settingsRes = await fetch(`${API_URL}/settings`);
         const settingsText = await settingsRes.text();
-        
+
         if (settingsText.trim().startsWith('<!DOCTYPE') || settingsText.trim().startsWith('<html')) {
           console.error('[UserContext] ❌ ERRO: Backend retornou HTML ao invés de JSON!');
           console.error('[UserContext] 💡 Possíveis causas:');
@@ -61,7 +64,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         const settingsData = JSON.parse(settingsText);
-        
+
         if (settingsData.success && settingsData.data.google_client_id) {
           setGoogleClientId(settingsData.data.google_client_id);
         } else {
@@ -75,21 +78,21 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (token && savedUser) {
           const parsedUser = JSON.parse(savedUser);
           setUser(parsedUser);
-          
+
           // Validação silenciosa
           fetch(`${API_URL}/auth/validate`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
           })
-          .then(res => res.json())
-          .then(data => {
-            if (!data.success) {
-              logout();
-            }
-          })
-          .catch(err => {
-            console.error('[UserContext] ❌ Erro na validação:', err);
-          });
+            .then(res => res.json())
+            .then(data => {
+              if (!data.success) {
+                logout();
+              }
+            })
+            .catch(err => {
+              console.error('[UserContext] ❌ Erro na validação:', err);
+            });
         }
       } catch (err) {
         console.error('[UserContext] ❌ Falha na inicialização:', err);
@@ -136,7 +139,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!json.success) {
         throw new Error(json.message || 'Credenciais inválidas');
       }
-      
+
       saveSession(json.data.user, json.data.token);
     } catch (err: any) {
       console.error('[UserContext] ❌ Erro no login:', err);
@@ -158,11 +161,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // Enviando o token junto com os dados
-        body: JSON.stringify({ 
-            email, 
-            password, 
-            name,
-            turnstileToken: turnstileToken || '' // Garante que envia string vazia se undefined
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          turnstileToken: turnstileToken || '' // Garante que envia string vazia se undefined
         })
       });
 
@@ -177,7 +180,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!json.success) {
         throw new Error(json.message || 'Falha no registro');
       }
-      
+
       saveSession(json.data.user, json.data.token);
     } catch (err: any) {
       console.error('[UserContext] ❌ Erro no registro:', err);
@@ -210,7 +213,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.error('  Status:', res.status);
         console.error('  Content-Type:', res.headers.get('content-type'));
         console.error('  URL chamada:', `${API_URL}/auth/google`);
-        
+
         throw new Error(
           'Servidor retornou HTML ao invés de JSON. ' +
           'Possíveis causas: ' +
@@ -225,7 +228,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!json.success) {
         throw new Error(json.message || 'Falha no Google Login');
       }
-      
+
       saveSession(json.data.user, json.data.token);
     } catch (err: any) {
       console.error('[UserContext] ❌ Google Login falhou:', err);
@@ -243,6 +246,56 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
     localStorage.removeItem('zen_jwt');
     localStorage.removeItem('zen_user');
+    clearAllCache();
+  };
+
+  // ========================================================================
+  // PASSWORD RESET
+  // ========================================================================
+  const requestPasswordReset = async (email: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/auth/password/reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const json = await res.json();
+      if (!json.success) {
+        throw new Error(json.message || 'Erro ao solicitar reset de senha');
+      }
+    } catch (err: any) {
+      console.error('[UserContext] ❌ Erro ao solicitar reset:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (key: string, login: string, password: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/auth/password/set`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, login, password })
+      });
+
+      const json = await res.json();
+      if (!json.success) {
+        throw new Error(json.message || 'Erro ao definir nova senha');
+      }
+    } catch (err: any) {
+      console.error('[UserContext] ❌ Erro ao resetar senha:', err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearError = () => setError(null);
@@ -262,6 +315,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       register,
       googleLogin,
       logout,
+      requestPasswordReset,
+      resetPassword,
       clearError
     }}>
       {children}

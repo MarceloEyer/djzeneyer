@@ -78,27 +78,27 @@ const MediaPage: React.FC = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.artist_name')}</h3>
-                <p className="text-lg font-semibold">DJ Zen Eyer</p>
+                <p className="text-lg font-semibold">{t('common.artist_name')}</p>
               </div>
               <div>
                 <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.legal_name')}</h3>
-                <p className="text-lg font-semibold">Marcelo Eyer Fernandes</p>
+                <p className="text-lg font-semibold">{t('common.legal_name')}</p>
               </div>
               <div>
                 <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.genre')}</h3>
-                <p className="text-lg font-semibold">Brazilian Zouk</p>
+                <p className="text-lg font-semibold">{t('media_page.genre_value')}</p>
               </div>
               <div>
                 <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.location')}</h3>
-                <p className="text-lg font-semibold">São Paulo, Brazil</p>
+                <p className="text-lg font-semibold">{t('media_page.location_value')}</p>
               </div>
               <div>
                 <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.cnpj')}</h3>
-                <p className="text-lg font-semibold font-mono">44.063.765/0001-46</p>
+                <p className="text-lg font-semibold font-mono">{t('common.cnpj')}</p>
               </div>
               <div>
                 <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.isni')}</h3>
-                <p className="text-lg font-semibold font-mono">0000 0005 2893 1015</p>
+                <p className="text-lg font-semibold font-mono">{t('common.isni')}</p>
               </div>
             </div>
           </motion.div>
@@ -134,9 +134,8 @@ const MediaPage: React.FC = () => {
             <div className="grid md:grid-cols-3 gap-6">
               {mediaAssets.map((asset, index) => (
                 <div key={index} className="card p-6 text-center">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
-                    asset.available ? 'bg-primary/20' : 'bg-white/5'
-                  }`}>
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${asset.available ? 'bg-primary/20' : 'bg-white/5'
+                    }`}>
                     <asset.icon size={28} className={asset.available ? 'text-primary' : 'text-white/30'} />
                   </div>
                   <h3 className="text-lg font-bold mb-2">{asset.title}</h3>

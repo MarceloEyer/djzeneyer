@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { getAlternateLinks, Language, normalizeLanguage } from '../config/routes';
 import { ensureTrailingSlash, HrefLang } from '../utils/seo';
+import { safeUrl } from '../utils/sanitize';
 
 // ============================================================================
 // 1. INTERFACES
@@ -46,6 +47,7 @@ interface HeadlessSEOProps {
   isHomepage?: boolean;
   preload?: PreloadItem[];
   locale?: 'en_US' | 'pt_BR'; // NOVO: Controle explícito de locale
+  leadAnswer?: string; // NOVO: Resposta direta para AIO (Lead Paragraph)
 }
 
 // ============================================================================
@@ -78,6 +80,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   isHomepage = false,
   preload = [],
   locale,
+  leadAnswer,
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
   const { i18n } = useTranslation();
@@ -92,28 +95,19 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
     const links: HrefLang[] = [];
     const siteUrlClean = baseUrl.replace(/\/$/, '');
 
-    // Add current page
-    const currentPathNormalized = location.pathname.startsWith('/') ? location.pathname : `/${location.pathname}`;
-    const currentFullUrl = ensureTrailingSlash(`${siteUrlClean}${currentPathNormalized}`);
-
-    links.push({
-        lang: currentLang === 'pt' ? 'pt-BR' : 'en',
-        url: currentFullUrl
-    });
-
-    // Add alternates
+    // Add alternates (which include current and x-default)
     try {
       const alternates = getAlternateLinks(location.pathname, currentLang);
       Object.entries(alternates).forEach(([lang, path]) => {
-          // Normalize path to ensure it starts with /
-          const safePath = path.startsWith('/') ? path : `/${path}`;
-          const url = ensureTrailingSlash(`${siteUrlClean}${safePath}`);
+        // Normalize path to ensure it starts with /
+        const safePath = path.startsWith('/') ? path : `/${path}`;
+        const url = ensureTrailingSlash(`${siteUrlClean}${safePath}`);
 
-          if (lang === 'x-default') {
-               links.push({ lang: 'x-default', url });
-          } else {
-               links.push({ lang: lang === 'pt' ? 'pt-BR' : 'en', url });
-          }
+        if (lang === 'x-default') {
+          links.push({ lang: 'x-default', url });
+        } else {
+          links.push({ lang: lang === 'pt' ? 'pt-BR' : 'en', url });
+        }
       });
     } catch (err) {
       console.error('Error generating alternate links:', err);
@@ -123,20 +117,25 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
   }, [hrefLang, location.pathname, currentLang, baseUrl]);
 
   // 2. Fallbacks
+  const rawDescription = data?.desc || description || ARTIST.site.defaultDescription;
   const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
-  const finalDescription = data?.desc || description || ARTIST.site.defaultDescription;
-  
+
+  // AIO Enhancement: Lead Answer logic
+  const finalDescription = leadAnswer
+    ? `${leadAnswer.trim()}${leadAnswer.endsWith('.') ? '' : '.'} ${rawDescription}`
+    : rawDescription;
+
   const truncatedDesc = finalDescription.length > 160
-      ? `${finalDescription.substring(0, 157)}...`
-      : finalDescription;
+    ? `${finalDescription.substring(0, 157)}...`
+    : finalDescription;
 
   const finalUrlRaw = data?.canonical || url || baseUrl;
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
-  const finalUrl = ensureTrailingSlash(absoluteUrl);
+  const finalUrl = safeUrl(ensureTrailingSlash(absoluteUrl));
 
   // FIX: Imagem padrão robusta se nada for passado
-  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`; // Certifique-se que essa imagem existe na pasta public/images/
-  const finalImage = ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl);
+  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`;
+  const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl));
 
   const shouldNoIndex = data?.noindex || noindex;
 
@@ -175,12 +174,15 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
           name: finalTitle,
           isPartOf: { '@id': `${baseUrl}/#website` },
           about: { '@id': `${baseUrl}/#artist` },
+          mainEntityOfPage: { '@id': `${baseUrl}/#artist` },
           description: truncatedDesc,
           inLanguage: htmlLangAttribute,
         },
       ],
     };
   } else if (!finalSchema) {
+    // Basic WebPage schema for other pages
+    // Using finalUrl which is ensured absolute and has trailing slash
     finalSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -189,6 +191,10 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       url: finalUrl,
     };
   }
+
+  // Identificador para o script do schema para evitar duplicidade
+  // react-helmet-async não remove scripts duplicados se não tiverem uma chave única
+  const schemaId = isHomepage ? 'homepage-schema' : `schema-${location.pathname.replace(/\//g, '-')}`;
 
   return (
     <Helmet>
@@ -201,7 +207,7 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
       {/* Preloads */}
       {preload.map((item, index) => (
-        <link key={`preload-${index}`} rel="preload" {...item} />
+        <link key={`preload-${index}`} rel="preload" {...item} href={safeUrl(item.href)} />
       ))}
 
       {/* Basic SEO */}
@@ -226,13 +232,13 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={truncatedDesc} />
       <meta property="og:url" content={finalUrl} />
-      
+
       {/* FIX: Garante que as imagens sempre apareçam */}
       <meta property="og:image" content={finalImage} />
       <meta property="og:image:secure_url" content={finalImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      
+
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
       {isProfileType && (
@@ -253,12 +259,12 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
 
       {/* Hreflang Tags */}
       {computedHrefLang.map(({ lang, url: hrefUrl }) => (
-        <link key={lang} rel="alternate" hrefLang={lang} href={hrefUrl} />
+        <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl)} />
       ))}
 
       {/* Schema JSON-LD */}
       {finalSchema && (
-        <script type="application/ld+json">
+        <script key={schemaId} type="application/ld+json">
           {JSON.stringify(finalSchema).replace(/</g, '\\u003c')}
         </script>
       )}

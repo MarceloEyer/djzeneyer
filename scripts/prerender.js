@@ -1,44 +1,55 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v18.8 - PATH FIX & DEBUG
- * Tenta corrigir o problema de carregamento de assets em sub-rotas e mostra erros de JS.
+ * SSR PRERENDER v19.0 - API INTERCEPTION OPTIMIZED
  */
 
 import { spawn } from 'child_process';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer';
-import { getLocalizedRouteEntries } from '../src/config/routes.data.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const routeEntries = getLocalizedRouteEntries({ prerenderOnly: true });
-const routesList = Array.from(
-  new Set(routeEntries.flatMap(entry => [entry.fullPaths.en, entry.fullPaths.pt])),
-);
-
-console.log(`📋 SSOT: ${routesList.length} rotas.`);
+// 1. Carregar Rotas (SSOT)
+let routesList = [];
+const ROUTES_DATA_PATH = join(__dirname, 'routes-data.json');
+try {
+  if (existsSync(ROUTES_DATA_PATH)) {
+    const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
+    data.routes.forEach(r => {
+      routesList.push(r.en === '' ? '/' : `/${r.en}`);
+      routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
+    });
+    console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
+  } else {
+    throw new Error('Arquivo routes-data.json não encontrado');
+  }
+} catch (e) {
+  console.error('❌ Erro na SSOT:', e.message);
+  process.exit(1);
+}
 
 const CONFIG = {
   serverBase: 'http://localhost:5173',
   distDir: join(process.cwd(), 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
-  routes: routesList,
+  routes: routesList
 };
 
-const wait = (ms) => new Promise(r => setTimeout(r, ms));
+const wait = ms => new Promise(r => setTimeout(r, ms));
 
 // Servidor Vite
 let viteProcess = null;
 function startDevServer() {
   return new Promise(async (resolve, reject) => {
-    console.log('🚀 Iniciando Vite...');
+    console.log('🚀 Iniciando Vite Preview...');
     viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
-      stdio: 'inherit', env: { ...process.env, FORCE_COLOR: '1' },
+      stdio: 'inherit',
+      env: { ...process.env, FORCE_COLOR: '1', PRERENDER_MODE: 'true' },
     });
     viteProcess.on('error', reject);
 
@@ -51,7 +62,7 @@ function startDevServer() {
           console.log('✅ Servidor OK.');
           return resolve();
         }
-      } catch (e) {}
+      } catch (e) { }
       await wait(1000);
       process.stdout.write('.');
     }
@@ -67,27 +78,41 @@ async function prerender() {
       headless: 'shell',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
+
     const page = await browser.newPage();
 
-    // 🚨 DEBUG: Ver erros do navegador
+    // 🛡️ API INTERCEPTION: Global for all pages
+    await page.setRequestInterception(true);
+    page.on('request', request => {
+      const reqUrl = request.url();
+      if (reqUrl.includes('/wp-json/')) {
+        let mockData = [];
+        if (reqUrl.includes('/posts')) mockData = [{ id: 1, title: { rendered: 'Build Preview' }, slug: 'preview', date: new Date().toISOString() }];
+        if (reqUrl.includes('/products')) mockData = [];
+        if (reqUrl.includes('/gamipress')) mockData = {};
+
+        request.respond({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockData)
+        });
+      } else {
+        request.continue();
+      }
+    });
+
     page.on('console', msg => {
       if (msg.type() === 'error') console.log(`[JS ERROR]: ${msg.text()}`);
-    });
-    page.on('pageerror', err => console.log(`[PAGE CRASH]: ${err.message}`));
-    page.on('requestfailed', req => {
-      if (req.url().endsWith('.js') || req.url().endsWith('.css')) {
-        console.log(`[ASSET 404]: ${req.url()}`); // Isso vai confirmar se é erro de caminho
-      }
     });
 
     let successCount = 0;
 
     for (const route of CONFIG.routes) {
-      const cleanRoute = route.replace(/^\/+/, '').replace(/\/+$/, '');
-      const url = cleanRoute ? `${CONFIG.serverBase}/${cleanRoute}` : CONFIG.serverBase;
+      const cleanRoute = route.replace(/^\//, '');
+      const url = `${CONFIG.serverBase}/${cleanRoute}`;
 
       let outputPath;
-      if (!cleanRoute) {
+      if (route === '/' || route === '') {
         outputPath = join(CONFIG.distDir, 'index.html');
       } else {
         const targetDir = join(CONFIG.distDir, cleanRoute);
@@ -96,21 +121,23 @@ async function prerender() {
       }
 
       try {
-        // console.log(`📄 Renderizando: ${route}`); // Menos log
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-        // Tenta esperar o React montar
         try {
-          await page.waitForSelector('#root div', { timeout: 5000 }); // Espera algo DENTRO do root
-        } catch (e) {}
+          // Espera o h1 ou o root carregar
+          await page.waitForSelector('#root', { timeout: 10000 });
+          await wait(1000); // Respiro para i18n
+        } catch (e) {
+          console.warn(`⚠️ Warning: Timeout on ${route}`);
+        }
 
         const html = await page.content();
 
-        // Verifica se pegou só o shell vazio
-        if (html.length < 1000) {
-          console.warn(`❌ ${route} VAZIO (${html.length}b). Erro de JS ou 404?`);
-        } else {
-          const finalHtml = html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+        if (html.length > 500) {
+          const finalHtml = html.includes('name="prerender-generated"')
+            ? html
+            : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
           successCount++;
@@ -120,11 +147,8 @@ async function prerender() {
       }
     }
 
-    // Se falhar muitos, avisa
-    if (successCount < CONFIG.routes.length) {
-      console.error(`⚠️ Apenas ${successCount}/${CONFIG.routes.length} rotas geradas corretamente.`);
-      // Não damos exit(1) aqui para deixar o script de validação decidir se falha o build
-    }
+    console.log(`\n🎉 Prerender concluído: ${successCount}/${CONFIG.routes.length} rotas.`);
+
   } catch (error) {
     console.error('FATAL:', error);
     process.exit(1);

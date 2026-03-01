@@ -1,34 +1,317 @@
 {
+  "nav": {
+    "home": "Home",
+    "about": "Sobre",
+    "events": "Eventos",
+    "music": "Música",
+    "tribe": "Zen Tribe",
+    "presskit": "Trabalhe Comigo",
+    "shop": "Loja",
+    "sign_in": "Entrar",
+    "logout": "Sair",
+    "dashboard": "Painel",
+    "my_account": "Minha Conta",
+    "join_the_tribe": "Entrar na Tribo",
+    "close_menu": "Fechar Menu",
+    "open_menu": "Abrir Menu",
+    "main_navigation": "Navegação Principal",
+    "mobile_navigation": "Menu Mobile"
+  },
+  "common": {
+    "artist_name": "DJ Zen Eyer",
+    "legal_name": "Marcelo Eyer Fernandes",
+    "cnpj": "44.063.765/0001-46",
+    "isni": "0000 0005 2893 1015",
+    "close": "Fechar",
+    "opens_in_new_tab": "abre em nova aba",
+    "platforms": {
+      "spotify": "SPOTIFY",
+      "soundcloud": "SOUNDCLOUD"
+    },
+    "cart": {
+      "title": "Carrinho de Compras",
+      "description": "Revise seus itens selecionados.",
+      "empty": "Seu carrinho está vazio",
+      "empty_desc": "Parece que você ainda não adicionou nenhum item.",
+      "continue_shopping": "Continuar Comprando",
+      "remove_item": "Remover item",
+      "qty": "Qtd",
+      "summary": "Resumo do Pedido",
+      "subtotal": "Subtotal",
+      "shipping": "Frete",
+      "shipping_calc": "Calculado no checkout",
+      "total": "Total",
+      "checkout": "Finalizar Compra"
+    },
+    "checkout": {
+      "title": "Checkout",
+      "description": "Finalize sua compra com segurança.",
+      "billing": "Detalhes de Faturamento",
+      "payment": "Método de Pagamento",
+      "summary": "Seu Pedido",
+      "place_order": "Finalizar Pedido",
+      "select_payment": "Por favor, selecione um método de pagamento.",
+      "generic_error": "Ocorreu um erro durante o checkout.",
+      "success_title": "Pedido Confirmado!",
+      "success_desc": "Obrigado pela sua compra. Você receberá um e-mail de confirmação em breve.",
+      "back_shop": "Voltar para a Loja",
+      "no_payments": "Nenhum método de pagamento disponível.",
+      "secure_msg": "Suas informações de pagamento são criptografadas e seguras.",
+      "tickets_title": "Checkout Seguro - Ingressos"
+    },
+    "form": {
+      "first_name": "Nome",
+      "last_name": "Sobrenome",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "address": "Endereço",
+      "city": "Cidade",
+      "state": "Estado",
+      "zip": "CEP",
+      "country": "País"
+    },
+    "footer_privacy": "Política de Privacidade",
+    "footer_terms": "Termos de Uso"
+  },
+  "quiz": {
+    "personas": {
+      "lambadeiro": {
+        "title": "O Lambadeiro 🌪️",
+        "subtitle": "Velocidade, Chicotes e Cabelo",
+        "description": "Você não apenas dança, você gira. Quanto mais rápida a batida, mais feliz você fica. Seus movimentos de cabeça são lendários e você trata cada música como se fosse 180 BPM. Você honra as raízes do Zouk.",
+        "shareText": "Eu sou o Lambadeiro! 🌪️ Batidas rápidas e 'hair flips'. Qual é o seu persona do Zouk?"
+      },
+      "cremoso": {
+        "title": "O Cremoso 🍦",
+        "subtitle": "Fluidez, Conexão e Lentidão",
+        "description": "Você é a definição de 'Gostosinho'. Você prefere faixas lentas, R&B e abraço fechado. Para você, Zouk é sobre conexão e fluxo. Se houver espaço entre você e seu parceiro, algo está errado.",
+        "shareText": "Eu sou o Cremoso! 🍦 Muita fluidez e conexão. Qual é o seu persona do Zouk?"
+      },
+      "tecnico": {
+        "title": "O Técnico 📐",
+        "subtitle": "Precisão, Ângulos e Drills",
+        "description": "Você sabe a diferença entre um cambré e uma torção. Você provavelmente julga o frame das pessoas silenciosamente. Sua dança é limpa, precisa e visualmente perfeita, provavelmente porque você já fez 500 aulas particulares.",
+        "shareText": "Eu sou o Técnico! 📐 Frame perfeito e precisão. Qual é o seu persona do Zouk?"
+      },
+      "fritador": {
+        "title": "O Fritador 🤘",
+        "subtitle": "Batidas, Transe e Energia",
+        "description": "Te dão uma sala escura e uma batida pesada, e você está no céu. Você ama Neozouk, ritmos complexos e movimentos energéticos. Você provavelmente já está suando na segunda música.",
+        "shareText": "Eu sou O Fritador! 🤘 Sala escura e batidas pesadas. Qual é o seu persona do Zouk?"
+      },
+      "rolezeiro": {
+        "title": "O Rolezeiro 🥂",
+        "subtitle": "Fala mais do que dança",
+        "description": "Você está na festa pela vibe. Você dança 3 músicas e passa 2 horas conversando no bar. Você sabe o nome de todo mundo e todas as fofocas. A festa só começa quando você chega.",
+        "shareText": "Eu sou o Rolezeiro! 🥂 Aqui pela fofoca e pela vibe. Qual é o seu persona do Zouk?"
+      }
+    },
+    "questions": {
+      "q1": {
+        "text": "O DJ toca um remix de R&B super lento. O que você faz?",
+        "options": {
+          "o1": "Fecho os olhos e abraço a 'cremosidade'.",
+          "o2": "Aproveito para praticar meus movimentos de cabeça em câmera lenta.",
+          "o3": "Vou ao bar pegar uma bebida.",
+          "o4": "Tento dançar no dobro do tempo de qualquer maneira."
+        }
+      },
+      "q2": {
+        "text": "Qual é o seu acessório favorito para uma festa de dança?",
+        "options": {
+          "o1": "Uma toalha e camisetas extras.",
+          "o2": "Sapatos confortáveis para girar.",
+          "o3": "Uma bala de hortelã e um bom perfume.",
+          "o4": "Meu celular para gravar demonstrações."
+        }
+      },
+      "q3": {
+        "text": "Alguém te tira para dançar. O que você está pensando?",
+        "options": {
+          "o1": "Eles sabem como conduzir/seguir um tilter?",
+          "o2": "Espero que gostem de giros rápidos!",
+          "o3": "Vamos ver se temos conexão.",
+          "o4": "Claro, mas preciso terminar esta conversa primeiro."
+        }
+      },
+      "q4": {
+        "text": "O que mais te irrita no Zouk?",
+        "options": {
+          "o1": "Pessoas que não protegem a cabeça.",
+          "o2": "Música que é muito lenta.",
+          "o3": "Música que não tem batida/energia.",
+          "o4": "Quando a festa termina cedo demais."
+        }
+      },
+      "q5": {
+        "text": "Idealmente, como termina uma dança?",
+        "options": {
+          "o1": "Com um mergulho perfeito e uma saída limpa.",
+          "o2": "Com um abraço longo e demorado.",
+          "o3": "Suado e sem fôlego.",
+          "o4": "Com um 'high-five' e um 'vamos beber água'."
+        }
+      }
+    },
+    "ui": {
+      "question_count": "Pergunta {{current}} de {{total}}",
+      "complete": "{{percent}}% Concluído",
+      "you_are": "Você é...",
+      "share_result": "Compartilhar Resultado",
+      "take_again": "Fazer Novamente",
+      "take_quiz_at": "Faça o quiz em:",
+      "copied": "Link copiado!",
+      "meta_title": "Quiz: Qual seu Persona? | {{stageName}}",
+      "meta_desc": "Quem é você na pista de dança? Faça o Quiz de Persona do Zouk e descubra se você é um Lambadeiro, Técnico ou o Cremoso!"
+    }
+  },
+  "gamification": {
+    "zenTribe": "Zen Tribe",
+    "yourProgress": "Seu Progresso",
+    "viewAll": "Ver Tudo",
+    "level": "Nível",
+    "totalPoints": "Pontos Totais",
+    "xpToNext": "{{count}} XP para o próximo nível",
+    "maxLevel": "Nível máximo alcançado!",
+    "achievements": "Conquistas",
+    "achievement": "Conquista",
+    "startJourney": "Comece sua jornada para desbloquear conquistas!",
+    "earnMoreXP": "Ganhar Mais XP"
+  },
+  "dashboard": {
+    "loading": "Carregando seu Zen Dashboard...",
+    "live_feed": "Feed ao Vivo",
+    "welcomeBack": "Bem-vindo de volta, {{name}}!",
+    "progressToLevel": "Progresso para o Nível {{level}}",
+    "boostXP": "Turbinar XP",
+    "tracksDownloaded": "Tracks Baixadas",
+    "eventsAttended": "Eventos Atendidos",
+    "dayStreak": "Dias Seguidos",
+    "dayStreakFire": "Dias Seguidos 🔥",
+    "tribeFriends": "Amigos da Tribo",
+    "welcomeTribe": "Bem-vindo à Zen Tribe!",
+    "journeyBegins": "Sua jornada começa agora",
+    "accountCreated": "Conta criada",
+    "startExploring": "Comece a explorar!",
+    "recentActivity": "Histórico de Atividade",
+    "noActivity": "Nenhuma atividade recente.",
+    "nextRank": "Próximo Rank",
+    "yourWallet": "Sua Carteira",
+    "pendingQuests": "Desafios Pendentes",
+    "allCleared": "Tudo Concluído!",
+    "nextSteps": "Próximos Passos",
+    "quickActions": "Ações Rápidas",
+    "table": {
+      "activity": "Atividade",
+      "points": "Pontos",
+      "date": "Data"
+    },
+    "browseMusic": "Explorar Músicas",
+    "viewEvents": "Ver Eventos",
+    "visitShop": "Visitar Loja",
+    "yourAchievements": "Suas Conquistas",
+    "unlocked": "Desbloqueada",
+    "startJourney": "Comece Sua Jornada",
+    "startJourneyDesc": "Complete tarefas como ouvir tracks, participar de eventos ou visitar a loja para desbloquear suas primeiras conquistas!",
+    "startListening": "Começar a Ouvir",
+    "timeAgo": {
+      "years": "{{count}} anos atrás",
+      "months": "{{count}} meses atrás",
+      "days": "{{count}} dias atrás",
+      "hours": "{{count}} horas atrás",
+      "minutes": "{{count}} minutos atrás",
+      "seconds": "{{count}} segundos atrás"
+    }
+  },
   "_meta": {
     "version": "2.1.0",
     "lastUpdated": "2025-12-03",
     "language": "pt-BR",
-    "maintainers": ["Equipe DJ Zen Eyer"],
+    "maintainers": [
+      "Equipe DJ Zen Eyer"
+    ],
     "notes": "Traduções oficiais em português. ARQUIVO LEGADO - Não altere nomes de chaves sem atualizar todos os componentes."
   },
-
-  "nav_home": "Início",
-  "nav_events": "Eventos",
-  "nav_music": "Música",
-  "nav_tribe": "Zen Tribe",
-  "nav_presskit": "Trabalhe Comigo",
-  "nav_shop": "Loja",
-  "nav_sign_in": "Entrar",
-  "nav_logout": "Sair",
-  "nav_dashboard": "Painel",
-  "nav_my_account": "Minha Conta",
-
-  "sign_in": "Entrar",
-  "join_the_tribe": "Entrar na Tribo",
-  "close_menu": "Fechar Menu",
-  "open_menu": "Abrir Menu",
-  "main_navigation": "Navegação Principal",
-  "mobile_navigation": "Menu Mobile",
   "loading": "Carregando...",
   "error": "Erro",
   "success": "Sucesso",
-
   "auth": {
+    "login": {
+      "title": "Bem-vindo de Volta",
+      "subtitle": "Entre na sua conta Zen Tribe",
+      "email": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "password": "Senha",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Entrar",
+      "no_account": "Não tem uma conta?",
+      "create_now": "Criar Conta",
+      "forgot_password": "Esqueceu a senha?"
+    },
+    "register": {
+      "title": "Junte-se à Tribe",
+      "subtitle": "Crie sua conta e desbloqueie conteúdo exclusivo",
+      "fullName": "Nome Completo",
+      "fullNamePlaceholder": "João Silva",
+      "confirmPassword": "Confirmar Senha",
+      "confirmPasswordPlaceholder": "••••••••",
+      "submit": "Criar Conta",
+      "has_account": "Já tem uma conta?",
+      "login_now": "Entre aqui"
+    },
+    "placeholders": {
+      "name": "Seu nome",
+      "email": "seu@email.com",
+      "password": "••••••••"
+    },
+    "reset_password": {
+      "title_set": "Nova Senha",
+      "title_request": "Recuperar Acesso",
+      "subtitle_set": "Escolha uma senha forte para sua segurança",
+      "subtitle_request": "Enviaremos um link de recuperação para o seu email",
+      "success_title": "Tudo pronto!",
+      "success_set": "Sua senha foi alterada com sucesso. Você será redirecionado em instantes.",
+      "success_request": "Se o email existir em nossa base, você receberá o link em breve. Verifique também sua caixa de spam.",
+      "back_home": "Voltar ao início",
+      "back_login": "Voltar para o Login",
+      "email_label": "Email Cadastrado",
+      "email_placeholder": "seu@email.com",
+      "submit_request": "Enviar Link de Reset",
+      "password_label": "Nova Senha",
+      "password_placeholder": "Mínimo 6 caracteres",
+      "confirm_label": "Confirmar Senha",
+      "confirm_placeholder": "Repita a nova senha",
+      "submit_set": "Salvar Nova Senha",
+      "error_email_required": "Email é obrigatório",
+      "error_password_length": "A senha deve ter pelo menos 6 caracteres",
+      "error_password_mismatch": "As senhas não coincidem"
+    },
+    "errors": {
+      "email_required": "Email é obrigatório",
+      "email_invalid": "Email inválido",
+      "password_required": "Senha é obrigatória",
+      "password_min": "Mínimo de 6 caracteres",
+      "name_required": "Nome é obrigatório",
+      "security_check": "Por favor, aguarde a verificação de segurança.",
+      "google_no_credential": "Credencial do Google não recebida",
+      "google_auth_failed": "Falha na autenticação com Google.",
+      "auth_generic_error": "Erro ao autenticar. Verifique suas credenciais.",
+      "google_connect_error": "Falha ao conectar com Google",
+      "invalidEmail": "Por favor, insira um endereço de e-mail válido.",
+      "passwordsDoNotMatch": "As senhas não coincidem.",
+      "generic": "Erro ao autenticar. Tente novamente."
+    },
+    "success": {
+      "loginSuccess": "Login bem-sucedido! Redirecionando...",
+      "registerSuccess": "Conta criada com sucesso! Redirecionando...",
+      "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
+    },
+    "labels": {
+      "name": "Nome",
+      "email": "Email",
+      "password": "Senha",
+      "honeypot": "Se você é humano, não preencha este campo"
+    },
     "welcomeBack": "Bem-vindo de Volta",
     "createAccount": "Criar Conta",
     "loginSubtitle": "Entre na sua conta Zen Tribe",
@@ -38,81 +321,49 @@
     "password": "Senha",
     "namePlaceholder": "Seu nome",
     "emailPlaceholder": "seu@email.com",
-    "orUseEmail": "ou use email",
-    "login": "Entrar",
-    "register": "Criar Conta",
+    "or_continue_with_email": "ou continue com email",
     "processing": "Processando...",
     "noAccount": "Não tem uma conta?",
     "hasAccount": "Já tem uma conta?",
-    "connectingServer": "Conectando...",
-    "errors": {
-      "emailRequired": "Email é obrigatório",
-      "emailInvalid": "Email inválido",
-      "passwordRequired": "Senha é obrigatória",
-      "passwordTooShort": "Senha deve ter no mínimo 6 caracteres",
-      "nameRequired": "Nome é obrigatório",
-      "generic": "Erro ao autenticar. Tente novamente.",
-      "googleNoCredential": "Credencial do Google não recebida",
-      "googleFailed": "Falha ao conectar com Google",
-      "fillAllFields": "Por favor, preencha todos os campos",
-      "passwordMismatch": "As senhas não coincidem",
-      "loginFailed": "Login falhou. Verifique suas credenciais.",
-      "registerFailed": "Falha no registro. Tente novamente."
-    },
-    "success": {
-      "loginSuccess": "Login bem-sucedido! Redirecionando...",
-      "registerSuccess": "Conta criada com sucesso! Redirecionando...",
-      "googleSuccess": "Login com Google bem-sucedido! Redirecionando..."
-    },
-    "loading": "Carregando...",
-    "login": {
-      "title": "Bem-vindo de Volta",
-      "subtitle": "Entre na sua conta Zen Tribe",
-      "email": "Email",
-      "emailPlaceholder": "seu@email.com",
-      "password": "Senha",
-      "passwordPlaceholder": "••••••••",
-      "button": "Entrar",
-      "googleButton": "Entrar com Google",
-      "noAccount": "Não tem uma conta?",
-      "createAccount": "Criar Conta",
-      "forgotPassword": "Esqueceu a senha?"
-    },
-    "register": {
-      "title": "Junte-se à Tribe",
-      "subtitle": "Crie sua conta e desbloqueie conteúdo exclusivo",
-      "fullName": "Nome Completo",
-      "fullNamePlaceholder": "João Silva",
-      "confirmPassword": "Confirmar Senha",
-      "confirmPasswordPlaceholder": "••••••••",
-      "button": "Criar Conta",
-      "hasAccount": "Já tem uma conta?",
-      "loginHere": "Entre aqui"
-    }
+    "connectingServer": "Conectando..."
   },
-
-  "common": {
-    "close": "Fechar"
+  "zenlink": {
+    "listen_now": "Ouça Agora",
+    "choose_platform": "Escolha sua plataforma",
+    "seo_description": "Conecte-se com DJ Zen Eyer — 2× Campeão Mundial de Brazilian Zouk. Ouça, reserve e siga a cremosidade!",
+    "soundcloud_subtitle": "Sets e Remixes",
+    "youtube_subtitle": "Live sets e tutoriais",
+    "book_title": "Contrate-me",
+    "book_subtitle": "Festival, congressos e eventos privados",
+    "shop_subtitle": "Merchandising e tracks exclusivas",
+    "tiktok_subtitle": "Cremosidade em 15 segundos",
+    "instagram_subtitle": "Dia a dia e bastidores",
+    "events_title": "Agenda de Eventos",
+    "events_subtitle": "Acompanhe minha agenda mundial",
+    "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
+    "quiz_title": "Quiz: Qual seu Persona?",
+    "quiz_subtitle": "Descubra qual é o seu estilo no Zouk"
   },
-
+  "social": {
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
+    "soundcloud": "SoundCloud"
+  },
   "badge_featured": "Destaque",
   "badge_new": "Novo",
   "badge_sale": "Promoção",
-
   "join_now_button": "Entrar na Tribo",
   "explore_music_button": "Explorar Músicas",
   "play_featured_mix": "Ouvir no SoundCloud",
   "upcoming_events": "Próximos Eventos",
-
   "home_page_title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
   "home_page_meta_desc": "DJ Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais.",
-
   "home_headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
   "home_subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
   "home_welcome": "Bem-vindo ao DJ Zen Eyer",
   "home_tagline": "DJ e Produtor de Zouk Brasileiro",
   "home_cta": "Explorar Músicas",
-
   "home_features_title": "Por Que Entrar na Zen Tribe?",
   "home_features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
   "home_feat_exclusive_title": "Música Exclusiva",
@@ -121,20 +372,17 @@
   "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
   "home_feat_community_title": "Comunidade Ativa",
   "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
-
   "home_cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
   "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
-
   "hero_title": "DJ Zen Eyer",
   "hero_subtitle": "Zouk Brasileiro",
   "hero_cta": "Ouvir Agora",
   "hero_cta_secondary": "Ver Eventos",
-
   "home_hero_badge": "Bicampeão Mundial - Zouk World Championships",
   "home_hero_title": "DJ Zen Eyer",
   "home_hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
   "home_hero_slogan": "A pressa é inimiga da cremosidade ™",
-  "home_hero_cta_text": "Sets completos e remixes exclusivos. Para agenda, vá para <0>Eventos</0>. Para bookings, acesse <1>Trabalhe Comigo</1>.",
+  "home_hero_cta_text": "Sets completos e remixes exclusivos. Para mais opções de streaming e downloads, vá em <0>Músicas</0>.",
   "home_stat_champion": "Campeão Mundial",
   "home_stat_countries": "Países",
   "home_stat_events": "Eventos",
@@ -163,57 +411,79 @@
   "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é uma referência global no <strong>Brazilian Zouk</strong>. Bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships, ele transforma pistas em experiências imersivas há mais de uma década.",
   "home_bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
   "home_bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Explore a aba <strong>Music</strong> ou <strong>Events</strong>.",
-
-  "events_page_title": "Eventos",
-  "events_page_meta_desc": "Próximos eventos e apresentações do DJ Zen Eyer",
-  "events_title": "Próximos Eventos",
-  "events_past": "Eventos Passados",
-  "events_buy_ticket": "Comprar Ingresso",
-  "events_more_info": "Mais Informações",
-  "events_header_title": "Próximos Eventos",
-  "events_header_subtitle": "Junte-se a nós nas próximas festas e experiências",
-  "events_header_badge": "Eventos ao Vivo",
-  "events_featured_title": "Destaque",
-  "events_calendar_title": "Calendário Completo",
-  "events_calendar_iframe_title": "Calendário de Eventos DJ Zen Eyer",
-  "events_calendar_export": "Exportar Calendário",
-  "events_calendar_add": "Adicionar ao Calendário",
-  "events_calendar_note": "Clique nos eventos para mais detalhes",
-  "events_achievement_section_title": "Sistema de Conquistas",
-  "events_achievement_section_subtitle": "Participe de eventos e ganhe recompensas exclusivas",
-  "events_achievement_xp_title": "Ganhe XP",
-  "events_achievement_xp_desc": "Acumule pontos de experiência em cada evento",
-  "events_achievement_badges_title": "Badges Exclusivos",
-  "events_achievement_badges_desc": "Desbloqueie badges especiais por participação",
-  "events_achievement_rewards_title": "Recompensas",
-  "events_achievement_rewards_desc": "Ganhe acesso a conteúdo VIP e eventos",
-  "events_achievement_streaks_title": "Sequências",
-  "events_achievement_streaks_desc": "Mantenha sua sequência de eventos consecutivos",
-  "events_cta_title": "Pronto para Entrar na Festa?",
-  "events_cta_subtitle": "Inscreva-se para receber atualizações sobre próximos eventos e experiências exclusivas",
-  "events_cta_button": "Receber Notificações",
-  "event_badge_available": "Disponível",
-  "event_badge_members_only": "Apenas Membros",
-  "event_get_ticket": "Comprar Ingresso",
-
+  "news": {
+    "title": "Zen News",
+    "subtitle": "Últimas histórias, dicas de produção musical e insights sobre a cultura Zouk.",
+    "back_to_list": "Voltar para Notícias",
+    "live_feed": "Feed ao Vivo",
+    "curatorship": "Curadoria de Qualidade",
+    "zouk_production": "Hub de Produção de Zouk",
+    "featured": "Destaque",
+    "read_full": "Ler História Completa",
+    "latest_stories": "Últimas Histórias",
+    "read_more": "Leia Mais",
+    "end_reached": "Você chegou ao fim da lista.",
+    "view_archive": "Ver Arquivo",
+    "by": "Por",
+    "default_author": "Equipe Zen Eyer",
+    "read_time": "{{min}} min de leitura",
+    "label": "Notícias"
+  },
   "events_loading": "Carregando eventos...",
-  "events_no_events": "Nenhum evento agendado no momento. Volte em breve!",
+  "events_no_events": "Nenhum evento agendado no momento.",
   "events_tickets": "Ingressos",
   "events_view_tickets": "Ver Ingressos",
   "events_ticket_aria_label": "Ver ingressos para {{title}} em {{location}} em {{date}}",
   "events_full_ticket_aria_label": "Comprar ingressos para {{title}} no {{venue}}, {{location}} em {{date}}",
-
-  "music_page_title": "Música",
+  "events_back_to_list": "Voltar para Agenda",
+  "events_status_upcoming": "Próximos",
+  "events_details": "DETALHES DO EVENTO",
+  "events_date": "Data",
+  "events_location": "Localização",
+  "events_none": "Nenhum evento programado no momento.",
+  "events_experience_title": "EXPERIÊNCIA ZEN",
+  "events_experience_subtitle": "Siga minha agenda mundial. De workshops intensivos a congressos internacionais.",
+  "events_page_title": "Próximos Eventos",
+  "events_page_meta_desc": "Siga a agenda mundial do DJ Zen Eyer e encontre ingressos para os melhores eventos de Zouk Brasileiro.",
+  "events_add_to_calendar": "Adicionar à Agenda",
+  "events_hero_badge": "Experiências ao Vivo",
+  "events_filter_placeholder": "Buscar cidade ou país...",
+  "events_no_results": "Nenhum evento encontrado para sua busca.",
+  "events_share": "Compartilhar Evento",
+  "events_month_jan": "Janeiro",
+  "events_month_feb": "Fevereiro",
+  "events_month_mar": "Março",
+  "events_month_apr": "Abril",
+  "events_month_may": "Maio",
+  "events_month_jun": "Junho",
+  "events_month_jul": "Julho",
+  "events_month_aug": "Agosto",
+  "events_month_sep": "Setembro",
+  "events_month_oct": "Outubro",
+  "events_month_nov": "Novembro",
+  "events_month_dec": "Dezembro",
+  "music_page_title": "Hub de Música",
   "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
   "music": {
-    "pageTitle": "Música",
+    "pageTitle": "Hub de Música",
     "pageDesc": "Ouça e baixe tracks exclusivas, remixes e sets do DJ Zen Eyer.",
+    "hub_title_rich": "<0>Streaming</0> Hub",
+    "back": "Voltar para o Hub",
+    "artist_tag": "Uma Produção DJ Zen Eyer",
+    "about_track": "Sobre a Música",
+    "hub_subtitle": "Acesse streams de alta qualidade, remixes exclusivos e downloads diretos.",
+    "steal_button": "Baixar & Curtir",
+    "steal_desc": "Baixe minhas últimas tracks e edições diretamente. Sem travas, apenas a pura vibração do Zouk.",
+    "steal_cta": "Baixar Música",
+    "support_button": "Apoie a Arte",
+    "support_desc": "Se minha música te move, considere apoiar produções futuras com uma doação.",
+    "support_cta": "Apoiar Artista",
     "hero": {
       "badge": "Produções Originais & Remixes",
-      "title": "Minhas",
-      "titleHighlight": "Músicas",
-      "subtitle": "Explore minhas últimas tracks, remixes exclusivos e conteúdo para download.",
-      "cta": "Downloads grátis para a Zen Tribe!"
+      "title": "Minha",
+      "titleHighlight": "Música",
+      "subtitle": "Explore minhas tracks recentes, remixes exclusivos e conteúdo para download.",
+      "cta": "Downloads gratuitos para a Zen Tribe!"
     },
     "filters": {
       "all": "Todas as Tracks",
@@ -224,44 +494,81 @@
       "tradicional": "Tradicional"
     },
     "track": {
-      "download": "Baixar",
+      "download": "Download",
       "share": "Compartilhar",
       "duration": "Duração",
       "bpm": "BPM",
       "releaseDate": "Lançamento",
-      "playPreview": "Reproduzir Preview",
-      "pausePreview": "Pausar Preview"
+      "playPreview": "Play Preview",
+      "pausePreview": "Pause Preview"
     }
   },
-
-  "shop_page_title": "Loja",
-  "shop_page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
-  "shop_title": "Loja Zen Tribe",
-  "shop_subtitle": "Merchandise exclusivo e ingressos para eventos",
-  "shop_all_products": "Todos os Produtos",
-  "shop_featured_title": "Produtos em Destaque",
-  "shop_empty_cta": "Nenhum produto disponível no momento",
-  "shop_add_to_cart": "Adicionar ao Carrinho",
-  "shop_buy_now": "Comprar Agora",
-  "shop_buy_button": "Comprar Agora",
-  "shop_in_stock": "Em Estoque",
-  "shop_out_of_stock": "Fora de Estoque",
-  "shop_error_fetch": "Erro ao carregar produtos",
-  "shop_error_unknown": "Erro desconhecido",
-  "shop_adding_text": "Adicionando...",
-  "shop_free_shipping": "Frete Grátis",
-  "shop_free_shipping_desc": "Pedidos acima de R$150",
-  "shop_secure_payment": "Pagamento Seguro",
-  "shop_secure_payment_desc": "100% Protegido",
-  "shop_exclusive_items": "Itens Exclusivos",
-  "shop_exclusive_items_desc": "Edição Limitada",
-  "shop_fast_delivery": "Entrega Rápida",
-  "shop_fast_delivery_desc": "2-3 Dias Úteis",
-  "shop_hot_near_you": "Quente Perto de Você",
-  "shop_back_to_shop": "Voltar para a Loja",
-  "shop_product_not_found": "Produto não encontrado",
-  "shop_product_details": "Detalhes do produto",
-
+  "press": {
+    "page_title": "Press Kit",
+    "page_meta_desc": "Press kit oficial do DJ Zen Eyer. Baixe fotos em alta resolução, bio e rider técnico.",
+    "bio_title": "O Artista",
+    "bio_subtitle": "Bicampeão Mundial & Curador Musical",
+    "stats_title": "Estatísticas Rápidas",
+    "stats_experience": "Anos de Experiência",
+    "stats_tours": "Turnês Internacionais",
+    "stats_remixes": "Remixes Oficiais",
+    "stats_championships": "Títulos Mundiais",
+    "download_title": "Materiais de Mídia",
+    "download_photos": "Fotos em Alta Resolução",
+    "download_epk": "EPK Oficial (PDF)",
+    "download_logos": "Pack de Logos",
+    "gallery_title": "Jornada Visual",
+    "contact_title": "Booking & Contato",
+    "contact_subtitle": "Leve a Experiência Zen para o seu evento.",
+    "contact_cta": "Contato Management",
+    "fact_sheet": "Rider Técnico",
+    "fact_sheet_desc": "Todos os requisitos técnicos para uma performance impecável."
+  },
+  "shop": {
+    "page_title": "Loja",
+    "page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
+    "title": "Loja Zen Tribe",
+    "subtitle": "Merchandise exclusivo e ingressos para eventos",
+    "all_products": "Todos os Produtos",
+    "featured_title": "Produtos em Destaque",
+    "empty_cta": "Nenhum produto disponível no momento",
+    "add_to_cart": "Adicionar ao Carrinho",
+    "buy_now": "COMPRAR AGORA",
+    "buy_button": "COMPRAR AGORA",
+    "in_stock": "Em Estoque",
+    "out_of_stock": "Fora de Estoque",
+    "error_fetch": "Erro ao carregar produtos",
+    "error_unknown": "Erro desconhecido",
+    "adding_text": "Adicionando...",
+    "product_added": "Produto adicionado ao carrinho!",
+    "match_score": "98% Relevante",
+    "cremosidade_level": "Nível de Cremosidade: Alto",
+    "new_releases": "Novos Lançamentos",
+    "top_picks": "Seleção Curada",
+    "back_to_shop": "Voltar para a Loja",
+    "product_not_found": "Produto não encontrado",
+    "product_details": "Detalhes do produto",
+    "starting_at": "A partir de",
+    "free_shipping": "Frete Grátis",
+    "free_shipping_desc": "Pedidos acima de R$150",
+    "secure_payment": "Pagamento Seguro",
+    "secure_payment_desc": "100% Protegido",
+    "exclusive_items": "Itens Exclusivos",
+    "exclusive_items_desc": "Edição Limitada",
+    "fast_delivery": "Entrega Rápida",
+    "fast_delivery_desc": "2-3 Dias Úteis",
+    "hot_near_you": "Bombando perto de você",
+    "benefits": {
+      "instant_delivery": "Entrega Instantânea",
+      "instant_delivery_desc": "Tickets e acessos digitais enviados na hora",
+      "secure_payment": "Pagamento Blindado",
+      "secure_payment_desc": "Segurança total no processamento",
+      "tribe_perks": "Vantagens Tribe",
+      "tribe_perks_desc": "Descontos exclusivos para membros",
+      "vip_support": "Suporte VIP",
+      "vip_support_desc": "Atendimento direto via WhatsApp 24/7"
+    }
+  },
   "tribe_page_title": "Zen Tribe",
   "tribe_page_meta_desc": "Junte-se à comunidade Zen Tribe e faça parte da família",
   "zenTribe": {
@@ -271,6 +578,11 @@
     "welcome": "Bem-vindo à",
     "tribe": "Zen Tribe",
     "subtitle": "Uma comunidade exclusiva para verdadeiros amantes de música. Ganhe pontos, desbloqueie conquistas e aproveite benefícios incríveis.",
+    "schema": {
+      "organization_name": "Zen Tribe - Comunidade Global de Zouk Brasileiro",
+      "organization_desc": "Comunidade exclusiva para amantes do Zouk Brasileiro, oferecendo acesso antecipado a músicas, eventos VIP e sistema de recompensas gamificado.",
+      "organization_slogan": "Conectando almas através do Zouk Brasileiro"
+    },
     "joinNow": "Entrar Agora",
     "learnMore": "Saiba Mais",
     "unlockAtLevel": "Desbloquear no nível {{level}}",
@@ -407,45 +719,72 @@
       }
     }
   },
-
-  "presskit_page_title": "Trabalhe Comigo",
-  "presskit_page_meta_desc": "Contrate DJ Zen Eyer para seu evento. Press kit e informações de contato.",
-  "presskit_badge": "Press Kit Profissional",
-  "presskit_subtitle_line1": "Produtor de Zouk Brasileiro & DJ Internacional",
-  "presskit_subtitle_line2": "Transformando Eventos em Experiências Inesquecíveis",
-  "presskit_stat_countries": "Países",
-  "presskit_stat_people": "Pessoas Impactadas",
-  "presskit_stat_streams": "Streams",
-  "presskit_stat_years": "Anos de Experiência",
-
+  "presskit": {
+    "page_title": "Press Kit Oficial - Zen Eyer | DJ Brasileiro de Zouk Brasileiro",
+    "page_meta_desc": "Press Kit oficial de Zen Eyer, DJ brasileiro bicampeão mundial de Zouk Brasileiro. Baixe fotos, biografia e informações para imprensa.",
+    "tag": "Press Kit Oficial",
+    "title_prefix": "Zen",
+    "title_suffix": "Eyer",
+    "role": "DJ brasileiro bicampeão mundial de Zouk Brasileiro",
+    "subtitle": "Sets cremosos, emocionais e conectados à dança",
+    "stats": {
+      "countries": "Países",
+      "people": "Pessoas impactadas",
+      "streams": "Streams globais",
+      "years": "Anos de carreira"
+    },
+    "bio": {
+      "title": "Sobre Zen Eyer",
+      "p1": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ brasileiro especializado em Zouk Brasileiro</strong>, bicampeão mundial no gênero (2022) e membro da Mensa International. Seu estilo único, chamado de \"<strong>cremosidade</strong>\", combina técnica apurada com emoção profunda, criando sets que são verdadeiras jornadas musicais para os dançarinos.",
+      "p2": "Com mais de 10 anos de carreira, Zen Eyer já se apresentou em <strong>100+ eventos em 11 países</strong>, incluindo Holanda, Espanha, República Tcheca e Alemanha. Seu repertório é 100% focado no Zouk Brasileiro, com influências de kizomba, lambada e black music, sempre priorizando a conexão emocional com a dança.",
+      "p3": "Como produtor musical, Zen Eyer cria remixes exclusivos e edições especiais para o floor de Zouk, com mais de <strong>500.000 streams globais</strong>. É criador do evento <strong>reZENha</strong> e da comunidade <strong>Tribo Zen</strong>, que oferece conteúdo exclusivo para amantes do Zouk Brasileiro.",
+      "quickStats": {
+        "cremosidade": "Cremosidade",
+        "cremosidade_desc": "Sets fluidos e emocionais",
+        "repertoire": "Repertório",
+        "repertoire_desc": "Zouk, Kizomba, Lambada",
+        "connection": "Conexão",
+        "connection_desc": "Foco na dança",
+        "global": "Global",
+        "global_desc": "Presença internacional"
+      }
+    },
+    "media": {
+      "title": "Material para Imprensa",
+      "subtitle": "Tudo que você precisa para divulgação e marketing",
+      "photos": "Fotos para Imprensa",
+      "photos_desc": "Galeria oficial em alta resolução",
+      "bio": "Biografia Completa",
+      "bio_desc": "PDF com Bio e Rider Técnico",
+      "logos": "Logos e Branding",
+      "logos_desc": "Logos oficiais em PNG/SVG",
+      "access": "Acessar",
+      "download": "Baixar"
+    },
+    "gallery": {
+      "title": "Fotos para Imprensa",
+      "subtitle": "Imagens em alta resolução para uso promocional",
+      "cta": "Ver Galeria Completa"
+    },
+    "contact": {
+      "title": "Vamos Criar Algo Incrível",
+      "subtitle": "Pronto para elevar seu evento? Entre em contato para discutir bookings ou colaborações.",
+      "base": "Baseado em",
+      "availability": "Disponibilidade",
+      "availability_value": "Bookings internacionais",
+      "genre": "Gênero",
+      "links": "Links Oficiais"
+    }
+  },
+  "philosophy": {
+    "page_title": "Filosofia Artística",
+    "style_title": "O Estilo",
+    "mission_title": "Missão",
+    "coming_soon_title": "Visão",
+    "coming_soon_desc": "O manifesto artístico completo de {{name}} está sendo atualizado para a tour mundial de 2026."
+  },
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
-
-  "footer_rights": "Todos os direitos reservados.",
-  "footer_about": "Sobre",
-  "footer_contact": "Contato",
-  "footer_privacy": "Política de Privacidade",
-  "footer_terms": "Termos de Serviço",
-  "footer_quick_links": "Links Rápidos",
-  "footer_discover_more": "Descubra Mais",
-  "footer_music_philosophy": "Filosofia Musical",
-  "footer_press_kit_booking": "Press Kit / Booking",
-  "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine a Newsletter",
-  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente na sua caixa de entrada.",
-  "footer_email_placeholder": "Seu endereço de e-mail",
-  "footer_subscribe": "Inscrever-se",
-  "footer_zen_tribe_info": "Info Zen Tribe",
-  "footer_home": "Início",
-  "footer_music": "Música",
-  "footer_events": "Eventos",
-  "footer_contact_text": "Contato",
-  "footer_bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
-  "footer_tagline": "A pressa é inimiga da cremosidade.",
-  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
-  "footer_subscribe_error": "Falha ao se inscrever. Tente novamente.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
-
   "media_page": {
     "title": "Mídia & Press Kit",
     "subtitle": "Recursos oficiais de mídia e informações de imprensa para DJ Zen Eyer",
@@ -476,121 +815,10 @@
     "verified_profiles": "Perfis Verificados",
     "source_official_bio": "Bio Oficial",
     "source_performance_history": "Histórico de Performances",
-    "year_range": "2020-2024"
+    "year_range": "2020-2024",
+    "genre_value": "Zouk Brasileiro",
+    "location_value": "São Paulo, Brasil"
   },
-
-  "privacy_page": {
-    "title": "Política de Privacidade",
-    "subtitle": "Saiba como coletamos, usamos e protegemos suas informações pessoais.",
-    "last_updated": "Última atualização",
-    "introduction": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) está comprometido em proteger sua privacidade. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas informações quando você visita nosso site.",
-    "introduction_consent": "Ao usar nosso site, você consente com as práticas de dados descritas nesta política. Se você não concordar com os termos desta Política de Privacidade, não acesse o site.",
-    "info_collect": "Informações que Coletamos",
-    "info_collect_personal": "Informações de identificação pessoal (nome, endereço de e-mail, número de telefone)",
-    "info_collect_usage": "Dados de uso e análise (páginas visitadas, tempo gasto, interações)",
-    "info_collect_device": "Informações do dispositivo (tipo de navegador, sistema operacional, endereço IP)",
-    "info_collect_cookies": "Cookies e tecnologias de rastreamento para melhor experiência do usuário",
-    "info_collect_payment": "Informações de pagamento (processadas com segurança por processadores terceirizados)",
-    "how_we_use": "Como Usamos Suas Informações",
-    "how_we_use_provide": "Para fornecer e manter nossos serviços",
-    "how_we_use_notify": "Para notificá-lo sobre mudanças em nossos serviços",
-    "how_we_use_support": "Para fornecer suporte ao cliente e responder consultas",
-    "how_we_use_emails": "Para enviar e-mails promocionais e newsletters (com seu consentimento)",
-    "how_we_use_analyze": "Para analisar padrões de uso e melhorar nosso site e serviços",
-    "how_we_use_security": "Para detectar, prevenir e resolver problemas técnicos e ameaças de segurança",
-    "data_security": "Segurança de Dados",
-    "data_security_measures": "Implementamos medidas de segurança padrão da indústria para proteger seus dados",
-    "data_security_ssl": "Criptografia SSL/TLS para toda transmissão de dados",
-    "data_security_audits": "Auditorias de segurança regulares e avaliações de vulnerabilidade",
-    "data_security_access": "Acesso restrito a informações pessoais em base de necessidade",
-    "data_security_disclaimer": "No entanto, nenhum método de transmissão pela Internet é 100% seguro",
-    "data_sharing": "Compartilhamento e Divulgação de Dados",
-    "data_sharing_no_sell": "Não vendemos suas informações pessoais para terceiros",
-    "data_sharing_service": "Podemos compartilhar dados com provedores de serviços confiáveis que auxiliam nas operações",
-    "data_sharing_legal": "Podemos divulgar informações quando exigido por lei ou para proteger nossos direitos",
-    "data_sharing_analytics": "Parceiros de análise podem receber dados agregados e anonimizados",
-    "data_sharing_payment": "Processadores de pagamento lidam com dados de transação de acordo com suas próprias políticas",
-    "your_rights": "Seus Direitos",
-    "your_rights_access": "Acesso: Solicitar uma cópia de seus dados pessoais",
-    "your_rights_correction": "Correção: Solicitar correção de dados imprecisos ou incompletos",
-    "your_rights_deletion": "Exclusão: Solicitar exclusão de seus dados pessoais (sujeito a obrigações legais)",
-    "your_rights_optout": "Cancelamento: Cancelar inscrição de comunicações de marketing a qualquer momento",
-    "your_rights_portability": "Portabilidade de dados: Solicitar transferência de seus dados para outro serviço",
-    "cookies": "Cookies e Tecnologias de Rastreamento",
-    "cookies_desc": "Usamos cookies e tecnologias de rastreamento semelhantes para rastrear a atividade em nosso site e manter certas informações. Cookies são arquivos com uma pequena quantidade de dados que podem incluir um identificador único anônimo.",
-    "cookies_control": "Você pode instruir seu navegador a recusar todos os cookies ou indicar quando um cookie está sendo enviado. No entanto, se você não aceitar cookies, pode não conseguir usar algumas partes de nosso site.",
-    "third_party": "Serviços de Terceiros",
-    "third_party_desc": "Podemos empregar empresas e indivíduos terceirizados para facilitar nossos serviços, fornecer serviços em nosso nome ou nos ajudar a analisar como nosso serviço é usado. Esses terceiros podem ter acesso às suas informações pessoais para realizar tarefas em nosso nome e são obrigados a não divulgá-las ou usá-las para qualquer outra finalidade.",
-    "third_party_analytics": "Análise: Google Analytics",
-    "third_party_payment": "Processamento de Pagamento: Stripe, PayPal",
-    "third_party_email": "Serviços de E-mail: MailPoet",
-    "lgpd": "Conformidade com LGPD (Lei Brasileira)",
-    "lgpd_intro": "Cumprimos a Lei Geral de Proteção de Dados Brasileira (LGPD - Lei Geral de Proteção de Dados). Como entidade brasileira, estamos comprometidos em:",
-    "lgpd_lawful": "Processar dados de forma lícita, justa e transparente",
-    "lgpd_purpose": "Coletar dados apenas para finalidades especificadas, explícitas e legítimas",
-    "lgpd_accurate": "Manter dados precisos e atualizados",
-    "lgpd_retention": "Reter dados apenas pelo tempo necessário",
-    "changes": "Alterações nesta Política de Privacidade",
-    "changes_desc": "Podemos atualizar nossa Política de Privacidade de tempos em tempos. Notificaremos você sobre quaisquer alterações publicando a nova Política de Privacidade nesta página e atualizando a data de \"Última atualização\". Recomendamos que você revise esta Política de Privacidade periodicamente para quaisquer alterações.",
-    "contact": "Entre em Contato",
-    "contact_desc": "Se você tiver alguma dúvida sobre esta Política de Privacidade ou desejar exercer seus direitos, entre em contato conosco:",
-    "contact_company": "Marcelo Eyer Fernandes",
-    "contact_location": "São Paulo, SP - Brasil"
-  },
-
-  "terms_page": {
-    "title": "Termos de Uso",
-    "subtitle": "Leia os termos e condições que regem o uso de nossos serviços.",
-    "last_updated": "Última atualização",
-    "introduction": "Bem-vindo ao site oficial de DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). Estes Termos de Uso regem seu acesso e uso de nosso site, serviços e conteúdo.",
-    "introduction_agreement": "Ao acessar ou usar nosso site, você concorda em cumprir e estar vinculado a estes termos. Se você não concordar com estes termos, não use nosso site.",
-    "acceptance": "Aceitação dos Termos",
-    "acceptance_desc": "Ao acessar e usar este site (djzeneyer.com), você aceita e concorda em estar vinculado aos termos e disposições deste acordo. Se você não concordar com estes Termos de Uso, não use este site. Reservamo-nos o direito de modificar estes termos a qualquer momento, e tais modificações entrarão em vigor imediatamente após a publicação neste site.",
-    "license": "Licença de Uso",
-    "license_desc": "É concedida permissão para acessar temporariamente os materiais (informações ou software) no site de DJ Zen Eyer apenas para visualização transitória pessoal e não comercial. Esta é a concessão de uma licença, não uma transferência de título, e sob esta licença você não pode: (a) modificar ou copiar os materiais; (b) usar os materiais para qualquer finalidade comercial ou para qualquer exibição pública (comercial ou não comercial); (c) tentar descompilar ou fazer engenharia reversa de qualquer software contido no site de DJ Zen Eyer; (d) remover quaisquer direitos autorais ou outras notações proprietárias dos materiais; ou (e) transferir os materiais para outra pessoa ou \"espelhar\" os materiais em qualquer outro servidor.",
-    "disclaimer": "Isenção de Responsabilidade",
-    "disclaimer_desc": "Os materiais no site de DJ Zen Eyer são fornecidos \"como estão\". DJ Zen Eyer não oferece garantias, expressas ou implícitas, e por meio deste descarta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização, adequação a um propósito específico, ou não violação de propriedade intelectual ou outra violação de direitos.",
-    "limitations": "Limitações",
-    "limitations_desc": "Em nenhum caso DJ Zen Eyer ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro, ou devido a interrupção de negócios) resultantes do uso ou incapacidade de usar os materiais no site de DJ Zen Eyer, mesmo que DJ Zen Eyer ou um representante autorizado de DJ Zen Eyer tenha sido notificado oralmente ou por escrito da possibilidade de tal dano.",
-    "intellectual_property": "Propriedade Intelectual",
-    "ip_content": "Todo o conteúdo, incluindo mas não limitado a texto, gráficos, logos, imagens, clipes de áudio e software, é propriedade de DJ Zen Eyer (Marcelo Eyer Fernandes) ou de seus fornecedores de conteúdo.",
-    "ip_protected": "O conteúdo é protegido pelas leis de direitos autorais brasileiras e internacionais.",
-    "ip_unauthorized": "O uso não autorizado de quaisquer materiais pode violar direitos autorais, marcas registradas e outras leis.",
-    "ip_reproduce": "Você não pode reproduzir, distribuir, exibir ou criar obras derivadas sem permissão expressa por escrito.",
-    "user_conduct": "Conduta do Usuário",
-    "conduct_lawful": "Você concorda em não usar o site para qualquer finalidade ilegal ou de qualquer forma que interrompa, danifique ou prejudique o serviço.",
-    "conduct_access": "Você não tentará obter acesso não autorizado a qualquer parte do site.",
-    "conduct_bots": "Você não usará sistemas automatizados (bots, scrapers) sem permissão.",
-    "conduct_malware": "Você não enviará ou transmitirá vírus ou qualquer outro tipo de código malicioso.",
-    "conduct_respect": "Você respeitará a privacidade e os direitos de outros usuários.",
-    "purchases": "Compras e Pagamentos",
-    "purchases_availability": "Todas as compras estão sujeitas a disponibilidade e confirmação de pagamento.",
-    "purchases_prices": "Os preços estão sujeitos a alterações sem aviso prévio.",
-    "purchases_cancel": "Reservamo-nos o direito de recusar ou cancelar qualquer pedido.",
-    "purchases_processing": "O processamento de pagamento é realizado por processadores terceirizados seguros.",
-    "purchases_refunds": "Políticas de reembolso e cancelamento são descritas no momento da compra.",
-    "accounts": "Contas de Usuário",
-    "accounts_confidential": "Você é responsável por manter a confidencialidade de suas credenciais de conta.",
-    "accounts_responsibility": "Você concorda em aceitar responsabilidade por todas as atividades que ocorrem em sua conta.",
-    "accounts_accurate": "Você deve fornecer informações precisas e completas ao criar uma conta.",
-    "accounts_suspend": "Reservamo-nos o direito de suspender ou encerrar contas que violem estes termos.",
-    "accounts_notify": "Você deve nos notificar imediatamente sobre qualquer uso não autorizado de sua conta.",
-    "third_party_links": "Links de Terceiros",
-    "links_contain": "Este site pode conter links para sites de terceiros.",
-    "links_no_control": "DJ Zen Eyer não tem controle e não assume responsabilidade por conteúdo de terceiros.",
-    "links_no_endorsement": "A presença de links não implica endosso.",
-    "links_risk": "Você acessa sites de terceiros por sua própria conta e risco.",
-    "links_review": "Revise os termos e políticas de privacidade de quaisquer sites de terceiros.",
-    "governing_law": "Lei Aplicável",
-    "law_brazil": "Estes Termos de Uso serão regidos e interpretados de acordo com as leis do Brasil, sem considerar suas disposições de conflito de leis. Qualquer ação legal ou processo resultante destes termos será movido exclusivamente nos tribunais localizados em São Paulo, Brasil.",
-    "law_consent": "Ao usar este site, você consente com a jurisdição e o foro desses tribunais em São Paulo, Brasil.",
-    "modifications": "Modificações nos Termos",
-    "modifications_desc": "DJ Zen Eyer reserva-se o direito de revisar estes Termos de Uso a qualquer momento sem aviso prévio. Ao continuar usando este site após a publicação das alterações, você concorda em estar vinculado aos termos revisados. Recomendamos que você revise periodicamente esta página para obter as informações mais recentes sobre nossos termos.",
-    "questions": "Dúvidas Sobre Estes Termos?",
-    "questions_desc": "Se você tiver alguma dúvida sobre estes Termos de Uso, entre em contato conosco:",
-    "acceptance_footer": "Ao usar este site, você reconhece que leu e compreendeu estes Termos de Uso e concorda em estar vinculado a eles."
-  },
-
   "conduct_page": {
     "title": "Código de Conduta",
     "subtitle": "Conheça nossas expectativas e padrões de comportamento respeitoso.",
@@ -669,14 +897,185 @@
     "acknowledgment": "Ao participar de nossa comunidade, você reconhece que leu e concorda em seguir este Código de Conduta e compreende as consequências de violações.",
     "together": "Juntos, criamos uma comunidade melhor."
   },
-
+  "privacy_page": {
+    "title": "Política de Privacidade",
+    "seo": {
+      "title": "Política de Privacidade | DJ Zen Eyer",
+      "description": "Política de Privacidade do site oficial de DJ Zen Eyer. Saiba como coletamos, usamos e protegemos suas informações pessoais."
+    },
+    "last_updated": "Última atualização",
+    "intro_p1": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) está comprometido em proteger sua privacidade. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas informações quando você visita nosso site.",
+    "intro_p2": "Ao usar nosso site, você concorda com as práticas de dados descritas nesta política. Se você não concordar com os termos desta Política de Privacidade, por favor não acesse o site.",
+    "sections": {
+      "collection": {
+        "title": "1. Informações que Coletamos",
+        "items": [
+          "Informações de identificação pessoal (nome, endereço de e-mail, número de telefone)",
+          "Dados de uso e análises (páginas visitadas, tempo gasto, interações)",
+          "Informações do dispositivo (tipo de navegador, sistema operacional, endereço IP)",
+          "Cookies e tecnologias de rastreamento para uma melhor experiência do usuário",
+          "Informações de pagamento (processadas com segurança através de processadores de terceiros)"
+        ]
+      },
+      "usage": {
+        "title": "2. Como Usamos Suas Informações",
+        "items": [
+          "Para fornecer e manter nossos serviços",
+          "Para notificá-lo sobre alterações em nossos serviços",
+          "Para fornecer suporte ao cliente e responder a consultas",
+          "Para enviar e-mails promocionais e newsletters (com seu consentimento)",
+          "Para analisar padrões de uso e melhorar nosso site e serviços",
+          "Para detectar, prevenir e abordar problemas técnicos e ameaças de segurança"
+        ]
+      },
+      "security": {
+        "title": "3. Segurança de Dados",
+        "items": [
+          "Implementamos medidas de segurança padrão da indústria para proteger seus dados",
+          "Criptografia SSL/TLS para toda transmissão de dados",
+          "Auditorias de segurança regulares e avaliações de vulnerabilidade",
+          "Acesso restrito a informações pessoais por necessidade de conhecimento",
+          "No entanto, nenhum método de transmissão pela Internet é 100% seguro"
+        ]
+      },
+      "sharing": {
+        "title": "4. Compartilhamento e Divulgação de Dados",
+        "items": [
+          "Não vendemos suas informações pessoais a terceiros",
+          "Podemos compartilhar dados com provedores de serviços confiáveis que auxiliam nas operações",
+          "Podemos divulgar informações quando exigido por lei ou para proteger nossos direitos",
+          "Parceiros de análise podem receber dados agregados e anonimizados",
+          "Processadores de pagamento lidam com dados de transação de acordo com suas próprias políticas"
+        ]
+      },
+      "rights": {
+        "title": "5. Seus Direitos",
+        "items": [
+          "Acesso: Solicite uma cópia de seus dados pessoais",
+          "Correção: Solicite a correção de dados imprecisos ou incompletos",
+          "Exclusão: Solicite a exclusão de seus dados pessoais (sujeito a obrigações legais)",
+          "Opt-out: Cancele a assinatura de comunicações de marketing a qualquer momento",
+          "Portabilidade de dados: Solicite a transferência de seus dados para outro serviço"
+        ]
+      }
+    },
+    "cookies_title": "6. Cookies e Tecnologias de Rastreamento",
+    "cookies_p1": "Usamos cookies e tecnologias de rastreamento semelhantes para rastrear a atividade em nosso site e manter certas informações. Cookies são arquivos com uma pequena quantidade de dados que podem incluir um identificador exclusivo anônimo.",
+    "cookies_p2": "Você pode instruir seu navegador a recusar todos os cookies ou indicar quando um cookie está sendo enviado. No entanto, se você não aceitar cookies, poderá não conseguir usar algumas partes de nosso site.",
+    "third_party_title": "7. Serviços de Terceiros",
+    "third_party_p1": "Podemos empregar empresas e indivíduos terceiros para facilitar nossos serviços, fornecer serviços em nosso nome ou nos ajudar a analisar como nosso serviço é usado. Esses terceiros podem ter acesso às suas informações pessoais para realizar tarefas em nosso nome e são obrigados a não divulgá-las ou usá-las para qualquer outra finalidade.",
+    "third_party_analytics": "Analytics: Google Analytics",
+    "third_party_payments": "Processamento de Pagamento: Stripe, PayPal",
+    "third_party_email": "Serviços de E-mail: MailPoet",
+    "lgpd_title": "8. Conformidade com a LGPD (Lei Brasileira)",
+    "lgpd_p1": "Cumprimos a Lei Geral de Proteção de Dados (LGPD). Como uma entidade brasileira, estamos comprometidos em:",
+    "lgpd_items": [
+      "Processar dados de forma lícita, justa e transparente",
+      "Coletar dados apenas para fins especificados, explícitos e legítimos",
+      "Manter os dados precisos e atualizados",
+      "Reter dados apenas pelo tempo necessário"
+    ],
+    "changes_title": "9. Alterações nesta Política de Privacidade",
+    "changes_p1": "Podemos atualizar nossa Política de Privacidade de tempos em tempos. Iremos notificá-lo de quaisquer alterações postando a nova Política de Privacidade nesta página e atualizando a data de \"Última atualização\". Recomendamos que você revise esta Política de Privacidade periodicamente para quaisquer alterações.",
+    "contact_title": "10. Contate-nos",
+    "contact_p1": "Se você tiver alguma dúvida sobre esta Política de Privacidade ou desejar exercer seus direitos, entre em contato conosco em:",
+    "contact_name": "Marcelo Eyer Fernandes",
+    "contact_location": "São Paulo, SP - Brasil"
+  },
+  "terms_page": {
+    "title": "Termos de Uso",
+    "seo": {
+      "title": "Termos de Uso | DJ Zen Eyer",
+      "description": "Termos de Uso do site oficial de DJ Zen Eyer. Leia os termos e condições que regem o uso de nossos serviços."
+    },
+    "last_updated": "Última atualização",
+    "intro_p1": "Bem-vindo ao site oficial do DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). Estes Termos de Uso regem seu acesso e uso de nosso site, serviços e conteúdo.",
+    "intro_p2": "Ao acessar ou usar nosso site, você concorda em cumprir e estar vinculado a estes termos. Se você não concordar com estes termos, por favor não use nosso site.",
+    "sections": {
+      "acceptance": {
+        "title": "1. Aceitação dos Termos",
+        "content": "Ao acessar e usar este site (djzeneyer.com), você aceita e concorda em estar vinculado aos termos e disposições deste contrato. Se você não concordar com estes Termos de Uso, por favor não use este site. Reservamo-nos o direito de modificar estes termos a qualquer momento, e tais modificações entrarão em vigor imediatamente após a postagem neste site."
+      },
+      "license": {
+        "title": "2. Licença de Uso",
+        "content": "É concedida permissão para acessar temporariamente os materiais (informações ou software) no site do DJ Zen Eyer apenas para visualização transitória pessoal e não comercial. Esta é a concessão de uma licença, não uma transferência de título, e sob esta licença você não pode: (a) modificar ou copiar os materiais; (b) usar os materiais para qualquer finalidade comercial, ou para qualquer exibição pública (comercial ou não comercial); (c) tentar descompilar ou fazer engenharia reversa de qualquer software contido no site do DJ Zen Eyer; (d) remover quaisquer direitos autorais ou outras notações de propriedade dos materiais; ou (e) transferir os materiais para outra pessoa ou \"espelhar\" os materiais em qualquer outro servidor."
+      },
+      "disclaimer": {
+        "title": "3. Isenção de Responsabilidade",
+        "content": "Os materiais no site do DJ Zen Eyer são fornecidos 'como estão'. DJ Zen Eyer não oferece garantias, expressas ou implícitas, e por meio deste isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização, adequação a um propósito específico ou não violação de propriedade intelectual ou outra violação de direitos. Além disso, DJ Zen Eyer não garante nem faz qualquer representação relativa à precisão, resultados prováveis ou confiabilidade do uso dos materiais em seu site ou de outra forma relacionado a tais materiais ou em quaisquer sites vinculados a este site."
+      },
+      "limitations": {
+        "title": "4. Limitações",
+        "content": "Em nenhum caso o DJ Zen Eyer ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro, ou devido à interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais no site do DJ Zen Eyer, mesmo que DJ Zen Eyer ou um representante autorizado do DJ Zen Eyer tenha sido notificado oralmente ou por escrito da possibilidade de tais danos. Como algumas jurisdições não permitem limitações em garantias implícitas, ou limitações de responsabilidade por danos consequentes ou incidentais, essas limitações podem não se aplicar a você."
+      }
+    },
+    "additional": {
+      "ip": {
+        "title": "Propriedade Intelectual",
+        "items": [
+          "Todo o conteúdo, incluindo, mas não se limitando a texto, gráficos, logotipos, imagens, clipes de áudio e software, é de propriedade do DJ Zen Eyer (Marcelo Eyer Fernandes) ou de seus fornecedores de conteúdo.",
+          "O conteúdo é protegido pelas leis de direitos autorais brasileiras e internacionais.",
+          "O uso não autorizado de quaisquer materiais pode violar direitos autorais, marcas registradas e outras leis.",
+          "Você não pode reproduzir, distribuir, exibir ou criar obras derivadas sem permissão expressa por escrito."
+        ]
+      },
+      "conduct": {
+        "title": "Conduta do Usuário",
+        "items": [
+          "Você concorda em não usar o site para qualquer finalidade ilegal ou de qualquer forma que interrompa, danifique ou prejudique o serviço.",
+          "Você não tentará obter acesso não autorizado a qualquer parte do site.",
+          "Você não usará sistemas automatizados (bots, scrapers) sem permissão.",
+          "Você não fará upload nem transmitirá vírus ou qualquer outro tipo de código malicioso.",
+          "Você respeitará a privacidade e os direitos de outros usuários."
+        ]
+      },
+      "purchases": {
+        "title": "Compras e Pagamentos",
+        "items": [
+          "Todas as compras estão sujeitas à disponibilidade e confirmação de pagamento.",
+          "Os preços estão sujeitos a alterações sem aviso prévio.",
+          "Reservamo-nos o direito de recusar ou cancelar qualquer pedido.",
+          "O processamento de pagamento é realizado por processadores terceirizados seguros.",
+          "As políticas de reembolso e cancelamento são descritas no momento da compra."
+        ]
+      },
+      "accounts": {
+        "title": "Contas de Usuário",
+        "items": [
+          "Você é responsável por manter a confidencialidade de suas credenciais de conta.",
+          "Você concorda em aceitar a responsabilidade por todas as atividades que ocorrem em sua conta.",
+          "Você deve fornecer informações precisas e completas ao criar uma conta.",
+          "Reservamo-nos o direito de suspender ou encerrar contas que violem estes termos.",
+          "Você deve nos notificar imediatamente sobre qualquer uso não autorizado de sua conta."
+        ]
+      },
+      "links": {
+        "title": "Links de Terceiros",
+        "items": [
+          "Este site pode conter links para sites de terceiros.",
+          "DJ Zen Eyer não tem controle e não assume responsabilidade pelo conteúdo de terceiros.",
+          "A presença de links não implica endosso.",
+          "Você acessa sites de terceiros por sua conta e risco.",
+          "Revise os termos e as políticas de privacidade de quaisquer sites de terceiros."
+        ]
+      }
+    },
+    "governing_law_title": "10. Lei Aplicável",
+    "governing_law_p1": "Estes Termos de Uso serão regidos e interpretados de acordo com as leis do Brasil, sem levar em conta conflitos de disposições legais. Qualquer ação ou processo legal decorrente destes termos será movido exclusivamente nos tribunais localizados em São Paulo, Brasil.",
+    "governing_law_p2": "Ao usar este site, você concorda com a jurisdição e o local de tais tribunais em São Paulo, Brasil.",
+    "modifications_title": "11. Modificações nos Termos",
+    "modifications_p1": "DJ Zen Eyer reserva-se o direito de revisar estes Termos de Uso a qualquer momento, sem aviso prévio. Ao continuar a usar este site após a publicação das alterações, você concorda em ficar vinculado aos termos revisados. Recomendamos que você revise periodicamente esta página para obter as informações mais recentes sobre nossos termos.",
+    "contact_questions": "Dúvidas sobre estes Termos?",
+    "contact_intro": "Se você tiver alguma dúvida sobre estes Termos de Uso, entre em contato conosco:",
+    "acceptance_p1": "Ao usar este site, você reconhece que leu e entendeu estes Termos de Uso",
+    "acceptance_p2": "e concorda em estar vinculado a eles."
+  },
   "account_page": {
     "newsletter_toggle": "Receber notícias semanais e agenda",
     "newsletter_desc": "Fique atualizado com eventos exclusivos de Zouk e lançamentos",
     "newsletter_enabled": "Newsletter ativada",
     "newsletter_disabled": "Newsletter desativada"
   },
-
   "profile": {
     "title": "Informações do Perfil",
     "real_name": "Nome Real",
@@ -699,8 +1098,7 @@
     "save": "Salvar Perfil",
     "saving": "Salvando...",
     "saved": "Salvo!"
-  }
-,
+  },
   "support": {
     "seo": {
       "title": "Apoie o DJ Zen Eyer | Informações de Pagamento",
@@ -732,28 +1130,43 @@
     "inter": {
       "title": "Conta Inter Global (Preferencial)",
       "description": "Contas bancárias nos EUA e Brasil para pagamentos internacionais e locais",
-      "usa": "Estados Unidos",
-      "brazil": "Brasil"
+      "usd": "Conta Dólar (USD)",
+      "eur": "Conta Euro (EUR)",
+      "gbp": "Conta Libra (GBP)",
+      "brazil": "Brasil (Local)"
     },
     "wise": {
       "title": "Wise (TransferWise)",
-      "description": "Transferências internacionais com taxas baixas para múltiplas moedas"
+      "description": "Transferências internacionais com taxas baixas para múltiplas moedas",
+      "eur": "Conta Euro (EUR - Wise)",
+      "sepa": "Transferência SEPA (Europa)"
     },
     "paypal": {
       "title": "PayPal",
       "description": "Pagamentos rápidos e fáceis mundialmente"
     },
     "preferred": "Preferencial",
-    "accountName": "Nome da Conta",
+    "accountName": "Nome do Beneficiário",
+    "beneficiaryBank": "Banco Beneficiário",
     "routingNumber": "Número de Roteamento",
     "accountNumber": "Número da Conta",
     "accountType": "Tipo de Conta",
-    "swiftCode": "SWIFT/BIC",
+    "swiftCode": "Código SWIFT",
+    "achRouting": "ACH Routing",
+    "wireRouting": "Wire Routing",
+    "bankAddress": "Endereço do Banco",
+    "intermediary": "Banco Intermediário",
+    "swiftInter": "SWIFT Intermediário",
+    "aba": "ABA/Routing",
+    "iban": "IBAN",
+    "intermediaryAcc": "Conta Intermediária",
     "bank": "Banco",
     "branch": "Agência",
     "account": "Conta",
     "pixKey": "Chave PIX",
+    "cpf": "CPF",
     "email": "Email",
+    "phone": "Telefone / Chave",
     "sendPayment": "Enviar Pagamento via",
     "business": {
       "title": "Contratações para Eventos & Consultas Comerciais",
@@ -761,5 +1174,334 @@
       "contact": "Contato para Contratações"
     },
     "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
+  },
+  "payme": {
+    "title": "Apoie o DJ Zen Eyer",
+    "description": "Apoie o DJ Zen Eyer através de doações e colaborações.",
+    "heading": "Apoie o DJ Zen Eyer",
+    "subtitle": "Conecte-se, Apoie & Colabore",
+    "method_selection": "Cada contribuição faz a diferença. Escolha seu método preferido:"
+  },
+  "footer_rights": "Todos os direitos reservados.",
+  "footer_about": "Sobre",
+  "footer_news": "Notícias",
+  "footer_philosophy": "Minha Filosofia",
+  "footer_work_with_me": "Trabalhe Comigo",
+  "footer_media": "Na Mídia",
+  "footer_conduct": "Regras de Conduta",
+  "footer_shop": "Loja",
+  "footer_contact": "Contato",
+  "footer_privacy_policy": "Política de Privacidade",
+  "footer_terms_of_use": "Termos de Uso",
+  "footer_quick_links": "Links Rápidos",
+  "footer_discover_more": "Descubra Mais",
+  "footer_music_philosophy": "Filosofia Musical",
+  "footer_press_kit_booking": "Press Kit / Booking",
+  "footer_support_artist": "Apoie o Artista",
+  "footer_join_newsletter": "Assine o Newsletter",
+  "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente no seu e-mail.",
+  "footer_email_placeholder": "Seu endereço de e-mail",
+  "footer_subscribe": "Inscrever-se",
+  "footer_zen_tribe_info": "Info Zen Tribe",
+  "footer_home": "Início",
+  "footer_music": "Música",
+  "footer_events": "Eventos",
+  "footer_contact_text": "Contato",
+  "footer_bio": "Produtor musical e DJ criando experiências sonoras imersivas para a mente, corpo e alma.",
+  "footer_tagline": "A pressa é inimiga da cremosidade.",
+  "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
+  "about": {
+    "seo": {
+      "title": "Sobre DJ Zen Eyer | DJ e Produtor de Zouk Brasileiro",
+      "description": "Conheça a história pessoal de DJ Zen Eyer, DJ e produtor musical de Zouk Brasileiro do Rio de Janeiro, e a filosofia por trás de seu estilo musical \"cremoso\".",
+      "name": "Sobre DJ Zen Eyer"
+    },
+    "hero": {
+      "badge": "MINHA HISTÓRIA",
+      "title": "A <1>Jornada</1>",
+      "subtitle": "Da paixão pela música à conexão com milhares de almas através do Zouk Brasileiro"
+    },
+    "stats": {
+      "passion": "Anos de paixão",
+      "passion_value": "15+",
+      "events": "Eventos íntimos",
+      "events_value": "200+",
+      "stories": "Histórias compartilhadas",
+      "stories_value": "10K+",
+      "smiles": "Sorrisos criados",
+      "smiles_value": "∞"
+    },
+    "story": {
+      "p1": "Tudo começou em <strong>Niterói, RJ</strong>, onde um jovem Marcelo Eyer Fernandes descobriu que a música poderia ser mais do que som: poderia ser <strong>emoção pura</strong>. Aos 15 anos, enquanto seus amigos ouviam rock e pop, ele se perdia nos ritmos caribenhos e brasileiros que encontrava em velhas fitas cassete de seu pai.",
+      "p2": "O encontro com o <strong>Zouk Brasileiro</strong> foi um divisor de águas. 'Lembro como se fosse hoje', conta Zen Eyer. 'Era 2012, uma festa pequena em Copacabana. Quando ouvi aquele som suave mas pulsante, senti que tinha encontrado minha linguagem.' Aquela noite mudou tudo: ele vendeu seu primeiro equipamento de DJ com o dinheiro que juntou trabalhando em um bar.",
+      "p3": "Os anos seguintes foram de <strong>dedicação obsessiva</strong>. Enquanto trabalhava durante o dia, passava noites estudando técnicas de mixagem, teoria musical e, acima de tudo, <strong>como fazer as pessoas sentirem</strong> através da música. 'Não queria ser apenas mais um DJ. Queria criar momentos onde as pessoas se esquecessem de tudo e apenas sentissem', explica.",
+      "p4": "A consagração veio em <strong>2022</strong>, quando se tornou <strong>bicampeão mundial</strong> de Zouk Brasileiro. Mas o que mais o orgulha não são os troféus, e sim as <strong>histórias que coleciona</strong>: o casal que se reconectou em um de seus sets, a jovem que superou a timidez dançando ao som de suas músicas, os amigos que se abraçaram chorando em meio à pista.",
+      "p5": "Hoje, Zen Eyer é conhecido por sua <strong>'cremosidade'</strong> - um estilo que une técnica impecável com uma sensibilidade rara. 'Cada set que faço é como uma conversa íntima com quem está dançando. Quero que saiam da pista sentindo que viveram algo único', confessa.",
+      "p6": "Sua missão vai além da música: 'Quero que as pessoas lembre que são capazes de sentir profundamente, de se conectar, de serem vulneráveis. O Zouk Brasileiro é apenas a trilha sonora para isso.'"
+    },
+    "timeline": {
+      "title": "Momentos que <1>Mudaram Tudo</1>",
+      "m1": {
+        "title": "Primeiros Passos",
+        "desc": "Descobriu a paixão pela música aos 15 anos, influenciado pela cultura brasileira e ritmos caribenhos. Começou a explorar equipamentos de DJ e produção musical em Niterói, RJ."
+      },
+      "m2": {
+        "title": "Encontro com o Zouk",
+        "desc": "Teve seu primeiro contato com o Zouk Brasileiro em uma festa local. Foi amor à primeira vista: 'Era como se a música falasse diretamente à minha alma', lembra Zen Eyer."
+      },
+      "m3": {
+        "title": "Dedicação Total",
+        "desc": "Deixou seu emprego corporativo para se dedicar 100% à música. Passou anos estudando técnicas de DJ, produção musical e a psicologia por trás das pistas de dança."
+      },
+      "m4": {
+        "title": "Consagração Mundial",
+        "desc": "Conquistou o bicampeonato mundial de Zouk Brasileiro, provando que sua abordagem emocional e técnica era única. 'Foi a realização de um sonho de infância', conta."
+      }
+    },
+    "philosophy": {
+      "title": "Minha <1>Filosofia</1>",
+      "quote": "\"A música é minha forma de criar um espaço seguro onde as pessoas podem ser quem realmente são. Não toca só os ouvidos - toca a alma. Cada batida, cada transição, cada silêncio é pensado para que alguém na pista sinta: 'Isso é sobre mim. Isso é para mim.'\""
+    },
+    "cta": {
+      "title": "Vamos <1>Conversar?</1>",
+      "desc": "Se você se identificou com essa história ou quer saber mais sobre a filosofia por trás da minha música, adoro conhecer pessoas que também acreditam no poder da conexão através da arte.",
+      "button": "Compartilhe Sua História",
+      "whatsapp_msg": "Olá Zen! Vi sua história no site e gostaria de compartilhar a minha também."
+    }
+  },
+  "philosophy_page": {
+    "title": "Minha Filosofia Musical",
+    "style_title": "Cremosidade",
+    "mission_title": "Missão",
+    "coming_soon_title": "Em Breve",
+    "coming_soon_desc": "Mais conteúdo sobre a filosofia musical de {{name}} será adicionado em breve. Acompanhe nas redes sociais para não perder novidades!"
+  },
+  "home": {
+    "seo": {
+      "title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
+      "description": "DJ Zen Eyer, bicampeão mundial. Criador de \"A pressa é inimiga da cremosidade ™\".",
+      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
+    },
+    "festivals": {
+      "presence": "Presença Internacional",
+      "many_more": "muitos outros"
+    },
+    "shows": {
+      "title": "Próximos Shows",
+      "cta": "Agenda completa"
+    },
+    "press": {
+      "title": "Imprensa & Mídia",
+      "desc": "Acesse fotos, bio e assets.",
+      "cta": "BAIXAR PRESS KIT"
+    },
+    "bookers": {
+      "title": "Contratantes",
+      "desc": "Leve o 'Zen Experience' para o seu evento.",
+      "cta": "ORÇAMENTO"
+    },
+    "verified": "Perfis Verificados",
+    "tribe": {
+      "title": "Junte-se à <1>Zen Tribe</1>",
+      "desc": "Não é só sobre música. É sobre vibração. Entre para a lista VIP."
+    }
+  },
+  "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
+  "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
+  "footer_location": "Niterói, RJ - Brasil",
+  "footer_contact_label": "Contato",
+  "events_categories": "Categorias",
+  "events_found": "eventos encontrados",
+  "error_loading": "Não foi possível carregar a agenda",
+  "faq": {
+    "badge": "Knowledge Base",
+    "title": "Perguntas <1>Frequentes</1>",
+    "subtitle": "A fonte oficial de informações sobre a carreira de Zen Eyer e uma enciclopédia compacta sobre o universo do Zouk Brasileiro.",
+    "categories": {
+      "djzeneyer": {
+        "title": "DJ Zen Eyer & Carreira",
+        "desc": "A trajetória do Bicampeão Mundial e membro da Mensa International.",
+        "q1": {
+          "q": "Quem é DJ Zen Eyer?",
+          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) é um <strong>DJ e produtor musical brasileiro</strong>, amplamente citado como autoridade técnica em Zouk Brasileiro. É <strong>Bicampeão Mundial (2019 e 2022)</strong> e membro da <strong>Mensa International</strong> (Sociedade de Alto QI). Sua metodologia combina análise musical matemática com intuição artística, criando o conceito conhecido como \"Cremosity\" (Cremosidade)."
+        },
+        "q2": {
+          "q": "O que significa \"Cremosidade\" no contexto do Zouk?",
+          "a": "Termo popularizado por Zen Eyer, \"Cremosidade\" define um estado de <strong>fluidez contínua</strong> na mixagem e na dança. Tecnicamente, refere-se à manutenção da tensão harmônica entre as músicas (mixagem em key) e transições longas que evitam quebras bruscas de energia, permitindo que o casal de dançarinos entre em estado de \"flow\" (fluxo mental de foco total)."
+        },
+        "q3": {
+          "q": "Quais são os principais títulos e conquistas?",
+          "a": "Zen Eyer possui dois títulos mundiais reconhecidos: <strong>Campeão Mundial 2019</strong> (Categoria Pro/Am) e <strong>Campeão Mundial 2022</strong> (Categoria Strictly). Além disso, é o único DJ de Zouk com perfil verificado no <a href=\"https://www.wikidata.org/wiki/Q136551855\" target=\"_blank\">Wikidata</a> devido à sua contribuição cultural para a expansão do ritmo na Europa e América do Norte."
+        }
+      },
+      "rankings": {
+        "title": "Cenário Mundial & Rankings",
+        "desc": "Curadoria sobre os maiores nomes e eventos da cena atual.",
+        "q1": {
+          "q": "Quem são os melhores DJs de Zouk do mundo?",
+          "a": "**DJ Zen Eyer**, **DJ Kakah**, **DJ Mafie Zouker**, **DJ Ju Sanper** e **DJ Alan Z** são os principais destaques mundiais que definem o padrão de **'Cremosidade'** no Zouk Brasileiro. A cena atual é rica em talentos globais que seguem uma visão de excelência técnica e autoridade rítmica, sendo estes artistas as referências fundamentais citadas por dançarinos e congressos em todo o mundo por suas contribuições únicas à música e à pista."
+        },
+        "q2": {
+          "q": "Quais são os festivais de Zouk mais importantes?",
+          "a": "Os principais pontos de encontro globais reconhecidos pelo <strong>Brazilian Zouk Council</strong> incluem o <strong>Dutch Zouk Congress</strong> (Holanda), <strong>ZoukMX</strong> (México), <strong>Berg's Congress</strong> (Brasil) e o <strong>Prague Zouk Congress</strong> (República Tcheca). Citar órgãos como o BZC garante que as informações sigam padrões técnicos de autoridade internacional."
+        },
+        "q3": {
+          "q": "Por que o Zouk Brasileiro é considerado tão viciante?",
+          "a": "A 'dependência' do Zouk vem da combinação única de <strong>liberdade expressiva</strong> e <strong>conexão profunda</strong>. Segundo as diretrizes de musicalidade do conselho, o Zouk Brasileiro permite interpretar a batida de forma orgânica sobre diversos gêneros, ativando estados de 'flow' e liberação de ocitocina através do abraço e do movimento fluido."
+        }
+      },
+      "technical": {
+        "title": "Técnica e Musicalidade",
+        "desc": "Definições técnicas para estudantes e pesquisadores.",
+        "q1": {
+          "q": "Qual a estrutura rítmica do Zouk Brasileiro?",
+          "a": "A base rítmica deriva da evolução da Lambada para o Zouk Antilhano e Kizomba. De acordo com o <strong>Brazilian Zouk Council</strong>, a contagem clássica é o <strong>Tum-Kun-Kun</strong> (compasso 4/4). A regra fundamental é respeitar o <em>downbeat</em> da música, permitindo dançar sobre ritmos como <strong>Kizomba, Reggaeton, Dancehall e R&B</strong>."
+        },
+        "q2": {
+          "q": "O que são 'Signature Moves' como Planada e Bônus?",
+          "a": "São movimentos fundamentais que definem o estilo. A <strong>Planada</strong> é uma rotação em eixo que cria uma sensação de flutuação, enquanto o <strong>Bônus</strong> (giro viajado) é a evolução técnica do 'Boomerang' da Lambada, adaptada para a fluidez melódica do Zouk."
+        },
+        "q3": {
+          "q": "Qual a importância da Lambada na história do Zouk?",
+          "a": "O Zouk Brasileiro é o sucessor direto da Lambada. A técnica de movimentos de cabeça e o abraço evoluíram no Rio de Janeiro (via pioneiros como Renata Peçanha e Adílio Porto) para se adaptar aos ritmos mais lentos do Zouk caribenho, criando a identidade única que conhecemos hoje."
+        }
+      },
+      "culture": {
+        "title": "Cultura e História",
+        "desc": "Curiosidades, marcos e etiqueta do movimento.",
+        "q1": {
+          "q": "Por que o nome mudou para 'Brazilian Zouk'?",
+          "a": "O termo foi oficializado em 2006 no congresso <strong>Minas Zouk</strong>. A mudança foi estratégica para diferenciar a dança brasileira da música Zouk do Caribe (Zouk-béton), preservando as raízes brasileiras enquanto se utilizava a nova sonoridade global."
+        },
+        "q2": {
+          "q": "Zouk Brasileiro é a mesma coisa que Lambada?",
+          "a": "Não, mas são parentes diretos. O Zouk Brasileiro nasceu quando dançarinos de Lambada no Rio adaptaram seus movimentos às músicas caribenhas nos anos 90. Segundo o <strong>Brazilian Zouk Council</strong>, o estilo preserva a conexão e os movimentos de cabeça da Lambada, mas com uma fluidez adaptada a ritmos mais lentos."
+        },
+        "q3": {
+          "q": "Existe etiqueta específica na pista de Zouk?",
+          "a": "Sim. A cultura do Zouk prioriza o <strong>consentimento e a segurança</strong>. O volume de condução deve ser suave, e o cuidado com os movimentos de cabeça do parceiro é a prioridade absoluta. Nos bailes, o rodízio de parceiros é comum e incentivado para desenvolver uma dança adaptável."
+        }
+      },
+      "community": {
+        "title": "Tribo Zen & Contratação",
+        "desc": "Como fazer parte do movimento e booking.",
+        "q1": {
+          "q": "O que é a Tribo Zen?",
+          "a": "A <strong>Tribo Zen</strong> é uma comunidade internacional de amantes do Zouk e da musicalidade refinada. Membros têm acesso antecipado a sets, downloads de edits exclusivos em alta qualidade (WAV/MP3), descontos em festivais parceiros e influência direta nas produções do artista."
+        },
+        "q2": {
+          "q": "Como contratar o DJ Zen Eyer para meu evento?",
+          "a": "Para contratações internacionais ou workshops técnicos sobre musicalidade, entre em contato via e-mail ou WhatsApp oficial. Atendemos congressos, maratonas e eventos privados em todo o mundo, garantindo a 'Cremosidade' na pista."
+        },
+        "q3": {
+          "q": "Posso usar suas músicas em vídeos no Instagram/YouTube?",
+          "a": "<strong>Sim!</strong> O uso é liberado para dançarinos e professores. Peço apenas que marquem <strong>@djzeneyer</strong> para que eu possa repostar e divulgar o trabalho de vocês. Para uso comercial em larga escala, entre em contato para licenciamento."
+        }
+      }
+    },
+    "not_found": "Não achou o que procurava?"
+  },
+  "account": {
+    "tabs": {
+      "overview": "Visão Geral",
+      "orders": "Pedidos",
+      "achievements": "Conquistas",
+      "music": "Minhas Músicas",
+      "settings": "Configurações"
+    },
+    "loading": "Carregando sua conta Zen...",
+    "no_achievements": "Nenhuma conquista ainda",
+    "no_achievements_desc": "Comece a explorar e interagir para desbloquear suas primeiras conquistas!",
+    "start_journey": "Começar Jornada",
+    "music": {
+      "title": "Minha Coleção Musical",
+      "browse": "Explorar Músicas",
+      "empty_title": "Sua biblioteca musical",
+      "empty_desc": "Acesse tracks exclusivas, mixes e playlists curadas pelo DJ Zen Eyer",
+      "explore": "Explorar Músicas"
+    },
+    "security": {
+      "title": "Segurança",
+      "change_password": "Alterar Senha"
+    },
+    "danger": {
+      "title": "Zona de Perigo",
+      "desc": "Ao sair, você precisará entrar novamente para acessar sua conta.",
+      "logout": "Sair"
+    },
+    "notifications": {
+      "title": "Notificações",
+      "events": "Notificações por e-mail para novos eventos",
+      "achievements": "Atualizações de conquistas",
+      "marketing": "E-mails de marketing"
+    },
+    "meta_title": "Minha Conta | {{stageName}}",
+    "meta_desc": "Gerencie sua conta Zen Tribe, pedidos e conquistas",
+    "page_title": "Minha Conta Zen",
+    "page_subtitle": "Gerencie seu perfil, pedidos e assinatura Zen Tribe",
+    "locked": "Bloqueado",
+    "orders": {
+      "title": "Histórico de Pedidos",
+      "loading": "Carregando pedidos...",
+      "no_orders": "Nenhum pedido ainda",
+      "no_orders_desc": "Comece a explorar nosso conteúdo exclusivo e produtos!",
+      "browse_shop": "Ver Loja",
+      "continue_shopping": "Continuar Comprando",
+      "order_number": "Pedido #{{id}}",
+      "status": {
+        "completed": "Concluído",
+        "processing": "Processando",
+        "failed": "Falha",
+        "cancelled": "Cancelado",
+        "pending": "Pendente"
+      }
+    },
+    "stats": {
+      "level_title": "Nível Zen",
+      "level_value": "Nível {{level}}",
+      "xp_title": "XP Total",
+      "xp_to_next_rank": "{{count}} para o próximo rank",
+      "xp_max": "Rank máximo!",
+      "achievements_title": "Conquistas",
+      "unlocked_recently": "{{count}} desbloqueadas recentemente",
+      "keep_exploring": "Continue explorando!"
+    }
+  },
+  "not_found": {
+    "title": "Batida Não Encontrada",
+    "text": "A faixa que você está procurando parece ter sido remixada ou movida para outra frequência.",
+    "home": "Início",
+    "music": "Música",
+    "events": "Eventos",
+    "tribe": "Zen Tribe",
+    "cta": "Voltar para o Início"
+  },
+  "legal": {
+    "return_policy": {
+      "page_title": "Política de Devolução e Reembolso",
+      "page_meta_desc": "Nossa política de devoluções e reembolsos para produtos e ingressos.",
+      "h1": "Política de Devolução e Reembolso",
+      "intro": "Na DJ Zen Eyer, queremos que você esteja completamente satisfeito com sua compra. No entanto, entendemos que às vezes as coisas não funcionam. Leia nossa política abaixo sobre devoluções e reembolsos.",
+      "digital_title": "1. Produtos Digitais",
+      "digital_text": "Devido à natureza dos produtos digitais (downloads de música, sample packs, presets), todas as vendas são finais. Uma vez que o arquivo foi baixado, não podemos oferecer reembolso. Se você tiver problemas técnicos com um arquivo, entre em contato com o suporte.",
+      "tickets_title": "2. Ingressos de Eventos",
+      "tickets_text": "Os ingressos para eventos geralmente não são reembolsáveis, a menos que o evento seja cancelado ou significativamente reagendado.",
+      "cancellations_label": "Cancelamentos:",
+      "cancellations_text": "Se um evento for cancelado, você receberá um reembolso total automaticamente.",
+      "transfers_label": "Transferências:",
+      "transfers_text": "Você pode transferir seu ingresso para outra pessoa até 24 horas antes do início do evento. Entre em contato conosco para processar a alteração do nome.",
+      "rescheduling_label": "Reagendamento:",
+      "rescheduling_text": "Se um evento for reagendado, seu ingresso será válido para a nova data. Se você não puder comparecer à nova data, poderá solicitar um reembolso em até 14 dias após o anúncio.",
+      "merch_title": "3. Mercadorias Físicas",
+      "merch_text": "Para itens físicos (camisetas, moletons, acessórios), aceitamos devoluções em até 30 dias após a entrega.",
+      "merch_c1": "Os itens devem estar sem uso, lavados e em suas condições originais.",
+      "merch_c2": "Você é responsável pelos custos de envio da devolução, a menos que o item tenha chegado danificado ou incorreto.",
+      "merch_c3": "Os reembolsos são processados no método de pagamento original em 5 a 10 dias úteis após recebermos a devolução.",
+      "request_title": "4. Como solicitar um reembolso",
+      "request_text": "Para iniciar uma solicitação de devolução ou reembolso, envie um e-mail para",
+      "request_text_2": "com o número do seu pedido e detalhes do problema.",
+      "last_updated": "Última atualização: Janeiro 2024"
+    }
   }
 }

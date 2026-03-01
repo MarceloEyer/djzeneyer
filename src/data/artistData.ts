@@ -19,6 +19,8 @@ export const ARTIST = {
     displayTitle: 'Zen Eyer',
     birthDate: '1985-08-20', // Wikidata + MusicBrainz
     nationality: 'Brazilian',
+    legalName: 'Marcelo Eyer Fernandes 44063765000146', // Wikidata CNPJ
+    taxId: '44.063.765/0001-46',
   },
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
@@ -53,6 +55,8 @@ export const ARTIST = {
 
   // 🌎 Festivais de Destaque
   // Datas adicionadas baseadas nos anos informados e calendário típico dos eventos
+  // NOTA: Datas mantidas intencionalmente no passado para fins de autoridade/histórico.
+  // NÃO ATUALIZAR para datas futuras estimadas a menos que confirmado.
   festivals: [
     {
       name: 'One Zouk Congress',
@@ -123,8 +127,11 @@ export const ARTIST = {
     discogs: '16872046',
     discogsUrl: 'https://www.discogs.com/artist/16872046',
     residentAdvisor: 'djzeneyer',
-    residentAdvisorUrl: 'https://pt-br.ra.co/dj/djzeneyer',
+    residentAdvisorUrl: 'https://ra.co/dj/djzeneyer',
     danceWikiFandom: 'https://dance.fandom.com/wiki/Zen_Eyer',
+    orcid: '0009-0006-2948-2148',
+    knowledgeGraphId: '/g/11ff3mhh10',
+    knowledgeGraphUrl: 'https://www.google.com/search?kgmid=/g/11ff3mhh10',
   },
 
   // 📱 Redes Sociais / Plataformas
@@ -132,14 +139,35 @@ export const ARTIST = {
     instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
     facebook: { handle: 'djzeneyer', url: 'https://facebook.com/djzeneyer' },
     youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
+    tiktok: { handle: '@djzeneyer', url: 'https://www.tiktok.com/@djzeneyer' },
+    twitter: { handle: '@djzeneyer', url: 'https://x.com/djzeneyer' },
+    twitch: { handle: 'djzeneyer', url: 'https://www.twitch.tv/djzeneyer' },
+    linkedin: { handle: 'eyermarcelo', url: 'https://www.linkedin.com/in/eyermarcelo' },
+    telegram: { handle: 'djzeneyer', url: 'https://t.me/djzeneyer' },
     soundcloud: { handle: 'djzeneyer', url: 'https://soundcloud.com/djzeneyer' },
     spotify: {
       id: '68SHKGndTlq3USQ2LZmyLw',
       url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
     },
-    appleMusic: { url: 'https://music.apple.com/us/artist/zen-eyer/1439280950' },
-    bandsintown: { url: 'https://www.bandsintown.com/a/15552355-dj-zen-eyer' },
-    mixcloud: { url: 'https://www.mixcloud.com/zeneyer' },
+    appleMusic: { url: 'https://music.apple.com/artist/1439280950' },
+    youtubeMusic: { url: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg' },
+    deezer: { url: 'https://www.deezer.com/artist/52900762' },
+    bandsintown: { url: 'https://www.bandsintown.com/a/15619775' },
+    mixcloud: { url: 'https://www.mixcloud.com/djzeneyer' },
+    bandcamp: { url: 'https://djzeneyer.bandcamp.com' },
+    lastfm: { url: 'https://www.last.fm/music/Zen+Eyer' },
+    songkick: { url: 'https://www.songkick.com/artists/8815204-zen-eyer' },
+    tidal: { url: 'https://tidal.com/artist/10492592' },
+    genius: { url: 'https://genius.com/artists/Zen-eyer' },
+    musixmatch: { url: 'https://www.musixmatch.com/pt/artista/Zen-Eyer' },
+    amazonMusic: { url: 'https://music.amazon.com/artists/B07JKCDCG8' },
+    audiomack: { url: 'https://audiomack.com/djzeneyer' },
+    boomplay: { url: 'https://www.boomplay.com/artists/35157982' },
+    napster: { url: 'https://us.napster.com/artist/art.626690096' },
+    qobuz: { url: 'https://www.qobuz.com/artist/7501129' },
+    reddit: { url: 'https://www.reddit.com/user/djzeneyer' },
+    crunchbase: { url: 'https://www.crunchbase.com/organization/zen-eyer' },
+    pinterest: { url: 'https://www.pinterest.com/djzeneyer' },
   } as Record<string, SocialLink>,
 
   // 📍 Contato
@@ -154,6 +182,75 @@ export const ARTIST = {
       state: 'RJ',
       country: 'Brazil',
       areaDetail: 'Born in Rio de Janeiro, based in Niterói',
+    },
+  },
+
+  // 💰 Pagamentos & Doações (SSOT)
+  payment: {
+    interGlobal: {
+      usd: {
+        accountName: 'MARCELO EYER FERNANDES',
+        accountNumber: '889693163-5',
+        achRouting: '026073150',
+        wireRouting: '026073008',
+        bankName: 'Community Federal Savings Bank',
+        bankAddress: '5 Penn Plaza, New York, NY 10001',
+        beneficiaryBank: 'Banco Inter SA',
+        swiftCode: 'ITEMBRSP',
+        intermediaryBank: {
+          name: 'JP Morgan Chase N.A.',
+          swift: 'CHASUS33',
+          aba: '021000021',
+          account: '360556937',
+        },
+        iban: 'BR9600416968000010007524137C1',
+      },
+      eur: {
+        accountName: 'MARCELO EYER FERNANDES',
+        beneficiaryBank: 'Banco Inter S.A.',
+        swiftCode: 'ITEMBRSP',
+        intermediaryBank: {
+          name: 'J.P.Morgan AG',
+          swift: 'CHASDEFX',
+        },
+        iban: 'BR9600416968000010007524137C1',
+      },
+      gbp: {
+        accountName: 'MARCELO EYER FERNANDES',
+        beneficiaryBank: 'Banco Inter S.A.',
+        swiftCode: 'ITEMBRSP',
+        intermediaryBank: {
+          name: 'JPMORGAN CHASE BANK N.A., LONDON BRANCH',
+          swift: 'CHASGB2L',
+        },
+        iban: 'BR9600416968000010007524137C1',
+      },
+      brazil: {
+        accountName: 'MARCELO EYER FERNANDES',
+        cpf: '113.739.157-06',
+        bank: 'Banco Inter (077)',
+        branch: '0001',
+        account: '752413-7',
+        pixKey: '21987413091',
+      },
+    },
+    wise: {
+      email: 'eyer.marcelo@gmail.com',
+      url: 'https://wise.com/pay/me/marceloe131',
+      eur: {
+        accountName: 'Marcelo Eyer Fernandes',
+        iban: 'BE09967420872757',
+        swiftCode: 'TRWIBEB1XXX',
+        bankName: 'Wise (Brussels, Belgium)',
+        bankAddress: 'Rue du Trône 100, 3rd floor, Brussels, 1050, Belgium',
+      },
+    },
+    paypal: {
+      email: 'eyer.marcelo@gmail.com',
+      phone: '+5521987413091',
+      businessId: '6BBTGNK7ZWUHY',
+      me: 'https://paypal.me/djzeneyer',
+      donateUrl: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6BBTGNK7ZWUHY&item_name=Mensagem%20Personalizada&currency_code=BRL&no_recurring=0',
     },
   },
 
@@ -204,23 +301,29 @@ const getSocialUrls = () => Object.values(ARTIST.social).map(s => s.url);
 
 const getVerificationUrls = () => [
   ARTIST.identifiers.wikidataUrl,
+  ARTIST.identifiers.knowledgeGraphUrl,
   ARTIST.identifiers.musicbrainzUrl,
+  `https://isni.org/isni/${ARTIST.identifiers.isni}`,
+  `https://orcid.org/${ARTIST.identifiers.orcid}`,
   ARTIST.identifiers.discogsUrl,
   ARTIST.identifiers.residentAdvisorUrl,
   ARTIST.identifiers.danceWikiFandom,
 ];
 
-// Schema.org Person base
+// Schema.org MusicGroup base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_BASE = {
-  '@type': 'Person',
+  '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: ARTIST.identity.stageName,
   alternateName: [ARTIST.identity.shortName, ARTIST.identity.fullName],
-  jobTitle: 'Brazilian Zouk DJ and music producer',
-  description: `${ARTIST.titles.primary}. Member of ${ARTIST.mensa.organization}. Known for the "${ARTIST.philosophy.style}" musical style.`,
-  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+  description: `${ARTIST.titles.primary}. Known for the "${ARTIST.philosophy.style}" musical style.`,
+  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Electronic'],
   knowsAbout: ['Brazilian Zouk', 'DJing', 'Music Production', 'Remixing', 'Festival Performance'],
   url: ARTIST.site.baseUrl,
+  foundingLocation: {
+    '@type': 'Place',
+    name: `${ARTIST.contact.location.city}, ${ARTIST.contact.location.country}`,
+  },
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],
   award: [

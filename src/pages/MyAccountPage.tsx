@@ -8,9 +8,10 @@ import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { User, Settings, ShoppingBag, Award, Music, LogOut, Edit3, Bell, Shield, Lock, AlertCircle, Headphones, Instagram, Facebook, Save } from 'lucide-react';
-import { UserStatsCards } from '../components/account/UserStatsCards'; // Importação corrigida
-import { OrdersList } from '../components/account/OrdersList'; // Importação corrigida
-import { RecentActivity } from '../components/account/RecentActivity'; // Importação corrigida
+import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
+import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
+import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
+import { useSearchParams } from 'react-router-dom';
 
 // Interfaces
 interface Order {
@@ -34,16 +35,30 @@ interface UserStats {
   recentAchievements: number;
 }
 
-const MyAccountPage: React.FC = () => {
+const MyAccountContent: React.FC = () => {
   const { t } = useTranslation();
   const { user, loading, logout } = useUser();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [newsletterEnabled, setNewsletterEnabled] = useState(false);
-  const [savingNewsletter, setSavingNewsletter] = useState(false);
-  
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'overview';
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  // Sync state correctly if parameter changes externally while page is mounted
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Handle manual tab switching and URL update
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    setSearchParams({ tab: tabId });
+  };
+
   // Profile form state
   const [profileForm, setProfileForm] = useState({
     realName: user?.name || '',
@@ -56,11 +71,15 @@ const MyAccountPage: React.FC = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
 
-  console.log('[MyAccountPage] User:', user);
+  if (import.meta.env.DEV) {
+    console.log('[MyAccountPage] User:', user);
+  }
+
+  const { data: gamipress, loading: loadingGP } = useGamiPressContext();
 
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS
   const userStats: UserStats = useMemo(() => {
-    if (!user) {
+    if (!user || !gamipress) {
       return {
         level: 0,
         xp: 0,
@@ -71,128 +90,75 @@ const MyAccountPage: React.FC = () => {
       };
     }
 
-    // ✅ DADOS REAIS DO GAMIPRESS
-    const totalPoints = user.gamipress_points || 0;
-    const currentRank = user.gamipress_rank || 'Zen Novice';
-    
-    // Calcular level baseado em pontos (cada 100 pontos = 1 level)
-    const level = Math.floor(totalPoints / 100) + 1;
-    
-    // Calcular XP para próximo rank
-    let xpToNext = 0;
-    if (totalPoints < 100) {
-      xpToNext = 100 - totalPoints; // Para Zen Apprentice
-    } else if (totalPoints < 500) {
-      xpToNext = 500 - totalPoints; // Para Zen Voyager
-    } else if (totalPoints < 1500) {
-      xpToNext = 1500 - totalPoints; // Para Zen Master
-    }
+    // ✅ DADOS REAIS DO GAMIPRESS v1.1.0
+    const mainPoints = gamipress.points.points?.amount || 0;
+    const currentRank = gamipress.rank.current.title || 'Zen Novice';
+    const progress = gamipress.rank.progress || 0;
 
-    const totalAchievements = user.gamipress_achievements?.length || 0;
-    const recentAchievements = user.gamipress_achievements?.slice(-2).length || 0;
+    // Calcular level baseado em pontos (cada 100 pontos = 1 level)
+    const level = Math.floor(mainPoints / 100) + 1;
+
+    // XP para o próximo nível (100 - resto da divisão por 100)
+    const xpToNext = 100 - (mainPoints % 100);
+
+    const totalAchievements = gamipress.achievements.length;
+    const earnedAchievements = gamipress.achievements.filter(a => a.earned);
+    const recentAchievements = earnedAchievements.slice(-2).length;
 
     return {
       level,
-      xp: totalPoints,
+      xp: mainPoints,
       rank: currentRank,
-      xpToNext,
+      xpToNext: gamipress.rank.next ? xpToNext : 0, // Se não houver próximo rank, assume 0
       totalAchievements,
       recentAchievements
     };
-  }, [user]);
+  }, [user, gamipress]);
 
   // Redirect se não logado
   useEffect(() => {
     if (!loading && !user?.isLoggedIn) {
-      console.log('[MyAccountPage] ❌ Usuário não logado, redirecionando...');
+      if (import.meta.env.DEV) {
+        console.log('[MyAccountPage] ❌ Usuário não logado, redirecionando...');
+      }
       navigate('/');
     }
   }, [user, loading, navigate]);
 
-  // Fetch orders, profile, and newsletter status
+  // React Query Hooks
+  const { data: profileData, isLoading: loadingProfile } = useProfileQuery(user?.token);
+  const { data: newsletterEnabled } = useNewsletterStatusQuery(user?.token);
+  const updateProfile = useUpdateProfileMutation(user?.token);
+  const updateNewsletter = useUpdateNewsletterMutation(user?.token);
+
+  // Sync profile data to form state
+  useEffect(() => {
+    if (profileData) {
+      setProfileForm({
+        realName: profileData.real_name || user?.name || '',
+        preferredName: profileData.preferred_name || '',
+        facebookUrl: profileData.facebook_url || '',
+        instagramUrl: profileData.instagram_url || '',
+        danceRole: profileData.dance_role || [],
+        gender: profileData.gender || '',
+      });
+    }
+  }, [profileData, user?.name]);
+
+  // Fetch orders
   useEffect(() => {
     if (user?.isLoggedIn) {
       fetchOrders();
-      fetchProfile();
-      fetchNewsletterStatus();
     }
   }, [user]);
 
-  // Fetch profile data
-  const fetchProfile = async () => {
-    if (!user?.token) return;
-    
-    try {
-      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.data) {
-          setProfileForm({
-            realName: data.data.real_name || user.name || '',
-            preferredName: data.data.preferred_name || '',
-            facebookUrl: data.data.facebook_url || '',
-            instagramUrl: data.data.instagram_url || '',
-            danceRole: data.data.dance_role || [],
-            gender: data.data.gender || '',
-          });
-        }
-      }
-    } catch (error) {
-      console.error('[MyAccountPage] Error fetching profile:', error);
-    }
-  };
-
-  // Fetch newsletter status
-  const fetchNewsletterStatus = async () => {
-    if (!user?.token) return;
-    
-    try {
-      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setNewsletterEnabled(data.subscribed);
-        }
-      }
-    } catch (error) {
-      console.error('[MyAccountPage] Error fetching newsletter status:', error);
-    }
-  };
 
   // Toggle newsletter subscription
   const handleNewsletterToggle = async (enabled: boolean) => {
-    if (!user?.token) return;
-    
-    setSavingNewsletter(true);
     try {
-      const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/newsletter`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
-        },
-        body: JSON.stringify({ enabled }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setNewsletterEnabled(data.subscribed);
-      }
+      await updateNewsletter.mutateAsync(enabled);
     } catch (error) {
       console.error('[MyAccountPage] Error toggling newsletter:', error);
-    } finally {
-      setSavingNewsletter(false);
     }
   };
 
@@ -201,14 +167,14 @@ const MyAccountPage: React.FC = () => {
       setLoadingOrders(false);
       return;
     }
-    
+
     const wpData = (window as any).wpData || { restUrl: '', nonce: '' };
     if (!wpData.restUrl) {
       console.error('[MyAccountPage] WordPress data not available');
       setLoadingOrders(false);
       return;
     }
-    
+
     try {
       const response = await fetch(`${wpData.restUrl}wc/v3/orders?customer=${user.id}`, {
         headers: {
@@ -216,7 +182,7 @@ const MyAccountPage: React.FC = () => {
           'X-WP-Nonce': wpData.nonce,
         }
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setOrders(data.slice(0, 5));
@@ -229,7 +195,9 @@ const MyAccountPage: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    console.log('[MyAccountPage] 🚪 Logout iniciado');
+    if (import.meta.env.DEV) {
+      console.log('[MyAccountPage] 🚪 Logout iniciado');
+    }
     try {
       await logout();
       navigate('/');
@@ -240,7 +208,7 @@ const MyAccountPage: React.FC = () => {
   };
 
   // Loading spinner
-  const LoadingSpinner = ({ message = "Loading..." }: { message?: string }) => (
+  const LoadingSpinner = ({ message }: { message?: string }) => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -248,13 +216,13 @@ const MyAccountPage: React.FC = () => {
     >
       <div className="text-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary mx-auto mb-4"></div>
-        <p className="text-xl font-semibold">{message}</p>
+        <p className="text-xl font-semibold">{message || t('loading')}</p>
       </div>
     </motion.div>
   );
 
-  if (loading) {
-    return <LoadingSpinner message="Loading your Zen account..." />;
+  if (loading || (user?.isLoggedIn && loadingGP)) {
+    return <LoadingSpinner message={t('account.loading')} />;
   }
 
   if (!user?.isLoggedIn) {
@@ -262,11 +230,11 @@ const MyAccountPage: React.FC = () => {
   }
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: User },
-    { id: 'orders', label: 'Orders', icon: ShoppingBag },
-    { id: 'achievements', label: 'Achievements', icon: Award },
-    { id: 'music', label: 'My Music', icon: Music },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'overview', label: t('account.tabs.overview'), icon: User },
+    { id: 'orders', label: t('account.tabs.orders'), icon: ShoppingBag },
+    { id: 'achievements', label: t('account.tabs.achievements'), icon: Award },
+    { id: 'music', label: t('account.tabs.music'), icon: Music },
+    { id: 'settings', label: t('account.tabs.settings'), icon: Settings },
   ];
 
   const renderTabContent = () => {
@@ -277,16 +245,16 @@ const MyAccountPage: React.FC = () => {
             {/* Welcome Section */}
             <div className="bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl p-6 border border-white/10">
               <h2 className="text-2xl font-bold mb-2">
-                Welcome back, {user.name}! 👋
+                {t('dashboard.welcomeBack', { name: user.name })} 👋
               </h2>
-              <p className="text-white/70">Ready to dive into your Zen journey today?</p>
+              <p className="text-white/70">{t('dashboard.journeyBegins')}</p>
             </div>
 
             {/* Quick Stats */}
             <UserStatsCards stats={userStats} />
 
-            {/* Recent Activity */}
-            <RecentActivity achievements={user.gamipress_achievements} />
+            {/* Recent Activity - Pass REAL LOGS from GamiPress context */}
+            <RecentActivity logs={gamipress.logs} />
           </div>
         );
 
@@ -297,17 +265,17 @@ const MyAccountPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Your Achievements</h2>
+              <h2 className="text-2xl font-bold">{t('dashboard.yourAchievements')}</h2>
               <div className="text-sm text-white/60 bg-white/5 px-4 py-2 rounded-full">
-                {userStats.totalAchievements} unlocked
+                {userStats.totalAchievements} {t('dashboard.unlocked')}
               </div>
             </div>
-            
-            {user.gamipress_achievements && user.gamipress_achievements.length > 0 ? (
+
+            {gamipress.achievements && gamipress.achievements.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {user.gamipress_achievements.map((achievement: any) => (
-                  <motion.div 
-                    key={achievement.id} 
+                {gamipress.achievements.map((achievement: any) => (
+                  <motion.div
+                    key={achievement.id}
                     className="bg-surface/50 rounded-lg p-5 border border-white/10 hover:border-primary/50 transition-all hover:scale-105"
                     whileHover={{ y: -4 }}
                   >
@@ -321,9 +289,9 @@ const MyAccountPage: React.FC = () => {
                       </p>
                     )}
                     <div className="text-center">
-                      <span className="inline-flex items-center text-xs bg-success/20 text-success px-3 py-1 rounded-full font-semibold">
+                      <span className={`inline-flex items-center text-xs px-3 py-1 rounded-full font-semibold ${achievement.earned ? 'bg-success/20 text-success' : 'bg-white/10 text-white/40'}`}>
                         <Award size={12} className="mr-1" />
-                        Unlocked
+                        {achievement.earned ? t('dashboard.unlocked') : t('account.locked')}
                       </span>
                     </div>
                   </motion.div>
@@ -332,47 +300,52 @@ const MyAccountPage: React.FC = () => {
             ) : (
               <div className="text-center py-20">
                 <Award className="mx-auto mb-4 text-white/30" size={64} />
-                <h3 className="text-2xl font-semibold mb-3">No achievements yet</h3>
+                <h3 className="text-2xl font-semibold mb-3">{t('account.no_achievements')}</h3>
                 <p className="text-white/60 mb-8 max-w-md mx-auto">
-                  Start exploring and engaging to unlock your first achievements!
+                  {t('account.no_achievements_desc')}
                 </p>
                 <Link to="/dashboard/" className="btn btn-primary btn-lg">
-                  Start Your Journey
+                  {t('account.start_journey')}
                 </Link>
               </div>
             )}
 
-            {/* Progress bar para próximo rank */}
-            {userStats.xpToNext > 0 && (
+            {/* Progress bar para próximo rank (Sync com regra de 1000pt) */}
+            {gamipress.rank.next && (
               <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-                <h3 className="text-lg font-semibold mb-4">Next Rank Progress</h3>
+                <h3 className="text-lg font-semibold mb-4">{t('dashboard.nextRank')}</h3>
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <div className="flex justify-between text-sm mb-2 text-white/80">
-                      <span>{userStats.rank}</span>
+                      <span>{gamipress.rank.current.title}</span>
                       <span>
-                        {userStats.xp < 100 ? 'Zen Apprentice' :
-                         userStats.xp < 500 ? 'Zen Voyager' : 'Zen Master'}
+                        {gamipress.rank.next.title}
                       </span>
                     </div>
-                    <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                      <motion.div 
-                        className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full"
+                    {/* Fighting Game Style Power Bar (Synced with Dashboard) */}
+                    <div className="h-4 bg-black/40 border border-white/10 relative overflow-hidden -skew-x-12 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] mb-2">
+                      {/* Segmented Background */}
+                      <div className="absolute inset-0 opacity-5 flex gap-1">
+                        {[...Array(10)].map((_, i) => (
+                          <div key={i} className="flex-1 border-r border-white/20" />
+                        ))}
+                      </div>
+                      <motion.div
                         initial={{ width: 0 }}
-                        animate={{ 
-                          width: `${
-                            userStats.xp < 100 
-                              ? (userStats.xp / 100) * 100
-                              : userStats.xp < 500
-                              ? ((userStats.xp - 100) / 400) * 100
-                              : ((userStats.xp - 500) / 1000) * 100
-                          }%`
-                        }}
+                        animate={{ width: `${gamipress.rank.progress}%` }}
+                        className="h-full bg-gradient-to-r from-primary via-accent to-white relative shadow-[0_0_20px_rgba(99,102,241,0.6)]"
                         transition={{ duration: 1, ease: "easeOut" }}
-                      />
+                      >
+                        {/* Animated Stripe Overlay */}
+                        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.05)_10px,rgba(255,255,255,0.05)_20px)]" />
+
+                        {/* Leading Edge Sparkle */}
+                        <div className="absolute top-0 right-0 h-full w-4 bg-white/30 blur-md" />
+                        <div className="absolute top-0 right-0 h-full w-1 bg-white animate-pulse" />
+                      </motion.div>
                     </div>
                     <p className="text-xs text-white/60 mt-2">
-                      <strong>{userStats.xpToNext} XP</strong> needed for next rank
+                      <strong>{1000 - (gamipress.points.points?.amount % 1000)} XP</strong> {t('dashboard.nextRank')}
                     </p>
                   </div>
                 </div>
@@ -385,20 +358,20 @@ const MyAccountPage: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">My Music Collection</h2>
+              <h2 className="text-2xl font-bold">{t('account.music.title')}</h2>
               <Link to="/music/" className="btn btn-primary">
-                Browse Music
+                {t('account.music.browse')}
               </Link>
             </div>
 
             <div className="text-center py-20">
               <Headphones className="mx-auto mb-4 text-white/30" size={64} />
-              <h3 className="text-2xl font-semibold mb-3">Your music library</h3>
+              <h3 className="text-2xl font-semibold mb-3">{t('account.music.empty_title')}</h3>
               <p className="text-white/60 mb-8 max-w-md mx-auto">
-                Access exclusive tracks, mixes, and playlists curated by DJ Zen Eyer
+                {t('account.music.empty_desc')}
               </p>
               <Link to="/music/" className="btn btn-primary btn-lg">
-                Explore Music
+                {t('account.music.explore')}
               </Link>
             </div>
           </div>
@@ -423,30 +396,16 @@ const MyAccountPage: React.FC = () => {
         const handleSaveProfile = async () => {
           setSavingProfile(true);
           try {
-            const response = await fetch(`${window.location.origin}/wp-json/zeneyer-auth/v1/profile`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.token}`,
-              },
-              body: JSON.stringify({
-                real_name: profileForm.realName,
-                preferred_name: profileForm.preferredName,
-                facebook_url: profileForm.facebookUrl,
-                instagram_url: profileForm.instagramUrl,
-                dance_role: profileForm.danceRole,
-                gender: profileForm.gender,
-              }),
+            await updateProfile.mutateAsync({
+              real_name: profileForm.realName,
+              preferred_name: profileForm.preferredName,
+              facebook_url: profileForm.facebookUrl,
+              instagram_url: profileForm.instagramUrl,
+              dance_role: profileForm.danceRole,
+              gender: profileForm.gender,
             });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-              setProfileSaved(true);
-              setTimeout(() => setProfileSaved(false), 3000);
-            } else {
-              console.error('[MyAccountPage] Error saving profile:', data.message);
-            }
+            setProfileSaved(true);
+            setTimeout(() => setProfileSaved(false), 3000);
           } catch (error) {
             console.error('[MyAccountPage] Error saving profile:', error);
           } finally {
@@ -555,22 +514,20 @@ const MyAccountPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleDanceRoleToggle('leader')}
-                      className={`px-5 py-2.5 rounded-lg border transition-all ${
-                        profileForm.danceRole.includes('leader')
-                          ? 'bg-primary border-primary text-white'
-                          : 'border-white/20 text-white/70 hover:border-white/40'
-                      }`}
+                      className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.danceRole.includes('leader')
+                        ? 'bg-primary border-primary text-white'
+                        : 'border-white/20 text-white/70 hover:border-white/40'
+                        }`}
                     >
                       {t('profile.leader')}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDanceRoleToggle('follower')}
-                      className={`px-5 py-2.5 rounded-lg border transition-all ${
-                        profileForm.danceRole.includes('follower')
-                          ? 'bg-secondary border-secondary text-white'
-                          : 'border-white/20 text-white/70 hover:border-white/40'
-                      }`}
+                      className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.danceRole.includes('follower')
+                        ? 'bg-secondary border-secondary text-white'
+                        : 'border-white/20 text-white/70 hover:border-white/40'
+                        }`}
                     >
                       {t('profile.follower')}
                     </button>
@@ -590,11 +547,10 @@ const MyAccountPage: React.FC = () => {
                         key={option.value}
                         type="button"
                         onClick={() => handleProfileChange('gender', option.value)}
-                        className={`px-5 py-2.5 rounded-lg border transition-all ${
-                          profileForm.gender === option.value
-                            ? 'bg-accent border-accent text-white'
-                            : 'border-white/20 text-white/70 hover:border-white/40'
-                        }`}
+                        className={`px-5 py-2.5 rounded-lg border transition-all ${profileForm.gender === option.value
+                          ? 'bg-accent border-accent text-white'
+                          : 'border-white/20 text-white/70 hover:border-white/40'
+                          }`}
                       >
                         {t(option.labelKey)}
                       </button>
@@ -604,7 +560,7 @@ const MyAccountPage: React.FC = () => {
 
                 {/* Save Button */}
                 <div className="pt-4 border-t border-white/10">
-                  <button 
+                  <button
                     onClick={handleSaveProfile}
                     disabled={savingProfile}
                     className="btn btn-primary flex items-center gap-2"
@@ -634,20 +590,20 @@ const MyAccountPage: React.FC = () => {
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <Bell className="text-secondary" size={24} />
-                <h3 className="text-xl font-semibold">Notifications</h3>
+                <h3 className="text-xl font-semibold">{t('account.notifications.title')}</h3>
               </div>
               <div className="space-y-3">
                 <label htmlFor="notify-events" className="flex items-center gap-3 cursor-pointer">
                   <input id="notify-events" name="notify-events" type="checkbox" className="w-5 h-5" defaultChecked />
-                  <span>Email notifications for new events</span>
+                  <span>{t('account.notifications.events')}</span>
                 </label>
                 <label htmlFor="notify-achievements" className="flex items-center gap-3 cursor-pointer">
                   <input id="notify-achievements" name="notify-achievements" type="checkbox" className="w-5 h-5" defaultChecked />
-                  <span>Achievement updates</span>
+                  <span>{t('account.notifications.achievements')}</span>
                 </label>
                 <label htmlFor="notify-marketing" className="flex items-center gap-3 cursor-pointer">
                   <input id="notify-marketing" name="notify-marketing" type="checkbox" className="w-5 h-5" />
-                  <span>Marketing emails</span>
+                  <span>{t('account.notifications.marketing')}</span>
                 </label>
                 <div className="pt-3 border-t border-white/10">
                   <label htmlFor="notify-newsletter" className="flex items-center justify-between cursor-pointer">
@@ -658,8 +614,8 @@ const MyAccountPage: React.FC = () => {
                           name="notify-newsletter"
                           type="checkbox"
                           className="w-5 h-5"
-                          checked={newsletterEnabled}
-                          disabled={savingNewsletter}
+                          checked={newsletterEnabled || false}
+                          disabled={updateNewsletter.isPending}
                           onChange={(e) => handleNewsletterToggle(e.target.checked)}
                         />
                         <span className="font-semibold">{t('account_page.newsletter_toggle')}</span>
@@ -668,17 +624,16 @@ const MyAccountPage: React.FC = () => {
                         {t('account_page.newsletter_desc')}
                       </p>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full ${
-                      savingNewsletter 
-                        ? 'bg-white/10 text-white/60' 
-                        : newsletterEnabled 
-                          ? 'bg-success/20 text-success' 
-                          : 'bg-white/10 text-white/60'
-                    }`}>
-                      {savingNewsletter 
-                        ? '...' 
-                        : newsletterEnabled 
-                          ? t('account_page.newsletter_enabled') 
+                    <span className={`text-xs px-3 py-1 rounded-full ${updateNewsletter.isPending
+                      ? 'bg-white/10 text-white/60'
+                      : newsletterEnabled
+                        ? 'bg-success/20 text-success'
+                        : 'bg-white/10 text-white/60'
+                      }`}>
+                      {updateNewsletter.isPending
+                        ? '...'
+                        : newsletterEnabled
+                          ? t('account_page.newsletter_enabled')
                           : t('account_page.newsletter_disabled')
                       }
                     </span>
@@ -691,11 +646,11 @@ const MyAccountPage: React.FC = () => {
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <Shield className="text-accent" size={24} />
-                <h3 className="text-xl font-semibold">Security</h3>
+                <h3 className="text-xl font-semibold">{t('account.security.title')}</h3>
               </div>
               <button className="btn btn-outline flex items-center gap-2">
                 <Lock size={16} />
-                Change Password
+                {t('account.security.change_password')}
               </button>
             </div>
 
@@ -703,17 +658,17 @@ const MyAccountPage: React.FC = () => {
             <div className="bg-red-500/10 rounded-lg p-6 border border-red-500/50">
               <div className="flex items-center gap-3 mb-4">
                 <AlertCircle className="text-red-500" size={24} />
-                <h3 className="text-xl font-semibold text-red-400">Danger Zone</h3>
+                <h3 className="text-xl font-semibold text-red-400">{t('account.danger.title')}</h3>
               </div>
               <p className="text-sm text-white/70 mb-4">
-                Once you log out, you'll need to sign in again to access your account.
+                {t('account.danger.desc')}
               </p>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="btn bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
               >
                 <LogOut size={16} />
-                Logout
+                {t('account.danger.logout')}
               </button>
             </div>
           </div>
@@ -727,8 +682,8 @@ const MyAccountPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>My Account | DJ Zen Eyer</title>
-        <meta name="description" content="Manage your Zen Tribe account, orders, and achievements" />
+        <title>{t('account.meta_title', { stageName: t('common.artist_name') })}</title>
+        <meta name="description" content={t('account.meta_desc')} />
       </Helmet>
 
       <motion.div
@@ -741,10 +696,10 @@ const MyAccountPage: React.FC = () => {
             {/* Header */}
             <div className="mb-12 text-center">
               <h1 className="text-4xl md:text-5xl font-black font-display mb-4">
-                My Zen Account
+                {t('account.page_title')}
               </h1>
               <p className="text-xl text-white/70">
-                Manage your profile, orders, and Zen Tribe membership
+                {t('account.page_subtitle')}
               </p>
             </div>
 
@@ -756,8 +711,8 @@ const MyAccountPage: React.FC = () => {
                   <div className="text-center mb-6 pb-6 border-b border-white/10">
                     <div className="relative mb-4">
                       {user.avatar ? (
-                        <img 
-                          src={user.avatar} 
+                        <img
+                          src={user.avatar}
                           alt={user.name}
                           className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-primary/30"
                         />
@@ -781,12 +736,11 @@ const MyAccountPage: React.FC = () => {
                       return (
                         <button
                           key={tab.id}
-                          onClick={() => setActiveTab(tab.id)}
-                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-semibold transition-all ${
-                            activeTab === tab.id
-                              ? 'bg-primary text-white shadow-lg'
-                              : 'text-white/70 hover:text-white hover:bg-white/5'
-                          }`}
+                          onClick={() => handleTabChange(tab.id)}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left font-semibold transition-all ${activeTab === tab.id
+                            ? 'bg-primary text-white shadow-lg'
+                            : 'text-white/70 hover:text-white hover:bg-white/5'
+                            }`}
                         >
                           <Icon size={20} />
                           <span>{tab.label}</span>
@@ -808,6 +762,14 @@ const MyAccountPage: React.FC = () => {
         </div>
       </motion.div>
     </>
+  );
+};
+
+const MyAccountPage: React.FC = () => {
+  return (
+    <GamiPressProvider>
+      <MyAccountContent />
+    </GamiPressProvider>
   );
 };
 

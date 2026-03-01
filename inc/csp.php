@@ -49,7 +49,7 @@ add_action('send_headers', function() {
     $policy = implode('; ', [
         "default-src 'self' https: data:",
         
-        "script-src 'self' 'nonce-{$nonce}' blob: https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://gsi.client-url.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com https://challenges.cloudflare.com",
+        "script-src 'self' 'nonce-{$nonce}' 'strict-dynamic' 'unsafe-inline' https: http: blob: https://accounts.google.com https://apis.google.com https://gsi.gstatic.com https://gsi.client-url.com https://www.googletagmanager.com https://widget.bandsintown.com https://cdn.bandsintown.com https://rest.bandsintown.com https://static.cloudflareinsights.com https://fonts.googleapis.com https://challenges.cloudflare.com",
         
         "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com",
         

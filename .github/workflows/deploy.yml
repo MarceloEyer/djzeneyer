@@ -119,7 +119,14 @@ jobs:
             for dir in plugins/*/; do
               if [ -f "$dir/composer.json" ]; then
                 cd "$dir"
-                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
+                # ⚠️ CI hardening note (do not "optimize" this without validation):
+                # Composer 2.9+ can block packages flagged by Packagist security advisories.
+                # Our auth plugin depends on firebase/php-jwt and Packagist currently marks all 6.x
+                # as blocked (PKSA-y2cr-5h3j-g3ys), which would break every deploy even when app build passes.
+                # IMPORTANT: keep --no-security-blocking until the advisory constraints are fixed.
+                # IMPORTANT: NEVER add --no-audit here; this option is not available in composer install
+                # and causes the pipeline to fail with: "The \"--no-audit\" option does not exist."
+                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction --no-security-blocking
                 rm -rf tests/ .git/ .github/ .gitignore
                 cd - > /dev/null
               fi
@@ -230,6 +237,12 @@ jobs:
           known_hosts: unnecessary
           name: id_rsa
 
+      # --- DIAGNOSTIC ---
+      - name: 🔍 Check Connectivity
+        run: |
+          echo "🔍 Testing connection to ${{ env.SSH_HOST }}:${{ env.SSH_PORT }}..."
+          nc -zv -w 15 ${{ env.SSH_HOST }} ${{ env.SSH_PORT }} || echo "⚠️ Warning: Host unreachable via nc, but continuing..."
+
       # --- BACKUP & CLEANUP ---
       - name: 📦 Backup & Clean dist folder
         uses: appleboy/ssh-action@v1.0.3
@@ -238,6 +251,8 @@ jobs:
           port: ${{ env.SSH_PORT }}
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 60s
+          command_timeout: 15m
           script: |
             set -e
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -340,7 +355,7 @@ jobs:
           mkdir -p temp_public
           
           # Arquivos básicos
-          SAFE_FILES=("robots.txt" "ai-bots.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
+          SAFE_FILES=(".htaccess" "robots.txt" "ai-bots.txt" "llms.txt" "llms-full.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
           for file in "${SAFE_FILES[@]}"; do
             if [ -f "public/$file" ]; then cp "public/$file" temp_public/; fi
           done

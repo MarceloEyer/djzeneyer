@@ -1,39 +1,53 @@
 // src/hooks/useGamiPress.ts
-// v7.2 - OPTIMIZED GAMIPRESS API AGGREGATION
+// v8.0 - REACT QUERY MIGRATION (replaces manual fetch + useState + setInterval)
 
-import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
-import { buildApiUrl } from '../config/api';
+import { useGamipressQuery } from './useQueries';
+import type { ZenGameUserData } from '../types/gamification';
 
-/* =========================
- * INTERFACES
- * ========================= */
+export type GamiPressData = ZenGameUserData;
 
-export interface Achievement {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  earned: boolean;
-  date_earned: string;
-}
-
-export interface GamiPressData {
-  points: number;
-  level: number;
-  rank: string;
-  rankId: number;
-  nextLevelPoints: number;
-  progressToNextLevel: number;
-  achievements: Achievement[];
-}
-
-interface GamiPressHookResponse extends GamiPressData {
-  data: GamiPressData | null;
+interface GamiPressHookResponse {
+  data: GamiPressData;
   loading: boolean;
   error: string | null;
   refresh: () => void;
+  // Legacy helpers for easier migration
+  mainPoints: number;
+  currentRank: string;
 }
+
+/* =========================
+ * DEFAULTS
+ * ========================= */
+
+const FALLBACK: GamiPressData = {
+  user_id: 0,
+  points: {
+    points: { name: 'XP', amount: 0, image: '' }
+  },
+  rank: {
+    current: {
+      id: 0,
+      title: 'Zen Novice',
+      image: '',
+    },
+    progress: 0,
+    requirements: [],
+    next: null
+  },
+  achievements: [],
+  logs: [],
+  stats: {
+    totalTracks: 0,
+    eventsAttended: 0,
+    streak: 0,
+    streakFire: false,
+  },
+  main_points_slug: 'points',
+  lastUpdate: '',
+  version: '1.1.0'
+};
 
 /* =========================
  * HOOK
@@ -41,98 +55,17 @@ interface GamiPressHookResponse extends GamiPressData {
 
 export const useGamiPress = (): GamiPressHookResponse => {
   const { user } = useUser();
+  const { data, isLoading, error, refetch } = useGamipressQuery(user?.id, user?.token);
 
-  const [data, setData] = useState<GamiPressData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchGamiPressData = useCallback(async () => {
-    if (!user?.id || !user?.token) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const wpData = (window as any).wpData || {};
-      const endpoint = buildApiUrl('djzeneyer/v1/gamipress/user-data');
-
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`,
-      };
-
-      if (wpData.nonce) {
-        headers['X-WP-Nonce'] = wpData.nonce;
-      }
-
-      const response = await fetch(endpoint, {
-        headers,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-            console.error('[useGamiPress] ❌ 401 Unauthorized');
-        }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const newData = await response.json();
-      setData(newData);
-
-    } catch (err) {
-      console.error('[useGamiPress]', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      
-      // Set fallback data on error
-      setData({
-        points: 0,
-        level: 1,
-        rank: 'Zen Novice',
-        rankId: 0,
-        nextLevelPoints: 100,
-        progressToNextLevel: 0,
-        achievements: [],
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id, user?.token]);
-
-  useEffect(() => {
-    fetchGamiPressData();
-  }, [fetchGamiPressData]);
-
-  useEffect(() => {
-    if (!user?.id) return;
-    const interval = setInterval(fetchGamiPressData, 60000);
-    return () => clearInterval(interval);
-  }, [user?.id, fetchGamiPressData]);
-
-  const fallback: GamiPressData = {
-    points: 0,
-    level: 1,
-    rank: 'Zen Novice',
-    rankId: 0,
-    nextLevelPoints: 100,
-    progressToNextLevel: 0,
-    achievements: [],
-  };
+  const resolved: GamiPressData = (data as GamiPressData) ?? FALLBACK;
 
   return {
-    points: data?.points ?? fallback.points,
-    level: data?.level ?? fallback.level,
-    rank: data?.rank ?? fallback.rank,
-    rankId: data?.rankId ?? fallback.rankId,
-    nextLevelPoints: data?.nextLevelPoints ?? fallback.nextLevelPoints,
-    progressToNextLevel: data?.progressToNextLevel ?? fallback.progressToNextLevel,
-    achievements: data?.achievements ?? fallback.achievements,
-    data,
-    loading,
-    error,
-    refresh: fetchGamiPressData,
+    data: resolved,
+    loading: isLoading,
+    error: error ? (error as Error).message : null,
+    refresh: () => { refetch(); },
+    // Legacy mapping (uses dynamic slug from backend)
+    mainPoints: resolved.points[resolved.main_points_slug]?.amount ?? 0,
+    currentRank: resolved.rank.current.title,
   };
 };

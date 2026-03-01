@@ -7,35 +7,52 @@
    ======================================== */
 :root {
   /* PRIMARY - SEU AZUL ELÉTRICO FAVORITO */
-  --color-primary: 13, 150, 255;           /* #0D96FF - Electric Blue */
-  --color-primary-darker: 10, 120, 200;    /* #0A78C8 - Para hover */
-  --color-primary-light: 102, 195, 255;    /* #66C3FF - Para textos */
-  
+  --color-primary: 13, 150, 255;
+  /* #0D96FF - Electric Blue */
+  --color-primary-darker: 10, 120, 200;
+  /* #0A78C8 - Para hover */
+  --color-primary-light: 102, 195, 255;
+  /* #66C3FF - Para textos */
+
   /* SECONDARY - Neon Purple */
-  --color-secondary: 157, 78, 221;         /* #9D4EDD */
-  --color-secondary-light: 196, 181, 253;  /* #C4B5FD */
-  
+  --color-secondary: 157, 78, 221;
+  /* #9D4EDD */
+  --color-secondary-light: 196, 181, 253;
+  /* #C4B5FD */
+
   /* ACCENT - Vibrant Pink */
-  --color-accent: 236, 72, 153;            /* #EC4899 */
-  --color-accent-light: 251, 207, 232;     /* #FBCFE8 */
-  
+  --color-accent: 236, 72, 153;
+  /* #EC4899 */
+  --color-accent-light: 251, 207, 232;
+  /* #FBCFE8 */
+
   /* SUCCESS */
-  --color-success: 16, 185, 129;           /* #10B981 - Green */
-  --color-success-light: 167, 243, 208;    /* #A7F3D0 */
-  
+  --color-success: 16, 185, 129;
+  /* #10B981 - Green */
+  --color-success-light: 167, 243, 208;
+  /* #A7F3D0 */
+
   /* WARNING */
-  --color-warning: 245, 158, 11;           /* #F59E0B - Amber */
-  --color-warning-light: 253, 230, 138;    /* #FDE68A */
-  
+  --color-warning: 245, 158, 11;
+  /* #F59E0B - Amber */
+  --color-warning-light: 253, 230, 138;
+  /* #FDE68A */
+
   /* ERROR */
-  --color-error: 239, 68, 68;              /* #EF4444 - Red */
-  --color-error-light: 254, 202, 202;      /* #FECACA */
-  
+  --color-error: 239, 68, 68;
+  /* #EF4444 - Red */
+  --color-error-light: 254, 202, 202;
+  /* #FECACA */
+
   /* NEUTRAL */
-  --color-background: 6, 6, 10;            /* #06060A */
-  --color-surface: 16, 20, 27;             /* #10141B */
-  --color-text: 255, 255, 255;             /* #FFFFFF */
-  --color-text-dark: 20, 20, 30;           /* #14141E */
+  --color-background: 6, 6, 10;
+  /* #06060A */
+  --color-surface: 16, 20, 27;
+  /* #10141B */
+  --color-text: 255, 255, 255;
+  /* #FFFFFF */
+  --color-text-dark: 20, 20, 30;
+  /* #14141E */
 }
 
 /* ========================================
@@ -47,8 +64,13 @@
     @apply bg-background text-white antialiased;
     scroll-behavior: smooth;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Orbitron', 'Inter', sans-serif;
     @apply font-bold;
   }
@@ -69,11 +91,11 @@
     width: 10px;
     height: 10px;
   }
-  
+
   ::-webkit-scrollbar-track {
     @apply bg-surface/50;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: rgb(var(--color-primary));
     @apply rounded-full;
@@ -94,72 +116,46 @@
    COMPONENT STYLES
    ======================================== */
 @layer components {
-  
+
   /* ========== BUTTONS ========== */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 
-           px-6 py-3 rounded-lg font-semibold 
-           transition-all duration-200 
-           focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 
-           focus-visible:ring-offset-background
-           disabled:opacity-50 disabled:cursor-not-allowed
-           select-none;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed select-none;
   }
-  
+
   .btn-primary {
     background: rgb(var(--color-primary));
-    @apply text-white shadow-lg
-           hover:brightness-110
-           active:scale-95
-           focus-visible:ring-primary;
+    @apply text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-primary;
     box-shadow: 0 4px 20px rgba(var(--color-primary), 0.3);
-    text-shadow: 0 1px 6px #000, 0 1px 1px #fff;
   }
-  
+
   .btn-primary:hover {
     background: rgb(var(--color-primary-darker));
     box-shadow: 0 6px 30px rgba(var(--color-primary), 0.4);
   }
-  
+
   .btn-secondary {
-    @apply bg-secondary text-white shadow-lg
-           hover:brightness-110 
-           active:scale-95
-           focus-visible:ring-secondary;
+    @apply bg-secondary text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-secondary;
   }
-  
+
   .btn-accent {
-    @apply bg-accent text-white shadow-lg
-           hover:brightness-110 
-           active:scale-95
-           focus-visible:ring-accent;
+    @apply bg-accent text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-accent;
   }
 
   .btn-success {
-    @apply bg-success text-white shadow-lg
-           hover:brightness-110 
-           active:scale-95
-           focus-visible:ring-success;
+    @apply bg-success text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-success;
   }
 
-  .btn-error, .btn-danger {
-    @apply bg-error text-white shadow-lg
-           hover:brightness-110 
-           active:scale-95
-           focus-visible:ring-error;
+  .btn-error,
+  .btn-danger {
+    @apply bg-error text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-error;
   }
-  
+
   .btn-outline {
-    @apply border-2 border-white/20 text-white bg-transparent 
-           hover:bg-white hover:text-background hover:border-white
-           active:scale-95
-           focus-visible:ring-white;
+    @apply border-2 border-white/20 text-white bg-transparent hover:bg-white hover:text-background hover:border-white active:scale-95 focus-visible:ring-white;
   }
 
   .btn-ghost {
-    @apply bg-transparent text-white
-           hover:bg-white/10
-           active:scale-95;
+    @apply bg-transparent text-white hover:bg-white/10 active:scale-95;
   }
 
   .btn-sm {
@@ -180,9 +176,7 @@
 
   /* ========== CARDS ========== */
   .card {
-    @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl 
-           border border-white/10 overflow-hidden
-           transition-all duration-300;
+    @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden transition-all duration-300;
   }
 
   .card:hover {
@@ -191,10 +185,9 @@
 
   /* ========== NAVIGATION ========== */
   .nav-link {
-    @apply relative px-4 py-2 text-white/70 hover:text-white 
-           transition-all duration-200 font-medium;
+    @apply relative px-4 py-2 text-white/70 hover:text-white transition-all duration-200 font-medium;
   }
-  
+
   .nav-link.active {
     color: rgb(var(--color-primary));
   }
@@ -207,8 +200,7 @@
 
   /* ========== BADGES ========== */
   .badge {
-    @apply inline-flex items-center justify-center 
-           px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+    @apply inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
   }
 
   .badge-primary {
@@ -218,40 +210,31 @@
   }
 
   .badge-secondary {
-    @apply bg-secondary/20 text-[rgb(var(--color-secondary-light))] 
-           border border-secondary/30;
+    @apply bg-secondary/20 text-[rgb(var(--color-secondary-light))] border border-secondary/30;
   }
 
   .badge-accent {
-    @apply bg-accent/20 text-[rgb(var(--color-accent-light))] 
-           border border-accent/30;
+    @apply bg-accent/20 text-[rgb(var(--color-accent-light))] border border-accent/30;
   }
 
   .badge-success {
-    @apply bg-success/20 text-[rgb(var(--color-success-light))] 
-           border border-success/30;
+    @apply bg-success/20 text-[rgb(var(--color-success-light))] border border-success/30;
   }
 
   .badge-warning {
-    @apply bg-warning/20 text-[rgb(var(--color-warning-light))] 
-           border border-warning/30;
+    @apply bg-warning/20 text-[rgb(var(--color-warning-light))] border border-warning/30;
   }
 
   .badge-error {
-    @apply bg-error/20 text-[rgb(var(--color-error-light))] 
-           border border-error/30;
+    @apply bg-error/20 text-[rgb(var(--color-error-light))] border border-error/30;
   }
 
   /* ========== INPUTS ========== */
   .input {
-    @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg 
-           text-white placeholder:text-white/40
-           focus:outline-none focus:border-transparent
-           transition-all duration-200
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
     box-shadow: 0 0 0 0 rgba(var(--color-primary), 0);
   }
-  
+
   .input:focus {
     border-color: rgb(var(--color-primary));
     box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
@@ -269,7 +252,7 @@
   .audio-progress {
     @apply relative h-1 w-full bg-white/20 rounded-full overflow-hidden cursor-pointer;
   }
-  
+
   .audio-progress-bar {
     background: linear-gradient(90deg, rgb(var(--color-primary)), rgb(var(--color-secondary)));
     @apply absolute top-0 left-0 h-full rounded-full transition-all duration-100;
@@ -279,7 +262,7 @@
   .glow {
     @apply relative;
   }
-  
+
   .glow::before {
     content: '';
     @apply absolute inset-0 -z-10 rounded-xl blur-2xl opacity-0 transition-opacity duration-300;
@@ -292,7 +275,7 @@
   }
 
   .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
+    @apply bg-white/5 backdrop-blur-sm border border-white/10;
   }
 
   .text-gradient {
@@ -321,8 +304,8 @@
   }
 
   .shadow-neon-strong {
-    box-shadow: 0 0 30px rgba(var(--color-primary), 0.7), 
-                0 0 60px rgba(var(--color-primary), 0.4);
+    box-shadow: 0 0 30px rgba(var(--color-primary), 0.7),
+      0 0 60px rgba(var(--color-primary), 0.4);
   }
 
   .animate-glow {
@@ -333,9 +316,10 @@
     from {
       box-shadow: 0 0 20px rgba(var(--color-primary), 0.5);
     }
+
     to {
-      box-shadow: 0 0 30px rgba(var(--color-primary), 0.8), 
-                  0 0 60px rgba(var(--color-primary), 0.5);
+      box-shadow: 0 0 30px rgba(var(--color-primary), 0.8),
+        0 0 60px rgba(var(--color-primary), 0.5);
     }
   }
 
@@ -360,7 +344,16 @@
    ======================================== */
 @media (max-width: 768px) {
   .btn {
-    @apply px-4 py-2.5 text-sm;
+    @apply px-4 py-3 text-sm;
+    min-height: 48px;
+    min-width: 44px;
+  }
+
+  .nav-link {
+    @apply py-3 px-4;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
   }
 
   .card {

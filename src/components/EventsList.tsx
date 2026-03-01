@@ -1,11 +1,12 @@
 // src/components/EventsList.tsx
 // ARQUITETURA DEFINITIVA: VISUAL LIMPO + JSON-LD ROBUSTO + REACT QUERY CACHE
 
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
 import { useEventsQuery } from '../hooks/useQueries';
+import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -37,64 +38,64 @@ interface EventsListProps {
 // 2. COMPONENT
 // ============================================================================
 
-export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
+// --- Helpers & Formatters (Puras e Estáticas) ---
+const formatDate = (date: Date, options: Intl.DateTimeFormatOptions, locale: string) => {
+  return date.toLocaleDateString(locale, options);
+};
+
+const formatTime = (date: Date, locale: string) => {
+  return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+};
+
+/**
+ * NORMALIZAÇÃO DE DADOS PARA SEO
+ * Garante que nenhum campo obrigatório do Schema.org fique vazio.
+ * Isso resolve os avisos amarelos e erros vermelhos do Google Search Console.
+ */
+const getCompleteEventData = (event: BandsintownEvent) => {
+  const eventDate = new Date(event.datetime);
+  // Fallback: Se não tiver data final, assume 4 horas de duração
+  const endDate = new Date(eventDate.getTime() + (4 * 60 * 60 * 1000));
+
+  // Garantia de Localização (Nunca undefined)
+  const venueName = event.venue?.name || 'Local a definir';
+  const city = event.venue?.city || 'City';
+  const country = event.venue?.country || 'BR';
+  const region = event.venue?.region || '';
+
+  // Lógica de Moeda (Simples)
+  const currency = (country === 'Brazil' || country === 'BR' || country === 'Brasil') ? 'BRL' : 'USD';
+
+  return {
+    // SEO: Imagem é recomendada/obrigatória para Rich Cards
+    image: event.image || '/images/event-default.svg',
+
+    // SEO: Descrição é recomendada. Geramos uma automática se faltar.
+    description: event.description || `DJ Zen Eyer performing live Brazilian Zouk set at ${venueName} in ${city}, ${country}.`,
+
+    endDate: endDate.toISOString(),
+    locationName: venueName,
+    city: city,
+    region: region,
+    country: country,
+
+    // SEO: Offers é recomendado
+    price: '0',
+    priceCurrency: currency
+  };
+};
+
+function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   // React Query: cache automático + deduplicação
   const { data: events = [], isLoading: loading, error } = useEventsQuery(limit);
-  
+
   // Log de erro
   if (error) {
     console.error('Error fetching events:', error);
   }
-
-  // --- Helpers & Formatters ---
-  const formatDate = (date: Date, options: Intl.DateTimeFormatOptions) => {
-    return date.toLocaleDateString(currentLocale, options);
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
-  };
-
-  /**
-   * NORMALIZAÇÃO DE DADOS PARA SEO
-   * Garante que nenhum campo obrigatório do Schema.org fique vazio.
-   * Isso resolve os avisos amarelos e erros vermelhos do Google Search Console.
-   */
-  const getCompleteEventData = (event: BandsintownEvent) => {
-    const eventDate = new Date(event.datetime);
-    // Fallback: Se não tiver data final, assume 4 horas de duração
-    const endDate = new Date(eventDate.getTime() + (4 * 60 * 60 * 1000));
-    
-    // Garantia de Localização (Nunca undefined)
-    const venueName = event.venue?.name || 'Local a definir';
-    const city = event.venue?.city || 'City';
-    const country = event.venue?.country || 'BR';
-    const region = event.venue?.region || '';
-
-    // Lógica de Moeda (Simples)
-    const currency = (country === 'Brazil' || country === 'BR' || country === 'Brasil') ? 'BRL' : 'USD';
-
-    return {
-      // SEO: Imagem é recomendada/obrigatória para Rich Cards
-      image: event.image || '/images/event-default.svg',
-      
-      // SEO: Descrição é recomendada. Geramos uma automática se faltar.
-      description: event.description || `DJ Zen Eyer performing live Brazilian Zouk set at ${venueName} in ${city}, ${country}.`,
-      
-      endDate: endDate.toISOString(),
-      locationName: venueName,
-      city: city,
-      region: region,
-      country: country,
-      
-      // SEO: Offers é recomendado
-      price: '0',
-      priceCurrency: currency
-    };
-  };
 
   // --- JSON-LD Generator (Memoized & Secure) ---
   const jsonLdMarkup = useMemo(() => {
@@ -129,9 +130,9 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           genre: 'Brazilian Zouk',
           url: 'https://djzeneyer.com',
           sameAs: [
-             'https://www.instagram.com/djzeneyer/',
-             'https://soundcloud.com/djzeneyer',
-             'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw'
+            'https://www.instagram.com/djzeneyer/',
+            'https://soundcloud.com/djzeneyer',
+            'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw'
           ]
         },
         organizer: {
@@ -199,12 +200,12 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
           const completeData = getCompleteEventData(event);
           const ticketUrl = event.offers?.[0]?.url || event.url;
           const eventLocation = `${completeData.city}, ${completeData.country}`;
-          
-          const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' });
-          const formattedTime = formatTime(eventDate);
-          
-          const ariaLabel = t('events.ticketAriaLabel', 
-            'View tickets for {{title}} at {{location}}', 
+
+          const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' }, currentLocale);
+          const formattedTime = formatTime(eventDate, currentLocale);
+
+          const ariaLabel = t('events.ticketAriaLabel',
+            'View tickets for {{title}} at {{location}}',
             { title: event.title, location: eventLocation }
           );
 
@@ -221,14 +222,14 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 <div className="flex items-start gap-4 p-4">
                   <time dateTime={event.datetime} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10">
                     <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
-                    <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' })}</div>
+                    <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
                   </time>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors">{event.title}</h3>
+                  <div className="flex_1 min-w-0">
+                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
                     <div className="space-y-1 text-sm text-white/70">
                       <div className="flex items-center gap-2">
-                         <MapPin size={14} className="flex-shrink-0" />
-                         <span className="truncate">{completeData.locationName}</span>
+                        <MapPin size={14} className="flex-shrink-0" />
+                        <span className="truncate">{completeData.locationName}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="flex-shrink-0" />
@@ -237,10 +238,10 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                     </div>
                   </div>
                   <div>
-                    <a 
-                      href={ticketUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={safeUrl(ticketUrl, '#')}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn btn-sm btn-primary flex-shrink-0 flex items-center gap-2"
                       aria-label={ariaLabel}
                     >
@@ -265,18 +266,24 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
                 {event.image ? (
-                   <img src={event.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500" />
+                  <img
+                    src={safeUrl(event.image, '/images/event-default.svg')}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 ) : null}
-                
+
                 <time dateTime={event.datetime} className="relative z-10 text-center drop-shadow-lg">
                   <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
-                  <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' })}</div>
+                  <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
                   <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
                 </time>
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white">{event.title}</h3>
+                <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
                 <div className="space-y-2 mb-4 text-sm text-white/70">
                   <div className="flex items-start gap-2">
                     <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
@@ -296,10 +303,10 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
                 </div>
 
                 <div>
-                  <a 
-                    href={ticketUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={safeUrl(ticketUrl, '#')}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="btn btn-primary w-full flex items-center justify-center gap-2 group/btn"
                     aria-label={ariaLabel}
                   >
@@ -324,3 +331,8 @@ export function EventsList({ limit = 10, showTitle = true, variant = 'full' }: E
     </div>
   );
 }
+
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary re-renders.
+// Optimized with external helper functions and explicit displayName for DevTools.
+export const EventsList = memo(EventsListInner);
+EventsList.displayName = 'EventsList';

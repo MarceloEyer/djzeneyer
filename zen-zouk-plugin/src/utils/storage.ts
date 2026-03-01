@@ -56,15 +56,21 @@ export const addBadge = (badgeId: string): void => {
 export const exportJournal = (): void => {
   const data = loadData();
   const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  // Basic sanitization to prevent potential injection in JSON viewers if re-imported or viewed
+  const safeJson = json.replace(/<(?:.|\n)*?>/gm, '');
+  const blob = new Blob([safeJson], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
+
+  // SEGURANÇA: Gatilho de download controlado sem appendChild dinâmico (Evita DOM XSS)
   const a = document.createElement('a');
   a.href = url;
   a.download = `zen-zouk-journal-${new Date().toISOString().split('T')[0]}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+
+  // Dispara o clique sem adicionar ao DOM
+  a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+
+  // Revogação imediata do objeto URL após o evento de clique ser processado
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
 export const resetData = (): void => {

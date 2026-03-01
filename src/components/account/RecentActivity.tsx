@@ -5,34 +5,61 @@
  * Extraído de MyAccountPage para melhor organização
  */
 
-import { Award, Music, Calendar } from 'lucide-react';
-
-interface Achievement {
-  id: number;
-  title: string;
-}
+import React, { memo } from 'react';
+import { Award, Music, Calendar, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import type { ZenGameLog } from '../../types/gamification';
 
 interface RecentActivityProps {
-  achievements?: Achievement[];
+  logs?: ZenGameLog[];
+  hideHeader?: boolean;
 }
 
-export const RecentActivity: React.FC<RecentActivityProps> = ({ achievements }) => {
-  const hasAchievements = achievements && achievements.length > 0;
+export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideHeader = false }) => {
+  const { t, i18n } = useTranslation();
+  const hasLogs = logs && logs.length > 0;
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat(i18n.language === 'pt' ? 'pt-BR' : 'en-US', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+    } catch (e) {
+      return dateString;
+    }
+  };
 
   return (
-    <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
-      <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
+    <div className={`${!hideHeader ? 'bg-surface/50 rounded-lg p-6 border border-white/10' : ''}`}>
+      {!hideHeader && (
+        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Clock className="text-primary" size={20} />
+          {t('dashboard.recentActivity')}
+        </h3>
+      )}
       <div className="space-y-3">
-        {hasAchievements ? (
-          achievements.slice(-3).reverse().map((achievement) => (
-            <div 
-              key={achievement.id} 
-              className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+        {hasLogs ? (
+          logs.slice(0, 5).map((log) => (
+            <div
+              key={log.id}
+              className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all group"
             >
-              <Award className="text-secondary flex-shrink-0" size={20} />
-              <div className="flex-1">
-                <p className="font-medium">{achievement.title}</p>
-                <p className="text-sm text-white/60">Recently achieved</p>
+              <div className={`p-2 rounded-lg ${log.points >= 0 ? 'bg-success/10 text-success' : 'bg-red-500/10 text-red-400'}`}>
+                {log.points >= 0 ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate group-hover:text-primary transition-colors">{log.description}</p>
+                <p className="text-xs text-white/40 flex items-center gap-1">
+                  <Clock size={10} /> {formatDate(log.date)}
+                </p>
+              </div>
+              <div className={`font-mono font-bold ${log.points >= 0 ? 'text-success' : 'text-red-400'}`}>
+                {log.points >= 0 ? '+' : ''}{log.points}
               </div>
             </div>
           ))
@@ -41,15 +68,15 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ achievements }) 
             <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
               <Music className="text-primary" size={20} />
               <div>
-                <p className="font-medium">Welcome to Zen Tribe!</p>
-                <p className="text-sm text-white/60">Your journey begins now</p>
+                <p className="font-medium">{t('dashboard.welcomeTribe')}</p>
+                <p className="text-sm text-white/60">{t('dashboard.journeyBegins')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
               <Calendar className="text-accent" size={20} />
               <div>
-                <p className="font-medium">Account created</p>
-                <p className="text-sm text-white/60">Start exploring!</p>
+                <p className="font-medium">{t('dashboard.accountCreated')}</p>
+                <p className="text-sm text-white/60">{t('dashboard.startExploring')}</p>
               </div>
             </div>
           </>
@@ -57,4 +84,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ achievements }) 
       </div>
     </div>
   );
-};
+});
+
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary re-renders.
+RecentActivity.displayName = 'RecentActivity';

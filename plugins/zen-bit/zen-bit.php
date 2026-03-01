@@ -115,6 +115,12 @@ class Zen_BIT {
             'permission_callback' => '__return_true'
         ));
 
+        register_rest_route('zen-bit/v1', '/events/(?P<id>[\w-]+)', array(
+            'methods' => 'GET',
+            'callback' => array('Zen_BIT_API', 'get_single_event_rest'),
+            'permission_callback' => '__return_true'
+        ));
+
         // Eventos (JSON-LD Schema graph)
         register_rest_route('zen-bit/v1', '/events-schema', array(
             'methods' => 'GET',
@@ -171,7 +177,10 @@ class Zen_BIT {
             add_option('zen_bit_api_key', '');
         }
         if (!get_option('zen_bit_cache_time')) {
-            add_option('zen_bit_cache_time', '86400'); // 24h
+            add_option('zen_bit_cache_time', '86400'); // legado em segundos
+        }
+        if (!get_option('zen_bit_throttle_hours')) {
+            add_option('zen_bit_throttle_hours', '24'); // Novo padrão: 24h entre chamadas externas
         }
 
         // Opcional: limpa cache ao ativar (garante primeira carga “limpa”)

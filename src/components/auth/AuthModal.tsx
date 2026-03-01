@@ -26,15 +26,14 @@ interface FormErrors {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // ATENÇÃO: Verifique se o seu useUser() já aceita o 4º argumento (token) no register
   const { login, register, googleLogin, googleClientId } = useUser();
-  
+
   // Estados do Formulário
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  
+
   // Estados de Segurança
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [honeypot, setHoneypot] = useState(''); // Campo armadilha para bots
@@ -49,26 +48,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     // Validação de Email
     if (!email) {
-      errors.email = 'Email é obrigatório';
+      errors.email = t('auth.errors.email_required');
     } else if (!emailRegex.test(email)) {
-      errors.email = 'Email inválido';
+      errors.email = t('auth.errors.email_invalid');
     }
 
     // Validação de Senha
     if (!password) {
-      errors.password = 'Senha é obrigatória';
+      errors.password = t('auth.errors.password_required');
     } else {
       if (password.length < 6) {
-        errors.password = 'Mínimo de 6 caracteres';
+        errors.password = t('auth.errors.password_min');
       }
     }
 
     // Validação de Nome
     if (mode === 'register' && !username.trim()) {
-      errors.username = 'Nome é obrigatório';
+      errors.username = t('auth.errors.name_required');
     }
 
     setFormErrors(errors);
@@ -80,18 +79,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     e.preventDefault();
     setError('');
 
-    // 1. Verificação Honeypot (Se preenchido, é bot)
     if (honeypot) {
-      // Fingimos sucesso para enganar o bot
       onClose();
       return;
     }
 
     if (!validateForm()) return;
 
-    // 2. Verificação Turnstile (Apenas no Registro)
     if (mode === 'register' && !turnstileToken) {
-      setError('Por favor, aguarde a verificação de segurança.');
+      setError(t('auth.errors.security_check'));
       return;
     }
 
@@ -100,19 +96,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       if (mode === 'login') {
         await login(email, password);
       } else {
-        // Envia o token do Cloudflare junto com os dados
-        // Certifique-se que sua função register no UserContext aceita esse argumento
         await register(username.trim(), email, password, turnstileToken);
       }
-      
+
       if (onSuccess) onSuccess();
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro:', err);
-      // Se der erro, reseta o token para forçar nova verificação
-      setTurnstileToken(''); 
-      setError(err.message || 'Erro ao autenticar. Verifique suas credenciais.');
+      setTurnstileToken('');
+      setError(err.message || t('auth.errors.auth_generic_error'));
     } finally {
       setLoading(false);
     }
@@ -120,13 +113,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse.credential) {
-      setError('Credencial do Google não recebida');
+      setError(t('auth.errors.google_no_credential'));
       return;
     }
 
     setLoading(true);
     setError('');
-    
+
     try {
       await googleLogin(credentialResponse.credential);
       if (onSuccess) onSuccess();
@@ -134,7 +127,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       navigate('/dashboard');
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro no Google Login:', err);
-      setError('Falha na autenticação com Google.');
+      setError(t('auth.errors.google_auth_failed'));
     } finally {
       setLoading(false);
     }
@@ -144,7 +137,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
     setFormErrors({});
-    setTurnstileToken(''); // Reseta token ao trocar de modo
+    setTurnstileToken('');
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -166,7 +159,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
         onClick={handleOverlayClick}
       >
-        {/* Backdrop Dark & Blur */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -174,7 +166,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
 
-        {/* Modal Container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -183,35 +174,27 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           className="relative w-full max-w-md"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Efeito de Brilho de Fundo */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-3xl blur-xl" />
-          
-          {/* Card Principal */}
+
           <div className="relative bg-surface/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
-            
-            {/* Botão Fechar */}
             <button
               onClick={onClose}
               className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white/60 hover:text-white"
-              aria-label="Fechar"
+              aria-label={t('common.close')}
             >
               <X size={20} />
             </button>
 
-            {/* Cabeçalho Limpo */}
             <div className="pt-10 pb-6 px-8 text-center">
               <h2 className="text-3xl font-black text-white mb-2 font-display tracking-tight">
-                {mode === 'login' ? 'Bem-vindo de Volta' : 'Junte-se à Tribe'}
+                {mode === 'login' ? t('auth.login.title') : t('auth.register.title')}
               </h2>
               <p className="text-white/60 text-sm">
-                {mode === 'login'
-                  ? 'Acesse conteúdos exclusivos e sua dashboard'
-                  : 'Crie sua conta gratuita e comece sua jornada'}
+                {mode === 'login' ? t('auth.login.subtitle') : t('auth.register.subtitle')}
               </p>
             </div>
 
             <div className="px-8 pb-8">
-              {/* Mensagem de Erro Global */}
               {error && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -223,18 +206,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </motion.div>
               )}
 
-              {/* Google Login Button */}
               {googleClientId ? (
                 <div className="mb-6">
                   <GoogleOAuthProvider clientId={googleClientId}>
                     <div className="w-full flex justify-center">
                       <GoogleLogin
                         onSuccess={handleGoogleSuccess}
-                        onError={() => setError('Falha ao conectar com Google')}
+                        onError={() => setError(t('auth.errors.google_connect_error'))}
                         theme="filled_black"
                         size="large"
                         text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                        width="100%"
+                        width={368}
                         logo_alignment="center"
                       />
                     </div>
@@ -246,22 +228,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </div>
               )}
 
-              {/* Divisor */}
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-white/10"></div>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
-                  <span className="px-3 bg-[#1a1a1a] text-white/40">ou continue com email</span>
+                  <span className="px-3 bg-[#1a1a1a] text-white/40">{t('auth.or_continue_with_email')}</span>
                 </div>
               </div>
 
-              {/* Formulário */}
               <form onSubmit={handleSubmit} className="space-y-4">
-                
-                {/* --- CAMPO ARMADILHA (HONEYPOT) - Invisível --- */}
                 <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} aria-hidden="true">
-                  <label htmlFor="user_website_trap">Se você é humano, não preencha este campo</label>
+                  <label htmlFor="user_website_trap">{t('auth.labels.honeypot')}</label>
                   <input
                     type="text"
                     id="user_website_trap"
@@ -273,10 +251,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   />
                 </div>
 
-                {/* Campo Nome (Apenas Registro) */}
                 {mode === 'register' && (
                   <div>
-                    <label className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">Nome</label>
+                    <label className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.name')}</label>
                     <div className="relative group">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                       <input
@@ -286,10 +263,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                           setUsername(e.target.value);
                           if (formErrors.username) setFormErrors({ ...formErrors, username: undefined });
                         }}
-                        className={`w-full bg-black/40 text-white border ${
-                          formErrors.username ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
-                        placeholder="Como devemos te chamar?"
+                        className={`w-full bg-black/40 text-white border ${formErrors.username ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
+                          } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                        placeholder={t('auth.placeholders.name')}
                         disabled={loading}
                       />
                     </div>
@@ -297,9 +273,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   </div>
                 )}
 
-                {/* Campo Email */}
                 <div>
-                  <label className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">Email</label>
+                  <label className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.email')}</label>
                   <div className="relative group">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                     <input
@@ -309,27 +284,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setEmail(e.target.value);
                         if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                       }}
-                      className={`w-full bg-black/40 text-white border ${
-                        formErrors.email ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                      } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
-                      placeholder="seu@email.com"
+                      className={`w-full bg-black/40 text-white border ${formErrors.email ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
+                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                      placeholder={t('auth.placeholders.email')}
                       disabled={loading}
                     />
                   </div>
                   {formErrors.email && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.email}</p>}
                 </div>
 
-                {/* Campo Senha com Toggle */}
                 <div>
                   <div className="flex justify-between items-center mb-1.5 ml-1">
-                    <label className="text-xs font-bold uppercase text-white/50">Senha</label>
+                    <label className="text-xs font-bold uppercase text-white/50">{t('auth.labels.password')}</label>
                     {mode === 'login' && (
-                      <button 
+                      <button
                         type="button"
                         onClick={handleForgotPassword}
                         className="text-xs text-primary hover:text-primary/80 transition-colors"
                       >
-                        Esqueceu?
+                        {t('auth.login.forgot_password')}
                       </button>
                     )}
                   </div>
@@ -342,17 +315,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setPassword(e.target.value);
                         if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
                       }}
-                      className={`w-full bg-black/40 text-white border ${
-                        formErrors.password ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                      } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
-                      placeholder="••••••••"
+                      className={`w-full bg-black/40 text-white border ${formErrors.password ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
+                        } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                      placeholder={t('auth.placeholders.password')}
                       disabled={loading}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors focus:outline-none"
-                      aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -360,10 +331,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   {formErrors.password && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.password}</p>}
                 </div>
 
-                {/* CLOUDFLARE TURNSTILE (Apenas no Registro) */}
                 {mode === 'register' && (
                   <div className="flex justify-center py-2">
-                    <Turnstile 
+                    <Turnstile
                       siteKey={getTurnstileSiteKey()}
                       onSuccess={(token) => setTurnstileToken(token)}
                       options={{ theme: 'dark' }}
@@ -371,7 +341,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   </div>
                 )}
 
-                {/* Botão Submit */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -380,27 +349,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   {loading ? (
                     <>
                       <Loader2 size={20} className="animate-spin" />
-                      <span>Processando...</span>
+                      <span>{t('auth.processing')}</span>
                     </>
                   ) : (
                     <span>
-                      {mode === 'login' ? 'Acessar Conta' : 'Criar Conta Grátis'}
+                      {mode === 'login' ? t('auth.login.submit') : t('auth.register.submit')}
                     </span>
                   )}
                 </button>
               </form>
 
-              {/* Switch Mode Footer */}
               <div className="mt-6 text-center pt-4 border-t border-white/5">
                 <p className="text-white/50 text-sm">
-                  {mode === 'login' ? 'Ainda não é membro?' : 'Já tem uma conta?'}
+                  {mode === 'login' ? t('auth.login.no_account') : t('auth.register.has_account')}
                   {' '}
                   <button
                     onClick={switchMode}
                     disabled={loading}
                     className="text-primary font-bold hover:text-white transition-colors disabled:opacity-50 ml-1"
                   >
-                    {mode === 'login' ? 'Crie agora' : 'Faça Login'}
+                    {mode === 'login' ? t('auth.login.create_now') : t('auth.register.login_now')}
                   </button>
                 </p>
               </div>

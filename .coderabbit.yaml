@@ -3,6 +3,13 @@
 
 language: pt-BR
 
+tone_instructions: >
+  Responda sempre em português brasileiro.
+  Seja direto, técnico e construtivo.
+  Use emojis com moderação para indicar severidade (🔴 crítico, 🟡 atenção, 🟢 ok).
+
+early_access: true
+
 reviews:
   profile: assertive
   request_changes_workflow: true
@@ -10,6 +17,21 @@ reviews:
   review_status: true
   poem: false
   collapse_walkthrough: false
+  sequence_diagrams: true
+  changed_files_summary: true
+  labeling_instructions:
+    - label: "bug-fix"
+      instructions: "Correção de bug"
+    - label: "feature"
+      instructions: "Nova funcionalidade"
+    - label: "refactor"
+      instructions: "Refatoração sem mudança de comportamento"
+    - label: "docs"
+      instructions: "Alteração apenas em documentação"
+    - label: "deploy"
+      instructions: "Alteração em CI/CD ou deploy"
+    - label: "i18n"
+      instructions: "Internacionalização ou tradução"
   
   auto_review:
     enabled: true

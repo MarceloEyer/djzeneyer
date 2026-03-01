@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { ProductImage, ProductCategory } from '../types/product';
 
 interface Product {
@@ -64,8 +65,8 @@ const TicketsPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={t('tickets_title', 'Tickets & Events')}
-        description={t('tickets_desc', 'Book your spot for the next Zen Experience.')}
+        title={t('checkout.tickets_title')}
+        description={t('checkout.description')}
         isHomepage={false}
       />
 
@@ -77,10 +78,10 @@ const TicketsPage: React.FC = () => {
             className="text-center mb-16"
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-6 font-display">
-              {t('tickets_hero_title', 'Upcoming Events')}
+              {t('events_title')}
             </h1>
             <p className="text-xl text-white/60 max-w-2xl mx-auto">
-              {t('tickets_hero_subtitle', 'Secure your access to exclusive workshops, parties and festivals.')}
+              {t('events_subtitle')}
             </p>
           </motion.div>
 
@@ -100,7 +101,7 @@ const TicketsPage: React.FC = () => {
                 >
                   <Link to={isPortuguese ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`} className="block relative aspect-video overflow-hidden">
                     <img
-                      src={ticket.images[0]?.src || 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event'}
+                      src={safeUrl(ticket.images[0]?.src, 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event')}
                       alt={ticket.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -116,12 +117,12 @@ const TicketsPage: React.FC = () => {
 
                   <div className="p-6">
                     <p className="text-white/60 line-clamp-2 mb-6 text-sm">
-                      {ticket.short_description?.replace(/<[^>]*>/g, '') || t('event_desc_fallback', 'Join us for an unforgettable experience.')}
+                      {sanitizeHtml(ticket.short_description).replace(/<[^>]*>/g, '') || t('event_desc_fallback', 'Join us for an unforgettable experience.')}
                     </p>
 
                     <div className="flex items-center justify-between mt-auto">
                       <div className="flex flex-col">
-                        <span className="text-xs text-white/40 uppercase tracking-wider">{t('ticket_starting_at', 'Starting at')}</span>
+                        <span className="text-xs text-white/40 uppercase tracking-wider">{t('shop.starting_at')}</span>
                         <span className="text-xl font-bold text-primary">{formatPrice(ticket.price)}</span>
                       </div>
 
@@ -129,7 +130,7 @@ const TicketsPage: React.FC = () => {
                         to={isPortuguese ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`}
                         className="btn btn-outline btn-sm rounded-full flex items-center gap-2"
                       >
-                        {t('tickets_details', 'Details')} <ArrowRight size={16} />
+                        {t('nav.about')} <ArrowRight size={16} />
                       </Link>
                     </div>
                   </div>

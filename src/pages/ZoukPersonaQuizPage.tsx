@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Share2, RefreshCw, ChevronRight, Music, Heart, Zap, Sparkles, Coffee } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // ============================================================================
 // DATA & LOGIC
@@ -135,6 +137,10 @@ const QUESTIONS: Question[] = [
 // ============================================================================
 
 const ZoukPersonaQuizPage: React.FC = () => {
+  const { t, i18n } = useTranslation();
+  const currentLang = normalizeLanguage(i18n.language);
+  const quizUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('quiz', currentLang)}`;
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [scores, setScores] = useState<Record<PersonaType, number>>({
     lambadeiro: 0,
@@ -181,29 +187,30 @@ const ZoukPersonaQuizPage: React.FC = () => {
 
   const shareResult = async () => {
     if (!result) return;
-    const text = `${result.shareText} Take the quiz at ${ARTIST.site.baseUrl}/quiz`;
+    const shareText = t(`quiz.personas.${result.id}.shareText`);
+    const text = `${shareText} ${t('quiz.ui.take_quiz_at')} ${quizUrl}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'My Zouk Persona',
+          title: t('quiz.ui.meta_title', { stageName: ARTIST.identity.stageName }),
           text: text,
-          url: `${ARTIST.site.baseUrl}/quiz`
+          url: quizUrl
         });
       } catch (err) {
         console.error('Share failed', err);
       }
     } else {
       navigator.clipboard.writeText(text);
-      alert('Result copied to clipboard!');
+      alert(t('quiz.ui.copied'));
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>Zouk Persona Quiz | {ARTIST.identity.stageName}</title>
-        <meta name="description" content="Who are you on the dance floor? Take the Zouk Persona Quiz to find out if you're a Lambadeiro, Technician, or the Creamy One!" />
+        <title>{t('quiz.ui.meta_title', { stageName: ARTIST.identity.stageName })}</title>
+        <meta name="description" content={t('quiz.ui.meta_desc')} />
       </Helmet>
 
       <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 relative overflow-hidden font-sans">
@@ -217,7 +224,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
             {!result ? (
               // QUESTION VIEW
               <motion.div
-                key="question"
+                key={currentQuestion}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -225,8 +232,8 @@ const ZoukPersonaQuizPage: React.FC = () => {
                 className="bg-gray-800/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/10"
               >
                 <div className="flex justify-between items-center mb-6 text-sm text-gray-400 font-mono">
-                  <span>Question {currentQuestion + 1} of {QUESTIONS.length}</span>
-                  <span>{Math.round(((currentQuestion) / QUESTIONS.length) * 100)}% Complete</span>
+                  <span>{t('quiz.ui.question_count', { current: currentQuestion + 1, total: QUESTIONS.length })}</span>
+                  <span>{t('quiz.ui.complete', { percent: Math.round(((currentQuestion) / QUESTIONS.length) * 100) })}</span>
                 </div>
 
                 {/* Progress Bar */}
@@ -238,7 +245,9 @@ const ZoukPersonaQuizPage: React.FC = () => {
                   />
                 </div>
 
-                <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">{QUESTIONS[currentQuestion].text}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">
+                  {t(`quiz.questions.q${QUESTIONS[currentQuestion].id}.text`)}
+                </h2>
 
                 <div className="space-y-4">
                   {QUESTIONS[currentQuestion].options.map((option, index) => (
@@ -249,7 +258,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                       onClick={() => handleAnswer(option.points)}
                       className="w-full p-4 text-left bg-gray-700/50 hover:bg-gray-600 rounded-xl border border-white/5 transition-colors flex items-center justify-between group"
                     >
-                      <span className="text-lg">{option.text}</span>
+                      <span className="text-lg">{t(`quiz.questions.q${QUESTIONS[currentQuestion].id}.options.o${index + 1}`)}</span>
                       <ChevronRight className="opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
                     </motion.button>
                   ))}
@@ -273,14 +282,14 @@ const ZoukPersonaQuizPage: React.FC = () => {
                     {result.icon}
                   </motion.div>
 
-                  <h3 className="text-white/60 uppercase tracking-widest text-sm font-bold mb-2">You are...</h3>
+                  <h3 className="text-white/60 uppercase tracking-widest text-sm font-bold mb-2">{t('quiz.ui.you_are')}</h3>
                   <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-                    {result.title}
+                    {t(`quiz.personas.${result.id}.title`)}
                   </h1>
-                  <p className="text-xl text-primary font-medium mb-6">{result.subtitle}</p>
+                  <p className="text-xl text-primary font-medium mb-6">{t(`quiz.personas.${result.id}.subtitle`)}</p>
 
                   <p className="text-gray-300 text-lg leading-relaxed mb-10 max-w-lg mx-auto border-t border-b border-white/10 py-6">
-                    {result.description}
+                    {t(`quiz.personas.${result.id}.description`)}
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -289,14 +298,14 @@ const ZoukPersonaQuizPage: React.FC = () => {
                       className="btn bg-white text-black hover:bg-gray-200 flex items-center justify-center gap-2 px-8 py-3 rounded-full font-bold transition-all"
                     >
                       <Share2 size={20} />
-                      Share Result
+                      {t('quiz.ui.share_result')}
                     </button>
                     <button
                       onClick={resetQuiz}
                       className="btn border border-white/30 hover:bg-white/10 text-white flex items-center justify-center gap-2 px-8 py-3 rounded-full font-bold transition-all"
                     >
                       <RefreshCw size={20} />
-                      Take Again
+                      {t('quiz.ui.take_again')}
                     </button>
                   </div>
                 </div>

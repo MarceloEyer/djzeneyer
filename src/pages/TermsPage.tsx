@@ -1,101 +1,83 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { FileText, AlertCircle, Scale, Ban, CheckCircle } from 'lucide-react';
 
 const TermsPage: React.FC = () => {
-  const lastUpdated = "January 2024";
+  const { t } = useTranslation();
 
   const sections = [
     {
       icon: CheckCircle,
-      title: "1. Acceptance of Terms",
-      content: `By accessing and using this website (djzeneyer.com), you accept and agree to be bound by the
-      terms and provisions of this agreement. If you do not agree to these Terms of Use, please do not use
-      this website. We reserve the right to modify these terms at any time, and such modifications shall be
-      effective immediately upon posting on this website.`
+      title: t('terms_page.acceptance'),
+      content: t('terms_page.acceptance_desc')
     },
     {
       icon: Scale,
-      title: "2. Use License",
-      content: `Permission is granted to temporarily access the materials (information or software) on
-      DJ Zen Eyer's website for personal, non-commercial transitory viewing only. This is the grant of a
-      license, not a transfer of title, and under this license you may not: (a) modify or copy the materials;
-      (b) use the materials for any commercial purpose, or for any public display (commercial or non-commercial);
-      (c) attempt to decompile or reverse engineer any software contained on DJ Zen Eyer's website; (d) remove
-      any copyright or other proprietary notations from the materials; or (e) transfer the materials to another
-      person or "mirror" the materials on any other server.`
+      title: t('terms_page.license'),
+      content: t('terms_page.license_desc')
     },
     {
       icon: AlertCircle,
-      title: "3. Disclaimer",
-      content: `The materials on DJ Zen Eyer's website are provided on an 'as is' basis. DJ Zen Eyer makes no
-      warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without
-      limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or
-      non-infringement of intellectual property or other violation of rights. Further, DJ Zen Eyer does not
-      warrant or make any representations concerning the accuracy, likely results, or reliability of the use of
-      the materials on its website or otherwise relating to such materials or on any sites linked to this site.`
+      title: t('terms_page.disclaimer'),
+      content: t('terms_page.disclaimer_desc')
     },
     {
       icon: Ban,
-      title: "4. Limitations",
-      content: `In no event shall DJ Zen Eyer or its suppliers be liable for any damages (including, without
-      limitation, damages for loss of data or profit, or due to business interruption) arising out of the use
-      or inability to use the materials on DJ Zen Eyer's website, even if DJ Zen Eyer or a DJ Zen Eyer authorized
-      representative has been notified orally or in writing of the possibility of such damage. Because some
-      jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential
-      or incidental damages, these limitations may not apply to you.`
+      title: t('terms_page.limitations'),
+      content: t('terms_page.limitations_desc')
     }
   ];
 
   const additionalTerms = [
     {
-      title: "Intellectual Property",
+      title: t('terms_page.intellectual_property'),
       points: [
-        "All content, including but not limited to text, graphics, logos, images, audio clips, and software, is the property of DJ Zen Eyer (Marcelo Eyer Fernandes) or its content suppliers.",
-        "The content is protected by Brazilian and international copyright laws.",
-        "Unauthorized use of any materials may violate copyright, trademark, and other laws.",
-        "You may not reproduce, distribute, display, or create derivative works without express written permission."
+        t('terms_page.ip_content'),
+        t('terms_page.ip_protected'),
+        t('terms_page.ip_unauthorized'),
+        t('terms_page.ip_reproduce')
       ]
     },
     {
-      title: "User Conduct",
+      title: t('terms_page.user_conduct'),
       points: [
-        "You agree not to use the website for any unlawful purpose or in any way that interrupts, damages, or impairs the service.",
-        "You will not attempt to gain unauthorized access to any portion of the website.",
-        "You will not use automated systems (bots, scrapers) without permission.",
-        "You will not upload or transmit viruses or any other type of malicious code.",
-        "You will respect the privacy and rights of other users."
+        t('terms_page.conduct_lawful'),
+        t('terms_page.conduct_access'),
+        t('terms_page.conduct_bots'),
+        t('terms_page.conduct_malware'),
+        t('terms_page.conduct_respect')
       ]
     },
     {
-      title: "Purchases and Payments",
+      title: t('terms_page.purchases'),
       points: [
-        "All purchases are subject to availability and confirmation of payment.",
-        "Prices are subject to change without notice.",
-        "We reserve the right to refuse or cancel any order.",
-        "Payment processing is handled by secure third-party processors.",
-        "Refund and cancellation policies are outlined at the time of purchase."
+        t('terms_page.purchases_availability'),
+        t('terms_page.purchases_prices'),
+        t('terms_page.purchases_cancel'),
+        t('terms_page.purchases_processing'),
+        t('terms_page.purchases_refunds')
       ]
     },
     {
-      title: "User Accounts",
+      title: t('terms_page.accounts'),
       points: [
-        "You are responsible for maintaining the confidentiality of your account credentials.",
-        "You agree to accept responsibility for all activities that occur under your account.",
-        "You must provide accurate and complete information when creating an account.",
-        "We reserve the right to suspend or terminate accounts that violate these terms.",
-        "You must notify us immediately of any unauthorized use of your account."
+        t('terms_page.accounts_confidential'),
+        t('terms_page.accounts_responsibility'),
+        t('terms_page.accounts_accurate'),
+        t('terms_page.accounts_suspend'),
+        t('terms_page.accounts_notify')
       ]
     },
     {
-      title: "Third-Party Links",
+      title: t('terms_page.third_party_links'),
       points: [
-        "This website may contain links to third-party websites.",
-        "DJ Zen Eyer has no control over and assumes no responsibility for third-party content.",
-        "The presence of links does not imply endorsement.",
-        "You access third-party sites at your own risk.",
-        "Please review the terms and privacy policies of any third-party sites."
+        t('terms_page.links_contain'),
+        t('terms_page.links_no_control'),
+        t('terms_page.links_no_endorsement'),
+        t('terms_page.links_risk'),
+        t('terms_page.links_review')
       ]
     }
   ];
@@ -103,8 +85,8 @@ const TermsPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Terms of Use | DJ Zen Eyer</title>
-        <meta name="description" content="Terms of Use for DJ Zen Eyer official website. Read the terms and conditions governing the use of our services." />
+        <title>{t('terms_page.title')} | {t('common.artist_name')}</title>
+        <meta name="description" content={t('terms_page.subtitle')} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
@@ -121,10 +103,10 @@ const TermsPage: React.FC = () => {
               <FileText size={40} className="text-primary" />
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              Terms of <span className="text-primary">Use</span>
+              {t('terms_page.title').split(' ')[0]} <span className="text-primary">{t('terms_page.title').split(' ').slice(1).join(' ')}</span>
             </h1>
             <p className="text-white/70">
-              Last updated: <span className="text-primary font-semibold">{lastUpdated}</span>
+              {t('terms_page.last_updated')}: <span className="text-primary font-semibold">Janeiro 2024</span>
             </p>
           </motion.div>
 
@@ -136,12 +118,10 @@ const TermsPage: React.FC = () => {
             className="card p-8 mb-8 border-l-4 border-primary"
           >
             <p className="text-lg text-white/80 leading-relaxed mb-4">
-              Welcome to the official website of DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46).
-              These Terms of Use govern your access to and use of our website, services, and content.
+              {t('terms_page.introduction')}
             </p>
             <p className="text-white/70 leading-relaxed">
-              By accessing or using our website, you agree to comply with and be bound by these terms. If you
-              do not agree to these terms, please do not use our website.
+              {t('terms_page.introduction_agreement')}
             </p>
           </motion.div>
 
@@ -158,7 +138,7 @@ const TermsPage: React.FC = () => {
                 <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                   <section.icon size={24} className="text-primary" />
                 </div>
-                <h2 className="text-2xl font-display font-bold mt-1">{section.title}</h2>
+                <h2 className="text-2xl font-display font-bold mt-1">{`${index + 1}. ${section.title}`}</h2>
               </div>
               <p className="text-white/70 leading-relaxed ml-16">{section.content}</p>
             </motion.div>
@@ -192,14 +172,12 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.1 }}
             className="card p-8 mb-6"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">10. Governing Law</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">10. {t('terms_page.governing_law')}</h2>
             <p className="text-white/70 leading-relaxed mb-4">
-              These Terms of Use shall be governed by and construed in accordance with the laws of Brazil,
-              without regard to its conflict of law provisions. Any legal action or proceeding arising under
-              these terms will be brought exclusively in the courts located in São Paulo, Brazil.
+              {t('terms_page.law_brazil')}
             </p>
             <p className="text-white/70 leading-relaxed">
-              By using this website, you consent to the jurisdiction and venue of such courts in São Paulo, Brazil.
+              {t('terms_page.law_consent')}
             </p>
           </motion.div>
 
@@ -210,11 +188,9 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.2 }}
             className="card p-8 mb-6"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">11. Modifications to Terms</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">11. {t('terms_page.modifications')}</h2>
             <p className="text-white/70 leading-relaxed">
-              DJ Zen Eyer reserves the right to revise these Terms of Use at any time without prior notice.
-              By continuing to use this website after changes are posted, you agree to be bound by the revised
-              terms. We encourage you to periodically review this page for the latest information on our terms.
+              {t('terms_page.modifications_desc')}
             </p>
           </motion.div>
 
@@ -225,15 +201,15 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.3 }}
             className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">Questions About These Terms?</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">{t('terms_page.questions')}</h2>
             <p className="text-white/70 mb-6">
-              If you have any questions about these Terms of Use, please contact us:
+              {t('terms_page.questions_desc')}
             </p>
             <div className="space-y-2 text-white/80">
-              <p><strong>DJ Zen Eyer</strong></p>
-              <p>Marcelo Eyer Fernandes</p>
-              <p>CNPJ: 44.063.765/0001-46</p>
-              <p>São Paulo, SP - Brazil</p>
+              <p><strong>{t('common.artist_name')}</strong></p>
+              <p>{t('terms_page.contact_company')}</p>
+              <p>{t('media_page.cnpj')}: {t('common.cnpj')}</p>
+              <p>{t('terms_page.contact_location')}</p>
               <a
                 href="mailto:contact@djzeneyer.com"
                 className="text-primary hover:underline inline-block mt-2"
@@ -250,8 +226,7 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.4 }}
             className="text-center text-white/50 text-sm mt-8"
           >
-            <p>By using this website, you acknowledge that you have read and understood these Terms of Use</p>
-            <p>and agree to be bound by them.</p>
+            <p>{t('terms_page.acceptance_footer')}</p>
           </motion.div>
         </div>
       </div>

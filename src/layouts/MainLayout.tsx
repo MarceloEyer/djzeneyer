@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import Navbar from '../components/common/Navbar';
+import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/common/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import ScrollToTop from '../components/ScrollToTop';
 
 const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -18,19 +19,18 @@ const MainLayout: React.FC = () => {
 
   return (
     <>
-      {/* Default SEO for all pages using this layout.
-          Individual pages can override this by rendering HeadlessSEO themselves. */}
+      <ScrollToTop />
       <HeadlessSEO />
 
       <div className="flex flex-col min-h-screen bg-background text-white">
         <Navbar onLoginClick={() => openModal('login')} />
-        
+
         <main className="flex-grow pt-20">
           <Outlet />
         </main>
-        
+
         <Footer />
-        
+
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={closeModal}

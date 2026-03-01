@@ -21,6 +21,18 @@ add_filter('template_include', function($template) {
     
     // Only intercept main front-end 404s (i.e., unknown WP routes) and hand them to the SPA.
     if (is_404() && is_main_query()) {
+        // SEGURANÇA: Se o path parece um arquivo estático (está no wp-content ou tem extensão comum),
+        // NÃO intercepte. Deixe o WordPress retornar 404 real ou o Web Server tratar.
+        // Isso evita loops 522 ao tentar servir HTML pesado para cada imagem/js quebrado.
+        $path = strtok($_SERVER['REQUEST_URI'], '?');
+        if (preg_match('/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|webmanifest|php)$/i', $path)) {
+            return $template;
+        }
+
+        if (strpos($path, '/wp-content/') !== false || strpos($path, '/wp-includes/') !== false) {
+            return $template;
+        }
+
         // Mark that we intentionally routed to the SPA so other hooks do not restore the 404 header.
         $GLOBALS['DJZ_SPA_ROUTED'] = true;
 

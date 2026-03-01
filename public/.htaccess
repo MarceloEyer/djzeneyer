@@ -191,6 +191,17 @@ Options -Indexes
 # ==============================================================================
 # 8. ROTEAMENTO PADRÃO DO WORDPRESS
 # ==============================================================================
+# ==============================================================================
+# 9. AI VISIBILITY (llms.txt)
+# ==============================================================================
+<FilesMatch "^llms(-full)?\.txt$">
+  AddType text/plain .txt
+  AddCharset UTF-8 .txt
+  <IfModule mod_headers.c>
+    Header set Content-Type "text/plain; charset=utf-8"
+  </IfModule>
+</FilesMatch>
+
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On

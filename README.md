@@ -1,150 +1,162 @@
-# 🎧 DJ Zen Eyer - Headless Experience
+# 🎧 DJ Zen Eyer — Experiência Digital Headless
 
-![Project Status](https://img.shields.io/badge/status-active-success.svg)
+![Status](https://img.shields.io/badge/status-ativo-success.svg)
 ![React](https://img.shields.io/badge/React-18-blue)
-![Vite](https://img.shields.io/badge/Vite-5-purple)
+![Vite](https://img.shields.io/badge/Vite-7-purple)
 ![WordPress](https://img.shields.io/badge/WordPress-Headless-21759b)
-![License](https://img.shields.io/badge/license-GPLv2-green)
+![Licença](https://img.shields.io/badge/licença-GPLv2-green)
 
-> **The official digital experience for DJ Zen Eyer - Two-time World Champion Brazilian Zouk DJ.**
+> **A experiência digital oficial do DJ Zen Eyer — Bicampeão Mundial de Brazilian Zouk.**
 >
-> A high-performance, bilingual Single Page Application (SPA) powered by a Headless WordPress backend, featuring gamification, e-commerce, and seamless audio streaming.
+> Uma SPA de alto desempenho, bilíngue, alimentada por um backend WordPress Headless, com gamificação, e-commerce e streaming de áudio contínuo.
 
-🌐 **Live Demo:** [djzeneyer.com](https://djzeneyer.com)
-
----
-
-## ✨ Features
-
-This project pushes the boundaries of what a DJ portfolio can be:
-
-- **🚀 Blazing Fast:** Built with **React 18** & **Vite 5**, achieving near-instant navigation.
-- **🌍 Bilingual Core:** Native support for **English** and **Portuguese** via `i18next`.
-- **🛍️ E-Commerce:** Full **WooCommerce** integration for selling tracks and event tickets.
-- **🎮 Gamification:** Users earn **XP, Ranks, and Achievements** (via **Zen-RA v3.2.0**) by listening to music and buying merch.
-- **🎧 Audio Experience:** Global persistence music player with continuous playback across routes.
-- **🧠 SEO Optimized:** Dynamic sitemaps, canonical tags, and Open Graph support for social sharing.
+🌐 **Site:** [djzeneyer.com](https://djzeneyer.com)
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Funcionalidades
 
-### Frontend (The Head)
+- **🚀 Ultra Rápido:** React 18 + Vite 7, navegação quase instantânea.
+- **🌍 Bilíngue:** Suporte nativo a **Inglês** e **Português** via `i18next`.
+- **🛍️ E-Commerce:** Integração completa com **WooCommerce** para venda de músicas e ingressos.
+- **🎮 Gamificação:** XP, Ranks e Conquistas (via **Zen-RA**) ao ouvir músicas e comprar.
+- **🎧 Player Global:** Player persistente com reprodução contínua entre rotas.
+- **🧠 SEO Otimizado:** Sitemaps dinâmicos, tags canônicas, Open Graph e SSG.
+
+---
+
+## 🛠️ Stack Técnica
+
+### Frontend
 - **Framework:** React 18 + TypeScript
-- **Build Tool:** Vite 5
-- **Styling:** Tailwind CSS + Framer Motion
-- **State:** React Query (TanStack Query) + Context API
-- **Routing:** React Router 7
+- **Build:** Vite 7
+- **Estilo:** Tailwind CSS + Framer Motion
+- **Estado:** React Query (TanStack Query v5) + Context API
+- **Roteamento:** React Router 7
 
-### Backend (The Body)
-- **CMS:** WordPress (Headless Mode)
-- **API:** REST API with custom endpoints (`/djzeneyer/v1`)
-- **Plugins:**
-  - **Zen-RA v3.2.0** (Gamification Engine)
-  - **Zen SEO Lite** (SEO Optimization)
-  - WooCommerce, GamiPress, Polylang
+### Backend
+- **CMS:** WordPress (Modo Headless)
+- **API:** REST API com endpoints customizados (`/djzeneyer/v1`)
+- **Plugins Customizados:**
+  - **ZenEyer Auth** (JWT + Google OAuth)
+  - **Zen SEO Lite** (SEO Headless)
+  - **Zen BIT** (Bandsintown)
+  - **Zen-RA** (Gamificação)
+- WooCommerce, GamiPress, Polylang
 
-### Infrastructure
-- **Hosting:** Hostinger VPS (PHP/MySQL)
-- **CDN:** Cloudflare + LiteSpeed Cache
-- **CI/CD:** GitHub Actions (Auto-deploy on push)
+### Infraestrutura
+- **Hospedagem:** Hostinger VPS (LiteSpeed)
+- **CDN:** Cloudflare
+- **CI/CD:** GitHub Actions (deploy automático no push)
+- **Node:** 20 | **PHP:** 8.0+
 
 ---
 
-## 🔄 Workflow de Desenvolvimento
-
-### Como funciona a sincronização automática
+## 🔄 Workflow de Deploy
 
 ```
-Seu Computador → [git push] → GitHub → [Auto Deploy] → djzeneyer.com
-     ↓                           ↓                            ↓
-  Edita código            GitHub Actions              Servidor Produção
-                          Build + Deploy                (5-10 min)
+Seu Computador → [git push] → GitHub → [Actions] → djzeneyer.com
+     ↓                           ↓                        ↓
+  Edita código            Build + Deploy           Servidor Produção
+                          (2-3 minutos)
 ```
 
-### Deploy automático configurado
+### O que acontece automaticamente no push:
 
-Quando você faz `git push origin main`, o GitHub Actions automaticamente:
+1. ✅ Build TypeScript + Vite
+2. ✅ Geração de sitemaps
+3. ✅ Prerender de páginas (SSG)
+4. ✅ Deploy via SSH para o servidor
+5. ✅ Limpeza de cache LiteSpeed + OPcache
+6. ✅ Health check do site
 
-1. ✅ Faz build do projeto (TypeScript + Vite)
-2. ✅ Gera sitemaps otimizados
-3. ✅ Faz prerender das páginas (SSG)
-4. ✅ Deploy via SSH no servidor
-5. ✅ Limpa cache LiteSpeed + OPcache
-6. ✅ Verifica saúde do site
-
-### Push rápido
+### Deploy rápido
 
 ```bash
-# Use o script helper
-./scripts/quick-push.sh "Descrição da alteração"
-
-# Ou manualmente
 git add .
-git commit -m "Sua mensagem"
+git commit -m "descrição da alteração"
 git push origin main
 ```
 
-### Acompanhe o deploy
+### Acompanhe
 
 - **GitHub Actions:** https://github.com/MarceloEyer/djzeneyer/actions
-- **Site ao vivo:** https://djzeneyer.com
-
-📖 **Documentação completa:** [`.bolt/SYNC_WORKFLOW.md`](.bolt/SYNC_WORKFLOW.md)
+- **Site:** https://djzeneyer.com
 
 ---
 
 ## 🚀 Quick Start
 
-Get the frontend running locally in minutes:
-
 ```bash
-# 1. Clone the repository
+# 1. Clonar o repositório
 git clone https://github.com/MarceloEyer/djzeneyer.git
 
-# 2. Install dependencies
+# 2. Instalar dependências
 npm install
 
-# 3. Start development server
+# 3. Iniciar servidor de desenvolvimento
 npm run dev
 ```
-> Open http://localhost:5173 to view it in the browser.
+> Abra http://localhost:5173 no navegador.
 
 ---
 
-## 📚 Documentation
+## 📚 Documentação
 
-We believe in clean, accessible documentation. Check out the guides below:
-
-| Document | Description |
-|----------|-------------|
-| [**📡 API Reference**](docs/API.md) | Endpoints for Activity, Gamification, and Products. |
-| [**🗺️ Roadmap & Tasks**](TODO.md) | Current project status and pending tasks. |
-| [**📂 Plugin: Zen-RA**](plugins/zen-ra/README.md) | Documentation for the Gamification Engine. |
-| [**🏗️ Architecture**](docs/ARCHITECTURE.md) | Deep dive into the system design. |
+| Documento | Descrição |
+|-----------|-----------|
+| [📐 Arquitetura](docs/ARCHITECTURE.md) | Arquitetura técnica e fluxo de dados |
+| [📡 API](docs/API.md) | Referência de endpoints REST |
+| [🏗️ Setup](docs/SETUP.md) | Guia de instalação |
+| [⚙️ Configuração](docs/CONFIGURATION.md) | WordPress, Cloudflare, LiteSpeed |
+| [👨‍💻 Guia Dev](docs/DEV_GUIDE.md) | Guia para desenvolvedores |
+| [📋 Roadmap](TODO.md) | Tarefas e melhorias pendentes |
 
 ---
 
-## 📂 Project Structure
+## 📂 Estrutura do Projeto
 
-```bash
+```
 djzeneyer/
-├── src/               # React Source Code
-│   ├── components/    # UI Building Blocks
-│   ├── pages/         # Route Components
-│   ├── hooks/         # Custom Logic (useMusicPlayer, etc.)
-│   └── locales/       # i18n JSON files
-├── inc/               # WordPress PHP Theme Includes
-│   ├── api.php        # REST API Registrations
-│   └── spa.php        # SPA Routing Logic
-├── plugins/           # Custom WordPress Plugins
-│   └── zen-ra/        # Zen Recent Activity Engine
-└── docs/              # Documentation
+├── src/                    # Frontend React
+│   ├── components/
+│   │   ├── Layout/         # Navbar
+│   │   ├── common/         # Footer, elementos reutilizáveis
+│   │   ├── auth/           # AuthModal
+│   │   └── account/        # Dashboard, perfil
+│   ├── pages/              # Páginas (lazy-loaded)
+│   ├── hooks/              # Hooks centralizados (useQueries.ts)
+│   ├── contexts/           # UserContext, CartContext, MusicPlayer
+│   ├── locales/            # Traduções i18n (en/, pt/)
+│   ├── config/             # api.ts, routes.ts
+│   └── layouts/            # MainLayout.tsx
+├── inc/                    # PHP do tema WordPress
+├── plugins/                # Plugins customizados
+│   ├── zeneyer-auth/       # Autenticação JWT
+│   ├── zen-seo-lite/       # SEO Headless
+│   ├── zen-bit/            # Bandsintown
+│   └── zen-ra/             # Gamificação
+├── scripts/                # Scripts de build
+├── docs/                   # Documentação
+└── .github/workflows/      # CI/CD
 ```
 
 ---
 
-## 👨‍💻 Author
+## 🤖 Configuração de Bots AI
+
+Este repositório inclui instruções para os seguintes bots de IA:
+
+| Bot | Arquivo |
+|-----|---------|
+| CodeRabbit | `.coderabbit.yaml` |
+| OpenAI Codex | `AGENTS.md` |
+| Gemini / Jules | `GEMINI.md` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+
+---
+
+## 👨‍💻 Autor
 
 **DJ Zen Eyer (Marcelo Eyer Fernandes)**
 - 📸 [Instagram](https://instagram.com/djzeneyer)
@@ -153,6 +165,4 @@ djzeneyer/
 
 ---
 
-*Built with ❤️ and 🎶 by the Zen Tribe.*
-
-Teste
+*Feito com ❤️ e 🎶 pela Tribo Zen.*

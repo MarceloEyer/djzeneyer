@@ -45,6 +45,9 @@ User-agent: *
 # Permitir acesso total ao site
 Allow: /
 
+# [AIO] Permitir que QUALQUER bot de IA (Grok, QWEN, etc.) acesse o contexto estruturado
+Allow: /wp-json/djzeneyer/v1/ai-context
+
 # Bloquear WordPress Admin e áreas privadas
 Disallow: /wp-admin/
 Disallow: /wp-login.php
@@ -197,11 +200,13 @@ Allow: /
 # PERPLEXITY AI
 User-agent: PerplexityBot
 Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 
 # COHERE AI
 User-agent: cohere-ai
 Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 
 # ==============================================================================
@@ -248,6 +253,7 @@ Disallow: /
 
 Sitemap: https://djzeneyer.com/sitemap.xml
 Sitemap: https://djzeneyer.com/sitemap-pages.xml
+Sitemap: https://djzeneyer.com/sitemap-events.xml
 
 # ==============================================================================
 # 📚 REFERÊNCIAS E BOAS PRÁTICAS

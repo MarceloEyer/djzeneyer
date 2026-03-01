@@ -1,324 +1,304 @@
-// src/pages/EventsPage.tsx
-// VERSÃO FINAL CORRIGIDA: URL API CORRETA (zen-bit) + Blindagem Anti-Crash
-
-import { useEffect, useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { memo, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getHreflangUrls } from '../utils/seo';
-import { ARTIST, getWhatsAppUrl } from '../data/artistData';
-import { Event, Testimonial, FlyerData } from '../types';
-import { EventsList } from '../components/EventsList';
 import { useParams, Link } from 'react-router-dom';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
-import {
-  Calendar as CalendarIcon,
-  MapPin,
-  Ticket,
-  Star,
-  Plus,
-  Globe,
-  Download,
-  Briefcase,
-  Lock,
-  Plane,
-  ExternalLink,
-  Trophy,
-  Users,
-  Music2,
-  ArrowRight,
-  ArrowLeft,
-  Info,
-  Send,
-  AlertCircle
-} from 'lucide-react';
+import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
+import { useEventsQuery, useEventById } from '../hooks/useQueries';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { MapPin, Search, Share2, ArrowLeft, Music, Calendar, Ticket } from 'lucide-react';
+import AddCalendarMenu from '../components/Events/AddCalendarMenu';
+import { Toast } from '../components/common/Toast';
+
+// ============================================================================
+// SUB-COMPONENTS (SUSPENSE READY)
+// ============================================================================
+
+const EventSkeleton = () => (
+  <div className="space-y-6">
+    {[1, 2, 3].map(i => (
+      <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
+        <div className="w-12 h-12 bg-white/5 rounded-full" />
+        <div className="flex-1 space-y-3">
+          <div className="h-4 bg-white/5 rounded w-1/4" />
+          <div className="h-3 bg-white/5 rounded w-1/2" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const EventDetailSkeleton = () => (
+  <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
+    <div className="h-10 w-32 bg-white/5 rounded-lg mb-8" />
+    <div className="grid md:grid-cols-2 gap-8">
+      <div className="rounded-3xl aspect-[4/5] bg-white/5 border border-white/10" />
+      <div className="space-y-6">
+        <div className="h-12 w-3/4 bg-white/5 rounded-xl" />
+        <div className="space-y-3">
+          <div className="h-6 w-1/2 bg-white/5 rounded" />
+          <div className="h-6 w-1/2 bg-white/5 rounded" />
+        </div>
+        <div className="h-32 w-full bg-white/5 rounded-2xl" />
+        <div className="h-14 w-full bg-white/5 rounded-xl" />
+      </div>
+    </div>
+  </div>
+);
+
+interface EventDetailProps {
+  id: string;
+  lang: string;
+}
+
+const EventDetailContent = ({ id, lang }: EventDetailProps) => {
+  const { t } = useTranslation();
+  const { data: e } = useEventById(id, { suspense: true });
+  const [showToast, setShowToast] = useState(false);
+
+  if (!e) {
+    return (
+      <div className="max-w-4xl mx-auto py-20 text-center animate-in fade-in duration-500">
+        <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary">
+          <Calendar size={40} />
+        </div>
+        <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter">{t('events_not_found', 'Event not found')}</h2>
+        <p className="text-white/40 mb-8 max-w-md mx-auto">{t('events_not_found_desc', 'The event you are looking for might have been removed or is no longer available.')}</p>
+        <Link to={getLocalizedRoute('events', lang)} className="btn btn-outline border-white/10 px-8 py-3 rounded-xl font-bold uppercase transition-all hover:bg-white/5 inline-flex items-center gap-2">
+          <ArrowLeft size={18} /> {t('events_back')}
+        </Link>
+      </div>
+    );
+  }
+
+  const share = () => {
+    const url = `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
+    if (navigator.share) {
+      navigator.share({ title: e.title, url });
+    } else {
+      navigator.clipboard.writeText(url);
+      setShowToast(true);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <Link to={getLocalizedRoute('events', lang)} className="flex items-center gap-2 text-primary mb-8 font-extrabold uppercase tracking-widest text-sm hover:text-white transition-colors">
+        <ArrowLeft size={18} /> {t('events_back')}
+      </Link>
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+        <div className="relative group">
+          <img
+            src={safeUrl(e.image || '/images/hero-background.webp')}
+            className="rounded-[2.5rem] aspect-[4/5] object-cover border border-white/10 shadow-2xl group-hover:scale-[1.02] transition-transform duration-500"
+            alt={e.title}
+          />
+          <div className="absolute inset-0 rounded-[2.5rem] ring-1 ring-inset ring-white/10" />
+        </div>
+
+        <div className="flex flex-col justify-center">
+          <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.2em] text-xs mb-6">
+            <div className="w-8 h-px bg-primary/30" />
+            {new Date(e.datetime).toLocaleDateString(lang, { month: 'long', year: 'numeric' })}
+          </div>
+
+          <h1 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter text-white leading-[0.9]" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
+
+          <div className="space-y-5 mb-10">
+            <div className="flex items-center gap-4 text-white/80">
+              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
+                <Calendar size={20} />
+              </div>
+              <span className="font-bold">{new Date(e.datetime).toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            </div>
+            <div className="flex items-center gap-4 text-white/80">
+              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
+                <MapPin size={20} />
+              </div>
+              <span className="font-bold">{e.venue?.name}, {e.venue?.city}</span>
+            </div>
+          </div>
+
+          <div className="prose prose-invert mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.description || e.content || '') }} />
+
+          <div className="space-y-3">
+            {e.url && (
+              <a
+                href={e.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm shadow-xl shadow-primary/20"
+              >
+                <Ticket size={20} />
+                {t('events_tickets', 'Get Tickets')}
+              </a>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <AddCalendarMenu event={e} variant="primary" />
+            </div>
+
+            <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
+              <Share2 size={18} /> {t('share')}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <Toast
+        message={t('link_copied', 'Link copied to clipboard!')}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
+    </div>
+  );
+};
+
+interface EventListProps {
+  searchQuery: string;
+  lang: string;
+}
+
+const EventListContent = ({ searchQuery, lang }: EventListProps) => {
+  const { t } = useTranslation();
+  const { data: events = [] } = useEventsQuery(50, { suspense: true });
+
+  const filteredEvents = useMemo(() => {
+    const sorted = [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
+    if (!searchQuery) return sorted;
+    const q = searchQuery.toLowerCase();
+    return sorted.filter((e: any) =>
+      `${e.title} ${e.venue?.city} ${e.venue?.country}`.toLowerCase().includes(q)
+    );
+  }, [events, searchQuery]);
+
+  const groupedEvents = useMemo(() => {
+    const groups: { [key: string]: any[] } = {};
+    filteredEvents.forEach((e: any) => {
+      const date = new Date(e.datetime || e.date);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(e);
+    });
+    return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filteredEvents]);
+
+  const [showToast, setShowToast] = React.useState(false);
+
+  const share = (e: any) => {
+    const url = `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
+    if (navigator.share) {
+      navigator.share({ title: e.title, url });
+    } else {
+      navigator.clipboard.writeText(url);
+      setShowToast(true);
+    }
+  };
+
+  if (filteredEvents.length === 0) {
+    return (
+      <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
+        <p className="text-white/40">{t('events_no_results', 'No events found matching your search.')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-12 animate-in fade-in duration-500">
+      {groupedEvents.map(([key, monthEvents]: [string, any[]]) => {
+        const [y, m] = key.split('-');
+        // Forçar cast para 'en' na geração da chave de tradução para garantir compatibilidade
+        const monthShort = new Date(Number(y), Number(m) - 1).toLocaleString('en', { month: 'short' }).toLowerCase();
+        const name = t(`events_month_${monthShort}`);
+        return (
+          <section key={key}>
+            <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
+              {name} <span className="text-white/10">{y}</span>
+              <div className="h-px flex-1 bg-white/5" />
+            </h2>
+            <div className="space-y-3">
+              {monthEvents.map((e: any) => (
+                <div key={e.id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
+                  <div className="text-3xl font-black min-w-[50px]">{String(new Date(e.datetime).getDate()).padStart(2, '0')}</div>
+                  <div className="flex-1">
+                    <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {e.venue?.city}, {e.venue?.country}</div>
+                    <Link to={`${getLocalizedRoute('events', lang)}/${e.id}`}>
+                      <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
+                    </Link>
+                  </div>
+                  <div className="flex gap-2">
+                    <AddCalendarMenu event={e} variant="ghost" />
+                    <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
+                      <Share2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+
+      <Toast
+        message={t('link_copied', 'Link copied to clipboard!')}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
+    </div>
+  );
+};
+
+// ============================================================================
+// MAIN PAGE
+// ============================================================================
 
 const EventsPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const { t, i18n } = useTranslation();
-  const [events, setEvents] = useState<Event[]>([]);
-  const [singleEvent, setSingleEvent] = useState<Event | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const lang = normalizeLanguage(i18n.language);
 
-  // Helper para rotas localizadas
-  const getRouteForKey = (key: string): string => {
-    const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
-    if (!route) return `/${key}`;
-    const normalizedLanguage = normalizeLanguage(i18n.language);
-    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
-  };
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    setLoading(true);
-    setError(null);
-
-    const fetchEvents = async () => {
-      try {
-        // ✅ CORREÇÃO: Usando o endpoint correto 'zen-bit/v1/events'
-        const baseUrl = 'https://djzeneyer.com/wp-json/zen-bit/v1/events';
-        // Se tiver ID, tentamos buscar o específico, senão a lista
-        const url = id ? `${baseUrl}/${id}` : baseUrl;
-
-        const response = await fetch(url, {
-          signal: abortController.signal
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erro na API: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Log para debug (ajuda a ver se a estrutura do JSON mudou)
-        console.log("Dados recebidos da API zen-bit:", data);
-
-        if (id) {
-          setSingleEvent(data);
-        } else {
-          // BLINDAGEM: Garante que é um array antes de setar
-          if (Array.isArray(data)) {
-            setEvents(data);
-          } else {
-            // Se a API retornar um objeto wrapper tipo { data: [...] }, tenta ajustar aqui
-            // Por enquanto, logamos o erro e deixamos vazio para não quebrar
-            console.error("Formato inesperado da API:", data);
-            setEvents([]);
-          }
-        }
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.error('Failed to fetch events:', err);
-          setError('Não foi possível carregar a agenda de eventos.');
-          setEvents([]);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-    return () => abortController.abort();
-  }, [id]);
-
-  // --- RENDERIZAÇÃO DE EVENTO ÚNICO ---
-  if (!loading && id && singleEvent) {
-    // Nota: APIs customizadas as vezes não usam "title.rendered", usam só "title"
-    // Adicionei fallbacks (singleEvent.title?.rendered || singleEvent.title)
-    const title = singleEvent.title?.rendered || (typeof singleEvent.title === 'string' ? singleEvent.title : 'Evento');
-    const content = singleEvent.content?.rendered || (typeof singleEvent.content === 'string' ? singleEvent.content : '');
-    const date = singleEvent.date || new Date().toISOString();
-    // Tenta pegar imagem destaque do padrão WP ou de um campo customizado se houver
-    const image = singleEvent._embedded?.['wp:featuredmedia']?.[0]?.source_url || singleEvent.featured_image_url || '/images/hero-background.webp';
-
+  if (id) {
     return (
-      <>
-        <HeadlessSEO
-          title={`${title} | Zen Events`}
-          description={singleEvent.excerpt?.rendered || ""}
-          url={`https://djzeneyer.com/events/${id}`}
-        />
-        <div className="min-h-screen bg-background text-white pt-24 pb-20">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <Link to={getRouteForKey('events')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
-              <ArrowLeft size={20} /> {t('events_back_to_list', 'Voltar para Eventos')}
-            </Link>
-
-            <div className="grid lg:grid-cols-2 gap-12">
-              <div className="space-y-8">
-                <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                  <img
-                    src={image}
-                    className="w-full aspect-[4/5] object-cover"
-                    alt={title}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col">
-                <div className="bg-primary/10 border border-primary/20 self-start px-4 py-1.5 rounded-full text-primary text-xs font-bold uppercase tracking-widest mb-6">
-                  {t('events_status_upcoming', 'Próximo Evento')}
-                </div>
-
-                <h1 className="text-4xl md:text-5xl font-black font-display mb-6" dangerouslySetInnerHTML={{ __html: title }} />
-
-                <div className="space-y-4 mb-10">
-                  <div className="flex items-center gap-4 text-white/80">
-                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
-                      <CalendarIcon size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-white/40 uppercase font-bold tracking-tighter">Data</p>
-                      <p className="font-bold">{new Date(date).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-white/80">
-                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
-                      <MapPin size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-white/40 uppercase font-bold tracking-tighter">Local</p>
-                      <p className="font-bold">São Paulo, Brasil</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className="prose prose-invert max-w-none mb-10 text-white/70"
-                  dangerouslySetInnerHTML={{ __html: content }}
-                />
-
-                <div className="mt-auto flex flex-col sm:flex-row gap-4">
-                  <a href="#" className="btn btn-primary flex-1 flex items-center justify-center gap-2 py-4 text-lg">
-                    <Ticket size={22} /> GARANTIR INGRESSO
-                  </a>
-                  <Link to={getRouteForKey('shop')} className="btn btn-outline flex-1 flex items-center justify-center gap-2 py-4 text-lg">
-                    <Plus size={22} /> {t('footer_shop', 'Shop')}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
+      <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
+        <React.Suspense fallback={<EventDetailSkeleton />}>
+          <EventDetailContent id={id} lang={lang} />
+        </React.Suspense>
+      </div>
     );
   }
 
-  // --- RENDERIZAÇÃO DA LISTA ---
   return (
-    <>
-      <HeadlessSEO 
-        title="Zen Events | Zouk Brasileiro Worldwide"
-        description="Confira a agenda de eventos, workshops e congressos com DJ Zen Eyer."
-        url="https://djzeneyer.com/events"
-      />
-      <div className="min-h-screen bg-background text-white pt-24 pb-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mb-20">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6"
-            >
-              ZEN <span className="text-primary italic">EXPERIENCE</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-xl md:text-2xl text-white/60 font-medium"
-            >
-              Acompanhe minha agenda mundial. De workshops intensivos a congressos internacionais.
-            </motion.p>
+    <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
+      <HeadlessSEO title={t('events_page_title')} description={t('events_page_meta_desc')} />
+      <div className="max-w-6xl mx-auto">
+        <header className="text-center mb-16 px-4">
+          <h1 className="text-5xl md:text-8xl font-black mb-6 uppercase tracking-tighter">{t('events_page_title')}</h1>
+          <div className="relative max-w-lg mx-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+            <input
+              type="text"
+              placeholder={t('events_filter_placeholder')}
+              className="w-full bg-surface border border-white/10 rounded-full py-4 pl-12 pr-6 focus:border-primary transition-all shadow-xl"
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            />
           </div>
+        </header>
 
-          <div className="grid lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-8">
-              <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
-                <h2 className="text-2xl font-display font-bold flex items-center gap-3">
-                  <CalendarIcon className="text-primary" /> {t('events_upcoming', 'Próximos Eventos')}
-                </h2>
-                <span className="text-white/40 text-sm font-mono">
-                  {!loading && !error ? `${events.length} EVENTOS ENCONTRADOS` : '...'}
-                </span>
-              </div>
+        <React.Suspense fallback={<EventSkeleton />}>
+          <EventListContent searchQuery={searchQuery} lang={lang} />
+        </React.Suspense>
 
-              {loading ? (
-                <div className="space-y-6 animate-pulse">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-48 bg-white/5 rounded-3xl w-full" />
-                  ))}
-                </div>
-              ) : error ? (
-                <div className="p-8 rounded-3xl bg-red-500/10 border border-red-500/20 text-center">
-                  <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Não foi possível carregar a agenda</h3>
-                  <p className="text-white/60">{error}</p>
-                </div>
-              ) : events.length === 0 ? (
-                <div className="p-8 rounded-3xl bg-white/5 border border-white/10 text-center">
-                  <p className="text-white/60">Nenhum evento agendado no momento.</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {events.map((event, index) => {
-                    // Fallback seguro para propriedades que podem variar entre APIs padrão e custom
-                    const title = event.title?.rendered || (typeof event.title === 'string' ? event.title : 'Evento sem título');
-                    const image = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || event.featured_image_url || '/images/hero-background.webp';
-                    const date = event.date || new Date().toISOString();
-
-                    return (
-                      <motion.div
-                        key={event.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                        className="group bg-surface/30 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/40 transition-all duration-500"
-                      >
-                        <div className="flex flex-col md:flex-row p-6 gap-8">
-                          <div className="md:w-48 h-48 rounded-2xl overflow-hidden shrink-0">
-                            <img
-                              src={image}
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                              alt={title}
-                            />
-                          </div>
-                          <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-4 text-primary text-xs font-bold uppercase mb-3">
-                                <span className="flex items-center gap-1.5"><CalendarIcon size={14} /> {new Date(date).toLocaleDateString()}</span>
-                                <span className="flex items-center gap-1.5"><MapPin size={14} /> São Paulo, SP</span>
-                              </div>
-                              <h3 className="text-2xl md:text-3xl font-black font-display mb-4 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: title }} />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <Link to={`${getRouteForKey('events')}/${event.id}`} className="text-sm font-bold flex items-center gap-2 hover:gap-4 transition-all">
-                                DETALHES DO EVENTO <ArrowRight size={16} />
-                              </Link>
-                              <a href="#" className="btn btn-primary px-6 py-2 rounded-full text-xs font-bold">
-                                TICKETS
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <aside className="lg:col-span-4 space-y-12">
-              <div className="bg-primary/10 border border-primary/20 rounded-3xl p-8">
-                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                  <Briefcase className="text-primary" /> {t('footer_work_with_me', 'Work With Me')}
-                </h3>
-                <p className="text-white/70 text-sm leading-relaxed mb-6">
-                  Interessado em levar a experiência Zen Eyer para o seu evento? Solicite um orçamento para bookings internacionais.
-                </p>
-                <Link to={getRouteForKey('work-with-me')} className="w-full btn btn-primary flex items-center justify-center gap-2 py-3">
-                  CONTATO <Send size={16} />
-                </Link>
-              </div>
-
-              <div className="border border-white/10 rounded-3xl p-8">
-                <h3 className="text-xl font-display font-bold mb-6">{t('events_categories', 'Categorias')}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {['Congressos', 'Workshops', 'Social', 'Online', 'Festivais'].map(cat => (
-                    <span key={cat} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold hover:bg-primary/20 hover:border-primary/40 cursor-pointer transition-colors">
-                      {cat}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </aside>
+        <section className="mt-40 p-12 md:p-24 text-center bg-surface border border-white/5 rounded-[3rem] relative overflow-hidden group">
+          <Music className="absolute -right-16 -bottom-16 text-white/5 w-96 h-96 rotate-12" />
+          <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter">{t('home_press_title')}</h2>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
+            <Link to={getLocalizedRoute('work-with-me', lang)} className="btn btn-primary px-10 py-4 rounded-xl font-bold uppercase">{t('contact')}</Link>
+            <Link to={getLocalizedRoute('press-kit', lang)} className="btn btn-outline border-white/10 px-10 py-4 rounded-xl font-bold uppercase">{t('press_kit')}</Link>
           </div>
-        </div>
+        </section>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -14,7 +14,8 @@ if (!defined('ABSPATH')) exit;
  */
 define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS);
 define('DJZ_CACHE_PRODUCTS', 30 * MINUTE_IN_SECONDS);
-define('DJZ_CACHE_GAMIPRESS', 24 * HOUR_IN_SECONDS);
+define('DJZ_CACHE_GAMIPRESS', 48 * HOUR_IN_SECONDS);
+
 
 /**
  * GamiPress helper: resolve points type slug with fallback.
@@ -268,12 +269,22 @@ add_filter('rank_math/frontend/canonical', 'djz_fix_canonical_slash');
 add_filter('get_canonical_url', 'djz_fix_canonical_slash');
 
 function djz_fix_canonical_slash($url) {
+    if (!is_string($url)) {
+        return $url;
+    }
+
+    // Se tiver query string (?), não adiciona barra (evita quebrar assets versionados)
+    if (strpos($url, '?') !== false) {
+        return $url;
+    }
+
+    // Se não terminar em barra E não for um arquivo (extensão 2-4 letras)
     if (
-        is_string($url) &&
         substr($url, -1) !== '/' &&
         !preg_match('/\.[a-z]{2,4}$/i', $url)
     ) {
         return $url . '/';
     }
+
     return $url;
 }
