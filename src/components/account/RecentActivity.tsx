@@ -5,6 +5,7 @@
  * Extraído de MyAccountPage para melhor organização
  */
 
+import React, { memo } from 'react';
 import { Award, Music, Calendar, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ZenGameLog } from '../../types/gamification';
@@ -14,7 +15,7 @@ interface RecentActivityProps {
   hideHeader?: boolean;
 }
 
-export const RecentActivity: React.FC<RecentActivityProps> = ({ logs, hideHeader = false }) => {
+export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideHeader = false }) => {
   const { t, i18n } = useTranslation();
   const hasLogs = logs && logs.length > 0;
 
@@ -83,4 +84,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ logs, hideHeader
       </div>
     </div>
   );
-};
+});
+
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary re-renders.
+RecentActivity.displayName = 'RecentActivity';

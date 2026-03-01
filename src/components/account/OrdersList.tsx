@@ -5,7 +5,7 @@
  * Extraído de MyAccountPage para melhor organização
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,7 @@ interface OrdersListProps {
   loading: boolean;
 }
 
-export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
+export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) => {
   const { t, i18n } = useTranslation();
   const currentLang = normalizeLanguage(i18n.language);
 
@@ -121,4 +121,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
       </div>
     </div>
   );
-};
+});
+
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary re-renders.
+OrdersList.displayName = 'OrdersList';

@@ -5,7 +5,7 @@
  * Extraído de MyAccountPage para melhor organização e reusabilidade
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { TrendingUp, Star, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ interface UserStatsCardsProps {
   stats: UserStats;
 }
 
-export const UserStatsCards: React.FC<UserStatsCardsProps> = ({ stats }) => {
+export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) => {
   const { t } = useTranslation();
 
   return (
@@ -70,4 +70,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = ({ stats }) => {
       </div>
     </div>
   );
-};
+});
+
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary re-renders.
+UserStatsCards.displayName = 'UserStatsCards';
