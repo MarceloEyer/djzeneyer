@@ -21,28 +21,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from '../common/UserMenu';
 import { useMenu } from '../../hooks/useMenu';
+import { usePrefetchOnHover } from '../../hooks/usePrefetchOnHover';
 import { getLocalizedRoute, normalizeLanguage, getAlternateLinks } from '../../config/routes';
-import { queryClient, QUERY_KEYS } from '../../config/queryClient';
-import { fetchEventsFn, fetchTracksFn, fetchNewsFn, fetchProductsFn } from '../../hooks/useQueries';
-import { safeRedirect } from '../../utils/sanitize';
+import { safeRedirect, sanitizePath } from '../../utils/sanitize';
 
 // ============================================================================
-// SECURITY: Robust Path Sanitization
+// HELPERS
 // ============================================================================
-const sanitizePath = (path: string): string => {
-    if (!path) return '/';
-    // Remove qualquer tentativa de protocolo ou host (ex: javascript:, http:, //example.com)
-    // 1. Remove protocolos
-    let clean = path.replace(/^[a-zA-Z]+:\/*|^[\\\/]+/g, '/');
-    // 2. Garante que comece com uma barra única e remove caracteres perigosos
-    clean = '/' + clean.replace(/[^\w\-\.\/\?\=\&\#\%]/g, '').replace(/\/+/g, '/').replace(/^\/+/, '');
-
-    // 3. Bloqueia explicitamente esquemas perigosos se ainda restarem
-    if (/^(javascript|data|vbscript):/i.test(clean)) return '/';
-
-    return clean;
-};
-
 const getLinkVisuals = (url: string) => {
     const path = url.toLowerCase();
     if (path.includes('event'))
@@ -175,6 +160,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     const location = useLocation();
 
     const menuItems = useMenu();
+    const handlePrefetch = usePrefetchOnHover();
     const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
     useEffect(() => {
@@ -196,45 +182,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         setIsMenuOpen(false);
         onLoginClick();
     }, [onLoginClick]);
-
-    /**
-     * OPTIMIZATION: Prefetch data on hover
-     * Identifies the page type from URL and triggers React Query prefetch
-     */
-    const handlePrefetch = useCallback((url: string) => {
-        const lowerUrl = url.toLowerCase();
-
-        // Events Page
-        if (lowerUrl.includes('event')) {
-            queryClient.prefetchQuery({
-                queryKey: QUERY_KEYS.events.list(10),
-                queryFn: () => fetchEventsFn(10)
-            });
-        }
-        // Music Page
-        else if (lowerUrl.includes('music') || lowerUrl.includes('musica') || lowerUrl.includes('música')) {
-            queryClient.prefetchQuery({
-                queryKey: QUERY_KEYS.tracks.list(),
-                queryFn: fetchTracksFn
-            });
-        }
-        // News Page
-        else if (lowerUrl.includes('news') || lowerUrl.includes('noticias')) {
-            queryClient.prefetchQuery({
-                queryKey: QUERY_KEYS.posts.list(),
-                queryFn: fetchNewsFn
-            });
-        }
-        // Shop Page
-        else if (lowerUrl.includes('shop') || lowerUrl.includes('loja')) {
-            // Determine lang from URL prefix or fallback to current
-            const lang = lowerUrl.startsWith('/pt') ? 'pt' : 'en';
-            queryClient.prefetchQuery({
-                queryKey: QUERY_KEYS.products.list(lang),
-                queryFn: () => fetchProductsFn(lang)
-            });
-        }
-    }, []);
 
     const processedMenuItems = useMemo(() => {
         if (!menuItems?.length) return [];

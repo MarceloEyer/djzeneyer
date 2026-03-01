@@ -171,7 +171,10 @@ class Zen_BIT {
             add_option('zen_bit_api_key', '');
         }
         if (!get_option('zen_bit_cache_time')) {
-            add_option('zen_bit_cache_time', '86400'); // 24h
+            add_option('zen_bit_cache_time', '86400'); // legado em segundos
+        }
+        if (!get_option('zen_bit_throttle_hours')) {
+            add_option('zen_bit_throttle_hours', '24'); // Novo padrão: 24h entre chamadas externas
         }
 
         // Opcional: limpa cache ao ativar (garante primeira carga “limpa”)

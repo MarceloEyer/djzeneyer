@@ -134,3 +134,21 @@ export const safeRedirect = (url: string | undefined | null, fallback: string = 
 
     return fallback;
 };
+
+/**
+ * Robust Path Sanitization to prevent XSS and malformed internal links.
+ * Used primarily in navigation components.
+ */
+export const sanitizePath = (path: string): string => {
+    if (!path) return '/';
+    // Remove qualquer tentativa de protocolo ou host (ex: javascript:, http:, //example.com)
+    // 1. Remove protocolos
+    let clean = path.replace(/^[a-zA-Z]+:\/*|^[\\\/]+/g, '/');
+    // 2. Garante que comece com uma barra única e remove caracteres perigosos
+    clean = '/' + clean.replace(/[^\w\-\.\/\?\=\&\#\%]/g, '').replace(/\/+/g, '/').replace(/^\/+/, '');
+
+    // 3. Bloqueia explicitamente esquemas perigosos se ainda restarem
+    if (/^(javascript|data|vbscript):/i.test(clean)) return '/';
+
+    return clean;
+};

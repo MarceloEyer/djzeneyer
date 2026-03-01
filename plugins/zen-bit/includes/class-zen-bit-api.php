@@ -245,13 +245,39 @@ class Zen_BIT_API {
         $cache_key = self::cache_key();
         $cached = get_transient($cache_key);
 
+        // Se temos cache válido, retorna imediatamente
         if (is_array($cached) && !empty($cached)) {
             return array_slice($cached, 0, $limit);
         }
 
+        // ====================================================================
+        // THROTTLE & DURABLE FALLBACK
+        // Proteção contra rate limit e falhas da API externa.
+        // ====================================================================
+        $throttle_key = 'zen_bit_api_throttle_' . self::get_artist_id();
+        $fallback_key = 'zen_bit_events_fallback_' . self::get_artist_id();
+
+        // Se o throttle estiver ativo, tentamos retornar o fallback durável
+        if (get_transient($throttle_key)) {
+            $fallback = get_option($fallback_key);
+            return is_array($fallback) ? array_slice($fallback, 0, $limit) : array();
+        }
+
+        // Ativa trava de 5 minutos antes de começar o fetch (evita concorrência)
+        set_transient($throttle_key, true, 300);
+
         $raw_events = self::fetch_from_bandsintown();
+        
         if (empty($raw_events)) {
-            // cache “negativo” curto pra evitar martelar API
+            // FALHA NA API: Tenta recuperar do fallback durável
+            $fallback = get_option($fallback_key);
+            if (is_array($fallback) && !empty($fallback)) {
+                // Cacheia o fallback por 1 hora pra não ficar tentando a API toda hora
+                set_transient($cache_key, $fallback, HOUR_IN_SECONDS);
+                return array_slice($fallback, 0, $limit);
+            }
+
+            // Se nem o fallback existir, cache "negativo" de 5 min
             set_transient($cache_key, array(), 5 * 60);
             return array();
         }
@@ -262,14 +288,22 @@ class Zen_BIT_API {
             $normalized[] = self::normalize_event($raw);
         }
 
-        // Cacheia tudo normalizado
-        set_transient($cache_key, $normalized, self::get_cache_time());
+        // Sucesso: Atualiza o throttle (Configurável, padrão 24h), o cache transient (7 dias) e o fallback (permanente)
+        $throttle_hours = (int) get_option('zen_bit_throttle_hours', 24);
+        if ($throttle_hours <= 0) $throttle_hours = 24;
+        $throttle_ttl = $throttle_hours * HOUR_IN_SECONDS;
+
+        set_transient($throttle_key, true, $throttle_ttl); 
+        set_transient($cache_key, $normalized, 7 * DAY_IN_SECONDS);
+        update_option($fallback_key, $normalized, false);
 
         return array_slice($normalized, 0, $limit);
     }
 
     public static function clear_cache(): void {
         delete_transient(self::cache_key());
+        delete_transient('zen_bit_api_throttle_' . self::get_artist_id());
+        // NÃO deletamos o fallback key por segurança, a menos que o usuário queira reset total
     }
 
     // =========================

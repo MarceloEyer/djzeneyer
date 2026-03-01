@@ -45,6 +45,14 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
     }
   };
 
+  const formatCurrency = (value: string) => {
+    const numValue = parseFloat(value);
+    return new Intl.NumberFormat(i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(numValue);
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -94,7 +102,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xl font-bold">R$ {order.total}</p>
+                <p className="text-xl font-bold">{formatCurrency(order.total)}</p>
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getOrderStatusClass(order.status)}`}>
                   {t(`account.orders.status.${order.status}`, { defaultValue: order.status })}
                 </span>
@@ -104,7 +112,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({ orders, loading }) => {
               {order.line_items.map((item, index) => (
                 <div key={index} className="flex justify-between text-sm border-t border-white/5 pt-2">
                   <span className="text-white/80">{item.name} x{item.quantity}</span>
-                  <span className="font-semibold">R$ {item.total}</span>
+                  <span className="font-semibold">{formatCurrency(item.total)}</span>
                 </div>
               ))}
             </div>

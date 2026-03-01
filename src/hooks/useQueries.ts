@@ -147,12 +147,13 @@ export const useMenuQuery = (lang: string) => {
 // EVENTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventsQuery = (limit = 10) => {
+export const useEventsQuery = (limit = 10, options = {}) => {
   return useQuery({
     queryKey: QUERY_KEYS.events.list(limit),
     queryFn: () => fetchEventsFn(limit),
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
+    ...options
   });
 };
 
@@ -226,7 +227,7 @@ export const useNewsBySlug = (slug?: string) => {
 // EVENT DETAIL QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventById = (id?: string) => {
+export const useEventById = (id?: string, options = {}) => {
   return useQuery({
     queryKey: QUERY_KEYS.events.detail(id || ''),
     queryFn: async (): Promise<BandsintownEvent | null> => {
@@ -239,6 +240,7 @@ export const useEventById = (id?: string) => {
     },
     enabled: !!id,
     staleTime: STALE_TIME.EVENTS,
+    ...options
   });
 };
 
