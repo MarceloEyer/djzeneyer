@@ -1,45 +1,53 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <title>DJ Zen Eyer</title>
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    
-    <meta name="theme-color" content="#0A0E27" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
-    
-  </head>
-  
-  <body>
-    <div id="root"></div>
+  <title>DJ Zen Eyer</title>
 
-    <script>
-      // Mock de dados para o ambiente local funcionar igual ao WordPress
-      if (window.location.hostname === 'localhost') {
-        window.wpData = {
-          siteUrl: 'http://localhost:5173',
-          themeUrl: 'http://localhost:5173',
-          nonce: 'dev-nonce',
-          isUserLoggedIn: false
-        };
-      }
-    </script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <script type="module" src="/src/main.tsx"></script>
-    
-    <noscript>
-      <div style="background:#ff4b2b; color:white; padding:10px; text-align:center; font-family:sans-serif; font-size:14px; position:fixed; bottom:0; width:100%; z-index:9999;">
-        <b>Note:</b> JavaScript is disabled. For the full interactive experience, please enable JavaScript.
-      </div>
-    </noscript>
-  </body>
+  <meta name="theme-color" content="#0A0E27" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"
+      rel="stylesheet" />
+  </noscript>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script>
+    // Mock de dados para o ambiente local funcionar igual ao WordPress
+    if (window.location.hostname === 'localhost') {
+      window.wpData = {
+        siteUrl: 'http://localhost:5173',
+        themeUrl: 'http://localhost:5173',
+        nonce: 'dev-nonce',
+        isUserLoggedIn: false
+      };
+    }
+  </script>
+
+  <script type="module" src="/src/main.tsx"></script>
+
+  <noscript>
+    <div
+      style="background:#ff4b2b; color:white; padding:10px; text-align:center; font-family:sans-serif; font-size:14px; position:fixed; bottom:0; width:100%; z-index:9999;">
+      <b>Note:</b> JavaScript is disabled. For the full interactive experience, please enable JavaScript.
+    </div>
+  </noscript>
+</body>
+
 </html>
