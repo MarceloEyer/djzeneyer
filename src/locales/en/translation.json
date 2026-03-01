@@ -1175,6 +1175,13 @@
     },
     "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
   },
+  "payme": {
+    "title": "Support DJ Zen Eyer",
+    "description": "Support DJ Zen Eyer through donations and collaborations.",
+    "heading": "Support DJ Zen Eyer",
+    "subtitle": "Connect, Support & Collaborate",
+    "method_selection": "Choose your preferred payment method..."
+  },
   "footer_rights": "All rights reserved.",
   "footer_about": "About",
   "footer_news": "News",

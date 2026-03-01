@@ -118,11 +118,14 @@ const SupportArtistPage = () => {
       <div className="container mx-auto px-4">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white drop-shadow-2xl">
-            {t('support.header.title', 'Support the Music')}
+            {t('payme.heading', t('support.header.title', 'Support the Music'))}
           </h1>
           <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-            {t('support.header.description', 'Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you\'re hiring for an event or making a donation, every contribution makes a difference.')}
+            {t('payme.description', t('support.header.description', "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."))}
           </p>
+          <div className="mt-4 text-primary font-bold">
+            {t('payme.subtitle', 'Connect, Support & Collaborate')}
+          </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-16">

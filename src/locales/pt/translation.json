@@ -1175,6 +1175,13 @@
     },
     "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
   },
+  "payme": {
+    "title": "Apoie o DJ Zen Eyer",
+    "description": "Apoie o DJ Zen Eyer através de doações e colaborações.",
+    "heading": "Apoie o DJ Zen Eyer",
+    "subtitle": "Conecte-se, Apoie & Colabore",
+    "method_selection": "Cada contribuição faz a diferença. Escolha seu método preferido:"
+  },
   "footer_rights": "Todos os direitos reservados.",
   "footer_about": "Sobre",
   "footer_news": "Notícias",
@@ -1402,9 +1409,6 @@
       "achievements": "Conquistas",
       "music": "Minhas Músicas",
       "settings": "Configurações"
-    },
-    "orders": {
-      "title": "Meus Pedidos"
     },
     "loading": "Carregando sua conta Zen...",
     "no_achievements": "Nenhuma conquista ainda",
