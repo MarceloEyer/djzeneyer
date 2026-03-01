@@ -261,9 +261,11 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.h1 variants={ITEM_VARIANTS} className="text-5xl md:text-7xl lg:text-8xl font-bold font-display mb-4 tracking-tight">
-              <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
-            </motion.h1>
+            <motion.div variants={ITEM_VARIANTS} className="mb-4">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight">
+                <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
+              </h1>
+            </motion.div>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
               {t('home_hero_subtitle')}

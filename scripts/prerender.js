@@ -90,6 +90,7 @@ async function prerender() {
         if (reqUrl.includes('/posts')) mockData = [{ id: 1, title: { rendered: 'Build Preview' }, slug: 'preview', date: new Date().toISOString() }];
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
+        if (reqUrl.includes('/zen-seo/v1/settings')) mockData = { success: true, data: { real_name: "DJ Zen Eyer", default_og_image: "" } };
 
         request.respond({
           status: 200,
@@ -124,9 +125,9 @@ async function prerender() {
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
         try {
-          // Espera o h1 ou o root carregar
-          await page.waitForSelector('#root', { timeout: 10000 });
-          await wait(1000); // Respiro para i18n
+          // Espera o h1 ou filhos do root carregar
+          await page.waitForSelector('#root > *', { timeout: 10000 });
+          await wait(2500); // Respiro para React Helmet async injetar tags no <head> e i18n
         } catch (e) {
           console.warn(`⚠️ Warning: Timeout on ${route}`);
         }

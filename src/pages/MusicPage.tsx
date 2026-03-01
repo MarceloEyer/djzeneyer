@@ -127,15 +127,17 @@ const MusicPage: React.FC = () => {
         <div className="container mx-auto px-4 max-w-5xl">
 
           <div className="text-center mb-16">
-            <motion.h1
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-8xl font-black font-display tracking-tighter mb-6 uppercase"
+              className="mb-6"
             >
-              <Trans i18nKey="music.hub_title_rich">
-                <span className="text-primary">Streaming</span> Hub
-              </Trans>
-            </motion.h1>
+              <h1 className="text-5xl md:text-8xl font-black font-display tracking-tighter uppercase">
+                <Trans i18nKey="music.hub_title_rich">
+                  <span className="text-primary">Streaming</span> Hub
+                </Trans>
+              </h1>
+            </motion.div>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

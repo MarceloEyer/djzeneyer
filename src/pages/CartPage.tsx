@@ -55,14 +55,16 @@ const CartPage: React.FC = () => {
 
       <div className="min-h-screen pt-24 pb-12 bg-background text-white">
         <div className="container mx-auto px-4 max-w-4xl">
-          <motion.h1
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl md:text-4xl font-bold mb-8 font-display flex items-center gap-3"
+            className="mb-8"
           >
-            <ShoppingCart className="text-primary" />
-            {t('cart.title')}
-          </motion.h1>
+            <h1 className="text-3xl md:text-4xl font-bold font-display flex items-center gap-3">
+              <ShoppingCart className="text-primary" />
+              {t('cart.title')}
+            </h1>
+          </motion.div>
 
           {isEmpty ? (
             <motion.div
