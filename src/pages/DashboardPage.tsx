@@ -103,25 +103,26 @@ const DashboardContent = () => {
                       <span className="text-sm font-bold text-white/50">{t('dashboard.nextRank')}: <span className="text-white">{gamipress.rank.next.title}</span></span>
                       <span className="text-primary font-black text-lg">{gamipress.rank.progress}%</span>
                     </div>
-                    {/* Fighting Game Style Power Bar */}
-                    <div className="h-4 bg-black/40 border border-white/10 relative overflow-hidden -skew-x-12 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
-                      {/* Segmented Background */}
-                      <div className="absolute inset-0 opacity-5 flex gap-1">
-                        {[...Array(10)].map((_, i) => (
-                          <div key={i} className="flex-1 border-r border-white/20" />
-                        ))}
-                      </div>
+                    {/* MMORPG Mana Bar Style (Electric Blue) */}
+                    <div className="h-3 bg-blue-950/30 rounded-full relative overflow-hidden border border-primary/20 shadow-[0_0_15px_rgba(13,150,255,0.1)]">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${gamipress.rank.progress}%` }}
-                        className="h-full bg-gradient-to-r from-primary via-accent to-white relative shadow-[0_0_20px_rgba(99,102,241,0.6)]"
+                        className="h-full bg-gradient-to-r from-primary/80 to-primary relative rounded-full shadow-[0_0_20px_rgba(13,150,255,0.4)]"
                       >
-                        {/* Animated Stripe Overlay */}
-                        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.05)_10px,rgba(255,255,255,0.05)_20px)]" />
+                        {/* Animated Mana Flare (MMORPG Style) */}
+                        <motion.div
+                          animate={{ x: ['-100%', '200%'] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                          className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg]"
+                        />
 
-                        {/* Leading Edge Sparkle */}
-                        <div className="absolute top-0 right-0 h-full w-4 bg-white/30 blur-md" />
-                        <div className="absolute top-0 right-0 h-full w-1 bg-white animate-pulse" />
+                        {/* Bright Electric Tip */}
+                        <div className="absolute top-0 right-0 h-full w-6 bg-white/20 blur-md rounded-full" />
+                        <div className="absolute top-0 right-0 h-full w-1 bg-white/80 rounded-full shadow-[0_0_10px_white]" />
+
+                        {/* Power Gloss */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent h-[40%] rounded-full opacity-40" />
                       </motion.div>
                     </div>
                   </div>
@@ -233,8 +234,18 @@ const DashboardContent = () => {
                         <div className="text-[10px] text-white/40 line-clamp-2 leading-tight uppercase font-bold">{quest.description}</div>
                       </div>
                     </div>
-                    <div className="mt-4 h-1.5 bg-background/50 rounded-full overflow-hidden">
-                      <div className="h-full w-1/4 bg-accent/20 rounded-full" />
+                    <div className="mt-4 h-1 bg-blue-950/30 rounded-full overflow-hidden border border-primary/10">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: '15%' }}
+                        className="h-full bg-primary/80 relative shadow-[0_0_10px_rgba(13,150,255,0.3)]"
+                      >
+                        <motion.div
+                          animate={{ x: ['-100%', '300%'] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                          className="absolute inset-0 w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                        />
+                      </motion.div>
                     </div>
                   </motion.div>
                 ))}

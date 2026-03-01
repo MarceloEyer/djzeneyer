@@ -216,10 +216,10 @@ const HomePage: React.FC = () => {
     <>
       <HeadlessSEO
         title={seoSettings?.real_name
-          ? `${seoSettings.real_name} | ${t('home.stat_champion')}`
-          : t('home.seo.title')}
+          ? `${seoSettings.real_name} | ${t('home_stat_champion')}`
+          : t('home_page_title')}
 
-        description={t('home.seo.description')}
+        description={t('home_page_meta_desc')}
 
         url={currentUrl}
 
@@ -227,7 +227,7 @@ const HomePage: React.FC = () => {
 
         isHomepage={true}
         schema={schemaData}
-        keywords={t('home.seo.keywords')}
+        keywords="DJ Zen Eyer, Brazilian Zouk DJ, Zouk Producer, World Champion Zouk, Event DJ, Zouk Remixes"
       />
 
       {/* HERO SECTION */}

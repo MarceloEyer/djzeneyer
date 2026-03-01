@@ -40,6 +40,10 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 6. **ESLint** → Manter na versão 9 (plugins React não suportam v10)
 7. **Navbar** → Está em `components/Layout/`, não em `components/common/`
 8. **Primatize CLI** → Sempre preferir ferramentas de linha de comando (`gh`, `git`, `npm`) em vez de agentes de navegador para interações externas (GitHub, etc). Isso reduz o uso de créditos e é mais performático.
+43. **Matriz de Responsabilidade (BRAIN vs BODY)**:
+   - **ZenGame Plugin (`plugins/zengame`)**: É o **CÉREBRO** único da gamificação. Toda lógica GamiPress (pontos, níveis, conquistas, cálculos de progresso) **DEVE** estar aqui. Nunca duplique isso no React ou no `inc/`.
+   - **Pasta `inc/`**: É a **ENGRENAGEM** do tema (menus, sidebars, setups globais). Não coloque lógica de jogo ou endpoints de GamiPress aqui. Se for GamiPress, vá para o plugin.
+   - **Frontend React (`src/pages`)**: É o **CORPO/ESPELHO**. Ele apenas exibe o que o cérebro (ZenGame) manda. Nunca calcule porcentagens, pontos ou filtros de conquistas no frontend. Se o dado não veio pronto da API, corrija o cérebro, não o corpo.
 
 ## O que NÃO fazer
 
