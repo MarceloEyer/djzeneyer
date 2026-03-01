@@ -236,7 +236,7 @@ export const useEventById = (id?: string, options = {}) => {
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error(`Event API ${res.status}`);
       const data = await res.json();
-      return data || null;
+      return data?.event || null;
     },
     enabled: !!id,
     staleTime: STALE_TIME.EVENTS,
