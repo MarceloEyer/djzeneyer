@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // src/pages/ZenLinkPage.tsx
 // v2.0 — Premium link-in-bio redesign (glassmorphism + smart music card)
 
@@ -9,11 +10,29 @@ import {
   Youtube, Calendar, ShoppingBag, Mail, Phone,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
   Instagram, Sparkles,
+=======
+import { motion } from 'framer-motion';
+import {
+  ArrowUpRight,
+  Award,
+  Calendar,
+  Disc3,
+  Globe,
+  Instagram,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Music2,
+  Sparkles,
+  Trophy,
+  Youtube,
+>>>>>>> 0ab4a72 (feat: redesign ZenLink page for mobile link-in-bio experience)
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
+<<<<<<< HEAD
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -139,6 +158,73 @@ const LINKS: LinkItem[] = [
     url: ARTIST.social.instagram.url,
     icon: <Instagram className="w-5 h-5" />,
     gradient: 'from-pink-600 to-purple-700',
+=======
+type LinkItem = {
+  title: string;
+  subtitle: string;
+  url: string;
+  icon: JSX.Element;
+  highlight?: boolean;
+};
+
+const MAIN_LINKS: LinkItem[] = [
+  {
+    title: 'Ouça no Spotify',
+    subtitle: 'Faixas, remixes e sets para dançar',
+    url: ARTIST.social.spotify.url,
+    icon: <Music2 className="h-5 w-5" />,
+    highlight: true,
+  },
+  {
+    title: 'Agenda & Booking',
+    subtitle: 'Festivais, congressos e eventos privados',
+    url: `${ARTIST.site.baseUrl}/work-with-me`,
+    icon: <Calendar className="h-5 w-5" />,
+    highlight: true,
+  },
+  {
+    title: 'Instagram',
+    subtitle: '@djzeneyer • bastidores e novidades',
+    url: ARTIST.social.instagram.url,
+    icon: <Instagram className="h-5 w-5" />,
+  },
+  {
+    title: 'YouTube',
+    subtitle: 'Sets ao vivo e conteúdo musical',
+    url: ARTIST.social.youtube.url,
+    icon: <Youtube className="h-5 w-5" />,
+  },
+  {
+    title: 'WhatsApp',
+    subtitle: 'Contato direto para propostas',
+    url: getWhatsAppUrl('Olá Zen! Vi seu link na bio e quero falar sobre booking.'),
+    icon: <MessageCircle className="h-5 w-5" />,
+  },
+  {
+    title: 'E-mail Profissional',
+    subtitle: ARTIST.contact.email,
+    url: `mailto:${ARTIST.contact.email}`,
+    icon: <Mail className="h-5 w-5" />,
+  },
+];
+
+const microFacts = [
+  {
+    icon: <Trophy className="h-4 w-4" />,
+    label: '2× campeão mundial',
+  },
+  {
+    icon: <Award className="h-4 w-4" />,
+    label: `${ARTIST.titles.event} (${ARTIST.titles.year})`,
+  },
+  {
+    icon: <MapPin className="h-4 w-4" />,
+    label: `${ARTIST.contact.location.city} • ${ARTIST.contact.location.state}`,
+  },
+  {
+    icon: <Disc3 className="h-4 w-4" />,
+    label: `${ARTIST.stats.yearsActive}+ anos de pista`,
+>>>>>>> 0ab4a72 (feat: redesign ZenLink page for mobile link-in-bio experience)
   },
 ];
 
@@ -305,6 +391,7 @@ export const ZenLinkPage = () => {
   return (
     <>
       <HeadlessSEO
+<<<<<<< HEAD
         title={`ZenLink — All Links | ${ARTIST.identity.stageName}`}
         description={t('zenlink.seo_description')}
         canonicalUrl={`${ARTIST.site.baseUrl}/zenlink`}
@@ -440,6 +527,128 @@ export const ZenLinkPage = () => {
           </motion.div>
         </div>
       </div>
+=======
+        title="Zen Link | DJ Zen Eyer"
+        description="Página oficial de links do DJ Zen Eyer para Instagram bio: música, booking, contato e perfis verificados."
+        canonicalUrl={`${ARTIST.site.baseUrl}/zenlink`}
+      />
+
+      <main className="min-h-screen bg-[#05060A] text-zinc-100">
+        <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-10 pt-8">
+          <motion.header
+            initial={{ opacity: 0, y: -24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="mb-6"
+          >
+            <div className="relative rounded-3xl border border-fuchsia-500/30 bg-gradient-to-br from-fuchsia-500/15 via-indigo-500/15 to-cyan-500/10 p-5 shadow-[0_8px_24px_rgba(168,85,247,0.25)] backdrop-blur">
+              <div className="absolute -right-2 -top-2 rounded-full border border-fuchsia-400/30 bg-zinc-950/90 px-2.5 py-1 text-[11px] font-medium text-fuchsia-200">
+                Link na Bio ⚡
+              </div>
+
+              <div className="flex items-center gap-4">
+                <img
+                  src={`${ARTIST.site.baseUrl}/images/zen-eyer-profile.jpg`}
+                  alt={ARTIST.identity.stageName}
+                  className="h-20 w-20 rounded-2xl border border-white/20 object-cover"
+                  loading="eager"
+                  onError={(e) => {
+                    e.currentTarget.src = `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`;
+                  }}
+                />
+
+                <div className="min-w-0">
+                  <h1 className="truncate text-2xl font-black tracking-tight text-white">
+                    {ARTIST.identity.stageName}
+                  </h1>
+                  <p className="text-sm text-zinc-200/90">{ARTIST.identity.fullName}</p>
+                  <p className="mt-1 text-xs text-fuchsia-200">{ARTIST.titles.primary}</p>
+                </div>
+              </div>
+
+              <p className="mt-4 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-sm italic text-zinc-200">
+                “{ARTIST.philosophy.slogan}”
+              </p>
+            </div>
+          </motion.header>
+
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.4 }}
+            className="mb-6 grid grid-cols-2 gap-2"
+          >
+            {microFacts.map((fact) => (
+              <div
+                key={fact.label}
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-100"
+              >
+                <span className="text-fuchsia-300">{fact.icon}</span>
+                <span className="truncate">{fact.label}</span>
+              </div>
+            ))}
+          </motion.section>
+
+          <section className="space-y-3">
+            {MAIN_LINKS.map((link, index) => (
+              <motion.a
+                key={link.title}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, x: -24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + index * 0.06, duration: 0.33 }}
+                whileTap={{ scale: 0.985 }}
+                className={`group block rounded-2xl border p-4 shadow-lg transition ${
+                  link.highlight
+                    ? 'border-fuchsia-400/45 bg-gradient-to-r from-fuchsia-500/20 to-indigo-500/20'
+                    : 'border-white/10 bg-white/5'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/35 text-fuchsia-200">
+                    {link.icon}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[15px] font-semibold text-white">{link.title}</p>
+                    <p className="truncate text-xs text-zinc-300">{link.subtitle}</p>
+                  </div>
+
+                  <ArrowUpRight className="h-4 w-4 shrink-0 text-zinc-400 transition group-hover:text-white" />
+                </div>
+              </motion.a>
+            ))}
+          </section>
+
+          <motion.footer
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.45 }}
+            className="mt-7 space-y-2"
+          >
+            <a
+              href={ARTIST.identifiers.wikidataUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-xl border border-emerald-400/35 bg-emerald-500/10 px-4 py-2.5 text-xs font-medium text-emerald-100"
+            >
+              <Globe className="h-4 w-4" />
+              Fonte de verdade: Wikidata ({ARTIST.identifiers.wikidata})
+            </a>
+
+            <a
+              href={ARTIST.site.baseUrl}
+              className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs text-zinc-200"
+            >
+              <Sparkles className="h-4 w-4" />
+              Conheça o site completo
+            </a>
+          </motion.footer>
+        </div>
+      </main>
+>>>>>>> 0ab4a72 (feat: redesign ZenLink page for mobile link-in-bio experience)
     </>
   );
 };
