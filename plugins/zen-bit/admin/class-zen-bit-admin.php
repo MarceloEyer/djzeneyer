@@ -34,26 +34,26 @@ class Zen_BIT_Admin
         register_setting('zen_bit_settings', 'zen_bit_api_key', array(
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
-            'default' => ''
+            'default' => 'f8f1216ea03be95a3ea91c7ebe7117e7'
         ));
-        register_setting('zen_bit_settings', 'zen_bit_cache_time', array(
+        register_setting('zen_bit_settings', 'zen_bit_throttle_hours', array(
             'type' => 'integer',
-            'sanitize_callback' => array($this, 'sanitize_cache_time'),
-            'default' => 3600
+            'sanitize_callback' => array($this, 'sanitize_throttle'),
+            'default' => 24
         ));
     }
 
     /**
-     * Sanitize cache time value
+     * Sanitize throttle hours value
      *
      * @param mixed $value
      * @return int
      */
-    public function sanitize_cache_time($value)
+    public function sanitize_throttle($value)
     {
         $value = absint($value);
-        // Minimum 5 minutes, maximum 24 hours
-        return max(300, min(86400, $value));
+        // Minimum 1 hour, maximum 1 week (168h)
+        return max(1, min(168, $value));
     }
 
     public function render_settings_page()
@@ -106,16 +106,16 @@ class Zen_BIT_Admin
                     
                     <tr>
                         <th scope="row">
-                            <label for="zen_bit_cache_time"><?php _e('Cache Duration (seconds)', 'zen-bit'); ?></label>
+                            <label for="zen_bit_throttle_hours"><?php _e('Throttle Duration (hours)', 'zen-bit'); ?></label>
                         </th>
                         <td>
                             <input type="number" 
-                                   id="zen_bit_cache_time" 
-                                   name="zen_bit_cache_time" 
-                                   value="<?php echo esc_attr(get_option('zen_bit_cache_time', '3600')); ?>" 
+                                   id="zen_bit_throttle_hours" 
+                                   name="zen_bit_throttle_hours" 
+                                   value="<?php echo esc_attr(get_option('zen_bit_throttle_hours', '24')); ?>" 
                                    class="small-text">
                             <p class="description">
-                                <?php _e('How long to cache events (default: 3600 = 1 hour)', 'zen-bit'); ?>
+                                <?php _e('Minimum interval between external API requests (default: 24h). Higher values protect your API rate limits.', 'zen-bit'); ?>
                             </p>
                         </td>
                     </tr>

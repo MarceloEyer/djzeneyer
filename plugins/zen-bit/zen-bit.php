@@ -115,6 +115,12 @@ class Zen_BIT {
             'permission_callback' => '__return_true'
         ));
 
+        register_rest_route('zen-bit/v1', '/events/(?P<id>[\w-]+)', array(
+            'methods' => 'GET',
+            'callback' => array('Zen_BIT_API', 'get_single_event_rest'),
+            'permission_callback' => '__return_true'
+        ));
+
         // Eventos (JSON-LD Schema graph)
         register_rest_route('zen-bit/v1', '/events-schema', array(
             'methods' => 'GET',

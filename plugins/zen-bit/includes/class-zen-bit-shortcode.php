@@ -73,7 +73,7 @@ class Zen_BIT_Shortcode {
     public function render_shortcode($atts) {
         $atts = shortcode_atts([
             'limit'  => 15,
-            'jsonld' => 1,  // 1 = injeta JSON-LD do @graph no final; 0 = não injeta
+            'jsonld' => 0,  // 1 = injeta JSON-LD do @graph no final; 0 = não injeta (Padrão: 0 para evitar duplicação)
         ], $atts, 'zen_bit_events');
 
         $limit = absint($atts['limit']);

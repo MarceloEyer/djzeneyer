@@ -253,6 +253,7 @@ Disallow: /
 
 Sitemap: https://djzeneyer.com/sitemap.xml
 Sitemap: https://djzeneyer.com/sitemap-pages.xml
+Sitemap: https://djzeneyer.com/sitemap-events.xml
 
 # ==============================================================================
 # 📚 REFERÊNCIAS E BOAS PRÁTICAS

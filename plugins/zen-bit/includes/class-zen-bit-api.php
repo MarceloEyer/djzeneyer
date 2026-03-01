@@ -406,6 +406,28 @@ class Zen_BIT_API {
     // REST ENDPOINTS
     // =========================
 
+    public static function get_single_event_rest(\WP_REST_Request $request) {
+        $id = $request->get_param('id');
+        $events = self::get_events(100); // busca do cache/api
+
+        $event = null;
+        foreach ($events as $e) {
+            if ($e['id'] === $id) {
+                $event = $e;
+                break;
+            }
+        }
+
+        if (!$event) {
+            return new \WP_Error('event_not_found', __('Event not found', 'zen-bit'), array('status' => 404));
+        }
+
+        return rest_ensure_response(array(
+            'success' => true,
+            'event'   => $event
+        ));
+    }
+
     public static function get_events_rest(\WP_REST_Request $request) {
         $limit = (int) ($request->get_param('limit') ?: 50);
         $events = self::get_events($limit);
