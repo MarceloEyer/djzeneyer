@@ -237,17 +237,8 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <a
-                      href={safeUrl(ticketUrl, '#')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-sm btn-primary flex-shrink-0 flex items-center gap-2"
-                      aria-label={ariaLabel}
-                    >
-                      <Ticket size={14} />
-                      <span className="hidden sm:inline">{t('events.tickets', 'Tickets')}</span>
-                    </a>
+                  <div className="flex-shrink-0">
+                    {/* Botão de tickets removido por solicitação do usuário */}
                   </div>
                 </div>
               </motion.article>
@@ -302,18 +293,8 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                   </div>
                 </div>
 
-                <div>
-                  <a
-                    href={safeUrl(ticketUrl, '#')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary w-full flex items-center justify-center gap-2 group/btn"
-                    aria-label={ariaLabel}
-                  >
-                    <Ticket size={18} />
-                    <span>{t('events.viewTickets', 'View Tickets')}</span>
-                    <ExternalLink size={16} className="group-hover/btn:translate-x-1 transition-transform" />
-                  </a>
+                <div className="mt-4">
+                  {/* Botão de tickets removido por solicitação do usuário */}
                 </div>
               </div>
             </motion.article>

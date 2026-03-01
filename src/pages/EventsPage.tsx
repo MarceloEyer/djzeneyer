@@ -5,7 +5,7 @@ import { useParams, Link } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { MapPin, Search, Share2, ArrowLeft, Music, Calendar, Ticket } from 'lucide-react';
+import { MapPin, Search, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { Toast } from '../components/common/Toast';
 
@@ -80,6 +80,9 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
     }
   };
 
+  const eventDate = new Date(e.datetime || e.date || '');
+  const isValidDate = !isNaN(eventDate.getTime());
+
   return (
     <div className="max-w-4xl mx-auto">
       <Link to={getLocalizedRoute('events', lang)} className="flex items-center gap-2 text-primary mb-8 font-extrabold uppercase tracking-widest text-sm hover:text-white transition-colors">
@@ -98,7 +101,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.2em] text-xs mb-6">
             <div className="w-8 h-px bg-primary/30" />
-            {new Date(e.datetime).toLocaleDateString(lang, { month: 'long', year: 'numeric' })}
+            {isValidDate ? eventDate.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) : t('tba', 'TBA')}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter text-white leading-[0.9]" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
@@ -108,38 +111,27 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
                 <Calendar size={20} />
               </div>
-              <span className="font-bold">{new Date(e.datetime).toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+              <span className="font-bold">
+                {isValidDate ? eventDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }) : t('tba', 'TBA')}
+              </span>
             </div>
             <div className="flex items-center gap-4 text-white/80">
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
                 <MapPin size={20} />
               </div>
-              <span className="font-bold">{e.venue?.name}, {e.venue?.city}</span>
+              <span className="font-bold">{e.venue?.name}{e.venue?.city ? `, ${e.venue.city}` : ''}</span>
             </div>
-          </div>
 
-          <div className="prose prose-invert mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.description || e.content || '') }} />
+            <div className="prose prose-invert mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.description || e.content || '') }} />
 
-          <div className="space-y-3">
-            {e.url && (
-              <a
-                href={e.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm shadow-xl shadow-primary/20"
-              >
-                <Ticket size={20} />
-                {t('events_tickets', 'Get Tickets')}
-              </a>
-            )}
-
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4">
+              {/* Tickets button removed by user request */}
               <AddCalendarMenu event={e} variant="primary" />
-            </div>
 
-            <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
-              <Share2 size={18} /> {t('share')}
-            </button>
+              <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
+                <Share2 size={18} /> {t('share')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
