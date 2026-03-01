@@ -87,8 +87,6 @@ const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
 const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
 const TicketsPage = lazy(() => import('../pages/TicketsPage'));
 const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
-const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage'));
-const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 // ============================================================================
