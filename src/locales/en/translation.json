@@ -1221,7 +1221,9 @@
     "seo": {
       "title": "About DJ Zen Eyer | Brazilian Zouk DJ & Producer",
       "description": "Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his signature cremosidade style.",
-      "name": "About DJ Zen Eyer"
+      "name": "About DJ Zen Eyer",
+      "keywords": "DJ Zen Eyer, world champion DJ, music philosophy, cremosidade, Brazilian Zouk history, Mensa member, music producer bio",
+      "lead_answer": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a Mensa member and award-winning DJ who brings emotional depth and technical precision to Brazilian Zouk music globally."
     },
     "hero": {
       "badge": "MY STORY",
@@ -1287,7 +1289,8 @@
     "seo": {
       "title": "DJ Zen Eyer | Brazilian Zouk DJ & Producer",
       "description": "DJ Zen Eyer, two-time world champion focused on Brazilian Zouk.",
-      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
+      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer",
+      "lead_answer": "DJ Zen Eyer is a two-time world champion Brazilian Zouk DJ and music producer, known for his signature 'cremosidade' style and immersive dance floor experiences."
     },
     "festivals": {
       "presence": "International Presence",
@@ -1320,6 +1323,10 @@
     "badge": "Knowledge Base",
     "title": "Frequent <1>Questions</1>",
     "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
+    "seo": {
+      "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
+      "keywords": "Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adílio porto, lambada history"
+    },
     "categories": {
       "djzeneyer": {
         "title": "DJ Zen Eyer & Career",
