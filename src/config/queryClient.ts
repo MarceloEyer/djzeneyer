@@ -28,8 +28,8 @@ const STALE_TIME = {
   /** Menu: 5 minutos (muda raramente) */
   MENU: 5 * 60 * 1000,
 
-  /** Eventos: 2 minutos (pode ter atualizações frequentes) */
-  EVENTS: 2 * 60 * 1000,
+  /** Eventos: 5 minutos (equilíbrio entre frescor e menos requests) */
+  EVENTS: 5 * 60 * 1000,
 
   /** News/Posts: 5 minutos */
   POSTS: 5 * 60 * 1000,
@@ -37,8 +37,8 @@ const STALE_TIME = {
   /** Músicas: 5 minutos (catálogo estável) */
   TRACKS: 5 * 60 * 1000,
 
-  /** Produtos: 3 minutos (preços podem mudar) */
-  PRODUCTS: 3 * 60 * 1000,
+  /** Produtos: 10 minutos (catálogo tende a ser estável durante a sessão) */
+  PRODUCTS: 10 * 60 * 1000,
 
   /** Carrinho: 30 segundos (muda frequentemente) */
   CART: 30 * 1000,
@@ -91,8 +91,8 @@ export const queryClient = new QueryClient({
       // Refetch ao focar na janela (útil para dados que mudam frequentemente)
       refetchOnWindowFocus: false,
 
-      // Refetch ao reconectar (útil para mobile)
-      refetchOnReconnect: true,
+      // Evita rajadas de refetch em reconexões curtas de rede mobile
+      refetchOnReconnect: false,
 
       // Retry automático com backoff exponencial
       retry: 2,

@@ -16,6 +16,13 @@ export default defineConfig(({ command, mode }) => {
         threshold: 1024, // Só comprime arquivos > 1KB
         deleteOriginFile: false,
       }),
+      // Brotli compression (melhor taxa para Cloudflare/CDN)
+      isProduction && viteCompression({
+        algorithm: 'brotliCompress',
+        ext: '.br',
+        threshold: 1024,
+        deleteOriginFile: false,
+      }),
     ].filter(Boolean),
 
     publicDir: false,
