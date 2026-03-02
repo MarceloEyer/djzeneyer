@@ -52,6 +52,7 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 - Não usar `fetch()` diretamente em componentes (usar React Query)
 - Não commitar `.env` ou credenciais
 - Não remover scripts de `prerender.js` (Eles evitam a "tela branca" no deploy)
+- **Não usar gradientes** (O usuário odeia). Preferir cores sólidas e camadas de opacidade.
 
 ## IA & Autoridade (AIO)
 

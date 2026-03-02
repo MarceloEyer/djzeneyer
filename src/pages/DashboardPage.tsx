@@ -15,6 +15,7 @@ import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressCon
 import { Helmet } from 'react-helmet-async';
 import { RecentActivity } from '../components/account';
 import { safeUrl } from '../utils/sanitize';
+import ManaProgressBar from '../components/ui/ManaProgressBar';
 
 
 
@@ -70,13 +71,13 @@ const DashboardContent = () => {
 
             <div className="relative flex flex-col md:flex-row items-center gap-8">
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse" />
+                <div className="absolute -inset-1 bg-primary/40 rounded-full blur-md group-hover:bg-primary/60 transition duration-1000 group-hover:duration-200 animate-pulse" />
                 <img
                   src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
                   alt={user.name}
                   className="relative w-32 h-32 rounded-full border-2 border-white/20 object-cover shadow-2xl"
                 />
-                <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-yellow-400 to-orange-600 text-black font-black rounded-full w-10 h-10 flex items-center justify-center shadow-2xl scale-125 border-4 border-black">
+                <div className="absolute -bottom-2 -right-2 bg-orange-600 text-black font-black rounded-full w-10 h-10 flex items-center justify-center shadow-2xl scale-125 border-4 border-black">
                   {earnedAchievements.length}
                 </div>
               </div>
@@ -98,34 +99,11 @@ const DashboardContent = () => {
 
                 {/* Rank Progression Real */}
                 {gamipress.rank.next && (
-                  <div className="max-w-md mx-auto md:mx-0">
-                    <div className="flex justify-between items-end mb-2">
-                      <span className="text-sm font-bold text-white/50">{t('dashboard.nextRank')}: <span className="text-white">{gamipress.rank.next.title}</span></span>
-                      <span className="text-primary font-black text-lg">{gamipress.rank.progress}%</span>
-                    </div>
-                    {/* MMORPG Mana Bar Style (Electric Blue) */}
-                    <div className="h-3 bg-blue-950/30 rounded-full relative overflow-hidden border border-primary/20 shadow-[0_0_15px_rgba(13,150,255,0.1)]">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${gamipress.rank.progress}%` }}
-                        className="h-full bg-gradient-to-r from-primary/80 to-primary relative rounded-full shadow-[0_0_20px_rgba(13,150,255,0.4)]"
-                      >
-                        {/* Animated Mana Flare (MMORPG Style) */}
-                        <motion.div
-                          animate={{ x: ['-100%', '200%'] }}
-                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                          className="absolute inset-0 w-32 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg]"
-                        />
-
-                        {/* Bright Electric Tip */}
-                        <div className="absolute top-0 right-0 h-full w-6 bg-white/20 blur-md rounded-full" />
-                        <div className="absolute top-0 right-0 h-full w-1 bg-white/80 rounded-full shadow-[0_0_10px_white]" />
-
-                        {/* Power Gloss */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent h-[40%] rounded-full opacity-40" />
-                      </motion.div>
-                    </div>
-                  </div>
+                  <ManaProgressBar
+                    progress={gamipress.rank.progress}
+                    label={t('dashboard.nextRank')}
+                    subLabel={gamipress.rank.next.title}
+                  />
                 )}
               </div>
 
@@ -151,7 +129,7 @@ const DashboardContent = () => {
               <div className="space-y-6">
                 {pointTypes.map(([slug, pt]) => (
                   <motion.div key={slug} whileHover={{ x: 5 }} className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
                       {pt.image ? <img src={safeUrl(pt.image)} className="w-8 h-8 object-contain" /> : <Star className="text-yellow-500" fill="currentColor" />}
                     </div>
                     <div>
@@ -188,7 +166,7 @@ const DashboardContent = () => {
 
           {/* CENTER COL: Activity Feed */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="card h-full min-h-[600px] flex flex-col p-6 border-white/5 bg-gradient-to-b from-surface/20 to-transparent">
+            <div className="card h-full min-h-[600px] flex flex-col p-6 border-white/5 bg-surface/20">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black font-display flex items-center gap-3">
                   <Clock className="text-primary" size={24} /> {t('dashboard.recentActivity')}
@@ -234,18 +212,8 @@ const DashboardContent = () => {
                         <div className="text-[10px] text-white/40 line-clamp-2 leading-tight uppercase font-bold">{quest.description}</div>
                       </div>
                     </div>
-                    <div className="mt-4 h-1 bg-blue-950/30 rounded-full overflow-hidden border border-primary/10">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: '15%' }}
-                        className="h-full bg-primary/80 relative shadow-[0_0_10px_rgba(13,150,255,0.3)]"
-                      >
-                        <motion.div
-                          animate={{ x: ['-100%', '300%'] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                          className="absolute inset-0 w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                        />
-                      </motion.div>
+                    <div className="mt-4">
+                      <ManaProgressBar progress={15} />
                     </div>
                   </motion.div>
                 ))}
@@ -287,7 +255,7 @@ const DashboardContent = () => {
                   key={ach.id}
                   whileHover={{ scale: 1.05, y: -5 }}
                   className={`relative p-5 rounded-3xl border transition-all cursor-default text-center group ${ach.earned
-                    ? 'bg-gradient-to-br from-surface to-surface/50 border-primary/20 shadow-xl shadow-primary/5'
+                    ? 'bg-surface border-primary/20 shadow-xl shadow-primary/5'
                     : 'bg-white/2 opacity-40 border-white/5 border-dashed'
                     }`}
                 >
