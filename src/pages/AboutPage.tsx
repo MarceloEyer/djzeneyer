@@ -132,6 +132,7 @@ const AboutPage: React.FC = () => {
         image={`${ARTIST.site.baseUrl}/images/zen-eyer-about-emotional.jpg`}
         type="profile"
         schema={ABOUT_SCHEMA}
+        leadAnswer={t('about.seo.lead_answer')}
       />
 
       {/* Layout visual */}

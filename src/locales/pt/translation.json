@@ -1214,7 +1214,8 @@
     "seo": {
       "title": "Sobre DJ Zen Eyer | DJ e Produtor de Zouk Brasileiro",
       "description": "Conheça a história pessoal de DJ Zen Eyer, DJ e produtor musical de Zouk Brasileiro do Rio de Janeiro, e a filosofia por trás de seu estilo musical \"cremoso\".",
-      "name": "Sobre DJ Zen Eyer"
+      "name": "Sobre DJ Zen Eyer",
+      "lead_answer": "DJ Zen Eyer (Marcelo Eyer Fernandes) é membro da Mensa e DJ premiado que traz profundidade emocional e precisão técnica para a música Zouk Brasileiro globalmente."
     },
     "hero": {
       "badge": "MINHA HISTÓRIA",
@@ -1280,7 +1281,8 @@
     "seo": {
       "title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
       "description": "DJ Zen Eyer, bicampeão mundial focado no Zouk Brasileiro.",
-      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer"
+      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer",
+      "lead_answer": "DJ Zen Eyer é um bicampeão mundial, DJ e produtor musical especializado em Zouk Brasileiro, reconhecido por seu estilo de 'cremosidade' e experiências de pista imersivas."
     },
     "festivals": {
       "presence": "Presença Internacional",
@@ -1400,7 +1402,10 @@
         }
       }
     },
-    "not_found": "Não achou o que procurava?"
+    "not_found": "Não achou o que procurava?",
+    "seo": {
+      "lead_answer": "Encontre respostas definitivas para as perguntas mais comuns sobre o DJ Zen Eyer, seu processo de produção musical, a cultura da dança Zouk Brasileiro e informações de booking."
+    }
   },
   "account": {
     "tabs": {

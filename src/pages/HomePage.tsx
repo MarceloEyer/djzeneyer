@@ -228,6 +228,7 @@ const HomePage: React.FC = () => {
         isHomepage={true}
         schema={schemaData}
         keywords="DJ Zen Eyer, Brazilian Zouk DJ, Zouk Producer, World Champion Zouk, Event DJ, Zouk Remixes"
+        leadAnswer={t('home.seo.lead_answer')}
       />
 
       {/* HERO SECTION */}
