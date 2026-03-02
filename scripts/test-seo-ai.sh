@@ -13,6 +13,30 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+calc_lt() {
+    python - "$1" "$2" <<'PY2'
+import sys
+a=float(sys.argv[1])
+b=float(sys.argv[2])
+print('1' if a < b else '0')
+PY2
+}
+
+calc_ms() {
+    python - "$1" <<'PY3'
+import sys
+print(int(float(sys.argv[1]) * 1000))
+PY3
+}
+
+calc_pct() {
+    python - "$1" "$2" <<'PY4'
+import sys
+num=int(sys.argv[1]); den=int(sys.argv[2])
+print(0 if den == 0 else int((num * 100) / den))
+PY4
+}
+
 echo "════════════════════════════════════════════════════════════════"
 echo "🧪 TESTE DE SEO E IA - DJ ZEN EYER"
 echo "Site: $SITE_URL"
@@ -204,11 +228,11 @@ echo "⚡ Testando performance..."
 
 # Tempo de resposta
 RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}\n' "$SITE_URL/")
-RESPONSE_TIME_MS=$(echo "$RESPONSE_TIME * 1000" | bc)
+RESPONSE_TIME_MS=$(calc_ms "$RESPONSE_TIME")
 
-if (( $(echo "$RESPONSE_TIME < 2.0" | bc -l) )); then
+if [ "$(calc_lt "$RESPONSE_TIME" "2.0")" = "1" ]; then
     echo -e "${GREEN}  ✅ Tempo de resposta: ${RESPONSE_TIME}s${NC}"
-elif (( $(echo "$RESPONSE_TIME < 4.0" | bc -l) )); then
+elif [ "$(calc_lt "$RESPONSE_TIME" "4.0")" = "1" ]; then
     echo -e "${YELLOW}  ⚠️  Tempo de resposta: ${RESPONSE_TIME}s (considere otimizar)${NC}"
 else
     echo -e "${RED}  ❌ Tempo de resposta: ${RESPONSE_TIME}s (muito lento!)${NC}"
@@ -242,11 +266,11 @@ if [ "$REST_HTTP" = "200" ]; then
     echo -e "${GREEN}  ✅ REST API acessível (HTTP $REST_HTTP)${NC}"
     
     # Testar endpoint customizado
-    CUSTOM_API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/wp-json/djz/v1/ai-data")
+    CUSTOM_API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/wp-json/djzeneyer/v1/ai-context")
     if [ "$CUSTOM_API_HTTP" = "200" ]; then
-        echo -e "${GREEN}  ✅ Endpoint /djz/v1/ai-data funcionando${NC}"
+        echo -e "${GREEN}  ✅ Endpoint /djzeneyer/v1/ai-context funcionando${NC}"
     else
-        echo -e "${YELLOW}  ℹ️  Endpoint /djz/v1/ai-data não encontrado (HTTP $CUSTOM_API_HTTP)${NC}"
+        echo -e "${YELLOW}  ℹ️  Endpoint /djzeneyer/v1/ai-context não encontrado (HTTP $CUSTOM_API_HTTP)${NC}"
     fi
 else
     echo -e "${RED}  ❌ REST API inacessível (HTTP $REST_HTTP)${NC}"
@@ -272,7 +296,7 @@ if [ "$ROBOTS_HTTP" = "200" ]; then ((PASSED_CHECKS++)); fi
 if [ "$AI_PLUGIN_HTTP" = "200" ]; then ((PASSED_CHECKS++)); fi
 ((TOTAL_CHECKS++))
 
-PASS_RATE=$(echo "scale=0; $PASSED_CHECKS * 100 / $TOTAL_CHECKS" | bc)
+PASS_RATE=$(calc_pct "$PASSED_CHECKS" "$TOTAL_CHECKS")
 
 echo ""
 echo "Verificações: $PASSED_CHECKS/$TOTAL_CHECKS passaram ($PASS_RATE%)"
