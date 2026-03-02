@@ -13,8 +13,14 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Helper to resolve Python binary
+get_python() {
+    if command -v python3 >/dev/null 2>&1; then echo "python3"; else echo "python"; fi
+}
+PY_BIN=$(get_python)
+
 calc_lt() {
-    python - "$1" "$2" <<'PY2'
+    $PY_BIN - "$1" "$2" <<'PY2'
 import sys
 a=float(sys.argv[1])
 b=float(sys.argv[2])
@@ -23,14 +29,14 @@ PY2
 }
 
 calc_ms() {
-    python - "$1" <<'PY3'
+    $PY_BIN - "$1" <<'PY3'
 import sys
 print(int(float(sys.argv[1]) * 1000))
 PY3
 }
 
 calc_pct() {
-    python - "$1" "$2" <<'PY4'
+    $PY_BIN - "$1" "$2" <<'PY4'
 import sys
 num=int(sys.argv[1]); den=int(sys.argv[2])
 print(0 if den == 0 else int((num * 100) / den))
@@ -227,15 +233,15 @@ echo ""
 echo "⚡ Testando performance..."
 
 # Tempo de resposta
-RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}\n' "$SITE_URL/")
+RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}\n' --connect-timeout 5 --max-time 10 "$SITE_URL/")
 RESPONSE_TIME_MS=$(calc_ms "$RESPONSE_TIME")
 
 if [ "$(calc_lt "$RESPONSE_TIME" "2.0")" = "1" ]; then
-    echo -e "${GREEN}  ✅ Tempo de resposta: ${RESPONSE_TIME}s${NC}"
+    echo -e "${GREEN}  ✅ Tempo de resposta: ${RESPONSE_TIME}s (${RESPONSE_TIME_MS}ms)${NC}"
 elif [ "$(calc_lt "$RESPONSE_TIME" "4.0")" = "1" ]; then
-    echo -e "${YELLOW}  ⚠️  Tempo de resposta: ${RESPONSE_TIME}s (considere otimizar)${NC}"
+    echo -e "${YELLOW}  ⚠️  Tempo de resposta: ${RESPONSE_TIME}s (${RESPONSE_TIME_MS}ms) (considere otimizar)${NC}"
 else
-    echo -e "${RED}  ❌ Tempo de resposta: ${RESPONSE_TIME}s (muito lento!)${NC}"
+    echo -e "${RED}  ❌ Tempo de resposta: ${RESPONSE_TIME}s (${RESPONSE_TIME_MS}ms) (muito lento!)${NC}"
 fi
 
 # HTTPS
@@ -266,7 +272,7 @@ if [ "$REST_HTTP" = "200" ]; then
     echo -e "${GREEN}  ✅ REST API acessível (HTTP $REST_HTTP)${NC}"
     
     # Testar endpoint customizado
-    CUSTOM_API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/wp-json/djzeneyer/v1/ai-context")
+    CUSTOM_API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 "$SITE_URL/wp-json/djzeneyer/v1/ai-context")
     if [ "$CUSTOM_API_HTTP" = "200" ]; then
         echo -e "${GREEN}  ✅ Endpoint /djzeneyer/v1/ai-context funcionando${NC}"
     else

@@ -5,15 +5,19 @@
  * @version 6.1.0 (Exhaustive Wikidata Linking)
  */
 
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
-class DJZ_AI_Authority {
+class DJZ_AI_Authority
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         add_action('rest_api_init', [$this, 'register_routes']);
     }
 
-    public function register_routes() {
+    public function register_routes()
+    {
         register_rest_route('djzeneyer/v1', '/ai-context', [
             'methods' => 'GET',
             'callback' => [$this, 'get_context'],
@@ -22,16 +26,26 @@ class DJZ_AI_Authority {
     }
 
     /**
-     * Endpoint Callback
+     * Endpoint Callback with ETag Caching and Transients
      */
-    public function get_context() {
-        $data = $this->build_structure();
+    public function get_context()
+    {
+        $transient_key = 'djz_ai_context_v5';
+        $data = get_transient($transient_key);
+
+        if (false === $data) {
+            $data = $this->build_structure();
+            // Cache por 12 horas (dados de IA não mudam tão rápido)
+            set_transient($transient_key, $data, 12 * HOUR_IN_SECONDS);
+        }
 
         $payload = wp_json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $etag = 'W/"' . md5($payload) . '"';
-        $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_IF_NONE_MATCH'])) : '';
+        $etag = '"' . md5($payload) . '"'; // Strong ETag for precise matching
 
-        if ($if_none_match === $etag) {
+        $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? wp_unslash($_SERVER['HTTP_IF_NONE_MATCH']) : '';
+
+        // Robust ETag Check (handles weak ETags and multiple values)
+        if ($this->is_etag_match($if_none_match, $etag)) {
             $not_modified = new WP_REST_Response(null, 304);
             $not_modified->set_headers([
                 'ETag' => $etag,
@@ -39,7 +53,7 @@ class DJZ_AI_Authority {
             ]);
             return $not_modified;
         }
-        
+
         $response = new WP_REST_Response($data, 200);
         $response->set_headers([
             'Content-Type' => 'application/json; charset=utf-8',
@@ -51,11 +65,37 @@ class DJZ_AI_Authority {
     }
 
     /**
+     * Valida se o ETag enviado pelo cliente bate com o atual
+     */
+    private function is_etag_match($if_none_match, $etag)
+    {
+        if (empty($if_none_match))
+            return false;
+
+        // Limpa o ETag atual para comparação (remove aspas extras se existirem)
+        $current_etag = trim($etag, '"');
+
+        $etags = explode(',', $if_none_match);
+        foreach ($etags as $item) {
+            $item = trim($item);
+            // Remove prefixo de Weak ETag "W/" e aspas
+            $item = preg_replace('/^W\//', '', $item);
+            $item = trim($item, '"');
+
+            if ($item === $current_etag || $item === '*') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Constrói o JSON Rico (Pillar Content + Dinâmico)
      */
-    private function build_structure() {
+    private function build_structure()
+    {
         $expert_name = 'DJ Zen Eyer';
-        $base_url    = untrailingslashit(home_url());
+        $base_url = untrailingslashit(home_url());
 
         // 1. CONTEÚDO PILAR (Fixo e Estratégico)
         $fragments = [
@@ -244,24 +284,28 @@ class DJZ_AI_Authority {
                 ],
                 "metadata" => [
                     "total_fragments" => count($fragments),
-                    "last_updated" => date('c'),
+                    "freshness_threshold" => 86400, // 24h em segundos
                     "generator" => "DJZ Diamond AI Authority Module"
                 ]
             ]
         ];
     }
 
-    private function get_faq_structured() {
+    private function get_faq_structured()
+    {
         $faq_page = get_page_by_path('faq');
-        if (!$faq_page) return '';
+        if (!$faq_page)
+            return '';
         return wp_strip_all_tags(substr($faq_page->post_content, 0, 2000));
     }
 
-    private function extract_keywords($content) {
+    private function extract_keywords($content)
+    {
         $keywords = [];
         $terms = ['zouk', 'brasileiro', 'cremosidade', 'conexão', 'flow', 'remix', 'djing'];
         foreach ($terms as $term) {
-            if (stripos($content, $term) !== false) $keywords[] = $term;
+            if (stripos($content, $term) !== false)
+                $keywords[] = $term;
         }
         return array_slice($keywords, 0, 5);
     }
