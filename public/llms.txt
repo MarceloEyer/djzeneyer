@@ -13,7 +13,8 @@
 ## Advanced & Technical Context
 
 - [Full Profile](https://djzeneyer.com/llms-full.txt): A detailed technical, intellectual, and professional breakdown for deep AI consumption.
-- [AI Data Endpoint](https://djzeneyer.com/wp-json/djz/v1/ai-data): Structured JSON data optimized for large language model queries.
+- [AI SEO / GEO / AEO Glossary](https://djzeneyer.com/llms-full.txt#ai-visibility-glossary-ai-seo--geo--aeo): Definitions and implementation signals for AI-first discoverability.
+- [AI Data Endpoint](https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context): Structured JSON data optimized for large language model queries.
 
 ## Identity & Authority
 
