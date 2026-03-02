@@ -89,6 +89,7 @@ jobs:
       - name: 🔨 Build production
         env:
           NODE_ENV: production
+          PRERENDER_MODE: 'true'
           VITE_WP_SITE_URL: ${{ env.SITE_URL }}
           VITE_WP_REST_URL: ${{ env.SITE_URL }}/wp-json/
           VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
