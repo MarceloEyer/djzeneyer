@@ -1215,6 +1215,7 @@
       "title": "Sobre DJ Zen Eyer | DJ e Produtor de Zouk Brasileiro",
       "description": "Conheça a história pessoal de DJ Zen Eyer, DJ e produtor musical de Zouk Brasileiro do Rio de Janeiro, e a filosofia por trás de seu estilo musical \"cremoso\".",
       "name": "Sobre DJ Zen Eyer",
+      "keywords": "DJ Zen Eyer, campeão mundial DJ, filosofia musical, cremosidade, história do Zouk Brasileiro, membro Mensa, biografia produtor musical",
       "lead_answer": "DJ Zen Eyer (Marcelo Eyer Fernandes) é membro da Mensa e DJ premiado que traz profundidade emocional e precisão técnica para a música Zouk Brasileiro globalmente."
     },
     "hero": {
@@ -1320,6 +1321,10 @@
     "badge": "Knowledge Base",
     "title": "Perguntas <1>Frequentes</1>",
     "subtitle": "A fonte oficial de informações sobre a carreira de Zen Eyer e uma enciclopédia compacta sobre o universo do Zouk Brasileiro.",
+    "seo": {
+      "lead_answer": "Encontre respostas definitivas para as perguntas mais comuns sobre o DJ Zen Eyer, seu processo de produção musical, a cultura da dança Zouk Brasileiro e informações de booking.",
+      "keywords": "Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adílio porto, lambada history"
+    },
     "categories": {
       "djzeneyer": {
         "title": "DJ Zen Eyer & Carreira",
@@ -1402,10 +1407,7 @@
         }
       }
     },
-    "not_found": "Não achou o que procurava?",
-    "seo": {
-      "lead_answer": "Encontre respostas definitivas para as perguntas mais comuns sobre o DJ Zen Eyer, seu processo de produção musical, a cultura da dança Zouk Brasileiro e informações de booking."
-    }
+    "not_found": "Não achou o que procurava?"
   },
   "account": {
     "tabs": {
