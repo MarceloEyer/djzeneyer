@@ -380,26 +380,49 @@ const ShopPage: React.FC = () => {
       : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
-  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: useMemo)
-  const featuredProduct = useMemo(() =>
-    products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0],
-    [products]
-  );
+  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: single pass iteration)
+  const { featuredProduct, newReleases, bestSellers, curatedSelection } = useMemo(() => {
+    let featuredProduct: Product | undefined;
+    const newReleases: Product[] = [];
+    const bestSellers: Product[] = [];
 
-  const newReleases = useMemo(() =>
-    products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10),
-    [products]
-  );
+    for (let j = 0; j < products.length; j++) {
+      const p = products[j];
+      let isFeatured = false;
 
-  const bestSellers = useMemo(() =>
-    products.filter((p: Product) => p.on_sale).slice(0, 10),
-    [products]
-  );
+      if (p.categories) {
+        for (let k = 0; k < p.categories.length; k++) {
+          if (p.categories[k].name.toLowerCase() === 'featured') {
+            isFeatured = true;
+            break;
+          }
+        }
+      }
 
-  const curatedSelection = useMemo(() =>
-    products.slice(-10).reverse(), // OPTIMIZATION: Slice first, then reverse
-    [products]
-  );
+      if (isFeatured && !featuredProduct) {
+        featuredProduct = p;
+      }
+
+      if (!isFeatured && newReleases.length < 10) {
+        newReleases.push(p);
+      }
+
+      if (p.on_sale && bestSellers.length < 10) {
+        bestSellers.push(p);
+      }
+
+      if (featuredProduct && newReleases.length === 10 && bestSellers.length === 10) {
+        break;
+      }
+    }
+
+    return {
+      featuredProduct: featuredProduct || products[0],
+      newReleases,
+      bestSellers,
+      curatedSelection: products.slice(-10).reverse()
+    };
+  }, [products]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
