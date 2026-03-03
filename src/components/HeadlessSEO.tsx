@@ -66,7 +66,11 @@ const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
 // 3. COMPONENTE PRINCIPAL
 // ============================================================================
 
-export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
+// ⚡ Bolt: Wrapped HeadlessSEO with React.memo to prevent unnecessary re-renders.
+// This component is used on almost every page and its props (like title, description)
+// rarely change during a single page view, making it a prime candidate for memoization.
+// Impact: Reduces React render cycle overhead for this component when parent components update.
+export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   data,
   schema,
   title,
@@ -270,4 +274,4 @@ export const HeadlessSEO: React.FC<HeadlessSEOProps> = ({
       )}
     </Helmet>
   );
-};
+});
