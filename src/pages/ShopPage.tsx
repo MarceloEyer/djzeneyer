@@ -380,21 +380,51 @@ const ShopPage: React.FC = () => {
       : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
-  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: useMemo)
-  const featuredProduct = useMemo(() =>
-    products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0],
-    [products]
-  );
+  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: Single-pass useMemo O(N))
+  const { featuredProduct, newReleases, bestSellers } = useMemo(() => {
+    let featured: Product | null = null;
+    const releases: Product[] = [];
+    const sellers: Product[] = [];
 
-  const newReleases = useMemo(() =>
-    products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10),
-    [products]
-  );
+    for (let i = 0; i < products.length; i++) {
+      const p = products[i];
+      let isFeatured = false;
 
-  const bestSellers = useMemo(() =>
-    products.filter((p: Product) => p.on_sale).slice(0, 10),
-    [products]
-  );
+      const needFeatured = !featured;
+      const needReleases = releases.length < 10;
+
+      if (p.categories && (needFeatured || needReleases)) {
+        for (let j = 0; j < p.categories.length; j++) {
+          if (p.categories[j].name.toLowerCase() === 'featured') {
+            isFeatured = true;
+            break;
+          }
+        }
+      }
+
+      if (isFeatured && needFeatured) {
+        featured = p;
+      }
+
+      if (!isFeatured && needReleases) {
+        releases.push(p);
+      }
+
+      if (p.on_sale && sellers.length < 10) {
+        sellers.push(p);
+      }
+
+      if (featured && releases.length >= 10 && sellers.length >= 10) {
+        break; // Early exit: found all necessary items
+      }
+    }
+
+    return {
+      featuredProduct: featured || products[0],
+      newReleases: releases,
+      bestSellers: sellers
+    };
+  }, [products]);
 
   const curatedSelection = useMemo(() =>
     products.slice(-10).reverse(), // OPTIMIZATION: Slice first, then reverse
