@@ -27,7 +27,6 @@ interface MenuItem {
 import type {
   ZenBitEventListItem,
   ZenBitEventDetail,
-  BandsintownEvent,
   FetchEventsParams,
   EventsApiResponse,
 } from '../types/events';
@@ -84,7 +83,6 @@ export const fetchEventsFn = async ({
   limit = 10,
   lang,
   upcomingOnly,
-  search,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
   // BC: upcomingOnly → mode
   const resolvedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
@@ -96,11 +94,11 @@ export const fetchEventsFn = async ({
   if (days !== undefined) params.days = String(days);
   if (date) params.date = date;
   if (lang) params.lang = lang;
-  if (search) params.search = search;
 
-  const apiUrl = buildApiUrl('zen-bit/v1/events', params);
+  // zen-bit/v2
+  const apiUrl = buildApiUrl('zen-bit/v2/events', params);
   const res = await fetch(apiUrl);
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  if (!res.ok) throw new Error(`Events API ${res.status}`);
   const data: EventsApiResponse | ZenBitEventListItem[] = await res.json();
 
   if (Array.isArray(data)) return data;
@@ -177,7 +175,6 @@ export const useEventsQuery = (params: FetchEventsParams = {}, options = {}) => 
     date: params.date,
     limit: params.limit ?? 10,
     lang: params.lang,
-    search: params.search,
   };
 
   return useQuery({

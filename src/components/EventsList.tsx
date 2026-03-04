@@ -1,32 +1,19 @@
 // src/components/EventsList.tsx
-// ARQUITETURA DEFINITIVA: VISUAL LIMPO + JSON-LD ROBUSTO + REACT QUERY CACHE
+// ARQUITETURA V2: VISUAL LIMPO + PAYLOAD ENXUTO + SEO CANONICAL
 
 import { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Calendar, MapPin, ExternalLink, Clock, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useEventsQuery } from '../hooks/useQueries';
-import { safeUrl, sanitizeHtml } from '../utils/sanitize';
+import { sanitizeHtml } from '../utils/sanitize';
+import { getLocalizedRoute } from '../config/routes';
+import type { ZenBitEventListItem } from '../types/events';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
 // ============================================================================
-
-interface BandsintownEvent {
-  id: string;
-  title: string;
-  datetime: string;
-  description?: string;
-  image?: string;
-  venue: {
-    name: string;
-    city: string;
-    region: string;
-    country: string;
-  };
-  url: string;
-  offers?: Array<{ url: string }>;
-}
 
 interface EventsListProps {
   limit?: number;
@@ -38,7 +25,6 @@ interface EventsListProps {
 // 2. COMPONENT
 // ============================================================================
 
-// --- Helpers & Formatters (Puras e Estáticas) ---
 const formatDate = (date: Date, options: Intl.DateTimeFormatOptions, locale: string) => {
   return date.toLocaleDateString(locale, options);
 };
@@ -47,124 +33,21 @@ const formatTime = (date: Date, locale: string) => {
   return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 };
 
-/**
- * NORMALIZAÇÃO DE DADOS PARA SEO
- * Garante que nenhum campo obrigatório do Schema.org fique vazio.
- * Isso resolve os avisos amarelos e erros vermelhos do Google Search Console.
- */
-const getCompleteEventData = (event: BandsintownEvent) => {
-  const eventDate = new Date(event.datetime);
-  // Fallback: Se não tiver data final, assume 4 horas de duração
-  const endDate = new Date(eventDate.getTime() + (4 * 60 * 60 * 1000));
-
-  // Garantia de Localização (Nunca undefined)
-  const venueName = event.venue?.name || 'Local a definir';
-  const city = event.venue?.city || 'City';
-  const country = event.venue?.country || 'BR';
-  const region = event.venue?.region || '';
-
-  // Lógica de Moeda (Simples)
-  const currency = (country === 'Brazil' || country === 'BR' || country === 'Brasil') ? 'BRL' : 'USD';
-
-  return {
-    // SEO: Imagem é recomendada/obrigatória para Rich Cards
-    image: event.image || '/images/event-default.svg',
-
-    // SEO: Descrição é recomendada. Geramos uma automática se faltar.
-    description: event.description || `DJ Zen Eyer performing live Brazilian Zouk set at ${venueName} in ${city}, ${country}.`,
-
-    endDate: endDate.toISOString(),
-    locationName: venueName,
-    city: city,
-    region: region,
-    country: country,
-
-    // SEO: Offers é recomendado
-    price: '0',
-    priceCurrency: currency
-  };
-};
-
 function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
+  const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
-  // React Query: cache automático + deduplicação
-  const { data: events = [], isLoading: loading, error } = useEventsQuery({ limit, lang: i18n.language.startsWith('pt') ? 'pt' : 'en', upcomingOnly: true });
+  // React Query: v2 defaults
+  const { data: events = [], isLoading: loading, error } = useEventsQuery({
+    mode: 'upcoming',
+    limit,
+    lang
+  }, { suspense: false }); // Home page usually non-suspense for better LCP
 
-  // Log de erro
   if (error) {
     console.error('Error fetching events:', error);
   }
-
-  // --- JSON-LD Generator (Memoized & Secure) ---
-  const jsonLdMarkup = useMemo(() => {
-    if (events.length === 0) return null;
-
-    const renderEventJsonLd = (event: BandsintownEvent) => {
-      const completeData = getCompleteEventData(event);
-      const ticketUrl = event.offers?.[0]?.url || event.url || 'https://djzeneyer.com/events';
-
-      return {
-        '@type': 'MusicEvent',
-        name: event.title || 'DJ Zen Eyer Live',
-        description: completeData.description,
-        startDate: event.datetime,
-        endDate: completeData.endDate,
-        eventStatus: 'https://schema.org/EventScheduled',
-        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-        image: completeData.image,
-        location: {
-          '@type': 'Place',
-          name: completeData.locationName,
-          address: {
-            '@type': 'PostalAddress',
-            addressLocality: completeData.city,
-            addressRegion: completeData.region,
-            addressCountry: completeData.country
-          }
-        },
-        performer: {
-          '@type': 'MusicGroup',
-          name: 'DJ Zen Eyer',
-          genre: 'Brazilian Zouk',
-          url: 'https://djzeneyer.com',
-          sameAs: [
-            'https://www.instagram.com/djzeneyer/',
-            'https://soundcloud.com/djzeneyer',
-            'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw'
-          ]
-        },
-        organizer: {
-          '@type': 'Organization',
-          name: completeData.locationName, // Usa o local como organizador se não houver outro
-          url: ticketUrl
-        },
-        offers: {
-          '@type': 'Offer',
-          url: ticketUrl,
-          availability: 'https://schema.org/InStock',
-          price: completeData.price,
-          priceCurrency: completeData.priceCurrency,
-          validFrom: new Date().toISOString()
-        }
-      };
-    };
-
-    return JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'EventSeries',
-      name: 'Zen Eyer World Tour',
-      url: `https://djzeneyer.com/${i18n.language}/events`,
-      description: 'Official tour dates for DJ Zen Eyer, two-time world champion Brazilian Zouk DJ',
-      performer: {
-        '@type': 'MusicGroup',
-        name: 'DJ Zen Eyer',
-        url: 'https://djzeneyer.com'
-      },
-      subEvent: events.map(renderEventJsonLd)
-    }).replace(/</g, '\\u003c'); // ✅ Proteção contra XSS
-  }, [events, i18n.language]);
 
   // --- Render States ---
   if (loading) {
@@ -185,8 +68,6 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     );
   }
 
-  // --- Main Render (Visual Only) ---
-  // Aplica o limit no cliente para garantir que não ultrapasse, independente da API
   const visibleEvents = events.slice(0, limit);
 
   return (
@@ -199,50 +80,49 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
 
       <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
         {visibleEvents.map((event, index) => {
-          const eventDate = new Date(event.datetime);
-          const completeData = getCompleteEventData(event);
-          const ticketUrl = event.offers?.[0]?.url || event.url;
-          const eventLocation = `${completeData.city}, ${completeData.country}`;
+          const eventDate = new Date(event.starts_at);
+          const loc = event.location;
+          const eventLocation = `${loc.city}, ${loc.country || ''}`;
 
           const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' }, currentLocale);
           const formattedTime = formatTime(eventDate, currentLocale);
 
-          const ariaLabel = t('events_ticketAriaLabel',
-            { title: event.title, location: eventLocation }
-          );
+          // Canonical Link handling
+          const detailHref = event.canonical_path
+            ? (lang === 'pt'
+              ? `/pt/eventos${event.canonical_path.replace('/events', '')}`
+              : event.canonical_path)
+            : `${getLocalizedRoute('events', lang)}/${event.event_id}`;
 
-          // --- COMPACT CARD ---
+          // --- COMPACT CARD (used in Home) ---
           if (variant === 'compact') {
             return (
               <motion.article
-                key={event.id}
+                key={event.event_id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="card hover:border-primary/50 transition-all duration-300 group"
+                className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
               >
-                <div className="flex items-start gap-4 p-4">
-                  <time dateTime={event.datetime} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10">
+                <Link to={detailHref} className="flex items-start gap-4 p-4">
+                  <time dateTime={event.starts_at} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]">
                     <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
                     <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
                   </time>
-                  <div className="flex_1 min-w-0">
-                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
-                    <div className="space-y-1 text-sm text-white/70">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+                    <div className="space-y-1 text-sm text-white/70 text-left">
                       <div className="flex items-center gap-2">
-                        <MapPin size={14} className="flex-shrink-0" />
-                        <span className="truncate">{completeData.locationName}</span>
+                        <MapPin size={14} className="flex-shrink-0 text-primary" />
+                        <span className="truncate">{loc.venue || loc.city}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock size={14} className="flex-shrink-0" />
-                        <span className="truncate">{eventLocation}</span>
+                        <Clock size={14} className="flex-shrink-0 text-white/40" />
+                        <span className="truncate">{eventLocation} • {formattedTime}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex-shrink-0">
-                    {/* Botão de tickets removido por solicitação do usuário */}
-                  </div>
-                </div>
+                </Link>
               </motion.article>
             );
           }
@@ -250,72 +130,50 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
           // --- FULL CARD ---
           return (
             <motion.article
-              key={event.id}
+              key={event.event_id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden"
+              className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden bg-surface/30 border border-white/5 rounded-2xl"
             >
-              <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
-                {event.image ? (
-                  <img
-                    src={safeUrl(event.image, '/images/event-default.svg')}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : null}
+              <Link to={detailHref}>
+                <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
+                  <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
+                  <time dateTime={event.starts_at} className="relative z-10 text-center drop-shadow-lg">
+                    <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
+                    <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
+                    <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
+                  </time>
+                </div>
 
-                <time dateTime={event.datetime} className="relative z-10 text-center drop-shadow-lg">
-                  <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
-                  <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
-                  <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
-                </time>
-              </div>
-
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
-                <div className="space-y-2 mb-4 text-sm text-white/70">
-                  <div className="flex items-start gap-2">
-                    <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
-                    <div>
-                      <div className="font-semibold text-white">{completeData.locationName}</div>
-                      <div>{completeData.city}, {completeData.country}</div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+                  <div className="space-y-2 mb-4 text-sm text-white/70">
+                    <div className="flex items-start gap-2">
+                      <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
+                      <div>
+                        <div className="font-semibold text-white">{loc.venue || t('loc_to_be_defined')}</div>
+                        <div>{eventLocation}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="flex-shrink-0 text-white/40" />
+                      <span>{formattedDate}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock size={16} className="flex-shrink-0 text-white/40" />
+                      <span>{formattedTime}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar size={16} className="flex-shrink-0 text-secondary" />
-                    <span>{formattedDate}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} className="flex-shrink-0 text-accent" />
-                    <span>{formattedTime}</span>
-                  </div>
                 </div>
-
-                <div className="mt-4">
-                  {/* Botão de tickets removido por solicitação do usuário */}
-                </div>
-              </div>
+              </Link>
             </motion.article>
           );
         })}
       </div>
-
-      {/* JSON-LD INJETADO AQUI (INVISÍVEL PARA O USUÁRIO, VISÍVEL PARA O GOOGLE) */}
-      {jsonLdMarkup && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLdMarkup }}
-        />
-      )}
     </div>
   );
 }
 
-// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary re-renders.
-// Optimized with external helper functions and explicit displayName for DevTools.
 export const EventsList = memo(EventsListInner);
 EventsList.displayName = 'EventsList';

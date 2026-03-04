@@ -1,7 +1,7 @@
-// src/types/events.ts — v2 (Zen BIT v2 API)
+// src/types/events.ts — v3 (Zen BIT v2 API)
 
 // ============================================================================
-// EVENTO v2 (Payload da lista — enxuto)
+// CAMPO LOCATION
 // ============================================================================
 
 export interface EventLocation {
@@ -13,62 +13,52 @@ export interface EventLocation {
     longitude?: string;
 }
 
+// ============================================================================
+// LISTA (payload enxuto — zen-bit/v2)
+// ============================================================================
+
 /**
- * Evento no formato da lista (GET /zen-bit/v1/events).
- * Não contém: description, image, offers, lineup.
+ * Evento na lista: GET /zen-bit/v2/events
+ * NÃO inclui: description, image, offers, lineup, raw
  */
 export interface ZenBitEventListItem {
-    id: string;
+    event_id: string;   // ID numérico Bandsintown (string)
     title: string;
-    starts_at: string;  // ISO 8601
+    starts_at: string;   // ISO 8601
     timezone?: string;
     location: EventLocation;
-    canonical_path: string;  // ex: /events/2025-06-20-dj-zen-eyer-at-club-x-abc123
-    canonical_url: string;  // site_url + canonical_path
+    canonical_path: string;   // ex: /events/2025-06-20-dj-zen-eyer-at-club-x-15619775
+    canonical_url: string;
+    source_url?: string;   // URL Bandsintown
 }
 
 // ============================================================================
-// EVENTO v2 (Payload do detalhe — completo)
+// DETALHE (payload completo — zen-bit/v2)
 // ============================================================================
 
 export interface EventOffer {
     url: string;
     type: string;
+    status?: string;
+}
+
+export interface EventArtist {
+    name: string;
+    image?: string;
+    source_url?: string;
 }
 
 /**
- * Evento completo (GET /zen-bit/v1/events/{id}).
- * Estende o item de lista com campos extras.
+ * Evento completo: GET /zen-bit/v2/events/{event_id}
  */
 export interface ZenBitEventDetail extends ZenBitEventListItem {
+    ends_at?: string;
     description?: string;
     image?: string;
+    artists?: EventArtist[];
     offers?: EventOffer[];
-    lineup?: string[];
-    source_url?: string;  // URL Bandsintown (sameAs no schema)
-    raw?: unknown; // presente apenas com debug mode ativo
-}
-
-// ============================================================================
-// UNION TYPE — compatibilidade com ambos os formatos
-// ============================================================================
-
-/** Usado em componentes que recebem tanto lista quanto detalhe */
-export type ZenBitEvent = ZenBitEventListItem | ZenBitEventDetail;
-
-// ============================================================================
-// PARÂMETROS DE FETCH
-// ============================================================================
-
-export interface FetchEventsParams {
-    mode?: 'upcoming' | 'past' | 'all';
-    days?: number;
-    date?: string;       // YYYY-MM-DD,YYYY-MM-DD (sobrescreve days)
-    limit?: number;
-    lang?: string;
-    search?: string;
-    // DEPRECATED — mantido para BC; mapeado internamente para mode
-    upcomingOnly?: boolean;
+    tickets?: string[];   // lista plana de URLs de tickets
+    raw?: unknown;    // debug only
 }
 
 // ============================================================================
@@ -79,7 +69,6 @@ export interface EventsApiResponse {
     success: boolean;
     count: number;
     mode: string;
-    lang: string;
     events: ZenBitEventListItem[];
 }
 
@@ -89,24 +78,17 @@ export interface EventDetailApiResponse {
 }
 
 // ============================================================================
-// ALIAS DE COMPATIBILIDADE — componentes antigos usam BandsintownEvent
-// Mantido para não precisar refatorar AddCalendarMenu e outros componentes
-// em um único PR. Remover em v3.
+// PARÂMETROS DE FETCH
 // ============================================================================
 
-/** @deprecated Use ZenBitEventDetail. Alias de compatibilidade. */
-export type BandsintownEvent = ZenBitEventDetail & {
-    /** @deprecated Use starts_at */
-    datetime?: string;
-    /** @deprecated Use location */
-    venue?: {
-        name: string;
-        city: string;
-        region: string;
-        country: string;
-        latitude?: string;
-        longitude?: string;
-    };
-    /** @deprecated Use source_url */
-    url?: string;
-};
+export interface FetchEventsParams {
+    mode?: 'upcoming' | 'past' | 'all';
+    days?: number;
+    date?: string;          // YYYY-MM-DD,YYYY-MM-DD
+    limit?: number;
+    lang?: string;
+
+    // DEPRECATED — BC apenas, mapeado para mode no fetchEventsFn
+    /** @deprecated Use mode='all' */
+    upcomingOnly?: boolean;
+}

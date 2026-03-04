@@ -1,13 +1,15 @@
 <?php
 /**
- * Zen BIT — Normalizer
+ * Zen BIT — Normalizer v2
  * Responsabilidade única: transformar dados brutos da Bandsintown em formatos
- * estáveis e semânticos para o React e para Schema.org.
+ * estáveis para o React e para Schema.org.
  *
- * Regras:
- *  - Para o mesmo evento, sempre produz o mesmo canonical_path (determinístico).
- *  - Lista (normalize_list_item): payload enxuto — sem description/image/offers.
- *  - Detalhe (normalize_detail): payload completo + todos os campos opcionais.
+ * BREAKING CHANGES vs v1:
+ *  - ID do evento agora exposto como `event_id` (string numérica)
+ *  - Campo `starts_at` substitui `datetime`
+ *  - Campo `location` (objeto) substitui `venue` (objeto flat)
+ *  - Lista NÃO inclui description/image/offers/lineup/raw
+ *  - Detalhe inclui `ends_at`, `artists`, `tickets`
  */
 
 if (!defined('ABSPATH'))
@@ -15,41 +17,32 @@ if (!defined('ABSPATH'))
 
 class Zen_BIT_Normalizer
 {
+    // Versão — mudar invalida todos os caches de payload
+    const VERSION = 'v2.1';
+
     // =========================================================================
     // CANONICAL PATH
     // =========================================================================
 
     /**
-     * Gera um slug URL-safe a partir de texto livre.
-     * Translitera acentos, converte para minúsculas, troca caracteres não-ASCII
-     * por hífen e trunca para $max caracteres.
-     *
-     * @param string $text
-     * @param int    $max  Comprimento máximo do slug (sem truncar no meio de palavra)
-     * @return string
+     * Gera slug URL-safe (translitera, lowercase, apenas a-z/0-9/hífen).
      */
-    public static function slugify(string $text, int $max = 60): string
+    public static function slugify(string $text, int $max = 55): string
     {
         if ($text === '')
             return '';
 
-        // Remove tags e entidades HTML
         $text = wp_strip_all_tags(html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 
-        // Translitera caracteres unicode para ASCII (ex: ã→a, ç→c, é→e)
         if (function_exists('transliterator_transliterate')) {
             $text = (string) transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $text);
         } else {
             $text = mb_strtolower($text, 'UTF-8');
         }
 
-        // Substitui tudo que não seja letra, dígito ou hífen por hífen
         $text = preg_replace('/[^a-z0-9]+/', '-', $text);
-
-        // Remove hífens nas bordas
         $text = trim($text, '-');
 
-        // Trunca (sem cortar no meio)
         if (mb_strlen($text) > $max) {
             $text = rtrim(mb_substr($text, 0, $max), '-');
         }
@@ -58,50 +51,37 @@ class Zen_BIT_Normalizer
     }
 
     /**
-     * Constrói o canonical_path estável para um evento.
-     * Padrão: /events/{yyyy-mm-dd}-{slug}-{id}
-     * Fallback: /events/{id}
-     *
-     * @param array $event Evento já normalizado OU raw (precisa de datetime e id)
-     * @return string
+     * Canonical path: /events/{yyyy-mm-dd}-{slug}-{event_id}
+     * Fallback: /events/{event_id}
      */
-    public static function build_canonical_path(array $event): string
+    public static function build_canonical_path(string $event_id, string $datetime, string $title): string
     {
-        $id = (string) ($event['id'] ?? '');
-        $datetime = (string) ($event['datetime'] ?? $event['starts_at'] ?? '');
-        $title = (string) ($event['title'] ?? '');
-
-        if ($id === '')
+        if ($event_id === '')
             return '/events/unknown';
 
-        // Data do evento (somente a parte YYYY-MM-DD)
         $date_part = '';
         if ($datetime !== '') {
             $ts = strtotime($datetime);
-            if ($ts) {
+            if ($ts)
                 $date_part = gmdate('Y-m-d', $ts);
-            }
         }
 
-        // Slug do título
         $slug = self::slugify($title, 55);
 
-        // Monta o path
         if ($date_part !== '' && $slug !== '') {
-            return '/events/' . $date_part . '-' . $slug . '-' . $id;
+            return '/events/' . $date_part . '-' . $slug . '-' . $event_id;
         }
 
-        return '/events/' . $id;
+        return '/events/' . $event_id;
     }
 
     // =========================================================================
-    // HELPERS INTERNOS
+    // HELPERS
     // =========================================================================
 
     private static function safe_text(string $text, int $max = 0): string
     {
-        $text = wp_strip_all_tags($text);
-        $text = trim(preg_replace('/\s+/', ' ', $text));
+        $text = trim(preg_replace('/\s+/', ' ', wp_strip_all_tags($text)));
         if ($max > 0 && mb_strlen($text) > $max) {
             $text = mb_substr($text, 0, $max) . '…';
         }
@@ -113,20 +93,12 @@ class Zen_BIT_Normalizer
         if ($url === '')
             return '';
         $url = trim($url);
-        if (str_starts_with($url, '/'))
-            return $url;
         $parsed = wp_parse_url($url);
         if (!$parsed || empty($parsed['scheme']))
             return '';
-        $scheme = strtolower((string) $parsed['scheme']);
-        if (!in_array($scheme, ['http', 'https'], true))
+        if (!in_array(strtolower((string) $parsed['scheme']), ['http', 'https'], true))
             return '';
         return esc_url_raw($url);
-    }
-
-    private static function parse_timezone(array $event): string
-    {
-        return (string) ($event['venue']['timezone'] ?? $event['timezone'] ?? '');
     }
 
     private static function normalize_location(array $raw): array
@@ -142,114 +114,110 @@ class Zen_BIT_Normalizer
         ];
     }
 
-    private static function parse_starts_at(array $raw): string
+    /**
+     * ISO 8601 com timezone
+     */
+    private static function parse_iso(string $datetime): string
     {
-        $dt = (string) ($raw['datetime'] ?? '');
-        if ($dt === '')
+        if ($datetime === '')
             return '';
-        $ts = strtotime($dt);
-        return $ts ? wp_date('c', $ts) : $dt;
+        $ts = strtotime($datetime);
+        return $ts ? date('c', $ts) : $datetime;
     }
 
-    private static function build_source_url(array $raw): string
+    // =========================================================================
+    // LISTA — payload enxuto
+    // =========================================================================
+
+    /**
+     * @return array{event_id,title,starts_at,timezone,location,canonical_path,source_url}
+     */
+    public static function normalize_list_item(array $raw): array
     {
-        $url = (string) ($raw['url'] ?? '');
-        return self::safe_url($url);
+        $event_id = (string) ($raw['id'] ?? '');
+        $datetime = (string) ($raw['datetime'] ?? '');
+        $title = self::safe_text((string) ($raw['title'] ?? ''), 180);
+        $starts_at = self::parse_iso($datetime);
+        $timezone = (string) ($raw['venue']['timezone'] ?? $raw['timezone'] ?? '');
+
+        $canonical_path = self::build_canonical_path($event_id, $datetime, $title);
+
+        return [
+            'event_id' => $event_id,
+            'title' => $title,
+            'starts_at' => $starts_at,
+            'timezone' => $timezone,
+            'location' => self::normalize_location($raw),
+            'canonical_path' => $canonical_path,
+            'canonical_url' => home_url($canonical_path),
+            'source_url' => self::safe_url((string) ($raw['url'] ?? '')),
+        ];
     }
 
-    private static function build_image(array $raw): string
-    {
-        $img = (string) ($raw['image'] ?? '');
-        $safe = $img !== '' ? self::safe_url($img) : '';
-        return $safe !== '' ? $safe : 'https://djzeneyer.com/images/event-default.jpg';
-    }
+    // =========================================================================
+    // DETALHE — payload completo
+    // =========================================================================
 
-    private static function build_offers(array $raw): array
+    /**
+     * @return array Inclui tudo de list_item + description, ends_at, image, artists, offers, tickets
+     */
+    public static function normalize_detail(array $raw, bool $include_raw = false): array
     {
-        $out = [];
+        $base = self::normalize_list_item($raw);
+
+        // ends_at
+        $ends_at_raw = (string) ($raw['ends_at'] ?? $raw['on_sale_datetime'] ?? '');
+        $ends_at = $ends_at_raw !== '' ? self::parse_iso($ends_at_raw) : '';
+
+        // image
+        $image = self::safe_url((string) ($raw['image'] ?? ''));
+        if ($image === '')
+            $image = 'https://djzeneyer.com/images/event-default.jpg';
+
+        // artists
+        $artists = [];
+        if (!empty($raw['artists']) && is_array($raw['artists'])) {
+            foreach ($raw['artists'] as $a) {
+                if (!is_array($a))
+                    continue;
+                $artists[] = [
+                    'name' => self::safe_text((string) ($a['name'] ?? ''), 120),
+                    'image' => self::safe_url((string) ($a['image_url'] ?? '')),
+                    'source_url' => self::safe_url((string) ($a['url'] ?? '')),
+                ];
+            }
+        }
+        // fallback: lineup como strings
+        if (empty($artists) && !empty($raw['lineup'])) {
+            foreach ((array) $raw['lineup'] as $name) {
+                $artists[] = ['name' => self::safe_text((string) $name, 120), 'image' => '', 'source_url' => ''];
+            }
+        }
+
+        // offers / tickets
+        $offers = [];
+        $tickets = [];
         if (!empty($raw['offers']) && is_array($raw['offers'])) {
             foreach ($raw['offers'] as $offer) {
                 if (!is_array($offer))
                     continue;
                 $url = self::safe_url((string) ($offer['url'] ?? ''));
+                $type = self::safe_text((string) ($offer['type'] ?? ''), 80);
+                $status = self::safe_text((string) ($offer['status'] ?? ''), 40);
                 if ($url) {
-                    $out[] = [
-                        'url' => $url,
-                        'type' => self::safe_text((string) ($offer['type'] ?? ''), 80),
-                    ];
+                    $offers[] = ['url' => $url, 'type' => $type, 'status' => $status];
+                    $tickets[] = $url; // lista plana de URLs de tickets
                 }
             }
         }
-        return $out;
-    }
 
-    private static function build_lineup(array $raw): array
-    {
-        $out = [];
-        if (!empty($raw['lineup']) && is_array($raw['lineup'])) {
-            foreach ($raw['lineup'] as $artist) {
-                $out[] = self::safe_text((string) $artist, 120);
-            }
-        }
-        return $out;
-    }
-
-    // =========================================================================
-    // PAYLOAD LISTA — Enxuto (sem description/image/offers/lineup)
-    // =========================================================================
-
-    /**
-     * Normaliza um evento bruto da API para o formato de lista (payload enxuto).
-     * Não inclui: description, image, offers, lineup.
-     *
-     * @param array $raw Evento bruto do Bandsintown
-     * @return array
-     */
-    public static function normalize_list_item(array $raw): array
-    {
-        $starts_at = self::parse_starts_at($raw);
-        $canonical_path = self::build_canonical_path(array_merge($raw, ['starts_at' => $starts_at]));
-        $canonical_url = home_url($canonical_path);
-
-        return [
-            'id' => (string) ($raw['id'] ?? ''),
-            'title' => self::safe_text((string) ($raw['title'] ?? ''), 180),
-            'starts_at' => $starts_at,
-            'timezone' => self::parse_timezone($raw),
-            'location' => self::normalize_location($raw),
-            'canonical_path' => $canonical_path,
-            'canonical_url' => $canonical_url,
-        ];
-    }
-
-    // =========================================================================
-    // PAYLOAD DETALHE — Completo
-    // =========================================================================
-
-    /**
-     * Normaliza um evento bruto para o formato completo (página de detalhe).
-     * Inclui todos os campos: description, image, offers, lineup, source_url.
-     * O campo 'raw' é incluído apenas se $include_raw === true.
-     *
-     * @param array $raw         Evento bruto do Bandsintown
-     * @param bool  $include_raw Incluir payload raw para debug
-     * @return array
-     */
-    public static function normalize_detail(array $raw, bool $include_raw = false): array
-    {
-        $list = self::normalize_list_item($raw);
-        $description = self::safe_text((string) ($raw['description'] ?? ''), 1000);
-        $image = self::build_image($raw);
-        $offers = self::build_offers($raw);
-        $lineup = self::build_lineup($raw);
-        $source_url = self::build_source_url($raw);
-
-        $detail = array_merge($list, [
-            'description' => $description,
+        $detail = array_merge($base, [
+            'ends_at' => $ends_at,
+            'description' => self::safe_text((string) ($raw['description'] ?? ''), 2000),
             'image' => $image,
+            'artists' => $artists,
             'offers' => $offers,
-            'lineup' => $lineup,
-            'source_url' => $source_url,
+            'tickets' => $tickets,
         ]);
 
         if ($include_raw) {
@@ -260,29 +228,26 @@ class Zen_BIT_Normalizer
     }
 
     // =========================================================================
-    // SCHEMA JSON-LD
+    // SCHEMA JSON-LD — MusicEvent
     // =========================================================================
 
     /**
-     * Gera um objeto MusicEvent Schema.org para o rich result do Google.
-     * Usa canonical_url como url principal e source_url como sameAs.
-     *
-     * @param array $detail Evento normalizado por normalize_detail()
-     * @return array
+     * Gera schema MusicEvent para um evento (list_item OU detail já normalizado).
+     * Campos opcionais só são incluídos quando presentes.
      */
-    public static function build_event_schema(array $detail): array
+    public static function build_event_schema(array $event): array
     {
-        if (empty($detail['starts_at']))
+        if (empty($event['starts_at']))
             return [];
 
-        $loc = $detail['location'] ?? [];
+        $loc = $event['location'] ?? [];
         $schema = [
             '@type' => 'MusicEvent',
-            'name' => $detail['title'] ?? '',
-            'startDate' => $detail['starts_at'],
+            'name' => $event['title'] ?? '',
+            'startDate' => $event['starts_at'],
             'eventStatus' => 'https://schema.org/EventScheduled',
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
-            'url' => $detail['canonical_url'] ?? '',
+            'url' => $event['canonical_url'] ?? '',
             'location' => [
                 '@type' => 'Place',
                 'name' => $loc['venue'] ?? '',
@@ -293,30 +258,20 @@ class Zen_BIT_Normalizer
                     'addressCountry' => $loc['country'] ?? '',
                 ],
             ],
-            'performer' => [
-                '@type' => 'MusicGroup',
-                'name' => 'DJ Zen Eyer',
-                'url' => home_url('/'),
-                'sameAs' => [
-                    'https://www.instagram.com/djzeneyer/',
-                    'https://soundcloud.com/djzeneyer',
-                    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-                ],
-            ],
         ];
 
-        // Campos opcionais (detalhe)
-        if (!empty($detail['description'])) {
-            $schema['description'] = $detail['description'];
-        }
-        if (!empty($detail['image'])) {
-            $schema['image'] = $detail['image'];
-        }
-        if (!empty($detail['source_url'])) {
-            $schema['sameAs'] = $detail['source_url'];
-        }
-        if (!empty($detail['offers'])) {
-            $offer = $detail['offers'][0];
+        // Campos do detalhe
+        if (!empty($event['ends_at']))
+            $schema['endDate'] = $event['ends_at'];
+        if (!empty($event['description']))
+            $schema['description'] = $event['description'];
+        if (!empty($event['image']))
+            $schema['image'] = $event['image'];
+        if (!empty($event['source_url']))
+            $schema['sameAs'] = $event['source_url'];
+
+        if (!empty($event['offers'])) {
+            $offer = $event['offers'][0];
             $schema['offers'] = [
                 '@type' => 'Offer',
                 'url' => $offer['url'],
@@ -324,6 +279,25 @@ class Zen_BIT_Normalizer
             ];
         }
 
-        return array_filter($schema, fn($v) => $v !== '' && $v !== null && $v !== []);
+        return $schema;
+    }
+
+    /**
+     * @return array Performer entity reutilizável com @id para ligação semântica no @graph
+     */
+    public static function build_performer_entity(): array
+    {
+        return [
+            '@type' => 'MusicGroup',
+            '@id' => home_url('/') . '#djzeneyer',
+            'name' => 'DJ Zen Eyer',
+            'genre' => 'Brazilian Zouk',
+            'url' => home_url('/'),
+            'sameAs' => [
+                'https://www.instagram.com/djzeneyer/',
+                'https://soundcloud.com/djzeneyer',
+                'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+            ],
+        ];
     }
 }
