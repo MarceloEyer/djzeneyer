@@ -200,8 +200,8 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
     <div className="space-y-12 animate-in fade-in duration-500">
       {groupedEvents.map(([key, monthEvents]: [string, BandsintownEvent[]]) => {
         const [y, m] = key.split('-');
-        // Forçar cast para 'en' na geração da chave de tradução para garantir compatibilidade
-        const monthShort = new Date(Number(y), Number(m) - 1).toLocaleString('en', { month: 'short' }).toLowerCase();
+        const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        const monthShort = MONTH_NAMES[Number(m) - 1];
         const name = t(`events_month_${monthShort}`);
         return (
           <section key={key}>
