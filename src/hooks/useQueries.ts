@@ -130,6 +130,79 @@ export const fetchProductsFn = async (lang?: string) => {
   return res.json();
 };
 
+/**
+ * Fetch featured product from WooCommerce REST API
+ * Uses server-side filtering instead of client-side
+ */
+export const fetchFeaturedProductFn = async (lang?: string) => {
+  const params: Record<string, string> = {
+    featured: 'true',
+    per_page: '1',
+    status: 'publish'
+  };
+  if (lang) params.lang = lang;
+  const apiUrl = buildApiUrl('wc/v3/products', params);
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch featured product');
+  const data = await res.json();
+  return Array.isArray(data) && data.length > 0 ? data[0] : null;
+};
+
+/**
+ * Fetch new releases from WooCommerce REST API
+ * Sorted by date descending (newest first)
+ */
+export const fetchNewReleasesFn = async (lang?: string) => {
+  const params: Record<string, string> = {
+    orderby: 'date',
+    order: 'desc',
+    per_page: '10',
+    status: 'publish'
+  };
+  if (lang) params.lang = lang;
+  const apiUrl = buildApiUrl('wc/v3/products', params);
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch new releases');
+  return res.json();
+};
+
+/**
+ * Fetch best sellers from WooCommerce REST API
+ * Sorted by popularity (total sales)
+ */
+export const fetchBestSellersFn = async (lang?: string) => {
+  const params: Record<string, string> = {
+    orderby: 'popularity',
+    per_page: '10',
+    status: 'publish'
+  };
+  if (lang) params.lang = lang;
+  const apiUrl = buildApiUrl('wc/v3/products', params);
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch best sellers');
+  return res.json();
+};
+
+/**
+ * Fetch curated selection (last 10 products)
+ * Using date ordering with offset for variety
+ */
+export const fetchCuratedSelectionFn = async (lang?: string) => {
+  const params: Record<string, string> = {
+    orderby: 'date',
+    order: 'desc',
+    per_page: '10',
+    status: 'publish'
+  };
+  if (lang) params.lang = lang;
+  const apiUrl = buildApiUrl('wc/v3/products', params);
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch curated selection');
+  const data = await res.json();
+  // Reverse to show oldest-to-newest for curated effect
+  return Array.isArray(data) ? data.reverse() : [];
+};
+
 // ============================================================================
 // MENU QUERY (PÚBLICO)
 // ============================================================================
@@ -252,6 +325,54 @@ export const useProductsQuery = (lang?: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.products.list(lang),
     queryFn: () => fetchProductsFn(lang),
+    staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
+/**
+ * Query for featured product using WooCommerce REST API
+ * Server-side filtered for ?featured=true
+ */
+export const useFeaturedProductQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.products.list(lang), 'featured'],
+    queryFn: () => fetchFeaturedProductFn(lang),
+    staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
+/**
+ * Query for new releases using WooCommerce REST API
+ * Server-side sorted by date descending
+ */
+export const useNewReleasesQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.products.list(lang), 'new-releases'],
+    queryFn: () => fetchNewReleasesFn(lang),
+    staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
+/**
+ * Query for best sellers using WooCommerce REST API
+ * Server-side sorted by popularity
+ */
+export const useBestSellersQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.products.list(lang), 'best-sellers'],
+    queryFn: () => fetchBestSellersFn(lang),
+    staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
+/**
+ * Query for curated selection using WooCommerce REST API
+ * Server-side filtered and reversed
+ */
+export const useCuratedSelectionQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.products.list(lang), 'curated'],
+    queryFn: () => fetchCuratedSelectionFn(lang),
     staleTime: STALE_TIME.PRODUCTS,
   });
 };

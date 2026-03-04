@@ -1,13 +1,19 @@
 // src/pages/ShopPage.tsx
 // Visual inspirado em Netflix para venda de ingressos de eventos
 
-import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { useProductsQuery, useAddToCartMutation } from '../hooks/useQueries';
+import {
+  useFeaturedProductQuery,
+  useNewReleasesQuery,
+  useBestSellersQuery,
+  useCuratedSelectionQuery,
+  useAddToCartMutation
+} from '../hooks/useQueries';
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
@@ -351,10 +357,19 @@ const ShopPage: React.FC = () => {
   const isPortuguese = i18n.language.startsWith('pt');
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
-  const { data: products = [], isLoading: loading, error, refetch } = useProductsQuery(currentLang);
+  // Fetch filtered products from WooCommerce REST API in parallel
+  const { data: featuredProduct, isLoading: loadingFeatured, error: errorFeatured } = useFeaturedProductQuery(currentLang);
+  const { data: newReleases = [], isLoading: loadingNew, error: errorNew } = useNewReleasesQuery(currentLang);
+  const { data: bestSellers = [], isLoading: loadingBest, error: errorBest } = useBestSellersQuery(currentLang);
+  const { data: curatedSelection = [], isLoading: loadingCurated, error: errorCurated } = useCuratedSelectionQuery(currentLang);
+
   const addToCartMutation = useAddToCartMutation();
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
+
+  // Aggregate loading and error states
+  const loading = loadingFeatured || loadingNew || loadingBest || loadingCurated;
+  const error = errorFeatured || errorNew || errorBest || errorCurated;
 
   // Função para adicionar ao carrinho (OPTIMIZATION: useCallback)
   const handleAddToCart = useCallback(async (productId: number) => {
@@ -380,26 +395,7 @@ const ShopPage: React.FC = () => {
       : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
-  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: useMemo)
-  const featuredProduct = useMemo(() =>
-    products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0],
-    [products]
-  );
-
-  const newReleases = useMemo(() =>
-    products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10),
-    [products]
-  );
-
-  const bestSellers = useMemo(() =>
-    products.filter((p: Product) => p.on_sale).slice(0, 10),
-    [products]
-  );
-
-  const curatedSelection = useMemo(() =>
-    products.slice(-10).reverse(), // OPTIMIZATION: Slice first, then reverse
-    [products]
-  );
+  // No client-side filtering needed - data comes pre-filtered from WooCommerce API
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
@@ -413,7 +409,6 @@ const ShopPage: React.FC = () => {
         <AlertCircle className="mx-auto mb-4 text-error" size={48} />
         <h2 className="text-2xl font-bold mb-2">Error loading shop</h2>
         <p className="opacity-70">{error instanceof Error ? error.message : String(error)}</p>
-        <button onClick={() => refetch()} className="mt-4 btn btn-primary">Try Again</button>
       </div>
     </div>
   );
