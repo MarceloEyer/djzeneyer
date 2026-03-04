@@ -1750,16 +1750,15 @@
   "events_loading": "Carregando eventos...",
   "events_noEvents": "Nenhum evento agendado no momento. Volte em breve!",
   "events_ticketAriaLabel": "Ver ingressos para {{title}} em {{location}}",
-  "events_add_google": "Adicionar ao Google Agenda"
-},
-"social": {
-  "instagram": "Instagram",
-  "youtube": "YouTube",
-  "spotify": "Spotify",
-  "apple_music": "Apple Music",
-  "musicbrainz": "MusicBrainz",
-  "wikidata": "Wikidata",
-  "discogs": "Discogs",
-  "resident_advisor": "Resident Advisor"
-}
+  "events_add_google": "Adicionar ao Google Agenda",
+  "social": {
+    "instagram": "Instagram",
+    "youtube": "YouTube",
+    "spotify": "Spotify",
+    "apple_music": "Apple Music",
+    "musicbrainz": "MusicBrainz",
+    "wikidata": "Wikidata",
+    "discogs": "Discogs",
+    "resident_advisor": "Resident Advisor"
+  }
 }

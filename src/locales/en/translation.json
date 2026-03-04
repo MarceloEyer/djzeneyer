@@ -1729,16 +1729,15 @@
   "events_loading": "Loading events...",
   "events_noEvents": "No events scheduled at the moment. Check back soon!",
   "events_ticketAriaLabel": "View tickets for {{title}} at {{location}}",
-  "events_add_google": "Add to Google Calendar"
-},
-"social": {
-  "instagram": "Instagram",
-  "youtube": "YouTube",
-  "spotify": "Spotify",
-  "apple_music": "Apple Music",
-  "musicbrainz": "MusicBrainz",
-  "wikidata": "Wikidata",
-  "discogs": "Discogs",
-  "resident_advisor": "Resident Advisor"
-}
+  "events_add_google": "Add to Google Calendar",
+  "social": {
+    "instagram": "Instagram",
+    "youtube": "YouTube",
+    "spotify": "Spotify",
+    "apple_music": "Apple Music",
+    "musicbrainz": "MusicBrainz",
+    "wikidata": "Wikidata",
+    "discogs": "Discogs",
+    "resident_advisor": "Resident Advisor"
+  }
 }
