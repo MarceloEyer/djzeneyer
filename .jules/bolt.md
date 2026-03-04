@@ -27,3 +27,7 @@
 
 **Learning:** Calling `gamipress_has_user_earned_achievement()` inside a loop of achievements causes one database query per item. For sites with dozens of achievements, this becomes the primary bottleneck of the user data endpoint.
 **Action:** Always fetch all user earnings at once using `gamipress_get_user_earnings($user_id, 'achievement')` before entering the loop. Build a local lookup map (ID -> data) to perform O(1) checks during iteration.
+
+## 2025-03-04 - Memoize static data in React functional components
+**Learning:** `AboutPage.tsx` re-created the complex static arrays `ABOUT_SCHEMA`, `MILESTONES`, and `ACHIEVEMENTS_DATA` on every render cycle. Because they needed the `t` function from `useTranslation`, they could not be easily moved outside the component.
+**Action:** Use `useMemo(() => [...], [t])` to keep them within the component so they can access hooks while preventing unnecessary allocations and downstream re-renders on unrelated state changes.
