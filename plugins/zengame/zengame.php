@@ -18,8 +18,9 @@ class ZenGame
 {
     private static $instance = null;
     const CACHE_VERSION = 'v8';
-    
-    private function get_cache_ttl() {
+
+    private function get_cache_ttl()
+    {
         return (int) get_option('zengame_cache_ttl', 86400);
     }
 
@@ -148,10 +149,8 @@ class ZenGame
                 // Period filtering logic
                 if ($period !== 'all') {
                     $days = ($period === '30d') ? 30 : 7;
-                    // Note: GamiPress points table doesn't have a direct 'last updated' for specific amounts, 
-                    // but we can join with logs if we want REAL period points.
-                    // For now, let's keep it simple or use logs for the period.
-
+                    // Note: Real GamiPress table uses 'points_type' or 'point_type' depending on version. 
+                    // Usually it is 'points_type' in the custom table.
                     $query = "SELECT log.user_id, SUM(log.points) as points 
                              FROM {$wpdb->prefix}gamipress_logs as log
                              WHERE log.type = %s AND log.date >= DATE_SUB(NOW(), INTERVAL %d DAY)
@@ -166,7 +165,8 @@ class ZenGame
                 // Sort and limit results if from logs
                 if ($period !== 'all') {
                     usort($results, function ($a, $b) {
-                        return $b->points - $a->points; });
+                        return $b->points - $a->points;
+                    });
                     $results = array_slice($results, 0, $limit);
                 }
 
@@ -270,13 +270,16 @@ class ZenGame
                             <tr>
                                 <th scope="row"><label for="cache_ttl">Cache TTL (seconds)</label></th>
                                 <td>
-                                    <input name="cache_ttl" type="number" id="cache_ttl" value="<?php echo esc_attr($ttl); ?>" class="regular-text">
-                                    <p class="description">Default: 86400 (24 hours). Lower values increase DB load but refresh data faster.</p>
+                                    <input name="cache_ttl" type="number" id="cache_ttl" value="<?php echo esc_attr($ttl); ?>"
+                                        class="regular-text">
+                                    <p class="description">Default: 86400 (24 hours). Lower values increase DB load but refresh
+                                        data faster.</p>
                                 </td>
                             </tr>
                         </table>
                         <p class="submit">
-                            <input type="submit" name="zengame_save_settings" id="submit" class="button button-primary" value="Save Settings">
+                            <input type="submit" name="zengame_save_settings" id="submit" class="button button-primary"
+                                value="Save Settings">
                         </p>
                     </form>
                 </div>
@@ -427,15 +430,18 @@ class ZenGame
         // Transient cache per user
         $cache_key = 'djz_gamipress_dashboard_' . self::CACHE_VERSION . '_' . $user_id;
         $cached = get_transient($cache_key);
-        if ($cached !== false) {
+        if ($cached !== false && !isset($_GET['nocache'])) {
             return rest_ensure_response($cached);
         }
 
         // --- 1. POINTS ---
         $point_data = [];
+        $main_points_slug = 'points'; // Default
         if (function_exists('gamipress_get_points_types')) {
             $point_types = gamipress_get_points_types();
             foreach ($point_types as $slug => $pt) {
+                if (empty($main_points_slug))
+                    $main_points_slug = $slug;
                 $point_data[$slug] = [
                     'name' => $pt['plural_name'],
                     'amount' => (int) gamipress_get_user_points($user_id, $slug),
@@ -455,14 +461,15 @@ class ZenGame
         if (function_exists('gamipress_query_logs')) {
             $raw_logs = gamipress_query_logs([
                 'user_id' => $user_id,
-                'limit' => 10,
+                'limit' => 15,
                 'order_by' => 'date',
                 'order' => 'DESC'
             ]);
 
             foreach ($raw_logs as $log) {
                 $logs[] = [
-                    'id' => $log->log_id,
+                    'id' => (int) $log->log_id,
+                    'type' => $log->type,
                     'description' => $log->title,
                     'date' => $log->date,
                     'points' => (int) ($log->points ?? 0)
@@ -470,12 +477,33 @@ class ZenGame
             }
         }
 
-        // --- 5. STATS & FLAGS ---
-        $data['version'] = '1.2.0';
-        $data['cache_ttl'] = $this->get_cache_ttl();
+        // --- 5. DATA AGGREGATION (Fixed Undefined Variable) ---
+        $data = [
+            'user_id' => $user_id,
+            'points' => $point_data,
+            'main_points_slug' => $main_points_slug,
+            'rank' => $rank_info,
+            'achievements_earned' => $achievements['earned'],
+            'achievements_locked' => $achievements['locked'],
+            'recent_achievements' => array_slice($achievements['earned'], 0, 5),
+            'logs' => $logs,
+            'stats' => [
+                'totalTracks' => $this->is_woo_active() ? $this->get_user_total_tracks($user_id) : 0,
+                'eventsAttended' => $this->is_woo_active() ? $this->get_user_events_attended($user_id) : 0,
+                'streak' => 0,
+                'streakFire' => false
+            ],
+            'lastUpdate' => current_time('mysql'),
+            'version' => '1.2.0'
+        ];
 
         set_transient($cache_key, $data, $this->get_cache_ttl());
         return rest_ensure_response($data);
+    }
+
+    private function is_woo_active()
+    {
+        return class_exists('WooCommerce');
     }
 
     /**
@@ -483,7 +511,12 @@ class ZenGame
      */
     private function get_detailed_rank_info($user_id)
     {
-        $info = ['current' => null, 'next' => null, 'progress' => 0];
+        $info = [
+            'current' => null,
+            'next' => null,
+            'progress' => 0,
+            'requirements' => []
+        ];
 
         if (!function_exists('gamipress_get_user_rank'))
             return $info;
@@ -497,6 +530,7 @@ class ZenGame
 
         if ($current) {
             $info['current'] = [
+                'id' => $current->ID,
                 'title' => $current->post_title,
                 'image' => get_the_post_thumbnail_url($current->ID, 'thumbnail') ?: ''
             ];
@@ -505,6 +539,7 @@ class ZenGame
             if ($next_id) {
                 $next = get_post($next_id);
                 $info['next'] = [
+                    'id' => (int) $next_id,
                     'title' => $next->post_title,
                     'image' => get_the_post_thumbnail_url($next_id, 'thumbnail') ?: ''
                 ];
@@ -512,15 +547,32 @@ class ZenGame
                 // Calculate progress based on requirements
                 $requirements = gamipress_get_rank_requirements($next_id);
                 if ($requirements) {
-                    $total_req = count($requirements);
-                    $completed_req = 0;
+                    $total_percent = 0;
                     foreach ($requirements as $req) {
-                        if (gamipress_has_user_completed_requirement($user_id, $req->ID)) {
-                            $completed_req++;
-                        }
+                        // Extract requirement details
+                        $req_obj = gamipress_get_requirement($req->ID);
+                        $required = (int) ($req_obj->times ?? 1);
+                        $current_val = (int) gamipress_get_earnings_count([
+                            'user_id' => $user_id,
+                            'post_id' => $req_obj->post_id,
+                            'requirement_id' => $req->ID
+                        ]);
+
+                        $percent = $required > 0 ? min(100, round(($current_val / $required) * 100)) : 100;
+                        $total_percent += $percent;
+
+                        $info['requirements'][] = [
+                            'title' => $req->post_title,
+                            'current' => $current_val,
+                            'required' => $required,
+                            'percent' => $percent
+                        ];
                     }
-                    $info['progress'] = round(($completed_req / $total_req) * 100);
+                    $info['progress'] = round($total_percent / count($requirements));
                 }
+            } else {
+                // Max rank reached
+                $info['progress'] = 100;
             }
         }
 
@@ -543,10 +595,13 @@ class ZenGame
         foreach ($all as $post) {
             $is_earned = in_array($post->ID, $user_earned_ids);
             $item = [
-                'id' => $post->ID,
+                'id' => (int) $post->ID,
                 'title' => $post->post_title,
+                'description' => $post->post_excerpt ?: $post->post_content,
                 'image' => get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
-                'earned' => $is_earned
+                'earned' => $is_earned,
+                'date_earned' => $is_earned ? gamipress_get_user_achievement_date_earned($user_id, $post->ID) : '',
+                'points_awarded' => 0 // Future logic if needed
             ];
 
             if ($is_earned)

@@ -40,7 +40,12 @@ function buildUrlEntry(url, date, priority = '0.8', ptUrl = null) {
 async function fetchEvents() {
   try {
     console.log(`📡 Fetching events from ${API_URL}...`);
-    const response = await fetch(API_URL + '?mode=all&limit=200');
+    const response = await fetch(API_URL + '?mode=all&limit=200', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json'
+      }
+    });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     return Array.isArray(data) ? data : (data.events || []);
