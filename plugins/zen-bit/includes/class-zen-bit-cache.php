@@ -10,6 +10,8 @@
  *   Past:     zen_bit_ttl_past     (padrão 7d)
  */
 
+namespace ZenBit;
+
 if (!defined('ABSPATH'))
     exit;
 

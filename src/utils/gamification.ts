@@ -47,11 +47,18 @@ export function formatPoints(points: number): string {
  */
 export function formatLogDate(dateString: string): string {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-    }).format(date);
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        return new Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+        }).format(date);
+    } catch (e) {
+        console.error('[gamification] Error formatting log date:', e, dateString);
+        return dateString;
+    }
 }

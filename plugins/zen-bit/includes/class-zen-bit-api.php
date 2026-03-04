@@ -1,102 +1,89 @@
 <?php
 /**
- * Zen BIT — API Layer v2
+ * Zen BIT — API v2
+ * Namespace: zen-bit/v2
  *
  * Endpoints:
- *   GET  /wp-json/zen-bit/v1/events                  → Lista enxuta (sem description/image/offers)
- *   GET  /wp-json/zen-bit/v1/events/{id}             → Detalhe completo
- *   GET  /wp-json/zen-bit/v1/events/{id}/schema      → JSON-LD MusicEvent por evento
- *   GET  /wp-json/zen-bit/v1/events-schema           → JSON-LD @graph para lista
- *   POST /wp-json/zen-bit/v1/clear-cache             → Admin: limpa cache
- *   POST /wp-json/zen-bit/v1/fetch-now               → Admin: força refresh
- *
- * Parâmetros suportados em /events e /events-schema:
- *   mode          string  upcoming|past|all  (default: upcoming)
- *   days          int     1–730             (default: zen_bit_default_days | 365)
- *   date          string  YYYY-MM-DD,YYYY-MM-DD  (sobrescreve days)
- *   limit         int     1–200             (default: 50)
- *   lang          string  en|pt             (passthrough)
- *   upcoming_only bool    DEPRECATED → mapeado para mode
+ *   GET  /wp-json/zen-bit/v2/events                   → Lista enxuta
+ *   GET  /wp-json/zen-bit/v2/events/schema            → JSON-LD lista
+ *   GET  /wp-json/zen-bit/v2/events/{event_id}        → Detalhe completo
+ *   GET  /wp-json/zen-bit/v2/events/{event_id}/schema → JSON-LD por evento
+ *   POST /wp-json/zen-bit/v2/admin/clear-cache        → Limpa cache (admin)
+ *   POST /wp-json/zen-bit/v2/admin/fetch-now          → Força refresh (admin)
+ *   GET  /wp-json/zen-bit/v2/admin/health             → Health status (admin)
  */
+
+namespace ZenBit;
 
 if (!defined('ABSPATH'))
     exit;
 
-class Zen_BIT_API
+class Zen_BIT_API_V2
 {
     // =========================================================================
     // OPTIONS
     // =========================================================================
 
-    public static function get_artist_id(): string
+    public static function artist_id(): string
     {
         return trim((string) get_option('zen_bit_artist_id', '15619775')) ?: '15619775';
     }
 
-    public static function get_artist_name(): string
+    public static function artist_name(): string
     {
         return trim((string) get_option('zen_bit_artist_name', ''));
     }
 
-    private static function get_app_id(): string
+    private static function app_id(): string
     {
         $key = trim((string) get_option('zen_bit_api_key', ''));
         return $key !== '' ? $key : 'djzeneyer';
     }
 
+    private static function default_days(): int
+    {
+        return max(1, (int) get_option('zen_bit_default_days', 365));
+    }
+
     // =========================================================================
-    // PARAM VALIDATION
+    // PARÂMETROS COMUNS
     // =========================================================================
 
     /**
-     * Valida e normaliza os parâmetros de filtro comuns a /events e /events-schema.
-     *
-     * @param \WP_REST_Request $request
-     * @return array{mode:string, date_start:string, date_end:string, limit:int, lang:string}|\WP_Error
+     * Valida e normaliza parâmetros do request.
+     * @return array|\WP_Error
      */
-    private static function parse_filter_params(\WP_REST_Request $request)
+    private static function parse_list_params(\WP_REST_Request $req)
     {
-        // ---- mode ----
-        $mode = strtolower(sanitize_text_field((string) ($request->get_param('mode') ?: 'upcoming')));
-
-        // Backward compat: upcoming_only=true → mode=upcoming
-        if ($request->get_param('upcoming_only') !== null) {
-            $upcoming_only = filter_var($request->get_param('upcoming_only'), FILTER_VALIDATE_BOOLEAN);
-            $mode = $upcoming_only ? 'upcoming' : 'all';
-        }
-
+        // mode
+        $mode = strtolower(sanitize_text_field((string) ($req->get_param('mode') ?: 'upcoming')));
         if (!in_array($mode, ['upcoming', 'past', 'all'], true)) {
-            return new \WP_Error('invalid_mode', 'Parâmetro mode deve ser upcoming, past ou all.', ['status' => 400]);
+            return new \WP_Error('invalid_mode', 'mode deve ser upcoming, past ou all.', ['status' => 400]);
         }
 
-        // ---- date range ----
-        $date_param = sanitize_text_field((string) ($request->get_param('date') ?: ''));
+        // date ou days
+        $date_param = sanitize_text_field((string) ($req->get_param('date') ?: ''));
         $date_start = '';
         $date_end = '';
 
         if ($date_param !== '') {
-            // Formato esperado: YYYY-MM-DD,YYYY-MM-DD
             if (!preg_match('/^(\d{4}-\d{2}-\d{2}),(\d{4}-\d{2}-\d{2})$/', $date_param, $m)) {
-                return new \WP_Error('invalid_date', 'Parâmetro date deve ter o formato YYYY-MM-DD,YYYY-MM-DD.', ['status' => 400]);
+                return new \WP_Error('invalid_date', 'date deve ter formato YYYY-MM-DD,YYYY-MM-DD.', ['status' => 400]);
             }
             $date_start = $m[1];
             $date_end = $m[2];
+
             if ($date_start > $date_end) {
-                return new \WP_Error('invalid_date_range', 'A data inicial deve ser menor ou igual à data final.', ['status' => 400]);
+                return new \WP_Error('invalid_date_range', 'date_start deve ser ≤ date_end.', ['status' => 400]);
             }
         } else {
-            // days → range dinâmico
-            $days_param = $request->get_param('days');
-            $default_days = (int) get_option('zen_bit_default_days', 365);
-            $days = ($days_param !== null) ? (int) $days_param : $default_days;
+            $days_raw = $req->get_param('days');
+            $days = $days_raw !== null ? (int) $days_raw : self::default_days();
 
             if ($days < 1 || $days > 730) {
-                return new \WP_Error('invalid_days', 'Parâmetro days deve estar entre 1 e 730.', ['status' => 400]);
+                return new \WP_Error('invalid_days', 'days deve estar entre 1 e 730.', ['status' => 400]);
             }
 
-            // Para mode=upcoming: hoje → hoje+days
-            // Para mode=past:     hoje-days → hoje
-            // Para mode=all:      não restringe por range
             if ($mode === 'upcoming') {
                 $date_start = gmdate('Y-m-d');
                 $date_end = gmdate('Y-m-d', strtotime("+{$days} days"));
@@ -104,110 +91,85 @@ class Zen_BIT_API
                 $date_start = gmdate('Y-m-d', strtotime("-{$days} days"));
                 $date_end = gmdate('Y-m-d');
             }
-            // mode=all: $date_start e $date_end ficam vazios → sem filtro de data
+            // mode=all → sem filtro de data
         }
 
-        // ---- limit ----
-        $limit_param = $request->get_param('limit');
-        $limit = ($limit_param !== null && (int) $limit_param > 0) ? (int) $limit_param : 50;
-        $limit = min($limit, 200);
+        // limit
+        $limit_raw = $req->get_param('limit');
+        $limit = $limit_raw !== null ? (int) $limit_raw : 50;
+        if ($limit < 1 || $limit > 200) {
+            return new \WP_Error('invalid_limit', 'limit deve estar entre 1 e 200.', ['status' => 400]);
+        }
 
-        // ---- lang ----
-        $lang = sanitize_text_field((string) ($request->get_param('lang') ?: 'en'));
+        // lang (passthrough)
+        $lang = sanitize_text_field((string) ($req->get_param('lang') ?: 'en'));
 
         return compact('mode', 'date_start', 'date_end', 'limit', 'lang');
     }
 
     // =========================================================================
-    // FETCH DA API BANDSINTOWN (raw)
+    // FETCH BANDSINTOWN
     // =========================================================================
 
     /**
-     * Chama a API do Bandsintown e retorna eventos raw.
-     * Parâmetro $date: string no formato "YYYY-MM-DD,YYYY-MM-DD" ou vazio.
+     * Chama a API do Bandsintown. Retorna array de eventos raw ou [].
+     * @param string $bit_date Valor para o param "date" da BIT API
      */
-    private static function fetch_from_bandsintown(string $date = ''): array
+    public static function fetch_from_bandsintown(string $bit_date = 'upcoming'): array
     {
-        $artist_name = self::get_artist_name();
-        $artist_id = self::get_artist_id();
-        $app_id = self::get_app_id();
+        $name = self::artist_name();
+        $id = self::artist_id();
+        $ident = $name !== '' ? urlencode($name) : 'id_' . $id;
 
-        // Suporta artist_name como alternativa ao artist_id
-        if ($artist_name !== '') {
-            $identifier = urlencode($artist_name);
-        } else {
-            $identifier = 'id_' . $artist_id;
-        }
-
-        $url = "https://rest.bandsintown.com/artists/{$identifier}/events?app_id={$app_id}";
-        if ($date !== '') {
-            $url .= '&date=' . urlencode($date);
-        }
+        $url = sprintf(
+            'https://rest.bandsintown.com/artists/%s/events?app_id=%s&date=%s',
+            $ident,
+            urlencode(self::app_id()),
+            urlencode($bit_date)
+        );
 
         $t0 = microtime(true);
-        $response = wp_remote_get($url, [
-            'timeout' => 15,
-            'headers' => ['Accept' => 'application/json'],
-        ]);
-        $fetch_ms = (int) round((microtime(true) - $t0) * 1000);
+        $res = wp_remote_get($url, ['timeout' => 15, 'headers' => ['Accept' => 'application/json']]);
+        $ms = (int) round((microtime(true) - $t0) * 1000);
 
-        if (is_wp_error($response)) {
-            error_log('[Zen BIT] wp_remote_get error: ' . $response->get_error_message());
-            Zen_BIT_Cache::health_update(false, $fetch_ms, $response->get_error_message(), 0, 0);
+        if (is_wp_error($res)) {
+            Zen_BIT_Cache::health_update(false, $ms, $res->get_error_message(), 0, 0);
             return [];
         }
 
-        $code = (int) wp_remote_retrieve_response_code($response);
-        $body = (string) wp_remote_retrieve_body($response);
+        $code = (int) wp_remote_retrieve_response_code($res);
+        $body = (string) wp_remote_retrieve_body($res);
 
         if ($code < 200 || $code >= 300) {
             $msg = "HTTP {$code}: " . substr($body, 0, 120);
-            error_log('[Zen BIT] Bandsintown error: ' . $msg);
-            Zen_BIT_Cache::health_update(false, $fetch_ms, $msg, 0, 0);
+            Zen_BIT_Cache::health_update(false, $ms, $msg, 0, 0);
             return [];
         }
 
         $data = json_decode($body, true);
-
         if (!is_array($data)) {
-            $msg = 'Invalid JSON: ' . substr($body, 0, 120);
-            error_log('[Zen BIT] ' . $msg);
-            Zen_BIT_Cache::health_update(false, $fetch_ms, $msg, 0, 0);
+            Zen_BIT_Cache::health_update(false, $ms, 'Invalid JSON', 0, 0);
             return [];
         }
-
-        if (isset($data['error']) || isset($data['message'])) {
-            $msg = (string) ($data['message'] ?? $data['error']);
-            error_log('[Zen BIT] API error: ' . $msg);
-            Zen_BIT_Cache::health_update(false, $fetch_ms, $msg, 0, 0);
+        if (!empty($data['error'])) {
+            Zen_BIT_Cache::health_update(false, $ms, (string) $data['error'], 0, 0);
             return [];
         }
-
-        // Às vezes vem objeto único
-        if (!isset($data[0]) && isset($data['id'])) {
+        // Objeto único → array
+        if (isset($data['id']) && !isset($data[0]))
             $data = [$data];
-        }
 
-        if (!is_array($data))
-            return [];
-
-        return $data;
+        return is_array($data) ? $data : [];
     }
 
     // =========================================================================
-    // POOL DE EVENTOS (COM CACHE SWR)
+    // POOL COM SWR
     // =========================================================================
 
     /**
-     * Retorna pool completo de eventos normalizados **como detalhe** (para detail endpoint)
-     * ou **como lista** (para list endpoint).
+     * Pool de eventos normalizado com cache SWR.
      *
-     * Usa SWR: retorna stale enquanto revalida em background.
-     *
-     * @param string $mode        upcoming|past|all
-     * @param string $date_start  YYYY-MM-DD (ou '' para sem restrição)
-     * @param string $date_end    YYYY-MM-DD
-     * @param bool   $detail      true = normalize_detail, false = normalize_list_item
+     * @param bool $detail  true = normalize_detail (detalhe), false = normalize_list_item
      * @return array{data:array, cache_status:string, fetch_ms:int}
      */
     private static function get_pool(
@@ -223,99 +185,92 @@ class Zen_BIT_API
 
         $include_raw = (bool) get_option('zen_bit_include_raw_debug', false);
 
-        $cache_key = Zen_BIT_Cache::make_key([
+        $key = Zen_BIT_Cache::make_key([
             'mode' => $mode,
-            'date_start' => $date_start,
-            'date_end' => $date_end,
-            'detail' => $detail ? 1 : 0,
+            'ds' => $date_start,
+            'de' => $date_end,
+            'det' => $detail ? 1 : 0,
+            'nv' => Zen_BIT_Normalizer::VERSION,
         ]);
 
-        return Zen_BIT_Cache::get_with_swr($cache_key, function () use ($mode, $date_start, $date_end, $detail, $include_raw) {
-            // Monta o parâmetro date para a API do Bandsintown
-            $date_param = '';
-            if ($mode === 'upcoming' && $date_start !== '') {
-                $date_param = "upcoming";  // BIT aceita "upcoming" nativo
-            } elseif ($mode === 'past') {
-                $date_param = "past";
+        return Zen_BIT_Cache::get_with_swr($key, function () use ($mode, $date_start, $date_end, $detail, $include_raw) {
+            // Traduz mode/range para param do BIT
+            if ($mode === 'past') {
+                $bit_date = 'past';
             } elseif ($date_start !== '' && $date_end !== '') {
-                $date_param = "{$date_start},{$date_end}";
+                $bit_date = "{$date_start},{$date_end}";
+            } else {
+                $bit_date = 'upcoming';
             }
 
-            $raw_events = self::fetch_from_bandsintown($date_param);
+            $raw_events = self::fetch_from_bandsintown($bit_date);
             if (empty($raw_events))
                 return [];
 
-            $normalized = [];
+            $out = [];
             foreach ($raw_events as $raw) {
                 if (!is_array($raw))
                     continue;
-                $normalized[] = $detail
+                $out[] = $detail
                     ? Zen_BIT_Normalizer::normalize_detail($raw, $include_raw)
                     : Zen_BIT_Normalizer::normalize_list_item($raw);
             }
-
-            return $normalized;
+            return $out;
         }, $ttl);
     }
 
     // =========================================================================
-    // FILTROS NO RESULTADO (aplicados após o cache)
+    // FILTROS PÓS-CACHE
     // =========================================================================
 
-    private static function apply_date_filter(array $events, string $mode, string $date_start, string $date_end): array
+    private static function filter_by_date(array $events, string $ds, string $de): array
     {
-        if ($mode === 'all' && $date_start === '') {
-            return $events; // sem filtro de data
-        }
-
-        return array_values(array_filter($events, function ($e) use ($date_start, $date_end) {
-            $ts = strtotime((string) ($e['starts_at'] ?? $e['datetime'] ?? ''));
+        if ($ds === '' && $de === '')
+            return $events;
+        return array_values(array_filter($events, function ($e) use ($ds, $de) {
+            $ts = strtotime((string) ($e['starts_at'] ?? ''));
             if (!$ts)
                 return false;
-            $event_date = gmdate('Y-m-d', $ts);
-            if ($date_start !== '' && $event_date < $date_start)
+            $d = gmdate('Y-m-d', $ts);
+            if ($ds !== '' && $d < $ds)
                 return false;
-            if ($date_end !== '' && $event_date > $date_end)
+            if ($de !== '' && $d > $de)
                 return false;
             return true;
         }));
     }
 
-    private static function sort_chronological(array $events, string $mode): array
+    private static function sort_events(array &$events, string $mode): void
     {
         usort($events, function ($a, $b) use ($mode) {
-            $a_ts = strtotime((string) ($a['starts_at'] ?? $a['datetime'] ?? '')) ?: PHP_INT_MAX;
-            $b_ts = strtotime((string) ($b['starts_at'] ?? $b['datetime'] ?? '')) ?: PHP_INT_MAX;
-            return $mode === 'past'
-                ? $b_ts <=> $a_ts  // past: mais recente primeiro
-                : $a_ts <=> $b_ts; // upcoming: mais próximo primeiro
+            $at = strtotime((string) ($a['starts_at'] ?? '')) ?: PHP_INT_MAX;
+            $bt = strtotime((string) ($b['starts_at'] ?? '')) ?: PHP_INT_MAX;
+            return $mode === 'past' ? $bt <=> $at : $at <=> $bt;
         });
-        return $events;
     }
 
     // =========================================================================
-    // ENDPOINT: GET /events (lista enxuta)
+    // ENDPOINT: GET /events (LISTA)
     // =========================================================================
 
-    public static function get_events_rest(\WP_REST_Request $request)
+    public static function list_events(\WP_REST_Request $req)
     {
-        $params = self::parse_filter_params($request);
+        $params = self::parse_list_params($req);
         if (is_wp_error($params))
             return $params;
 
         ['mode' => $mode, 'date_start' => $ds, 'date_end' => $de, 'limit' => $limit, 'lang' => $lang] = $params;
 
         $result = self::get_pool($mode, $ds, $de, false);
-        $events = self::apply_date_filter($result['data'], $mode, $ds, $de);
-        $events = self::sort_chronological($events, $mode);
+        $events = self::filter_by_date($result['data'], $ds, $de);
+        self::sort_events($events, $mode);
         $events = array_slice($events, 0, $limit);
 
         $response = rest_ensure_response([
             'success' => true,
             'count' => count($events),
             'mode' => $mode,
-            'lang' => $lang,
-            'events' => $events,
+            'events' => array_values($events),
         ]);
 
         Zen_BIT_Cache::add_headers($response, $result['cache_status'], $result['fetch_ms'], Zen_BIT_Cache::ttl_upcoming());
@@ -323,167 +278,130 @@ class Zen_BIT_API
     }
 
     // =========================================================================
-    // ENDPOINT: GET /events/{id} (detalhe completo)
+    // ENDPOINT: GET /events/{event_id} (DETALHE)
     // =========================================================================
 
-    public static function get_single_event_rest(\WP_REST_Request $request)
+    public static function get_event(\WP_REST_Request $req)
     {
-        $id = sanitize_text_field((string) $request->get_param('id'));
-        if ($id === '') {
-            return new \WP_Error('missing_id', 'ID do evento é obrigatório.', ['status' => 400]);
+        $event_id = sanitize_text_field((string) $req->get_param('event_id'));
+        if ($event_id === '' || !ctype_digit($event_id)) {
+            return new \WP_Error('invalid_event_id', 'event_id deve ser numérico.', ['status' => 400]);
         }
 
-        $cache_key = Zen_BIT_Cache::make_key(['id' => $id, 'type' => 'detail']);
         $include_raw = (bool) get_option('zen_bit_include_raw_debug', false);
+        $key = Zen_BIT_Cache::make_key(['event_id' => $event_id, 'det' => 1]);
 
-        $result = Zen_BIT_Cache::get_with_swr($cache_key, function () use ($id, $include_raw) {
-            // Busca o pool completo e procura por ID
-            $raw_events = self::fetch_from_bandsintown('upcoming');
-            if (empty($raw_events)) {
-                // Tenta buscar também em past caso o evento já tenha passado
-                $raw_events = self::fetch_from_bandsintown('past');
-            }
-
-            foreach ((array) $raw_events as $raw) {
-                if (!is_array($raw))
-                    continue;
-                if ((string) ($raw['id'] ?? '') === $id) {
-                    return [Zen_BIT_Normalizer::normalize_detail($raw, $include_raw)];
+        $result = Zen_BIT_Cache::get_with_swr($key, function () use ($event_id, $include_raw) {
+            // Tenta upcoming primeiro, depois past
+            foreach (['upcoming', 'past'] as $bit_date) {
+                $raws = self::fetch_from_bandsintown($bit_date);
+                foreach ($raws as $raw) {
+                    if (!is_array($raw))
+                        continue;
+                    if ((string) ($raw['id'] ?? '') === $event_id) {
+                        return [Zen_BIT_Normalizer::normalize_detail($raw, $include_raw)];
+                    }
                 }
             }
             return [];
         }, Zen_BIT_Cache::ttl_detail());
 
         if (empty($result['data'])) {
-            return new \WP_Error('event_not_found', 'Evento não encontrado.', ['status' => 404]);
+            return new \WP_Error('event_not_found', "Evento {$event_id} não encontrado.", ['status' => 404]);
         }
 
-        $event = $result['data'][0];
-        $response = rest_ensure_response(['success' => true, 'event' => $event]);
-
+        $response = rest_ensure_response(['success' => true, 'event' => $result['data'][0]]);
         Zen_BIT_Cache::add_headers($response, $result['cache_status'], $result['fetch_ms'], Zen_BIT_Cache::ttl_detail());
         return $response;
     }
 
     // =========================================================================
-    // ENDPOINT: GET /events/{id}/schema
+    // ENDPOINT: GET /events/schema (LISTA JSON-LD)
     // =========================================================================
 
-    public static function get_single_event_schema_rest(\WP_REST_Request $request)
+    public static function list_events_schema(\WP_REST_Request $req)
     {
-        $id = sanitize_text_field((string) $request->get_param('id'));
-        if ($id === '') {
-            return new \WP_Error('missing_id', 'ID do evento é obrigatório.', ['status' => 400]);
-        }
-
-        // Reutiliza o endpoint de detalhe internamente
-        $detail_request = new \WP_REST_Request('GET', "/wp-json/zen-bit/v1/events/{$id}");
-        $detail_request->set_param('id', $id);
-        $detail_response = self::get_single_event_rest($detail_request);
-
-        if (is_wp_error($detail_response))
-            return $detail_response;
-
-        $data = $detail_response->get_data();
-        $event = $data['event'] ?? [];
-
-        if (empty($event)) {
-            return new \WP_Error('event_not_found', 'Evento não encontrado.', ['status' => 404]);
-        }
-
-        $schema = Zen_BIT_Normalizer::build_event_schema($event);
-        if (empty($schema)) {
-            return new \WP_Error('schema_not_available', 'Não foi possível gerar schema para este evento.', ['status' => 422]);
-        }
-
-        $payload = [
-            '@context' => 'https://schema.org',
-            '@graph' => [$schema],
-        ];
-
-        $response = rest_ensure_response($payload);
-        $response->header('Cache-Control', 'public, max-age=' . Zen_BIT_Cache::ttl_detail());
-        return $response;
-    }
-
-    // =========================================================================
-    // ENDPOINT: GET /events-schema (lista)
-    // =========================================================================
-
-    public static function get_events_schema_rest(\WP_REST_Request $request)
-    {
-        if ((bool) get_option('zen_bit_enable_schema', true) === false) {
+        if (!(bool) get_option('zen_bit_enable_schema', '1')) {
             return rest_ensure_response(['@context' => 'https://schema.org', '@graph' => []]);
         }
 
-        $params = self::parse_filter_params($request);
+        $params = self::parse_list_params($req);
         if (is_wp_error($params))
             return $params;
 
         ['mode' => $mode, 'date_start' => $ds, 'date_end' => $de, 'limit' => $limit] = $params;
 
-        $result = self::get_pool($mode, $ds, $de, true); // detail=true para ter image/description
-        $events = self::apply_date_filter($result['data'], $mode, $ds, $de);
-        $events = self::sort_chronological($events, $mode);
+        $result = self::get_pool($mode, $ds, $de, true); // detail=true para image/description
+        $events = self::filter_by_date($result['data'], $ds, $de);
+        self::sort_events($events, $mode);
         $events = array_slice($events, 0, $limit);
 
-        // Performer entity (reutilizável no @graph)
-        $performer_id = home_url('/') . '#djzeneyer';
-        $graph = [
-            [
-                '@type' => 'MusicGroup',
-                '@id' => $performer_id,
-                'name' => 'DJ Zen Eyer',
-                'genre' => 'Brazilian Zouk',
-                'url' => home_url('/'),
-                'sameAs' => [
-                    'https://www.instagram.com/djzeneyer/',
-                    'https://soundcloud.com/djzeneyer',
-                    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-                ],
-            ],
-        ];
+        $performer = Zen_BIT_Normalizer::build_performer_entity();
+        $perf_id = $performer['@id'];
+        $graph = [$performer];
 
         foreach ($events as $event) {
             $schema = Zen_BIT_Normalizer::build_event_schema($event);
             if (empty($schema))
                 continue;
-            // Usa @id do performer para ligação semântica
-            $schema['performer'] = ['@id' => $performer_id];
+            $schema['performer'] = ['@id' => $perf_id];
             $graph[] = $schema;
         }
 
-        $payload = ['@context' => 'https://schema.org', '@graph' => $graph];
-
-        $response = rest_ensure_response($payload);
+        $response = rest_ensure_response(['@context' => 'https://schema.org', '@graph' => $graph]);
         Zen_BIT_Cache::add_headers($response, $result['cache_status'], $result['fetch_ms'], Zen_BIT_Cache::ttl_upcoming());
         return $response;
     }
 
     // =========================================================================
-    // ENDPOINT: POST /fetch-now (admin)
+    // ENDPOINT: GET /events/{event_id}/schema
     // =========================================================================
 
-    public static function fetch_now_rest(\WP_REST_Request $request)
+    public static function get_event_schema(\WP_REST_Request $req)
     {
-        // Limpa todo o cache e força um novo fetch
+        // Reutiliza get_event internamente
+        $detail_res = self::get_event($req);
+        if (is_wp_error($detail_res))
+            return $detail_res;
+
+        $data = $detail_res->get_data();
+        $event = $data['event'] ?? [];
+        if (empty($event)) {
+            return new \WP_Error('schema_error', 'Evento não disponível para schema.', ['status' => 404]);
+        }
+
+        $schema = Zen_BIT_Normalizer::build_event_schema($event);
+        if (empty($schema)) {
+            return new \WP_Error('schema_empty', 'Schema não pôde ser gerado para este evento.', ['status' => 422]);
+        }
+
+        $schema['performer'] = ['@id' => home_url('/') . '#djzeneyer'];
+
+        return rest_ensure_response([
+            '@context' => 'https://schema.org',
+            '@graph' => [Zen_BIT_Normalizer::build_performer_entity(), $schema],
+        ]);
+    }
+
+    // =========================================================================
+    // ENDPOINT: POST /admin/fetch-now
+    // =========================================================================
+
+    public static function admin_fetch_now(\WP_REST_Request $req)
+    {
         Zen_BIT_Cache::clear_all();
-
-        $raw = self::fetch_from_bandsintown('upcoming');
+        $raws = self::fetch_from_bandsintown('upcoming');
         $count = 0;
-        $bytes = 0;
 
-        if (!empty($raw)) {
+        if (!empty($raws)) {
             $normalized = [];
-            foreach ($raw as $r) {
-                if (!is_array($r))
+            foreach ($raws as $raw) {
+                if (!is_array($raw))
                     continue;
-                $normalized[] = Zen_BIT_Normalizer::normalize_list_item($r);
+                $normalized[] = Zen_BIT_Normalizer::normalize_list_item($raw);
             }
             $count = count($normalized);
-            $bytes = strlen(maybe_serialize($normalized));
-            // Salva no cache principal
-            $key = Zen_BIT_Cache::make_key(['mode' => 'upcoming', 'date_start' => '', 'date_end' => '', 'detail' => 0]);
+            $key = Zen_BIT_Cache::make_key(['mode' => 'upcoming', 'ds' => '', 'de' => '', 'det' => 0, 'nv' => Zen_BIT_Normalizer::VERSION]);
             set_transient($key, $normalized, Zen_BIT_Cache::ttl_upcoming());
             update_option(Zen_BIT_Cache::make_fallback_key($key), $normalized, false);
         }
@@ -493,5 +411,52 @@ class Zen_BIT_API
             'count' => $count,
             'health' => Zen_BIT_Cache::health_get(),
         ]);
+    }
+
+    // =========================================================================
+    // ENDPOINT: POST /admin/clear-cache
+    // =========================================================================
+
+    public static function admin_clear_cache(\WP_REST_Request $req)
+    {
+        Zen_BIT_Cache::clear_all();
+        return rest_ensure_response(['success' => true, 'message' => 'Cache limpo.']);
+    }
+
+    // =========================================================================
+    // ENDPOINT: GET /admin/health
+    // =========================================================================
+
+    public static function admin_health(\WP_REST_Request $req)
+    {
+        return rest_ensure_response(Zen_BIT_Cache::health_get());
+    }
+
+    // =========================================================================
+    // Legado (usado pelo shortcode em zen-bit.php)
+    // =========================================================================
+
+    public static function get_events_schema_graph(int $limit = 25): array
+    {
+        $raws = self::fetch_from_bandsintown('upcoming');
+        $graph = [];
+        $count = 0;
+        foreach ($raws as $raw) {
+            if (!is_array($raw) || $count >= $limit)
+                break;
+            $detail = Zen_BIT_Normalizer::normalize_detail($raw);
+            $schema = Zen_BIT_Normalizer::build_event_schema($detail);
+            if (!empty($schema)) {
+                $graph[] = $schema;
+                $count++;
+            }
+        }
+        return ['@context' => 'https://schema.org', '@graph' => $graph];
+    }
+
+    /** @deprecated v1 compat */
+    public static function clear_cache(): void
+    {
+        Zen_BIT_Cache::clear_all();
     }
 }

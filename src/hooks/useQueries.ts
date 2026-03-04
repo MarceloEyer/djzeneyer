@@ -27,7 +27,6 @@ interface MenuItem {
 import type {
   ZenBitEventListItem,
   ZenBitEventDetail,
-  BandsintownEvent,
   FetchEventsParams,
   EventsApiResponse,
 } from '../types/events';
@@ -78,35 +77,37 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
 };
 
 export const fetchEventsFn = async ({
-  mode,
+  mode = 'upcoming',
   days,
   date,
   limit = 10,
   lang,
-  upcomingOnly,
-  search,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
-  // BC: upcomingOnly → mode
-  const resolvedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
+  try {
+    const params: Record<string, string> = {
+      mode: mode,
+      limit: String(limit),
+    };
+    if (days !== undefined) params.days = String(days);
+    if (date) params.date = date;
+    if (lang) params.lang = lang;
 
-  const params: Record<string, string> = {
-    mode: resolvedMode,
-    limit: String(limit),
-  };
-  if (days !== undefined) params.days = String(days);
-  if (date) params.date = date;
-  if (lang) params.lang = lang;
-  if (search) params.search = search;
+    const apiUrl = buildApiUrl('zen-bit/v2/events', params);
+    const res = await fetch(apiUrl);
+    if (!res.ok) {
+      console.error(`Events API Error: ${res.status}`);
+      return [];
+    }
+    const data: EventsApiResponse | ZenBitEventListItem[] = await res.json();
 
-  const apiUrl = buildApiUrl('zen-bit/v1/events', params);
-  const res = await fetch(apiUrl);
-  if (!res.ok) throw new Error(`API ${res.status}`);
-  const data: EventsApiResponse | ZenBitEventListItem[] = await res.json();
-
-  if (Array.isArray(data)) return data;
-  if (data && typeof data === 'object' && Array.isArray((data as EventsApiResponse).events))
-    return (data as EventsApiResponse).events;
-  return [];
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === 'object' && Array.isArray((data as EventsApiResponse).events))
+      return (data as EventsApiResponse).events;
+    return [];
+  } catch (err) {
+    console.error('Fetch Events failed:', err);
+    return [];
+  }
 };
 
 export const fetchTracksFn = async (): Promise<MusicTrack[]> => {
@@ -177,7 +178,6 @@ export const useEventsQuery = (params: FetchEventsParams = {}, options = {}) => 
     date: params.date,
     limit: params.limit ?? 10,
     lang: params.lang,
-    search: params.search,
   };
 
   return useQuery({
@@ -294,11 +294,19 @@ export const useEventById = (routeParam?: string, options = {}) => {
     queryKey: QUERY_KEYS.events.detail(routeParam || ''),
     queryFn: async (): Promise<ZenBitEventDetail | null> => {
       if (!eventId) return null;
-      const apiUrl = buildApiUrl(`zen-bit/v1/events/${eventId}`);
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error(`Event API ${res.status}`);
-      const data = await res.json();
-      return (data?.event as ZenBitEventDetail) || null;
+      try {
+        const apiUrl = buildApiUrl(`zen-bit/v2/events/${eventId}`);
+        const res = await fetch(apiUrl);
+        if (!res.ok) {
+          console.error(`Event Detail API ${res.status}`);
+          return null;
+        }
+        const data = await res.json();
+        return (data?.event as ZenBitEventDetail) || null;
+      } catch (err) {
+        console.error('Zen BIT Event detail fetch failed:', err);
+        return null;
+      }
     },
     enabled: !!eventId,
     // Detalhe tem TTL maior (24h no backend)
@@ -403,13 +411,8 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
     // Use 0 or -1 as a placeholder for "self" in the query key if userId is not provided
     queryKey: [...QUERY_KEYS.user.gamipress(userId || 0), token],
     queryFn: async (): Promise<ZenGameUserData | null> => {
-      if (!token && !userId) return null;
-
-      const params: Record<string, string> = {};
-      if (userId) params.user_id = String(userId);
-
-      params.limit_logs = '5'; // Dashboard typically only needs 5
-      const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/user-data', params);
+      // /me is for the current user, userId is ignored but kept for key compatibility
+      const apiUrl = buildApiUrl('zengame/v1/me');
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };
@@ -448,7 +451,7 @@ export const useLeaderboardQuery = (limit = 10) => {
   return useQuery({
     queryKey: QUERY_KEYS.user.leaderboard(limit),
     queryFn: async (): Promise<ZenGameLeaderboard> => {
-      const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/leaderboard', { limit: String(limit) });
+      const apiUrl = buildApiUrl('zengame/v1/leaderboard', { limit: String(limit) });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error(`Leaderboard API Error: ${res.status}`);
       return res.json();

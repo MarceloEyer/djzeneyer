@@ -1,19 +1,21 @@
 <?php
 /**
  * Plugin Name: Zen BIT - Bandsintown Events
- * Plugin URI: https://djzeneyer.com
+ * Plugin URI:  https://djzeneyer.com
  * Description: Proxy Bandsintown com cache SWR, canonical paths, JSON-LD MusicEvent e admin health para arquitetura headless.
- * Version: 2.0.0
- * Author: Zen Eyer
- * Author URI: https://djzeneyer.com
- * License: GPL v2 or later
+ * Version:     3.0.0
+ * Author:      Zen Eyer
+ * Author URI:  https://djzeneyer.com
+ * License:     GPL v2 or later
  * Text Domain: zen-bit
  */
+
+namespace ZenBit;
 
 if (!defined('ABSPATH'))
     exit;
 
-define('ZEN_BIT_VERSION', '2.0.0');
+define('ZEN_BIT_VERSION', '3.0.0');
 define('ZEN_BIT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZEN_BIT_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -23,11 +25,10 @@ if (!class_exists('Zen_BIT')) {
     {
         private static $instance = null;
 
-        public static function get_instance()
+        public static function get_instance(): self
         {
-            if (null === self::$instance) {
+            if (null === self::$instance)
                 self::$instance = new self();
-            }
             return self::$instance;
         }
 
@@ -37,217 +38,155 @@ if (!class_exists('Zen_BIT')) {
             $this->init_hooks();
         }
 
-        private function load_dependencies()
+        private function load_dependencies(): void
         {
-            // Ordem importa: Normalizer e Cache primeiro (sem deps WP pesadas)
-            if (!class_exists('Zen_BIT_Normalizer')) {
-                require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-normalizer.php';
-            }
-            if (!class_exists('Zen_BIT_Cache')) {
-                require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-cache.php';
-            }
-            if (!class_exists('Zen_BIT_API')) {
-                require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-api.php';
-            }
-            if (!class_exists('Zen_BIT_Shortcode')) {
-                require_once ZEN_BIT_PLUGIN_DIR . 'includes/class-zen-bit-shortcode.php';
+            $files = [
+                'includes/class-zen-bit-normalizer.php' => 'Zen_BIT_Normalizer',
+                'includes/class-zen-bit-cache.php' => 'Zen_BIT_Cache',
+                'includes/class-zen-bit-api.php' => 'Zen_BIT_API_V2',
+                'includes/class-zen-bit-sitemap.php' => 'Zen_BIT_Sitemap',
+            ];
+            foreach ($files as $path => $class) {
+                if (!class_exists(__NAMESPACE__ . '\\' . $class)) {
+                    require_once ZEN_BIT_PLUGIN_DIR . $path;
+                }
             }
             if (is_admin()) {
                 require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
             }
         }
 
-        private function init_hooks()
+        private function init_hooks(): void
         {
-            /**
-             * WP 6.7+: textdomain deve carregar no init (não cedo demais)
-             */
-            add_action('init', array($this, 'load_textdomain'));
+            add_action('init', [$this, 'load_textdomain']);
+            add_action('rest_api_init', [$this, 'register_rest_routes']);
+            register_activation_hook(__FILE__, [$this, 'activate']);
+            register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
-            add_action('wp_enqueue_scripts', array($this, 'enqueue_public_assets'));
-
-            add_action('rest_api_init', array($this, 'register_rest_routes'));
-
-            // Shortcode que injeta o JSON-LD (pra SSR / páginas WP)
-            add_shortcode('zen_bit_events_schema', array($this, 'shortcode_events_schema'));
-
-            // Hooks de ciclo de vida
-            register_activation_hook(__FILE__, array($this, 'activate'));
-            register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+            // Inicializa Sitemap
+            if (class_exists(__NAMESPACE__ . '\\Zen_BIT_Sitemap')) {
+                new Zen_BIT_Sitemap();
+            }
         }
 
-        public function load_textdomain()
+        public function load_textdomain(): void
         {
             load_plugin_textdomain('zen-bit', false, dirname(plugin_basename(__FILE__)) . '/languages');
         }
 
-        /**
-         * Só carrega CSS/JS quando a página contém o shortcode [zen_bit_events]
-         * (performance + menos ruído para crawlers)
-         */
-        public function enqueue_public_assets()
+        // =====================================================================
+        // ROTAS REST — apenas zen-bit/v2
+        // =====================================================================
+
+        public function register_rest_routes(): void
         {
-            if (is_admin())
-                return;
+            $api_class = __NAMESPACE__ . '\\Zen_BIT_API_V2';
 
-            if (!function_exists('has_shortcode') || !is_singular())
-                return;
+            // ---- Público ----
 
-            $post_id = get_queried_object_id();
-            if (!$post_id)
-                return;
-
-            $content = get_post_field('post_content', $post_id);
-            if (!is_string($content) || $content === '')
-                return;
-
-            $has_events = has_shortcode($content, 'zen_bit_events');
-            if (!$has_events)
-                return;
-
-            // CSS
-            wp_enqueue_style(
-                'zen-bit-public',
-                ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
-                array(),
-                ZEN_BIT_VERSION
-            );
-
-            // JS (somente quando precisa)
-            wp_enqueue_script(
-                'zen-bit-public',
-                ZEN_BIT_PLUGIN_URL . 'public/js/zen-bit-public.js',
-                array('jquery'),
-                ZEN_BIT_VERSION,
-                true
-            );
-        }
-
-        public function register_rest_routes()
-        {
             // Lista de eventos (payload enxuto)
-            register_rest_route('zen-bit/v1', '/events', array(
+            register_rest_route('zen-bit/v2', '/events', [
                 'methods' => 'GET',
-                'callback' => array('Zen_BIT_API', 'get_events_rest'),
+                'callback' => [$api_class, 'list_events'],
                 'permission_callback' => '__return_true',
-            ));
+                'args' => [
+                    'mode' => ['type' => 'string', 'default' => 'upcoming'],
+                    'days' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 730],
+                    'date' => ['type' => 'string'],
+                    'limit' => ['type' => 'integer', 'default' => 50, 'minimum' => 1, 'maximum' => 200],
+                    'lang' => ['type' => 'string', 'default' => 'en'],
+                ],
+            ]);
 
-            // Detalhe completo de um evento
-            register_rest_route('zen-bit/v1', '/events/(?P<id>[\w-]+)', array(
+            // Schema JSON-LD — lista  (/events/schema ANTES de /events/{id})
+            register_rest_route('zen-bit/v2', '/events/schema', [
                 'methods' => 'GET',
-                'callback' => array('Zen_BIT_API', 'get_single_event_rest'),
+                'callback' => [$api_class, 'list_events_schema'],
                 'permission_callback' => '__return_true',
-            ));
+                'args' => [
+                    'mode' => ['type' => 'string', 'default' => 'upcoming'],
+                    'days' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 730],
+                    'date' => ['type' => 'string'],
+                    'limit' => ['type' => 'integer', 'default' => 50, 'minimum' => 1, 'maximum' => 200],
+                ],
+            ]);
 
-            // Schema JSON-LD para um evento
-            register_rest_route('zen-bit/v1', '/events/(?P<id>[\w-]+)/schema', array(
+            // Detalhe de evento (event_id numérico)
+            register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)', [
                 'methods' => 'GET',
-                'callback' => array('Zen_BIT_API', 'get_single_event_schema_rest'),
+                'callback' => [$api_class, 'get_event'],
                 'permission_callback' => '__return_true',
-            ));
+                'args' => [
+                    'event_id' => ['type' => 'integer', 'required' => true, 'minimum' => 1],
+                ],
+            ]);
 
-            // Schema JSON-LD para lista de eventos
-            register_rest_route('zen-bit/v1', '/events-schema', array(
+            // Schema JSON-LD — evento individual
+            register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)/schema', [
                 'methods' => 'GET',
-                'callback' => array('Zen_BIT_API', 'get_events_schema_rest'),
+                'callback' => [$api_class, 'get_event_schema'],
                 'permission_callback' => '__return_true',
-            ));
+                'args' => [
+                    'event_id' => ['type' => 'integer', 'required' => true],
+                ],
+            ]);
 
-            // Limpar cache (admin)
-            register_rest_route('zen-bit/v1', '/clear-cache', array(
+            // ---- Admin (manage_options) ----
+
+            register_rest_route('zen-bit/v2', '/admin/fetch-now', [
                 'methods' => 'POST',
-                'callback' => array($this, 'clear_cache_rest'),
-                'permission_callback' => function () {
-                    return current_user_can('manage_options'); },
-            ));
+                'callback' => [$api_class, 'admin_fetch_now'],
+                'permission_callback' => fn() => current_user_can('manage_options'),
+            ]);
 
-            // Forçar refresh imediato (admin)
-            register_rest_route('zen-bit/v1', '/fetch-now', array(
+            register_rest_route('zen-bit/v2', '/admin/clear-cache', [
                 'methods' => 'POST',
-                'callback' => array('Zen_BIT_API', 'fetch_now_rest'),
-                'permission_callback' => function () {
-                    return current_user_can('manage_options'); },
-            ));
+                'callback' => [$api_class, 'admin_clear_cache'],
+                'permission_callback' => fn() => current_user_can('manage_options'),
+            ]);
+
+            register_rest_route('zen-bit/v2', '/admin/health', [
+                'methods' => 'GET',
+                'callback' => [$api_class, 'admin_health'],
+                'permission_callback' => fn() => current_user_can('manage_options'),
+            ]);
         }
 
-        public function shortcode_events_schema($atts)
+        // =====================================================================
+        // ATIVAÇÃO / DESATIVAÇÃO
+        // =====================================================================
+
+        public function activate(): void
         {
-            $atts = shortcode_atts(array(
-                'limit' => 25,
-            ), $atts, 'zen_bit_events_schema');
-
-            $limit = (int) $atts['limit'];
-            if ($limit <= 0)
-                $limit = 25;
-            if ($limit > 100)
-                $limit = 100;
-
-            if (!class_exists('Zen_BIT_API'))
-                return '';
-
-            $graph = Zen_BIT_API::get_events_schema_graph($limit);
-            if (empty($graph))
-                return '';
-
-            $json = wp_json_encode($graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-            return '<script type="application/ld+json">' . $json . '</script>';
+            $defaults = [
+                'zen_bit_artist_id' => '15619775',
+                'zen_bit_artist_name' => '',
+                'zen_bit_api_key' => '',
+                'zen_bit_default_days' => '365',
+                'zen_bit_ttl_upcoming' => '21600',
+                'zen_bit_ttl_detail' => '86400',
+                'zen_bit_ttl_past' => '604800',
+                'zen_bit_enable_schema' => '1',
+                'zen_bit_include_raw_debug' => '0',
+            ];
+            foreach ($defaults as $key => $val) {
+                if (get_option($key) === false)
+                    add_option($key, $val);
+            }
+            if (class_exists('Zen_BIT_Cache'))
+                Zen_BIT_Cache::clear_all();
         }
 
-        public function clear_cache_rest()
+        public function deactivate(): void
         {
-            if (!class_exists('Zen_BIT_API')) {
-                return rest_ensure_response(array('success' => false, 'message' => 'Zen_BIT_API not available'));
-            }
-
-            Zen_BIT_API::clear_cache();
-            return rest_ensure_response(array(
-                'success' => true,
-                'message' => 'Cache cleared successfully'
-            ));
+            if (class_exists('Zen_BIT_Cache'))
+                Zen_BIT_Cache::clear_all();
         }
-
-        public function activate()
-        {
-            if (!get_option('zen_bit_artist_id')) {
-                add_option('zen_bit_artist_id', '15619775');
-            }
-            if (!get_option('zen_bit_api_key')) {
-                // sem key hardcoded
-                add_option('zen_bit_api_key', '');
-            }
-            if (!get_option('zen_bit_cache_time')) {
-                add_option('zen_bit_cache_time', '86400'); // legado em segundos
-            }
-            if (!get_option('zen_bit_throttle_hours')) {
-                add_option('zen_bit_throttle_hours', '24'); // Novo padrão: 24h entre chamadas externas
-            }
-
-            // Opcional: limpa cache ao ativar (garante primeira carga “limpa”)
-            if (class_exists('Zen_BIT_API')) {
-                Zen_BIT_API::clear_cache();
-            }
-        }
-
-        public function deactivate()
-        {
-            // Limpa transient para evitar resíduos após desativar
-            if (class_exists('Zen_BIT_API')) {
-                Zen_BIT_API::clear_cache();
-            }
-        }
-    }
-
-} // class_exists guard
-
-/**
- * Bootstrap: DEVE EXISTIR APENAS AQUI (arquivo principal).
- * Blindagem: evita fatal se alguém duplicar isso sem querer.
- */
-if (!function_exists('zen_bit_init')) {
-    function zen_bit_init()
-    {
-        return Zen_BIT::get_instance();
     }
 }
 
+function zen_bit_init(): Zen_BIT
+{
+    return Zen_BIT::get_instance();
+}
 zen_bit_init();

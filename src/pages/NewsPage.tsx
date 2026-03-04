@@ -13,11 +13,20 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 // HELPERS
 // ============================================================================
 const formatDate = (dateString: string, lang: string = 'pt-BR') => {
-  return new Date(dateString).toLocaleDateString(lang, {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  });
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+
+    return date.toLocaleDateString(lang, {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  } catch (e) {
+    console.error('[NewsPage] Error formatting date:', e, dateString);
+    return dateString;
+  }
 };
 
 // ============================================================================

@@ -5,10 +5,10 @@ import { useParams, Link } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { MapPin, Search, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
+import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { Toast } from '../components/common/Toast';
-import type { ZenBitEventListItem, ZenBitEventDetail, BandsintownEvent } from '../types/events';
+import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
@@ -72,11 +72,13 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
   }
 
   const share = () => {
-    const url = `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
+    // canonical_url do detalhe já contém o origin; fallback via event_id
+    const canonical = e.canonical_url ||
+      `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.event_id || ''}`;
     if (navigator.share) {
-      navigator.share({ title: e.title, url });
+      navigator.share({ title: e.title, url: canonical });
     } else {
-      navigator.clipboard.writeText(url);
+      navigator.clipboard.writeText(canonical);
       setShowToast(true);
     }
   };
@@ -156,29 +158,20 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
   );
 };
 
-interface EventListProps {
-  searchQuery: string;
-  lang: string;
-}
-
-const EventListContent = ({ searchQuery, lang }: EventListProps) => {
+const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
   const { data: events = [] } = useEventsQuery({
     mode: 'upcoming',
     days: 365,
     limit: 50,
     lang,
-    search: searchQuery || undefined,
   }, { suspense: true });
 
   const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
-    const groups: { [key: string]: ZenBitEventListItem[] } = {};
+    const groups: Record<string, ZenBitEventListItem[]> = {};
     events.forEach((e) => {
-      // Suporte dual: starts_at (v2) ou datetime (v1)
-      const rawDate = e.starts_at || (e as Record<string, string>).datetime || '';
-      const date = new Date(rawDate);
+      const date = new Date(e.starts_at);
       if (isNaN(date.getTime())) return;
-
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
@@ -189,8 +182,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   const [showToast, setShowToast] = React.useState(false);
 
   const share = (e: ZenBitEventListItem) => {
-    // Usa canonical_url se disponível, fallback para /events/{id}
-    const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
+    const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.event_id}`;
     if (navigator.share) {
       navigator.share({ title: e.title, url: canonical });
     } else {
@@ -209,7 +201,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
-      {groupedEvents.map(([key, monthEvents]: [string, BandsintownEvent[]]) => {
+      {groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
         const [y, m] = key.split('-');
         const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
         const monthShort = MONTH_NAMES[Number(m) - 1];
@@ -222,24 +214,19 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
             </h2>
             <div className="space-y-3">
               {monthEvents.map((e) => {
-                // Suporte dual: starts_at (v2) ou datetime (v1)
-                const rawDate = e.starts_at || (e as unknown as Record<string, string>).datetime || '';
-                const eventDay = new Date(rawDate);
-                // Link: canonical_path (v2) ou /events/{id} (v1 fallback)
+                const eventDay = new Date(e.starts_at);
+                // canonical_path sempre presente na v2
                 const detailHref = e.canonical_path
                   ? (lang === 'pt'
                     ? `/pt/eventos${e.canonical_path.replace('/events', '')}`
                     : e.canonical_path)
-                  : `${getLocalizedRoute('events', lang)}/${e.id}`;
+                  : `${getLocalizedRoute('events', lang)}/${e.event_id}`;
 
-                // Localização: v2 usa location, v1 usa venue
-                const loc = e.location ?? {
-                  city: (e as BandsintownEvent & { venue?: { city: string; country: string } }).venue?.city ?? '',
-                  country: (e as BandsintownEvent & { venue?: { city: string; country: string } }).venue?.country ?? '',
-                };
+                // v2: location sempre presente
+                const loc = e.location;
 
                 return (
-                  <div key={e.id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
+                  <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
                     <div className="text-3xl font-black min-w-[50px]">{String(eventDay.getDate()).padStart(2, '0')}</div>
                     <div className="flex-1">
                       <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.country ? `, ${loc.country}` : ''}</div>
@@ -248,7 +235,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
                       </Link>
                     </div>
                     <div className="flex gap-2">
-                      <AddCalendarMenu event={e as BandsintownEvent} variant="ghost" />
+                      <AddCalendarMenu event={e as unknown as import('../types/events').ZenBitEventDetail} variant="ghost" />
                       <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
                         <Share2 size={16} />
                       </button>
@@ -277,7 +264,6 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
 const EventsPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const { t, i18n } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
   const lang = normalizeLanguage(i18n.language);
 
   if (id) {
@@ -296,20 +282,10 @@ const EventsPage: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16 px-4">
           <h1 className="text-5xl md:text-8xl font-black mb-6 uppercase tracking-tighter">{t('events_page_title')}</h1>
-          <div className="relative max-w-lg mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
-            <input
-              type="text"
-              placeholder={t('events_filter_placeholder')}
-              className="w-full bg-surface border border-white/10 rounded-full py-4 pl-12 pr-6 focus:border-primary transition-all shadow-xl"
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            />
-          </div>
         </header>
 
         <React.Suspense fallback={<EventSkeleton />}>
-          <EventListContent searchQuery={searchQuery} lang={lang} />
+          <EventListContent lang={lang} />
         </React.Suspense>
 
         <section className="mt-40 p-12 md:p-24 text-center bg-surface border border-white/5 rounded-[3rem] relative overflow-hidden group">

@@ -1,13 +1,13 @@
-# Zen BIT v2 — Bandsintown Events Plugin
+# Zen BIT — Bandsintown Events Bridge (v2 API)
 
 Proxy WordPress para a API Bandsintown com cache SWR, canonical paths SEO, JSON-LD MusicEvent e painel de health.
 
-## Endpoints
+## Endpoints (Namespace: `/wp-json/zen-bit/v2/`)
 
 ### Lista de eventos (payload enxuto)
 
 ```
-GET /wp-json/zen-bit/v1/events
+GET /wp-json/zen-bit/v2/events
 ```
 
 **Parâmetros:**
@@ -19,9 +19,8 @@ GET /wp-json/zen-bit/v1/events
 | `date` | string | — | `YYYY-MM-DD,YYYY-MM-DD` — sobrescreve `days` |
 | `limit` | int | 50 | Máximo 200 |
 | `lang` | string | `en` | Passthrough para o React |
-| `upcoming_only` | bool | — | **DEPRECATED** → mapeado para `mode=upcoming` ou `mode=all` |
 
-**Payload de retorno (enxuto — sem description/image/offers):**
+**Payload de retorno (ZenBitEventListItem):**
 ```json
 {
   "success": true,
@@ -30,13 +29,13 @@ GET /wp-json/zen-bit/v1/events
   "lang": "pt",
   "events": [
     {
-      "id": "abc123",
+      "event_id": "123456",
       "title": "DJ Zen Eyer at Club X",
       "starts_at": "2025-06-20T22:00:00+01:00",
       "timezone": "Europe/Lisbon",
       "location": { "venue": "Club X", "city": "Lisboa", "region": "Lisboa", "country": "Portugal" },
-      "canonical_path": "/events/2025-06-20-dj-zen-eyer-at-club-x-abc123",
-      "canonical_url": "https://djzeneyer.com/events/2025-06-20-dj-zen-eyer-at-club-x-abc123"
+      "canonical_path": "/events/2025-06-20-dj-zen-eyer-at-club-x-123456",
+      "canonical_url": "https://djzeneyer.com/events/2025-06-20-dj-zen-eyer-at-club-x-123456"
     }
   ]
 }
@@ -51,18 +50,19 @@ GET /wp-json/zen-bit/v1/events
 ### Detalhe do evento (payload completo)
 
 ```
-GET /wp-json/zen-bit/v1/events/{id}
+GET /wp-json/zen-bit/v2/events/{event_id}
 ```
 
-Retorna todos os campos: `description`, `image`, `offers`, `lineup`, `source_url`, `canonical_path`.
-O campo `raw` é incluído apenas quando `zen_bit_include_raw_debug` estiver habilitado no admin.
+O `{event_id}` deve ser um ID numérico da Bandsintown.
+Retorna todos os campos: `description`, `image`, `offers`, `lineup`, `source_url`, `canonical_path`, `artists`, `tickets`.
+O campo `raw` é incluído apenas quando "Include Raw Debug" estiver habilitado no admin.
 
 ---
 
 ### Schema JSON-LD por evento
 
 ```
-GET /wp-json/zen-bit/v1/events/{id}/schema
+GET /wp-json/zen-bit/v2/events/{event_id}/schema
 ```
 
 Retorna `@context + @graph` com um único `MusicEvent`. Use na tag `<script type="application/ld+json">` da página de detalhe. Inclui `url` (canonical interno) e `sameAs` (Bandsintown).
@@ -72,26 +72,26 @@ Retorna `@context + @graph` com um único `MusicEvent`. Use na tag `<script type
 ### Schema JSON-LD — lista
 
 ```
-GET /wp-json/zen-bit/v1/events-schema
+GET /wp-json/zen-bit/v2/events/schema
 ```
 
-Aceita os mesmos parâmetros do endpoint de lista. Retorna `@graph` com `MusicGroup` (performer) + `MusicEvent` por evento.
+Aceita os mesmos parâmetros do endpoint de lista (`mode`, `days`, etc). Retorna `@graph` com `MusicGroup` (performer) + `MusicEvent` por evento.
 
 ---
 
-### Admin — forçar refresh
+### Admin — API de Controle
 
 ```
-POST /wp-json/zen-bit/v1/fetch-now
+# Forçar Refresh
+POST /wp-json/zen-bit/v2/admin/fetch-now
 Authorization: Bearer {jwt_admin}
-```
 
-Limpa o cache, busca eventos frescos e atualiza o health.
+# Limpar Cache
+POST /wp-json/zen-bit/v2/admin/clear-cache
+Authorization: Bearer {jwt_admin}
 
-### Admin — limpar cache
-
-```
-POST /wp-json/zen-bit/v1/clear-cache
+# Status de Health (JSON)
+GET /wp-json/zen-bit/v2/admin/health
 Authorization: Bearer {jwt_admin}
 ```
 
@@ -101,22 +101,22 @@ Authorization: Bearer {jwt_admin}
 
 ```
 # Homepage: próximos 3 eventos
-GET /wp-json/zen-bit/v1/events?mode=upcoming&days=365&limit=3
+GET /wp-json/zen-bit/v2/events?mode=upcoming&days=365&limit=3
 
-# Página /events: até 1 ano à frente (agrupamento por mês feito no React)
-GET /wp-json/zen-bit/v1/events?mode=upcoming&days=365
+# Página /events: até 1 ano à frente
+GET /wp-json/zen-bit/v2/events?mode=upcoming&days=365
 
 # Página /events — schema para SEO
-GET /wp-json/zen-bit/v1/events-schema?mode=upcoming&days=365
+GET /wp-json/zen-bit/v2/events/schema?mode=upcoming&days=365
 
 # Página de detalhe
-GET /wp-json/zen-bit/v1/events/{id}
+GET /wp-json/zen-bit/v2/events/123456
 
 # Schema para página de detalhe
-GET /wp-json/zen-bit/v1/events/{id}/schema
+GET /wp-json/zen-bit/v2/events/123456/schema
 
 # Eventos passados (últimos 6 meses)
-GET /wp-json/zen-bit/v1/events?mode=past&days=180
+GET /wp-json/zen-bit/v2/events?mode=past&days=180
 ```
 
 ---
@@ -126,23 +126,23 @@ GET /wp-json/zen-bit/v1/events?mode=past&days=180
 Gerado deterministicamente por `Zen_BIT_Normalizer::build_canonical_path()`:
 
 ```
-/events/{yyyy-mm-dd}-{slug}-{id}
+/events/{yyyy-mm-dd}-{slug}-{event_id}
 ```
 
 - `{yyyy-mm-dd}` → data UTC do evento
 - `{slug}` → título transliterado, URL-safe, máximo 55 chars
-- `{id}` → ID Bandsintown (garante unicidade)
-- **Fallback** (sem data ou título): `/events/{id}`
+- `{event_id}` → ID numérico Bandsintown
+- **Fallback**: `/events/{event_id}`
 
 ---
 
-## Cache — TTLs configuráveis
+## Cache — TTLs configuráveis (Admin)
 
-| Contexto | Option | Default |
-|---|---|---|
-| Upcoming | `zen_bit_ttl_upcoming` | 6h (21600s) |
-| Detail | `zen_bit_ttl_detail` | 24h (86400s) |
-| Past | `zen_bit_ttl_past` | 7d (604800s) |
+| Contexto | Default |
+|---|---|
+| Próximos (Upcoming) | 6h (21600s) |
+| Detalhe (Detail) | 24h (86400s) |
+| Passados (Past) | 7d (604800s) |
 
 **SWR (Stale-While-Revalidate):** se o cache expirou, responde com dados antigos enquanto revalida em background. Anti-stampede via lock de transient (30s).
 
@@ -150,22 +150,19 @@ Gerado deterministicamente por `Zen_BIT_Normalizer::build_canonical_path()`:
 
 ## Changelog
 
+### v3.0.0 (API v2)
+- Namespace oficial alterado para `/wp-json/zen-bit/v2/`
+- Parâmetros normalizados: `mode`, `days`, `date`, `limit`.
+- Removido suporte a `upcoming_only` legada (BREAKING).
+- Respostas enxutas (`ZenBitEventListItem`) na lista para performance.
+- Respostas ricas (`ZenBitEventDetail`) no detalhe.
+- `event_id` como identificador principal (string numérica).
+- Endpoints de admin centralizados em `/admin/`.
+- Integrado com painel de health no WordPress.
+
 ### v2.0.0
-- `mode=upcoming|past|all` + `days=N` + `date=start,end`
-- `upcoming_only` deprecated (backward compat mantida)
-- Payload enxuto na lista (sem description/image/offers)
-- Novo endpoint detalhe completo com `source_url` e canonical
-- Novo endpoint `/events/{id}/schema`
-- SWR com headers `X-Zen-Cache` e `X-Zen-Fetch-MS`
-- Anti-stampede lock 30s
-- TTLs por contexto (6h/24h/7d)
-- Admin health: último fetch, ms, erros, contagem, bytes
-- Botão "Fetch Now"
-- `artist_name` como alternativa ao `artist_id`
+- Primeira implementação da lógica de mode/days.
+- SWR introduzido.
 
-### v1.1.2
-- Fix: `$limit` não declarado em `get_events_rest()`
-
-### v1.1.0
-- Throttle configurável
-- Fallback persistente em `wp_options`
+### v1.x.x
+- Versão inicial legado.

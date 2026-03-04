@@ -9,37 +9,41 @@
  * @version 1.0.0
  */
 
-if (!defined('ABSPATH')) exit;
+namespace ZenBit;
 
-class Zen_BIT_Sitemap {
+if (!defined('ABSPATH'))
+    exit;
+
+class Zen_BIT_Sitemap
+{
 
     const CACHE_KEY = 'zen_bit_sitemap_events_xml';
-    const CACHE_TTL = 6 * HOUR_IN_SECONDS; // 6h é um bom equilíbrio
+    const CACHE_TTL = 21600; // 6h (6 * 3600)
 
-    public function __construct() {
+    public function __construct()
+    {
         add_action('init', [$this, 'add_rewrite_rules']);
         add_action('template_redirect', [$this, 'maybe_serve_sitemap']);
     }
 
-    public function add_rewrite_rules() {
-        // /sitemap-events.xml
+    public function add_rewrite_rules(): void
+    {
         add_rewrite_rule('^sitemap-events\.xml$', 'index.php?zen_bit_sitemap=events', 'top');
 
-        // registra query var
-        add_filter('query_vars', function($vars) {
+        add_filter('query_vars', function ($vars) {
             $vars[] = 'zen_bit_sitemap';
             return $vars;
         });
     }
 
-    public function maybe_serve_sitemap() {
+    public function maybe_serve_sitemap(): void
+    {
         $type = get_query_var('zen_bit_sitemap');
-        if ($type !== 'events') return;
+        if ($type !== 'events')
+            return;
 
-        // Segurança: sempre XML
         header('Content-Type: application/xml; charset=UTF-8');
 
-        // Cache de sitemap (evita hits repetidos no Bandsintown)
         $cached = get_transient(self::CACHE_KEY);
         if ($cached !== false && is_string($cached) && strlen($cached) > 50) {
             $this->send_cache_headers();
@@ -49,9 +53,7 @@ class Zen_BIT_Sitemap {
 
         $xml = $this->build_sitemap_xml();
 
-        // Se der ruim, não serve vazio “indexável”
         if (!is_string($xml) || strlen($xml) < 50) {
-            status_header(503);
             echo $this->empty_sitemap();
             exit;
         }
@@ -63,58 +65,53 @@ class Zen_BIT_Sitemap {
         exit;
     }
 
-    private function send_cache_headers() {
+    private function send_cache_headers(): void
+    {
         $max_age = self::CACHE_TTL;
         header('Cache-Control: public, max-age=' . $max_age);
         header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . ' GMT');
     }
 
-    private function empty_sitemap() {
+    private function empty_sitemap(): string
+    {
         return '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
             . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>';
     }
 
-    private function compute_internal_event_id($event) {
-        if (!is_array($event)) return '';
-        if (!empty($event['id'])) return (string)$event['id'];
+    private function build_sitemap_xml(): string
+    {
+        if (!class_exists(__NAMESPACE__ . '\\Zen_BIT_API_V2')) {
+            return $this->empty_sitemap();
+        }
 
-        $seed = (string)($event['url'] ?? '') . '|' . (string)($event['datetime'] ?? '');
-        return hash('sha256', $seed);
-    }
-
-    private function build_event_internal_url($event_id) {
-        return add_query_arg(['bit_event' => $event_id], home_url('/events/'));
-    }
-
-    private function build_sitemap_xml() {
-        if (!class_exists('Zen_BIT_API')) return $this->empty_sitemap();
-
-        // Pega mais eventos para sitemap. Se você tiver MUITOS, a gente pagina em vários sitemaps depois.
-        $events = Zen_BIT_API::get_events(200);
-        if (!is_array($events) || empty($events)) return $this->empty_sitemap();
+        // v2: Busca direta do Bandsintown para garantir dados frescos no crawler
+        $events = Zen_BIT_API_V2::fetch_from_bandsintown('upcoming');
+        if (!is_array($events) || empty($events)) {
+            return $this->empty_sitemap();
+        }
 
         $now = gmdate('c');
-
         $lines = [];
         $lines[] = '<?xml version="1.0" encoding="UTF-8"?>';
         $lines[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
         foreach ($events as $event) {
-            if (!is_array($event)) continue;
+            if (!is_array($event) || empty($event['id']))
+                continue;
 
-            $event_id = $this->compute_internal_event_id($event);
-            if (!$event_id) continue;
+            $event_id = (string) $event['id'];
 
-            // lastmod: usa datetime do evento se existir; senão, agora
+            // lastmod: na v2 usamos datetime raw da BIT ou agora
             $lastmod = $now;
             if (!empty($event['datetime']) && is_string($event['datetime'])) {
                 $ts = strtotime($event['datetime']);
-                if ($ts) $lastmod = gmdate('c', $ts);
+                if ($ts)
+                    $lastmod = gmdate('c', $ts);
             }
 
-            $loc = $this->build_event_internal_url($event_id);
+            // O sitemap aponta para o path canônico do headless /events/ID
+            $loc = home_url('/events/' . $event_id);
 
-            // Importante: escapando XML
             $lines[] = '  <url>';
             $lines[] = '    <loc>' . esc_url($loc) . '</loc>';
             $lines[] = '    <lastmod>' . esc_html($lastmod) . '</lastmod>';
@@ -128,7 +125,8 @@ class Zen_BIT_Sitemap {
         return implode("\n", $lines);
     }
 
-    public static function clear_cache() {
+    public static function clear_cache(): void
+    {
         delete_transient(self::CACHE_KEY);
     }
 }

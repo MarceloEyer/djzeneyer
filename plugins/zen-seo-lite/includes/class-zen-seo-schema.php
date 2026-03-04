@@ -10,88 +10,122 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class Zen_SEO_Schema {
-    
+class Zen_SEO_Schema
+{
+
     private static $instance = null;
-    
-    public static function get_instance() {
+
+    public static function get_instance()
+    {
         if (null === self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
     }
-    
-    private function __construct() {
+
+    private function __construct()
+    {
         // Schema is rendered by Zen_SEO_Meta_Tags
     }
-    
+
     /**
      * Generate schema for current page
      */
-    public function generate_schema() {
+    public function generate_schema()
+    {
         global $post;
-        
+
+        $post_id = $post->ID ?? 0;
+        if ($post_id) {
+            return $this->generate_schema_for_post($post_id);
+        }
+
+        return $this->generate_default_schema();
+    }
+
+    /**
+     * Generate schema for a specific post (used by REST API)
+     */
+    public function generate_schema_for_post($post_id)
+    {
+        $post = get_post($post_id);
+        if (!$post) {
+            return $this->generate_default_schema();
+        }
+
         // Check cache
-        $cache_key = 'schema_' . ($post->ID ?? 'home');
+        $cache_key = 'schema_' . $post_id;
         $cached = Zen_SEO_Cache::get($cache_key);
-        
         if ($cached !== false) {
             return $cached;
         }
-        
+
         $schema = [
             '@context' => 'https://schema.org',
             '@graph' => []
         ];
-        
-        // Always include Person schema (the artist)
+
+        // Core fragments
         $schema['@graph'][] = $this->generate_person_schema();
-        
-        // Add WebSite schema for homepage
-        if (is_front_page() || is_home()) {
-            $schema['@graph'][] = $this->generate_website_schema();
+        $schema['@graph'][] = $this->generate_webpage_schema($post);
+
+        // Type-specific logic
+        switch ($post->post_type) {
+            case 'flyers':
+                $event_schema = $this->generate_event_schema($post);
+                if ($event_schema)
+                    $schema['@graph'][] = $event_schema;
+                break;
+            case 'remixes':
+                $schema['@graph'][] = $this->generate_music_schema($post);
+                break;
+            case 'product':
+                $product_schema = $this->generate_product_schema($post);
+                if ($product_schema)
+                    $schema['@graph'][] = $product_schema;
+                break;
         }
-        
-        // Add page-specific schema
-        if (Zen_SEO_Helpers::is_supported_post_type() && $post) {
-            $schema['@graph'][] = $this->generate_webpage_schema($post);
-            
-            // Add type-specific schema
-            switch ($post->post_type) {
-                case 'flyers':
-                    $event_schema = $this->generate_event_schema($post);
-                    if ($event_schema) {
-                        $schema['@graph'][] = $event_schema;
-                    }
-                    break;
-                    
-                case 'remixes':
-                    $schema['@graph'][] = $this->generate_music_schema($post);
-                    break;
-                    
-                case 'product':
-                    $product_schema = $this->generate_product_schema($post);
-                    if ($product_schema) {
-                        $schema['@graph'][] = $product_schema;
-                    }
-                    break;
-            }
-        }
-        
-        // Cache for 3 days (shared hosting optimization)
+
+        $schema = apply_filters('zen_seo_schema', $schema, $post_id);
         Zen_SEO_Cache::set($cache_key, $schema, 3 * DAY_IN_SECONDS);
-        
-        return apply_filters('zen_seo_schema', $schema);
+
+        return $schema;
     }
-    
+
+    /**
+     * Generate default global schema (for Home or unknown routes)
+     */
+    public function generate_default_schema()
+    {
+        $cache_key = 'schema_global_default';
+        $cached = Zen_SEO_Cache::get($cache_key);
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                $this->generate_person_schema(),
+                $this->generate_website_schema()
+            ]
+        ];
+
+        $schema = apply_filters('zen_seo_default_schema', $schema);
+        Zen_SEO_Cache::set($cache_key, $schema, 3 * DAY_IN_SECONDS);
+
+        return $schema;
+    }
+
     /**
      * Generate Person schema (the artist)
      */
-    private function generate_person_schema() {
+    private function generate_person_schema()
+    {
         $settings = Zen_SEO_Helpers::get_global_settings();
-        
+
         $name = !empty($settings['real_name']) ? sanitize_text_field($settings['real_name']) : get_bloginfo('name');
-        
+
         $person = [
             '@type' => 'Person',
             '@id' => home_url('/#artist'),
@@ -101,18 +135,18 @@ class Zen_SEO_Schema {
             'knowsAbout' => ['Brazilian Zouk', 'Zouk', 'Kizomba', 'Music Production', 'DJing'],
             'gender' => 'Male',
         ];
-        
+
         // Image
         if (!empty($settings['default_image'])) {
             $person['image'] = esc_url($settings['default_image']);
         }
-        
+
         // Nationality
         $person['nationality'] = [
             '@type' => 'Country',
             'name' => 'Brazil'
         ];
-        
+
         // Birth place
         if (!empty($settings['birth_place'])) {
             $person['birthPlace'] = [
@@ -120,7 +154,7 @@ class Zen_SEO_Schema {
                 'name' => sanitize_text_field($settings['birth_place'])
             ];
         }
-        
+
         // Home location
         if (!empty($settings['home_location'])) {
             $person['homeLocation'] = [
@@ -128,7 +162,7 @@ class Zen_SEO_Schema {
                 'name' => sanitize_text_field($settings['home_location'])
             ];
         }
-        
+
         // ISNI identifier
         if (!empty($settings['isni_code'])) {
             $person['identifier'] = [
@@ -137,12 +171,12 @@ class Zen_SEO_Schema {
                 'value' => sanitize_text_field($settings['isni_code'])
             ];
         }
-        
+
         // Tax ID (CNPJ) - Only if set
         if (!empty($settings['cnpj'])) {
             $person['taxID'] = sanitize_text_field($settings['cnpj']);
         }
-        
+
         // Contact point - Only if email is set
         if (!empty($settings['booking_email'])) {
             $person['contactPoint'] = [
@@ -152,7 +186,7 @@ class Zen_SEO_Schema {
                 'areaServed' => 'World'
             ];
         }
-        
+
         // Mensa membership
         if (!empty($settings['mensa_url'])) {
             $person['memberOf'] = [
@@ -161,7 +195,7 @@ class Zen_SEO_Schema {
                 'url' => esc_url($settings['mensa_url'])
             ];
         }
-        
+
         // Awards
         if (!empty($settings['awards_list'])) {
             $awards = array_filter(array_map('trim', explode("\n", $settings['awards_list'])));
@@ -169,17 +203,18 @@ class Zen_SEO_Schema {
                 $person['award'] = array_values($awards);
             }
         }
-        
+
         // SameAs (social profiles)
         $person['sameAs'] = $this->get_same_as_urls($settings);
-        
+
         return $person;
     }
-    
+
     /**
      * Generate WebSite schema
      */
-    private function generate_website_schema() {
+    private function generate_website_schema()
+    {
         return [
             '@type' => 'WebSite',
             '@id' => home_url('/#website'),
@@ -199,16 +234,17 @@ class Zen_SEO_Schema {
             ]
         ];
     }
-    
+
     /**
      * Generate WebPage schema
      */
-    private function generate_webpage_schema($post) {
+    private function generate_webpage_schema($post)
+    {
         $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
-        
+
         $title = !empty($meta['title']) ? $meta['title'] : get_the_title($post);
         $description = !empty($meta['desc']) ? $meta['desc'] : Zen_SEO_Helpers::generate_excerpt(get_post_field('post_content', $post));
-        
+
         return [
             '@type' => 'WebPage',
             '@id' => get_permalink($post) . '#webpage',
@@ -225,22 +261,23 @@ class Zen_SEO_Schema {
             ]
         ];
     }
-    
+
     /**
      * Generate Event schema
      */
-    private function generate_event_schema($post) {
+    private function generate_event_schema($post)
+    {
         $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
-        
+
         // Event date is required
         if (empty($meta['event_date'])) {
             return null;
         }
-        
+
         $title = !empty($meta['title']) ? $meta['title'] : get_the_title($post);
         $description = !empty($meta['desc']) ? $meta['desc'] : Zen_SEO_Helpers::generate_excerpt(get_post_field('post_content', $post));
         $image = !empty($meta['image']) ? $meta['image'] : Zen_SEO_Helpers::get_featured_image($post->ID);
-        
+
         $event = [
             '@type' => 'MusicEvent',
             'name' => sanitize_text_field($title),
@@ -252,12 +289,12 @@ class Zen_SEO_Schema {
                 '@id' => home_url('/#artist')
             ],
         ];
-        
+
         // Image
         if ($image) {
             $event['image'] = esc_url($image);
         }
-        
+
         // Location
         if (!empty($meta['event_location'])) {
             $event['location'] = [
@@ -269,7 +306,7 @@ class Zen_SEO_Schema {
                 ]
             ];
         }
-        
+
         // Offers (ticket)
         $ticket_url = !empty($meta['event_ticket']) ? $meta['event_ticket'] : get_permalink($post);
         $event['offers'] = [
@@ -277,20 +314,21 @@ class Zen_SEO_Schema {
             'url' => esc_url($ticket_url),
             'availability' => 'https://schema.org/InStock'
         ];
-        
+
         return $event;
     }
-    
+
     /**
      * Generate MusicRecording schema
      */
-    private function generate_music_schema($post) {
+    private function generate_music_schema($post)
+    {
         $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
-        
+
         $title = !empty($meta['title']) ? $meta['title'] : get_the_title($post);
         $description = !empty($meta['desc']) ? $meta['desc'] : Zen_SEO_Helpers::generate_excerpt(get_post_field('post_content', $post));
         $image = !empty($meta['image']) ? $meta['image'] : Zen_SEO_Helpers::get_featured_image($post->ID);
-        
+
         $music = [
             '@type' => 'MusicRecording',
             'name' => sanitize_text_field($title),
@@ -300,42 +338,43 @@ class Zen_SEO_Schema {
                 '@id' => home_url('/#artist')
             ],
         ];
-        
+
         if ($image) {
             $music['image'] = esc_url($image);
         }
-        
+
         // Get audio URL from custom fields
         $audio_url = get_post_meta($post->ID, 'audio_url', true);
         if ($audio_url) {
             $music['audio'] = esc_url($audio_url);
         }
-        
+
         // Genre from tags
         $tags = get_the_terms($post->ID, 'music_tags');
         if ($tags && !is_wp_error($tags)) {
-            $music['genre'] = array_map(function($tag) {
+            $music['genre'] = array_map(function ($tag) {
                 return $tag->name;
             }, $tags);
         }
-        
+
         return $music;
     }
-    
+
     /**
      * Generate Product schema (WooCommerce)
      */
-    private function generate_product_schema($post) {
+    private function generate_product_schema($post)
+    {
         if (!function_exists('wc_get_product')) {
             return null;
         }
-        
+
         $product = wc_get_product($post->ID);
-        
+
         if (!$product) {
             return null;
         }
-        
+
         $schema = [
             '@type' => 'Product',
             'name' => $product->get_name(),
@@ -353,16 +392,17 @@ class Zen_SEO_Schema {
                 ]
             ]
         ];
-        
+
         return $schema;
     }
-    
+
     /**
      * Get sameAs URLs from settings
      */
-    private function get_same_as_urls($settings) {
+    private function get_same_as_urls($settings)
+    {
         $urls = [];
-        
+
         // Google Knowledge Graph
         if (!empty($settings['google_kg'])) {
             $kg = trim($settings['google_kg']);
@@ -372,20 +412,31 @@ class Zen_SEO_Schema {
                 $urls[] = 'https://g.co/kg' . $kg;
             }
         }
-        
+
         // Social and music platforms
         $platforms = [
-            'musicbrainz', 'wikidata', 'beatport', 'spotify', 'apple_music',
-            'shazam', 'soundcloud', 'mixcloud', 'bandcamp', 'songkick',
-            'bandsintown', 'instagram', 'youtube', 'facebook'
+            'musicbrainz',
+            'wikidata',
+            'beatport',
+            'spotify',
+            'apple_music',
+            'shazam',
+            'soundcloud',
+            'mixcloud',
+            'bandcamp',
+            'songkick',
+            'bandsintown',
+            'instagram',
+            'youtube',
+            'facebook'
         ];
-        
+
         foreach ($platforms as $platform) {
             if (!empty($settings[$platform])) {
                 $urls[] = esc_url(trim($settings[$platform]));
             }
         }
-        
+
         return array_values(array_filter($urls));
     }
 }
