@@ -32,10 +32,9 @@ try {
 }
 
 const CONFIG = {
-  // O Vite Preview durante o prerender usa base '/' (vite.config.ts não inclui PRERENDER_MODE na condição)
-  // Portanto acessamos as rotas diretamente na raiz do servidor local.
-  serverBase: 'http://localhost:5173',
-  distDir: join(process.cwd(), 'dist'),
+  // Sincronizado com vite.config.ts base para que assets (JS/CSS) carreguem
+  serverBase: 'http://localhost:5173/wp-content/themes/zentheme/dist',
+  distDir: join(__dirname, '..', 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
   routes: routesList
@@ -55,11 +54,11 @@ function startDevServer() {
     });
     viteProcess.on('error', reject);
 
-    // Polling de conexão
+    // Polling de conexão (Verifica o base path)
     const start = Date.now();
     while (Date.now() - start < 60000) {
       try {
-        const res = await fetch('http://localhost:5173/');
+        const res = await fetch(CONFIG.serverBase + '/');
         if (res.ok || res.status === 404) {
           console.log('✅ Servidor OK.');
           return resolve();
