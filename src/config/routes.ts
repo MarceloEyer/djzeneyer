@@ -297,24 +297,34 @@ export const normalizeRouteKey = (key: string): string => {
 };
 
 /**
+ * Lookup map for English paths to optimize getLocalizedRoute
+ * O(1) access instead of O(N) linear search
+ */
+const EN_ROUTE_MAP = new Map<string, { route: RouteConfig; index: number }>();
+
+// Initialize the map once at module load time
+ROUTES_CONFIG.forEach(route => {
+  const enPaths = getLocalizedPaths(route, 'en');
+  enPaths.forEach((path, index) => {
+    EN_ROUTE_MAP.set(path, { route, index });
+  });
+});
+
+/**
  * Obtém o caminho localizado para uma rota, a partir de uma chave em inglês
  */
 export const getLocalizedRoute = (key: string, lang: Language): string => {
   const normalizedKey = normalizeRouteKey(key);
   if (!normalizedKey) return buildFullPath('', lang);
 
-  const route = ROUTES_CONFIG.find(routeConfig => {
-    const enPaths = getLocalizedPaths(routeConfig, 'en');
-    return enPaths.some(path => path === normalizedKey);
-  });
+  const entry = EN_ROUTE_MAP.get(normalizedKey);
 
-  if (!route) {
+  if (!entry) {
     return buildFullPath(normalizedKey, lang);
   }
 
-  const enPaths = getLocalizedPaths(route, 'en');
+  const { route, index: matchedIndex } = entry;
   const localizedPaths = getLocalizedPaths(route, lang);
-  const matchedIndex = enPaths.findIndex(path => path === normalizedKey);
   const localizedPath =
     localizedPaths[Math.max(0, Math.min(matchedIndex, localizedPaths.length - 1))] ??
     localizedPaths[0];
