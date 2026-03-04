@@ -260,18 +260,47 @@ export const useNewsBySlug = (slug?: string, lang?: string) => {
 // EVENT DETAIL QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventById = (id?: string, options = {}) => {
+/**
+ * Extrai o ID real do evento a partir de um `routeParam` que pode ser:
+ *   - ID puro:      "12345678"
+ *   - Canonical:    "2025-06-20-dj-zen-eyer-at-club-x-12345678"
+ *   - Alfanumérico: "2025-06-20-...-abc123" → retorna "abc123" (conservador)
+ *
+ * Regra: pega o último segmento após split("-").
+ *   - Se for puramente numérico → é o ID Bandsintown confirma.
+ *   - Senão → usa o segmento inteiro (pode ser ID alfanumérico real).
+ *
+ * Em ambos os casos retorna o mesmo valor para IDs sem hífen.
+ */
+export function extractZenBitEventId(routeParam: string): string {
+  if (!routeParam) return routeParam;
+  // Sem hífen → já é um ID puro (numérico ou string)
+  if (!routeParam.includes('-')) return routeParam;
+
+  // Último segmento após split por hífen
+  const last = routeParam.split('-').pop() ?? routeParam;
+
+  // Conservador: se puramente numérico retorna ele; senão retorna o segmento inteiro
+  if (/^\d+$/.test(last)) return last;
+  return last;
+}
+
+export const useEventById = (routeParam?: string, options = {}) => {
+  // Normaliza: aceita ID puro ("12345678") ou canonical slug ("2025-06-20-...-12345678")
+  const eventId = routeParam ? extractZenBitEventId(routeParam) : undefined;
+
   return useQuery({
-    queryKey: QUERY_KEYS.events.detail(id || ''),
+    // queryKey usa routeParam original para diferenciar entradas de cache distintas
+    queryKey: QUERY_KEYS.events.detail(routeParam || ''),
     queryFn: async (): Promise<ZenBitEventDetail | null> => {
-      if (!id) return null;
-      const apiUrl = buildApiUrl(`zen-bit/v1/events/${id}`);
+      if (!eventId) return null;
+      const apiUrl = buildApiUrl(`zen-bit/v1/events/${eventId}`);
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error(`Event API ${res.status}`);
       const data = await res.json();
       return (data?.event as ZenBitEventDetail) || null;
     },
-    enabled: !!id,
+    enabled: !!eventId,
     // Detalhe tem TTL maior (24h no backend)
     staleTime: 24 * 60 * 60 * 1000,
     ...options
