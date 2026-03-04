@@ -12,9 +12,10 @@ $a = $gamipress_template_args;
 
 $rank_types = gamipress_get_rank_types();
 
-$user_id = isset( $a['user_id'] ) ? absint( $a['user_id'] ) : get_current_user_id(); ?>
+$user_id = isset($a['user_id']) ? absint($a['user_id']) : get_current_user_id(); ?>
 
-<div id="gamipress-ranks-list" class="gamipress-ranks-list <?php echo ( $a['is_user_ranks'] ? 'gamipress-user-ranks' : '' ); ?>">
+<div id="gamipress-ranks-list"
+    class="gamipress-ranks-list <?php echo ($a['is_user_ranks'] ? 'gamipress-user-ranks' : ''); ?>">
 
     <?php
     /**
@@ -25,15 +26,16 @@ $user_id = isset( $a['user_id'] ) ? absint( $a['user_id'] ) : get_current_user_i
      * @param array $rank_types       Array of rank types to be rendered
      * @param array $template_args    Template received arguments
      */
-    do_action( 'gamipress_before_render_rank_types_list', $a['rank-types'], $a ); ?>
+    do_action('gamipress_before_render_rank_types_list', $a['rank-types'], $a); ?>
 
-    <?php foreach( $a['rank-types'] as $rank_type => $rank_ids ) :
-        if( ! isset( $rank_types[$rank_type] ) ) :
+    <?php foreach ($a['rank-types'] as $rank_type => $rank_ids):
+        if (!isset($rank_types[$rank_type])):
             continue;
         endif; ?>
 
 
-        <div id="gamipress-rank-type-<?php echo esc_attr( $rank_type ); ?>" class="gamipress-rank-type gamipress-rank-type-<?php echo esc_attr( $rank_type ); ?>">
+        <div id="gamipress-rank-type-<?php echo esc_attr($rank_type); ?>"
+            class="gamipress-rank-type gamipress-rank-type-<?php echo esc_attr($rank_type); ?>">
 
             <?php
             /**
@@ -45,9 +47,10 @@ $user_id = isset( $a['user_id'] ) ? absint( $a['user_id'] ) : get_current_user_i
              * @param array   $rank_types       Array of rank types to be rendered
              * @param array   $template_args    Template received arguments
              */
-            do_action( 'gamipress_before_render_rank_type', $rank_type, $a['rank-types'], $a ); ?>
+            do_action('gamipress_before_render_rank_type', $rank_type, $a['rank-types'], $a); ?>
 
-            <h2 class="gamipress-rank-type-title"><?php echo $rank_types[$rank_type]['plural_name']; ?></h2>
+            <h2 class="text-2xl font-black text-white mb-8 tracking-tighter uppercase border-l-4 border-primary pl-4">
+                <?php echo $rank_types[$rank_type]['plural_name']; ?></h2>
 
             <?php
             /**
@@ -59,13 +62,15 @@ $user_id = isset( $a['user_id'] ) ? absint( $a['user_id'] ) : get_current_user_i
              * @param array   $rank_types       Array of rank types to be rendered
              * @param array   $template_args    Template received arguments
              */
-            do_action( 'gamipress_after_rank_type_title', $rank_type, $a['rank-types'], $a ); ?>
+            do_action('gamipress_after_rank_type_title', $rank_type, $a['rank-types'], $a); ?>
 
-            <div class="gamipress-ranks-container gamipress-columns-<?php echo esc_attr( $a['columns'] ); ?> gamipress-columns-small-<?php echo esc_attr( $a['columns_small'] ); ?>">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 
-                <?php foreach( $rank_ids as $rank_id ) : ?>
+                <?php foreach ($rank_ids as $rank_id): ?>
 
-                    <?php echo gamipress_render_rank( $rank_id, $a['template_args'] ) ;?>
+                    <div class="gamipress-rank-item">
+                        <?php echo gamipress_render_rank($rank_id, $a['template_args']); ?>
+                    </div>
 
                 <?php endforeach; ?>
 
@@ -81,9 +86,9 @@ $user_id = isset( $a['user_id'] ) ? absint( $a['user_id'] ) : get_current_user_i
              * @param array   $rank_types       Array of rank types to be rendered
              * @param array   $template_args    Template received arguments
              */
-            do_action( 'gamipress_after_render_rank_type', $rank_type, $a['rank-types'], $a ); ?>
+            do_action('gamipress_after_render_rank_type', $rank_type, $a['rank-types'], $a); ?>
 
-            </div>
+        </div>
 
     <?php endforeach; ?>
 
@@ -96,6 +101,6 @@ $user_id = isset( $a['user_id'] ) ? absint( $a['user_id'] ) : get_current_user_i
      * @param array $rank_types       Array of rank types to be rendered
      * @param array $template_args    Template received arguments
      */
-    do_action( 'gamipress_after_render_rank_types_list', $a['rank-types'], $a ); ?>
+    do_action('gamipress_after_render_rank_types_list', $a['rank-types'], $a); ?>
 
 </div><!-- .gamipress-ranks-list -->

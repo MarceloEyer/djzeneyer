@@ -32,8 +32,7 @@ try {
 }
 
 const CONFIG = {
-  // Sincronizado com vite.config.ts base para que assets (JS/CSS) carreguem
-  serverBase: 'http://localhost:5173/wp-content/themes/zentheme/dist',
+  serverBase: 'http://localhost:5173',
   distDir: join(__dirname, '..', 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
@@ -54,11 +53,11 @@ function startDevServer() {
     });
     viteProcess.on('error', reject);
 
-    // Polling de conexão (Verifica o base path)
+    // Polling de conexão
     const start = Date.now();
     while (Date.now() - start < 60000) {
       try {
-        const res = await fetch(CONFIG.serverBase + '/');
+        const res = await fetch(CONFIG.serverBase);
         if (res.ok || res.status === 404) {
           console.log('✅ Servidor OK.');
           return resolve();
@@ -81,24 +80,6 @@ async function prerender() {
     });
 
     const page = await browser.newPage();
-    const BASE_PATH = '/wp-content/themes/zentheme/dist';
-
-    // 🎭 ROUTE MASKING: Engana o React Router (v6) para ignorar o base path durante o prerender
-    await page.evaluateOnNewDocument((base) => {
-      const originalPathname = window.location.pathname;
-      if (originalPathname.startsWith(base)) {
-        const maskedPath = originalPathname.replace(base, '') || '/';
-
-        // Sobrescreve getter do pathname
-        Object.defineProperty(window.location, 'pathname', {
-          get: () => maskedPath,
-          configurable: true
-        });
-
-        // Debug no console do browser (capturado pelo node)
-        console.log(`[MASK] Original: ${originalPathname} -> Masked: ${maskedPath}`);
-      }
-    }, BASE_PATH);
 
     // 🛡️ API INTERCEPTION: Global for all pages
     await page.setRequestInterception(true);
@@ -129,7 +110,6 @@ async function prerender() {
 
     for (const route of CONFIG.routes) {
       const cleanRoute = route.replace(/^\//, '');
-      // Acessa a rota diretamente na raiz — o React Router resolve corretamente
       const url = `${CONFIG.serverBase}/${cleanRoute}`;
 
       let outputPath;
@@ -155,9 +135,15 @@ async function prerender() {
         const html = await page.content();
 
         if (html.length > 500) {
-          const finalHtml = html.includes('name="prerender-generated"')
-            ? html
-            : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+          // ⭐ REESCREVER CAMINHOS: De '/' (prerender) para o caminho do WordPress (PROD)
+          // Isso garante que os assets funcionem no servidor real do Hostinger
+          let processedHtml = html
+            .replace(/src="\/assets\//g, 'src="/wp-content/themes/zentheme/dist/assets/')
+            .replace(/href="\/assets\//g, 'href="/wp-content/themes/zentheme/dist/assets/');
+
+          const finalHtml = processedHtml.includes('name="prerender-generated"')
+            ? processedHtml
+            : processedHtml.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
 
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
