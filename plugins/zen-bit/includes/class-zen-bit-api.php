@@ -468,6 +468,8 @@ class Zen_BIT_API
         $search = sanitize_text_field((string) $request->get_param('search'));
         $upcoming_only = filter_var($request->get_param('upcoming_only'), FILTER_VALIDATE_BOOLEAN);
         $lang = sanitize_text_field((string) ($request->get_param('lang') ?: 'en'));
+        $limit_param = $request->get_param('limit');
+        $limit = ($limit_param !== null && (int) $limit_param > 0) ? (int) $limit_param : 50;
 
         // Busca pool completo de eventos para filtrar corretamente
         $events = self::get_events(-1);
