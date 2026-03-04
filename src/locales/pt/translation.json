@@ -905,6 +905,7 @@
       "description": "Política de Privacidade do site oficial de DJ Zen Eyer. Saiba como coletamos, usamos e protegemos suas informações pessoais."
     },
     "last_updated": "Última atualização",
+    "last_updated_date": "Janeiro 2024",
     "intro_p1": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) está comprometido em proteger sua privacidade. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas informações quando você visita nosso site.",
     "intro_p2": "Ao usar nosso site, você concorda com as práticas de dados descritas nesta política. Se você não concordar com os termos desta Política de Privacidade, por favor não acesse o site.",
     "sections": {
@@ -990,6 +991,7 @@
       "description": "Termos de Uso do site oficial de DJ Zen Eyer. Leia os termos e condições que regem o uso de nossos serviços."
     },
     "last_updated": "Última atualização",
+    "last_updated_date": "Janeiro 2024",
     "intro_p1": "Bem-vindo ao site oficial do DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). Estes Termos de Uso regem seu acesso e uso de nosso site, serviços e conteúdo.",
     "intro_p2": "Ao acessar ou usar nosso site, você concorda em cumprir e estar vinculado a estes termos. Se você não concordar com estes termos, por favor não use nosso site.",
     "sections": {
@@ -1509,7 +1511,8 @@
       "request_title": "4. Como solicitar um reembolso",
       "request_text": "Para iniciar uma solicitação de devolução ou reembolso, envie um e-mail para",
       "request_text_2": "com o número do seu pedido e detalhes do problema.",
-      "last_updated": "Última atualização: Janeiro 2024"
+      "last_updated": "Última atualização",
+      "last_updated_date": "Janeiro 2024"
     }
   }
 }

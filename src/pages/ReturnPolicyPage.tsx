@@ -63,7 +63,7 @@ const ReturnPolicyPage: React.FC = () => {
             </p>
 
             <div className="mt-12 pt-8 border-t border-white/10 text-sm text-white/50">
-              <p>{t('legal.return_policy.last_updated')}</p>
+              <p>{t('legal.return_policy.last_updated')}: <span className="text-primary font-semibold">{t('legal.return_policy.last_updated_date')}</span></p>
             </div>
           </motion.article>
         </div>
