@@ -98,7 +98,38 @@ class Rest_Routes
             'permission_callback' => '__return_true', // Logout should always be accessible even with expired main token
         ]);
 
-        // ... (password reset, settings, profile routes)
+        // 8. Settings
+        register_rest_route(self::NAMESPACE , '/settings', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [__CLASS__, 'get_settings'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        // 9. Profile
+        register_rest_route(self::NAMESPACE , '/profile', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [__CLASS__, 'get_profile'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
+
+        register_rest_route(self::NAMESPACE , '/profile', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'update_profile'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
+
+        // 10. Newsletter
+        register_rest_route(self::NAMESPACE , '/newsletter', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [__CLASS__, 'get_newsletter_status'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
+
+        register_rest_route(self::NAMESPACE , '/newsletter', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'toggle_newsletter'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
     }
 
     /**

@@ -174,7 +174,7 @@ class Zen_BIT_Normalizer
         // image
         $image = self::safe_url((string) ($raw['image'] ?? ''));
         if ($image === '')
-            $image = 'https://djzeneyer.com/images/event-default.jpg';
+            $image = 'https://djzeneyer.com/images/event-default.svg';
 
         // artists
         $artists = [];

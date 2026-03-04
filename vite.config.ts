@@ -29,8 +29,8 @@ export default defineConfig(({ command, mode }) => {
 
     // 🚀 BASE PATH: Importante para o Headless WordPress
     // Em produção, os assets ficam na pasta do tema.
-    // Durante o Prerender no CI, usamos '/' para o Vite Preview funcionar.
-    base: process.env.PRERENDER_MODE === 'true' ? '/' : '/wp-content/themes/zentheme/dist/',
+    // Usamos sempre o caminho do tema ativado para build/prerender.
+    base: (process.env.PRERENDER_MODE === 'true' || isProduction) ? '/wp-content/themes/zentheme/dist/' : '/',
 
     resolve: {
       alias: {

@@ -32,7 +32,7 @@ try {
 }
 
 const CONFIG = {
-  serverBase: 'http://localhost:5173',
+  serverBase: 'http://localhost:5173/wp-content/themes/zentheme/dist', // Alinhado com vite.config.ts base
   distDir: join(process.cwd(), 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
@@ -57,7 +57,7 @@ function startDevServer() {
     const start = Date.now();
     while (Date.now() - start < 60000) {
       try {
-        const res = await fetch(CONFIG.serverBase);
+        const res = await fetch('http://localhost:5173/'); // O preview serve o index na raiz ou no base prefixado
         if (res.ok || res.status === 404) {
           console.log('✅ Servidor OK.');
           return resolve();
@@ -110,6 +110,7 @@ async function prerender() {
 
     for (const route of CONFIG.routes) {
       const cleanRoute = route.replace(/^\//, '');
+      // IMPORTANTE: Vite Preview com base path prefixado exige o path completo no goto
       const url = `${CONFIG.serverBase}/${cleanRoute}`;
 
       let outputPath;
@@ -135,15 +136,10 @@ async function prerender() {
         const html = await page.content();
 
         if (html.length > 500) {
-          // ⭐ REESCREVER CAMINHOS: De '/' (prerender) para o caminho do WordPress (PROD)
-          // Isso garante que os assets funcionem no servidor real do Hostinger
-          let processedHtml = html
-            .replace(/src="\/assets\//g, 'src="/wp-content/themes/zentheme/dist/assets/')
-            .replace(/href="\/assets\//g, 'href="/wp-content/themes/zentheme/dist/assets/');
-
-          const finalHtml = processedHtml.includes('name="prerender-generated"')
-            ? processedHtml
-            : processedHtml.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+          // ⭐ Vite compila com o base path correto agora, então não precisamos de replace manual
+          const finalHtml = html.includes('name="prerender-generated"')
+            ? html
+            : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
 
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
