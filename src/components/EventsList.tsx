@@ -186,6 +186,9 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   }
 
   // --- Main Render (Visual Only) ---
+  // Aplica o limit no cliente para garantir que não ultrapasse, independente da API
+  const visibleEvents = events.slice(0, limit);
+
   return (
     <div className="w-full">
       {variant === 'full' && showTitle && (
@@ -195,7 +198,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
       )}
 
       <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
-        {events.map((event, index) => {
+        {visibleEvents.map((event, index) => {
           const eventDate = new Date(event.datetime);
           const completeData = getCompleteEventData(event);
           const ticketUrl = event.offers?.[0]?.url || event.url;

@@ -348,7 +348,7 @@ const HomePage: React.FC = () => {
             </motion.h2>
 
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
-              <EventsList limit={1} showTitle={false} variant="compact" />
+              <EventsList limit={3} showTitle={false} variant="compact" />
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
