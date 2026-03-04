@@ -85,8 +85,10 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchEventsFn = async (limit = 10): Promise<any[]> => {
-  const apiUrl = buildApiUrl('zen-bit/v1/events', { limit: String(limit) });
+export const fetchEventsFn = async (limit = 10, search = ''): Promise<any[]> => {
+  const params: Record<string, string> = { limit: String(limit) };
+  if (search) params.search = search;
+  const apiUrl = buildApiUrl('zen-bit/v1/events', params);
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error(`API ${res.status}`);
   const data = await res.json();
@@ -147,10 +149,10 @@ export const useMenuQuery = (lang: string) => {
 // EVENTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventsQuery = (limit = 10, options = {}) => {
+export const useEventsQuery = (limit = 10, search = '', options = {}) => {
   return useQuery({
-    queryKey: QUERY_KEYS.events.list(limit),
-    queryFn: () => fetchEventsFn(limit),
+    queryKey: [...QUERY_KEYS.events.list(limit), search],
+    queryFn: () => fetchEventsFn(limit, search),
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
     ...options
@@ -248,6 +250,20 @@ export const useEventById = (id?: string, options = {}) => {
 // PRODUCTS QUERY (PÚBLICO)
 // ============================================================================
 
+
+export const useShopPageQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: ['shop_page', lang],
+    queryFn: async () => {
+      const apiUrl = buildApiUrl('djzeneyer/v1/shop/page', { lang: lang || 'en' });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch shop page view-model');
+      return res.json();
+    },
+    staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
 export const useProductsQuery = (lang?: string) => {
   return useQuery({
     queryKey: QUERY_KEYS.products.list(lang),
@@ -323,6 +339,7 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       const params: Record<string, string> = {};
       if (userId) params.user_id = String(userId);
 
+      params.limit_logs = '5'; // Dashboard typically only needs 5
       const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/user-data', params);
       const headers: HeadersInit = {
         'Content-Type': 'application/json',

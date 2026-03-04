@@ -430,7 +430,25 @@ class Zen_BIT_API {
 
     public static function get_events_rest(\WP_REST_Request $request) {
         $limit = (int) ($request->get_param('limit') ?: 50);
-        $events = self::get_events($limit);
+        $search = strtolower(sanitize_text_field($request->get_param('search') ?? ''));
+
+        $events = self::get_events(100);
+
+        if (!empty($search)) {
+            $filtered = [];
+            foreach ($events as $e) {
+                $city = $e['venue']['city'] ?? '';
+                $country = $e['venue']['country'] ?? '';
+                $searchable = strtolower(($e['title'] ?? '') . ' ' . $city . ' ' . $country);
+                if (strpos($searchable, $search) !== false) {
+                    $filtered[] = $e;
+                }
+            }
+            $events = $filtered;
+        }
+
+        // Apply slice after filter
+        $events = array_slice($events, 0, $limit);
 
         $response = rest_ensure_response(array(
             'success' => true,
@@ -438,7 +456,6 @@ class Zen_BIT_API {
             'events' => $events
         ));
 
-        // Cache headers para browser/CDN (opcional)
         $cache_time = self::get_cache_time();
         $response->header('Cache-Control', 'public, max-age=' . $cache_time);
         $response->header('Expires', gmdate('D, d M Y H:i:s', time() + $cache_time) . ' GMT');

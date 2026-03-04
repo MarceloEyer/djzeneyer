@@ -50,6 +50,12 @@ class ZenGame {
                     'type' => 'integer',
                     'description' => 'User ID (optional, uses current user if not provided)',
                     'required' => false,
+                ],
+                'limit_logs' => [
+                    'type' => 'integer',
+                    'description' => 'Limit number of logs returned (default 5)',
+                    'required' => false,
+                    'default' => 5
                 ]
             ]
         ]);
@@ -413,6 +419,8 @@ class ZenGame {
 
         // --- 3. ACHIEVEMENTS ---
         $achievements = [];
+        $earned_achievements = [];
+        $locked_achievements = [];
         $achievement_types = function_exists('gamipress_get_achievement_types') 
             ? gamipress_get_achievement_types() 
             : [];
@@ -446,7 +454,7 @@ class ZenGame {
                 $earned = isset($user_earnings[$post->ID]);
                 $points_awarded = (int)get_post_meta($post->ID, '_gamipress_points_awarded', true);
                 
-                $achievements[] = [
+                $achievement_data = [
                     'id' => $post->ID,
                     'title' => $post->post_title,
                     'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
@@ -455,6 +463,13 @@ class ZenGame {
                     'points_awarded' => $points_awarded,
                     'date_earned' => $earned ? $user_earnings[$post->ID]->date : '',
                 ];
+
+                $achievements[] = $achievement_data;
+                if ($earned) {
+                    $earned_achievements[] = $achievement_data;
+                } else {
+                    $locked_achievements[] = $achievement_data;
+                }
             }
         }
 
@@ -463,7 +478,7 @@ class ZenGame {
         if (function_exists('gamipress_query_logs')) {
             $raw_logs = gamipress_query_logs([
                 'user_id' => $user_id,
-                'limit' => 20,
+                'limit' => (int) ($request->get_param('limit_logs') ?: 20),
                 'order_by' => 'date',
                 'order' => 'DESC'
             ]);
@@ -503,6 +518,10 @@ class ZenGame {
             'points' => $point_data,
             'rank' => $rank_info,
             'achievements' => $achievements,
+            'earned_achievements' => $earned_achievements,
+            'locked_achievements' => $locked_achievements,
+            'earned_achievements_count' => count($earned_achievements),
+            'locked_achievements_count' => count($locked_achievements),
             'logs' => $logs,
             'stats' => $stats,
             'main_points_slug' => $main_pt_slug,

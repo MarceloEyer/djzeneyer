@@ -102,8 +102,8 @@ const MyAccountContent: React.FC = () => {
     const xpToNext = 100 - (mainPoints % 100);
 
     const totalAchievements = gamipress.achievements.length;
-    const earnedAchievements = gamipress.achievements.filter(a => a.earned);
-    const recentAchievements = earnedAchievements.slice(-2).length;
+    const earnedAchievements = gamipress.earned_achievements || [];
+    const recentAchievements = earnedAchievements.length;
 
     return {
       level,

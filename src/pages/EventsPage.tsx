@@ -152,16 +152,12 @@ interface EventListProps {
 
 const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   const { t } = useTranslation();
-  const { data: events = [] } = useEventsQuery(50, { suspense: true });
+  const { data: events = [] } = useEventsQuery(50, searchQuery, { suspense: true });
 
+  // Events are already filtered on the server.
   const filteredEvents = useMemo(() => {
-    const sorted = [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
-    if (!searchQuery) return sorted;
-    const q = searchQuery.toLowerCase();
-    return sorted.filter((e: any) =>
-      `${e.title} ${e.venue?.city} ${e.venue?.country}`.toLowerCase().includes(q)
-    );
-  }, [events, searchQuery]);
+    return [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
+  }, [events]);
 
   const groupedEvents = useMemo(() => {
     const groups: { [key: string]: any[] } = {};

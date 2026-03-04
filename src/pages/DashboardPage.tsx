@@ -50,8 +50,8 @@ const DashboardContent = () => {
   if (!user || !gamipress) return null;
 
   const pointTypes = Object.entries(gamipress.points);
-  const earnedAchievements = gamipress.achievements.filter(a => a.earned);
-  const lockedAchievements = gamipress.achievements.filter(a => !a.earned);
+  const earnedAchievements = gamipress.earned_achievements || [];
+  const lockedAchievements = gamipress.locked_achievements || [];
 
   // Animation variants removed (unused after cleanup)
 
@@ -190,7 +190,7 @@ const DashboardContent = () => {
               </h2>
 
               <div className="space-y-4 flex-1">
-                {lockedAchievements.slice(0, 5).map((quest, i) => (
+                {lockedAchievements.map((quest, i) => (
                   <motion.div
                     key={quest.id}
                     whileHover={{ scale: 1.02 }}

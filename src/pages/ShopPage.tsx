@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { useProductsQuery, useAddToCartMutation } from '../hooks/useQueries';
+import { useShopPageQuery, useProductsQuery, useAddToCartMutation } from '../hooks/useQueries';
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
@@ -76,7 +76,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
         <img
           src={safeUrl(product.images[0]?.src, 'https://placehold.co/1200x675/0D96FF/FFFFFF')}
           alt={product.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover" loading="lazy" decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent" />
@@ -172,7 +172,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
           <img
             src={safeUrl(product.images[0]?.src, 'https://placehold.co/640x360/0D96FF/FFFFFF')}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover" loading="lazy" decoding="async"
           />
           <div className="absolute inset-0 bg-black/20 group-hover/card:bg-transparent transition-colors" />
           {product.on_sale && (
@@ -351,7 +351,7 @@ const ShopPage: React.FC = () => {
   const isPortuguese = i18n.language.startsWith('pt');
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
-  const { data: products = [], isLoading: loading, error, refetch } = useProductsQuery(currentLang);
+  const { data: shopData, isLoading: loading, error, refetch } = useShopPageQuery(currentLang);
   const addToCartMutation = useAddToCartMutation();
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
@@ -380,26 +380,10 @@ const ShopPage: React.FC = () => {
       : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
-  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: useMemo)
-  const featuredProduct = useMemo(() =>
-    products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0],
-    [products]
-  );
-
-  const newReleases = useMemo(() =>
-    products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10),
-    [products]
-  );
-
-  const bestSellers = useMemo(() =>
-    products.filter((p: Product) => p.on_sale).slice(0, 10),
-    [products]
-  );
-
-  const curatedSelection = useMemo(() =>
-    products.slice(-10).reverse(), // OPTIMIZATION: Slice first, then reverse
-    [products]
-  );
+  const featuredProduct = shopData?.featured || null;
+  const newReleases = shopData?.new_releases || [];
+  const bestSellers = shopData?.best_sellers || [];
+  const curatedSelection = shopData?.curated || [];
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">

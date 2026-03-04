@@ -44,7 +44,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
       )}
       <div className="space-y-3">
         {hasLogs ? (
-          logs.slice(0, 5).map((log) => (
+          logs.map((log) => (
             <div
               key={log.id}
               className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all group"

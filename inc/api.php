@@ -19,6 +19,12 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 
+        register_rest_route($ns, '/shop/page', [
+        'methods' => 'GET',
+        'callback' => 'djz_get_shop_page',
+        'permission_callback' => '__return_true',
+    ]);
+
     register_rest_route($ns, '/products', [
         'methods' => 'GET',
         'callback' => 'djz_get_products',
@@ -408,4 +414,142 @@ function djz_prime_thumbnails_cache($ids) {
     if (function_exists('_prime_post_caches')) {
         _prime_post_caches($ids, false, true);
     }
+}
+
+
+/**
+ * Shop Page View-Model Endpoint (Aggregated & Cached)
+ */
+function djz_get_shop_page($request) {
+    $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
+    $cache_key = 'djz_shop_page_v1_' . $lang;
+
+    $cached = get_transient($cache_key);
+    if ($cached) return rest_ensure_response($cached);
+
+    $format_products = function($query_args) use ($lang) {
+        $args = array_merge([
+            'post_type' => 'product',
+            'post_status' => 'publish',
+            'no_found_rows' => true,
+        ], $query_args);
+
+        if (function_exists('pll_get_post_language')) {
+            $args['lang'] = $lang;
+        }
+
+        $query = new WP_Query($args);
+        $products = [];
+
+        if ($query->have_posts()) {
+            $product_objects = [];
+            $product_ids = [];
+            $all_img_ids = [];
+
+            while ($query->have_posts()) {
+                $query->the_post();
+                $id = get_the_ID();
+                $product = wc_get_product($id);
+                if (!$product) continue;
+
+                $product_objects[] = $product;
+                $product_ids[] = $product->get_id();
+
+                $img_ids = djz_get_product_image_ids($product, true); // true = list view
+                if (!empty($img_ids)) $all_img_ids = array_merge($all_img_ids, $img_ids);
+            }
+
+            if (!empty($all_img_ids)) djz_prime_thumbnails_cache($all_img_ids);
+            if (!empty($product_ids)) update_object_term_cache($product_ids, 'product');
+
+            foreach ($product_objects as $product) {
+                $img_ids = djz_get_product_image_ids($product, true);
+                $images = [];
+                foreach ($img_ids as $img_id) {
+                    $src = wp_get_attachment_url($img_id);
+                    if ($src) {
+                        $img_data = [
+                            'id' => $img_id,
+                            'src' => $src,
+                            'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
+                        ];
+                        $sizes = ['medium', 'medium_large'];
+                        $img_sizes = [];
+                        foreach ($sizes as $size) {
+                            $img_src = wp_get_attachment_image_src($img_id, $size);
+                            if ($img_src) $img_sizes[$size] = $img_src[0];
+                        }
+                        if (!empty($img_sizes)) $img_data['sizes'] = $img_sizes;
+                        $images[] = $img_data;
+                    }
+                }
+
+                $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+                $products[] = [
+                    'id' => $product->get_id(),
+                    'name' => $product->get_name(),
+                    'slug' => $product->get_slug(),
+                    'price' => $product->get_price(),
+                    'regular_price' => $product->get_regular_price(),
+                    'sale_price' => $product->get_sale_price(),
+                    'on_sale' => $product->is_on_sale(),
+                    'stock_status' => $product->get_stock_status(),
+                    'images' => $images,
+                    'short_description' => $product->get_short_description(),
+                    'description' => '',
+                    'permalink' => get_permalink($product->get_id()),
+                    'categories' => !is_wp_error($categories) ? array_map(function($term) {
+                        return ['id' => $term->term_id, 'name' => $term->name, 'slug' => $term->slug];
+                    }, $categories) : [],
+                ];
+            }
+        }
+        return $products;
+    };
+
+    $featured = $format_products([
+        'posts_per_page' => 1,
+        'tax_query' => [[
+            'taxonomy' => 'product_cat',
+            'field'    => 'slug',
+            'terms'    => 'featured',
+        ]]
+    ]);
+
+    $new_releases = $format_products([
+        'posts_per_page' => 10,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'tax_query' => [[
+            'taxonomy' => 'product_cat',
+            'field'    => 'slug',
+            'terms'    => 'featured',
+            'operator' => 'NOT IN'
+        ]]
+    ]);
+
+    $best_sellers = $format_products([
+        'posts_per_page' => 10,
+        'meta_query' => [[
+            'relation' => 'OR',
+            ['key' => '_sale_price', 'value' => 0, 'compare' => '>', 'type' => 'numeric'],
+            ['key' => '_min_variation_sale_price', 'value' => 0, 'compare' => '>', 'type' => 'numeric']
+        ]]
+    ]);
+
+    $curated = $format_products([
+        'posts_per_page' => 10,
+        'orderby' => 'date',
+        'order' => 'ASC',
+    ]);
+
+    $data = [
+        'featured' => !empty($featured) ? $featured[0] : null,
+        'new_releases' => $new_releases,
+        'best_sellers' => $best_sellers,
+        'curated' => $curated,
+    ];
+
+    set_transient($cache_key, $data, DJZ_CACHE_PRODUCTS);
+    return rest_ensure_response($data);
 }
