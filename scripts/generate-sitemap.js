@@ -44,14 +44,19 @@ async function fetchEvents() {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': 'https://djzeneyer.com/',
+        'Origin': 'https://djzeneyer.com'
       }
     });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'No body');
+      throw new Error(`HTTP error! status: ${response.status} - Body: ${errorText.substring(0, 200)}`);
+    }
     const data = await response.json();
     return Array.isArray(data) ? data : (data.events || []);
   } catch (error) {
-    console.warn('⚠️  Could not fetch events, skipping sitemap-events.xml:', error.message);
+    console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error.message);
     return [];
   }
 }

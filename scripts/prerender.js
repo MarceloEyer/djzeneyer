@@ -90,6 +90,8 @@ async function prerender() {
         if (reqUrl.includes('/posts')) mockData = [{ id: 1, title: { rendered: 'Build Preview' }, slug: 'preview', date: new Date().toISOString() }];
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
+        if (reqUrl.includes('/v1/menu')) mockData = [];
+        if (reqUrl.includes('/zen-bit/v2/events')) mockData = { success: true, events: [] };
         if (reqUrl.includes('/zen-seo/v1/settings')) mockData = { success: true, data: { real_name: "DJ Zen Eyer", default_og_image: "" } };
 
         request.respond({
@@ -109,7 +111,11 @@ async function prerender() {
     });
 
     page.on('console', msg => {
-      if (msg.type() === 'error') console.log(`[JS ERROR]: ${msg.text()}`);
+      const text = msg.text();
+      // Silenciar erros de assets (imagens/svgs) para não sujar o log principal
+      if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
+        console.log(`[JS ERROR]: ${text}`);
+      }
     });
 
     let successCount = 0;
