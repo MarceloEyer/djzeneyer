@@ -430,12 +430,45 @@ class Zen_BIT_API {
 
     public static function get_events_rest(\WP_REST_Request $request) {
         $limit = (int) ($request->get_param('limit') ?: 50);
+        $search = sanitize_text_field((string) $request->get_param('search'));
+        $upcoming_only = filter_var($request->get_param('upcoming_only'), FILTER_VALIDATE_BOOLEAN);
+        $lang = sanitize_text_field((string) ($request->get_param('lang') ?: 'en'));
+
         $events = self::get_events($limit);
+
+        usort($events, function($a, $b) {
+            $a_ts = strtotime((string) ($a['datetime'] ?? '')) ?: PHP_INT_MAX;
+            $b_ts = strtotime((string) ($b['datetime'] ?? '')) ?: PHP_INT_MAX;
+            return $a_ts <=> $b_ts;
+        });
+
+        if ($upcoming_only) {
+            $now = current_time('timestamp');
+            $events = array_values(array_filter($events, function($event) use ($now) {
+                $event_ts = strtotime((string) ($event['datetime'] ?? ''));
+                return $event_ts && $event_ts >= $now;
+            }));
+        }
+
+        if ($search !== '') {
+            $search_lower = mb_strtolower($search);
+            $events = array_values(array_filter($events, function($event) use ($search_lower) {
+                $title = mb_strtolower((string) ($event['title'] ?? ''));
+                $city = mb_strtolower((string) ($event['venue']['city'] ?? ''));
+                $country = mb_strtolower((string) ($event['venue']['country'] ?? ''));
+                return strpos($title, $search_lower) !== false
+                    || strpos($city, $search_lower) !== false
+                    || strpos($country, $search_lower) !== false;
+            }));
+        }
+
+        $events = array_slice($events, 0, $limit);
 
         $response = rest_ensure_response(array(
             'success' => true,
             'count' => count($events),
-            'events' => $events
+            'events' => $events,
+            'lang' => $lang,
         ));
 
         // Cache headers para browser/CDN (opcional)

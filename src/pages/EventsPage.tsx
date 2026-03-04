@@ -152,27 +152,23 @@ interface EventListProps {
 
 const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   const { t } = useTranslation();
-  const { data: events = [] } = useEventsQuery(50, { suspense: true });
-
-  const filteredEvents = useMemo(() => {
-    const sorted = [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
-    if (!searchQuery) return sorted;
-    const q = searchQuery.toLowerCase();
-    return sorted.filter((e: any) =>
-      `${e.title} ${e.venue?.city} ${e.venue?.country}`.toLowerCase().includes(q)
-    );
-  }, [events, searchQuery]);
+  const { data: events = [] } = useEventsQuery({
+    limit: 50,
+    lang,
+    upcomingOnly: true,
+    search: searchQuery || undefined,
+  }, { suspense: true });
 
   const groupedEvents = useMemo(() => {
     const groups: { [key: string]: any[] } = {};
-    filteredEvents.forEach((e: any) => {
+    events.forEach((e: any) => {
       const date = new Date(e.datetime || e.date);
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
     return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [filteredEvents]);
+  }, [events]);
 
   const [showToast, setShowToast] = React.useState(false);
 
@@ -186,7 +182,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
     }
   };
 
-  if (filteredEvents.length === 0) {
+  if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
         <p className="text-white/40">{t('events_no_results', 'No events found matching your search.')}</p>

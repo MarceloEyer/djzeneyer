@@ -129,14 +129,14 @@ export const QUERY_KEYS = {
   /** Eventos */
   events: {
     all: ['events'] as const,
-    list: (limit?: number) => ['events', 'list', limit] as const,
+    list: (params?: Record<string, string | number | boolean | undefined>) => ['events', 'list', params] as const,
     detail: (id: string) => ['events', 'detail', id] as const,
   },
 
   /** Notícias/Posts */
   posts: {
     all: ['posts'] as const,
-    list: () => ['posts', 'list'] as const,
+    list: (lang?: string) => ['posts', 'list', lang] as const,
     detail: (slug: string) => ['posts', 'detail', slug] as const,
   },
 
@@ -151,6 +151,7 @@ export const QUERY_KEYS = {
   products: {
     all: ['products'] as const,
     list: (lang?: string) => ['products', 'list', lang] as const,
+    collections: (lang?: string, limit?: number) => ['products', 'collections', lang, limit] as const,
     detail: (id: number) => ['products', 'detail', id] as const,
   },
 
@@ -199,9 +200,9 @@ export const prefetchQueries = {
     });
   },
 
-  events: (limit: number, fetcher: () => Promise<unknown>) => {
+  events: (params: Record<string, string | number | boolean | undefined>, fetcher: () => Promise<unknown>) => {
     return queryClient.prefetchQuery({
-      queryKey: QUERY_KEYS.events.list(limit),
+      queryKey: QUERY_KEYS.events.list(params),
       queryFn: fetcher,
       staleTime: STALE_TIME.EVENTS,
     });

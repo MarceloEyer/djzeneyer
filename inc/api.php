@@ -25,6 +25,12 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 
+    register_rest_route($ns, '/products/collections', [
+        'methods' => 'GET',
+        'callback' => 'djz_get_product_collections',
+        'permission_callback' => '__return_true',
+    ]);
+
     register_rest_route($ns, '/subscribe', [
         'methods' => 'POST',
         'callback' => 'djz_subscribe_newsletter',
@@ -114,17 +120,119 @@ function djz_get_products($request)
 {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     $slug = sanitize_title($request->get_param('slug') ?? '');
-    $cache_key = 'djz_products_v2_' . $lang;
+    $category = sanitize_title($request->get_param('category') ?? '');
+    $exclude_category = sanitize_title($request->get_param('exclude_category') ?? '');
+    $on_sale = filter_var($request->get_param('on_sale'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    $limit = max(1, min(100, (int) ($request->get_param('limit') ?: 100)));
+    $orderby = sanitize_key($request->get_param('orderby') ?? 'date');
+    $order = strtoupper(sanitize_text_field($request->get_param('order') ?? 'DESC'));
+
+    if (!in_array($orderby, ['date', 'title', 'menu_order', 'modified', 'rand'], true)) {
+        $orderby = 'date';
+    }
+
+    if (!in_array($order, ['ASC', 'DESC'], true)) {
+        $order = 'DESC';
+    }
+
+    $cache_suffix = md5(wp_json_encode([
+        'lang' => $lang,
+        'slug' => $slug,
+        'category' => $category,
+        'exclude_category' => $exclude_category,
+        'on_sale' => $on_sale,
+        'limit' => $limit,
+        'orderby' => $orderby,
+        'order' => $order,
+    ]));
+
+    $cache_key = 'djz_products_v3_' . $cache_suffix;
 
     $cached = get_transient($cache_key);
     if ($cached && empty($slug))
         return rest_ensure_response($cached);
 
+    $products = djz_query_products([
+        'lang' => $lang,
+        'slug' => $slug,
+        'category' => $category,
+        'exclude_category' => $exclude_category,
+        'on_sale' => $on_sale,
+        'limit' => $limit,
+        'orderby' => $orderby,
+        'order' => $order,
+    ]);
+
+    if (empty($slug)) {
+        set_transient($cache_key, $products, DJZ_CACHE_PRODUCTS);
+    }
+    return rest_ensure_response($products);
+}
+
+function djz_get_product_collections($request)
+{
+    $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
+    $limit = max(1, min(20, (int) ($request->get_param('limit') ?: 10)));
+    $cache_key = 'djz_products_collections_v1_' . md5($lang . '|' . $limit);
+
+    $cached = get_transient($cache_key);
+    if ($cached) {
+        return rest_ensure_response($cached);
+    }
+
+    $response = [
+        'featured' => djz_query_products([
+            'lang' => $lang,
+            'category' => 'featured',
+            'limit' => 1,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ]),
+        'new_releases' => djz_query_products([
+            'lang' => $lang,
+            'exclude_category' => 'featured',
+            'limit' => $limit,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ]),
+        'best_sellers' => djz_query_products([
+            'lang' => $lang,
+            'on_sale' => true,
+            'limit' => $limit,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ]),
+        'top_picks' => djz_query_products([
+            'lang' => $lang,
+            'limit' => $limit,
+            'orderby' => 'rand',
+            'order' => 'DESC',
+        ]),
+    ];
+
+    set_transient($cache_key, $response, DJZ_CACHE_PRODUCTS);
+
+    return rest_ensure_response($response);
+}
+
+function djz_query_products(array $options = [])
+{
+    $lang = sanitize_text_field($options['lang'] ?? 'en');
+    $slug = sanitize_title($options['slug'] ?? '');
+    $category = sanitize_title($options['category'] ?? '');
+    $exclude_category = sanitize_title($options['exclude_category'] ?? '');
+    $on_sale = $options['on_sale'] ?? null;
+    $limit = max(1, min(100, (int) ($options['limit'] ?? 100)));
+    $orderby = sanitize_key($options['orderby'] ?? 'date');
+    $order = strtoupper(sanitize_text_field($options['order'] ?? 'DESC'));
+
     $args = [
         'post_type' => 'product',
-        'posts_per_page' => 100,
+        'posts_per_page' => $limit,
         'post_status' => 'publish',
         'no_found_rows' => true,
+        'orderby' => $orderby,
+        'order' => $order,
     ];
 
     if (!empty($slug)) {
@@ -132,8 +240,41 @@ function djz_get_products($request)
         $args['posts_per_page'] = 1;
     }
 
+    $tax_query = [];
+    if (!empty($category)) {
+        $tax_query[] = [
+            'taxonomy' => 'product_cat',
+            'field' => 'slug',
+            'terms' => [$category],
+        ];
+    }
+
+    if (!empty($exclude_category)) {
+        $tax_query[] = [
+            'taxonomy' => 'product_cat',
+            'field' => 'slug',
+            'terms' => [$exclude_category],
+            'operator' => 'NOT IN',
+        ];
+    }
+
+    if (!empty($tax_query)) {
+        $args['tax_query'] = $tax_query;
+    }
+
     if (function_exists('pll_get_post_language')) {
         $args['lang'] = $lang;
+    }
+
+    if ($on_sale === true) {
+        $args['meta_query'] = [
+            [
+                'key' => '_sale_price',
+                'value' => 0,
+                'type' => 'NUMERIC',
+                'compare' => '>',
+            ]
+        ];
     }
 
     $query = new WP_Query($args);
@@ -146,11 +287,14 @@ function djz_get_products($request)
 
         while ($query->have_posts()) {
             $query->the_post();
-            $id = get_the_ID();
-            $product = wc_get_product($id);
+            $product = wc_get_product(get_the_ID());
 
             if (!$product)
                 continue;
+
+            if ($on_sale === true && !$product->is_on_sale()) {
+                continue;
+            }
 
             $product_objects[] = $product;
             $product_ids[] = $product->get_id();
@@ -161,18 +305,15 @@ function djz_get_products($request)
             }
         }
 
-        // Batch prime caches for all images
         if (!empty($all_img_ids)) {
             djz_prime_thumbnails_cache($all_img_ids);
         }
 
-        // Batch prime caches for terms
         if (!empty($product_ids)) {
             update_object_term_cache($product_ids, 'product');
         }
 
         foreach ($product_objects as $product) {
-            $id = $product->get_id();
             $images = [];
             $img_ids = djz_get_product_image_ids($product, empty($slug));
 
@@ -185,7 +326,6 @@ function djz_get_products($request)
                         'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
                     ];
 
-                    // OPTIMIZATION: Only process necessary sizes for list view
                     $sizes = empty($slug)
                         ? ['medium', 'medium_large']
                         : ['thumbnail', 'medium', 'medium_large', 'large'];
@@ -221,24 +361,21 @@ function djz_get_products($request)
                 'stock_status' => $product->get_stock_status(),
                 'images' => $images,
                 'short_description' => $product->get_short_description(),
-                'description' => !empty($slug) ? $product->get_description() : '', // Optimization: Only return description for single view
+                'description' => !empty($slug) ? $product->get_description() : '',
                 'permalink' => get_permalink($product->get_id()),
                 'categories' => array_map(function ($term) {
-                return [
-                'id' => $term->term_id,
-                'name' => $term->name,
-                'slug' => $term->slug,
-                ];
-            }, $categories),
+                    return [
+                        'id' => $term->term_id,
+                        'name' => $term->name,
+                        'slug' => $term->slug,
+                    ];
+                }, $categories),
             ];
         }
         wp_reset_postdata();
     }
 
-    if (empty($slug)) {
-        set_transient($cache_key, $products, DJZ_CACHE_PRODUCTS);
-    }
-    return rest_ensure_response($products);
+    return $products;
 }
 
 /**
