@@ -152,16 +152,13 @@ interface EventListProps {
 
 const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   const { t } = useTranslation();
-  const { data: events = [] } = useEventsQuery(50, { suspense: true });
+  const { data: events = [] } = useEventsQuery(100, searchQuery, { suspense: true });
 
   const filteredEvents = useMemo(() => {
-    const sorted = [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
-    if (!searchQuery) return sorted;
-    const q = searchQuery.toLowerCase();
-    return sorted.filter((e: any) =>
-      `${e.title} ${e.venue?.city} ${e.venue?.country}`.toLowerCase().includes(q)
-    );
-  }, [events, searchQuery]);
+    // A filtragem agora acontece no backend via searchQuery passado pro queryKey
+    // Mantemos apenas a ordenação client-side se necessário (embora o backend retorne ordenado por data)
+    return [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
+  }, [events]);
 
   const groupedEvents = useMemo(() => {
     const groups: { [key: string]: any[] } = {};

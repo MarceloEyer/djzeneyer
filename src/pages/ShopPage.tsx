@@ -351,7 +351,21 @@ const ShopPage: React.FC = () => {
   const isPortuguese = i18n.language.startsWith('pt');
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
-  const { data: products = [], isLoading: loading, error, refetch } = useProductsQuery(currentLang);
+  // 1. Featured (Hero)
+  const { data: featuredData = [], isLoading: loadingFeatured } = useProductsQuery(currentLang, { category: 'featured', per_page: '1' });
+  const featuredProduct = featuredData[0];
+
+  // 2. New Releases (Default order by date DESC)
+  const { data: newReleases = [], isLoading: loadingNew } = useProductsQuery(currentLang, { per_page: '10' });
+
+  // 3. Best Sellers (On Sale)
+  const { data: bestSellers = [], isLoading: loadingSale } = useProductsQuery(currentLang, { on_sale: 'true', per_page: '10' });
+
+  // 4. Top Picks (Curated - using ASC order to mimic "oldest reversed" or just random)
+  const { data: curatedSelection = [], isLoading: loadingPicks } = useProductsQuery(currentLang, { orderby: 'date', order: 'ASC', per_page: '10' });
+
+  const loading = loadingFeatured || loadingNew || loadingSale || loadingPicks;
+
   const addToCartMutation = useAddToCartMutation();
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
@@ -380,43 +394,13 @@ const ShopPage: React.FC = () => {
       : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
-  // Filtros de categorias para as seções (Estilo Netflix) (OPTIMIZATION: useMemo)
-  const featuredProduct = useMemo(() =>
-    products.find((p: Product) => p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')) || products[0],
-    [products]
-  );
-
-  const newReleases = useMemo(() =>
-    products.filter((p: Product) => !p.categories?.some((c: { name: string }) => c.name.toLowerCase() === 'featured')).slice(0, 10),
-    [products]
-  );
-
-  const bestSellers = useMemo(() =>
-    products.filter((p: Product) => p.on_sale).slice(0, 10),
-    [products]
-  );
-
-  const curatedSelection = useMemo(() =>
-    products.slice(-10).reverse(), // OPTIMIZATION: Slice first, then reverse
-    [products]
-  );
-
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
     </div>
   );
 
-  if (error) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white p-4">
-      <div className="text-center max-w-md">
-        <AlertCircle className="mx-auto mb-4 text-error" size={48} />
-        <h2 className="text-2xl font-bold mb-2">Error loading shop</h2>
-        <p className="opacity-70">{error instanceof Error ? error.message : String(error)}</p>
-        <button onClick={() => refetch()} className="mt-4 btn btn-primary">Try Again</button>
-      </div>
-    </div>
-  );
+  // Removed the `if (error)` block as error handling is now per-query and not aggregated in a single `error` state.
 
   return (
     <div className="min-h-screen bg-[#141414] text-white">

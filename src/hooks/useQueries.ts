@@ -85,8 +85,11 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchEventsFn = async (limit = 10): Promise<any[]> => {
-  const apiUrl = buildApiUrl('zen-bit/v1/events', { limit: String(limit) });
+export const fetchEventsFn = async (limit = 10, search = ''): Promise<any[]> => {
+  const apiUrl = buildApiUrl('zen-bit/v1/events', {
+    limit: String(limit),
+    search
+  });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error(`API ${res.status}`);
   const data = await res.json();
@@ -109,20 +112,22 @@ export const fetchTracksFn = async (): Promise<MusicTrack[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchNewsFn = async (): Promise<WPPost[]> => {
-  const apiUrl = buildApiUrl('wp/v2/posts', {
+export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
+  const params: Record<string, string> = {
     per_page: '10',
     // OPTIMIZATION: Replaced _embed=true with targeted fields
     _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
-  });
+  };
+  if (lang) params.lang = lang;
+  const apiUrl = buildApiUrl('wp/v2/posts', params);
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch news posts');
   const data = await res.json();
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchProductsFn = async (lang?: string) => {
-  const params: Record<string, string> = { per_page: '100' };
+export const fetchProductsFn = async (lang?: string, filters: Record<string, string> = {}) => {
+  const params: Record<string, string> = { per_page: '100', ...filters };
   if (lang) params.lang = lang;
   const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
   const res = await fetch(apiUrl);
@@ -147,10 +152,10 @@ export const useMenuQuery = (lang: string) => {
 // EVENTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventsQuery = (limit = 10, options = {}) => {
+export const useEventsQuery = (limit = 10, search = '', options = {}) => {
   return useQuery({
-    queryKey: QUERY_KEYS.events.list(limit),
-    queryFn: () => fetchEventsFn(limit),
+    queryKey: QUERY_KEYS.events.list(limit, search),
+    queryFn: () => fetchEventsFn(limit, search),
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
     ...options
@@ -194,10 +199,10 @@ export const useTrackBySlug = (slug?: string) => {
 // NEWS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useNewsQuery = (options: { enabled?: boolean } = {}) => {
+export const useNewsQuery = (lang?: string, options: { enabled?: boolean } = {}) => {
   return useQuery({
-    queryKey: QUERY_KEYS.posts.list(),
-    queryFn: fetchNewsFn,
+    queryKey: QUERY_KEYS.posts.list(lang || ''),
+    queryFn: () => fetchNewsFn(lang),
     staleTime: STALE_TIME.POSTS,
     ...options,
   });
@@ -248,10 +253,10 @@ export const useEventById = (id?: string, options = {}) => {
 // PRODUCTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useProductsQuery = (lang?: string) => {
+export const useProductsQuery = (lang?: string, filters: Record<string, string> = {}) => {
   return useQuery({
-    queryKey: QUERY_KEYS.products.list(lang),
-    queryFn: () => fetchProductsFn(lang),
+    queryKey: [...QUERY_KEYS.products.list(lang), filters],
+    queryFn: () => fetchProductsFn(lang, filters),
     staleTime: STALE_TIME.PRODUCTS,
   });
 };

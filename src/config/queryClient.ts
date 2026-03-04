@@ -129,14 +129,14 @@ export const QUERY_KEYS = {
   /** Eventos */
   events: {
     all: ['events'] as const,
-    list: (limit?: number) => ['events', 'list', limit] as const,
+    list: (limit?: number, search?: string) => ['events', 'list', limit, search] as const,
     detail: (id: string) => ['events', 'detail', id] as const,
   },
 
   /** Notícias/Posts */
   posts: {
     all: ['posts'] as const,
-    list: () => ['posts', 'list'] as const,
+    list: (lang?: string) => ['posts', 'list', lang] as const,
     detail: (slug: string) => ['posts', 'detail', slug] as const,
   },
 

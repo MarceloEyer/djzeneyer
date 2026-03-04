@@ -85,7 +85,7 @@ function djz_get_menu($request)
 
     if ($items) {
         foreach ($items as $item) {
-            if ((int)$item->menu_item_parent !== 0)
+            if ((int) $item->menu_item_parent !== 0)
                 continue;
 
             $url = $item->url;
@@ -114,7 +114,14 @@ function djz_get_products($request)
 {
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     $slug = sanitize_title($request->get_param('slug') ?? '');
-    $cache_key = 'djz_products_v2_' . $lang;
+    $category = sanitize_text_field($request->get_param('category') ?? '');
+    $on_sale = $request->get_param('on_sale') === 'true';
+    $per_page = min(100, absint($request->get_param('per_page') ?? 100));
+    $orderby = sanitize_text_field($request->get_param('orderby') ?? 'date');
+    $order = sanitize_text_field($request->get_param('order') ?? 'DESC');
+
+    $cache_params = [$lang, $slug, $category, $on_sale, $per_page, $orderby, $order];
+    $cache_key = 'djz_products_v3_' . md5(serialize($cache_params));
 
     $cached = get_transient($cache_key);
     if ($cached && empty($slug))
@@ -122,10 +129,24 @@ function djz_get_products($request)
 
     $args = [
         'post_type' => 'product',
-        'posts_per_page' => 100,
+        'posts_per_page' => $per_page,
         'post_status' => 'publish',
         'no_found_rows' => true,
+        'orderby' => $orderby,
+        'order' => $order,
     ];
+
+    if (!empty($category)) {
+        $args['tax_query'][] = [
+            'taxonomy' => 'product_cat',
+            'field' => 'slug',
+            'terms' => $category,
+        ];
+    }
+
+    if ($on_sale) {
+        $args['post__in'] = array_merge([0], wc_get_product_ids_on_sale());
+    }
 
     if (!empty($slug)) {
         $args['name'] = $slug;
@@ -224,12 +245,12 @@ function djz_get_products($request)
                 'description' => !empty($slug) ? $product->get_description() : '', // Optimization: Only return description for single view
                 'permalink' => get_permalink($product->get_id()),
                 'categories' => array_map(function ($term) {
-                return [
-                'id' => $term->term_id,
-                'name' => $term->name,
-                'slug' => $term->slug,
-                ];
-            }, $categories),
+                    return [
+                        'id' => $term->term_id,
+                        'name' => $term->name,
+                        'slug' => $term->slug,
+                    ];
+                }, $categories),
             ];
         }
         wp_reset_postdata();
@@ -259,7 +280,7 @@ function djz_subscribe_newsletter($request)
     try {
         $api = \MailPoet\API\API::MP('v1');
         $lists = $api->getLists();
-        $list_id = (int)apply_filters('djz_mailpoet_list_id', 0);
+        $list_id = (int) apply_filters('djz_mailpoet_list_id', 0);
         if ($list_id <= 0) {
             $list_id = $lists[0]['id'] ?? 1;
         }
@@ -273,8 +294,7 @@ function djz_subscribe_newsletter($request)
             'success' => true,
             'message' => 'Subscribed!',
         ]);
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         if (stripos($e->getMessage(), 'already exists') !== false) {
             return rest_ensure_response([
                 'success' => true,
@@ -372,37 +392,41 @@ add_action('admin_init', function () {
  * @param bool $is_list_view
  * @return array
  */
-function djz_get_product_image_ids($product, $is_list_view = false) {
-    if (!$product) return [];
-    
+function djz_get_product_image_ids($product, $is_list_view = false)
+{
+    if (!$product)
+        return [];
+
     $img_ids = $product->get_gallery_image_ids();
     $featured_id = $product->get_image_id();
-    
+
     if ($featured_id) {
         // Ensure featured image is first and unique
         array_unshift($img_ids, $featured_id);
         $img_ids = array_unique($img_ids);
     }
-    
+
     // OPTIMIZATION: In list view, only return the first image (usually featured)
     if ($is_list_view && !empty($img_ids)) {
         $img_ids = array_slice($img_ids, 0, 1);
     }
-    
+
     return $img_ids;
 }
 
 /**
  * Helper to prime thumbnail caches efficiently
  */
-function djz_prime_thumbnails_cache($ids) {
-    if (empty($ids)) return;
+function djz_prime_thumbnails_cache($ids)
+{
+    if (empty($ids))
+        return;
     $ids = array_unique(array_map('intval', $ids));
-    
+
     if (function_exists('update_meta_cache')) {
         update_meta_cache('post', $ids);
     }
-    
+
     // _prime_post_caches is an internal function since WP 6.1
     // We use version_compare or function_exists for safety.
     if (function_exists('_prime_post_caches')) {
