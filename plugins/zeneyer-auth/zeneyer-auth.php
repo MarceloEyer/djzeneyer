@@ -111,7 +111,11 @@ final class ZenEyer_Auth_Pro
 
         // 2. Mata registro padrão
         add_action('login_form_register', function () {
-            wp_die('O registro padrão está desativado. Use o site oficial.', 'Acesso Negado', ['response' => 403]);
+            $message = 'O registro padrão está desativado. Use o site oficial.';
+            if (defined('REST_REQUEST') && REST_REQUEST) {
+                wp_send_json_error(['message' => $message], 403);
+            }
+            wp_die($message, 'Acesso Negado', ['response' => 403]);
         });
 
         // 3. Remove rota nativa com SEGURANÇA DE TIPOS
@@ -126,8 +130,7 @@ final class ZenEyer_Auth_Pro
                     if (is_string($route['methods'])) {
                         if (strpos($route['methods'], 'POST') !== false)
                             $should_remove = true;
-                    }
-                    elseif (is_array($route['methods'])) {
+                    } elseif (is_array($route['methods'])) {
                         if (isset($route['methods']['POST']) || in_array('POST', $route['methods']))
                             $should_remove = true;
                     }
@@ -147,14 +150,19 @@ final class ZenEyer_Auth_Pro
             // Allow WooCommerce customers
             if (class_exists('WooCommerce')) {
                 $user = get_userdata($user_id);
-                if ($user && in_array('customer', (array)$user->roles))
+                if ($user && in_array('customer', (array) $user->roles))
                     return;
             }
 
             if (!defined('ZEN_AUTH_VALIDATED')) {
                 error_log("🚨 [ZenEyer Security] INTRUSO DETECTADO: Usuário ID $user_id. Removendo...");
                 wp_delete_user($user_id);
-                wp_die('Registro não autorizado.', 403);
+
+                $message = 'Registro não autorizado.';
+                if (defined('REST_REQUEST') && REST_REQUEST) {
+                    wp_send_json_error(['message' => $message], 403);
+                }
+                wp_die($message, 403);
             }
         }, 999);
     }

@@ -10,6 +10,8 @@
  * Text Domain: zen-bit
  */
 
+namespace ZenBit;
+
 if (!defined('ABSPATH'))
     exit;
 
@@ -42,9 +44,10 @@ if (!class_exists('Zen_BIT')) {
                 'includes/class-zen-bit-normalizer.php' => 'Zen_BIT_Normalizer',
                 'includes/class-zen-bit-cache.php' => 'Zen_BIT_Cache',
                 'includes/class-zen-bit-api.php' => 'Zen_BIT_API_V2',
+                'includes/class-zen-bit-sitemap.php' => 'Zen_BIT_Sitemap',
             ];
             foreach ($files as $path => $class) {
-                if (!class_exists($class)) {
+                if (!class_exists(__NAMESPACE__ . '\\' . $class)) {
                     require_once ZEN_BIT_PLUGIN_DIR . $path;
                 }
             }
@@ -59,6 +62,11 @@ if (!class_exists('Zen_BIT')) {
             add_action('rest_api_init', [$this, 'register_rest_routes']);
             register_activation_hook(__FILE__, [$this, 'activate']);
             register_deactivation_hook(__FILE__, [$this, 'deactivate']);
+
+            // Inicializa Sitemap
+            if (class_exists(__NAMESPACE__ . '\\Zen_BIT_Sitemap')) {
+                new Zen_BIT_Sitemap();
+            }
         }
 
         public function load_textdomain(): void
@@ -72,12 +80,14 @@ if (!class_exists('Zen_BIT')) {
 
         public function register_rest_routes(): void
         {
+            $api_class = __NAMESPACE__ . '\\Zen_BIT_API_V2';
+
             // ---- Público ----
 
             // Lista de eventos (payload enxuto)
             register_rest_route('zen-bit/v2', '/events', [
                 'methods' => 'GET',
-                'callback' => ['Zen_BIT_API_V2', 'list_events'],
+                'callback' => [$api_class, 'list_events'],
                 'permission_callback' => '__return_true',
                 'args' => [
                     'mode' => ['type' => 'string', 'default' => 'upcoming'],
@@ -91,7 +101,7 @@ if (!class_exists('Zen_BIT')) {
             // Schema JSON-LD — lista  (/events/schema ANTES de /events/{id})
             register_rest_route('zen-bit/v2', '/events/schema', [
                 'methods' => 'GET',
-                'callback' => ['Zen_BIT_API_V2', 'list_events_schema'],
+                'callback' => [$api_class, 'list_events_schema'],
                 'permission_callback' => '__return_true',
                 'args' => [
                     'mode' => ['type' => 'string', 'default' => 'upcoming'],
@@ -104,7 +114,7 @@ if (!class_exists('Zen_BIT')) {
             // Detalhe de evento (event_id numérico)
             register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)', [
                 'methods' => 'GET',
-                'callback' => ['Zen_BIT_API_V2', 'get_event'],
+                'callback' => [$api_class, 'get_event'],
                 'permission_callback' => '__return_true',
                 'args' => [
                     'event_id' => ['type' => 'integer', 'required' => true, 'minimum' => 1],
@@ -114,7 +124,7 @@ if (!class_exists('Zen_BIT')) {
             // Schema JSON-LD — evento individual
             register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)/schema', [
                 'methods' => 'GET',
-                'callback' => ['Zen_BIT_API_V2', 'get_event_schema'],
+                'callback' => [$api_class, 'get_event_schema'],
                 'permission_callback' => '__return_true',
                 'args' => [
                     'event_id' => ['type' => 'integer', 'required' => true],
@@ -125,19 +135,19 @@ if (!class_exists('Zen_BIT')) {
 
             register_rest_route('zen-bit/v2', '/admin/fetch-now', [
                 'methods' => 'POST',
-                'callback' => ['Zen_BIT_API_V2', 'admin_fetch_now'],
+                'callback' => [$api_class, 'admin_fetch_now'],
                 'permission_callback' => fn() => current_user_can('manage_options'),
             ]);
 
             register_rest_route('zen-bit/v2', '/admin/clear-cache', [
                 'methods' => 'POST',
-                'callback' => ['Zen_BIT_API_V2', 'admin_clear_cache'],
+                'callback' => [$api_class, 'admin_clear_cache'],
                 'permission_callback' => fn() => current_user_can('manage_options'),
             ]);
 
             register_rest_route('zen-bit/v2', '/admin/health', [
                 'methods' => 'GET',
-                'callback' => ['Zen_BIT_API_V2', 'admin_health'],
+                'callback' => [$api_class, 'admin_health'],
                 'permission_callback' => fn() => current_user_can('manage_options'),
             ]);
         }

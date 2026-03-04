@@ -13,6 +13,8 @@
  *   GET  /wp-json/zen-bit/v2/admin/health             → Health status (admin)
  */
 
+namespace ZenBit;
+
 if (!defined('ABSPATH'))
     exit;
 

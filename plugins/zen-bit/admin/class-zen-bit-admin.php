@@ -3,6 +3,8 @@
  * Zen BIT — Admin v2
  */
 
+namespace ZenBit;
+
 if (!defined('ABSPATH')) exit;
 
 class Zen_BIT_Admin

@@ -12,6 +12,8 @@
  *  - Detalhe inclui `ends_at`, `artists`, `tickets`
  */
 
+namespace ZenBit;
+
 if (!defined('ABSPATH'))
     exit;
 
