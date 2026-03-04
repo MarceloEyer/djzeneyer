@@ -1,6 +1,6 @@
 // src/pages/AboutPage.tsx - VERSÃO FINAL HEADLESS E OTIMIZADA
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Music2,
@@ -33,7 +33,7 @@ const AboutPage: React.FC = () => {
   const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
 
   // SCHEMA.ORG PARA A PÁGINA ABOUT
-  const ABOUT_SCHEMA = {
+  const ABOUT_SCHEMA = useMemo(() => ({
     '@context': 'https://schema.org',
     '@graph': [
       {
@@ -66,9 +66,9 @@ const AboutPage: React.FC = () => {
         },
       },
     ],
-  };
+  }), [t, currentUrl]);
 
-  const MILESTONES = [
+  const MILESTONES = useMemo(() => [
     {
       year: '2005-2010',
       title: t('about.timeline.m1.title'),
@@ -97,9 +97,9 @@ const AboutPage: React.FC = () => {
       icon: <Trophy className="w-8 h-8 text-white" />,
       color: 'bg-gradient-to-br from-yellow-500 to-amber-600',
     },
-  ];
+  ], [t]);
 
-  const ACHIEVEMENTS_DATA = [
+  const ACHIEVEMENTS_DATA = useMemo(() => [
     {
       label: t('about.stats.passion'),
       value: t('about.stats.passion_value'),
@@ -120,7 +120,7 @@ const AboutPage: React.FC = () => {
       value: t('about.stats.smiles_value'),
       icon: <Star className="w-8 h-8 mx-auto mb-4 text-primary" />,
     },
-  ];
+  ], [t]);
 
   return (
     <>
