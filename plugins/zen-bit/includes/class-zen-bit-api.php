@@ -1,18 +1,22 @@
 <?php
 /**
- * Zen BIT - API Layer
- * File: wp-content/plugins/zen-bit/includes/class-zen-bit-api.php
+ * Zen BIT — API Layer v2
  *
- * Responsabilidades:
- * - Buscar e cachear eventos do Bandsintown
- * - Normalizar os dados para consumo no site e em bots
- * - Entregar REST:
- *   GET /wp-json/zen-bit/v1/events
- *   GET /wp-json/zen-bit/v1/events-schema
+ * Endpoints:
+ *   GET  /wp-json/zen-bit/v1/events                  → Lista enxuta (sem description/image/offers)
+ *   GET  /wp-json/zen-bit/v1/events/{id}             → Detalhe completo
+ *   GET  /wp-json/zen-bit/v1/events/{id}/schema      → JSON-LD MusicEvent por evento
+ *   GET  /wp-json/zen-bit/v1/events-schema           → JSON-LD @graph para lista
+ *   POST /wp-json/zen-bit/v1/clear-cache             → Admin: limpa cache
+ *   POST /wp-json/zen-bit/v1/fetch-now               → Admin: força refresh
  *
- * Observações:
- * - NÃO define zen_bit_init() nem hooks do plugin (evita redeclare)
- * - NÃO carrega textdomain (evita rodar cedo)
+ * Parâmetros suportados em /events e /events-schema:
+ *   mode          string  upcoming|past|all  (default: upcoming)
+ *   days          int     1–730             (default: zen_bit_default_days | 365)
+ *   date          string  YYYY-MM-DD,YYYY-MM-DD  (sobrescreve days)
+ *   limit         int     1–200             (default: 50)
+ *   lang          string  en|pt             (passthrough)
+ *   upcoming_only bool    DEPRECATED → mapeado para mode
  */
 
 if (!defined('ABSPATH'))
@@ -20,519 +24,474 @@ if (!defined('ABSPATH'))
 
 class Zen_BIT_API
 {
-
-    // =========================
+    // =========================================================================
     // OPTIONS
-    // =========================
+    // =========================================================================
 
-    private static function get_artist_id(): string
+    public static function get_artist_id(): string
     {
-        $id = (string) get_option('zen_bit_artist_id', '15619775');
-        return trim($id) !== '' ? trim($id) : '15619775';
+        return trim((string) get_option('zen_bit_artist_id', '15619775')) ?: '15619775';
     }
 
-    private static function get_api_key(): string
+    public static function get_artist_name(): string
     {
-        // Ideal: setar via admin e não hardcode.
-        $key = (string) get_option('zen_bit_api_key', '');
-        return trim($key);
+        return trim((string) get_option('zen_bit_artist_name', ''));
     }
 
-    private static function get_cache_time(): int
+    private static function get_app_id(): string
     {
-        // padrão: 24h
-        $ttl = (int) get_option('zen_bit_cache_time', 86400);
-        if ($ttl < 60)
-            $ttl = 60;
-        return $ttl;
+        $key = trim((string) get_option('zen_bit_api_key', ''));
+        return $key !== '' ? $key : 'djzeneyer';
     }
 
-    private static function cache_key(): string
+    // =========================================================================
+    // PARAM VALIDATION
+    // =========================================================================
+
+    /**
+     * Valida e normaliza os parâmetros de filtro comuns a /events e /events-schema.
+     *
+     * @param \WP_REST_Request $request
+     * @return array{mode:string, date_start:string, date_end:string, limit:int, lang:string}|\WP_Error
+     */
+    private static function parse_filter_params(\WP_REST_Request $request)
     {
-        return 'zen_bit_events_' . self::get_artist_id();
-    }
+        // ---- mode ----
+        $mode = strtolower(sanitize_text_field((string) ($request->get_param('mode') ?: 'upcoming')));
 
-    // =========================
-    // SANITIZATION / NORMALIZATION
-    // =========================
-
-    private static function sanitize_url($url): string
-    {
-        if (empty($url) || !is_string($url))
-            return '';
-        $url = trim($url);
-
-        // relative path ok
-        if (strpos($url, '/') === 0)
-            return $url;
-
-        $parsed = wp_parse_url($url);
-        if (!$parsed || empty($parsed['scheme']))
-            return '';
-
-        $scheme = strtolower((string) $parsed['scheme']);
-        if (!in_array($scheme, array('http', 'https'), true))
-            return '';
-
-        return esc_url_raw($url);
-    }
-
-    private static function sanitize_text($text, int $max = 300): string
-    {
-        if (!is_string($text))
-            return '';
-        $text = wp_strip_all_tags($text);
-        $text = trim(preg_replace('/\s+/', ' ', $text));
-        if ($max > 0 && strlen($text) > $max) {
-            $text = mb_substr($text, 0, $max) . '…';
+        // Backward compat: upcoming_only=true → mode=upcoming
+        if ($request->get_param('upcoming_only') !== null) {
+            $upcoming_only = filter_var($request->get_param('upcoming_only'), FILTER_VALIDATE_BOOLEAN);
+            $mode = $upcoming_only ? 'upcoming' : 'all';
         }
-        return $text;
-    }
 
-    private static function parse_datetime_iso($datetime): string
-    {
-        if (empty($datetime) || !is_string($datetime))
-            return '';
-        $ts = strtotime($datetime);
-        if (!$ts)
-            return '';
-        return wp_date('c', $ts);
-    }
-
-    private static function build_title(array $event): string
-    {
-        if (!empty($event['title']) && is_string($event['title'])) {
-            return self::sanitize_text($event['title'], 180);
+        if (!in_array($mode, ['upcoming', 'past', 'all'], true)) {
+            return new \WP_Error('invalid_mode', 'Parâmetro mode deve ser upcoming, past ou all.', ['status' => 400]);
         }
-        $venue = is_array($event['venue'] ?? null) ? $event['venue'] : array();
-        $venue_name = !empty($venue['name']) ? self::sanitize_text((string) $venue['name'], 120) : 'Event';
-        return self::sanitize_text(sprintf('DJ Zen Eyer at %s', $venue_name), 180);
-    }
 
-    private static function build_description(array $event): string
-    {
-        if (!empty($event['description']) && is_string($event['description'])) {
-            return self::sanitize_text($event['description'], 280);
-        }
-        $venue = is_array($event['venue'] ?? null) ? $event['venue'] : array();
-        $vname = !empty($venue['name']) ? self::sanitize_text((string) $venue['name'], 120) : 'venue';
-        $city = !empty($venue['city']) ? self::sanitize_text((string) $venue['city'], 80) : '';
-        $country = !empty($venue['country']) ? self::sanitize_text((string) $venue['country'], 80) : '';
-        $place = trim($city . (empty($country) ? '' : ', ' . $country));
-        return self::sanitize_text(
-            sprintf('DJ Zen Eyer performing live at %s%s.', $vname, $place ? (' in ' . $place) : ''),
-            280
-        );
-    }
+        // ---- date range ----
+        $date_param = sanitize_text_field((string) ($request->get_param('date') ?: ''));
+        $date_start = '';
+        $date_end = '';
 
-    private static function build_image(array $event): string
-    {
-        if (!empty($event['image']) && is_string($event['image'])) {
-            $img = self::sanitize_url($event['image']);
-            if ($img)
-                return $img;
-        }
-        return 'https://djzeneyer.com/images/event-default.jpg';
-    }
-
-    private static function build_external_url(array $event): string
-    {
-        if (!empty($event['url']) && is_string($event['url'])) {
-            return self::sanitize_url($event['url']);
-        }
-        return '';
-    }
-
-    private static function build_ticket_url(array $event): string
-    {
-        // Bandsintown costuma ter offers[0].url (às vezes)
-        if (!empty($event['offers']) && is_array($event['offers'])) {
-            $first = $event['offers'][0] ?? null;
-            if (is_array($first) && !empty($first['url']) && is_string($first['url'])) {
-                $u = self::sanitize_url($first['url']);
-                if ($u)
-                    return $u;
+        if ($date_param !== '') {
+            // Formato esperado: YYYY-MM-DD,YYYY-MM-DD
+            if (!preg_match('/^(\d{4}-\d{2}-\d{2}),(\d{4}-\d{2}-\d{2})$/', $date_param, $m)) {
+                return new \WP_Error('invalid_date', 'Parâmetro date deve ter o formato YYYY-MM-DD,YYYY-MM-DD.', ['status' => 400]);
             }
-        }
-        $external = self::build_external_url($event);
-        return $external ?: '';
-    }
+            $date_start = $m[1];
+            $date_end = $m[2];
+            if ($date_start > $date_end) {
+                return new \WP_Error('invalid_date_range', 'A data inicial deve ser menor ou igual à data final.', ['status' => 400]);
+            }
+        } else {
+            // days → range dinâmico
+            $days_param = $request->get_param('days');
+            $default_days = (int) get_option('zen_bit_default_days', 365);
+            $days = ($days_param !== null) ? (int) $days_param : $default_days;
 
-    private static function normalize_venue(array $event): array
-    {
-        $venue = is_array($event['venue'] ?? null) ? $event['venue'] : array();
+            if ($days < 1 || $days > 730) {
+                return new \WP_Error('invalid_days', 'Parâmetro days deve estar entre 1 e 730.', ['status' => 400]);
+            }
 
-        return array(
-            'name' => !empty($venue['name']) ? self::sanitize_text((string) $venue['name'], 140) : '',
-            'city' => !empty($venue['city']) ? self::sanitize_text((string) $venue['city'], 80) : '',
-            'region' => !empty($venue['region']) ? self::sanitize_text((string) $venue['region'], 80) : '',
-            'country' => !empty($venue['country']) ? self::sanitize_text((string) $venue['country'], 80) : '',
-            'latitude' => isset($venue['latitude']) ? (string) $venue['latitude'] : '',
-            'longitude' => isset($venue['longitude']) ? (string) $venue['longitude'] : '',
-        );
-    }
-
-    private static function normalize_event(array $raw): array
-    {
-        $datetime_raw = (!empty($raw['datetime']) && is_string($raw['datetime'])) ? $raw['datetime'] : '';
-        $datetime_iso = self::parse_datetime_iso($datetime_raw);
-
-        $title = self::build_title($raw);
-        $desc = self::build_description($raw);
-        $img = self::build_image($raw);
-
-        $venue = self::normalize_venue($raw);
-
-        $external = self::build_external_url($raw);
-        $tickets = self::build_ticket_url($raw);
-
-        // Mantém id original se existir
-        $id = '';
-        if (!empty($raw['id']))
-            $id = (string) $raw['id'];
-
-        // Offers normalizado (só o que importa)
-        $offers = array();
-        if (!empty($tickets)) {
-            $offers[] = array('url' => $tickets);
+            // Para mode=upcoming: hoje → hoje+days
+            // Para mode=past:     hoje-days → hoje
+            // Para mode=all:      não restringe por range
+            if ($mode === 'upcoming') {
+                $date_start = gmdate('Y-m-d');
+                $date_end = gmdate('Y-m-d', strtotime("+{$days} days"));
+            } elseif ($mode === 'past') {
+                $date_start = gmdate('Y-m-d', strtotime("-{$days} days"));
+                $date_end = gmdate('Y-m-d');
+            }
+            // mode=all: $date_start e $date_end ficam vazios → sem filtro de data
         }
 
-        return array(
-            'id' => $id,
-            'title' => $title,
-            'description' => $desc,
-            'image' => $img,
-            'datetime' => $datetime_iso ?: $datetime_raw, // mantém raw se não parseou
-            'datetime_iso' => $datetime_iso,
-            'venue' => $venue,
-            'url' => $external,
-            'offers' => $offers,
-        );
+        // ---- limit ----
+        $limit_param = $request->get_param('limit');
+        $limit = ($limit_param !== null && (int) $limit_param > 0) ? (int) $limit_param : 50;
+        $limit = min($limit, 200);
+
+        // ---- lang ----
+        $lang = sanitize_text_field((string) ($request->get_param('lang') ?: 'en'));
+
+        return compact('mode', 'date_start', 'date_end', 'limit', 'lang');
     }
 
-    // =========================
-    // FETCH + CACHE
-    // =========================
+    // =========================================================================
+    // FETCH DA API BANDSINTOWN (raw)
+    // =========================================================================
 
-    private static function fetch_from_bandsintown(): array
+    /**
+     * Chama a API do Bandsintown e retorna eventos raw.
+     * Parâmetro $date: string no formato "YYYY-MM-DD,YYYY-MM-DD" ou vazio.
+     */
+    private static function fetch_from_bandsintown(string $date = ''): array
     {
+        $artist_name = self::get_artist_name();
         $artist_id = self::get_artist_id();
-        $api_key = self::get_api_key();
+        $app_id = self::get_app_id();
 
-        // Bandsintown exige app_id. Se estiver vazio, ainda pode funcionar em alguns casos,
-        // mas o correto é configurar.
-        $app_id = $api_key !== '' ? $api_key : 'djzeneyer';
+        // Suporta artist_name como alternativa ao artist_id
+        if ($artist_name !== '') {
+            $identifier = urlencode($artist_name);
+        } else {
+            $identifier = 'id_' . $artist_id;
+        }
 
-        $url = "https://rest.bandsintown.com/artists/id_{$artist_id}/events?app_id={$app_id}";
+        $url = "https://rest.bandsintown.com/artists/{$identifier}/events?app_id={$app_id}";
+        if ($date !== '') {
+            $url .= '&date=' . urlencode($date);
+        }
 
-        $response = wp_remote_get($url, array(
+        $t0 = microtime(true);
+        $response = wp_remote_get($url, [
             'timeout' => 15,
-            'headers' => array('Accept' => 'application/json'),
-        ));
+            'headers' => ['Accept' => 'application/json'],
+        ]);
+        $fetch_ms = (int) round((microtime(true) - $t0) * 1000);
 
         if (is_wp_error($response)) {
-            error_log('Zen BIT: wp_remote_get error - ' . $response->get_error_message());
-            return array();
+            error_log('[Zen BIT] wp_remote_get error: ' . $response->get_error_message());
+            Zen_BIT_Cache::health_update(false, $fetch_ms, $response->get_error_message(), 0, 0);
+            return [];
         }
 
         $code = (int) wp_remote_retrieve_response_code($response);
         $body = (string) wp_remote_retrieve_body($response);
 
         if ($code < 200 || $code >= 300) {
-            error_log('Zen BIT: Bandsintown HTTP ' . $code . ' - ' . substr($body, 0, 200));
-            return array();
+            $msg = "HTTP {$code}: " . substr($body, 0, 120);
+            error_log('[Zen BIT] Bandsintown error: ' . $msg);
+            Zen_BIT_Cache::health_update(false, $fetch_ms, $msg, 0, 0);
+            return [];
         }
 
         $data = json_decode($body, true);
 
         if (!is_array($data)) {
-            error_log('Zen BIT: Invalid JSON from Bandsintown - ' . substr($body, 0, 200));
-            return array();
+            $msg = 'Invalid JSON: ' . substr($body, 0, 120);
+            error_log('[Zen BIT] ' . $msg);
+            Zen_BIT_Cache::health_update(false, $fetch_ms, $msg, 0, 0);
+            return [];
         }
 
-        // erro padrão do Bandsintown
         if (isset($data['error']) || isset($data['message'])) {
-            error_log('Zen BIT: API error - ' . (string) ($data['message'] ?? $data['error']));
-            return array();
+            $msg = (string) ($data['message'] ?? $data['error']);
+            error_log('[Zen BIT] API error: ' . $msg);
+            Zen_BIT_Cache::health_update(false, $fetch_ms, $msg, 0, 0);
+            return [];
         }
 
-        // às vezes vem um objeto único
+        // Às vezes vem objeto único
         if (!isset($data[0]) && isset($data['id'])) {
-            $data = array($data);
+            $data = [$data];
         }
 
         if (!is_array($data))
-            return array();
+            return [];
 
         return $data;
     }
 
-    public static function get_events(int $limit = 50): array
-    {
-        $cache_key = self::cache_key();
-        $cached = get_transient($cache_key);
+    // =========================================================================
+    // POOL DE EVENTOS (COM CACHE SWR)
+    // =========================================================================
 
-        $events_pool = array();
+    /**
+     * Retorna pool completo de eventos normalizados **como detalhe** (para detail endpoint)
+     * ou **como lista** (para list endpoint).
+     *
+     * Usa SWR: retorna stale enquanto revalida em background.
+     *
+     * @param string $mode        upcoming|past|all
+     * @param string $date_start  YYYY-MM-DD (ou '' para sem restrição)
+     * @param string $date_end    YYYY-MM-DD
+     * @param bool   $detail      true = normalize_detail, false = normalize_list_item
+     * @return array{data:array, cache_status:string, fetch_ms:int}
+     */
+    private static function get_pool(
+        string $mode,
+        string $date_start,
+        string $date_end,
+        bool $detail = false
+    ): array {
+        $ttl = match ($mode) {
+            'past' => Zen_BIT_Cache::ttl_past(),
+            default => Zen_BIT_Cache::ttl_upcoming(),
+        };
 
-        // Se temos cache válido
-        if (is_array($cached) && !empty($cached)) {
-            $events_pool = $cached;
-        } else {
-            // ====================================================================
-            // THROTTLE & DURABLE FALLBACK
-            // ====================================================================
-            $throttle_key = 'zen_bit_api_throttle_' . self::get_artist_id();
-            $fallback_key = 'zen_bit_events_fallback_' . self::get_artist_id();
+        $include_raw = (bool) get_option('zen_bit_include_raw_debug', false);
 
-            if (get_transient($throttle_key)) {
-                $fallback = get_option($fallback_key);
-                $events_pool = is_array($fallback) ? $fallback : array();
-            } else {
-                set_transient($throttle_key, true, 300);
-                $raw_events = self::fetch_from_bandsintown();
+        $cache_key = Zen_BIT_Cache::make_key([
+            'mode' => $mode,
+            'date_start' => $date_start,
+            'date_end' => $date_end,
+            'detail' => $detail ? 1 : 0,
+        ]);
 
-                if (empty($raw_events)) {
-                    $fallback = get_option($fallback_key);
-                    if (is_array($fallback) && !empty($fallback)) {
-                        set_transient($cache_key, $fallback, HOUR_IN_SECONDS);
-                        $events_pool = $fallback;
-                    } else {
-                        set_transient($cache_key, array(), 5 * 60);
-                        $events_pool = array();
-                    }
-                } else {
-                    $normalized = array();
-                    foreach ($raw_events as $raw) {
-                        if (!is_array($raw))
-                            continue;
-                        $normalized[] = self::normalize_event($raw);
-                    }
-
-                    $throttle_hours = (int) get_option('zen_bit_throttle_hours', 24);
-                    if ($throttle_hours <= 0)
-                        $throttle_hours = 24;
-                    $throttle_ttl = $throttle_hours * HOUR_IN_SECONDS;
-
-                    set_transient($throttle_key, true, $throttle_ttl);
-                    set_transient($cache_key, $normalized, 7 * DAY_IN_SECONDS);
-                    update_option($fallback_key, $normalized, false);
-                    $events_pool = $normalized;
-                }
+        return Zen_BIT_Cache::get_with_swr($cache_key, function () use ($mode, $date_start, $date_end, $detail, $include_raw) {
+            // Monta o parâmetro date para a API do Bandsintown
+            $date_param = '';
+            if ($mode === 'upcoming' && $date_start !== '') {
+                $date_param = "upcoming";  // BIT aceita "upcoming" nativo
+            } elseif ($mode === 'past') {
+                $date_param = "past";
+            } elseif ($date_start !== '' && $date_end !== '') {
+                $date_param = "{$date_start},{$date_end}";
             }
-        }
 
-        if ($limit === -1) {
-            return $events_pool;
-        }
+            $raw_events = self::fetch_from_bandsintown($date_param);
+            if (empty($raw_events))
+                return [];
 
-        return array_slice($events_pool, 0, $limit);
+            $normalized = [];
+            foreach ($raw_events as $raw) {
+                if (!is_array($raw))
+                    continue;
+                $normalized[] = $detail
+                    ? Zen_BIT_Normalizer::normalize_detail($raw, $include_raw)
+                    : Zen_BIT_Normalizer::normalize_list_item($raw);
+            }
+
+            return $normalized;
+        }, $ttl);
     }
 
-    public static function clear_cache(): void
+    // =========================================================================
+    // FILTROS NO RESULTADO (aplicados após o cache)
+    // =========================================================================
+
+    private static function apply_date_filter(array $events, string $mode, string $date_start, string $date_end): array
     {
-        delete_transient(self::cache_key());
-        delete_transient('zen_bit_api_throttle_' . self::get_artist_id());
-        // NÃO deletamos o fallback key por segurança, a menos que o usuário queira reset total
+        if ($mode === 'all' && $date_start === '') {
+            return $events; // sem filtro de data
+        }
+
+        return array_values(array_filter($events, function ($e) use ($date_start, $date_end) {
+            $ts = strtotime((string) ($e['starts_at'] ?? $e['datetime'] ?? ''));
+            if (!$ts)
+                return false;
+            $event_date = gmdate('Y-m-d', $ts);
+            if ($date_start !== '' && $event_date < $date_start)
+                return false;
+            if ($date_end !== '' && $event_date > $date_end)
+                return false;
+            return true;
+        }));
     }
 
-    // =========================
-    // JSON-LD GRAPH
-    // =========================
-
-    public static function get_events_schema_graph(int $limit = 25): array
+    private static function sort_chronological(array $events, string $mode): array
     {
-        if ($limit <= 0)
-            $limit = 25;
-        if ($limit > 100)
-            $limit = 100;
-
-        $events = self::get_events($limit);
-
-        $graph = array();
-
-        // Performer entity (reutilizável)
-        $performer_id = home_url('/') . '#djzeneyer';
-        $graph[] = array(
-            '@type' => 'MusicGroup',
-            '@id' => $performer_id,
-            'name' => 'DJ Zen Eyer',
-            'genre' => 'Brazilian Zouk',
-            'url' => home_url('/'),
-            'sameAs' => array(
-                'https://www.instagram.com/djzeneyer/',
-                'https://soundcloud.com/djzeneyer',
-                'https://www.bandsintown.com/a/15552355'
-            )
-        );
-
-        foreach ((array) $events as $event) {
-            if (!is_array($event))
-                continue;
-
-            $start = !empty($event['datetime_iso']) ? (string) $event['datetime_iso'] : '';
-            if ($start === '') {
-                // SEM startDate real, não entra no schema (evita lixo pro Google)
-                continue;
-            }
-
-            $venue = is_array($event['venue'] ?? null) ? $event['venue'] : array();
-
-            $url = !empty($event['url']) ? (string) $event['url'] : '';
-            $img = !empty($event['image']) ? (string) $event['image'] : 'https://djzeneyer.com/images/event-default.jpg';
-
-            $tickets = '';
-            if (!empty($event['offers'][0]['url']))
-                $tickets = (string) $event['offers'][0]['url'];
-
-            $schema = array(
-                '@type' => 'MusicEvent',
-                'name' => self::sanitize_text((string) ($event['title'] ?? ''), 180),
-                'description' => self::sanitize_text((string) ($event['description'] ?? ''), 280),
-                'startDate' => $start,
-                'eventStatus' => 'https://schema.org/EventScheduled',
-                'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
-                'image' => $img,
-                'location' => array(
-                    '@type' => 'Place',
-                    'name' => self::sanitize_text((string) ($venue['name'] ?? ''), 140),
-                    'address' => array(
-                        '@type' => 'PostalAddress',
-                        'addressLocality' => self::sanitize_text((string) ($venue['city'] ?? ''), 80),
-                        'addressRegion' => self::sanitize_text((string) ($venue['region'] ?? ''), 80),
-                        'addressCountry' => self::sanitize_text((string) ($venue['country'] ?? ''), 80),
-                    )
-                ),
-                'performer' => array('@id' => $performer_id),
-            );
-
-            if (!empty($url)) {
-                $schema['sameAs'] = $url;
-            }
-
-            if (!empty($tickets)) {
-                $schema['offers'] = array(
-                    '@type' => 'Offer',
-                    'url' => $tickets,
-                    'availability' => 'https://schema.org/InStock',
-                );
-            }
-
-            // limpa campos vazios superficialmente
-            $schema = array_filter($schema, function ($v) {
-                return !($v === '' || $v === null || $v === array());
-            });
-
-            $graph[] = $schema;
-        }
-
-        if (count($graph) <= 1) {
-            // só performer => não vale a pena soltar schema
-            return array();
-        }
-
-        return array(
-            '@context' => 'https://schema.org',
-            '@graph' => $graph
-        );
+        usort($events, function ($a, $b) use ($mode) {
+            $a_ts = strtotime((string) ($a['starts_at'] ?? $a['datetime'] ?? '')) ?: PHP_INT_MAX;
+            $b_ts = strtotime((string) ($b['starts_at'] ?? $b['datetime'] ?? '')) ?: PHP_INT_MAX;
+            return $mode === 'past'
+                ? $b_ts <=> $a_ts  // past: mais recente primeiro
+                : $a_ts <=> $b_ts; // upcoming: mais próximo primeiro
+        });
+        return $events;
     }
 
-    // =========================
-    // REST ENDPOINTS
-    // =========================
-
-    public static function get_single_event_rest(\WP_REST_Request $request)
-    {
-        $id = $request->get_param('id');
-        $events = self::get_events(100); // busca do cache/api
-
-        $event = null;
-        foreach ($events as $e) {
-            if ($e['id'] === $id) {
-                $event = $e;
-                break;
-            }
-        }
-
-        if (!$event) {
-            return new \WP_Error('event_not_found', __('Event not found', 'zen-bit'), array('status' => 404));
-        }
-
-        return rest_ensure_response(array(
-            'success' => true,
-            'event' => $event
-        ));
-    }
+    // =========================================================================
+    // ENDPOINT: GET /events (lista enxuta)
+    // =========================================================================
 
     public static function get_events_rest(\WP_REST_Request $request)
     {
-        $search = sanitize_text_field((string) $request->get_param('search'));
-        $upcoming_only = filter_var($request->get_param('upcoming_only'), FILTER_VALIDATE_BOOLEAN);
-        $lang = sanitize_text_field((string) ($request->get_param('lang') ?: 'en'));
-        $limit_param = $request->get_param('limit');
-        $limit = ($limit_param !== null && (int) $limit_param > 0) ? (int) $limit_param : 50;
+        $params = self::parse_filter_params($request);
+        if (is_wp_error($params))
+            return $params;
 
-        // Busca pool completo de eventos para filtrar corretamente
-        $events = self::get_events(-1);
+        ['mode' => $mode, 'date_start' => $ds, 'date_end' => $de, 'limit' => $limit, 'lang' => $lang] = $params;
 
-        if ($upcoming_only) {
-            $now = current_time('timestamp');
-            $events = array_values(array_filter($events, function ($event) use ($now) {
-                $event_ts = strtotime((string) ($event['datetime'] ?? ''));
-                return $event_ts && $event_ts >= $now;
-            }));
-        }
-
-        if ($search !== '') {
-            $search_lower = mb_strtolower($search);
-            $events = array_values(array_filter($events, function ($event) use ($search_lower) {
-                $title = mb_strtolower((string) ($event['title'] ?? ''));
-                $city = mb_strtolower((string) ($event['venue']['city'] ?? ''));
-                $country = mb_strtolower((string) ($event['venue']['country'] ?? ''));
-                return strpos($title, $search_lower) !== false
-                    || strpos($city, $search_lower) !== false
-                    || strpos($country, $search_lower) !== false;
-            }));
-        }
-
-        // Ordenação cronológica (garante ordem correta após filtros)
-        usort($events, function ($a, $b) {
-            $a_ts = strtotime((string) ($a['datetime'] ?? '')) ?: PHP_INT_MAX;
-            $b_ts = strtotime((string) ($b['datetime'] ?? '')) ?: PHP_INT_MAX;
-            return $a_ts <=> $b_ts;
-        });
-
-        // Aplica o limite apenas no final
+        $result = self::get_pool($mode, $ds, $de, false);
+        $events = self::apply_date_filter($result['data'], $mode, $ds, $de);
+        $events = self::sort_chronological($events, $mode);
         $events = array_slice($events, 0, $limit);
 
-        $response = rest_ensure_response(array(
+        $response = rest_ensure_response([
             'success' => true,
             'count' => count($events),
-            'events' => $events,
+            'mode' => $mode,
             'lang' => $lang,
-        ));
+            'events' => $events,
+        ]);
 
-        $cache_time = self::get_cache_time();
-        $response->header('Cache-Control', 'public, max-age=' . $cache_time);
-        $response->header('Expires', gmdate('D, d M Y H:i:s', time() + $cache_time) . ' GMT');
-
+        Zen_BIT_Cache::add_headers($response, $result['cache_status'], $result['fetch_ms'], Zen_BIT_Cache::ttl_upcoming());
         return $response;
     }
 
+    // =========================================================================
+    // ENDPOINT: GET /events/{id} (detalhe completo)
+    // =========================================================================
+
+    public static function get_single_event_rest(\WP_REST_Request $request)
+    {
+        $id = sanitize_text_field((string) $request->get_param('id'));
+        if ($id === '') {
+            return new \WP_Error('missing_id', 'ID do evento é obrigatório.', ['status' => 400]);
+        }
+
+        $cache_key = Zen_BIT_Cache::make_key(['id' => $id, 'type' => 'detail']);
+        $include_raw = (bool) get_option('zen_bit_include_raw_debug', false);
+
+        $result = Zen_BIT_Cache::get_with_swr($cache_key, function () use ($id, $include_raw) {
+            // Busca o pool completo e procura por ID
+            $raw_events = self::fetch_from_bandsintown('upcoming');
+            if (empty($raw_events)) {
+                // Tenta buscar também em past caso o evento já tenha passado
+                $raw_events = self::fetch_from_bandsintown('past');
+            }
+
+            foreach ((array) $raw_events as $raw) {
+                if (!is_array($raw))
+                    continue;
+                if ((string) ($raw['id'] ?? '') === $id) {
+                    return [Zen_BIT_Normalizer::normalize_detail($raw, $include_raw)];
+                }
+            }
+            return [];
+        }, Zen_BIT_Cache::ttl_detail());
+
+        if (empty($result['data'])) {
+            return new \WP_Error('event_not_found', 'Evento não encontrado.', ['status' => 404]);
+        }
+
+        $event = $result['data'][0];
+        $response = rest_ensure_response(['success' => true, 'event' => $event]);
+
+        Zen_BIT_Cache::add_headers($response, $result['cache_status'], $result['fetch_ms'], Zen_BIT_Cache::ttl_detail());
+        return $response;
+    }
+
+    // =========================================================================
+    // ENDPOINT: GET /events/{id}/schema
+    // =========================================================================
+
+    public static function get_single_event_schema_rest(\WP_REST_Request $request)
+    {
+        $id = sanitize_text_field((string) $request->get_param('id'));
+        if ($id === '') {
+            return new \WP_Error('missing_id', 'ID do evento é obrigatório.', ['status' => 400]);
+        }
+
+        // Reutiliza o endpoint de detalhe internamente
+        $detail_request = new \WP_REST_Request('GET', "/wp-json/zen-bit/v1/events/{$id}");
+        $detail_request->set_param('id', $id);
+        $detail_response = self::get_single_event_rest($detail_request);
+
+        if (is_wp_error($detail_response))
+            return $detail_response;
+
+        $data = $detail_response->get_data();
+        $event = $data['event'] ?? [];
+
+        if (empty($event)) {
+            return new \WP_Error('event_not_found', 'Evento não encontrado.', ['status' => 404]);
+        }
+
+        $schema = Zen_BIT_Normalizer::build_event_schema($event);
+        if (empty($schema)) {
+            return new \WP_Error('schema_not_available', 'Não foi possível gerar schema para este evento.', ['status' => 422]);
+        }
+
+        $payload = [
+            '@context' => 'https://schema.org',
+            '@graph' => [$schema],
+        ];
+
+        $response = rest_ensure_response($payload);
+        $response->header('Cache-Control', 'public, max-age=' . Zen_BIT_Cache::ttl_detail());
+        return $response;
+    }
+
+    // =========================================================================
+    // ENDPOINT: GET /events-schema (lista)
+    // =========================================================================
+
     public static function get_events_schema_rest(\WP_REST_Request $request)
     {
-        $limit = (int) ($request->get_param('limit') ?: 25);
-        $graph = self::get_events_schema_graph($limit);
+        if ((bool) get_option('zen_bit_enable_schema', true) === false) {
+            return rest_ensure_response(['@context' => 'https://schema.org', '@graph' => []]);
+        }
 
-        $response = rest_ensure_response($graph ? $graph : array(
-            '@context' => 'https://schema.org',
-            '@graph' => array()
-        ));
+        $params = self::parse_filter_params($request);
+        if (is_wp_error($params))
+            return $params;
 
-        // Cache headers
-        $cache_time = self::get_cache_time();
-        $response->header('Cache-Control', 'public, max-age=' . $cache_time);
-        $response->header('Expires', gmdate('D, d M Y H:i:s', time() + $cache_time) . ' GMT');
+        ['mode' => $mode, 'date_start' => $ds, 'date_end' => $de, 'limit' => $limit] = $params;
 
+        $result = self::get_pool($mode, $ds, $de, true); // detail=true para ter image/description
+        $events = self::apply_date_filter($result['data'], $mode, $ds, $de);
+        $events = self::sort_chronological($events, $mode);
+        $events = array_slice($events, 0, $limit);
+
+        // Performer entity (reutilizável no @graph)
+        $performer_id = home_url('/') . '#djzeneyer';
+        $graph = [
+            [
+                '@type' => 'MusicGroup',
+                '@id' => $performer_id,
+                'name' => 'DJ Zen Eyer',
+                'genre' => 'Brazilian Zouk',
+                'url' => home_url('/'),
+                'sameAs' => [
+                    'https://www.instagram.com/djzeneyer/',
+                    'https://soundcloud.com/djzeneyer',
+                    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+                ],
+            ],
+        ];
+
+        foreach ($events as $event) {
+            $schema = Zen_BIT_Normalizer::build_event_schema($event);
+            if (empty($schema))
+                continue;
+            // Usa @id do performer para ligação semântica
+            $schema['performer'] = ['@id' => $performer_id];
+            $graph[] = $schema;
+        }
+
+        $payload = ['@context' => 'https://schema.org', '@graph' => $graph];
+
+        $response = rest_ensure_response($payload);
+        Zen_BIT_Cache::add_headers($response, $result['cache_status'], $result['fetch_ms'], Zen_BIT_Cache::ttl_upcoming());
         return $response;
+    }
+
+    // =========================================================================
+    // ENDPOINT: POST /fetch-now (admin)
+    // =========================================================================
+
+    public static function fetch_now_rest(\WP_REST_Request $request)
+    {
+        // Limpa todo o cache e força um novo fetch
+        Zen_BIT_Cache::clear_all();
+
+        $raw = self::fetch_from_bandsintown('upcoming');
+        $count = 0;
+        $bytes = 0;
+
+        if (!empty($raw)) {
+            $normalized = [];
+            foreach ($raw as $r) {
+                if (!is_array($r))
+                    continue;
+                $normalized[] = Zen_BIT_Normalizer::normalize_list_item($r);
+            }
+            $count = count($normalized);
+            $bytes = strlen(maybe_serialize($normalized));
+            // Salva no cache principal
+            $key = Zen_BIT_Cache::make_key(['mode' => 'upcoming', 'date_start' => '', 'date_end' => '', 'detail' => 0]);
+            set_transient($key, $normalized, Zen_BIT_Cache::ttl_upcoming());
+            update_option(Zen_BIT_Cache::make_fallback_key($key), $normalized, false);
+        }
+
+        return rest_ensure_response([
+            'success' => true,
+            'count' => $count,
+            'health' => Zen_BIT_Cache::health_get(),
+        ]);
     }
 }

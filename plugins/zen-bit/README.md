@@ -1,173 +1,171 @@
-# Zen BIT - Bandsintown Events Plugin
+# Zen BIT v2 — Bandsintown Events Plugin
 
-WordPress plugin to display Bandsintown events with beautiful design and full SEO optimization for search engines and AI bots.
+Proxy WordPress para a API Bandsintown com cache SWR, canonical paths SEO, JSON-LD MusicEvent e painel de health.
 
-## Features
+## Endpoints
 
-✅ **Bandsintown API Integration** - Fetches events automatically  
-✅ **Beautiful Design** - Modern gradient cards with animations  
-✅ **SEO Optimized** - Full Schema.org markup (MusicEvent, EventSeries)  
-✅ **AI Bot Friendly** - JSON-LD structured data for Google, ChatGPT, Claude  
-✅ **REST API** - Headless WordPress support  
-✅ **Caching** - Smart caching to reduce API calls  
-✅ **Responsive** - Mobile-first design  
-✅ **Easy to Use** - Simple shortcode `[zen_bit_events]`
-
-## Installation
-
-1. Upload `zen-bit` folder to `/wp-content/plugins/`
-2. **Activate plugin in WordPress admin** (Plugins → Installed Plugins → Zen BIT → Activate)
-3. Go to Zen Plugins → Zen BIT Events
-4. Configure your Bandsintown Artist ID (default: 15552355)
-
-**IMPORTANT:** The plugin MUST be activated in WordPress for the REST API endpoint to work. The React frontend depends on `/wp-json/zen-bit/v1/events` being available.
-
-## Usage
-
-### Shortcode
-
-```
-[zen_bit_events]
-[zen_bit_events limit="10"]
-[zen_bit_events layout="grid"]
-```
-
-### REST API
+### Lista de eventos (payload enxuto)
 
 ```
 GET /wp-json/zen-bit/v1/events
-GET /wp-json/zen-bit/v1/events?limit=10
 ```
 
-### PHP
+**Parâmetros:**
 
-```php
-$events = Zen_BIT_API::get_events(50);
-```
+| Parâmetro | Tipo | Default | Notas |
+|---|---|---|---|
+| `mode` | string | `upcoming` | `upcoming`, `past`, `all` |
+| `days` | int | 365 | Range dinâmico em dias (1–730). Ignorado se `date` for passado. |
+| `date` | string | — | `YYYY-MM-DD,YYYY-MM-DD` — sobrescreve `days` |
+| `limit` | int | 50 | Máximo 200 |
+| `lang` | string | `en` | Passthrough para o React |
+| `upcoming_only` | bool | — | **DEPRECATED** → mapeado para `mode=upcoming` ou `mode=all` |
 
-## SEO Features
-
-### Schema.org Markup
-
-- `EventSeries` for the entire event list
-- `MusicEvent` for each individual event
-- `Place` and `PostalAddress` for venues
-- `MusicGroup` for performer (Zen Eyer)
-- `Offer` for ticket information
-
-### JSON-LD
-
-Complete structured data in JSON-LD format for:
-- Google Search (rich snippets)
-- Google Events
-- AI bots (ChatGPT, Claude, Gemini)
-- Social media crawlers
-
-### Microdata
-
-HTML5 microdata attributes (`itemscope`, `itemprop`) for maximum compatibility.
-
-## Configuration
-
-### Settings
-
-- **Artist ID**: Your Bandsintown artist ID (find at bandsintown.com)
-- **Cache Duration**: How long to cache events (default: 1 hour)
-
-### Cache Management
-
-Clear cache manually from Settings → Zen BIT Events → Clear Events Cache
-
-## File Structure
-
-```
-zen-bit/
-├── zen-bit.php                 # Main plugin file
-├── includes/
-│   ├── class-zen-bit-api.php       # Bandsintown API integration
-│   └── class-zen-bit-shortcode.php # Shortcode and display logic
-├── admin/
-│   └── class-zen-bit-admin.php     # Admin settings page
-├── public/
-│   ├── css/
-│   │   └── zen-bit-public.css      # Frontend styles
-│   └── js/
-│       └── zen-bit-public.js       # Frontend JavaScript
-└── README.md
-```
-
-## API Response Example
-
+**Payload de retorno (enxuto — sem description/image/offers):**
 ```json
 {
   "success": true,
-  "count": 5,
+  "count": 3,
+  "mode": "upcoming",
+  "lang": "pt",
   "events": [
     {
-      "id": "123456",
-      "title": "Zen Eyer at Club XYZ",
-      "datetime": "2025-12-31T22:00:00",
-      "venue": {
-        "name": "Club XYZ",
-        "city": "São Paulo",
-        "region": "SP",
-        "country": "Brazil"
-      },
-      "url": "https://bandsintown.com/...",
-      "offers": [...]
+      "id": "abc123",
+      "title": "DJ Zen Eyer at Club X",
+      "starts_at": "2025-06-20T22:00:00+01:00",
+      "timezone": "Europe/Lisbon",
+      "location": { "venue": "Club X", "city": "Lisboa", "region": "Lisboa", "country": "Portugal" },
+      "canonical_path": "/events/2025-06-20-dj-zen-eyer-at-club-x-abc123",
+      "canonical_url": "https://djzeneyer.com/events/2025-06-20-dj-zen-eyer-at-club-x-abc123"
     }
   ]
 }
 ```
 
-## Customization
+**Headers de observabilidade:**
+- `X-Zen-Cache: hit | miss | stale`
+- `X-Zen-Fetch-MS: 342` (apenas quando houve fetch externo)
 
-### CSS
+---
 
-Override styles by adding to your theme:
+### Detalhe do evento (payload completo)
 
-```css
-.zen-bit-event-card {
-    background: your-gradient;
-}
+```
+GET /wp-json/zen-bit/v1/events/{id}
 ```
 
-### Filters
+Retorna todos os campos: `description`, `image`, `offers`, `lineup`, `source_url`, `canonical_path`.
+O campo `raw` é incluído apenas quando `zen_bit_include_raw_debug` estiver habilitado no admin.
 
-```php
-// Modify events before display
-add_filter('zen_bit_events', function($events) {
-    // Your modifications
-    return $events;
-});
+---
+
+### Schema JSON-LD por evento
+
+```
+GET /wp-json/zen-bit/v1/events/{id}/schema
 ```
 
-## Requirements
+Retorna `@context + @graph` com um único `MusicEvent`. Use na tag `<script type="application/ld+json">` da página de detalhe. Inclui `url` (canonical interno) e `sameAs` (Bandsintown).
 
-- WordPress 5.0+
-- PHP 7.4+
-- Active internet connection (for Bandsintown API)
+---
 
-## Support
+### Schema JSON-LD — lista
 
-- Website: https://djzeneyer.com
-- Bandsintown: https://www.bandsintown.com/a/15552355
+```
+GET /wp-json/zen-bit/v1/events-schema
+```
 
-## License
+Aceita os mesmos parâmetros do endpoint de lista. Retorna `@graph` com `MusicGroup` (performer) + `MusicEvent` por evento.
 
-GPL v2 or later
+---
 
-## Author
+### Admin — forçar refresh
 
-**Zen Eyer** - Two-time World Champion Brazilian Zouk DJ
+```
+POST /wp-json/zen-bit/v1/fetch-now
+Authorization: Bearer {jwt_admin}
+```
+
+Limpa o cache, busca eventos frescos e atualiza o health.
+
+### Admin — limpar cache
+
+```
+POST /wp-json/zen-bit/v1/clear-cache
+Authorization: Bearer {jwt_admin}
+```
+
+---
+
+## Exemplos de uso
+
+```
+# Homepage: próximos 3 eventos
+GET /wp-json/zen-bit/v1/events?mode=upcoming&days=365&limit=3
+
+# Página /events: até 1 ano à frente (agrupamento por mês feito no React)
+GET /wp-json/zen-bit/v1/events?mode=upcoming&days=365
+
+# Página /events — schema para SEO
+GET /wp-json/zen-bit/v1/events-schema?mode=upcoming&days=365
+
+# Página de detalhe
+GET /wp-json/zen-bit/v1/events/{id}
+
+# Schema para página de detalhe
+GET /wp-json/zen-bit/v1/events/{id}/schema
+
+# Eventos passados (últimos 6 meses)
+GET /wp-json/zen-bit/v1/events?mode=past&days=180
+```
+
+---
+
+## Canonical Path
+
+Gerado deterministicamente por `Zen_BIT_Normalizer::build_canonical_path()`:
+
+```
+/events/{yyyy-mm-dd}-{slug}-{id}
+```
+
+- `{yyyy-mm-dd}` → data UTC do evento
+- `{slug}` → título transliterado, URL-safe, máximo 55 chars
+- `{id}` → ID Bandsintown (garante unicidade)
+- **Fallback** (sem data ou título): `/events/{id}`
+
+---
+
+## Cache — TTLs configuráveis
+
+| Contexto | Option | Default |
+|---|---|---|
+| Upcoming | `zen_bit_ttl_upcoming` | 6h (21600s) |
+| Detail | `zen_bit_ttl_detail` | 24h (86400s) |
+| Past | `zen_bit_ttl_past` | 7d (604800s) |
+
+**SWR (Stale-While-Revalidate):** se o cache expirou, responde com dados antigos enquanto revalida em background. Anti-stampede via lock de transient (30s).
+
+---
 
 ## Changelog
 
-### 1.0.0 (2025-11-30)
-- Initial release
-- Bandsintown API integration
-- Schema.org markup
-- REST API endpoint
-- Beautiful gradient design
-- Caching system
-- Admin settings page
+### v2.0.0
+- `mode=upcoming|past|all` + `days=N` + `date=start,end`
+- `upcoming_only` deprecated (backward compat mantida)
+- Payload enxuto na lista (sem description/image/offers)
+- Novo endpoint detalhe completo com `source_url` e canonical
+- Novo endpoint `/events/{id}/schema`
+- SWR com headers `X-Zen-Cache` e `X-Zen-Fetch-MS`
+- Anti-stampede lock 30s
+- TTLs por contexto (6h/24h/7d)
+- Admin health: último fetch, ms, erros, contagem, bytes
+- Botão "Fetch Now"
+- `artist_name` como alternativa ao `artist_id`
+
+### v1.1.2
+- Fix: `$limit` não declarado em `get_events_rest()`
+
+### v1.1.0
+- Throttle configurável
+- Fallback persistente em `wp_options`
