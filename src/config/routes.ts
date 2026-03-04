@@ -338,16 +338,50 @@ export const getRoutesForLanguage = (lang: Language) => {
 };
 
 /**
+ * Cached structure for finding routes by path efficiently
+ * Reduces O(N) nested loops and string allocations down to a single linear array iteration
+ */
+interface RouteMatch {
+  config: RouteConfig;
+  exactPath: string;
+  prefixPath: string;
+}
+
+const buildRouteMatchCache = (): Record<Language, RouteMatch[]> => {
+  const cache: Record<Language, RouteMatch[]> = { en: [], pt: [] };
+  const langs: Language[] = ['en', 'pt'];
+
+  for (const lang of langs) {
+    for (const route of ROUTES_CONFIG) {
+      const paths = getLocalizedPaths(route, lang);
+      for (const p of paths) {
+        const fullPath = buildFullPath(p, lang);
+        cache[lang].push({
+          config: route,
+          exactPath: fullPath,
+          prefixPath: fullPath + '/'
+        });
+      }
+    }
+  }
+
+  return cache;
+};
+
+const routeMatchCache = buildRouteMatchCache();
+
+/**
  * Encontra a rota correspondente a um caminho
  */
 export const findRouteByPath = (path: string, lang: Language): RouteConfig | undefined => {
-  return ROUTES_CONFIG.find(route => {
-    const paths = getLocalizedPaths(route, lang);
-    return paths.some(p => {
-      const fullPath = buildFullPath(p, lang);
-      return fullPath === path || path.startsWith(fullPath + '/');
-    });
-  });
+  const matches = routeMatchCache[lang];
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    if (path === match.exactPath || path.startsWith(match.prefixPath)) {
+      return match.config;
+    }
+  }
+  return undefined;
 };
 
 /**
