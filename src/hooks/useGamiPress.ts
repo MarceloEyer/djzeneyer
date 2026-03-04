@@ -36,7 +36,9 @@ const FALLBACK: GamiPressData = {
     requirements: [],
     next: null
   },
-  achievements: [],
+  achievements_earned: [],
+  achievements_locked: [],
+  recent_achievements: [],
   logs: [],
   stats: {
     totalTracks: 0,

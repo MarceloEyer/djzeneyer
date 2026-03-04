@@ -191,7 +191,8 @@ class ZenGame
                     </tr>
                     <tr>
                         <td><strong>GamiPress Core</strong></td>
-                        <td><?php echo $gamipress_active ? '<span style="color: #10b981;">✓ Active (v' . GAMIPRESS_VER . ')</span>' : '<span style="color: #ef4444;">✗ Inactive</span>'; ?>
+                        <td>
+                            <?php echo $gamipress_active ? '<span style="color: #10b981;">✓ Active (v' . GAMIPRESS_VER . ')</span>' : '<span style="color: #ef4444;">✗ Inactive</span>'; ?>
                         </td>
                     </tr>
                     <tr>
@@ -219,7 +220,8 @@ class ZenGame
                                     </div>
                                 <?php endif; ?>
                                 <div>
-                                    <div style="font-weight: 800; font-size: 14px;"><?php echo esc_html($pt['plural_name']); ?>
+                                    <div style="font-weight: 800; font-size: 14px;">
+                                        <?php echo esc_html($pt['plural_name']); ?>
                                     </div>
                                     <code style="font-size: 10px; color: #64748b;"><?php echo esc_html($slug); ?></code>
                                 </div>
@@ -452,21 +454,12 @@ class ZenGame
             }
         }
 
-<<<<<<< HEAD
-        // --- 3. ACHIEVEMENTS ---
-        $achievements = [];
-        $earned_achievements = [];
-        $locked_achievements = [];
-        $achievement_types = function_exists('gamipress_get_achievement_types') 
-            ? gamipress_get_achievement_types() 
-=======
         // --- 3. ACHIEVEMENTS (Aggregated) ---
         $achievements_earned = [];
         $achievements_locked = [];
 
         $achievement_types = function_exists('gamipress_get_achievement_types')
             ? gamipress_get_achievement_types()
->>>>>>> origin/main
             : [];
         $achievement_post_types = !empty($achievement_types)
             ? array_keys($achievement_types)
@@ -496,15 +489,9 @@ class ZenGame
 
             foreach ($all_achievements as $post) {
                 $earned = isset($user_earnings[$post->ID]);
-<<<<<<< HEAD
-                $points_awarded = (int)get_post_meta($post->ID, '_gamipress_points_awarded', true);
-                
-                $achievement_data = [
-=======
                 $points_awarded = (int) get_post_meta($post->ID, '_gamipress_points_awarded', true);
 
                 $achivement_item = [
->>>>>>> origin/main
                     'id' => $post->ID,
                     'title' => $post->post_title,
                     'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
@@ -514,18 +501,10 @@ class ZenGame
                     'date_earned' => $earned ? $user_earnings[$post->ID]->date : '',
                 ];
 
-<<<<<<< HEAD
-                $achievements[] = $achievement_data;
-                if ($earned) {
-                    $earned_achievements[] = $achievement_data;
-                } else {
-                    $locked_achievements[] = $achievement_data;
-=======
                 if ($earned) {
                     $achievements_earned[] = $achivement_item;
                 } else {
                     $achievements_locked[] = $achivement_item;
->>>>>>> origin/main
                 }
             }
         }
@@ -574,17 +553,9 @@ class ZenGame
             'user_id' => $user_id,
             'points' => $point_data,
             'rank' => $rank_info,
-<<<<<<< HEAD
-            'achievements' => $achievements,
-            'earned_achievements' => $earned_achievements,
-            'locked_achievements' => $locked_achievements,
-            'earned_achievements_count' => count($earned_achievements),
-            'locked_achievements_count' => count($locked_achievements),
-=======
             'achievements_earned' => $achievements_earned,
             'achievements_locked' => $achievements_locked,
             'recent_achievements' => array_slice($achievements_earned, -6),
->>>>>>> origin/main
             'logs' => $logs,
             'stats' => $stats,
             'main_points_slug' => $main_pt_slug,

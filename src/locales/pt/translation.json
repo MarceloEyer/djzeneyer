@@ -368,10 +368,16 @@
     "quiz_subtitle": "Descubra qual é o seu estilo no Zouk"
   },
   "social": {
-    "youtube": "YouTube",
     "instagram": "Instagram",
+    "youtube": "YouTube",
     "tiktok": "TikTok",
-    "soundcloud": "SoundCloud"
+    "soundcloud": "SoundCloud",
+    "spotify": "Spotify",
+    "apple_music": "Apple Music",
+    "musicbrainz": "MusicBrainz",
+    "wikidata": "Wikidata",
+    "discogs": "Discogs",
+    "resident_advisor": "Resident Advisor"
   },
   "badge_featured": "Destaque",
   "badge_new": "Novo",
@@ -452,39 +458,6 @@
     "read_time": "{{min}} min de leitura",
     "label": "Notícias"
   },
-  "events_loading": "Carregando eventos...",
-  "events_no_events": "Nenhum evento agendado no momento.",
-  "events_tickets": "Ingressos",
-  "events_view_tickets": "Ver Ingressos",
-  "events_ticket_aria_label": "Ver ingressos para {{title}} em {{location}} em {{date}}",
-  "events_full_ticket_aria_label": "Comprar ingressos para {{title}} no {{venue}}, {{location}} em {{date}}",
-  "events_back_to_list": "Voltar para Agenda",
-  "events_status_upcoming": "Próximos",
-  "events_details": "DETALHES DO EVENTO",
-  "events_date": "Data",
-  "events_location": "Localização",
-  "events_none": "Nenhum evento programado no momento.",
-  "events_experience_title": "EXPERIÊNCIA ZEN",
-  "events_experience_subtitle": "Siga minha agenda mundial. De workshops intensivos a congressos internacionais.",
-  "events_page_title": "Próximos Eventos",
-  "events_page_meta_desc": "Siga a agenda do DJ Zen Eyer e encontre ingressos para ótimos eventos de Zouk Brasileiro ao redor do mundo.",
-  "events_add_to_calendar": "Adicionar à Agenda",
-  "events_hero_badge": "Experiências ao Vivo",
-  "events_filter_placeholder": "Buscar cidade ou país...",
-  "events_no_results": "Nenhum evento encontrado para sua busca.",
-  "events_share": "Compartilhar Evento",
-  "events_month_jan": "Janeiro",
-  "events_month_feb": "Fevereiro",
-  "events_month_mar": "Março",
-  "events_month_apr": "Abril",
-  "events_month_may": "Maio",
-  "events_month_jun": "Junho",
-  "events_month_jul": "Julho",
-  "events_month_aug": "Agosto",
-  "events_month_sep": "Setembro",
-  "events_month_oct": "Outubro",
-  "events_month_nov": "Novembro",
-  "events_month_dec": "Dezembro",
   "music_page_title": "Hub de Música",
   "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
   "music": {
@@ -740,63 +713,6 @@
         "feature5": "Coleção de badges digitais Mestre Zen",
         "feature6": "Oportunidades de meet & greet"
       }
-    }
-  },
-  "presskit": {
-    "page_title": "Press Kit Oficial - Zen Eyer | DJ Brasileiro de Zouk Brasileiro",
-    "page_meta_desc": "Press Kit oficial de Zen Eyer, DJ brasileiro bicampeão mundial de Zouk Brasileiro. Baixe fotos, biografia e informações para imprensa.",
-    "tag": "Press Kit Oficial",
-    "title_prefix": "Zen",
-    "title_suffix": "Eyer",
-    "role": "DJ brasileiro bicampeão mundial de Zouk Brasileiro",
-    "subtitle": "Sets cremosos, emocionais e conectados à dança",
-    "stats": {
-      "countries": "Países",
-      "people": "Pessoas impactadas",
-      "streams": "Streams globais",
-      "years": "Anos de carreira"
-    },
-    "bio": {
-      "title": "Sobre Zen Eyer",
-      "p1": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ e produtor brasileiro focado em Zouk Brasileiro</strong>. Bicampeão mundial no gênero (2022) e membro da Mensa International, ele busca transmitir em seus sets essa vibe fluida popularmente conhecida entre os dançarinos como \"<strong>cremosidade</strong>\". O objetivo é aliar a técnica de mixagem contínua a um repertório que priorize o conforto e o flow na pista.",
-      "p2": "Com mais de 10 anos de carreira, Zen Eyer já tocou em mais de <strong>100 eventos em 11 países</strong>, incluindo Holanda, Espanha, República Tcheca e Alemanha. O repertório passeia pelo Zouk Brasileiro Contemporâneo, Lambada e Black Music, sempre com o foco de manter a pista fluida e conectada.",
-      "p3": "Na produção musical, faz remixes e edições pensadas especificamente para a dinâmica da dança a dois, acumulando mais de <strong>500.000 streams globais</strong>. Também organiza o evento <strong>reZENha</strong> e incentiva a comunidade <strong>Tribo Zen</strong>, um espaço para quem curte compartilhar música e experiências na dança.",
-      "quickStats": {
-        "cremosidade": "Cremosidade",
-        "cremosidade_desc": "Sets fluidos e sem pressa",
-        "repertoire": "Repertório",
-        "repertoire_desc": "Zouk, Kizomba, Lambada",
-        "connection": "Conexão",
-        "connection_desc": "Foco no flow da pista",
-        "global": "Global",
-        "global_desc": "Presença internacional"
-      }
-    },
-    "media": {
-      "title": "Material para Imprensa",
-      "subtitle": "Tudo que você precisa para divulgação e marketing",
-      "photos": "Fotos para Imprensa",
-      "photos_desc": "Galeria oficial em alta resolução",
-      "bio": "Biografia Completa",
-      "bio_desc": "PDF com Bio e Rider Técnico",
-      "logos": "Logos e Branding",
-      "logos_desc": "Logos oficiais em PNG/SVG",
-      "access": "Acessar",
-      "download": "Baixar"
-    },
-    "gallery": {
-      "title": "Fotos para Imprensa",
-      "subtitle": "Imagens em alta resolução para uso promocional",
-      "cta": "Ver Galeria Completa"
-    },
-    "contact": {
-      "title": "Vamos Criar Algo Incrível",
-      "subtitle": "Pronto para elevar seu evento? Entre em contato para discutir bookings ou colaborações.",
-      "base": "Baseado em",
-      "availability": "Disponibilidade",
-      "availability_value": "Bookings internacionais",
-      "genre": "Gênero",
-      "links": "Links Oficiais"
     }
   },
   "philosophy": {
@@ -1124,82 +1040,6 @@
     "save": "Salvar Perfil",
     "saving": "Salvando...",
     "saved": "Salvo!"
-  },
-  "support": {
-    "seo": {
-      "title": "Apoie o DJ Zen Eyer | Informações de Pagamento",
-      "description": "Apoie o DJ Zen Eyer através de doações ou contrate para eventos. Múltiplos métodos de pagamento disponíveis mundialmente incluindo Inter Global, Wise e PayPal.",
-      "keywords": "apoiar artista, contratar dj, métodos de pagamento, pagamentos internacionais, dj brazilian zouk"
-    },
-    "header": {
-      "title": "Apoie a Música",
-      "description": "Seu apoio ajuda a criar novas músicas, conteúdo educacional e construir a comunidade Brazilian Zouk mundialmente. Seja contratando para um evento ou fazendo uma doação, cada contribuição faz a diferença."
-    },
-    "reasons": {
-      "title": "Por Que Seu Apoio Importa",
-      "music": {
-        "title": "Apoie Novas Músicas",
-        "description": "Ajude a produzir e lançar novas faixas de Brazilian Zouk"
-      },
-      "community": {
-        "title": "Crescimento da Comunidade",
-        "description": "Apoie workshops, eventos e conteúdo educacional"
-      },
-      "worldwide": {
-        "title": "Presença Mundial",
-        "description": "Possibilite turnês internacionais e colaborações"
-      }
-    },
-    "payment": {
-      "title": "Métodos de Pagamento"
-    },
-    "inter": {
-      "title": "Conta Inter Global (Preferencial)",
-      "description": "Contas bancárias nos EUA e Brasil para pagamentos internacionais e locais",
-      "usd": "Conta Dólar (USD)",
-      "eur": "Conta Euro (EUR)",
-      "gbp": "Conta Libra (GBP)",
-      "brazil": "Brasil (Local)"
-    },
-    "wise": {
-      "title": "Wise (TransferWise)",
-      "description": "Transferências internacionais com taxas baixas para múltiplas moedas",
-      "eur": "Conta Euro (EUR - Wise)",
-      "sepa": "Transferência SEPA (Europa)"
-    },
-    "paypal": {
-      "title": "PayPal",
-      "description": "Pagamentos rápidos e fáceis mundialmente"
-    },
-    "preferred": "Preferencial",
-    "accountName": "Nome do Beneficiário",
-    "beneficiaryBank": "Banco Beneficiário",
-    "routingNumber": "Número de Roteamento",
-    "accountNumber": "Número da Conta",
-    "accountType": "Tipo de Conta",
-    "swiftCode": "Código SWIFT",
-    "achRouting": "ACH Routing",
-    "wireRouting": "Wire Routing",
-    "bankAddress": "Endereço do Banco",
-    "intermediary": "Banco Intermediário",
-    "swiftInter": "SWIFT Intermediário",
-    "aba": "ABA/Routing",
-    "iban": "IBAN",
-    "intermediaryAcc": "Conta Intermediária",
-    "bank": "Banco",
-    "branch": "Agência",
-    "account": "Conta",
-    "pixKey": "Chave PIX",
-    "cpf": "CPF",
-    "email": "Email",
-    "phone": "Telefone / Chave",
-    "sendPayment": "Enviar Pagamento via",
-    "business": {
-      "title": "Contratações para Eventos & Consultas Comerciais",
-      "description": "Para contratações de eventos, solicitações de workshops ou colaborações comerciais, envie os detalhes de pagamento para o email abaixo. Inclua detalhes do evento, localização e data para processamento mais rápido.",
-      "contact": "Contato para Contratações"
-    },
-    "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
   },
   "payme": {
     "title": "Apoie o DJ Zen Eyer",
@@ -1734,31 +1574,4 @@
     },
     "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
   },
-  "zenlink": {
-    "listen_now": "Ouça Agora",
-    "choose_platform": "Escolha sua plataforma",
-    "spotify_title": "Spotify",
-    "spotify_subtitle": "Faixas, remixes e sets",
-    "booking_title": "Agenda & Booking",
-    "booking_subtitle": "Festivais e congressos",
-    "contact_direct": "WhatsApp Direto"
-  },
-  "price_free": "Grátis",
-  "events_title": "Próximos Eventos",
-  "events_subtitle": "Participe da experiência. Veja onde o DJ Zen Eyer tocará em breve.",
-  "event_desc_fallback": "Junte-se a nós para uma experiência inesquecível.",
-  "events_loading": "Carregando eventos...",
-  "events_noEvents": "Nenhum evento agendado no momento. Volte em breve!",
-  "events_ticketAriaLabel": "Ver ingressos para {{title}} em {{location}}",
-  "events_add_google": "Adicionar ao Google Agenda",
-  "social": {
-    "instagram": "Instagram",
-    "youtube": "YouTube",
-    "spotify": "Spotify",
-    "apple_music": "Apple Music",
-    "musicbrainz": "MusicBrainz",
-    "wikidata": "Wikidata",
-    "discogs": "Discogs",
-    "resident_advisor": "Resident Advisor"
-  }
 }

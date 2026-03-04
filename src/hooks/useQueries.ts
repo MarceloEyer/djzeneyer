@@ -258,8 +258,6 @@ export const useEventById = (id?: string, options = {}) => {
 // PRODUCTS QUERY (PÚBLICO)
 // ============================================================================
 
-<<<<<<< HEAD
-
 export const useShopPageQuery = (lang?: string) => {
   return useQuery({
     queryKey: ['shop_page', lang],
@@ -273,10 +271,8 @@ export const useShopPageQuery = (lang?: string) => {
   });
 };
 
-export const useProductsQuery = (lang?: string) => {
-=======
 export const useProductsQuery = (lang?: string, filters: Record<string, string> = {}) => {
->>>>>>> origin/main
+
   return useQuery({
     queryKey: [...QUERY_KEYS.products.list(lang), filters],
     queryFn: () => fetchProductsFn(lang, filters),

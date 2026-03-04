@@ -366,10 +366,16 @@
     "quiz_subtitle": "Discover your unique dance style"
   },
   "social": {
-    "youtube": "YouTube",
     "instagram": "Instagram",
+    "youtube": "YouTube",
     "tiktok": "TikTok",
-    "soundcloud": "SoundCloud"
+    "soundcloud": "SoundCloud",
+    "spotify": "Spotify",
+    "apple_music": "Apple Music",
+    "musicbrainz": "MusicBrainz",
+    "wikidata": "Wikidata",
+    "discogs": "Discogs",
+    "resident_advisor": "Resident Advisor"
   },
   "badge_featured": "Featured",
   "badge_new": "New",
@@ -452,39 +458,6 @@
     "read_time": "{{min}} min read",
     "label": "News"
   },
-  "events_loading": "Loading events...",
-  "events_no_events": "No events scheduled at the moment.",
-  "events_tickets": "Tickets",
-  "events_view_tickets": "View Tickets",
-  "events_ticket_aria_label": "View tickets for {{title}} at {{location}} on {{date}}",
-  "events_full_ticket_aria_label": "Buy tickets for {{title}} at {{venue}}, {{location}} on {{date}}",
-  "events_back_to_list": "Back to Agenda",
-  "events_status_upcoming": "Upcoming",
-  "events_details": "EVENT DETAILS",
-  "events_date": "Date",
-  "events_location": "Location",
-  "events_none": "No upcoming events scheduled.",
-  "events_experience_title": "ZEN EXPERIENCE",
-  "events_experience_subtitle": "Follow my global journey. From intensive workshops to international congresses.",
-  "events_page_title": "Next Events",
-  "events_page_meta_desc": "Follow DJ Zen Eyer worldwide schedule and find tickets for great Brazilian Zouk events.",
-  "events_add_to_calendar": "Add to Calendar",
-  "events_hero_badge": "Live Experiences",
-  "events_filter_placeholder": "Search city or country...",
-  "events_no_results": "No events found for your search.",
-  "events_share": "Share Event",
-  "events_month_jan": "January",
-  "events_month_feb": "February",
-  "events_month_mar": "March",
-  "events_month_apr": "April",
-  "events_month_may": "May",
-  "events_month_jun": "June",
-  "events_month_jul": "July",
-  "events_month_aug": "August",
-  "events_month_sep": "September",
-  "events_month_oct": "October",
-  "events_month_nov": "November",
-  "events_month_dec": "December",
   "music_page_title": "Music Hub",
   "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
   "music": {
@@ -740,63 +713,6 @@
         "feature5": "Zen Master digital badge collection",
         "feature6": "Meet & greet opportunities"
       }
-    }
-  },
-  "presskit": {
-    "page_title": "Official Press Kit - Zen Eyer | Brazilian Zouk DJ & Producer",
-    "page_meta_desc": "Official Press Kit for Zen Eyer, 2x World Champion Brazilian Zouk DJ. Download high-res photos, biography, and technical rider.",
-    "tag": "Official Press Kit",
-    "title_prefix": "Zen",
-    "title_suffix": "Eyer",
-    "role": "2x World Champion Brazilian Zouk DJ & Producer",
-    "subtitle": "Creamy sets, emotional journeys, and deep dance connection",
-    "stats": {
-      "countries": "Countries",
-      "people": "People impacted",
-      "streams": "Global streams",
-      "years": "Years active"
-    },
-    "bio": {
-      "title": "About Zen Eyer",
-      "p1": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer focused on Brazilian Zouk</strong>. Two-time World Champion in the genre (2022) and member of Mensa International, he seeks to deliver that fluid vibe popularly recognized by dancers as \"<strong>creaminess</strong>\" (cremosidade). The goal is to combine continuous mixing technique with a repertoire that prioritizes the comfort and flow on the floor.",
-      "p2": "With over 10 years of career, Zen Eyer has played at more than <strong>100 events in 11 countries</strong>, including the Netherlands, Spain, Czech Republic, and Germany. His repertoire ranges through Contemporary Brazilian Zouk, Lambada, and Black Music, always focusing on keeping the dance floor fluid and connected.",
-      "p3": "In music production, he makes remixes and edits designed specifically for the dynamics of partner dance, accumulating over <strong>500,000 global streams</strong>. He also organizes the <strong>reZENha</strong> event and supports the <strong>Tribo Zen</strong> community, a space for those who enjoy sharing music and dance experiences.",
-      "quickStats": {
-        "cremosidade": "Creaminess",
-        "cremosidade_desc": "Fluid & unhurried sets",
-        "repertoire": "Repertoire",
-        "repertoire_desc": "Zouk, Kizomba, Lambada",
-        "connection": "Connection",
-        "connection_desc": "Floor flow focused",
-        "global": "Global",
-        "global_desc": "International presence"
-      }
-    },
-    "media": {
-      "title": "Press Materials",
-      "subtitle": "Everything you need for promotion and marketing",
-      "photos": "Press Photos",
-      "photos_desc": "High-res photos gallery",
-      "bio": "Full Biography",
-      "bio_desc": "PDF with Bio and Tech Rider",
-      "logos": "Logos & Branding",
-      "logos_desc": "Official logos in PNG/SVG",
-      "access": "Access",
-      "download": "Download"
-    },
-    "gallery": {
-      "title": "Press Photos",
-      "subtitle": "High-resolution images for promotional use",
-      "cta": "View Full Gallery"
-    },
-    "contact": {
-      "title": "Let's Create Magic",
-      "subtitle": "Ready to elevate your event? Get in touch to discuss bookings or collaborations.",
-      "base": "Based in",
-      "availability": "Availability",
-      "availability_value": "International Bookings",
-      "genre": "Genre",
-      "links": "Official Links"
     }
   },
   "philosophy": {
@@ -1125,82 +1041,6 @@
     "saving": "Saving...",
     "saved": "Saved!"
   },
-  "support": {
-    "seo": {
-      "title": "Support DJ Zen Eyer | Payment Information",
-      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise and PayPal.",
-      "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
-    },
-    "header": {
-      "title": "Support the Music",
-      "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
-    },
-    "reasons": {
-      "title": "Why Your Support Matters",
-      "music": {
-        "title": "Support New Music",
-        "description": "Help produce and release new Brazilian Zouk tracks"
-      },
-      "community": {
-        "title": "Community Growth",
-        "description": "Support workshops, events and educational content"
-      },
-      "worldwide": {
-        "title": "Worldwide Presence",
-        "description": "Enable international tours and collaborations"
-      }
-    },
-    "payment": {
-      "title": "Payment Methods"
-    },
-    "inter": {
-      "title": "Inter Global Account (Preferred)",
-      "description": "US and Brazil bank accounts for international and local payments",
-      "usd": "Dollar Account (USD)",
-      "eur": "Euro Account (EUR)",
-      "gbp": "Pound Account (GBP)",
-      "brazil": "Brazil (Local)"
-    },
-    "wise": {
-      "title": "Wise (TransferWise)",
-      "description": "Low-fee international transfers to multiple currencies",
-      "eur": "Euro Account (EUR - Wise)",
-      "sepa": "SEPA Transfer (Europe)"
-    },
-    "paypal": {
-      "title": "PayPal",
-      "description": "Quick and easy payments worldwide"
-    },
-    "preferred": "Preferred",
-    "accountName": "Beneficiary Name",
-    "beneficiaryBank": "Beneficiary Bank",
-    "routingNumber": "Routing Number",
-    "accountNumber": "Account Number",
-    "accountType": "Account Type",
-    "swiftCode": "SWIFT/BIC Code",
-    "achRouting": "ACH Routing",
-    "wireRouting": "Wire Routing",
-    "bankAddress": "Bank Address",
-    "intermediary": "Intermediary Bank",
-    "swiftInter": "Intermediary SWIFT",
-    "aba": "ABA/Routing",
-    "iban": "IBAN",
-    "intermediaryAcc": "Intermediary Account",
-    "bank": "Bank",
-    "branch": "Branch",
-    "account": "Account",
-    "pixKey": "PIX Key",
-    "cpf": "CPF",
-    "email": "Email",
-    "phone": "Phone / Key",
-    "sendPayment": "Send Payment via",
-    "business": {
-      "title": "Event Bookings & Business Inquiries",
-      "description": "For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.",
-      "contact": "Contact for Bookings"
-    },
-    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
-  },
   "payme": {
     "title": "Support DJ Zen Eyer",
     "description": "Support DJ Zen Eyer through donations and collaborations.",
@@ -1310,37 +1150,6 @@
     "mission_title": "Mission",
     "coming_soon_title": "Coming Soon",
     "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!"
-  },
-  "home": {
-    "seo": {
-      "title": "DJ Zen Eyer | Brazilian Zouk DJ & Producer",
-      "description": "DJ Zen Eyer, two-time world champion focused on Brazilian Zouk.",
-      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer",
-      "lead_answer": "DJ Zen Eyer is a two-time world champion Brazilian Zouk DJ and music producer, known for his signature 'cremosidade' style and immersive dance floor experiences."
-    },
-    "festivals": {
-      "presence": "International Presence",
-      "many_more": "many more"
-    },
-    "shows": {
-      "title": "Upcoming Shows",
-      "cta": "Full schedule"
-    },
-    "press": {
-      "title": "Press & Media",
-      "desc": "Access photos, bio and assets.",
-      "cta": "DOWNLOAD PRESS KIT"
-    },
-    "bookers": {
-      "title": "Bookers",
-      "desc": "Bring the 'Zen Experience' to your event.",
-      "cta": "REQUEST BOOKING"
-    },
-    "verified": "Verified Profiles",
-    "tribe": {
-      "title": "Join the <1>Zen Tribe</1>",
-      "desc": "It's not just about music. It's about the vibe. Join the VIP list."
-    }
   },
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
@@ -1713,31 +1522,4 @@
     },
     "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
   },
-  "zenlink": {
-    "listen_now": "Listen Now",
-    "choose_platform": "Choose your platform",
-    "spotify_title": "Spotify",
-    "spotify_subtitle": "Tracks, remixes and sets",
-    "booking_title": "Schedule & Booking",
-    "booking_subtitle": "Festivals and congresses",
-    "contact_direct": "WhatsApp Direct"
-  },
-  "price_free": "Free",
-  "events_title": "Upcoming Events",
-  "events_subtitle": "Join the experience. Check where DJ Zen Eyer will be playing next.",
-  "event_desc_fallback": "Join us for an unforgettable experience.",
-  "events_loading": "Loading events...",
-  "events_noEvents": "No events scheduled at the moment. Check back soon!",
-  "events_ticketAriaLabel": "View tickets for {{title}} at {{location}}",
-  "events_add_google": "Add to Google Calendar",
-  "social": {
-    "instagram": "Instagram",
-    "youtube": "YouTube",
-    "spotify": "Spotify",
-    "apple_music": "Apple Music",
-    "musicbrainz": "MusicBrainz",
-    "wikidata": "Wikidata",
-    "discogs": "Discogs",
-    "resident_advisor": "Resident Advisor"
-  }
 }
