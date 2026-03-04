@@ -8,7 +8,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { MapPin, Search, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { Toast } from '../components/common/Toast';
-import type { BandsintownEvent } from '../types/events';
+import type { ZenBitEventListItem, ZenBitEventDetail, BandsintownEvent } from '../types/events';
 
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
@@ -81,8 +81,18 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
     }
   };
 
-  const eventDate = new Date(e.datetime || e.date || '');
+  // Suporte dual: v2 usa starts_at, fallback para datetime (v1 local)
+  const rawDate = e.starts_at || (e as Record<string, string>).datetime || '';
+  const eventDate = new Date(rawDate);
   const isValidDate = !isNaN(eventDate.getTime());
+
+  // Suporte dual: v2 usa location.venue, fallback para venue.name
+  const loc = e.location ?? {
+    venue: (e as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.name ?? '',
+    city: (e as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.city ?? '',
+    region: '',
+    country: '',
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -120,7 +130,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
                 <MapPin size={20} />
               </div>
-              <span className="font-bold">{e.venue?.name}{e.venue?.city ? `, ${e.venue.city}` : ''}</span>
+              <span className="font-bold">{loc.venue}{loc.city ? `, ${loc.city}` : ''}</span>
             </div>
 
             <div className="prose prose-invert mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.description || e.content || '') }} />
@@ -154,20 +164,20 @@ interface EventListProps {
 const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   const { t } = useTranslation();
   const { data: events = [] } = useEventsQuery({
+    mode: 'upcoming',
+    days: 365,
     limit: 50,
     lang,
-    upcomingOnly: true,
     search: searchQuery || undefined,
   }, { suspense: true });
 
-  const groupedEvents = useMemo<[string, BandsintownEvent[]][]>(() => {
-    const groups: { [key: string]: BandsintownEvent[] } = {};
+  const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
+    const groups: { [key: string]: ZenBitEventListItem[] } = {};
     events.forEach((e) => {
-      const date = new Date(e.datetime);
-      const isInvalid = isNaN(date.getTime());
-
-      // Fallback para agrupar eventos sem data válida no final ou ignorar
-      if (isInvalid) return;
+      // Suporte dual: starts_at (v2) ou datetime (v1)
+      const rawDate = e.starts_at || (e as Record<string, string>).datetime || '';
+      const date = new Date(rawDate);
+      if (isNaN(date.getTime())) return;
 
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
@@ -178,12 +188,13 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
 
   const [showToast, setShowToast] = React.useState(false);
 
-  const share = (e: BandsintownEvent) => {
-    const url = `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
+  const share = (e: ZenBitEventListItem) => {
+    // Usa canonical_url se disponível, fallback para /events/{id}
+    const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
     if (navigator.share) {
-      navigator.share({ title: e.title, url });
+      navigator.share({ title: e.title, url: canonical });
     } else {
-      navigator.clipboard.writeText(url);
+      navigator.clipboard.writeText(canonical);
       setShowToast(true);
     }
   };
@@ -210,23 +221,41 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
               <div className="h-px flex-1 bg-white/5" />
             </h2>
             <div className="space-y-3">
-              {monthEvents.map((e) => (
-                <div key={e.id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
-                  <div className="text-3xl font-black min-w-[50px]">{String(new Date(e.datetime).getDate()).padStart(2, '0')}</div>
-                  <div className="flex-1">
-                    <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {e.venue?.city}, {e.venue?.country}</div>
-                    <Link to={`${getLocalizedRoute('events', lang)}/${e.id}`}>
-                      <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
-                    </Link>
+              {monthEvents.map((e) => {
+                // Suporte dual: starts_at (v2) ou datetime (v1)
+                const rawDate = e.starts_at || (e as unknown as Record<string, string>).datetime || '';
+                const eventDay = new Date(rawDate);
+                // Link: canonical_path (v2) ou /events/{id} (v1 fallback)
+                const detailHref = e.canonical_path
+                  ? (lang === 'pt'
+                    ? `/pt/eventos${e.canonical_path.replace('/events', '')}`
+                    : e.canonical_path)
+                  : `${getLocalizedRoute('events', lang)}/${e.id}`;
+
+                // Localização: v2 usa location, v1 usa venue
+                const loc = e.location ?? {
+                  city: (e as BandsintownEvent & { venue?: { city: string; country: string } }).venue?.city ?? '',
+                  country: (e as BandsintownEvent & { venue?: { city: string; country: string } }).venue?.country ?? '',
+                };
+
+                return (
+                  <div key={e.id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
+                    <div className="text-3xl font-black min-w-[50px]">{String(eventDay.getDate()).padStart(2, '0')}</div>
+                    <div className="flex-1">
+                      <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.country ? `, ${loc.country}` : ''}</div>
+                      <Link to={detailHref}>
+                        <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
+                      </Link>
+                    </div>
+                    <div className="flex gap-2">
+                      <AddCalendarMenu event={e as BandsintownEvent} variant="ghost" />
+                      <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
+                        <Share2 size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <AddCalendarMenu event={e} variant="ghost" />
-                    <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
-                      <Share2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         );

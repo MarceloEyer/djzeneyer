@@ -24,7 +24,13 @@ interface MenuItem {
   target: string;
 }
 
-import type { BandsintownEvent, FetchEventsParams, EventsApiResponse } from '../types/events';
+import type {
+  ZenBitEventListItem,
+  ZenBitEventDetail,
+  BandsintownEvent,
+  FetchEventsParams,
+  EventsApiResponse,
+} from '../types/events';
 
 export interface MusicTrack {
   id: number;
@@ -71,20 +77,35 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchEventsFn = async ({ limit = 10, lang, upcomingOnly = true, search }: FetchEventsParams = {}): Promise<BandsintownEvent[]> => {
-  const apiUrl = buildApiUrl('zen-bit/v1/events', {
+export const fetchEventsFn = async ({
+  mode,
+  days,
+  date,
+  limit = 10,
+  lang,
+  upcomingOnly,
+  search,
+}: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
+  // BC: upcomingOnly → mode
+  const resolvedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
+
+  const params: Record<string, string> = {
+    mode: resolvedMode,
     limit: String(limit),
-    ...(lang ? { lang } : {}),
-    ...(upcomingOnly ? { upcoming_only: '1' } : {}),
-    ...(search ? { search } : {}),
-  });
+  };
+  if (days !== undefined) params.days = String(days);
+  if (date) params.date = date;
+  if (lang) params.lang = lang;
+  if (search) params.search = search;
+
+  const apiUrl = buildApiUrl('zen-bit/v1/events', params);
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error(`API ${res.status}`);
-  const data: EventsApiResponse | BandsintownEvent[] = await res.json();
+  const data: EventsApiResponse | ZenBitEventListItem[] = await res.json();
 
-  // Handle both direct array and { success, events } wrapper
   if (Array.isArray(data)) return data;
-  if (data && typeof data === 'object' && Array.isArray(data.events)) return data.events;
+  if (data && typeof data === 'object' && Array.isArray((data as EventsApiResponse).events))
+    return (data as EventsApiResponse).events;
   return [];
 };
 
@@ -151,9 +172,11 @@ export const useMenuQuery = (lang: string) => {
 
 export const useEventsQuery = (params: FetchEventsParams = {}, options = {}) => {
   const normalizedParams: FetchEventsParams = {
+    mode: params.mode ?? (params.upcomingOnly === false ? 'all' : 'upcoming'),
+    days: params.days,
+    date: params.date,
     limit: params.limit ?? 10,
     lang: params.lang,
-    upcomingOnly: params.upcomingOnly ?? true,
     search: params.search,
   };
 
@@ -240,16 +263,17 @@ export const useNewsBySlug = (slug?: string, lang?: string) => {
 export const useEventById = (id?: string, options = {}) => {
   return useQuery({
     queryKey: QUERY_KEYS.events.detail(id || ''),
-    queryFn: async (): Promise<BandsintownEvent | null> => {
+    queryFn: async (): Promise<ZenBitEventDetail | null> => {
       if (!id) return null;
       const apiUrl = buildApiUrl(`zen-bit/v1/events/${id}`);
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error(`Event API ${res.status}`);
       const data = await res.json();
-      return data?.event || null;
+      return (data?.event as ZenBitEventDetail) || null;
     },
     enabled: !!id,
-    staleTime: STALE_TIME.EVENTS,
+    // Detalhe tem TTL maior (24h no backend)
+    staleTime: 24 * 60 * 60 * 1000,
     ...options
   });
 };
