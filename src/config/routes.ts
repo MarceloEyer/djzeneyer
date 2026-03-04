@@ -297,24 +297,34 @@ export const normalizeRouteKey = (key: string): string => {
 };
 
 /**
+ * Lookup map for English paths to optimize getLocalizedRoute
+ * O(1) access instead of O(N) linear search
+ */
+const EN_ROUTE_MAP = new Map<string, { route: RouteConfig; index: number }>();
+
+// Initialize the map once at module load time
+ROUTES_CONFIG.forEach(route => {
+  const enPaths = getLocalizedPaths(route, 'en');
+  enPaths.forEach((path, index) => {
+    EN_ROUTE_MAP.set(path, { route, index });
+  });
+});
+
+/**
  * Obtém o caminho localizado para uma rota, a partir de uma chave em inglês
  */
 export const getLocalizedRoute = (key: string, lang: Language): string => {
   const normalizedKey = normalizeRouteKey(key);
   if (!normalizedKey) return buildFullPath('', lang);
 
-  const route = ROUTES_CONFIG.find(routeConfig => {
-    const enPaths = getLocalizedPaths(routeConfig, 'en');
-    return enPaths.some(path => path === normalizedKey);
-  });
+  const entry = EN_ROUTE_MAP.get(normalizedKey);
 
-  if (!route) {
+  if (!entry) {
     return buildFullPath(normalizedKey, lang);
   }
 
-  const enPaths = getLocalizedPaths(route, 'en');
+  const { route, index: matchedIndex } = entry;
   const localizedPaths = getLocalizedPaths(route, lang);
-  const matchedIndex = enPaths.findIndex(path => path === normalizedKey);
   const localizedPath =
     localizedPaths[Math.max(0, Math.min(matchedIndex, localizedPaths.length - 1))] ??
     localizedPaths[0];
@@ -338,16 +348,50 @@ export const getRoutesForLanguage = (lang: Language) => {
 };
 
 /**
+ * Cached structure for finding routes by path efficiently
+ * Reduces O(N) nested loops and string allocations down to a single linear array iteration
+ */
+interface RouteMatch {
+  config: RouteConfig;
+  exactPath: string;
+  prefixPath: string;
+}
+
+const buildRouteMatchCache = (): Record<Language, RouteMatch[]> => {
+  const cache: Record<Language, RouteMatch[]> = { en: [], pt: [] };
+  const langs: Language[] = ['en', 'pt'];
+
+  for (const lang of langs) {
+    for (const route of ROUTES_CONFIG) {
+      const paths = getLocalizedPaths(route, lang);
+      for (const p of paths) {
+        const fullPath = buildFullPath(p, lang);
+        cache[lang].push({
+          config: route,
+          exactPath: fullPath,
+          prefixPath: fullPath + '/'
+        });
+      }
+    }
+  }
+
+  return cache;
+};
+
+const routeMatchCache = buildRouteMatchCache();
+
+/**
  * Encontra a rota correspondente a um caminho
  */
 export const findRouteByPath = (path: string, lang: Language): RouteConfig | undefined => {
-  return ROUTES_CONFIG.find(route => {
-    const paths = getLocalizedPaths(route, lang);
-    return paths.some(p => {
-      const fullPath = buildFullPath(p, lang);
-      return fullPath === path || path.startsWith(fullPath + '/');
-    });
-  });
+  const matches = routeMatchCache[lang];
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    if (path === match.exactPath || path.startsWith(match.prefixPath)) {
+      return match.config;
+    }
+  }
+  return undefined;
 };
 
 /**

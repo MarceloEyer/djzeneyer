@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Music, Calendar, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const NotFoundPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   return (
     <div className="min-h-screen pt-24 flex items-center justify-center">
@@ -42,7 +44,7 @@ const NotFoundPage: React.FC = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <Link
-              to="/"
+              to={getLocalizedRoute('', currentLang)}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -52,7 +54,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to="/music/"
+              to={getLocalizedRoute('music', currentLang)}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -62,7 +64,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to="/events/"
+              to={getLocalizedRoute('events', currentLang)}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -72,7 +74,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to="/tribe/"
+              to={getLocalizedRoute('zentribe', currentLang)}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -82,7 +84,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
           </div>
 
-          <Link to="/" className="btn btn-primary px-8 py-3">
+          <Link to={getLocalizedRoute('', currentLang)} className="btn btn-primary px-8 py-3">
             {t('not_found.cta')}
           </Link>
         </div>

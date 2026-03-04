@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
@@ -9,6 +10,7 @@ import { useCart } from '../contexts/CartContext';
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { cart, loading, removeItem } = useCart();
+  const currentLang = React.useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
 
   const containerVariants = {
@@ -75,7 +77,7 @@ const CartPage: React.FC = () => {
               <ShoppingCart size={64} className="mx-auto mb-4 text-white/20" />
               <h2 className="text-xl font-semibold mb-2">{t('cart.empty')}</h2>
               <p className="text-white/60 mb-8">{t('cart.empty_desc')}</p>
-              <Link to="/shop" className="btn btn-primary">
+              <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary">
                 {t('cart.continue_shopping')}
               </Link>
             </motion.div>
@@ -158,7 +160,7 @@ const CartPage: React.FC = () => {
                   </div>
 
                   <Link
-                    to="/checkout"
+                    to={getLocalizedRoute('checkout', currentLang)}
                     className="btn btn-primary w-full flex items-center justify-center gap-2 py-3 text-lg"
                   >
                     {t('cart.checkout')}

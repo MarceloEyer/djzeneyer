@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
@@ -17,6 +18,7 @@ interface PaymentMethod {
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { cart, loading, getCart, clearCart } = useCart();
+  const currentLang = React.useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -130,7 +132,7 @@ const CheckoutPage: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Checkout failed');
+        throw new Error(data.message || t('common.checkout.error_failed'));
       }
 
       // Refresh cart state after checkout
@@ -139,7 +141,7 @@ const CheckoutPage: React.FC = () => {
       // Handle redirect or success
       if (data.payment_result?.redirect_url) {
         // Garantimos que o redirecionamento seja seguro
-        window.location.href = safeRedirect(data.payment_result.redirect_url, '/shop');
+        window.location.href = safeRedirect(data.payment_result.redirect_url, getLocalizedRoute('shop', currentLang));
       } else {
         // Defensive clear to guarantee local cart consistency in non-redirect payments
         await clearCart();
@@ -189,7 +191,8 @@ const CheckoutPage: React.FC = () => {
           <p className="text-white/70 mb-8">
             {t('checkout.success_desc')}
           </p>
-          <Link to="/shop" className="btn btn-primary w-full">            {t('checkout.back_shop')}
+          <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary w-full">
+            {t('checkout.back_shop')}
           </Link>        </motion.div>
       </div>
     );

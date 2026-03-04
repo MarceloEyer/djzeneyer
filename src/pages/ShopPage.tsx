@@ -1,13 +1,17 @@
 // src/pages/ShopPage.tsx
 // Visual inspirado em Netflix para venda de ingressos de eventos
 
-import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+<<<<<<< HEAD
 import { useShopPageQuery, useProductsQuery, useAddToCartMutation } from '../hooks/useQueries';
+=======
+import { useProductCollectionsQuery, useAddToCartMutation } from '../hooks/useQueries';
+>>>>>>> origin/main
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
@@ -74,9 +78,15 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
     <div className="relative h-[80vh] w-full group overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src={safeUrl(product.images[0]?.src, 'https://placehold.co/1200x675/0D96FF/FFFFFF')}
+          src={safeUrl(product.images[0]?.sizes?.large || product.images[0]?.sizes?.medium_large || product.images[0]?.src, 'https://placehold.co/1200x675/0D96FF/FFFFFF')}
           alt={product.name}
+<<<<<<< HEAD
           className="w-full h-full object-cover" loading="lazy" decoding="async"
+=======
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+>>>>>>> origin/main
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent" />
@@ -170,9 +180,15 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
       <div className="card-outer bg-surface border border-white/5 rounded-md overflow-hidden shadow-2xl group/card h-full">
         <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
           <img
-            src={safeUrl(product.images[0]?.src, 'https://placehold.co/640x360/0D96FF/FFFFFF')}
+            src={safeUrl(product.images[0]?.sizes?.medium || product.images[0]?.sizes?.medium_large || product.images[0]?.src, 'https://placehold.co/640x360/0D96FF/FFFFFF')}
             alt={product.name}
+<<<<<<< HEAD
             className="w-full h-full object-cover" loading="lazy" decoding="async"
+=======
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+>>>>>>> origin/main
           />
           <div className="absolute inset-0 bg-black/20 group-hover/card:bg-transparent transition-colors" />
           {product.on_sale && (
@@ -351,7 +367,11 @@ const ShopPage: React.FC = () => {
   const isPortuguese = i18n.language.startsWith('pt');
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
+<<<<<<< HEAD
   const { data: shopData, isLoading: loading, error, refetch } = useShopPageQuery(currentLang);
+=======
+  const { data: collections, isLoading: loading, error, refetch } = useProductCollectionsQuery(currentLang, 10);
+>>>>>>> origin/main
   const addToCartMutation = useAddToCartMutation();
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
@@ -380,27 +400,25 @@ const ShopPage: React.FC = () => {
       : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
+<<<<<<< HEAD
   const featuredProduct = shopData?.featured || null;
   const newReleases = shopData?.new_releases || [];
   const bestSellers = shopData?.best_sellers || [];
   const curatedSelection = shopData?.curated || [];
 
+=======
+  const featuredProduct = (collections?.featured?.[0] as Product | undefined) || undefined;
+  const newReleases = (collections?.new_releases as Product[]) || [];
+  const bestSellers = (collections?.best_sellers as Product[]) || [];
+  const curatedSelection = (collections?.top_picks as Product[]) || [];
+>>>>>>> origin/main
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
     </div>
   );
 
-  if (error) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white p-4">
-      <div className="text-center max-w-md">
-        <AlertCircle className="mx-auto mb-4 text-error" size={48} />
-        <h2 className="text-2xl font-bold mb-2">Error loading shop</h2>
-        <p className="opacity-70">{error instanceof Error ? error.message : String(error)}</p>
-        <button onClick={() => refetch()} className="mt-4 btn btn-primary">Try Again</button>
-      </div>
-    </div>
-  );
+  // Removed the `if (error)` block as error handling is now per-query and not aggregated in a single `error` state.
 
   return (
     <div className="min-h-screen bg-[#141414] text-white">

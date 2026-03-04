@@ -90,7 +90,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   // React Query: cache automático + deduplicação
-  const { data: events = [], isLoading: loading, error } = useEventsQuery(limit);
+  const { data: events = [], isLoading: loading, error } = useEventsQuery({ limit, lang: i18n.language.startsWith('pt') ? 'pt' : 'en', upcomingOnly: true });
 
   // Log de erro
   if (error) {
@@ -171,7 +171,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     return (
       <div className="flex justify-center items-center py-12" role="status">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" aria-hidden="true"></div>
-        <span className="sr-only">{t('events.loading', 'Loading events...')}</span>
+        <span className="sr-only">{t('events_loading')}</span>
       </div>
     );
   }
@@ -180,7 +180,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     return (
       <div className="text-center py-12 text-white/60">
         <Calendar size={48} className="mx-auto mb-4 text-white/20" aria-hidden="true" />
-        <p>{t('events.noEvents', 'No events scheduled at the moment. Check back soon!')}</p>
+        <p>{t('events_noEvents')}</p>
       </div>
     );
   }
@@ -190,7 +190,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     <div className="w-full">
       {variant === 'full' && showTitle && (
         <h2 className="text-3xl font-bold mb-8 text-center font-display text-white">
-          {t('events.title', 'Upcoming Events')}
+          {t('events_title')}
         </h2>
       )}
 
@@ -204,8 +204,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
           const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' }, currentLocale);
           const formattedTime = formatTime(eventDate, currentLocale);
 
-          const ariaLabel = t('events.ticketAriaLabel',
-            'View tickets for {{title}} at {{location}}',
+          const ariaLabel = t('events_ticketAriaLabel',
             { title: event.title, location: eventLocation }
           );
 

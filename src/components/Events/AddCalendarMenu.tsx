@@ -2,16 +2,10 @@ import React from 'react';
 import { CalendarPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import type { BandsintownEvent } from '../../types/events';
+
 interface AddCalendarMenuProps {
-    event: {
-        title?: string;
-        datetime?: string;
-        date?: string;
-        venue?: {
-            name?: string;
-            city?: string;
-        };
-    };
+    event: BandsintownEvent;
     variant?: 'primary' | 'ghost';
     className?: string;
 }
@@ -21,8 +15,14 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     const getDetails = () => {
         const title = event.title ? event.title.replace(/<\/?[^>]+(>|$)/g, "") : 'DJ Zen Eyer Event';
-        const dateStr = event.datetime || event.date || new Date().toISOString();
-        const dateObj = new Date(dateStr);
+
+        // Validação robusta de data conforme feedback CodeRabbit
+        const rawDate = event.datetime || '';
+        const dateObj = new Date(rawDate);
+
+        if (!rawDate || isNaN(dateObj.getTime())) {
+            return null;
+        }
 
         // Formato ICS/Google: AAAAMMDDTHHMMSSZ
         const formatICS = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
@@ -33,33 +33,33 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
         const location = event.venue ? `${event.venue.name}, ${event.venue.city}` : "TBA";
         const eventUrl = `${window.location.origin}${window.location.pathname}`;
-        const details = `${t('events_view_details', 'View details at')}: ${eventUrl}`;
+        const details = `${t('events_view_details')}: ${eventUrl}`;
 
         return { title, start, end, location, details };
     };
 
-    const googleUrl = () => {
-        const { title, start, end, location, details } = getDetails();
-        return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
-    };
+    const details = getDetails();
+    if (!details) return null; // Não renderiza o menu se a data for inválida
+
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(details.title)}&dates=${details.start}/${details.end}&details=${encodeURIComponent(details.details)}&location=${encodeURIComponent(details.location)}`;
 
     if (variant === 'primary') {
         return (
             <button
-                onClick={() => window.open(googleUrl(), '_blank')}
+                onClick={() => window.open(googleUrl, '_blank')}
                 className={`btn btn-outline border-primary/30 text-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm hover:bg-primary/10 transition-all ${className}`}
             >
                 <CalendarPlus size={20} />
-                {t('events_add_google', 'Add to Google Calendar')}
+                {t('events_add_google')}
             </button>
         );
     }
 
     return (
         <button
-            onClick={() => window.open(googleUrl(), '_blank')}
+            onClick={() => window.open(googleUrl, '_blank')}
             className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
-            title={t('events_add_google', 'Add to Google Calendar')}
+            title={t('events_add_google')}
         >
             <CalendarPlus size={16} />
         </button>

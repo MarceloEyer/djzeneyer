@@ -106,7 +106,7 @@ const TermsPage: React.FC = () => {
               {t('terms_page.title').split(' ')[0]} <span className="text-primary">{t('terms_page.title').split(' ').slice(1).join(' ')}</span>
             </h1>
             <p className="text-white/70">
-              {t('terms_page.last_updated')}: <span className="text-primary font-semibold">Janeiro 2024</span>
+              {t('terms_page.last_updated')}: <span className="text-primary font-semibold">{t('terms_page.last_updated_date')}</span>
             </p>
           </motion.div>
 

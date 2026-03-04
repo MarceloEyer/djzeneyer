@@ -90,12 +90,12 @@ const MusicPage: React.FC = () => {
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     {singleTrack.links?.spotify && (
                       <a href={safeUrl(singleTrack.links.spotify)} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2">
-                        <Play fill="currentColor" size={18} /> {t('common.platforms.spotify', 'SPOTIFY')}
+                        <Play fill="currentColor" size={18} /> {t('common.platforms.spotify')}
                       </a>
                     )}
                     {singleTrack.links?.soundcloud && (
                       <a href={safeUrl(singleTrack.links.soundcloud)} target="_blank" rel="noopener noreferrer" className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20">
-                        <Cloud size={18} /> {t('common.platforms.soundcloud', 'SOUNDCLOUD')}
+                        <Cloud size={18} /> {t('common.platforms.soundcloud')}
                       </a>
                     )}
                   </div>

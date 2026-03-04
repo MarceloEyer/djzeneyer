@@ -8,6 +8,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { MapPin, Search, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { Toast } from '../components/common/Toast';
+import type { BandsintownEvent } from '../types/events';
 
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
@@ -61,8 +62,8 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
         <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary">
           <Calendar size={40} />
         </div>
-        <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter">{t('events_not_found', 'Event not found')}</h2>
-        <p className="text-white/40 mb-8 max-w-md mx-auto">{t('events_not_found_desc', 'The event you are looking for might have been removed or is no longer available.')}</p>
+        <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter">{t('events_not_found')}</h2>
+        <p className="text-white/40 mb-8 max-w-md mx-auto">{t('events_not_found_desc')}</p>
         <Link to={getLocalizedRoute('events', lang)} className="btn btn-outline border-white/10 px-8 py-3 rounded-xl font-bold uppercase transition-all hover:bg-white/5 inline-flex items-center gap-2">
           <ArrowLeft size={18} /> {t('events_back')}
         </Link>
@@ -101,7 +102,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.2em] text-xs mb-6">
             <div className="w-8 h-px bg-primary/30" />
-            {isValidDate ? eventDate.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) : t('tba', 'TBA')}
+            {isValidDate ? eventDate.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) : t('tba')}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter text-white leading-[0.9]" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
@@ -112,7 +113,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
                 <Calendar size={20} />
               </div>
               <span className="font-bold">
-                {isValidDate ? eventDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }) : t('tba', 'TBA')}
+                {isValidDate ? eventDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }) : t('tba')}
               </span>
             </div>
             <div className="flex items-center gap-4 text-white/80">
@@ -137,7 +138,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
       </div>
 
       <Toast
-        message={t('link_copied', 'Link copied to clipboard!')}
+        message={t('link_copied')}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />
@@ -152,27 +153,32 @@ interface EventListProps {
 
 const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   const { t } = useTranslation();
-  const { data: events = [] } = useEventsQuery(50, searchQuery, { suspense: true });
+  const { data: events = [] } = useEventsQuery({
+    limit: 50,
+    lang,
+    upcomingOnly: true,
+    search: searchQuery || undefined,
+  }, { suspense: true });
 
-  // Events are already filtered on the server.
-  const filteredEvents = useMemo(() => {
-    return [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
-  }, [events]);
+  const groupedEvents = useMemo<[string, BandsintownEvent[]][]>(() => {
+    const groups: { [key: string]: BandsintownEvent[] } = {};
+    events.forEach((e) => {
+      const date = new Date(e.datetime);
+      const isInvalid = isNaN(date.getTime());
 
-  const groupedEvents = useMemo(() => {
-    const groups: { [key: string]: any[] } = {};
-    filteredEvents.forEach((e: any) => {
-      const date = new Date(e.datetime || e.date);
+      // Fallback para agrupar eventos sem data válida no final ou ignorar
+      if (isInvalid) return;
+
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
     return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [filteredEvents]);
+  }, [events]);
 
   const [showToast, setShowToast] = React.useState(false);
 
-  const share = (e: any) => {
+  const share = (e: BandsintownEvent) => {
     const url = `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
     if (navigator.share) {
       navigator.share({ title: e.title, url });
@@ -182,20 +188,20 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
     }
   };
 
-  if (filteredEvents.length === 0) {
+  if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
-        <p className="text-white/40">{t('events_no_results', 'No events found matching your search.')}</p>
+        <p className="text-white/40">{t('events_no_results')}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
-      {groupedEvents.map(([key, monthEvents]: [string, any[]]) => {
+      {groupedEvents.map(([key, monthEvents]: [string, BandsintownEvent[]]) => {
         const [y, m] = key.split('-');
-        // Forçar cast para 'en' na geração da chave de tradução para garantir compatibilidade
-        const monthShort = new Date(Number(y), Number(m) - 1).toLocaleString('en', { month: 'short' }).toLowerCase();
+        const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        const monthShort = MONTH_NAMES[Number(m) - 1];
         const name = t(`events_month_${monthShort}`);
         return (
           <section key={key}>
@@ -204,7 +210,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
               <div className="h-px flex-1 bg-white/5" />
             </h2>
             <div className="space-y-3">
-              {monthEvents.map((e: any) => (
+              {monthEvents.map((e) => (
                 <div key={e.id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
                   <div className="text-3xl font-black min-w-[50px]">{String(new Date(e.datetime).getDate()).padStart(2, '0')}</div>
                   <div className="flex-1">
@@ -227,7 +233,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
       })}
 
       <Toast
-        message={t('link_copied', 'Link copied to clipboard!')}
+        message={t('link_copied')}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />

@@ -448,7 +448,7 @@ const HomePage: React.FC = () => {
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
             <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">
-              {t('nav_tribe')}
+              {t('nav.tribe')}
             </Link>
           </motion.div>
         </motion.div>

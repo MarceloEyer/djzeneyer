@@ -49,6 +49,7 @@
       "summary": "Your Order",
       "place_order": "Place Order",
       "select_payment": "Please select a payment method.",
+      "error_failed": "Checkout failed",
       "generic_error": "An error occurred during checkout.",
       "success_title": "Order Confirmed!",
       "success_desc": "Thank you for your purchase. You will receive an email confirmation shortly.",
@@ -69,7 +70,27 @@
       "country": "Country"
     },
     "footer_privacy": "Privacy Policy",
-    "footer_terms": "Terms of Use"
+    "footer_terms": "Terms of Use",
+    "footer_bio": "Exploring connection through music. Remixing Brazilian Zouk vibes for the world.",
+    "footer_quick_links": "Quick Links",
+    "footer_events": "Events",
+    "footer_music": "Music",
+    "footer_zen_tribe_info": "About Zen Tribe",
+    "footer_shop": "Shop",
+    "footer_support_artist": "Support the Artist",
+    "footer_discover_more": "Discover More",
+    "footer_about": "About",
+    "footer_news": "News & Blog",
+    "footer_philosophy": "My Philosophy",
+    "footer_work_with_me": "Work With Me",
+    "footer_media": "Press & Media",
+    "footer_conduct": "Code of Conduct",
+    "footer_join_newsletter": "Join our Newsletter",
+    "footer_email_placeholder": "Your best email",
+    "footer_subscribe": "Subscribe",
+    "footer_subscribe_success": "Subscription successful!",
+    "footer_subscribe_error": "Error during subscription.",
+    "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved."
   },
   "quiz": {
     "personas": {
@@ -198,6 +219,8 @@
     },
     "recentActivity": "Recent Activity",
     "noActivity": "No recent activity yet.",
+    "rank_new_member": "New Member",
+    "rank_zen_novice": "Zen Novice",
     "nextRank": "Next Rank",
     "yourWallet": "Your Wallet",
     "pendingQuests": "Pending Quests",
@@ -823,6 +846,7 @@
     "title": "Code of Conduct",
     "subtitle": "Learn about our expectations and standards for respectful behavior.",
     "last_updated": "Last updated",
+    "last_updated_date": "January 2024",
     "commitment": "Our Commitment",
     "commitment_intro": "DJ Zen Eyer is committed to creating a welcoming, safe, and inclusive environment for all members of our community. This Code of Conduct applies to all interactions within our community, including events, online platforms, and any spaces associated with DJ Zen Eyer.",
     "commitment_participation": "By participating in our community, you agree to abide by this Code of Conduct. We expect all community members to help create a positive environment where everyone feels respected and valued.",
@@ -904,6 +928,7 @@
       "description": "Privacy Policy for DJ Zen Eyer official website. Learn how we collect, use, and protect your personal information."
     },
     "last_updated": "Last updated",
+    "last_updated_date": "January 2024",
     "intro_p1": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.",
     "intro_p2": "By using our website, you consent to the data practices described in this policy. If you do not agree with the terms of this Privacy Policy, please do not access the website.",
     "sections": {
@@ -989,6 +1014,7 @@
       "description": "Terms of Use for DJ Zen Eyer official website. Read the terms and conditions governing the use of our services."
     },
     "last_updated": "Last updated",
+    "last_updated_date": "January 2024",
     "intro_p1": "Welcome to the official website of DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). These Terms of Use govern your access to and use of our website, services, and content.",
     "intro_p2": "By accessing or using our website, you agree to comply with and be bound by these terms. If you do not agree to these terms, please do not use our website.",
     "sections": {
@@ -1319,6 +1345,29 @@
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
   "events_categories": "Categories",
+  "events_page_title": "Shows & Events",
+  "events_page_meta_desc": "Upcoming events, shows and festivals by DJ Zen Eyer worldwide.",
+  "events_filter_placeholder": "Filter by city or event...",
+  "events_back": "Back to Events",
+  "events_not_found": "Event not found",
+  "events_not_found_desc": "The event you are looking for might have been removed or is no longer available.",
+  "events_no_results": "No events found matching your search.",
+  "events_month_jan": "January",
+  "events_month_feb": "February",
+  "events_month_mar": "March",
+  "events_month_apr": "April",
+  "events_month_may": "May",
+  "events_month_jun": "June",
+  "events_month_jul": "July",
+  "events_month_aug": "August",
+  "events_month_sep": "September",
+  "events_month_oct": "October",
+  "events_month_nov": "November",
+  "events_month_dec": "December",
+  "tba": "TBA",
+  "share": "Share",
+  "link_copied": "Link copied to clipboard!",
+  "error_loading": "Could not load the schedule",
   "faq": {
     "badge": "Knowledge Base",
     "title": "Frequent <1>Questions</1>",
@@ -1419,7 +1468,8 @@
       "orders": "Orders",
       "achievements": "Achievements",
       "music": "My Music",
-      "settings": "Settings"
+      "settings": "Settings",
+      "not_found": "Tab not found"
     },
     "orders": {
       "title": "My Orders"
@@ -1486,7 +1536,209 @@
       "merch_c1": "Items must be unworn, unwashed, and in their original condition.",
       "merch_c2": "You are responsible for return shipping costs unless the item arrived damaged or incorrect.",
       "merch_c3": "Refunds are processed to the original payment method within 5-10 business days after we receive the return.",
-      "last_updated": "Last updated: January 2024"
+      "last_updated": "Last updated",
+      "last_updated_date": "January 2024"
     }
-  }
+  },
+  "home": {
+    "seo": {
+      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music Producer, Zen Tribe",
+      "lead_answer": "DJ Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance."
+    },
+    "shows": {
+      "title": "Upcoming Events",
+      "cta": "View All Events"
+    },
+    "festivals": {
+      "presence": "International Festival Presence",
+      "many_more": "many more"
+    },
+    "press": {
+      "title": "Press & Media",
+      "desc": "Complete press kit, high-resolution photos, releases, and interviews available.",
+      "cta": "DOWNLOAD PRESS KIT 2025"
+    },
+    "bookers": {
+      "title": "Bookers & Promoters",
+      "desc": "Available for congresses, festivals, workshops, and exclusive events worldwide.",
+      "cta": "REQUEST QUOTE"
+    },
+    "verified": "Verified Profiles",
+    "tribe": {
+      "title": "Join the Zen Tribe",
+      "desc": "Access exclusive content, behind-the-scenes, and be part of the official DJ Zen Eyer community."
+    }
+  },
+  "presskit": {
+    "page_title": "Official Press Kit | DJ Zen Eyer",
+    "page_meta_desc": "Official EPK of DJ Zen Eyer. Two-time Brazilian Zouk world champion. Photos, bio, logos, and contact information for booking.",
+    "tag": "Official Press Kit 2026",
+    "title_prefix": "Official",
+    "title_suffix": "EPK",
+    "role": "DJ & Music Producer",
+    "subtitle": "2× World Champion Brazilian Zouk",
+    "stats": {
+      "countries": "Countries Played",
+      "people": "People Impacted",
+      "streams": "Total Streams",
+      "years": "Years of Career"
+    },
+    "bio": {
+      "title": "The Sonic Journey",
+      "p1": "<strong>DJ Zen Eyer</strong> is a global reference in Brazilian Zouk, known for his unique approach that prioritizes connection and 'flow' on the dance floor.",
+      "p2": "With performances in over 11 countries and international awards, he created the 'Cremosidade' concept — sets that evolve gradually, respecting the dancer's pace.",
+      "p3": "Member of Mensa International, Zen uses his sharp perception to curate perfect emotional journeys, whether at major festivals or intimate Zen Tribe sessions.",
+      "quickStats": {
+        "cremosidade": "Cremosidade",
+        "cremosidade_desc": "Total focus on connection",
+        "repertoire": "Repertoire",
+        "repertoire_desc": "Exclusive & original edits",
+        "connection": "Connection",
+        "connection_desc": "Impeccable floor reading",
+        "global": "Global",
+        "global_desc": "International experience"
+      }
+    },
+    "media": {
+      "title": "Media & Downloads",
+      "subtitle": "High-resolution resources for promoters and press.",
+      "photos": "Official Photos",
+      "photos_desc": "Updated gallery for promotional material.",
+      "bio": "Complete Bio (PDF)",
+      "bio_desc": "History, awards, and technical details.",
+      "logos": "Logos & Identity",
+      "logos_desc": "Brand guidelines and vector files.",
+      "access": "Access Gallery",
+      "download": "Download File"
+    },
+    "gallery": {
+      "title": "Photo Gallery",
+      "subtitle": "Moments captured at festivals around the world.",
+      "cta": "View All at Photos.djzeneyer"
+    },
+    "contact": {
+      "title": "Contact & Booking",
+      "subtitle": "Interested in bringing the Zen experience to your event?",
+      "base": "Base",
+      "availability": "Availability",
+      "availability_value": "Worldwide",
+      "genre": "Main Genre",
+      "links": "Useful Links & Social Media",
+      "whatsapp_message": "Hello Zen Eyer! I'd like to talk about a possible collaboration or booking. How can we proceed?"
+    }
+  },
+  "music": {
+    "pageTitle": "Music Collection",
+    "pageDesc": "Exclusive tracks, mixes and playlists curated by DJ Zen Eyer",
+    "back": "Back to Music",
+    "artist_tag": "Bicampeão Mundial de Brazilian Zouk",
+    "about_track": "About the track",
+    "hub_title_rich": "Streaming Hub",
+    "hub_subtitle": "Select your preferred platform to enjoy the 'Creamy' vibes.",
+    "steal_button": "DJ Tool Kit",
+    "steal_desc": "Access high-quality downloads, edits and exclusive tools for DJs.",
+    "steal_cta": "Access Downloads",
+    "support_button": "Support Art",
+    "support_desc": "Contribute to the creation of new music and community development.",
+    "support_cta": "How to Support"
+  },
+  "support": {
+    "inter": {
+      "title": "Inter Global Account (Preferred)",
+      "description": "US and Brazil bank accounts for international and local payments",
+      "usd": "US Bank Account (USD)",
+      "eur": "Euro Bank Account (EUR)",
+      "gbp": "Pound Bank Account (GBP)",
+      "brazil": "Brazil (Local)"
+    },
+    "accountName": "Account Name",
+    "bank": "Bank",
+    "accountNumber": "Account Number",
+    "achRouting": "ACH Routing",
+    "wireRouting": "Wire Routing",
+    "bankAddress": "Bank Address",
+    "beneficiaryBank": "Beneficiary Bank",
+    "swiftCode": "SWIFT/BIC Code",
+    "intermediary": "Intermediary Bank",
+    "swiftInter": "Intermediary SWIFT",
+    "iban": "IBAN",
+    "cpf": "CPF",
+    "branch": "Branch",
+    "account": "Account",
+    "pixKey": "PIX Key",
+    "wise": {
+      "title": "Wise (TransferWise)",
+      "description": "Low-fee international transfers to multiple currencies",
+      "eur": "Euro Bank Account (EUR - Wise)"
+    },
+    "paypal": {
+      "title": "PayPal",
+      "description": "Quick and easy payments worldwide"
+    },
+    "reasons": {
+      "title": "Why Your Support Matters",
+      "music": {
+        "title": "Support New Music",
+        "description": "Help produce and release new Brazilian Zouk tracks"
+      },
+      "community": {
+        "title": "Community Growth",
+        "description": "Support workshops, events, and educational content"
+      },
+      "worldwide": {
+        "title": "Worldwide Presence",
+        "description": "Enable international tours and collaborations"
+      }
+    },
+    "seo": {
+      "title": "Support DJ Zen Eyer | Payment Information",
+      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.",
+      "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
+    },
+    "header": {
+      "title": "Support the Music",
+      "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
+    },
+    "payment": {
+      "title": "Payment Methods"
+    },
+    "preferred": "Preferred",
+    "email": "Email",
+    "phone": "Phone / Key",
+    "sendPayment": "Send Payment via",
+    "business": {
+      "title": "Event Bookings & Business Inquiries",
+      "description": "For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.",
+      "contact": "Contact for Bookings"
+    },
+    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
+  },
+  "zenlink": {
+    "listen_now": "Listen Now",
+    "choose_platform": "Choose your platform",
+    "spotify_title": "Spotify",
+    "spotify_subtitle": "Tracks, remixes and sets",
+    "booking_title": "Schedule & Booking",
+    "booking_subtitle": "Festivals and congresses",
+    "contact_direct": "WhatsApp Direct"
+  },
+  "price_free": "Free",
+  "events_title": "Upcoming Events",
+  "events_subtitle": "Join the experience. Check where DJ Zen Eyer will be playing next.",
+  "event_desc_fallback": "Join us for an unforgettable experience.",
+  "events_loading": "Loading events...",
+  "events_noEvents": "No events scheduled at the moment. Check back soon!",
+  "events_ticketAriaLabel": "View tickets for {{title}} at {{location}}",
+  "events_add_google": "Add to Google Calendar"
+},
+"social": {
+  "instagram": "Instagram",
+  "youtube": "YouTube",
+  "spotify": "Spotify",
+  "apple_music": "Apple Music",
+  "musicbrainz": "MusicBrainz",
+  "wikidata": "Wikidata",
+  "discogs": "Discogs",
+  "resident_advisor": "Resident Advisor"
+}
 }

@@ -1,10 +1,12 @@
-import React, { memo } from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import React, { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getHrefLangUrls } from '../utils/seo';
 import { sanitizeHtml } from '../utils/sanitize';
+import { getLocalizedRoute } from '../config/routes';
 import {
   Download,
   Phone,
@@ -35,22 +37,7 @@ const PRESS_LINKS = {
   logos: "/media/dj-zen-eyer-logos.zip"
 };
 
-const RELEVANT_LINKS = [
-  { name: "Instagram", url: ARTIST.social.instagram.url, icon: <Instagram size={20} /> },
-  { name: "YouTube", url: ARTIST.social.youtube.url, icon: <Radio size={20} /> },
-  { name: "Spotify", url: ARTIST.social.spotify.url, icon: <PlayCircle size={20} /> },
-  { name: "Apple Music", url: ARTIST.social.appleMusic.url, icon: <PlayCircle size={20} /> },
-  { name: "MusicBrainz", url: "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154", icon: <Database size={20} /> },
-  { name: "Wikidata", url: "https://www.wikidata.org/wiki/Q136551855", icon: <Globe size={20} /> },
-  { name: "Discogs", url: "https://www.discogs.com/artist/16872046", icon: <Database size={20} /> },
-  { name: "Resident Advisor", url: "https://pt-br.ra.co/dj/djzeneyer", icon: <ExternalLink size={20} /> }
-];
-
-const WHATSAPP_CONFIG = {
-  number: '5521987413091',
-  message: "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking. Como podemos prosseguir?"
-};
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_CONFIG.number}?text=${encodeURIComponent(WHATSAPP_CONFIG.message)}`;
+const WHATSAPP_NUMBER = '5521987413091';
 
 // ============================================================================
 // 2. COMPONENTES AUXILIARES
@@ -99,15 +86,33 @@ MediaKitCard.displayName = 'MediaKitCard';
 // ============================================================================
 const PressKitPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const currentPath = '/press-kit';
-  const currentUrl = 'https://djzeneyer.com' + currentPath;
+  const location = useLocation();
+  const currentLang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
-  const PERSON_SCHEMA = {
+  const currentPath = location.pathname;
+  const currentUrl = `https://djzeneyer.com${currentPath}`;
+
+  const RELEVANT_LINKS = useMemo(() => [
+    { name: t('social.instagram'), url: ARTIST.social.instagram.url, icon: <Instagram size={20} /> },
+    { name: t('social.youtube'), url: ARTIST.social.youtube.url, icon: <Radio size={20} /> },
+    { name: t('social.spotify'), url: ARTIST.social.spotify.url, icon: <PlayCircle size={20} /> },
+    { name: t('social.apple_music'), url: ARTIST.social.appleMusic.url, icon: <PlayCircle size={20} /> },
+    { name: t('social.musicbrainz'), url: "https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154", icon: <Database size={20} /> },
+    { name: t('social.wikidata'), url: "https://www.wikidata.org/wiki/Q136551855", icon: <Globe size={20} /> },
+    { name: t('social.discogs'), url: "https://www.discogs.com/artist/16872046", icon: <Database size={20} /> },
+    { name: t('social.resident_advisor'), url: "https://pt-br.ra.co/dj/djzeneyer", icon: <ExternalLink size={20} /> }
+  ], [t]);
+
+  const WHATSAPP_URL = useMemo(() =>
+    `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t('presskit.contact.whatsapp_message'))}`,
+    [t]);
+
+  const PERSON_SCHEMA = useMemo(() => ({
     "@type": "Person",
     "@id": "https://djzeneyer.com/#artist",
     "name": "DJ Zen Eyer",
     "alternateName": ["Zen Eyer", "Marcelo Eyer Fernandes"],
-    "jobTitle": i18n.language.startsWith('pt') ? "DJ e Produtor Musical" : "DJ & Music Producer",
+    "jobTitle": t('presskit.role'),
     "description": t('presskit.page_meta_desc'),
     "url": "https://djzeneyer.com",
     "image": "https://djzeneyer.com/wp-content/uploads/2025/12/ZenEyer-2026.png",
@@ -117,27 +122,27 @@ const PressKitPage: React.FC = () => {
       { "@type": "Award", "name": "World Champion DJ (Ilha do Zouk 2022)", "datePublished": "2022" },
       { "@type": "Award", "name": "Best Remix (Ilha do Zouk 2022)", "datePublished": "2022" }
     ]
-  };
+  }), [t, RELEVANT_LINKS]);
 
-  const stats = [
+  const stats = useMemo(() => [
     { number: "11+", label: t('presskit.stats.countries'), icon: <Globe size={32} />, color: "bg-gradient-to-br from-blue-500 to-blue-700" },
     { number: "50K+", label: t('presskit.stats.people'), icon: <Users size={32} />, color: "bg-gradient-to-br from-purple-500 to-purple-700" },
     { number: "500K+", label: t('presskit.stats.streams'), icon: <Music2 size={32} />, color: "bg-gradient-to-br from-pink-500 to-pink-700" },
     { number: "10+", label: t('presskit.stats.years'), icon: <Award size={32} />, color: "bg-gradient-to-br from-green-500 to-green-700" }
-  ];
+  ], [t]);
 
-  const quickStatsItems = [
+  const quickStatsItems = useMemo(() => [
     { title: t('presskit.bio.quickStats.cremosidade'), desc: t('presskit.bio.quickStats.cremosidade_desc'), icon: <Star size={20} className="text-primary" /> },
     { title: t('presskit.bio.quickStats.repertoire'), desc: t('presskit.bio.quickStats.repertoire_desc'), icon: <Music2 size={20} className="text-accent" /> },
     { title: t('presskit.bio.quickStats.connection'), desc: t('presskit.bio.quickStats.connection_desc'), icon: <Users size={20} className="text-success" /> },
     { title: t('presskit.bio.quickStats.global'), desc: t('presskit.bio.quickStats.global_desc'), icon: <Globe size={20} className="text-purple-400" /> }
-  ];
+  ], [t]);
 
-  const mediaItems = [
+  const mediaItems = useMemo(() => [
     { title: t('presskit.media.photos'), desc: t('presskit.media.photos_desc'), path: PRESS_LINKS.photos, icon: <ImageIcon size={32} />, isExternal: true },
     { title: t('presskit.media.bio'), desc: t('presskit.media.bio_desc'), path: PRESS_LINKS.epk, icon: <FileText size={32} />, isExternal: false },
     { title: t('presskit.media.logos'), desc: t('presskit.media.logos_desc'), path: PRESS_LINKS.logos, icon: <Music2 size={32} />, isExternal: false }
-  ];
+  ], [t]);
 
   return (
     <>
