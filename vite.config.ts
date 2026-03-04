@@ -28,9 +28,10 @@ export default defineConfig(({ command, mode }) => {
     publicDir: false,
 
     // 🚀 BASE PATH: Importante para o Headless WordPress
-    // Em produção, os assets ficam na pasta do tema.
-    // Usamos sempre o caminho do tema ativado para build/prerender.
-    base: (process.env.PRERENDER_MODE === 'true' || isProduction) ? '/wp-content/themes/zentheme/dist/' : '/',
+    // Em produção (build), os assets ficam na pasta do tema.
+    // Durante o prerender (vite preview), usamos '/' para o React Router funcionar corretamente.
+    // IMPORTANTE: PRERENDER_MODE NÃO deve alterar o base — o prerender acessa rotas pela raiz.
+    base: isProduction ? '/wp-content/themes/zentheme/dist/' : '/',
 
     resolve: {
       alias: {

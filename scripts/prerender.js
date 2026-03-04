@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v19.0 - API INTERCEPTION OPTIMIZED
+ * SSR PRERENDER v20.0 - BASE PATH FIXED
  */
 
 import { spawn } from 'child_process';
@@ -32,7 +32,9 @@ try {
 }
 
 const CONFIG = {
-  serverBase: 'http://localhost:5173/wp-content/themes/zentheme/dist', // Alinhado com vite.config.ts base
+  // O Vite Preview durante o prerender usa base '/' (vite.config.ts não inclui PRERENDER_MODE na condição)
+  // Portanto acessamos as rotas diretamente na raiz do servidor local.
+  serverBase: 'http://localhost:5173',
   distDir: join(process.cwd(), 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
@@ -57,7 +59,7 @@ function startDevServer() {
     const start = Date.now();
     while (Date.now() - start < 60000) {
       try {
-        const res = await fetch('http://localhost:5173/'); // O preview serve o index na raiz ou no base prefixado
+        const res = await fetch('http://localhost:5173/');
         if (res.ok || res.status === 404) {
           console.log('✅ Servidor OK.');
           return resolve();
@@ -128,7 +130,7 @@ async function prerender() {
 
     for (const route of CONFIG.routes) {
       const cleanRoute = route.replace(/^\//, '');
-      // IMPORTANTE: Vite Preview com base path prefixado exige o path completo no goto
+      // Acessa a rota diretamente na raiz — o React Router resolve corretamente
       const url = `${CONFIG.serverBase}/${cleanRoute}`;
 
       let outputPath;
@@ -154,7 +156,6 @@ async function prerender() {
         const html = await page.content();
 
         if (html.length > 500) {
-          // ⭐ Vite compila com o base path correto agora, então não precisamos de replace manual
           const finalHtml = html.includes('name="prerender-generated"')
             ? html
             : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
