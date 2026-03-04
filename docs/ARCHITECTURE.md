@@ -49,6 +49,17 @@
 
 ---
 
+## Data Fetching Philosophy: "Backend Filters, Frontend Renders"
+
+To ensure maximum performance and minimize payload sizes, the project follows a strict rule: **The API is responsible for all data processing.**
+
+1. **Filtering & Sorting**: Must always happen server-side via query parameters (e.g., `?limit=10&search=term&lang=pt`).
+2. **Data Reduction**: Use the `_fields` parameter in WordPress REST API whenever possible to fetch only required keys.
+3. **Aggregator Endpoints**: For complex pages (like the Dashboard or Shop), create specialized WordPress endpoints that return "pre-digested" data ready for rendering.
+4. **Client Responsibility**: The React frontend should only receive clean arrays/objects and map them to components. Avoid `.filter()`, `.sort()`, or `.slice()` on large datasets within components.
+
+---
+
 ## Request Flow
 
 ### 1. First Visit (SSR/SSG)
