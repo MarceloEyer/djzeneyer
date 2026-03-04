@@ -62,9 +62,17 @@ export interface ZenGameUserData {
     user_id: number;
     points: Record<string, ZenGamePoint>;
     rank: ZenGameRank;
+<<<<<<< HEAD
+    achievements: ZenGameAchievement[];
+    earned_achievements: ZenGameAchievement[];
+    locked_achievements: ZenGameAchievement[];
+    earned_achievements_count: number;
+    locked_achievements_count: number;
+=======
     achievements_earned: ZenGameAchievement[];
     achievements_locked: ZenGameAchievement[];
     recent_achievements: ZenGameAchievement[];
+>>>>>>> origin/main
     logs: ZenGameLog[];
     stats: ZenGameStats;
     main_points_slug: string;

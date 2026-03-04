@@ -191,7 +191,7 @@ const DashboardContent = () => {
               </h2>
 
               <div className="space-y-4 flex-1">
-                {lockedAchievements.slice(0, 5).map((quest, i) => (
+                {lockedAchievements.map((quest, i) => (
                   <motion.div
                     key={quest.id}
                     whileHover={{ scale: 1.02 }}

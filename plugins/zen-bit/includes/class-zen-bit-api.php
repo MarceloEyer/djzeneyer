@@ -465,7 +465,6 @@ class Zen_BIT_API
 
     public static function get_events_rest(\WP_REST_Request $request)
     {
-        $limit = (int) ($request->get_param('limit') ?: 50);
         $search = sanitize_text_field((string) $request->get_param('search'));
         $upcoming_only = filter_var($request->get_param('upcoming_only'), FILTER_VALIDATE_BOOLEAN);
         $lang = sanitize_text_field((string) ($request->get_param('lang') ?: 'en'));
@@ -510,7 +509,6 @@ class Zen_BIT_API
             'lang' => $lang,
         ));
 
-        // Cache headers para browser/CDN (opcional)
         $cache_time = self::get_cache_time();
         $response->header('Cache-Control', 'public, max-age=' . $cache_time);
         $response->header('Expires', gmdate('D, d M Y H:i:s', time() + $cache_time) . ' GMT');

@@ -55,6 +55,12 @@ class ZenGame
                     'type' => 'integer',
                     'description' => 'User ID (optional, uses current user if not provided)',
                     'required' => false,
+                ],
+                'limit_logs' => [
+                    'type' => 'integer',
+                    'description' => 'Limit number of logs returned (default 5)',
+                    'required' => false,
+                    'default' => 5
                 ]
             ]
         ]);
@@ -153,8 +159,10 @@ class ZenGame
         // Handle Cache Clearing Action
         if (isset($_GET['action']) && $_GET['action'] === 'clear_cache') {
             check_admin_referer('zengame_clear_cache');
-            $this->clear_all_gamipress_cache();
-            echo '<div class="notice notice-success is-dismissible"><p>ZenGame Cache cleared successfully!</p></div>';
+            if (current_user_can('manage_options')) {
+                $this->clear_all_gamipress_cache();
+                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('ZenGame Cache cleared successfully!', 'zengame') . '</p></div>';
+            }
         }
 
         $point_types = function_exists('gamipress_get_points_types') ? gamipress_get_points_types() : [];
@@ -444,12 +452,21 @@ class ZenGame
             }
         }
 
+<<<<<<< HEAD
+        // --- 3. ACHIEVEMENTS ---
+        $achievements = [];
+        $earned_achievements = [];
+        $locked_achievements = [];
+        $achievement_types = function_exists('gamipress_get_achievement_types') 
+            ? gamipress_get_achievement_types() 
+=======
         // --- 3. ACHIEVEMENTS (Aggregated) ---
         $achievements_earned = [];
         $achievements_locked = [];
 
         $achievement_types = function_exists('gamipress_get_achievement_types')
             ? gamipress_get_achievement_types()
+>>>>>>> origin/main
             : [];
         $achievement_post_types = !empty($achievement_types)
             ? array_keys($achievement_types)
@@ -479,9 +496,15 @@ class ZenGame
 
             foreach ($all_achievements as $post) {
                 $earned = isset($user_earnings[$post->ID]);
+<<<<<<< HEAD
+                $points_awarded = (int)get_post_meta($post->ID, '_gamipress_points_awarded', true);
+                
+                $achievement_data = [
+=======
                 $points_awarded = (int) get_post_meta($post->ID, '_gamipress_points_awarded', true);
 
                 $achivement_item = [
+>>>>>>> origin/main
                     'id' => $post->ID,
                     'title' => $post->post_title,
                     'description' => $post->post_excerpt ?: strip_tags(wp_trim_words($post->post_content, 20)),
@@ -491,10 +514,18 @@ class ZenGame
                     'date_earned' => $earned ? $user_earnings[$post->ID]->date : '',
                 ];
 
+<<<<<<< HEAD
+                $achievements[] = $achievement_data;
+                if ($earned) {
+                    $earned_achievements[] = $achievement_data;
+                } else {
+                    $locked_achievements[] = $achievement_data;
+=======
                 if ($earned) {
                     $achievements_earned[] = $achivement_item;
                 } else {
                     $achievements_locked[] = $achivement_item;
+>>>>>>> origin/main
                 }
             }
         }
@@ -504,7 +535,7 @@ class ZenGame
         if (function_exists('gamipress_query_logs')) {
             $raw_logs = gamipress_query_logs([
                 'user_id' => $user_id,
-                'limit' => 20,
+                'limit' => (int) ($request->get_param('limit_logs') ?: 20),
                 'order_by' => 'date',
                 'order' => 'DESC'
             ]);
@@ -543,9 +574,17 @@ class ZenGame
             'user_id' => $user_id,
             'points' => $point_data,
             'rank' => $rank_info,
+<<<<<<< HEAD
+            'achievements' => $achievements,
+            'earned_achievements' => $earned_achievements,
+            'locked_achievements' => $locked_achievements,
+            'earned_achievements_count' => count($earned_achievements),
+            'locked_achievements_count' => count($locked_achievements),
+=======
             'achievements_earned' => $achievements_earned,
             'achievements_locked' => $achievements_locked,
             'recent_achievements' => array_slice($achievements_earned, -6),
+>>>>>>> origin/main
             'logs' => $logs,
             'stats' => $stats,
             'main_points_slug' => $main_pt_slug,

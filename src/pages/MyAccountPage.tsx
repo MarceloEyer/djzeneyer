@@ -102,8 +102,14 @@ const MyAccountContent: React.FC = () => {
     // XP para o próximo nível (baseado no rank real do backend se possível)
     const xpToNext = gamipress.rank.next ? (100 - (mainPoints % 100)) : 0;
 
+<<<<<<< HEAD
+    const totalAchievements = gamipress.achievements.length;
+    const earnedAchievements = gamipress.earned_achievements || [];
+    const recentAchievements = earnedAchievements.length;
+=======
     const totalAchievements = gamipress.achievements_earned.length + gamipress.achievements_locked.length;
     const recentAchievements = gamipress.recent_achievements.length;
+>>>>>>> origin/main
 
     return {
       level,

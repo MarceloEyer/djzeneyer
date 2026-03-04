@@ -258,7 +258,25 @@ export const useEventById = (id?: string, options = {}) => {
 // PRODUCTS QUERY (PÚBLICO)
 // ============================================================================
 
+<<<<<<< HEAD
+
+export const useShopPageQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: ['shop_page', lang],
+    queryFn: async () => {
+      const apiUrl = buildApiUrl('djzeneyer/v1/shop/page', { lang: lang || 'en' });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch shop page view-model');
+      return res.json();
+    },
+    staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
+export const useProductsQuery = (lang?: string) => {
+=======
 export const useProductsQuery = (lang?: string, filters: Record<string, string> = {}) => {
+>>>>>>> origin/main
   return useQuery({
     queryKey: [...QUERY_KEYS.products.list(lang), filters],
     queryFn: () => fetchProductsFn(lang, filters),
@@ -341,6 +359,7 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       const params: Record<string, string> = {};
       if (userId) params.user_id = String(userId);
 
+      params.limit_logs = '5'; // Dashboard typically only needs 5
       const apiUrl = buildApiUrl('djzeneyer/v1/gamipress/user-data', params);
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
