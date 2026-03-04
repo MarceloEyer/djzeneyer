@@ -15,8 +15,14 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     const getDetails = () => {
         const title = event.title ? event.title.replace(/<\/?[^>]+(>|$)/g, "") : 'DJ Zen Eyer Event';
-        const dateStr = event.datetime || new Date().toISOString();
-        const dateObj = new Date(dateStr);
+
+        // Validação robusta de data conforme feedback CodeRabbit
+        const rawDate = event.datetime || '';
+        const dateObj = new Date(rawDate);
+
+        if (!rawDate || isNaN(dateObj.getTime())) {
+            return null;
+        }
 
         // Formato ICS/Google: AAAAMMDDTHHMMSSZ
         const formatICS = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
@@ -32,10 +38,10 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
         return { title, start, end, location, details };
     };
 
-    const googleUrl = () => {
-        const { title, start, end, location, details } = getDetails();
-        return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
-    };
+    const details = getDetails();
+    if (!details) return null; // Não renderiza o menu se a data for inválida
+
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(details.title)}&dates=${details.start}/${details.end}&details=${encodeURIComponent(details.details)}&location=${encodeURIComponent(details.location)}`;
 
     if (variant === 'primary') {
         return (

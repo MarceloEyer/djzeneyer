@@ -10,12 +10,14 @@ export const usePrefetchOnHover = () => {
     return useCallback((url: string) => {
         if (!url) return;
         const lowerUrl = url.toLowerCase();
+        const lang = lowerUrl.startsWith('/pt') ? 'pt' : 'en';
 
         // 1. Events Page
         if (lowerUrl.includes('event')) {
+            const params = { limit: 10, lang, upcomingOnly: true };
             queryClient.prefetchQuery({
-                queryKey: QUERY_KEYS.events.list(10),
-                queryFn: () => fetchEventsFn(10)
+                queryKey: QUERY_KEYS.events.list(params),
+                queryFn: () => fetchEventsFn(params)
             });
         }
         // 2. Music Page
@@ -28,13 +30,12 @@ export const usePrefetchOnHover = () => {
         // 3. News Page (Blog)
         else if (lowerUrl.includes('news') || lowerUrl.includes('noticias')) {
             queryClient.prefetchQuery({
-                queryKey: QUERY_KEYS.posts.list(),
-                queryFn: fetchNewsFn
+                queryKey: QUERY_KEYS.posts.list(lang),
+                queryFn: () => fetchNewsFn(lang)
             });
         }
         // 4. Shop Page
         else if (lowerUrl.includes('shop') || lowerUrl.includes('loja')) {
-            const lang = lowerUrl.startsWith('/pt') ? 'pt' : 'en';
             queryClient.prefetchQuery({
                 queryKey: QUERY_KEYS.products.list(lang),
                 queryFn: () => fetchProductsFn(lang)

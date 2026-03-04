@@ -160,10 +160,15 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
     search: searchQuery || undefined,
   }, { suspense: true });
 
-  const groupedEvents = useMemo(() => {
+  const groupedEvents = useMemo<[string, BandsintownEvent[]][]>(() => {
     const groups: { [key: string]: BandsintownEvent[] } = {};
     events.forEach((e) => {
       const date = new Date(e.datetime);
+      const isInvalid = isNaN(date.getTime());
+
+      // Fallback para agrupar eventos sem data válida no final ou ignorar
+      if (isInvalid) return;
+
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
@@ -193,7 +198,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
-      {groupedEvents.map(([key, monthEvents]: [string, any[]]) => {
+      {groupedEvents.map(([key, monthEvents]: [string, BandsintownEvent[]]) => {
         const [y, m] = key.split('-');
         // Forçar cast para 'en' na geração da chave de tradução para garantir compatibilidade
         const monthShort = new Date(Number(y), Number(m) - 1).toLocaleString('en', { month: 'short' }).toLowerCase();
