@@ -95,6 +95,12 @@ async function prerender() {
         request.respond({
           status: 200,
           contentType: 'application/json',
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'X-Requested-With': 'XMLHttpRequest' // Adicionado para tentar contornar bloqueios
+          },
           body: JSON.stringify(mockData)
         });
       } else {

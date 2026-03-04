@@ -43,7 +43,8 @@ async function fetchEvents() {
     const response = await fetch(API_URL + '?mode=all&limit=200', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
       }
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -85,12 +86,26 @@ async function generateSitemaps() {
     let eventCount = 0;
     if (events.length > 0) {
       let eventsXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
 
       for (const event of events) {
-        if (!event.canonical_url) continue;
-        eventsXml += buildUrlEntry(event.canonical_url, date, '0.7');
-        eventCount++;
+        // Determinamos o slug independente do idioma
+        const eventId = event.event_id;
+        const relativePath = event.canonical_path
+          ? event.canonical_path.replace(/^\/events\//, '')
+          : eventId;
+
+        if (!relativePath) continue;
+
+        // Construímos os URLs conforme as rotas definidas no routes.ts
+        const enEventUrl = `${BASE_URL}/events/${relativePath}/`;
+        const ptEventUrl = `${BASE_URL}/pt/eventos/${relativePath}/`;
+
+        // Adicionamos ambos ao sitemap com link alternativo
+        eventsXml += buildUrlEntry(enEventUrl, date, '0.7', ptEventUrl);
+        eventsXml += buildUrlEntry(ptEventUrl, date, '0.7', enEventUrl);
+
+        eventCount += 2;
       }
       eventsXml += '\n</urlset>';
       fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-events.xml'), eventsXml);
