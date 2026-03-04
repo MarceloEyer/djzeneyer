@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 const CodeOfConductPage: React.FC = () => {
   const { t } = useTranslation();
-  const lastUpdated = "Janeiro 2024"; // TODO: Localize this properly if needed, but keeping for now as it was manually set
+  const lastUpdated = t('conduct_page.last_updated_date');
 
   const principles = [
     {
