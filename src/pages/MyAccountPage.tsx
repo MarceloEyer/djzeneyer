@@ -90,26 +90,24 @@ const MyAccountContent: React.FC = () => {
       };
     }
 
-    // ✅ DADOS REAIS DO GAMIPRESS v1.1.0
+    // ✅ DADOS REAIS DO GAMIPRESS v1.1.0 (Refatorado para v1.2.0)
     const mainPoints = gamipress.points.points?.amount || 0;
     const currentRank = gamipress.rank.current.title || 'Zen Novice';
-    const progress = gamipress.rank.progress || 0;
 
-    // Calcular level baseado em pontos (cada 100 pontos = 1 level)
+    // Calcular level baseado em pontos (cada 100 pontos = 1 level) - Mantendo lógica visual
     const level = Math.floor(mainPoints / 100) + 1;
 
-    // XP para o próximo nível (100 - resto da divisão por 100)
-    const xpToNext = 100 - (mainPoints % 100);
+    // XP para o próximo nível (baseado no rank real do backend se possível)
+    const xpToNext = gamipress.rank.next ? (100 - (mainPoints % 100)) : 0;
 
-    const totalAchievements = gamipress.achievements.length;
-    const earnedAchievements = gamipress.achievements.filter(a => a.earned);
-    const recentAchievements = earnedAchievements.slice(-2).length;
+    const totalAchievements = gamipress.achievements_earned.length + gamipress.achievements_locked.length;
+    const recentAchievements = gamipress.recent_achievements.length;
 
     return {
       level,
       xp: mainPoints,
       rank: currentRank,
-      xpToNext: gamipress.rank.next ? xpToNext : 0, // Se não houver próximo rank, assume 0
+      xpToNext,
       totalAchievements,
       recentAchievements
     };
@@ -267,13 +265,13 @@ const MyAccountContent: React.FC = () => {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">{t('dashboard.yourAchievements')}</h2>
               <div className="text-sm text-white/60 bg-white/5 px-4 py-2 rounded-full">
-                {userStats.totalAchievements} {t('dashboard.unlocked')}
+                {gamipress.achievements_earned.length} {t('dashboard.unlocked')}
               </div>
             </div>
 
-            {gamipress.achievements && gamipress.achievements.length > 0 ? (
+            {[...gamipress.achievements_earned, ...gamipress.achievements_locked].length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {gamipress.achievements.map((achievement: any) => (
+                {[...gamipress.achievements_earned, ...gamipress.achievements_locked].map((achievement: any) => (
                   <motion.div
                     key={achievement.id}
                     className="bg-surface/50 rounded-lg p-5 border border-white/10 hover:border-primary/50 transition-all hover:scale-105"
@@ -345,7 +343,7 @@ const MyAccountContent: React.FC = () => {
                       </motion.div>
                     </div>
                     <p className="text-xs text-white/60 mt-2">
-                      <strong>{1000 - (gamipress.points.points?.amount % 1000)} XP</strong> {t('dashboard.nextRank')}
+                      <strong>{gamipress.rank.requirements[0]?.required - gamipress.rank.requirements[0]?.current || 0} XP</strong> {t('dashboard.nextRank')}
                     </p>
                   </div>
                 </div>

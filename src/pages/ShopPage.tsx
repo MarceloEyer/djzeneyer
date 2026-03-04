@@ -388,23 +388,13 @@ const ShopPage: React.FC = () => {
   const newReleases = (collections?.new_releases as Product[]) || [];
   const bestSellers = (collections?.best_sellers as Product[]) || [];
   const curatedSelection = (collections?.top_picks as Product[]) || [];
-
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
     </div>
   );
 
-  if (error) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white p-4">
-      <div className="text-center max-w-md">
-        <AlertCircle className="mx-auto mb-4 text-error" size={48} />
-        <h2 className="text-2xl font-bold mb-2">Error loading shop</h2>
-        <p className="opacity-70">{error instanceof Error ? error.message : String(error)}</p>
-        <button onClick={() => refetch()} className="mt-4 btn btn-primary">Try Again</button>
-      </div>
-    </div>
-  );
+  // Removed the `if (error)` block as error handling is now per-query and not aggregated in a single `error` state.
 
   return (
     <div className="min-h-screen bg-[#141414] text-white">

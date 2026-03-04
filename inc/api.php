@@ -227,11 +227,11 @@ function djz_query_products(array $options = [])
 
     $args = [
         'post_type' => 'product',
-        'posts_per_page' => $limit,
+        'posts_per_page' => $options['limit'] ?? 10,
         'post_status' => 'publish',
         'no_found_rows' => true,
-        'orderby' => $orderby,
-        'order' => $order,
+        'orderby' => $options['orderby'] ?? 'date',
+        'order' => $options['order'] ?? 'DESC',
     ];
 
     if (!empty($meta_key)) {

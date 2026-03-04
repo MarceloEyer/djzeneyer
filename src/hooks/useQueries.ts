@@ -71,7 +71,6 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-
 export const fetchEventsFn = async ({ limit = 10, lang, upcomingOnly = true, search }: FetchEventsParams = {}): Promise<BandsintownEvent[]> => {
   const apiUrl = buildApiUrl('zen-bit/v1/events', {
     limit: String(limit),
@@ -114,8 +113,8 @@ export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchProductsFn = async (lang?: string) => {
-  const params: Record<string, string> = { per_page: '100' };
+export const fetchProductsFn = async (lang?: string, filters: Record<string, string> = {}) => {
+  const params: Record<string, string> = { per_page: '100', ...filters };
   if (lang) params.lang = lang;
   const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
   const res = await fetch(apiUrl);
@@ -259,10 +258,10 @@ export const useEventById = (id?: string, options = {}) => {
 // PRODUCTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useProductsQuery = (lang?: string) => {
+export const useProductsQuery = (lang?: string, filters: Record<string, string> = {}) => {
   return useQuery({
-    queryKey: QUERY_KEYS.products.list(lang),
-    queryFn: () => fetchProductsFn(lang),
+    queryKey: [...QUERY_KEYS.products.list(lang), filters],
+    queryFn: () => fetchProductsFn(lang, filters),
     staleTime: STALE_TIME.PRODUCTS,
   });
 };

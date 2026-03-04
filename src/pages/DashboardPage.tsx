@@ -50,8 +50,9 @@ const DashboardContent = () => {
   if (!user || !gamipress) return null;
 
   const pointTypes = Object.entries(gamipress.points);
-  const earnedAchievements = gamipress.achievements.filter(a => a.earned);
-  const lockedAchievements = gamipress.achievements.filter(a => !a.earned);
+  const earnedAchievements = gamipress.achievements_earned;
+  const lockedAchievements = gamipress.achievements_locked;
+  const allAchievements = [...earnedAchievements, ...lockedAchievements];
 
   // Animation variants removed (unused after cleanup)
 
@@ -250,7 +251,7 @@ const DashboardContent = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-              {gamipress.achievements.map((ach) => (
+              {allAchievements.map((ach) => (
                 <motion.div
                   key={ach.id}
                   whileHover={{ scale: 1.05, y: -5 }}
