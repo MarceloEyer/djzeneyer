@@ -7,6 +7,7 @@ import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
+import { EventMedia } from '../components/Events/EventMedia';
 import { Toast } from '../components/common/Toast';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 
@@ -103,12 +104,12 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
       </Link>
       <div className="grid md:grid-cols-2 gap-8 md:gap-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
         <div className="relative group">
-          <img
-            src={safeUrl(e.image || '/images/hero-background.webp')}
-            className="rounded-[2.5rem] aspect-[4/5] object-cover border border-white/10 shadow-2xl group-hover:scale-[1.02] transition-transform duration-500"
-            alt={e.title}
+          <EventMedia
+            image={e.image}
+            title={e.title}
+            date={rawDate}
+            venue={loc.venue}
           />
-          <div className="absolute inset-0 rounded-[2.5rem] ring-1 ring-inset ring-white/10" />
         </div>
 
         <div className="flex flex-col justify-center">

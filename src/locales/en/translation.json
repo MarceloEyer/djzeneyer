@@ -175,7 +175,6 @@
     "ui": {
       "question_count": "Question {{current}} of {{total}}",
       "complete": "{{percent}}% Complete",
-      "you_are": "You are...",
       "share_result": "Share Result",
       "take_again": "Take Again",
       "take_quiz_at": "Take the quiz at:",
@@ -474,6 +473,11 @@
     "support_button": "Fuel the Art",
     "support_desc": "If my music moves you, consider supporting future productions with a donation.",
     "support_cta": "Support Artist",
+    "dj_tool_kit": "DJ Tool Kit",
+    "dj_tool_kit_desc": "Access high-quality downloads, edits and exclusive tools for DJs.",
+    "dj_tool_kit_cta": "Access Downloads",
+    "collections_title": "Music Collection",
+    "collections_desc": "Exclusive tracks, mixes and playlists curated by DJ Zen Eyer",
     "hero": {
       "badge": "Original Productions & Remixes",
       "title": "My",
@@ -762,7 +766,7 @@
     "title": "Code of Conduct",
     "subtitle": "Learn about our expectations and standards for respectful behavior.",
     "last_updated": "Last updated",
-    "last_updated_date": "January 2024",
+    "last_updated_date": "January 2026",
     "commitment": "Our Commitment",
     "commitment_intro": "DJ Zen Eyer is committed to creating a welcoming, safe, and inclusive environment for all members of our community. This Code of Conduct applies to all interactions within our community, including events, online platforms, and any spaces associated with DJ Zen Eyer.",
     "commitment_participation": "By participating in our community, you agree to abide by this Code of Conduct. We expect all community members to help create a positive environment where everyone feels respected and valued.",
@@ -844,7 +848,7 @@
       "description": "Privacy Policy for DJ Zen Eyer official website. Learn how we collect, use, and protect your personal information."
     },
     "last_updated": "Last updated",
-    "last_updated_date": "January 2024",
+    "last_updated_date": "January 2026",
     "intro_p1": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.",
     "intro_p2": "By using our website, you consent to the data practices described in this policy. If you do not agree with the terms of this Privacy Policy, please do not access the website.",
     "sections": {
@@ -930,7 +934,7 @@
       "description": "Terms of Use for DJ Zen Eyer official website. Read the terms and conditions governing the use of our services."
     },
     "last_updated": "Last updated",
-    "last_updated_date": "January 2024",
+    "last_updated_date": "January 2026",
     "intro_p1": "Welcome to the official website of DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). These Terms of Use govern your access to and use of our website, services, and content.",
     "intro_p2": "By accessing or using our website, you agree to comply with and be bound by these terms. If you do not agree to these terms, please do not use our website.",
     "sections": {
@@ -1176,7 +1180,6 @@
   "tba": "TBA",
   "share": "Share",
   "link_copied": "Link copied to clipboard!",
-  "error_loading": "Could not load the schedule",
   "faq": {
     "badge": "Knowledge Base",
     "title": "Frequent <1>Questions</1>",
@@ -1436,21 +1439,7 @@
       "whatsapp_message": "Hello Zen Eyer! I'd like to talk about a possible collaboration or booking. How can we proceed?"
     }
   },
-  "music": {
-    "pageTitle": "Music Collection",
-    "pageDesc": "Exclusive tracks, mixes and playlists curated by DJ Zen Eyer",
-    "back": "Back to Music",
-    "artist_tag": "Bicampeão Mundial de Brazilian Zouk",
-    "about_track": "About the track",
-    "hub_title_rich": "Streaming Hub",
-    "hub_subtitle": "Select your preferred platform to enjoy the 'Creamy' vibes.",
-    "steal_button": "DJ Tool Kit",
-    "steal_desc": "Access high-quality downloads, edits and exclusive tools for DJs.",
-    "steal_cta": "Access Downloads",
-    "support_button": "Support Art",
-    "support_desc": "Contribute to the creation of new music and community development.",
-    "support_cta": "How to Support"
-  },
+  "events_add_google": "Add to Calendar",
   "support": {
     "inter": {
       "title": "Inter Global Account (Preferred)",
