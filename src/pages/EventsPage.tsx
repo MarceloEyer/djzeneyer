@@ -8,6 +8,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { MapPin, Search, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { Toast } from '../components/common/Toast';
+import type { BandsintownEvent } from '../types/events';
 
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
@@ -160,9 +161,9 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   }, { suspense: true });
 
   const groupedEvents = useMemo(() => {
-    const groups: { [key: string]: any[] } = {};
-    events.forEach((e: any) => {
-      const date = new Date(e.datetime || e.date);
+    const groups: { [key: string]: BandsintownEvent[] } = {};
+    events.forEach((e) => {
+      const date = new Date(e.datetime);
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
@@ -172,7 +173,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
 
   const [showToast, setShowToast] = React.useState(false);
 
-  const share = (e: any) => {
+  const share = (e: BandsintownEvent) => {
     const url = `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
     if (navigator.share) {
       navigator.share({ title: e.title, url });
@@ -204,7 +205,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
               <div className="h-px flex-1 bg-white/5" />
             </h2>
             <div className="space-y-3">
-              {monthEvents.map((e: any) => (
+              {monthEvents.map((e) => (
                 <div key={e.id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
                   <div className="text-3xl font-black min-w-[50px]">{String(new Date(e.datetime).getDate()).padStart(2, '0')}</div>
                   <div className="flex-1">

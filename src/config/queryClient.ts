@@ -15,6 +15,7 @@
  */
 
 import { QueryClient } from '@tanstack/react-query';
+import type { FetchEventsParams } from '../types/events';
 
 // ============================================================================
 // CACHE TIMES (em milisegundos)
@@ -96,7 +97,7 @@ export const queryClient = new QueryClient({
 
       // Retry automático com backoff exponencial
       retry: 2,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
 
       // Não refetch automaticamente em mount (usa cache)
       refetchOnMount: false,
@@ -129,7 +130,7 @@ export const QUERY_KEYS = {
   /** Eventos */
   events: {
     all: ['events'] as const,
-    list: (params?: Record<string, string | number | boolean | undefined>) => ['events', 'list', params] as const,
+    list: (params?: FetchEventsParams) => ['events', 'list', params] as const,
     detail: (id: string) => ['events', 'detail', id] as const,
   },
 
@@ -200,7 +201,7 @@ export const prefetchQueries = {
     });
   },
 
-  events: (params: Record<string, string | number | boolean | undefined>, fetcher: () => Promise<unknown>) => {
+  events: (params: FetchEventsParams, fetcher: () => Promise<unknown>) => {
     return queryClient.prefetchQuery({
       queryKey: QUERY_KEYS.events.list(params),
       queryFn: fetcher,

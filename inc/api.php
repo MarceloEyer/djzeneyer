@@ -91,7 +91,7 @@ function djz_get_menu($request)
 
     if ($items) {
         foreach ($items as $item) {
-            if ((int)$item->menu_item_parent !== 0)
+            if ((int) $item->menu_item_parent !== 0)
                 continue;
 
             $url = $item->url;
@@ -183,7 +183,7 @@ function djz_get_product_collections($request)
     $response = [
         'featured' => djz_query_products([
             'lang' => $lang,
-            'category' => 'featured',
+            'featured' => true,
             'limit' => 1,
             'orderby' => 'date',
             'order' => 'DESC',
@@ -197,9 +197,9 @@ function djz_get_product_collections($request)
         ]),
         'best_sellers' => djz_query_products([
             'lang' => $lang,
-            'on_sale' => true,
             'limit' => $limit,
-            'orderby' => 'date',
+            'meta_key' => 'total_sales',
+            'orderby' => 'meta_value_num',
             'order' => 'DESC',
         ]),
         'top_picks' => djz_query_products([
@@ -222,9 +222,8 @@ function djz_query_products(array $options = [])
     $category = sanitize_title($options['category'] ?? '');
     $exclude_category = sanitize_title($options['exclude_category'] ?? '');
     $on_sale = $options['on_sale'] ?? null;
-    $limit = max(1, min(100, (int) ($options['limit'] ?? 100)));
-    $orderby = sanitize_key($options['orderby'] ?? 'date');
-    $order = strtoupper(sanitize_text_field($options['order'] ?? 'DESC'));
+    $featured = filter_var($options['featured'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    $meta_key = sanitize_key($options['meta_key'] ?? '');
 
     $args = [
         'post_type' => 'product',
@@ -234,6 +233,10 @@ function djz_query_products(array $options = [])
         'orderby' => $orderby,
         'order' => $order,
     ];
+
+    if (!empty($meta_key)) {
+        $args['meta_key'] = $meta_key;
+    }
 
     if (!empty($slug)) {
         $args['name'] = $slug;
@@ -255,6 +258,15 @@ function djz_query_products(array $options = [])
             'field' => 'slug',
             'terms' => [$exclude_category],
             'operator' => 'NOT IN',
+        ];
+    }
+
+    if ($featured) {
+        $tax_query[] = [
+            'taxonomy' => 'product_visibility',
+            'field' => 'name',
+            'terms' => 'featured',
+            'operator' => 'IN',
         ];
     }
 
@@ -396,7 +408,7 @@ function djz_subscribe_newsletter($request)
     try {
         $api = \MailPoet\API\API::MP('v1');
         $lists = $api->getLists();
-        $list_id = (int)apply_filters('djz_mailpoet_list_id', 0);
+        $list_id = (int) apply_filters('djz_mailpoet_list_id', 0);
         if ($list_id <= 0) {
             $list_id = $lists[0]['id'] ?? 1;
         }
@@ -410,8 +422,7 @@ function djz_subscribe_newsletter($request)
             'success' => true,
             'message' => 'Subscribed!',
         ]);
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         if (stripos($e->getMessage(), 'already exists') !== false) {
             return rest_ensure_response([
                 'success' => true,
@@ -419,7 +430,7 @@ function djz_subscribe_newsletter($request)
             ]);
         }
 
-        return new WP_Error('subscription_failed', $e->getMessage(), ['status' => 500]);
+        return new WP_Error('subscription_failed', 'Ocorreu um erro na inscrição. Tente novamente mais tarde.', ['status' => 500]);
     }
 }
 
@@ -488,13 +499,16 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
     $wp_admin_bar->add_node([
         'id' => 'djz_clear_cache',
         'title' => '🧹 Clear Cache',
-        'href' => add_query_arg('djz_clear_cache', '1', admin_url()),
+        'href' => wp_nonce_url(add_query_arg('djz_clear_cache', '1', admin_url()), 'djz_clear_cache'),
     ]);
 }, 999);
 
 add_action('admin_init', function () {
     if (!isset($_GET['djz_clear_cache']) || !current_user_can('manage_options'))
         return;
+
+    // Fix: CSRF protection
+    check_admin_referer('djz_clear_cache');
 
     global $wpdb;
     $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_%'");
@@ -509,37 +523,41 @@ add_action('admin_init', function () {
  * @param bool $is_list_view
  * @return array
  */
-function djz_get_product_image_ids($product, $is_list_view = false) {
-    if (!$product) return [];
-    
+function djz_get_product_image_ids($product, $is_list_view = false)
+{
+    if (!$product)
+        return [];
+
     $img_ids = $product->get_gallery_image_ids();
     $featured_id = $product->get_image_id();
-    
+
     if ($featured_id) {
         // Ensure featured image is first and unique
         array_unshift($img_ids, $featured_id);
         $img_ids = array_unique($img_ids);
     }
-    
+
     // OPTIMIZATION: In list view, only return the first image (usually featured)
     if ($is_list_view && !empty($img_ids)) {
         $img_ids = array_slice($img_ids, 0, 1);
     }
-    
+
     return $img_ids;
 }
 
 /**
  * Helper to prime thumbnail caches efficiently
  */
-function djz_prime_thumbnails_cache($ids) {
-    if (empty($ids)) return;
+function djz_prime_thumbnails_cache($ids)
+{
+    if (empty($ids))
+        return;
     $ids = array_unique(array_map('intval', $ids));
-    
+
     if (function_exists('update_meta_cache')) {
         update_meta_cache('post', $ids);
     }
-    
+
     // _prime_post_caches is an internal function since WP 6.1
     // We use version_compare or function_exists for safety.
     if (function_exists('_prime_post_caches')) {

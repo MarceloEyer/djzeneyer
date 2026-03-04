@@ -2,16 +2,10 @@ import React from 'react';
 import { CalendarPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import type { BandsintownEvent } from '../../types/events';
+
 interface AddCalendarMenuProps {
-    event: {
-        title?: string;
-        datetime?: string;
-        date?: string;
-        venue?: {
-            name?: string;
-            city?: string;
-        };
-    };
+    event: BandsintownEvent;
     variant?: 'primary' | 'ghost';
     className?: string;
 }
@@ -21,7 +15,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     const getDetails = () => {
         const title = event.title ? event.title.replace(/<\/?[^>]+(>|$)/g, "") : 'DJ Zen Eyer Event';
-        const dateStr = event.datetime || event.date || new Date().toISOString();
+        const dateStr = event.datetime || new Date().toISOString();
         const dateObj = new Date(dateStr);
 
         // Formato ICS/Google: AAAAMMDDTHHMMSSZ

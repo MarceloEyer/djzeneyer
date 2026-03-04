@@ -24,21 +24,7 @@ interface MenuItem {
   target: string;
 }
 
-interface BandsintownEvent {
-  id: string;
-  title: string;
-  datetime: string;
-  description?: string;
-  image?: string;
-  venue: {
-    name: string;
-    city: string;
-    region: string;
-    country: string;
-  };
-  url: string;
-  offers?: Array<{ url: string }>;
-}
+import type { BandsintownEvent, FetchEventsParams, EventsApiResponse } from '../types/events';
 
 export interface MusicTrack {
   id: number;
@@ -85,14 +71,8 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-interface FetchEventsParams {
-  limit?: number;
-  lang?: string;
-  upcomingOnly?: boolean;
-  search?: string;
-}
 
-export const fetchEventsFn = async ({ limit = 10, lang, upcomingOnly = true, search }: FetchEventsParams = {}): Promise<any[]> => {
+export const fetchEventsFn = async ({ limit = 10, lang, upcomingOnly = true, search }: FetchEventsParams = {}): Promise<BandsintownEvent[]> => {
   const apiUrl = buildApiUrl('zen-bit/v1/events', {
     limit: String(limit),
     ...(lang ? { lang } : {}),
@@ -101,7 +81,7 @@ export const fetchEventsFn = async ({ limit = 10, lang, upcomingOnly = true, sea
   });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error(`API ${res.status}`);
-  const data = await res.json();
+  const data: EventsApiResponse | BandsintownEvent[] = await res.json();
 
   // Handle both direct array and { success, events } wrapper
   if (Array.isArray(data)) return data;
