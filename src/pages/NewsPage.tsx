@@ -28,11 +28,11 @@ const formatDate = (dateString: string, lang: string = 'pt-BR') => {
 const NewsPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { i18n, t } = useTranslation();
-  const currentLang = normalizeLanguage(i18n.language);
+  const normalizedLanguage = normalizeLanguage(i18n.language);
 
   // Queries centralizadas
-  const { data: postsData, isLoading: loadingList } = useNewsQuery(currentLang, { enabled: !slug });
-  const { data: singlePost, isLoading: loadingDetail } = useNewsBySlug(slug);
+  const { data: postsData, isLoading: loadingList } = useNewsQuery(normalizedLanguage, { enabled: !slug });
+  const { data: singlePost, isLoading: loadingDetail } = useNewsBySlug(slug, normalizedLanguage);
 
   const posts = postsData || [];
   const loading = slug ? loadingDetail : loadingList;

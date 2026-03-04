@@ -8,6 +8,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { MapPin, Search, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { Toast } from '../components/common/Toast';
+import type { BandsintownEvent } from '../types/events';
 
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
@@ -152,28 +153,32 @@ interface EventListProps {
 
 const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   const { t } = useTranslation();
-  const { data: events = [] } = useEventsQuery(100, searchQuery, { suspense: true });
+  const { data: events = [] } = useEventsQuery({
+    limit: 50,
+    lang,
+    upcomingOnly: true,
+    search: searchQuery || undefined,
+  }, { suspense: true });
 
-  const filteredEvents = useMemo(() => {
-    // A filtragem agora acontece no backend via searchQuery passado pro queryKey
-    // Mantemos apenas a ordenação client-side se necessário (embora o backend retorne ordenado por data)
-    return [...events].sort((a: any, b: any) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
-  }, [events]);
+  const groupedEvents = useMemo<[string, BandsintownEvent[]][]>(() => {
+    const groups: { [key: string]: BandsintownEvent[] } = {};
+    events.forEach((e) => {
+      const date = new Date(e.datetime);
+      const isInvalid = isNaN(date.getTime());
 
-  const groupedEvents = useMemo(() => {
-    const groups: { [key: string]: any[] } = {};
-    filteredEvents.forEach((e: any) => {
-      const date = new Date(e.datetime || e.date);
+      // Fallback para agrupar eventos sem data válida no final ou ignorar
+      if (isInvalid) return;
+
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
     return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [filteredEvents]);
+  }, [events]);
 
   const [showToast, setShowToast] = React.useState(false);
 
-  const share = (e: any) => {
+  const share = (e: BandsintownEvent) => {
     const url = `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.id}`;
     if (navigator.share) {
       navigator.share({ title: e.title, url });
@@ -183,7 +188,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
     }
   };
 
-  if (filteredEvents.length === 0) {
+  if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
         <p className="text-white/40">{t('events_no_results', 'No events found matching your search.')}</p>
@@ -193,7 +198,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
-      {groupedEvents.map(([key, monthEvents]: [string, any[]]) => {
+      {groupedEvents.map(([key, monthEvents]: [string, BandsintownEvent[]]) => {
         const [y, m] = key.split('-');
         // Forçar cast para 'en' na geração da chave de tradução para garantir compatibilidade
         const monthShort = new Date(Number(y), Number(m) - 1).toLocaleString('en', { month: 'short' }).toLowerCase();
@@ -205,7 +210,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
               <div className="h-px flex-1 bg-white/5" />
             </h2>
             <div className="space-y-3">
-              {monthEvents.map((e: any) => (
+              {monthEvents.map((e) => (
                 <div key={e.id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
                   <div className="text-3xl font-black min-w-[50px]">{String(new Date(e.datetime).getDate()).padStart(2, '0')}</div>
                   <div className="flex-1">

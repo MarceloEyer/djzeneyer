@@ -24,21 +24,7 @@ interface MenuItem {
   target: string;
 }
 
-interface BandsintownEvent {
-  id: string;
-  title: string;
-  datetime: string;
-  description?: string;
-  image?: string;
-  venue: {
-    name: string;
-    city: string;
-    region: string;
-    country: string;
-  };
-  url: string;
-  offers?: Array<{ url: string }>;
-}
+import type { BandsintownEvent, FetchEventsParams, EventsApiResponse } from '../types/events';
 
 export interface MusicTrack {
   id: number;
@@ -85,14 +71,16 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchEventsFn = async (limit = 10, search = ''): Promise<any[]> => {
+export const fetchEventsFn = async ({ limit = 10, lang, upcomingOnly = true, search }: FetchEventsParams = {}): Promise<BandsintownEvent[]> => {
   const apiUrl = buildApiUrl('zen-bit/v1/events', {
     limit: String(limit),
-    search
+    ...(lang ? { lang } : {}),
+    ...(upcomingOnly ? { upcoming_only: '1' } : {}),
+    ...(search ? { search } : {}),
   });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error(`API ${res.status}`);
-  const data = await res.json();
+  const data: EventsApiResponse | BandsintownEvent[] = await res.json();
 
   // Handle both direct array and { success, events } wrapper
   if (Array.isArray(data)) return data;
@@ -113,13 +101,12 @@ export const fetchTracksFn = async (): Promise<MusicTrack[]> => {
 };
 
 export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
-  const params: Record<string, string> = {
+  const apiUrl = buildApiUrl('wp/v2/posts', {
     per_page: '10',
+    ...(lang ? { lang } : {}),
     // OPTIMIZATION: Replaced _embed=true with targeted fields
     _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
-  };
-  if (lang) params.lang = lang;
-  const apiUrl = buildApiUrl('wp/v2/posts', params);
+  });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch news posts');
   const data = await res.json();
@@ -132,6 +119,16 @@ export const fetchProductsFn = async (lang?: string, filters: Record<string, str
   const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch products');
+  return res.json();
+};
+
+export const fetchProductCollectionsFn = async (lang?: string, limit = 10) => {
+  const params: Record<string, string> = { limit: String(limit) };
+  if (lang) params.lang = lang;
+
+  const apiUrl = buildApiUrl('djzeneyer/v1/products/collections', params);
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch product collections');
   return res.json();
 };
 
@@ -152,10 +149,17 @@ export const useMenuQuery = (lang: string) => {
 // EVENTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventsQuery = (limit = 10, search = '', options = {}) => {
+export const useEventsQuery = (params: FetchEventsParams = {}, options = {}) => {
+  const normalizedParams: FetchEventsParams = {
+    limit: params.limit ?? 10,
+    lang: params.lang,
+    upcomingOnly: params.upcomingOnly ?? true,
+    search: params.search,
+  };
+
   return useQuery({
-    queryKey: QUERY_KEYS.events.list(limit, search),
-    queryFn: () => fetchEventsFn(limit, search),
+    queryKey: QUERY_KEYS.events.list(normalizedParams),
+    queryFn: () => fetchEventsFn(normalizedParams),
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
     ...options
@@ -201,20 +205,21 @@ export const useTrackBySlug = (slug?: string) => {
 
 export const useNewsQuery = (lang?: string, options: { enabled?: boolean } = {}) => {
   return useQuery({
-    queryKey: QUERY_KEYS.posts.list(lang || ''),
+    queryKey: QUERY_KEYS.posts.list(lang),
     queryFn: () => fetchNewsFn(lang),
     staleTime: STALE_TIME.POSTS,
     ...options,
   });
 };
 
-export const useNewsBySlug = (slug?: string) => {
+export const useNewsBySlug = (slug?: string, lang?: string) => {
   return useQuery({
-    queryKey: QUERY_KEYS.posts.detail(slug || ''),
+    queryKey: [...QUERY_KEYS.posts.detail(slug || ''), lang],
     queryFn: async (): Promise<WPPost | null> => {
       if (!slug) return null;
       const apiUrl = buildApiUrl('wp/v2/posts', {
         slug,
+        ...(lang ? { lang } : {}),
         // OPTIMIZATION: Replaced _embed=true with targeted fields
         _fields: 'id,date,slug,title,content,excerpt,featured_image_src_full,author_name',
       });
@@ -257,6 +262,14 @@ export const useProductsQuery = (lang?: string, filters: Record<string, string> 
   return useQuery({
     queryKey: [...QUERY_KEYS.products.list(lang), filters],
     queryFn: () => fetchProductsFn(lang, filters),
+    staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
+export const useProductCollectionsQuery = (lang?: string, limit = 10) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.products.collections(lang, limit),
+    queryFn: () => fetchProductCollectionsFn(lang, limit),
     staleTime: STALE_TIME.PRODUCTS,
   });
 };

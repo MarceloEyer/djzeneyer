@@ -267,90 +267,65 @@ class Zen_BIT_API
         return $data;
     }
 
-    public static function get_events(int $limit = 50, string $search = ''): array
+    public static function get_events(int $limit = 50): array
     {
-        if ($limit <= 0)
-            $limit = 50;
-        if ($limit > 100)
-            $limit = 100;
-
         $cache_key = self::cache_key();
         $cached = get_transient($cache_key);
 
-        $results = array();
+        $events_pool = array();
 
-        // Se temos cache válido, usa como base
+        // Se temos cache válido
         if (is_array($cached) && !empty($cached)) {
-            $results = $cached;
+            $events_pool = $cached;
         } else {
-            // Se não houver cache, faz o fetch (protegido por throttle interno)
-            $results = self::fetch_and_cache_events();
-        }
+            // ====================================================================
+            // THROTTLE & DURABLE FALLBACK
+            // ====================================================================
+            $throttle_key = 'zen_bit_api_throttle_' . self::get_artist_id();
+            $fallback_key = 'zen_bit_events_fallback_' . self::get_artist_id();
 
-        // Aplicar busca se necessário (Backend filters)
-        if (!empty($search) && !empty($results)) {
-            $q = mb_strtolower($search);
-            $results = array_filter($results, function ($e) use ($q) {
-                $searchable = ($e['title'] ?? '') . ' ' . ($e['venue']['city'] ?? '') . ' ' . ($e['venue']['country'] ?? '');
-                return mb_strpos(mb_strtolower($searchable), $q) !== false;
-            });
-        }
+            if (get_transient($throttle_key)) {
+                $fallback = get_option($fallback_key);
+                $events_pool = is_array($fallback) ? $fallback : array();
+            } else {
+                set_transient($throttle_key, true, 300);
+                $raw_events = self::fetch_from_bandsintown();
 
-        return array_slice($results, 0, $limit);
-    }
+                if (empty($raw_events)) {
+                    $fallback = get_option($fallback_key);
+                    if (is_array($fallback) && !empty($fallback)) {
+                        set_transient($cache_key, $fallback, HOUR_IN_SECONDS);
+                        $events_pool = $fallback;
+                    } else {
+                        set_transient($cache_key, array(), 5 * 60);
+                        $events_pool = array();
+                    }
+                } else {
+                    $normalized = array();
+                    foreach ($raw_events as $raw) {
+                        if (!is_array($raw))
+                            continue;
+                        $normalized[] = self::normalize_event($raw);
+                    }
 
-    /**
-     * Helper to fetch, normalize and cache
-     */
-    private static function fetch_and_cache_events(): array
-    {
-        $throttle_key = 'zen_bit_api_throttle_' . self::get_artist_id();
-        $fallback_key = 'zen_bit_events_fallback_' . self::get_artist_id();
-        $cache_key = self::cache_key();
+                    $throttle_hours = (int) get_option('zen_bit_throttle_hours', 24);
+                    if ($throttle_hours <= 0)
+                        $throttle_hours = 24;
+                    $throttle_ttl = $throttle_hours * HOUR_IN_SECONDS;
 
-        // Se o throttle estiver ativo, tentamos retornar o fallback durável
-        if (get_transient($throttle_key)) {
-            $fallback = get_option($fallback_key);
-            return is_array($fallback) ? $fallback : array();
-        }
-
-        // Ativa trava de 5 minutos antes de começar o fetch (evita concorrência)
-        set_transient($throttle_key, true, 300);
-
-        $raw_events = self::fetch_from_bandsintown();
-
-        if (empty($raw_events)) {
-            // FALHA NA API: Tenta recuperar do fallback durável
-            $fallback = get_option($fallback_key);
-            if (is_array($fallback) && !empty($fallback)) {
-                // Cacheia o fallback por 1 hora pra não ficar tentando a API toda hora
-                set_transient($cache_key, $fallback, HOUR_IN_SECONDS);
-                return $fallback;
+                    set_transient($throttle_key, true, $throttle_ttl);
+                    set_transient($cache_key, $normalized, 7 * DAY_IN_SECONDS);
+                    update_option($fallback_key, $normalized, false);
+                    $events_pool = $normalized;
+                }
             }
-
-            // Se nem o fallback existir, cache "negativo" de 5 min
-            set_transient($cache_key, array(), 5 * 60);
-            return array();
         }
 
-        $normalized = array();
-        foreach ($raw_events as $raw) {
-            if (!is_array($raw))
-                continue;
-            $normalized[] = self::normalize_event($raw);
+        if ($limit === -1) {
+            return $events_pool;
         }
 
-        // Sucesso: Atualiza o throttle (Configurável, padrão 24h), o cache transient (7 dias) e o fallback (permanente)
-        $throttle_hours = (int) get_option('zen_bit_throttle_hours', 24);
-        if ($throttle_hours <= 0)
-            $throttle_hours = 24;
-        $throttle_ttl = $throttle_hours * HOUR_IN_SECONDS;
-
-        set_transient($throttle_key, true, $throttle_ttl);
-        set_transient($cache_key, $normalized, 7 * DAY_IN_SECONDS);
-        update_option($fallback_key, $normalized, false);
-
-        return $normalized;
+        return array_slice($events_pool, 0, $limit);
     }
 
     public static function clear_cache(): void
@@ -491,13 +466,48 @@ class Zen_BIT_API
     public static function get_events_rest(\WP_REST_Request $request)
     {
         $limit = (int) ($request->get_param('limit') ?: 50);
-        $search = (string) $request->get_param('search');
-        $events = self::get_events($limit, $search);
+        $search = sanitize_text_field((string) $request->get_param('search'));
+        $upcoming_only = filter_var($request->get_param('upcoming_only'), FILTER_VALIDATE_BOOLEAN);
+        $lang = sanitize_text_field((string) ($request->get_param('lang') ?: 'en'));
+
+        // Busca pool completo de eventos para filtrar corretamente
+        $events = self::get_events(-1);
+
+        if ($upcoming_only) {
+            $now = current_time('timestamp');
+            $events = array_values(array_filter($events, function ($event) use ($now) {
+                $event_ts = strtotime((string) ($event['datetime'] ?? ''));
+                return $event_ts && $event_ts >= $now;
+            }));
+        }
+
+        if ($search !== '') {
+            $search_lower = mb_strtolower($search);
+            $events = array_values(array_filter($events, function ($event) use ($search_lower) {
+                $title = mb_strtolower((string) ($event['title'] ?? ''));
+                $city = mb_strtolower((string) ($event['venue']['city'] ?? ''));
+                $country = mb_strtolower((string) ($event['venue']['country'] ?? ''));
+                return strpos($title, $search_lower) !== false
+                    || strpos($city, $search_lower) !== false
+                    || strpos($country, $search_lower) !== false;
+            }));
+        }
+
+        // Ordenação cronológica (garante ordem correta após filtros)
+        usort($events, function ($a, $b) {
+            $a_ts = strtotime((string) ($a['datetime'] ?? '')) ?: PHP_INT_MAX;
+            $b_ts = strtotime((string) ($b['datetime'] ?? '')) ?: PHP_INT_MAX;
+            return $a_ts <=> $b_ts;
+        });
+
+        // Aplica o limite apenas no final
+        $events = array_slice($events, 0, $limit);
 
         $response = rest_ensure_response(array(
             'success' => true,
             'count' => count($events),
-            'events' => $events
+            'events' => $events,
+            'lang' => $lang,
         ));
 
         // Cache headers para browser/CDN (opcional)

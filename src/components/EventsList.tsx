@@ -90,7 +90,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
   // React Query: cache automático + deduplicação
-  const { data: events = [], isLoading: loading, error } = useEventsQuery(limit);
+  const { data: events = [], isLoading: loading, error } = useEventsQuery({ limit, lang: i18n.language.startsWith('pt') ? 'pt' : 'en', upcomingOnly: true });
 
   // Log de erro
   if (error) {

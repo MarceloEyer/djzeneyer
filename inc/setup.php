@@ -5,7 +5,8 @@
  * @version 2.1.1 (WP 6.7 Textdomain Lifecycle Fix)
  */
 
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 /**
  * --------------------------------------------------
@@ -13,14 +14,15 @@ if (!defined('ABSPATH')) exit;
  * --------------------------------------------------
  */
 define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS);
-define('DJZ_CACHE_PRODUCTS', 30 * MINUTE_IN_SECONDS);
+define('DJZ_CACHE_PRODUCTS', 24 * HOUR_IN_SECONDS);
 define('DJZ_CACHE_GAMIPRESS', 48 * HOUR_IN_SECONDS);
 
 
 /**
  * GamiPress helper: resolve points type slug with fallback.
  */
-function djz_get_gamipress_points_type_slug(): string {
+function djz_get_gamipress_points_type_slug(): string
+{
     $default = 'zen-points';
     if (!function_exists('gamipress_get_points_types')) {
         return $default;
@@ -36,15 +38,17 @@ function djz_get_gamipress_points_type_slug(): string {
     }
 
     $first = array_key_first($points_types);
-	return apply_filters('djz_gamipress_points_type_slug', $first ?: $default, $points_types);}
+    return apply_filters('djz_gamipress_points_type_slug', $first ?: $default, $points_types);
+}
 
-	// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_points_type_slug' para especificar.
+// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_points_type_slug' para especificar.
 /**
  * GamiPress helper: resolve rank tiers with fallback.
  *
  * @return array{tiers: array<int, array{name: string, min: int, next: int}>, source: string}
  */
-function djz_get_gamipress_rank_tiers(): array {
+function djz_get_gamipress_rank_tiers(): array
+{
     $fallback = [
         ['name' => 'Zen Novice', 'min' => 0, 'next' => 100],
         ['name' => 'Zen Apprentice', 'min' => 100, 'next' => 500],
@@ -61,8 +65,9 @@ function djz_get_gamipress_rank_tiers(): array {
     }
 
     $rank_types = gamipress_get_rank_types();
-	// NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_rank_slug' para especificar.
-	$rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);    if (!$rank_slug) {
+    // NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_rank_slug' para especificar.
+    $rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);
+    if (!$rank_slug) {
         return [
             'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
             'source' => 'fallback',
@@ -98,7 +103,7 @@ function djz_get_gamipress_rank_tiers(): array {
         ];
     }
 
-    usort($tiers, function($a, $b) {
+    usort($tiers, function ($a, $b) {
         return $a['min'] <=> $b['min'];
     });
 
@@ -122,7 +127,8 @@ function djz_get_gamipress_rank_tiers(): array {
  * CORS
  * --------------------------------------------------
  */
-function djz_allowed_origins(): array {
+function djz_allowed_origins(): array
+{
     return [
         'https://djzeneyer.com',
         'https://www.djzeneyer.com',
@@ -163,7 +169,7 @@ add_action('after_setup_theme', function () {
  */
 add_action('rest_api_init', function () {
     add_filter('rest_pre_serve_request', function ($served) {
-        $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $allowed = djz_allowed_origins();
 
         if (in_array($origin, $allowed, true)) {
@@ -218,7 +224,8 @@ add_filter('script_loader_tag', function ($tag, $handle) {
 add_filter('style_loader_src', 'djz_remove_query_strings', 10);
 add_filter('script_loader_src', 'djz_remove_query_strings', 10);
 
-function djz_remove_query_strings($src) {
+function djz_remove_query_strings($src)
+{
     return remove_query_arg('ver', $src);
 }
 
@@ -268,7 +275,8 @@ add_filter('wpseo_canonical', 'djz_fix_canonical_slash');
 add_filter('rank_math/frontend/canonical', 'djz_fix_canonical_slash');
 add_filter('get_canonical_url', 'djz_fix_canonical_slash');
 
-function djz_fix_canonical_slash($url) {
+function djz_fix_canonical_slash($url)
+{
     if (!is_string($url)) {
         return $url;
     }
