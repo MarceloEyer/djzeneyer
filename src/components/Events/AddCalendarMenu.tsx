@@ -33,7 +33,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
         const location = event.venue ? `${event.venue.name}, ${event.venue.city}` : "TBA";
         const eventUrl = `${window.location.origin}${window.location.pathname}`;
-        const details = `${t('events_view_details', 'View details at')}: ${eventUrl}`;
+        const details = `${t('events_view_details')}: ${eventUrl}`;
 
         return { title, start, end, location, details };
     };
@@ -46,20 +46,20 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
     if (variant === 'primary') {
         return (
             <button
-                onClick={() => window.open(googleUrl(), '_blank')}
+                onClick={() => window.open(googleUrl, '_blank')}
                 className={`btn btn-outline border-primary/30 text-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm hover:bg-primary/10 transition-all ${className}`}
             >
                 <CalendarPlus size={20} />
-                {t('events_add_google', 'Add to Google Calendar')}
+                {t('events_add_google')}
             </button>
         );
     }
 
     return (
         <button
-            onClick={() => window.open(googleUrl(), '_blank')}
+            onClick={() => window.open(googleUrl, '_blank')}
             className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
-            title={t('events_add_google', 'Add to Google Calendar')}
+            title={t('events_add_google')}
         >
             <CalendarPlus size={16} />
         </button>

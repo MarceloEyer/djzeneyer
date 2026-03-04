@@ -10,8 +10,8 @@ const SupportArtistPage = () => {
   const paymentMethods = [
     {
       id: 'inter',
-      title: t('support.inter.title', 'Inter Global Account (Preferred)'),
-      description: t('support.inter.description', 'US and Brazil bank accounts for international and local payments'),
+      title: t('support.inter.title'),
+      description: t('support.inter.description'),
       icon: Building2,
       priority: 1,
       isPreferred: true,
@@ -23,19 +23,19 @@ const SupportArtistPage = () => {
           return {
             country: t(`support.inter.${currency}`, `${currency.toUpperCase()} Bank Account`),
             details: currency === 'usd' ? [
-              { label: t('support.accountName', 'Beneficiary Name'), value: acc.accountName },
-              { label: t('support.bank', 'Bank'), value: (acc as any).bankName },
-              { label: t('support.accountNumber', 'Account Number'), value: (acc as any).accountNumber },
-              { label: t('support.achRouting', 'ACH Routing'), value: (acc as any).achRouting },
-              { label: t('support.wireRouting', 'Wire Routing'), value: (acc as any).wireRouting },
-              { label: t('support.bankAddress', 'Bank Address'), value: (acc as any).bankAddress },
+              { label: t('support.accountName'), value: acc.accountName },
+              { label: t('support.bank'), value: (acc as any).bankName },
+              { label: t('support.accountNumber'), value: (acc as any).accountNumber },
+              { label: t('support.achRouting'), value: (acc as any).achRouting },
+              { label: t('support.wireRouting'), value: (acc as any).wireRouting },
+              { label: t('support.bankAddress'), value: (acc as any).bankAddress },
             ] : [
-              { label: t('support.accountName', 'Account Name'), value: acc.accountName },
-              { label: t('support.beneficiaryBank', 'Beneficiary Bank'), value: acc.beneficiaryBank },
-              { label: t('support.swiftCode', 'SWIFT Code'), value: acc.swiftCode },
-              { label: t('support.intermediary', 'Intermediary Bank'), value: acc.intermediaryBank.name },
-              { label: t('support.swiftInter', 'Intermediary SWIFT'), value: acc.intermediaryBank.swift },
-              { label: t('support.iban', 'IBAN'), value: acc.iban },
+              { label: t('support.accountName'), value: acc.accountName },
+              { label: t('support.beneficiaryBank'), value: acc.beneficiaryBank },
+              { label: t('support.swiftCode'), value: acc.swiftCode },
+              { label: t('support.intermediary'), value: acc.intermediaryBank.name },
+              { label: t('support.swiftInter'), value: acc.intermediaryBank.swift },
+              { label: t('support.iban'), value: acc.iban },
             ],
           };
         }),
@@ -43,20 +43,20 @@ const SupportArtistPage = () => {
         {
           country: t('support.inter.brazil', 'Brazil (Local)'),
           details: [
-            { label: t('support.accountName', 'Account Name'), value: ARTIST.payment.interGlobal.brazil.accountName },
-            { label: t('support.cpf', 'CPF'), value: ARTIST.payment.interGlobal.brazil.cpf },
-            { label: t('support.bank', 'Bank'), value: ARTIST.payment.interGlobal.brazil.bank },
-            { label: t('support.branch', 'Branch'), value: ARTIST.payment.interGlobal.brazil.branch },
-            { label: t('support.account', 'Account'), value: ARTIST.payment.interGlobal.brazil.account },
-            { label: t('support.pixKey', 'PIX Key'), value: ARTIST.payment.interGlobal.brazil.pixKey },
+            { label: t('support.accountName'), value: ARTIST.payment.interGlobal.brazil.accountName },
+            { label: t('support.cpf'), value: ARTIST.payment.interGlobal.brazil.cpf },
+            { label: t('support.bank'), value: ARTIST.payment.interGlobal.brazil.bank },
+            { label: t('support.branch'), value: ARTIST.payment.interGlobal.brazil.branch },
+            { label: t('support.account'), value: ARTIST.payment.interGlobal.brazil.account },
+            { label: t('support.pixKey'), value: ARTIST.payment.interGlobal.brazil.pixKey },
           ],
         },
       ],
     },
     {
       id: 'wise',
-      title: t('support.wise.title', 'Wise (TransferWise)'),
-      description: t('support.wise.description', 'Low-fee international transfers to multiple currencies'),
+      title: t('support.wise.title'),
+      description: t('support.wise.description'),
       icon: Globe,
       priority: 2,
       color: 'from-green-500 to-green-600',
@@ -66,19 +66,19 @@ const SupportArtistPage = () => {
         {
           country: t('support.wise.eur', 'Euro Bank Account (EUR - Wise)'),
           details: [
-            { label: t('support.accountName', 'Account Name'), value: ARTIST.payment.wise.eur.accountName },
-            { label: t('support.iban', 'IBAN'), value: ARTIST.payment.wise.eur.iban },
-            { label: t('support.swiftCode', 'SWIFT/BIC Code'), value: ARTIST.payment.wise.eur.swiftCode },
-            { label: t('support.bank', 'Bank Name'), value: ARTIST.payment.wise.eur.bankName },
-            { label: t('support.bankAddress', 'Bank Address'), value: ARTIST.payment.wise.eur.bankAddress },
+            { label: t('support.accountName'), value: ARTIST.payment.wise.eur.accountName },
+            { label: t('support.iban'), value: ARTIST.payment.wise.eur.iban },
+            { label: t('support.swiftCode'), value: ARTIST.payment.wise.eur.swiftCode },
+            { label: t('support.bank'), value: ARTIST.payment.wise.eur.bankName },
+            { label: t('support.bankAddress'), value: ARTIST.payment.wise.eur.bankAddress },
           ],
         },
       ],
     },
     {
       id: 'paypal',
-      title: t('support.paypal.title', 'PayPal'),
-      description: t('support.paypal.description', 'Quick and easy payments worldwide'),
+      title: t('support.paypal.title'),
+      description: t('support.paypal.description'),
       icon: CreditCard,
       priority: 3,
       color: 'from-blue-500 to-blue-600',
@@ -91,27 +91,27 @@ const SupportArtistPage = () => {
   const supportReasons = [
     {
       icon: Music,
-      title: t('support.reasons.music.title', 'Support New Music'),
-      description: t('support.reasons.music.description', 'Help produce and release new Brazilian Zouk tracks'),
+      title: t('support.reasons.music.title'),
+      description: t('support.reasons.music.description'),
     },
     {
       icon: Heart,
-      title: t('support.reasons.community.title', 'Community Growth'),
-      description: t('support.reasons.community.description', 'Support workshops, events, and educational content'),
+      title: t('support.reasons.community.title'),
+      description: t('support.reasons.community.description'),
     },
     {
       icon: Globe,
-      title: t('support.reasons.worldwide.title', 'Worldwide Presence'),
-      description: t('support.reasons.worldwide.description', 'Enable international tours and collaborations'),
+      title: t('support.reasons.worldwide.title'),
+      description: t('support.reasons.worldwide.description'),
     },
   ];
 
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <HeadlessSEO
-        title={t('support.seo.title', 'Support DJ Zen Eyer | Payment Information')}
-        description={t('support.seo.description', 'Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.')}
-        keywords={t('support.seo.keywords', 'support artist, hire dj, payment methods, international payments, brazilian zouk dj')}
+        title={t('support.seo.title')}
+        description={t('support.seo.description')}
+        keywords={t('support.seo.keywords')}
         ogImage="/images/zen-eyer-og-image.svg"
       />
 

@@ -5,11 +5,13 @@ import { motion } from 'framer-motion';
 import { Star, Award, Zap, TrendingUp } from 'lucide-react';
 import { useGamiPressContext } from '../../contexts/GamiPressContext';
 import { Link } from 'react-router-dom';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { safeUrl } from '../../utils/sanitize';
 
 const GamificationWidget: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { points, rank, level, nextLevelPoints, progressToNextLevel, achievements, loading } = useGamiPressContext();
+  const currentLang = React.useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   if (loading) {
     return (
@@ -39,7 +41,7 @@ const GamificationWidget: React.FC = () => {
           <p className="text-sm text-white/60">{t('gamification.yourProgress')}</p>
         </div>
         <Link
-          to="/my-account/"
+          to={getLocalizedRoute('my-account', currentLang)}
           className="px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-lg text-primary font-bold text-sm transition-all"
         >
           {t('gamification.viewAll')}
@@ -58,7 +60,7 @@ const GamificationWidget: React.FC = () => {
             <span className="text-xs text-white/60">{t('gamification.level')}</span>
           </div>
           <p className="text-3xl font-black">{level}</p>
-          <p className="text-xs text-white/40 truncate">{rank || 'Zen Novice'}</p>
+          <p className="text-xs text-white/40 truncate">{rank || t('dashboard.rank_zen_novice')}</p>
         </motion.div>
 
         {/* Points */}
@@ -140,7 +142,7 @@ const GamificationWidget: React.FC = () => {
 
       {/* Quick Action */}
       <Link
-        to="/events/"
+        to={getLocalizedRoute('events', currentLang)}
         className="mt-4 w-full btn btn-primary flex items-center justify-center gap-2"
       >
         <TrendingUp size={18} />

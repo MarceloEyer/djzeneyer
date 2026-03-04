@@ -12,6 +12,7 @@ import { UserStatsCards, OrdersList, RecentActivity } from '../components/accoun
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { useSearchParams } from 'react-router-dom';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // Interfaces
 interface Order {
@@ -36,8 +37,9 @@ interface UserStats {
 }
 
 const MyAccountContent: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, loading, logout } = useUser();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
@@ -83,7 +85,7 @@ const MyAccountContent: React.FC = () => {
       return {
         level: 0,
         xp: 0,
-        rank: 'New Member',
+        rank: t('dashboard.rank_new_member'),
         xpToNext: 0,
         totalAchievements: 0,
         recentAchievements: 0
@@ -92,7 +94,7 @@ const MyAccountContent: React.FC = () => {
 
     // ✅ DADOS REAIS DO GAMIPRESS v1.1.0 (Refatorado para v1.2.0)
     const mainPoints = gamipress.points.points?.amount || 0;
-    const currentRank = gamipress.rank.current.title || 'Zen Novice';
+    const currentRank = gamipress.rank.current.title || t('dashboard.rank_zen_novice');
 
     // Calcular level baseado em pontos (cada 100 pontos = 1 level) - Mantendo lógica visual
     const level = Math.floor(mainPoints / 100) + 1;
@@ -119,7 +121,7 @@ const MyAccountContent: React.FC = () => {
       if (import.meta.env.DEV) {
         console.log('[MyAccountPage] ❌ Usuário não logado, redirecionando...');
       }
-      navigate('/');
+      navigate(getLocalizedRoute('', currentLang));
     }
   }, [user, loading, navigate]);
 
@@ -214,7 +216,7 @@ const MyAccountContent: React.FC = () => {
     >
       <div className="text-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary mx-auto mb-4"></div>
-        <p className="text-xl font-semibold">{message || t('loading')}</p>
+        <p className="text-xl font-semibold">{t('loading')}</p>
       </div>
     </motion.div>
   );
@@ -302,7 +304,7 @@ const MyAccountContent: React.FC = () => {
                 <p className="text-white/60 mb-8 max-w-md mx-auto">
                   {t('account.no_achievements_desc')}
                 </p>
-                <Link to="/dashboard/" className="btn btn-primary btn-lg">
+                <Link to={getLocalizedRoute('dashboard', currentLang)} className="btn btn-primary btn-lg">
                   {t('account.start_journey')}
                 </Link>
               </div>
@@ -357,7 +359,7 @@ const MyAccountContent: React.FC = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">{t('account.music.title')}</h2>
-              <Link to="/music/" className="btn btn-primary">
+              <Link to={getLocalizedRoute('music', currentLang)} className="btn btn-primary">
                 {t('account.music.browse')}
               </Link>
             </div>
@@ -368,7 +370,7 @@ const MyAccountContent: React.FC = () => {
               <p className="text-white/60 mb-8 max-w-md mx-auto">
                 {t('account.music.empty_desc')}
               </p>
-              <Link to="/music/" className="btn btn-primary btn-lg">
+              <Link to={getLocalizedRoute('music', currentLang)} className="btn btn-primary btn-lg">
                 {t('account.music.explore')}
               </Link>
             </div>
@@ -413,7 +415,7 @@ const MyAccountContent: React.FC = () => {
 
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">{t('nav_my_account')}</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('nav.my_account')}</h2>
 
             {/* Profile Settings */}
             <div className="bg-surface/50 rounded-lg p-6 border border-white/10">
@@ -673,7 +675,12 @@ const MyAccountContent: React.FC = () => {
         );
 
       default:
-        return <div>Tab not found</div>;
+        return (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <AlertCircle className="text-white/20 mb-4" size={48} />
+            <h3 className="text-xl font-bold mb-2">{t('account.tabs.not_found')}</h3>
+          </div>
+        );
     }
   };
 

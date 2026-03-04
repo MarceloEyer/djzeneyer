@@ -95,8 +95,8 @@ const SmartMusicCard = () => {
               <Headphones className="w-5 h-5 text-white" />
             </div>
             <div className="text-left">
-              <h3 className="text-white font-bold text-lg">{t('zenlink.listen_now', 'Ouça Agora')}</h3>
-              <p className="text-gray-400 text-sm">{t('zenlink.choose_platform', 'Escolha sua plataforma')}</p>
+              <h3 className="text-white font-bold text-lg">{t('zenlink.listen_now')}</h3>
+              <p className="text-gray-400 text-sm">{t('zenlink.choose_platform')}</p>
             </div>
           </div>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -144,11 +144,11 @@ export const ZenLinkPage = () => {
   const currentLang = normalizeLanguage(i18n.language);
 
   const MAIN_LINKS = [
-    { title: t('zenlink.spotify_title', 'Spotify'), subtitle: t('zenlink.spotify_subtitle', 'Faixas, remixes e sets'), url: ARTIST.social.spotify.url, icon: <Music2 className="h-5 w-5" />, highlight: true },
-    { title: t('zenlink.booking_title', 'Agenda & Booking'), subtitle: t('zenlink.booking_subtitle', 'Festivais e congressos'), url: `${ARTIST.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
+    { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: ARTIST.social.spotify.url, icon: <Music2 className="h-5 w-5" />, highlight: true },
+    { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${ARTIST.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
     { title: 'Instagram', subtitle: '@djzeneyer • bastidores', url: ARTIST.social.instagram.url, icon: <Instagram className="h-5 w-5" /> },
     { title: 'YouTube', subtitle: 'Sets ao vivo', url: ARTIST.social.youtube.url, icon: <Youtube className="h-5 w-5" /> },
-    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct', 'WhatsApp Direct'), url: getWhatsAppUrl('Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
+    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getWhatsAppUrl('Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
     { title: 'E-mail', subtitle: ARTIST.contact.email, url: `mailto:${ARTIST.contact.email}`, icon: <Mail className="h-5 w-5" /> },
   ];
 
@@ -224,8 +224,8 @@ export const ZenLinkPage = () => {
                 transition={{ delay: 0.1 * index }}
                 whileTap={{ scale: 0.98 }}
                 className={`group block rounded-2xl border p-4 transition-all duration-300 ${link.highlight
-                    ? 'border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-500/10 to-indigo-500/10 hover:border-fuchsia-500/50'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20'
+                  ? 'border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-500/10 to-indigo-500/10 hover:border-fuchsia-500/50'
+                  : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20'
                   }`}
               >
                 <div className="flex items-center gap-3">

@@ -62,8 +62,8 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
         <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary">
           <Calendar size={40} />
         </div>
-        <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter">{t('events_not_found', 'Event not found')}</h2>
-        <p className="text-white/40 mb-8 max-w-md mx-auto">{t('events_not_found_desc', 'The event you are looking for might have been removed or is no longer available.')}</p>
+        <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter">{t('events_not_found')}</h2>
+        <p className="text-white/40 mb-8 max-w-md mx-auto">{t('events_not_found_desc')}</p>
         <Link to={getLocalizedRoute('events', lang)} className="btn btn-outline border-white/10 px-8 py-3 rounded-xl font-bold uppercase transition-all hover:bg-white/5 inline-flex items-center gap-2">
           <ArrowLeft size={18} /> {t('events_back')}
         </Link>
@@ -102,7 +102,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.2em] text-xs mb-6">
             <div className="w-8 h-px bg-primary/30" />
-            {isValidDate ? eventDate.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) : t('tba', 'TBA')}
+            {isValidDate ? eventDate.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) : t('tba')}
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter text-white leading-[0.9]" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
@@ -113,7 +113,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
                 <Calendar size={20} />
               </div>
               <span className="font-bold">
-                {isValidDate ? eventDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }) : t('tba', 'TBA')}
+                {isValidDate ? eventDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }) : t('tba')}
               </span>
             </div>
             <div className="flex items-center gap-4 text-white/80">
@@ -138,7 +138,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
       </div>
 
       <Toast
-        message={t('link_copied', 'Link copied to clipboard!')}
+        message={t('link_copied')}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />
@@ -191,7 +191,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
-        <p className="text-white/40">{t('events_no_results', 'No events found matching your search.')}</p>
+        <p className="text-white/40">{t('events_no_results')}</p>
       </div>
     );
   }
@@ -233,7 +233,7 @@ const EventListContent = ({ searchQuery, lang }: EventListProps) => {
       })}
 
       <Toast
-        message={t('link_copied', 'Link copied to clipboard!')}
+        message={t('link_copied')}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />

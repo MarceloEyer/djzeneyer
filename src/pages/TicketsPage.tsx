@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute } from '../config/routes';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { ProductImage, ProductCategory } from '../types/product';
 
@@ -54,7 +55,7 @@ const TicketsPage: React.FC = () => {
   }, [currentLang]);
 
   const formatPrice = (price: string) => {
-    if (!price) return t('price_free', 'Free');
+    if (!price) return t('price_free');
     const numPrice = parseFloat(price);
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
     return isNaN(numPrice)
@@ -99,7 +100,7 @@ const TicketsPage: React.FC = () => {
                   transition={{ delay: index * 0.1 }}
                   className="bg-surface rounded-xl overflow-hidden border border-white/10 group hover:border-primary/50 transition-colors"
                 >
-                  <Link to={isPortuguese ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`} className="block relative aspect-video overflow-hidden">
+                  <Link to={getLocalizedRoute(`/shop/product/${ticket.slug}`, i18n.language)} className="block relative aspect-video overflow-hidden">
                     <img
                       src={safeUrl(ticket.images[0]?.src, 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event')}
                       alt={ticket.name}
@@ -117,7 +118,7 @@ const TicketsPage: React.FC = () => {
 
                   <div className="p-6">
                     <p className="text-white/60 line-clamp-2 mb-6 text-sm">
-                      {sanitizeHtml(ticket.short_description).replace(/<[^>]*>/g, '') || t('event_desc_fallback', 'Join us for an unforgettable experience.')}
+                      {sanitizeHtml(ticket.short_description).replace(/<[^>]*>/g, '') || t('event_desc_fallback')}
                     </p>
 
                     <div className="flex items-center justify-between mt-auto">
@@ -127,7 +128,7 @@ const TicketsPage: React.FC = () => {
                       </div>
 
                       <Link
-                        to={isPortuguese ? `/loja/produto/${ticket.slug}` : `/shop/product/${ticket.slug}`}
+                        to={getLocalizedRoute(`/shop/product/${ticket.slug}`, i18n.language)}
                         className="btn btn-outline btn-sm rounded-full flex items-center gap-2"
                       >
                         {t('nav.about')} <ArrowRight size={16} />
