@@ -24,7 +24,7 @@ $request_uri = str_replace("\0", '', rawurldecode($request_uri));
 
 // 3. Atalho: Se for um arquivo físico que NÃO está na dist (ex: wp-admin, wp-includes, uploads)
 // Deixa o WordPress ou o servidor tratar diretamente.
-if (preg_match('/^\/(wp-admin|wp-includes|wp-json|wp-content\/plugins|wp-content\/uploads)/', $request_uri)) {
+if (preg_match('/^\/(wp-admin|wp-includes|wp-json|wp-content\/plugins|wp-content\/uploads|wp-login)/', $request_uri)) {
     return;
 }
 
@@ -45,7 +45,13 @@ if (strpos($request_uri, $dist_marker) !== false) {
 }
 
 // 5. Definição dos candidatos (Arquivo direto ou Rota Prerender)
+// Caso especial: Raiz serve o index.html da dist
+if ($clean_mapped_path === '/' || $clean_mapped_path === '') {
+    $clean_mapped_path = '/index.html';
+}
+
 $possible_file = $real_dist_path . ltrim($clean_mapped_path, '/');
+// Rota prerender: /contato -> /contato/index.html
 $possible_route = $real_dist_path . rtrim(ltrim($request_uri, '/'), '/') . '/index.html';
 
 $serve_file = null;
@@ -77,28 +83,29 @@ if ($serve_file) {
 
     $mime_types = [
         'html' => 'text/html; charset=UTF-8',
-        'xml'  => 'application/xml; charset=UTF-8',
-        'txt'  => 'text/plain; charset=UTF-8',
-        'css'  => 'text/css',
-        'js'   => 'application/javascript',
+        'xml' => 'application/xml; charset=UTF-8',
+        'txt' => 'text/plain; charset=UTF-8',
+        'css' => 'text/css',
+        'js' => 'application/javascript',
         'json' => 'application/json',
-        'png'  => 'image/png',
-        'jpg'  => 'image/jpeg',
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
         'jpeg' => 'image/jpeg',
-        'svg'  => 'image/svg+xml',
-        'ico'  => 'image/x-icon',
+        'svg' => 'image/svg+xml',
+        'ico' => 'image/x-icon',
         'webmanifest' => 'application/manifest+json'
     ];
-    
+
     $content_type = isset($mime_types[$extension]) ? $mime_types[$extension] : 'text/html; charset=UTF-8';
-    
+
     header('Content-Type: ' . $content_type);
-    
+
     // Entrega o arquivo CANÔNICO (resolvido pelo realpath)
     readfile($serve_file);
     exit;
 }
 
-// 6. Fallback: Se não é estático, entrega o App React (index.html raiz)
-// Como o $real_dist_path agora tem barra no final, concatenamos direto
-require($real_dist_path . 'index.html');
+// 6. Fallback final: Se não é um arquivo e não é rota estática, deixa o WordPress decidir.
+// Isso evita que o SPA loader tente servir o index.html para uma URL que deveria ser 404 real no WP
+// ou que o WP deveria tratar.
+return;

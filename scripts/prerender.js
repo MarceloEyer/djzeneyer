@@ -80,6 +80,24 @@ async function prerender() {
     });
 
     const page = await browser.newPage();
+    const BASE_PATH = '/wp-content/themes/zentheme/dist';
+
+    // 🎭 ROUTE MASKING: Engana o React Router (v6) para ignorar o base path durante o prerender
+    await page.evaluateOnNewDocument((base) => {
+      const originalPathname = window.location.pathname;
+      if (originalPathname.startsWith(base)) {
+        const maskedPath = originalPathname.replace(base, '') || '/';
+
+        // Sobrescreve getter do pathname
+        Object.defineProperty(window.location, 'pathname', {
+          get: () => maskedPath,
+          configurable: true
+        });
+
+        // Debug no console do browser (capturado pelo node)
+        console.log(`[MASK] Original: ${originalPathname} -> Masked: ${maskedPath}`);
+      }
+    }, BASE_PATH);
 
     // 🛡️ API INTERCEPTION: Global for all pages
     await page.setRequestInterception(true);

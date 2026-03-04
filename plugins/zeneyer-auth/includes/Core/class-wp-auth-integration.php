@@ -13,17 +13,22 @@ namespace ZenEyer\Auth\Core;
 
 use ZenEyer\Auth\Core\JWT_Manager;
 
-class WP_Auth_Integration {
+class WP_Auth_Integration
+{
 
     /**
      * Initialize integration hooks
      */
-    public static function init() {
+    public static function init()
+    {
         // Register JWT authentication for ALL WordPress REST API endpoints
         add_filter('determine_current_user', [__CLASS__, 'determine_current_user_via_jwt'], 20);
 
         // Allow JWT auth for specific endpoints that require authentication
         add_filter('rest_authentication_errors', [__CLASS__, 'handle_rest_auth_errors'], 10);
+
+        // 🛡️ Skip nonce check if JWT is valid (Prevents 403 on stale/missing cookie nonces)
+        add_filter('rest_nonce_check', [__CLASS__, 'skip_nonce_check_for_jwt'], 10);
     }
 
     /**
@@ -35,7 +40,8 @@ class WP_Auth_Integration {
      * @param int|false $user_id Current user ID or false
      * @return int|false User ID if JWT is valid, original value otherwise
      */
-    public static function determine_current_user_via_jwt($user_id) {
+    public static function determine_current_user_via_jwt($user_id)
+    {
         // If already authenticated via other means, don't override
         if ($user_id) {
             return $user_id;
@@ -89,7 +95,8 @@ class WP_Auth_Integration {
      * @param WP_Error|null|bool $errors Authentication errors
      * @return WP_Error|null|bool
      */
-    public static function handle_rest_auth_errors($errors) {
+    public static function handle_rest_auth_errors($errors)
+    {
         // If no errors, continue
         if (!is_wp_error($errors)) {
             return $errors;
@@ -118,11 +125,40 @@ class WP_Auth_Integration {
     }
 
     /**
+     * Skip REST nonce check for JWT requests
+     *
+     * WordPress requires a nonce for cookie-authenticated REST requests.
+     * Since we use JWT (stateless), we bypass this check if a valid token is present.
+     *
+     * @param bool|WP_Error $result
+     * @return bool|WP_Error
+     */
+    public static function skip_nonce_check_for_jwt($result)
+    {
+        if ($result === true) {
+            return $result;
+        }
+
+        $token = self::get_token_from_request();
+        if (!$token) {
+            return $result;
+        }
+
+        $decoded = JWT_Manager::validate_token($token);
+        if (!is_wp_error($decoded) && isset($decoded->data->user_id)) {
+            return true;
+        }
+
+        return $result;
+    }
+
+    /**
      * Extract JWT token from request headers
      *
      * @return string|null Token or null if not found
      */
-    private static function get_token_from_request() {
+    private static function get_token_from_request()
+    {
         // Try Authorization header first (preferred)
         $auth_header = isset($_SERVER['HTTP_AUTHORIZATION'])
             ? $_SERVER['HTTP_AUTHORIZATION']

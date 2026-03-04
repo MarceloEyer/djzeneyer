@@ -460,3 +460,9 @@ class Zen_BIT_API_V2
         Zen_BIT_Cache::clear_all();
     }
 }
+
+// 🔄 Alias para compatibilidade com versões anteriores (< 3.0.0) 
+// Evita erro fatal em 'deactivate' se arquivos antigos de zen-bit.php estiverem no server.
+if (!class_exists(__NAMESPACE__ . '\\Zen_BIT_API')) {
+    class_alias(__NAMESPACE__ . '\\Zen_BIT_API_V2', __NAMESPACE__ . '\\Zen_BIT_API');
+}
