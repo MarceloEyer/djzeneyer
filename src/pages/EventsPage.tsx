@@ -228,7 +228,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                 const eventDay = new Date(e.starts_at);
                 // v2: canonical_path sempre presente ou fallback para key
                 const detailHref = e.canonical_path
-                  ? (lang === 'pt' ? `/pt${e.canonical_path.replace('/events', '/eventos-zouk')}` : e.canonical_path)
+                  ? (lang === 'pt' ? `/pt${e.canonical_path.replace('/events', '/eventos')}` : e.canonical_path)
                   : generatePath(getLocalizedRoute('events-detail', lang), { id: e.event_id });
 
                 // v2: location sempre presente
@@ -289,7 +289,7 @@ const EventsPage: React.FC = () => {
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16 px-4">
-          <h1 className="text-5xl md:text-8xl font-black mb-6 uppercase tracking-tighter">{t('events_page_title')}</h1>
+          <h1 className="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tighter text-primary">{t('events_page_title')}</h1>
         </header>
 
         <React.Suspense fallback={<EventSkeleton />}>
