@@ -193,7 +193,7 @@ class Zen_SEO_Schema
 
         // Awards
         if (!empty($settings['awards_list'])) {
-            $awards = \array_filter(\array_map('trim', \explode("\n", $settings['awards_list'])));
+            $awards = \array_filter(\array_map('trim', \explode("\n", (string) $settings['awards_list'])));
             if (!empty($awards)) {
                 $person['award'] = \array_values($awards);
             }
@@ -409,7 +409,7 @@ class Zen_SEO_Schema
 
         // Google Knowledge Graph
         if (!empty($settings['google_kg'])) {
-            $kg = \trim($settings['google_kg']);
+            $kg = \trim((string) $settings['google_kg']);
             if (\strpos($kg, 'http') === 0) {
                 $urls[] = \esc_url($kg);
             } else {
@@ -437,7 +437,7 @@ class Zen_SEO_Schema
 
         foreach ($platforms as $platform) {
             if (!empty($settings[$platform])) {
-                $urls[] = \esc_url(\trim($settings[$platform]));
+                $urls[] = \esc_url(\trim((string) $settings[$platform]));
             }
         }
 

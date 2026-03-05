@@ -153,7 +153,7 @@ class Zen_SEO_Meta_Tags
         // Add Twitter handle if available
         $settings = Zen_SEO_Helpers::get_global_settings();
         if (!empty($settings['twitter'])) {
-            $handle = \str_replace('https://twitter.com/', '@', $settings['twitter']);
+            $handle = \str_replace('https://twitter.com/', '@', (string) $settings['twitter']);
             echo '
 <meta name="twitter:site" content="' . \esc_attr($handle) . '">' . "\n";
             echo '

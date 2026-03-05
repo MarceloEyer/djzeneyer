@@ -135,7 +135,7 @@ class Zen_SEO_Helpers
             return '';
         }
 
-        return \esc_url_raw(\trim($url));
+        return \esc_url_raw(\trim((string) $url));
     }
 
     /**
@@ -167,14 +167,14 @@ class Zen_SEO_Helpers
      */
     public static function generate_excerpt($content, $length = 160)
     {
-        $content = \strip_tags($content);
+        $content = \wp_strip_all_tags($content);
         $content = \strip_shortcodes($content);
 
-        if (\strlen($content) <= $length) {
+        if (\strlen((string) $content) <= $length) {
             return $content;
         }
 
-        return \substr($content, 0, $length) . '...';
+        return \substr((string) $content, 0, $length) . '...';
     }
 
     /**

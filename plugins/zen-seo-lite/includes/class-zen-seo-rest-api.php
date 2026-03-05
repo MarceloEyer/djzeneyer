@@ -190,7 +190,7 @@ class Zen_SEO_REST_API
     private function resolve_special_urls($url)
     {
         $path = \parse_url($url, \PHP_URL_PATH);
-        $path = \trim($path, '/');
+        $path = \trim((string) $path, '/');
 
         // Home Page check
         if (empty($path) || $path === 'pt' || $path === 'en') {

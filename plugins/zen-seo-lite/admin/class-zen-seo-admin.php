@@ -507,7 +507,7 @@ class Zen_SEO_Admin
      */
     public function enqueue_admin_assets($hook)
     {
-        if (strpos($hook, 'zen-seo') === false) {
+        if (strpos((string) $hook, 'zen-seo') === false) {
             return;
         }
 
