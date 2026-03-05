@@ -99,6 +99,11 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <HeadlessSEO
+        title={`${e.title} | DJ Zen Eyer`}
+        description={e.description || t('events_page_meta_desc')}
+        events={[e]}
+      />
       <Link to={getLocalizedRoute('events', lang)} className="flex items-center gap-2 text-primary mb-8 font-extrabold uppercase tracking-widest text-sm hover:text-white transition-colors">
         <ArrowLeft size={18} /> {t('events_back')}
       </Link>
@@ -202,6 +207,11 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
+      <HeadlessSEO
+        title={t('events_page_title')}
+        description={t('events_page_meta_desc')}
+        events={events}
+      />
       {groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
         const [y, m] = key.split('-');
         const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
@@ -279,7 +289,6 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
-      <HeadlessSEO title={t('events_page_title')} description={t('events_page_meta_desc')} />
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16 px-4">
           <h1 className="text-5xl md:text-8xl font-black mb-6 uppercase tracking-tighter">{t('events_page_title')}</h1>

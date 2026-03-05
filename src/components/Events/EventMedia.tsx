@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ElectricBorder } from '../ui/ElectricBorder';
 import { safeUrl } from '../../utils/sanitize';
 import { Calendar, Music } from 'lucide-react';
 
@@ -56,23 +55,21 @@ export const EventMedia: React.FC<EventMediaProps> = ({
     );
 
     return (
-        <ElectricBorder active={true} className={className}>
-            <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10">
-                {image ? (
-                    <img
-                        src={safeUrl(image)}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        alt={title}
-                        onError={(e) => {
-                            // Fallback if image fails to load
-                            (e.target as HTMLImageElement).style.display = 'none';
-                            (e.target as HTMLImageElement).parentElement?.classList.add('bg-surface');
-                        }}
-                    />
-                ) : (
-                    renderFallback()
-                )}
-            </div>
-        </ElectricBorder>
+        <div className={`aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 ${className}`}>
+            {image ? (
+                <img
+                    src={safeUrl(image)}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    alt={title}
+                    onError={(e) => {
+                        // Fallback if image fails to load
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        (e.target as HTMLImageElement).parentElement?.classList.add('bg-surface');
+                    }}
+                />
+            ) : (
+                renderFallback()
+            )}
+        </div>
     );
 };

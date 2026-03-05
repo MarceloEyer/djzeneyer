@@ -234,23 +234,54 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
     // 4.3 Event Schema (If on events page or specific event)
     if (events && events.length > 0) {
-      events.forEach((event, idx) => {
+      events.forEach((event) => {
+        const eventTitle = event.title?.rendered || event.title || event.name || 'Zouk Event';
+        const startDate = event.starts_at || event.event_date || event.start_date;
+        const endDate = event.ends_at || event.end_date;
+
+        // Location mapping
+        const locName = event.location?.venue || event.event_location || 'TBA';
+
+        // Offers mapping
+        let eventOffers: any = undefined;
+        const ticketUrl = event.event_ticket || (event.tickets && event.tickets[0]) || (event.offers && event.offers[0]?.url);
+
+        if (ticketUrl) {
+          eventOffers = {
+            '@type': 'Offer',
+            url: ticketUrl,
+            availability: 'https://schema.org/InStock',
+            validFrom: startDate,
+          };
+        }
+
         graph.push({
           '@type': 'Event',
-          name: event.title?.rendered || event.name || 'Zouk Event',
-          startDate: event.event_date || event.start_date,
+          name: eventTitle,
+          startDate: startDate,
+          ...(endDate ? { endDate } : {}),
+          eventStatus: 'https://schema.org/EventScheduled',
+          eventAttendanceMode: locName.toLowerCase().includes('online')
+            ? 'https://schema.org/OnlineEventAttendanceMode'
+            : 'https://schema.org/OfflineEventAttendanceMode',
           location: {
             '@type': 'Place',
-            name: event.event_location || 'TBA',
-            address: event.event_location || 'Online',
+            name: locName,
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: locName,
+              addressLocality: event.location?.city || '',
+              addressCountry: event.location?.country || '',
+            }
           },
           image: event.image || finalImage,
-          description: event.desc || event.description,
-          offers: event.event_ticket ? {
-            '@type': 'Offer',
-            url: event.event_ticket,
-            availability: 'https://schema.org/InStock',
-          } : undefined,
+          description: (event.description || event.desc || '').replace(/<[^>]*>?/gm, '').substring(0, 300),
+          performer: {
+            '@type': 'Person',
+            name: ARTIST.identity.stageName,
+            sameAs: ARTIST.social.instagram
+          },
+          ...(eventOffers ? { offers: eventOffers } : {}),
         });
       });
     }
