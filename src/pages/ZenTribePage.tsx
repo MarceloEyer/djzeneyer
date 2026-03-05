@@ -65,12 +65,12 @@ const CONTAINER_VARIANTS = {
  * Dados de Achievements (sistema de gamificação)
  */
 const ACHIEVEMENTS_DATA = [
-  { image: '/images/badges/badge-first-track.png', titleKey: 'zenTribe.achievements.firstTrack.title', descKey: 'zenTribe.achievements.firstTrack.desc', unlocked: true },
-  { image: '/images/badges/badge-first-event.png', titleKey: 'zenTribe.achievements.firstEvent.title', descKey: 'zenTribe.achievements.firstEvent.desc', unlocked: true },
-  { image: '/images/badges/badge-collector.png', titleKey: 'zenTribe.achievements.collector.title', descKey: 'zenTribe.achievements.collector.desc', unlocked: false },
-  { image: '/images/badges/badge-marketer.png', titleKey: 'zenTribe.achievements.marketer.title', descKey: 'zenTribe.achievements.marketer.desc', unlocked: false },
-  { image: '/images/badges/badge-legend.png', titleKey: 'zenTribe.achievements.legend.title', descKey: 'zenTribe.achievements.legend.desc', unlocked: false },
-  { image: '/images/badges/badge-streak.png', titleKey: 'zenTribe.achievements.streak.title', descKey: 'zenTribe.achievements.streak.desc', unlocked: false },
+  { emoji: '🎧', titleKey: 'zenTribe.achievements.firstTrack.title', descKey: 'zenTribe.achievements.firstTrack.desc', unlocked: true },
+  { emoji: '🚀', titleKey: 'zenTribe.achievements.firstEvent.title', descKey: 'zenTribe.achievements.firstEvent.desc', unlocked: true },
+  { emoji: '🔍', titleKey: 'zenTribe.achievements.collector.title', descKey: 'zenTribe.achievements.collector.desc', unlocked: false },
+  { emoji: '🦋', titleKey: 'zenTribe.achievements.marketer.title', descKey: 'zenTribe.achievements.marketer.desc', unlocked: false },
+  { emoji: '🎪', titleKey: 'zenTribe.achievements.legend.title', descKey: 'zenTribe.achievements.legend.desc', unlocked: false },
+  { emoji: '⏱️', titleKey: 'zenTribe.achievements.streak.title', descKey: 'zenTribe.achievements.streak.desc', unlocked: false },
 ];
 
 // ============================================================================
@@ -163,25 +163,22 @@ MembershipCard.displayName = 'MembershipCard';
  * AchievementCard - Card de conquista
  */
 const AchievementCard = memo<{
-  image: string;
+  emoji: string;
   title: string;
   description: string;
   unlocked: boolean;
   t: any;
-}>(({ image, title, description, unlocked, t }) => (
-  <div className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 border border-white/5 ${unlocked ? 'hover:bg-surface/70 glow border-primary/20' : 'opacity-40 grayscale group'}`}>
-    <div className={`w-16 h-16 mb-4 flex items-center justify-center transition-all duration-500 ${unlocked ? 'drop-shadow-[0_0_12px_rgba(99,102,241,0.4)] hover:scale-110' : ''}`}>
-      <img src={image} alt={title} className="w-full h-full object-contain" />
-    </div>
-    <h4 className={`font-display text-lg mb-1 ${unlocked ? 'text-white' : 'text-white/40'}`}>{title}</h4>
-    <p className="text-sm text-white/60 mb-3">{description}</p>
-    {unlocked ? (
-      <div className="text-[10px] font-bold text-success flex items-center gap-1 uppercase tracking-widest bg-success/10 px-2 py-0.5 rounded-full border border-success/20 w-fit">
-        <Award size={10} /> {t('zenTribe.unlocked')}
-      </div>
-    ) : (
-      <div className="text-[10px] font-bold text-white/20 flex items-center gap-1 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-full border border-white/10 w-fit">
-        <Zap size={10} /> {t('zenTribe.unlockAtLevel', { level: '?' })}
+}>(({ emoji, title, description, unlocked, t }) => (
+  <div className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 ${unlocked ? 'hover:bg-surface/70' : 'opacity-60'}`}>
+    <div className="text-4xl mb-3">{emoji}</div>
+    <h4 className="font-display text-lg mb-1">{title}</h4>
+    <p className="text-sm text-white/70">{description}</p>
+    {unlocked && (
+      <div className="mt-2 text-xs text-success flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        {t('zenTribe.unlocked')}
       </div>
     )}
   </div>
@@ -445,14 +442,14 @@ const ZenTribePage: React.FC = () => {
                   <h3 className="text-2xl font-display">{t('zenTribe.achievementShowcase')}</h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {ACHIEVEMENTS_DATA.map((ach, index) => (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {ACHIEVEMENTS_DATA.map((achievement, index) => (
                     <AchievementCard
                       key={index}
-                      image={ach.image}
-                      title={t(ach.titleKey as any)}
-                      description={t(ach.descKey as any)}
-                      unlocked={ach.unlocked}
+                      emoji={achievement.emoji}
+                      title={t(achievement.titleKey as any)}
+                      description={t(achievement.descKey as any)}
+                      unlocked={achievement.unlocked}
                       t={t}
                     />
                   ))}
