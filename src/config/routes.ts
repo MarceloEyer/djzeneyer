@@ -234,7 +234,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Zen Link (Linktree Style)
   {
     component: ZenLinkPage,
-    paths: { en: ['links', 'zenlink'], pt: 'biolink' },
+    paths: { en: ['links', 'zenlink'], pt: 'ligacoes' },
   },
 
   // Zouk Persona Quiz
