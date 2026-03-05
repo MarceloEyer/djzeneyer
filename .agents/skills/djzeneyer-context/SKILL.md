@@ -100,13 +100,20 @@ Localizados em `.agents/skills/djzeneyer-context/`:
 - `scripts/pre-deploy-check.sh`: Script de validação prévia.
 - `scripts/new-page.sh`: Blueprint para novas páginas.
 
-### 4.1 Skills Especializadas (Awesome Skills)
-- `react-best-practices`: Regras de performance da Vercel.
-- `typescript-pro`: Tipagem avançada e segurança de tipos.
-- `wordpress-theme-development`: Padrões avançados de temas WP.
-- `clean-code`: Princípios de código limpo.
-- `tailwind-patterns`: Padrões modernos de design com Tailwind v4.
-- `seo-meta-optimizer`: Gerador de metadados otimizados para SEO.
+### 4.1 Skills Especializadas (Power Pack Consolidado)
+- `@seo-audit`: Audita crawlability, meta tags e indexação.
+- `@schema-markup`: Valida e otimiza JSON-LD (ideal para o zen-seo-lite).
+- `@ai-seo`: Otimiza para E-E-A-T e respostas de IA/Knowledge Graph.
+- `@social-content`: Criação de conteúdo para redes sociais (Zouk/Eventos).
+- `@copywriting`: Copy persuasiva para landing pages e shop.
+- `@react-patterns`: Padrões de UI, loading states e error handling.
+- `@tailwind-mastery`: Estilização avançada e responsiva com Tailwind v4.
+- `@auth-implementation-patterns`: Segurança JWT e OAuth2 (zeneyer-auth).
+- `@web-quality-skills`: Auditoria de performance, bundle e Core Web Vitals.
+- `@backend-security-coder`: Código PHP seguro (Prepared Statements/Sanitização).
+- `@content-strategy`: Planejamento de conteúdo e clusters de tópicos.
+- `@typescript-pro`: Tipagem avançada e segurança de tipos técnica.
+- `@clean-code`: Princípios de qualidade e manutenibilidade de código.
 
 ---
 
