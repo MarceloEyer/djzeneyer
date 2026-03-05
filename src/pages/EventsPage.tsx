@@ -290,7 +290,14 @@ const EventsPage: React.FC = () => {
         </React.Suspense>
 
         <section className="mt-40 p-12 md:p-24 text-center bg-surface border border-white/5 rounded-[3rem] relative overflow-hidden group">
-          <Music className="absolute -right-16 -bottom-16 text-white/5 w-96 h-96 rotate-12" />
+          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
+            <img
+              src="/images/artist/dj-zen-eyer-club-performance.jpg"
+              alt=""
+              className="w-full h-full object-cover grayscale"
+            />
+          </div>
+          <Music className="absolute -right-16 -bottom-16 text-white/5 w-96 h-96 rotate-12 relative z-10" />
           <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter">{t('home_press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
             <Link to={getLocalizedRoute('work-with-me', lang)} className="btn btn-primary px-10 py-4 rounded-xl font-bold uppercase">{t('contact')}</Link>

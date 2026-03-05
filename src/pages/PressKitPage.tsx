@@ -150,10 +150,7 @@ const PressKitPage: React.FC = () => {
         title={t('presskit.page_title')}
         description={t('presskit.page_meta_desc')}
         url={currentUrl}
-        image="https://djzeneyer.com/images/zen-eyer-presskit-cover.jpg"
-        ogType="profile"
-        schema={{ "@context": "https://schema.org", "@graph": [PERSON_SCHEMA] }}
-        hrefLang={getHrefLangUrls(currentPath, 'https://djzeneyer.com')}
+        image={`${ARTIST.site.baseUrl}/images/artist/dj-zen-eyer-official-hero.jpg`}
       />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-surface/20 to-background text-white">
@@ -175,7 +172,7 @@ const PressKitPage: React.FC = () => {
               </motion.div>
 
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
-                {t('presskit.title_prefix')} <span className="text-primary">{t('presskit.title_suffix')}</span>
+                Sobre Zen Eyer <span className="text-primary">- EPK Oficial</span>
               </h1>
 
               <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
@@ -202,8 +199,8 @@ const PressKitPage: React.FC = () => {
                 <motion.div className="relative" whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 300 }}>
                   <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 shadow-2xl">
                     <img
-                      src="https://djzeneyer.com/wp-content/uploads/2025/12/ZenEyer-2026.png"
-                      alt="Zen Eyer - Press Photo"
+                      src="/images/artist/dj-zen-eyer-smiling-at-deck.jpg"
+                      alt="DJ Zen Eyer - World Champion Brazilian Zouk DJ"
                       className="w-full h-full object-cover"
                       loading="lazy"
                       decoding="async"

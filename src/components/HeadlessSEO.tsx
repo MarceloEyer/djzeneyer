@@ -46,8 +46,10 @@ interface HeadlessSEOProps {
   keywords?: string;
   isHomepage?: boolean;
   preload?: PreloadItem[];
-  locale?: 'en_US' | 'pt_BR'; // NOVO: Controle explícito de locale
-  leadAnswer?: string; // NOVO: Resposta direta para AIO (Lead Paragraph)
+  locale?: 'en_US' | 'pt_BR';
+  leadAnswer?: string;
+  faqs?: { q: string; a: string }[]; // NOVO: Suporte a FAQ Schema
+  events?: any[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
 }
 
 // ============================================================================
@@ -85,6 +87,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   preload = [],
   locale,
   leadAnswer,
+  faqs,
+  events,
 }) => {
   const baseUrl = ARTIST.site.baseUrl;
   const { i18n } = useTranslation();
@@ -184,16 +188,124 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         },
       ],
     };
-  } else if (!finalSchema) {
-    // Basic WebPage schema for other pages
-    // Using finalUrl which is ensured absolute and has trailing slash
-    finalSchema = {
-      '@context': 'https://schema.org',
+  }
+
+  // 4. Advanced Schema Logic (Breadcrumbs, FAQ, Events)
+  if (!schema) {
+    const graph: any[] = [];
+    const siteUrlClean = baseUrl.replace(/\/$/, '');
+
+    // 4.1 BreadcrumbList (Automatic)
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    if (pathSegments.length > 0) {
+      const breadcrumbList = {
+        '@type': 'BreadcrumbList',
+        '@id': `${finalUrl}#breadcrumb`,
+        itemListElement: pathSegments.map((segment, index) => {
+          const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
+          const isLast = index === pathSegments.length - 1;
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@id': `${siteUrlClean}${path}${isLast ? '' : '/'}`,
+              name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+            },
+          };
+        }),
+      };
+      graph.push(breadcrumbList);
+    }
+
+    // 4.2 FAQPage Schema
+    if (faqs && faqs.length > 0) {
+      graph.push({
+        '@type': 'FAQPage',
+        mainEntity: faqs.map(faq => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.a,
+          },
+        })),
+      });
+    }
+
+    // 4.3 Event Schema (If on events page or specific event)
+    if (events && events.length > 0) {
+      events.forEach((event, idx) => {
+        graph.push({
+          '@type': 'Event',
+          name: event.title?.rendered || event.name || 'Zouk Event',
+          startDate: event.event_date || event.start_date,
+          location: {
+            '@type': 'Place',
+            name: event.event_location || 'TBA',
+            address: event.event_location || 'Online',
+          },
+          image: event.image || finalImage,
+          description: event.desc || event.description,
+          offers: event.event_ticket ? {
+            '@type': 'Offer',
+            url: event.event_ticket,
+            availability: 'https://schema.org/InStock',
+          } : undefined,
+        });
+      });
+    }
+
+    // Combine with WebPage base
+    const webPageSchema = {
       '@type': 'WebPage',
-      name: finalTitle,
-      description: truncatedDesc,
+      '@id': `${finalUrl}#webpage`,
       url: finalUrl,
+      name: finalTitle,
+      isPartOf: { '@id': `${baseUrl}/#website` },
+      about: { '@id': `${baseUrl}/#artist` },
+      description: truncatedDesc,
+      inLanguage: htmlLangAttribute,
     };
+
+    if (graph.length > 0) {
+      finalSchema = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          ...(isHomepage ? [
+            {
+              '@type': 'WebSite',
+              '@id': `${baseUrl}/#website`,
+              url: baseUrl,
+              name: 'DJ Zen Eyer',
+              publisher: { '@id': `${baseUrl}/#artist` },
+            },
+            { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` }
+          ] : []),
+          webPageSchema,
+          ...graph
+        ],
+      };
+    } else if (isHomepage) {
+      // Re-use original homepage schema if no dynamic graph items
+      finalSchema = {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebSite',
+            '@id': `${baseUrl}/#website`,
+            url: baseUrl,
+            name: 'DJ Zen Eyer - Official Website',
+            description: ARTIST.site.defaultDescription,
+            publisher: { '@id': `${baseUrl}/#artist` },
+            inLanguage: ['en', 'pt-BR'],
+          },
+          { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` },
+          webPageSchema,
+        ],
+      };
+    } else {
+      finalSchema = webPageSchema; // Fallback to basic WebPage if no graph
+    }
   }
 
   // Identificador para o script do schema para evitar duplicidade

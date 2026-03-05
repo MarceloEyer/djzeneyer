@@ -47,23 +47,6 @@ const AboutPage: React.FC = () => {
         description: t('about.seo.description'),
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
         about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
-        breadcrumb: {
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            {
-              '@type': 'ListItem',
-              position: 1,
-              name: t('nav.home'),
-              item: `${ARTIST.site.baseUrl}/`,
-            },
-            {
-              '@type': 'ListItem',
-              position: 2,
-              name: t('nav.about'),
-              item: `${ARTIST.site.baseUrl}/about`,
-            },
-          ],
-        },
       },
     ],
   }), [t, currentUrl]);
@@ -129,7 +112,7 @@ const AboutPage: React.FC = () => {
         title={t('about.seo.title')}
         description={t('about.seo.description')}
         url={currentUrl}
-        image={`${ARTIST.site.baseUrl}/images/zen-eyer-about-emotional.jpg`}
+        image={`${ARTIST.site.baseUrl}/images/artist/dj-zen-eyer-nature-portrait.jpg`}
         type="profile"
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}
