@@ -119,7 +119,10 @@ class Zen_SEO_Schema
     {
         $settings = Zen_SEO_Helpers::get_global_settings();
 
-        $name = !empty($settings['real_name']) ? \sanitize_text_field($settings['real_name']) : \get_bloginfo('name');
+        // FIX: get_bloginfo() can return null in early REST contexts; coerce to string.
+        $blog_name = (string) \get_bloginfo('name');
+        $real_name = !empty($settings['real_name']) ? (string) $settings['real_name'] : $blog_name;
+        $name = \sanitize_text_field($real_name ?: 'DJ Zen Eyer');
 
         $person = [
             '@type' => 'Person',
@@ -133,7 +136,7 @@ class Zen_SEO_Schema
 
         // Image
         if (!empty($settings['default_image'])) {
-            $person['image'] = \esc_url($settings['default_image']);
+            $person['image'] = \esc_url((string) $settings['default_image']);
         }
 
         // Nationality
@@ -146,7 +149,7 @@ class Zen_SEO_Schema
         if (!empty($settings['birth_place'])) {
             $person['birthPlace'] = [
                 '@type' => 'Place',
-                'name' => \sanitize_text_field($settings['birth_place'])
+                'name' => \sanitize_text_field((string) $settings['birth_place'])
             ];
         }
 
@@ -154,7 +157,7 @@ class Zen_SEO_Schema
         if (!empty($settings['home_location'])) {
             $person['homeLocation'] = [
                 '@type' => 'Place',
-                'name' => \sanitize_text_field($settings['home_location'])
+                'name' => \sanitize_text_field((string) $settings['home_location'])
             ];
         }
 
@@ -163,20 +166,20 @@ class Zen_SEO_Schema
             $person['identifier'] = [
                 '@type' => 'PropertyValue',
                 'propertyID' => 'ISNI',
-                'value' => \sanitize_text_field($settings['isni_code'])
+                'value' => \sanitize_text_field((string) $settings['isni_code'])
             ];
         }
 
         // Tax ID (CNPJ) - Only if set
         if (!empty($settings['cnpj'])) {
-            $person['taxID'] = \sanitize_text_field($settings['cnpj']);
+            $person['taxID'] = \sanitize_text_field((string) $settings['cnpj']);
         }
 
         // Contact point - Only if email is set
         if (!empty($settings['booking_email'])) {
             $person['contactPoint'] = [
                 '@type' => 'ContactPoint',
-                'email' => \sanitize_email($settings['booking_email']),
+                'email' => \sanitize_email((string) $settings['booking_email']),
                 'contactType' => 'booking',
                 'areaServed' => 'World'
             ];
@@ -187,7 +190,7 @@ class Zen_SEO_Schema
             $person['memberOf'] = [
                 '@type' => 'Organization',
                 'name' => 'Mensa International',
-                'url' => \esc_url($settings['mensa_url'])
+                'url' => \esc_url((string) $settings['mensa_url'])
             ];
         }
 
@@ -214,8 +217,8 @@ class Zen_SEO_Schema
             '@type' => 'WebSite',
             '@id' => \home_url('/#website'),
             'url' => \home_url('/'),
-            'name' => \get_bloginfo('name'),
-            'description' => \get_bloginfo('description'),
+            'name' => (string) \get_bloginfo('name'),
+            'description' => (string) \get_bloginfo('description'),
             'publisher' => [
                 '@id' => \home_url('/#artist')
             ],
@@ -247,8 +250,8 @@ class Zen_SEO_Schema
             '@type' => 'WebPage',
             '@id' => \get_permalink($post) . '#webpage',
             'url' => \get_permalink($post),
-            'name' => \sanitize_text_field($title),
-            'description' => \sanitize_text_field($description),
+            'name' => \sanitize_text_field((string) $title),
+            'description' => \sanitize_text_field((string) $description),
             'datePublished' => \get_post_time('c', true, $post),
             'dateModified' => \get_post_modified_time('c', true, $post),
             'publisher' => [
@@ -281,9 +284,9 @@ class Zen_SEO_Schema
 
         $event = [
             '@type' => 'MusicEvent',
-            'name' => \sanitize_text_field($title),
-            'description' => \sanitize_text_field($description),
-            'startDate' => \sanitize_text_field($meta['event_date']),
+            'name' => \sanitize_text_field((string) $title),
+            'description' => \sanitize_text_field((string) $description),
+            'startDate' => \sanitize_text_field((string) $meta['event_date']),
             'eventStatus' => 'https://schema.org/EventScheduled',
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
             'performer' => [
@@ -293,14 +296,14 @@ class Zen_SEO_Schema
 
         // Image
         if ($image) {
-            $event['image'] = \esc_url($image);
+            $event['image'] = \esc_url((string) $image);
         }
 
         // Location
         if (!empty($meta['event_location'])) {
             $event['location'] = [
                 '@type' => 'Place',
-                'name' => \sanitize_text_field($meta['event_location']),
+                'name' => \sanitize_text_field((string) $meta['event_location']),
                 'address' => [
                     '@type' => 'PostalAddress',
                     'addressCountry' => 'BR'
@@ -312,7 +315,7 @@ class Zen_SEO_Schema
         $ticket_url = !empty($meta['event_ticket']) ? $meta['event_ticket'] : \get_permalink($post);
         $event['offers'] = [
             '@type' => 'Offer',
-            'url' => \esc_url($ticket_url),
+            'url' => \esc_url((string) $ticket_url),
             'availability' => 'https://schema.org/InStock'
         ];
 
@@ -335,8 +338,8 @@ class Zen_SEO_Schema
 
         $music = [
             '@type' => 'MusicRecording',
-            'name' => \sanitize_text_field($title),
-            'description' => \sanitize_text_field($description),
+            'name' => \sanitize_text_field((string) $title),
+            'description' => \sanitize_text_field((string) $description),
             'datePublished' => \get_post_time('c', true, $post),
             'byArtist' => [
                 '@id' => \home_url('/#artist')
@@ -344,7 +347,7 @@ class Zen_SEO_Schema
         ];
 
         if ($image) {
-            $music['image'] = \esc_url($image);
+            $music['image'] = \esc_url((string) $image);
         }
 
         // Get audio URL from custom fields
@@ -382,7 +385,7 @@ class Zen_SEO_Schema
         $schema = [
             '@type' => 'Product',
             'name' => $product->get_name(),
-            'description' => \wp_strip_all_tags($product->get_description()),
+            'description' => \wp_strip_all_tags((string) $product->get_description()),
             'sku' => $product->get_sku(),
             'image' => \wp_get_attachment_url($product->get_image_id()),
             'offers' => [
@@ -402,14 +405,17 @@ class Zen_SEO_Schema
 
     /**
      * Get sameAs URLs from settings
+     *
+     * FIX: Use null coalescing on every array access before casting/trimming
+     * to prevent "Passing null to parameter #1 ($string) of type string" deprecation.
      */
     private function get_same_as_urls($settings)
     {
         $urls = [];
 
         // Google Knowledge Graph
-        if (!empty($settings['google_kg'])) {
-            $kg = \trim((string) $settings['google_kg']);
+        $kg = \trim((string) ($settings['google_kg'] ?? ''));
+        if ($kg !== '') {
             if (\strpos($kg, 'http') === 0) {
                 $urls[] = \esc_url($kg);
             } else {
@@ -432,12 +438,15 @@ class Zen_SEO_Schema
             'bandsintown',
             'instagram',
             'youtube',
-            'facebook'
+            'facebook',
+            'ranker_list',
         ];
 
         foreach ($platforms as $platform) {
-            if (!empty($settings[$platform])) {
-                $urls[] = \esc_url(\trim((string) $settings[$platform]));
+            // FIX: ?? '' prevents null being passed to trim() and esc_url()
+            $value = \trim((string) ($settings[$platform] ?? ''));
+            if ($value !== '') {
+                $urls[] = \esc_url($value);
             }
         }
 
