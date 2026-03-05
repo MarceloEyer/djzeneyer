@@ -102,11 +102,11 @@ Localizados em `.agents/skills/djzeneyer-context/`:
 ### 4.1 Skills Especializadas (Power Pack Consolidado)
 - `@seo-audit`: Audita crawlability, meta tags e indexação.
 - `@schema-markup`: Valida e otimiza JSON-LD (ideal para o zen-seo-lite).
-- `@ai-seo`: Otimiza para E-E-A-T e respostas de IA/Knowledge Graph.
+- `@ai-seo` (via `@seo-authority-builder`): Otimiza para E-E-A-T e respostas de IA.
 - `@social-content`: Criação de conteúdo para redes sociais (Zouk/Eventos).
 - `@copywriting`: Copy persuasiva para landing pages e shop.
 - `@react-patterns`: Padrões de UI, loading states e error handling.
-- `@tailwind-mastery`: Estilização avançada e responsiva com Tailwind v4.
+- `@tailwind-patterns`: Estilização avançada e responsiva com Tailwind v4.
 - `@auth-implementation-patterns`: Segurança JWT e OAuth2 (zeneyer-auth).
 - `@web-quality-skills`: Auditoria de performance, bundle e Core Web Vitals.
 - `@backend-security-coder`: Código PHP seguro (Prepared Statements/Sanitização).
