@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
 import { useTrackBySlug } from '../hooks/useQueries';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, generatePath } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
@@ -58,7 +58,7 @@ const MusicPage: React.FC = () => {
         <HeadlessSEO
           title={`${singleTrack.title?.rendered || t('music.pageTitle')} | Zen Music`}
           description={singleTrack.excerpt?.rendered || t('music.pageDesc')}
-          url={`https://djzeneyer.com/music/${slug}`}
+          url={`${window.location.origin}${generatePath(getLocalizedRoute('music-detail', currentLang), { slug })}`}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
@@ -114,7 +114,7 @@ const MusicPage: React.FC = () => {
       <HeadlessSEO
         title={`${t('music_page_title')} | DJ Zen Eyer`}
         description={t('music_page_meta_desc')}
-        url={`https://djzeneyer.com${currentLang === 'pt' ? '/pt/musica-zouk' : '/zouk-music'}`}
+        url={`${window.location.origin}${getLocalizedRoute('music', currentLang)}`}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">

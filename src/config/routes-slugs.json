@@ -14,17 +14,41 @@
         {
             "key": "events",
             "en": "zouk-events",
-            "pt": "eventos-zouk"
+            "pt": "eventos-zouk",
+            "aliases": {
+                "en": [
+                    "events"
+                ],
+                "pt": [
+                    "eventos"
+                ]
+            }
         },
         {
             "key": "music",
             "en": "zouk-music",
-            "pt": "musica-zouk"
+            "pt": "musica-zouk",
+            "aliases": {
+                "en": [
+                    "music"
+                ],
+                "pt": [
+                    "musica"
+                ]
+            }
         },
         {
             "key": "news",
             "en": "zouk-dance-news",
-            "pt": "noticias-zouk"
+            "pt": "noticias-zouk",
+            "aliases": {
+                "en": [
+                    "news"
+                ],
+                "pt": [
+                    "noticias"
+                ]
+            }
         },
         {
             "key": "philosophy",

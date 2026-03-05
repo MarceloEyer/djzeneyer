@@ -4,7 +4,8 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Calendar, Clock, ArrowRight, TrendingUp, Hash, ArrowLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
+import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage, getLocalizedRoute } from '../config/routes';
+import { generatePath } from 'react-router-dom';
 import { useNewsQuery, useNewsBySlug, WPPost } from '../hooks/useQueries';
 import { stripHtml } from '../utils/text';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
@@ -46,12 +47,9 @@ const NewsPage: React.FC = () => {
   const posts = postsData || [];
   const loading = slug ? loadingDetail : loadingList;
 
-  // Helper para rotas localizadas
+  // Helper para rotas localizadas usando SSOT
   const getRouteForKey = (key: string): string => {
-    const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
-    if (!route) return `/${key}`;
-    const normalizedLanguage = normalizeLanguage(i18n.language);
-    return buildFullPath(getLocalizedPaths(route, normalizedLanguage)[0], normalizedLanguage);
+    return getLocalizedRoute(key, normalizedLanguage);
   };
 
   // --- RENDERIZAÇÃO DE POST ÚNICO ---
@@ -61,7 +59,7 @@ const NewsPage: React.FC = () => {
         <HeadlessSEO
           title={`${stripHtml(singlePost.title.rendered)} | ${t('news.title')}`}
           description={stripHtml(singlePost.excerpt.rendered)}
-          url={`https://djzeneyer.com/news/${singlePost.slug}`}
+          url={`${window.location.origin}${generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: singlePost.slug })}`}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
@@ -109,7 +107,7 @@ const NewsPage: React.FC = () => {
       <HeadlessSEO
         title={t('news_page_title')}
         description={t('news_page_meta_desc')}
-        url="https://djzeneyer.com/news"
+        url={`${window.location.origin}${getLocalizedRoute('news', normalizedLanguage)}`}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4">
@@ -150,7 +148,7 @@ const NewsPage: React.FC = () => {
                 <motion.article
                   className="relative group cursor-pointer mb-20"
                 >
-                  <Link to={`${getRouteForKey('news')}/${featuredPost.slug}`}>
+                  <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: featuredPost.slug })}>
                     <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                       <img
                         src={safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
@@ -203,7 +201,7 @@ const NewsPage: React.FC = () => {
                     transition={{ delay: index * 0.1 }}
                     className="group flex flex-col h-full bg-surface/30 rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 hover:bg-surface/50 transition-all duration-300 text-left"
                   >
-                    <Link to={`${getRouteForKey('news')}/${post.slug}`} className="block h-56 overflow-hidden relative">
+                    <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })} className="block h-56 overflow-hidden relative">
                       <img
                         src={safeUrl(post.featured_image_src || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
                         alt={stripHtml(post.title.rendered)}
@@ -218,7 +216,7 @@ const NewsPage: React.FC = () => {
                       <div className="text-xs text-primary mb-3 font-bold uppercase tracking-wider flex items-center gap-2">
                         <Hash size={12} /> {t('news.label')}
                       </div>
-                      <Link to={`${getRouteForKey('news')}/${post.slug}`}>
+                      <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })}>
                         <h3
                           className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2 text-white"
                           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.title.rendered) }}
@@ -232,7 +230,7 @@ const NewsPage: React.FC = () => {
                         <span className="text-xs text-white/40 font-medium">
                           {formatDate(post.date, i18n.language)}
                         </span>
-                        <Link to={`${getRouteForKey('news')}/${post.slug}`} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
+                        <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
                           {t('news.read_more')}
                         </Link>
                       </div>

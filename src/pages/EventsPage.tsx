@@ -54,10 +54,10 @@ interface EventDetailProps {
 
 const EventDetailContent = ({ id, lang }: EventDetailProps) => {
   const { t } = useTranslation();
-  const { data: e } = useEventById(id, { suspense: true });
+  const { data: event } = useEventById(id, { suspense: true });
   const [showToast, setShowToast] = useState(false);
 
-  if (!e) {
+  if (!event) {
     return (
       <div className="max-w-4xl mx-auto py-20 text-center animate-in fade-in duration-500">
         <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary">
@@ -74,10 +74,10 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
 
   const share = () => {
     // canonical_url do detalhe já contém o origin; fallback via event_id
-    const canonical = e.canonical_url ||
-      `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.event_id || ''}`;
+    const canonical = event.canonical_url ||
+      `${window.location.origin}${getLocalizedRoute('events', lang)}/${event.event_id || ''}`;
     if (navigator.share) {
-      navigator.share({ title: e.title, url: canonical });
+      navigator.share({ title: event.title, url: canonical });
     } else {
       navigator.clipboard.writeText(canonical);
       setShowToast(true);
@@ -85,14 +85,14 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
   };
 
   // Suporte dual: v2 usa starts_at, fallback para datetime (v1 local)
-  const rawDate = e.starts_at || (e as Record<string, string>).datetime || '';
+  const rawDate = event.starts_at || (event as Record<string, string>).datetime || '';
   const eventDate = new Date(rawDate);
   const isValidDate = !isNaN(eventDate.getTime());
 
   // Suporte dual: v2 usa location.venue, fallback para venue.name
-  const loc = e.location ?? {
-    venue: (e as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.name ?? '',
-    city: (e as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.city ?? '',
+  const loc = event.location ?? {
+    venue: (event as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.name ?? '',
+    city: (event as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.city ?? '',
     region: '',
     country: '',
   };
@@ -100,9 +100,9 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
   return (
     <div className="max-w-4xl mx-auto">
       <HeadlessSEO
-        title={`${e.title} | DJ Zen Eyer`}
-        description={e.description || t('events_page_meta_desc')}
-        events={[e]}
+        title={`${event.title} | ${t('events.title')}`}
+        description={event.description.substring(0, 160)}
+        url={`${window.location.origin}${generatePath(getLocalizedRoute('events-detail', lang), { id })}`}
       />
       <Link to={getLocalizedRoute('events', lang)} className="flex items-center gap-2 text-primary mb-8 font-extrabold uppercase tracking-widest text-sm hover:text-white transition-colors">
         <ArrowLeft size={18} /> {t('events_back')}
@@ -110,8 +110,8 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
       <div className="grid md:grid-cols-2 gap-8 md:gap-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
         <div className="relative group">
           <EventMedia
-            image={e.image}
-            title={e.title}
+            image={event.image}
+            title={event.title}
             date={rawDate}
             venue={loc.venue}
           />
@@ -123,7 +123,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
             {isValidDate ? eventDate.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) : t('tba')}
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter text-white leading-[0.9]" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
+          <h1 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter text-white leading-[0.9]" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
 
           <div className="space-y-5 mb-10">
             <div className="flex items-center gap-4 text-white/80">
@@ -141,11 +141,11 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
               <span className="font-bold">{loc.venue}{loc.city ? `, ${loc.city}` : ''}</span>
             </div>
 
-            <div className="prose prose-invert mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.description || e.content || '') }} />
+            <div className="prose prose-invert mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || event.content || '') }} />
 
             <div className="space-y-4">
               {/* Tickets button removed by user request */}
-              <AddCalendarMenu event={e} variant="primary" />
+              <AddCalendarMenu event={event} variant="primary" />
 
               <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
                 <Share2 size={18} /> {t('share')}
@@ -175,7 +175,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
     const groups: Record<string, ZenBitEventListItem[]> = {};
-    events.forEach((e) => {
+    events.forEach((e: ZenBitEventListItem) => {
       const date = new Date(e.starts_at);
       if (isNaN(date.getTime())) return;
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -210,7 +210,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
       <HeadlessSEO
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
-        events={events}
+        url={`${window.location.origin}${getLocalizedRoute('events', lang)}`}
       />
       {groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
         const [y, m] = key.split('-');
@@ -226,10 +226,12 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <div className="space-y-3">
               {monthEvents.map((e) => {
                 const eventDay = new Date(e.starts_at);
-                // v2: canonical_path sempre presente ou fallback para key
-                const detailHref = e.canonical_path
-                  ? (lang === 'pt' ? `/pt${e.canonical_path.replace('/events', '/eventos')}` : e.canonical_path)
-                  : generatePath(getLocalizedRoute('events-detail', lang), { id: e.event_id });
+                // Normaliza o link do detalhe usando SSOT para evitar 404
+                const identifier = e.canonical_path
+                  ? e.canonical_path.split('/').pop() || e.event_id
+                  : e.event_id;
+
+                const detailHref = generatePath(getLocalizedRoute('events-detail', lang), { id: identifier });
 
                 // v2: location sempre presente
                 const loc = e.location;

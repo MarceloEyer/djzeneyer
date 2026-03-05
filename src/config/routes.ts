@@ -377,20 +377,47 @@ ROUTES_CONFIG.forEach(route => {
 });
 
 /**
- * Tenta encontrar a chave lógica a partir de um caminho/slug
+ * Tenta encontrar a chave lógica a partir de um caminho/slug (Omni-language)
  */
 export const findKeyByPath = (path: string): string | undefined => {
-  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  const cleanPath = normalizeRouteKey(path);
   if (!cleanPath) return 'home';
-  return PATH_TO_KEY_MAP.get(cleanPath);
+
+  // 1. Busca exata
+  const exact = PATH_TO_KEY_MAP.get(cleanPath);
+  if (exact) return exact;
+
+  // 2. Busca por prefixo (para rotas de detalhe dinâmicas)
+  // Ordenar por extensao do path para pegar o match mais específico primeiro
+  const sortedPaths = Array.from(PATH_TO_KEY_MAP.entries()).sort((a, b) => b[0].length - a[0].length);
+
+  for (const [p, key] of sortedPaths) {
+    if (cleanPath.startsWith(p + '/')) {
+      // Mapeamento automático para rotas de detalhe
+      if (key === 'events') return 'events-detail';
+      if (key === 'music') return 'music-detail';
+      if (key === 'news') return 'news-detail';
+      if (key === 'shop') return 'product-detail';
+      return key;
+    }
+  }
+
+  // 3. Fallback: Se for a própria chave
+  if (KEY_ROUTE_MAP.has(cleanPath)) return cleanPath;
+
+  return undefined;
 };
 
 /**
  * Obtém o caminho localizado para uma rota, a partir de sua CHAVE LÓGICA ou um PATH legado
  */
 export const getLocalizedRoute = (keyOrPath: string, lang: Language): string => {
-  // 1. Tenta como chave direta
-  let route = KEY_ROUTE_MAP.get(keyOrPath);
+  // 0. Sanitiza a chave (remove leading slashes se houver)
+  const sanitizedKey = normalizeRouteKey(keyOrPath);
+  const finalKey = sanitizedKey || keyOrPath; // se vazio (home), mantém original
+
+  // 1. Tenta como chave direta ou descoberta por path
+  let route = KEY_ROUTE_MAP.get(finalKey) || KEY_ROUTE_MAP.get(keyOrPath);
 
   // 2. Se não encontrou, tenta descobrir a chave pelo path (Reverse Lookup)
   if (!route) {
