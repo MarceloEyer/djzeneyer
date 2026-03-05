@@ -13,29 +13,29 @@
         },
         {
             "key": "events",
-            "en": "events",
-            "pt": "eventos",
+            "en": "zouk-events",
+            "pt": "eventos-zouk",
             "aliases": {
                 "en": [
-                    "zouk-events",
+                    "events",
                     "zouk-events-2"
                 ],
                 "pt": [
-                    "eventos-zouk"
+                    "eventos"
                 ]
             }
         },
         {
             "key": "music",
-            "en": "music",
-            "pt": "musica",
+            "en": "zouk-music",
+            "pt": "musica-zouk",
             "aliases": {
                 "en": [
-                    "zouk-music",
+                    "music",
                     "zouk-music-2"
                 ],
                 "pt": [
-                    "musica-zouk"
+                    "musica"
                 ]
             }
         },
