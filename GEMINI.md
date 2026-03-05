@@ -64,6 +64,12 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 - **TypeScript (tsc)** → A verificação de tipos é obrigatória no build. Erros de lint devem ser resolvidos antes do push para não quebrar a `main`.
 - **Secrets** → Depende de `SSH_PRIVATE_KEY` e `VITE_WC_CONSUMER_KEY` configurados no GitHub.
 
+## Ambiente de Desenvolvimento
+
+- **IDE:** VS Code com configurações em `.vscode/settings.json` (Prettier + ESLint auto-fix).
+- **Sem Python:** O projeto é estritamente React/PHP. Não adicionar arquivos `.py` para evitar conflitos com o servidor de linguagem Pyre2.
+- **Extensões Recomendadas:** Listadas em `.vscode/extensions.json`. Priorizar ESLint, Tailwind CSS IntelliSense e Intelephense.
+
 ## Contexto Técnico & Preferências
 
 1. **Escala** → O site é voltado para um público nichado e de baixo volume. Não há necessidade de otimizações para "milhões de usuários".
