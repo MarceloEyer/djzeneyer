@@ -220,7 +220,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         return (
           <section key={key}>
             <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
-              {name} <span className="text-white/10">{y}</span>
+              {name} <span className="text-white/60 drop-shadow-sm">{y}</span>
               <div className="h-px flex-1 bg-white/5" />
             </h2>
             <div className="space-y-3">
@@ -291,9 +291,8 @@ const EventsPage: React.FC = () => {
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16 px-4">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display uppercase text-white">
-            {lang === 'pt' ? 'Agenda de ' : 'Events '}
-            <span className="text-primary">{lang === 'pt' ? 'Eventos' : 'Schedule'}</span>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 font-display uppercase text-white tracking-tighter">
+            {t('events.title_part1')} <span className="text-primary">{t('events.title_part2')}</span>
           </h1>
         </header>
 

@@ -15,6 +15,39 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Use"
   },
+  "dashboard": {
+    "loading": "Syncing with the Zen Universe...",
+    "welcomeBack": "Welcome Back, {{name}}",
+    "journeyBegins": "Your journey in the Zen Tribe continues.",
+    "diveDeep": "Dive deep into the melt.",
+    "rank_new_member": "New Member",
+    "rank_zen_novice": "Zen Novice",
+    "nextRank": "Progression to",
+    "boostXP": "Boost Your XP",
+    "yourWallet": "Your Zen Wallet",
+    "quickActions": "Quick Actions",
+    "browseMusic": "Browse Music Central",
+    "viewEvents": "Global Event Agenda",
+    "visitShop": "Visit Apparel Shop",
+    "recentActivity": "Recent Activity",
+    "live_feed": "Live Feed",
+    "pendingQuests": "Pending Quests",
+    "allCleared": "All Quests Cleared!",
+    "yourAchievements": "Your Achievements",
+    "unlocked": "Unlocked",
+    "dayStreak": "Day Streak",
+    "welcomeTribe": "Welcome to Zen Tribe!",
+    "accountCreated": "Account created",
+    "startExploring": "Start exploring!",
+    "timeAgo": {
+      "years": "{{count}} years ago",
+      "months": "{{count}} months ago",
+      "days": "{{count}} days ago",
+      "hours": "{{count}} hours ago",
+      "minutes": "{{count}} minutes ago",
+      "seconds": "{{count}} seconds ago"
+    }
+  },
   "common": {
     "artist_name": "DJ Zen Eyer",
     "legal_name": "Marcelo Eyer Fernandes",
@@ -91,7 +124,12 @@
     "footer_subscribe": "Subscribe",
     "footer_subscribe_success": "Subscription successful!",
     "footer_subscribe_error": "Error during subscription.",
-    "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved."
+    "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
+    "friend": "Zen Friend"
+  },
+  "events": {
+    "title_part1": "Events",
+    "title_part2": "Schedule"
   },
   "quiz": {
     "personas": {
@@ -195,54 +233,8 @@
     "achievements": "Achievements",
     "achievement": "Achievement",
     "startJourney": "Start your journey to unlock achievements!",
-    "earnMoreXP": "Earn More XP"
-  },
-  "dashboard": {
-    "loading": "Loading your Zen Dashboard...",
-    "live_feed": "Live Feed",
-    "welcomeBack": "Welcome back, {{name}}!",
-    "progressToLevel": "Progress to Level {{level}}",
-    "boostXP": "Boost XP",
-    "tracksDownloaded": "Tracks Downloaded",
-    "eventsAttended": "Events Attended",
-    "dayStreak": "Day Streak",
-    "dayStreakFire": "Day Streak 🔥",
-    "tribeFriends": "Tribe Friends",
-    "welcomeTribe": "Welcome to Zen Tribe!",
-    "journeyBegins": "Your journey begins now",
-    "accountCreated": "Account created",
-    "startExploring": "Start exploring!",
-    "table": {
-      "activity": "Activity",
-      "points": "Points",
-      "date": "Date"
-    },
-    "recentActivity": "Recent Activity",
-    "noActivity": "No recent activity yet.",
-    "rank_new_member": "New Member",
-    "rank_zen_novice": "Zen Novice",
-    "nextRank": "Next Rank",
-    "yourWallet": "Your Wallet",
-    "pendingQuests": "Pending Quests",
-    "allCleared": "All Cleared!",
-    "nextSteps": "Next Steps",
-    "quickActions": "Quick Actions",
-    "browseMusic": "Browse Music",
-    "viewEvents": "View Events",
-    "visitShop": "Visit Shop",
-    "yourAchievements": "Your Achievements",
-    "unlocked": "Unlocked",
-    "startJourney": "Start Your Journey",
-    "startJourneyDesc": "Complete tasks like listening to tracks, attending events, or visiting the shop to unlock your first achievements!",
-    "startListening": "Start Listening",
-    "timeAgo": {
-      "years": "{{count}} years ago",
-      "months": "{{count}} months ago",
-      "days": "{{count}} days ago",
-      "hours": "{{count}} hours ago",
-      "minutes": "{{count}} minutes ago",
-      "seconds": "{{count}} seconds ago"
-    }
+    "earnMoreXP": "Earn More XP",
+    "unlock_at": "Unlock at level {{level}}"
   },
   "_meta": {
     "version": "2.1.0",
@@ -1017,35 +1009,6 @@
     "acceptance_p1": "By using this website, you acknowledge that you have read and understood these Terms of Use",
     "acceptance_p2": "and agree to be bound by them."
   },
-  "account_page": {
-    "newsletter_toggle": "Receive weekly news & agenda",
-    "newsletter_desc": "Stay updated with exclusive Zouk events and releases",
-    "newsletter_enabled": "Newsletter enabled",
-    "newsletter_disabled": "Newsletter disabled"
-  },
-  "profile": {
-    "title": "Profile Information",
-    "real_name": "Real Name",
-    "real_name_hint": "for purchases and friend lists",
-    "preferred_name": "Preferred Name",
-    "preferred_name_hint": "how we'll call you on the site and emails",
-    "email": "Email",
-    "facebook": "Facebook",
-    "facebook_placeholder": "https://facebook.com/yourprofile",
-    "instagram": "Instagram",
-    "instagram_placeholder": "https://instagram.com/yourprofile",
-    "dance_role": "Dance Role",
-    "dance_role_hint": "you can select both",
-    "leader": "Leader",
-    "follower": "Follower",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "non_binary": "Non-binary",
-    "save": "Save Profile",
-    "saving": "Saving...",
-    "saved": "Saved!"
-  },
   "payme": {
     "title": "Support DJ Zen Eyer",
     "description": "Support DJ Zen Eyer through donations and collaborations.",
@@ -1284,8 +1247,48 @@
       "settings": "Settings",
       "not_found": "Tab not found"
     },
-    "orders": {
-      "title": "My Orders"
+    "stats": {
+      "level_title": "Level",
+      "level_value": "Level {{level}}",
+      "xp_title": "Experience Points",
+      "xp_to_next_rank": "{{count}} XP to next level",
+      "xp_max": "Max level reached!",
+      "achievements_title": "Achievements",
+      "unlocked_recently": "{{count}} unlocked recently",
+      "keep_exploring": "Keep exploring!"
+    },
+    "profile": {
+      "title": "Account Details",
+      "real_name": "Full Name",
+      "real_name_hint": "for certificates and tickets",
+      "preferred_name": "Artist / Preferred Name",
+      "preferred_name_hint": "how the Tribe sees you",
+      "email": "Email Frequency",
+      "facebook": "Facebook Profile",
+      "facebook_placeholder": "URL or Username",
+      "instagram": "Instagram",
+      "instagram_placeholder": "@username",
+      "dance_role": "Dance Specialty",
+      "dance_role_hint": "optional",
+      "leader": "Leader",
+      "follower": "Follower",
+      "gender": "Gender / Identity",
+      "male": "Male",
+      "female": "Female",
+      "non_binary": "Non-binary",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "saved": "Profile Updated!",
+      "identity": "Identity",
+      "social": "Social Connection",
+      "success": "Success!",
+      "milestones": "Mastered {{count}} Milestones"
+    },
+    "newsletter": {
+      "title": "Newsletter Tribe",
+      "desc": "Get exclusive tracks & events directly in your inbox.",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
     },
     "loading": "Loading your Zen account...",
     "no_achievements": "No achievements yet",

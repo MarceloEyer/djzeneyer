@@ -17,6 +17,39 @@
     "main_navigation": "Navegação Principal",
     "mobile_navigation": "Menu Mobile"
   },
+  "dashboard": {
+    "loading": "Sincronizando com o Universo Zen...",
+    "welcomeBack": "Bem-vindo de volta, {{name}}",
+    "journeyBegins": "Sua jornada na Zen Tribe continua.",
+    "diveDeep": "Mergulhe fundo no derretimento.",
+    "rank_new_member": "Novo Membro",
+    "rank_zen_novice": "Zen Novice",
+    "nextRank": "Progressão para",
+    "boostXP": "Turbinar XP",
+    "yourWallet": "Sua Carteira Zen",
+    "quickActions": "Ações Rápidas",
+    "browseMusic": "Explorar Músicas",
+    "viewEvents": "Agenda de Eventos",
+    "visitShop": "Visitar a Loja",
+    "recentActivity": "Atividade Recente",
+    "live_feed": "Feed ao Vivo",
+    "pendingQuests": "Missões Pendentes",
+    "allCleared": "Tudo Limpo!",
+    "yourAchievements": "Suas Conquistas",
+    "unlocked": "Desbloqueado",
+    "dayStreak": "Dias Seguidos",
+    "welcomeTribe": "Bem-vindo à Zen Tribe!",
+    "accountCreated": "Conta criada",
+    "startExploring": "Comece a explorar!",
+    "timeAgo": {
+      "years": "{{count}} anos atrás",
+      "months": "{{count}} meses atrás",
+      "days": "{{count}} dias atrás",
+      "hours": "{{count}} horas atrás",
+      "minutes": "{{count}} minutos atrás",
+      "seconds": "{{count}} segundos atrás"
+    }
+  },
   "common": {
     "artist_name": "DJ Zen Eyer",
     "legal_name": "Marcelo Eyer Fernandes",
@@ -93,7 +126,12 @@
     "footer_subscribe": "Assinar",
     "footer_subscribe_success": "Inscrição realizada com sucesso!",
     "footer_subscribe_error": "Erro ao realizar inscrição.",
-    "footer_copyright": "© {{year}} DJ Zen Eyer. Todos os direitos reservados."
+    "footer_copyright": "© {{year}} DJ Zen Eyer. Todos os direitos reservados.",
+    "friend": "Amigo Zen"
+  },
+  "events": {
+    "title_part1": "Agenda de",
+    "title_part2": "Eventos"
   },
   "quiz": {
     "personas": {
@@ -198,54 +236,8 @@
     "achievements": "Conquistas",
     "achievement": "Conquista",
     "startJourney": "Comece sua jornada para desbloquear conquistas!",
-    "earnMoreXP": "Ganhar Mais XP"
-  },
-  "dashboard": {
-    "loading": "Carregando seu Zen Dashboard...",
-    "live_feed": "Feed ao Vivo",
-    "welcomeBack": "Bem-vindo de volta, {{name}}!",
-    "progressToLevel": "Progresso para o Nível {{level}}",
-    "boostXP": "Turbinar XP",
-    "tracksDownloaded": "Tracks Baixadas",
-    "eventsAttended": "Eventos Atendidos",
-    "dayStreak": "Dias Seguidos",
-    "dayStreakFire": "Dias Seguidos 🔥",
-    "tribeFriends": "Amigos da Tribo",
-    "welcomeTribe": "Bem-vindo à Zen Tribe!",
-    "journeyBegins": "Sua jornada começa agora",
-    "accountCreated": "Conta criada",
-    "startExploring": "Comece a explorar!",
-    "recentActivity": "Histórico de Atividade",
-    "noActivity": "Nenhuma atividade recente.",
-    "rank_new_member": "Novo Membro",
-    "rank_zen_novice": "Zen Noviço",
-    "nextRank": "Próximo Rank",
-    "yourWallet": "Sua Carteira",
-    "pendingQuests": "Desafios Pendentes",
-    "allCleared": "Tudo Concluído!",
-    "nextSteps": "Próximos Passos",
-    "quickActions": "Ações Rápidas",
-    "table": {
-      "activity": "Atividade",
-      "points": "Pontos",
-      "date": "Data"
-    },
-    "browseMusic": "Explorar Músicas",
-    "viewEvents": "Ver Eventos",
-    "visitShop": "Visitar Loja",
-    "yourAchievements": "Suas Conquistas",
-    "unlocked": "Desbloqueada",
-    "startJourney": "Comece Sua Jornada",
-    "startJourneyDesc": "Complete tarefas como ouvir tracks, participar de eventos ou visitar a loja para desbloquear suas primeiras conquistas!",
-    "startListening": "Começar a Ouvir",
-    "timeAgo": {
-      "years": "{{count}} anos atrás",
-      "months": "{{count}} meses atrás",
-      "days": "{{count}} dias atrás",
-      "hours": "{{count}} horas atrás",
-      "minutes": "{{count}} minutos atrás",
-      "seconds": "{{count}} segundos atrás"
-    }
+    "earnMoreXP": "Ganhar Mais XP",
+    "unlock_at": "Desbloqueie no nível {{level}}"
   },
   "_meta": {
     "version": "2.1.0",
@@ -1002,35 +994,6 @@
     "acceptance_p1": "Ao usar este site, você reconhece que leu e entendeu estes Termos de Uso",
     "acceptance_p2": "e concorda em estar vinculado a eles."
   },
-  "account_page": {
-    "newsletter_toggle": "Receber notícias semanais e agenda",
-    "newsletter_desc": "Fique atualizado com eventos exclusivos de Zouk e lançamentos",
-    "newsletter_enabled": "Newsletter ativada",
-    "newsletter_disabled": "Newsletter desativada"
-  },
-  "profile": {
-    "title": "Informações do Perfil",
-    "real_name": "Nome Real",
-    "real_name_hint": "para compras e listas de amigos",
-    "preferred_name": "Nome Preferido",
-    "preferred_name_hint": "como vamos te chamar no site e nos emails",
-    "email": "Email",
-    "facebook": "Facebook",
-    "facebook_placeholder": "https://facebook.com/seuperfil",
-    "instagram": "Instagram",
-    "instagram_placeholder": "https://instagram.com/seuperfil",
-    "dance_role": "Papel na Dança",
-    "dance_role_hint": "você pode marcar ambos",
-    "leader": "Condutor",
-    "follower": "Conduzido",
-    "gender": "Gênero",
-    "male": "Masculino",
-    "female": "Feminino",
-    "non_binary": "Não-binário",
-    "save": "Salvar Perfil",
-    "saving": "Salvando...",
-    "saved": "Salvo!"
-  },
   "payme": {
     "title": "Apoie o DJ Zen Eyer",
     "description": "Apoie o DJ Zen Eyer através de doações e colaborações.",
@@ -1288,24 +1251,87 @@
     "not_found": "Não achou o que procurava?"
   },
   "account": {
+    "loading": "Carregando seus dados...",
+    "page_title": "Minha Conta Zen",
+    "page_subtitle": "Gerencie seu perfil, pedidos e assinatura Zen Tribe",
+    "meta_title": "Minha Conta | {{stageName}}",
+    "meta_desc": "Gerencie seu perfil e acompanhe sua jornada na Zen Tribe.",
+    "locked": "Bloqueado",
+    "no_achievements": "Nenhuma conquista ainda",
+    "no_achievements_desc": "Comece a explorar o site e participar de eventos para ganhar conquistas!",
+    "start_journey": "Começar Jornada",
     "tabs": {
       "overview": "Visão Geral",
       "orders": "Pedidos",
       "achievements": "Conquistas",
-      "music": "Minhas Músicas",
+      "music": "Minha Música",
       "settings": "Configurações",
       "not_found": "Aba não encontrada"
     },
-    "loading": "Carregando sua conta Zen...",
-    "no_achievements": "Nenhuma conquista ainda",
-    "no_achievements_desc": "Comece a explorar e interagir para desbloquear suas primeiras conquistas!",
-    "start_journey": "Começar Jornada",
-    "music": {
-      "title": "Minha Coleção Musical",
-      "browse": "Explorar Músicas",
-      "empty_title": "Sua biblioteca musical",
-      "empty_desc": "Acesse tracks exclusivas, mixes e playlists curadas pelo DJ Zen Eyer",
-      "explore": "Explorar Músicas"
+    "stats": {
+      "level_title": "Nível",
+      "level_value": "Nível {{level}}",
+      "xp_title": "Pontos de Experiência",
+      "xp_to_next_rank": "{{count}} XP para o próximo nível",
+      "xp_max": "Nível máximo alcançado!",
+      "achievements_title": "Conquistas",
+      "unlocked_recently": "{{count}} desbloqueadas recentemente",
+      "keep_exploring": "Continue explorando!"
+    },
+    "profile": {
+      "title": "Detalhes da Conta",
+      "real_name": "Nome Completo",
+      "real_name_hint": "para certificados e ingressos",
+      "preferred_name": "Nome Artístico / Preferido",
+      "preferred_name_hint": "como a Tribo te vê",
+      "email": "Canal de Contato",
+      "facebook": "Perfil Facebook",
+      "facebook_placeholder": "URL ou Usuário",
+      "instagram": "Instagram",
+      "instagram_placeholder": "@usuario",
+      "dance_role": "Sua Especialidade",
+      "dance_role_hint": "opcional",
+      "leader": "Leader",
+      "follower": "Follower",
+      "gender": "Gênero / Identidade",
+      "male": "Masculino",
+      "female": "Feminino",
+      "non_binary": "Não-binário",
+      "save": "Salvar Alterações",
+      "saving": "Salvando...",
+      "saved": "Perfil Atualizado!",
+      "identity": "Identidade",
+      "social": "Conexão Social",
+      "success": "Sucesso!",
+      "milestones": "Dominou {{count}} Marcos"
+    },
+    "newsletter": {
+      "title": "Newsletter Tribe",
+      "desc": "Receba músicas e eventos exclusivos no seu e-mail.",
+      "enabled": "Ativado",
+      "disabled": "Desativado"
+    },
+    "orders": {
+      "title": "Meu Histórico de Pedidos",
+      "loading": "Carregando pedidos...",
+      "no_orders": "Nenhum pedido encontrado",
+      "no_orders_desc": "Você ainda não realizou nenhum pedido na nossa loja.",
+      "browse_shop": "Ir para a Loja",
+      "continue_shopping": "Continuar Comprando",
+      "order_number": "Pedido #{{id}}",
+      "status": {
+        "completed": "Concluído",
+        "processing": "Processando",
+        "failed": "Falha",
+        "pending": "Pendente",
+        "cancelled": "Cancelado"
+      }
+    },
+    "notifications": {
+      "title": "Notificações",
+      "events": "Novos eventos e agenda",
+      "achievements": "Minhas conquistas e XP",
+      "marketing": "Ofertas e novidades da loja"
     },
     "security": {
       "title": "Segurança",
@@ -1313,45 +1339,15 @@
     },
     "danger": {
       "title": "Zona de Perigo",
-      "desc": "Ao sair, você precisará entrar novamente para acessar sua conta.",
-      "logout": "Sair"
+      "desc": "Depois de sair, você precisará entrar novamente para acessar seus benefícios.",
+      "logout": "Sair da Conta"
     },
-    "notifications": {
-      "title": "Notificações",
-      "events": "Notificações por e-mail para novos eventos",
-      "achievements": "Atualizações de conquistas",
-      "marketing": "E-mails de marketing"
-    },
-    "meta_title": "Minha Conta | {{stageName}}",
-    "meta_desc": "Gerencie sua conta Zen Tribe, pedidos e conquistas",
-    "page_title": "Minha Conta Zen",
-    "page_subtitle": "Gerencie seu perfil, pedidos e assinatura Zen Tribe",
-    "locked": "Bloqueado",
-    "orders": {
-      "title": "Histórico de Pedidos",
-      "loading": "Carregando pedidos...",
-      "no_orders": "Nenhum pedido ainda",
-      "no_orders_desc": "Comece a explorar nosso conteúdo exclusivo e produtos!",
-      "browse_shop": "Ver Loja",
-      "continue_shopping": "Continuar Comprando",
-      "order_number": "Pedido #{{id}}",
-      "status": {
-        "completed": "Concluído",
-        "processing": "Processando",
-        "failed": "Falha",
-        "cancelled": "Cancelado",
-        "pending": "Pendente"
-      }
-    },
-    "stats": {
-      "level_title": "Nível Zen",
-      "level_value": "Nível {{level}}",
-      "xp_title": "XP Total",
-      "xp_to_next_rank": "{{count}} para o próximo rank",
-      "xp_max": "Rank máximo!",
-      "achievements_title": "Conquistas",
-      "unlocked_recently": "{{count}} desbloqueadas recentemente",
-      "keep_exploring": "Continue explorando!"
+    "music": {
+      "title": "Minha Coleção",
+      "browse": "Explorar Músicas",
+      "empty_title": "Nenhuma música ainda",
+      "empty_desc": "Suas tracks baixadas e coleções aparecerão aqui.",
+      "explore": "Explorar Agora"
     }
   },
   "not_found": {

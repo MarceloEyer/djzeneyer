@@ -17,6 +17,7 @@ export const stripHtml = (html: string): string => {
 
     // SSR Fallback or if DOMParser is unavailable: use Regex
     return html
+        .replace(/<!--[\s\S]*?-->/g, '')                                   // Remove comments (WP)
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
         .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')   // Remove styles
         .replace(/<[^>]*>?/gm, '')                                         // Remove tags
