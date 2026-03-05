@@ -7,6 +7,7 @@
  * Author: DJ Zen Eyer
  * Author URI: https://djzeneyer.com
  */
+namespace ZenEyer\Overview;
 
 if (!defined('ABSPATH'))
     exit;
@@ -26,22 +27,22 @@ class Zen_Plugins_Overview
 
     private function __construct()
     {
-        add_action('admin_menu', array($this, 'add_overview_page'), 2);
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
+        \add_action('admin_menu', array($this, 'add_overview_page'), 2);
+        \add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
     }
 
     public function enqueue_assets($hook)
     {
-        if (strpos($hook, 'zen-control') === false)
+        if (\strpos($hook, 'zen-control') === false)
             return;
-        wp_enqueue_style('dashicons');
+        \wp_enqueue_style('dashicons');
     }
 
     public function add_overview_page()
     {
-        add_menu_page(
-            __('Zen Control', 'zen-plugins'),
-            __('Zen Control', 'zen-plugins'),
+        \add_menu_page(
+            \__('Zen Control', 'zen-plugins'),
+            \__('Zen Control', 'zen-plugins'),
             'manage_options',
             'zen-control',
             array($this, 'render_overview_page'),
@@ -52,15 +53,15 @@ class Zen_Plugins_Overview
 
     private function check_active($path)
     {
-        if (!function_exists('is_plugin_active')) {
-            include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        if (!\function_exists('is_plugin_active')) {
+            include_once(\ABSPATH . 'wp-admin/includes/plugin.php');
         }
-        return is_plugin_active($path);
+        return \is_plugin_active($path);
     }
 
     private function get_plugins_data()
     {
-        $rest_base = rest_url();
+        $rest_base = \rest_url();
 
         return array(
             array(
@@ -75,22 +76,21 @@ class Zen_Plugins_Overview
                     'GET ' . $rest_base . 'zen-seo/v1/settings' => 'Config global SEO (nome, OG image)',
                     'GET ' . $rest_base . 'zen-seo/v1/meta?url=/' => 'Meta tags para rota React',
                 ),
-                'docs_url' => admin_url('admin.php?page=zen-seo-settings'),
+                'docs_url' => \admin_url('admin.php?page=zen-seo-settings'),
             ),
             array(
                 'name' => 'ZenGame',
                 'path' => 'zengame/zengame.php',
-                'version' => '1.1.0',
-                'desc' => 'Bridge GamiPress para arquitetura headless. Agrega pontos, ranks, conquistas e atividades em um único endpoint com cache. Leaderboard público incluído.',
+                'version' => '1.2.1',
+                'desc' => 'Bridge GamiPress para arquitetura headless. Agrega pontos, ranks, conquistas e atividades em um único endpoint com cache. Leaderboard público otimizado com JOIN.',
                 'icon' => 'dashicons-games',
                 'color' => '#ff6b35',
                 'menu' => 'zengame-settings',
                 'endpoints' => array(
-                    'GET ' . $rest_base . 'zengame/v1/user-data?user_id=X' => 'Dados completos GamiPress (JWT)',
-                    'GET ' . $rest_base . 'zengame/v1/leaderboard' => 'Leaderboard público',
-                    'POST ' . $rest_base . 'zengame/v1/clear-cache' => 'Limpar cache (admin)',
+                    'GET ' . $rest_base . 'zengame/v1/me' => 'Dashboard do usuário (JWT)',
+                    'GET ' . $rest_base . 'zengame/v1/leaderboard' => 'Leaderboard público (Otimizado)',
                 ),
-                'docs_url' => admin_url('admin.php?page=zengame-settings'),
+                'docs_url' => \admin_url('admin.php?page=zengame-settings'),
             ),
             array(
                 'name' => 'ZenEyer Auth Pro',
@@ -106,32 +106,31 @@ class Zen_Plugins_Overview
                     'POST ' . $rest_base . 'zeneyer-auth/v1/refresh' => 'Renovar token JWT',
                     'GET ' . $rest_base . 'zeneyer-auth/v1/user' => 'Dados do user autenticado',
                 ),
-                'docs_url' => admin_url('admin.php?page=zeneyer-auth'),
+                'docs_url' => \admin_url('admin.php?page=zeneyer-auth'),
             ),
             array(
                 'name' => 'Zen BIT (Events)',
                 'path' => 'zen-bit/zen-bit.php',
-                'version' => '1.1.2',
-                'desc' => 'Proxy inteligente da API Bandsintown com cache de 7 dias, throttle de 24h e geração automática de Schema.org MusicEvent para SEO.',
+                'version' => '3.0.0',
+                'desc' => 'Proxy inteligente da API Bandsintown com cache SWR, canonical paths e geração automática de Schema.org MusicEvent para SEO.',
                 'icon' => 'dashicons-tickets-alt',
                 'color' => '#00ff88',
                 'menu' => 'zen-bit-settings',
                 'endpoints' => array(
-                    'GET ' . $rest_base . 'zen-bit/v1/events' => 'Lista de eventos (limit, search, upcoming_only)',
-                    'GET ' . $rest_base . 'zen-bit/v1/events/{id}' => 'Evento único por ID',
-                    'GET ' . $rest_base . 'zen-bit/v1/events-schema' => 'JSON-LD MusicEvent para Google',
-                    'POST ' . $rest_base . 'zen-bit/v1/clear-cache' => 'Limpar cache Bandsintown (admin)',
+                    'GET ' . $rest_base . 'zen-bit/v2/events' => 'Lista de eventos (limit, lang, mode)',
+                    'GET ' . $rest_base . 'zen-bit/v2/events/{id}' => 'Evento único por ID',
+                    'GET ' . $rest_base . 'zen-bit/v2/events/schema' => 'JSON-LD MusicEvent para Google',
                 ),
-                'docs_url' => admin_url('admin.php?page=zen-bit-settings'),
+                'docs_url' => \admin_url('admin.php?page=zen-bit-settings'),
             ),
         );
     }
 
     public function render_overview_page()
     {
-        $php_version = phpversion();
-        $wp_version = get_bloginfo('version');
-        $memory = size_format(wp_convert_hr_to_bytes(WP_MEMORY_LIMIT));
+        $php_version = \phpversion();
+        $wp_version = \get_bloginfo('version');
+        $memory = \size_format(\wp_convert_hr_to_bytes(\WP_MEMORY_LIMIT));
         $db_version = $GLOBALS['wpdb']->db_version();
         $plugins = $this->get_plugins_data();
         $active_count = 0;
@@ -159,10 +158,10 @@ class Zen_Plugins_Overview
                         <?php echo $active_count; ?>/<?php echo count($plugins); ?> SISTEMAS ONLINE
                     </div>
                     <div class="zc-sys-info">
-                        <div class="zc-sys-item"><span>PHP</span> <?php echo esc_html($php_version); ?></div>
-                        <div class="zc-sys-item"><span>WP</span> <?php echo esc_html($wp_version); ?></div>
-                        <div class="zc-sys-item"><span>DB</span> <?php echo esc_html($db_version); ?></div>
-                        <div class="zc-sys-item"><span>MEM</span> <?php echo esc_html($memory); ?></div>
+                        <div class="zc-sys-item"><span>PHP</span> <?php echo \esc_html($php_version); ?></div>
+                        <div class="zc-sys-item"><span>WP</span> <?php echo \esc_html($wp_version); ?></div>
+                        <div class="zc-sys-item"><span>DB</span> <?php echo \esc_html($db_version); ?></div>
+                        <div class="zc-sys-item"><span>MEM</span> <?php echo \esc_html($memory); ?></div>
                     </div>
                 </div>
             </header>
@@ -175,13 +174,13 @@ class Zen_Plugins_Overview
                     $status_label = $is_active ? 'ONLINE' : 'OFFLINE';
                     $color = $plugin['color'];
                     ?>
-                    <article class="zc-card <?php echo $status_class; ?>" style="--accent: <?php echo esc_attr($color); ?>">
+                    <article class="zc-card <?php echo $status_class; ?>" style="--accent: <?php echo \esc_attr($color); ?>">
 
                         <div class="zc-card-header">
                             <div class="zc-icon"
-                                style="background: <?php echo esc_attr($color); ?>18; border-color: <?php echo esc_attr($color); ?>30;">
-                                <span class="dashicons <?php echo esc_attr($plugin['icon']); ?>"
-                                    style="color: <?php echo esc_attr($color); ?>;"></span>
+                                style="background: <?php echo \esc_attr($color); ?>18; border-color: <?php echo \esc_attr($color); ?>30;">
+                                <span class="dashicons <?php echo \esc_attr($plugin['icon']); ?>"
+                                    style="color: <?php echo \esc_attr($color); ?>;"></span>
                             </div>
                             <div class="zc-status <?php echo $status_class; ?>">
                                 <span class="zc-dot"></span>
@@ -189,8 +188,8 @@ class Zen_Plugins_Overview
                             </div>
                         </div>
 
-                        <h2 class="zc-card-title"><?php echo esc_html($plugin['name']); ?></h2>
-                        <p class="zc-card-desc"><?php echo esc_html($plugin['desc']); ?></p>
+                        <h2 class="zc-card-title"><?php echo \esc_html($plugin['name']); ?></h2>
+                        <p class="zc-card-desc"><?php echo \esc_html($plugin['desc']); ?></p>
 
                         <!-- ENDPOINTS -->
                         <div class="zc-endpoints">
@@ -198,32 +197,32 @@ class Zen_Plugins_Overview
                                 <span class="dashicons dashicons-rest-api"></span> REST Endpoints
                             </div>
                             <?php foreach ($plugin['endpoints'] as $endpoint => $label):
-                                $method = strtok($endpoint, ' ');
-                                $url = trim(substr($endpoint, strlen($method)));
-                                $method_class = strtolower($method);
+                                $method = \strtok($endpoint, ' ');
+                                $url = \trim(\substr($endpoint, \strlen($method)));
+                                $method_class = \strtolower($method);
                                 ?>
                                 <div class="zc-endpoint-row">
                                     <span
-                                        class="zc-method <?php echo esc_attr($method_class); ?>"><?php echo esc_html($method); ?></span>
-                                    <code class="zc-url" title="<?php echo esc_attr($label); ?>"><?php echo esc_html($url); ?></code>
+                                        class="zc-method <?php echo \esc_attr($method_class); ?>"><?php echo \esc_html($method); ?></span>
+                                    <code class="zc-url" title="<?php echo \esc_attr($label); ?>"><?php echo \esc_html($url); ?></code>
                                 </div>
                             <?php endforeach; ?>
                         </div>
 
                         <div class="zc-card-footer">
-                            <span class="zc-version">v<?php echo esc_html($plugin['version']); ?></span>
+                            <span class="zc-version">v<?php echo \esc_html($plugin['version']); ?></span>
                             <div class="zc-actions">
                                 <?php if ($is_active): ?>
-                                    <a href="<?php echo esc_url($plugin['docs_url']); ?>" class="zc-btn primary"
-                                        style="--accent: <?php echo esc_attr($color); ?>">
+                                    <a href="<?php echo \esc_url($plugin['docs_url']); ?>" class="zc-btn primary"
+                                        style="--accent: <?php echo \esc_attr($color); ?>">
                                         <span class="dashicons dashicons-admin-settings"></span> Configurar
                                     </a>
                                 <?php else: ?>
-                                    <a href="<?php echo esc_url(admin_url('plugins.php')); ?>" class="zc-btn danger">
+                                    <a href="<?php echo \esc_url(\admin_url('plugins.php')); ?>" class="zc-btn danger">
                                         <span class="dashicons dashicons-warning"></span> Ativar
                                     </a>
                                 <?php endif; ?>
-                                <a href="<?php echo esc_url(rest_url()); ?>" target="_blank" class="zc-btn ghost"
+                                <a href="<?php echo \esc_url(\rest_url()); ?>" target="_blank" class="zc-btn ghost"
                                     title="REST API Root">
                                     <span class="dashicons dashicons-external"></span>
                                 </a>
@@ -237,29 +236,29 @@ class Zen_Plugins_Overview
             <section class="zc-section">
                 <h2 class="zc-section-title"><span class="dashicons dashicons-rest-api"></span> Quick Links</h2>
                 <div class="zc-quick-grid">
-                    <a href="<?php echo esc_url(rest_url('zen-bit/v1/events?upcoming_only=true&limit=3')); ?>" target="_blank"
+                    <a href="<?php echo \esc_url(\rest_url('zen-bit/v2/events?mode=upcoming&limit=3')); ?>" target="_blank"
                         class="zc-quick-card">
                         <span class="dashicons dashicons-tickets-alt"></span>
-                        <span>Próximos Eventos</span>
+                        <span>Próximos Eventos (v2)</span>
                         <span class="dashicons dashicons-external"></span>
                     </a>
-                    <a href="<?php echo esc_url(rest_url('zen-bit/v1/events-schema')); ?>" target="_blank"
+                    <a href="<?php echo \esc_url(\rest_url('zen-bit/v2/events/schema')); ?>" target="_blank"
                         class="zc-quick-card">
                         <span class="dashicons dashicons-search"></span>
-                        <span>MusicEvent Schema</span>
+                        <span>MusicEvent Schema (v2)</span>
                         <span class="dashicons dashicons-external"></span>
                     </a>
-                    <a href="<?php echo esc_url(rest_url('zen-seo/v1/settings')); ?>" target="_blank" class="zc-quick-card">
+                    <a href="<?php echo \esc_url(\rest_url('zen-seo/v1/settings')); ?>" target="_blank" class="zc-quick-card">
                         <span class="dashicons dashicons-chart-line"></span>
                         <span>SEO Settings</span>
                         <span class="dashicons dashicons-external"></span>
                     </a>
-                    <a href="<?php echo esc_url(rest_url('zengame/v1/leaderboard')); ?>" target="_blank" class="zc-quick-card">
+                    <a href="<?php echo \esc_url(\rest_url('zengame/v1/leaderboard')); ?>" target="_blank" class="zc-quick-card">
                         <span class="dashicons dashicons-games"></span>
                         <span>Leaderboard</span>
                         <span class="dashicons dashicons-external"></span>
                     </a>
-                    <a href="<?php echo esc_url(admin_url('plugins.php')); ?>" class="zc-quick-card">
+                    <a href="<?php echo \esc_url(\admin_url('plugins.php')); ?>" class="zc-quick-card">
                         <span class="dashicons dashicons-admin-plugins"></span>
                         <span>Todos os Plugins</span>
                         <span class="dashicons dashicons-arrow-right-alt2"></span>
@@ -275,16 +274,16 @@ class Zen_Plugins_Overview
             <footer class="zc-footer">
                 <p>
                     <strong>Zen Control</strong> v3.0.0 &nbsp;·&nbsp;
-                    Desenvolvido por <a href="https://djzeneyer.com" target="_blank">DJ Zen Eyer</a>
-                    &nbsp;·&nbsp; <?php echo date('Y'); ?>
-                </p>
+                    Desenvolvido por \u003ca href=\"https://djzeneyer.com\" target=\"_blank\"\u003eDJ Zen Eyer\u003c/a\u003e
+                    \u0026nbsp;\u00b7\u0026nbsp; \u003c?php echo \\date('Y'); ?\u003e
+                \u003c/p\u003e
             </footer>
         </div>
 
         <style>
             /* ============================================================
-                   ZEN CONTROL v3.0 — Mission Control Dashboard
-                ============================================================ */
+                                           ZEN CONTROL v3.0 — Mission Control Dashboard
+                                        ============================================================ */
             :root {
                 --zc-bg: #06080f;
                 --zc-surface: #0d1020;
@@ -819,7 +818,7 @@ class Zen_Plugins_Overview
 
 function zen_plugins_overview_init()
 {
-    return Zen_Plugins_Overview::get_instance();
+    return \ZenEyer\Overview\Zen_Plugins_Overview::get_instance();
 }
 
 zen_plugins_overview_init();

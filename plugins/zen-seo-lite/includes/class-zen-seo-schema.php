@@ -10,6 +10,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+namespace ZenEyer\SEO;
+
 class Zen_SEO_Schema
 {
 
