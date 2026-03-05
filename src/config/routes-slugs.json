@@ -14,30 +14,12 @@
         {
             "key": "events",
             "en": "zouk-events",
-            "pt": "eventos-zouk",
-            "aliases": {
-                "en": [
-                    "events",
-                    "zouk-events-2"
-                ],
-                "pt": [
-                    "eventos"
-                ]
-            }
+            "pt": "eventos-zouk"
         },
         {
             "key": "music",
             "en": "zouk-music",
-            "pt": "musica-zouk",
-            "aliases": {
-                "en": [
-                    "music",
-                    "zouk-music-2"
-                ],
-                "pt": [
-                    "musica"
-                ]
-            }
+            "pt": "musica-zouk"
         },
         {
             "key": "news",
