@@ -14,15 +14,17 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-if (!defined('ABSPATH')) {
+namespace ZenEyer\SEO;
+
+if (!\defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 // Plugin constants
-define('ZEN_SEO_VERSION', '8.0.0');
-define('ZEN_SEO_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('ZEN_SEO_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('ZEN_SEO_PLUGIN_BASENAME', plugin_basename(__FILE__));
+\define('ZEN_SEO_VERSION', '8.0.0');
+\define('ZEN_SEO_PLUGIN_DIR', \plugin_dir_path(__FILE__));
+\define('ZEN_SEO_PLUGIN_URL', \plugin_dir_url(__FILE__));
+\define('ZEN_SEO_PLUGIN_BASENAME', \plugin_basename(__FILE__));
 
 /**
  * Main plugin class - Singleton pattern
@@ -53,14 +55,14 @@ final class Zen_SEO_Lite_Pro
     }
 
     /**
-     * Define plugin constants
+     * Define plugin constants (Legacy Support)
      */
     private function define_constants()
     {
-        define('ZEN_SEO_VERSION', '8.1.1');
-        define('ZEN_SEO_PATH', plugin_dir_path(__FILE__));
-        define('ZEN_SEO_URL', plugin_dir_url(__FILE__));
-        define('ZEN_SEO_BASENAME', plugin_basename(__FILE__));
+        \define('ZEN_SEO_VERSION_LEGACY', '8.1.1');
+        \define('ZEN_SEO_PATH', \plugin_dir_path(__FILE__));
+        \define('ZEN_SEO_URL', \plugin_dir_url(__FILE__));
+        \define('ZEN_SEO_BASENAME', \plugin_basename(__FILE__));
     }
 
     /**
@@ -79,7 +81,7 @@ final class Zen_SEO_Lite_Pro
         require_once ZEN_SEO_PLUGIN_DIR . 'includes/class-zen-seo-rest-api.php';
 
         // Admin only
-        if (is_admin()) {
+        if (\is_admin()) {
             require_once ZEN_SEO_PLUGIN_DIR . 'admin/class-zen-seo-admin.php';
             require_once ZEN_SEO_PLUGIN_DIR . 'admin/class-zen-seo-meta-box.php';
         }
@@ -91,14 +93,14 @@ final class Zen_SEO_Lite_Pro
     private function init_hooks()
     {
         // Activation/Deactivation
-        register_activation_hook(__FILE__, [$this, 'activate']);
-        register_deactivation_hook(__FILE__, [$this, 'deactivate']);
+        \register_activation_hook(__FILE__, [$this, 'activate']);
+        \register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
         // Initialize components
-        add_action('plugins_loaded', [$this, 'init_components']);
+        \add_action('plugins_loaded', [$this, 'init_components']);
 
         // Load text domain
-        add_action('init', [$this, 'load_textdomain']);
+        \add_action('init', [$this, 'load_textdomain']);
     }
 
     /**
@@ -113,7 +115,7 @@ final class Zen_SEO_Lite_Pro
         Zen_SEO_REST_API::get_instance();
 
         // Admin components
-        if (is_admin()) {
+        if (\is_admin()) {
             Zen_SEO_Admin::get_instance();
             Zen_SEO_Meta_Box::get_instance();
         }
@@ -126,16 +128,16 @@ final class Zen_SEO_Lite_Pro
     {
         // Add sitemap rewrite rules
         Zen_SEO_Sitemap::register_rewrite_rules();
-        flush_rewrite_rules();
+        \flush_rewrite_rules();
 
         // Set default options
         $defaults = [
-            'real_name' => get_bloginfo('name'),
+            'real_name' => \get_bloginfo('name'),
             'react_routes' => $this->get_default_routes(),
         ];
 
-        if (!get_option('zen_seo_global')) {
-            add_option('zen_seo_global', $defaults);
+        if (!\get_option('zen_seo_global')) {
+            \add_option('zen_seo_global', $defaults);
         }
 
         // Clear all caches
@@ -147,7 +149,7 @@ final class Zen_SEO_Lite_Pro
      */
     public function deactivate()
     {
-        flush_rewrite_rules();
+        \flush_rewrite_rules();
         Zen_SEO_Cache::clear_all();
     }
 
@@ -156,10 +158,10 @@ final class Zen_SEO_Lite_Pro
      */
     public function load_textdomain()
     {
-        load_plugin_textdomain(
+        \load_plugin_textdomain(
             'zen-seo',
             false,
-            dirname(ZEN_SEO_PLUGIN_BASENAME) . '/languages'
+            \dirname(ZEN_SEO_PLUGIN_BASENAME) . '/languages'
         );
     }
 
