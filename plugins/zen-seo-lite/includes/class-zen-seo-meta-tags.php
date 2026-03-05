@@ -288,7 +288,9 @@ class Zen_SEO_Meta_Tags
         }
 
         // Ensure title has site name
-        $site_name = \get_bloginfo('name');
+        $site_name = (string) \get_bloginfo('name');
+        $data['title'] = (string) ($data['title'] ?? '');
+
         if (!\str_contains($data['title'], $site_name)) {
             $data['title'] .= ' | ' . $site_name;
         }

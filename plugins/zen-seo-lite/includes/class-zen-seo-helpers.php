@@ -24,7 +24,14 @@ class Zen_SEO_Helpers
     {
         $settings = \get_option('zen_seo_global', []);
 
-        return \is_array($settings) ? $settings : [];
+        if (!\is_array($settings)) {
+            return [];
+        }
+
+        // Normalize: ensure no null values reach string functions
+        return \array_map(function ($value) {
+            return (null === $value) ? '' : $value;
+        }, $settings);
     }
 
     /**
@@ -37,7 +44,14 @@ class Zen_SEO_Helpers
     {
         $meta = \get_post_meta($post_id, '_zen_seo_data', true);
 
-        return \is_array($meta) ? $meta : [];
+        if (!\is_array($meta)) {
+            return [];
+        }
+
+        // Normalize: ensure no null values reach string functions
+        return \array_map(function ($value) {
+            return (null === $value) ? '' : $value;
+        }, $meta);
     }
 
     /**
@@ -167,14 +181,15 @@ class Zen_SEO_Helpers
      */
     public static function generate_excerpt($content, $length = 160)
     {
+        $content = (string) $content; // Ensure string for PHP 8.1+
         $content = \wp_strip_all_tags($content);
         $content = \strip_shortcodes($content);
 
-        if (\strlen((string) $content) <= $length) {
+        if (\strlen($content) <= $length) {
             return $content;
         }
 
-        return \substr((string) $content, 0, $length) . '...';
+        return \substr($content, 0, $length) . '...';
     }
 
     /**

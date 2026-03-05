@@ -348,7 +348,7 @@ class Zen_SEO_Schema
         }
 
         // Get audio URL from custom fields
-        $audio_url = \get_post_meta($post->ID, 'audio_url', true);
+        $audio_url = (string) \get_post_meta($post->ID, 'audio_url', true);
         if ($audio_url) {
             $music['audio'] = \esc_url($audio_url);
         }
