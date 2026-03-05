@@ -271,26 +271,6 @@ class Zen_SEO_REST_API
             'total_urls' => 0
         ];
 
-        // Get React routes
-        $settings = Zen_SEO_Helpers::get_global_settings();
-        $routes_raw = $settings['react_routes'] ?? '';
-
-        if (!empty($routes_raw)) {
-            $routes = array_filter(array_map('trim', explode("\n", $routes_raw)));
-
-            foreach ($routes as $line) {
-                $parts = array_map('trim', explode(',', $line));
-
-                if (!empty($parts[0])) {
-                    $data['routes'][] = [
-                        'en' => $parts[0],
-                        'pt' => $parts[1] ?? null
-                    ];
-                    $data['total_urls']++;
-                }
-            }
-        }
-
         // Get posts
         $post_types = Zen_SEO_Helpers::get_supported_post_types();
 

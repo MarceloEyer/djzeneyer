@@ -50,12 +50,23 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     console.error('Error fetching events:', error);
   }
 
-  // --- Render States ---
+  // --- Render States (Skeleton Loader for CLS) ---
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12" role="status">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" aria-hidden="true"></div>
-        <span className="sr-only">{t('events_loading')}</span>
+      <div className="w-full">
+        {variant === 'full' && showTitle && (
+          <div className="h-9 w-48 bg-white/5 animate-pulse rounded-lg mx-auto mb-8" />
+        )}
+        <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
+          {[...Array(limit)].map((_, i) => (
+            <div
+              key={`skeleton-${i}`}
+              className={`animate-pulse bg-surface/30 border border-white/5 rounded-xl overflow-hidden ${variant === 'compact' ? 'h-[106px]' : 'h-[360px]'}`}
+            >
+              <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
