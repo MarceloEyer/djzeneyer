@@ -189,15 +189,17 @@ class Zen_SEO_Sitemap
 
     /**
      * Add sitemap to robots.txt
+     *
+     * FIX: Cast $public to string before comparison to prevent
+     * "strpos(): Passing null to parameter #1" deprecation when
+     * the blog_public option has not been set yet.
      */
     public function add_sitemap_to_robots($output, $public)
     {
-        if ($public == '0') {
+        // FIX: coerce $public to string; it can be null on fresh installs
+        if ((string) $public === '0') {
             return "User-agent: *\nDisallow: /\n";
         }
-
-        // Points to the Sitemap Index (which you should create in React public folder)
-        // OR lists both individual sitemaps if no index exists.
 
         $rules = "User-agent: *\n";
         $rules .= "Allow: /\n";
