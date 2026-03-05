@@ -1,3 +1,4 @@
+<?php
 namespace ZenEyer\SEO;
 
 if (!\defined('ABSPATH')) {
@@ -415,8 +416,12 @@ class Zen_SEO_Admin
 
         ?>
         <div class="wrap">
-            <h1><?php echo \esc_html(\get_admin_page_title()); ?></h1>
-            <p><?php _e('Configure SEO settings for your headless WordPress + React SPA.', 'zen-seo'); ?></p>
+            <h1>
+                <?php echo \esc_html(\get_admin_page_title()); ?>
+            </h1>
+            <p>
+                <?php _e('Configure SEO settings for your headless WordPress + React SPA.', 'zen-seo'); ?>
+            </p>
 
             <form method="post" action="options.php">
                 <?php
@@ -450,25 +455,41 @@ class Zen_SEO_Admin
 
         ?>
         <div class="wrap">
-            <h1><?php _e('Cache Manager', 'zen-seo'); ?></h1>
+            <h1>
+                <?php _e('Cache Manager', 'zen-seo'); ?>
+            </h1>
 
             <div class="card">
-                <h2><?php _e('Cache Statistics', 'zen-seo'); ?></h2>
+                <h2>
+                    <?php _e('Cache Statistics', 'zen-seo'); ?>
+                </h2>
                 <table class="widefat">
                     <tr>
-                        <th><?php _e('Total Cache Items', 'zen-seo'); ?></th>
-                        <td><?php echo \esc_html($stats['total_items']); ?></td>
+                        <th>
+                            <?php _e('Total Cache Items', 'zen-seo'); ?>
+                        </th>
+                        <td>
+                            <?php echo \esc_html($stats['total_items']); ?>
+                        </td>
                     </tr>
                     <tr>
-                        <th><?php _e('Total Cache Size', 'zen-seo'); ?></th>
-                        <td><?php echo \esc_html($stats['size_formatted']); ?></td>
+                        <th>
+                            <?php _e('Total Cache Size', 'zen-seo'); ?>
+                        </th>
+                        <td>
+                            <?php echo \esc_html($stats['size_formatted']); ?>
+                        </td>
                     </tr>
                 </table>
             </div>
 
             <div class="card" style="margin-top: 20px;">
-                <h2><?php _e('Clear Cache', 'zen-seo'); ?></h2>
-                <p><?php _e('Clear all Zen SEO caches (sitemap, schema, meta tags).', 'zen-seo'); ?></p>
+                <h2>
+                    <?php _e('Clear Cache', 'zen-seo'); ?>
+                </h2>
+                <p>
+                    <?php _e('Clear all Zen SEO caches (sitemap, schema, meta tags).', 'zen-seo'); ?>
+                </p>
 
                 <form method="post">
                     <?php \wp_nonce_field('zen_seo_clear_cache'); ?>
@@ -512,7 +533,9 @@ class Zen_SEO_Admin
             ?>
             <div class="notice notice-warning">
                 <p>
-                    <strong><?php _e('Zen SEO:', 'zen-seo'); ?></strong>
+                    <strong>
+                        <?php _e('Zen SEO:', 'zen-seo'); ?>
+                    </strong>
                     <?php _e('Please configure essential SEO settings for optimal results.', 'zen-seo'); ?>
                     <a href="<?php echo \admin_url('admin.php?page=zen-seo-settings'); ?>">
                         <?php _e('Configure now', 'zen-seo'); ?>

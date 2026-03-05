@@ -1,3 +1,4 @@
+<?php
 namespace ZenEyer\SEO;
 
 if (!\defined('ABSPATH')) {
