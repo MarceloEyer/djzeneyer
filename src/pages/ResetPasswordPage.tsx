@@ -139,16 +139,19 @@ const ResetPasswordPage: React.FC = () => {
                                 {!isSettingNewPassword ? (
                                     <form onSubmit={handleRequestReset} className="space-y-6">
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.email_label')}</label>
+                                            <label htmlFor="reset_email" className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.email_label')}</label>
                                             <div className="relative group">
                                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
                                                     type="email"
+                                                    id="reset_email"
+                                                    name="email"
                                                     required
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder={t('auth.reset_password.email_placeholder')}
                                                     className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                                                    autoComplete="email"
                                                 />
                                             </div>
                                         </div>
@@ -164,21 +167,25 @@ const ResetPasswordPage: React.FC = () => {
                                 ) : (
                                     <form onSubmit={handleSetPassword} className="space-y-6">
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.password_label')}</label>
+                                            <label htmlFor="reset_password" className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.password_label')}</label>
                                             <div className="relative group">
                                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
                                                     type={showPassword ? "text" : "password"}
+                                                    id="reset_password"
+                                                    name="password"
                                                     required
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     placeholder={t('auth.reset_password.password_placeholder')}
                                                     className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-12 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                                                    autoComplete="new-password"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPassword(!showPassword)}
                                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                                                    aria-label={showPassword ? t('auth.aria.hide_password') : t('auth.aria.show_password')}
                                                 >
                                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                                 </button>
@@ -186,16 +193,19 @@ const ResetPasswordPage: React.FC = () => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.confirm_label')}</label>
+                                            <label htmlFor="confirm_password" className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.confirm_label')}</label>
                                             <div className="relative group">
                                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
                                                     type={showPassword ? "text" : "password"}
+                                                    id="confirm_password"
+                                                    name="confirm_password"
                                                     required
                                                     value={confirmPassword}
                                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                                     placeholder={t('auth.reset_password.confirm_placeholder')}
                                                     className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                                                    autoComplete="new-password"
                                                 />
                                             </div>
                                         </div>

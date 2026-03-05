@@ -1,7 +1,7 @@
 import React, { memo, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, generatePath } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
@@ -226,12 +226,10 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <div className="space-y-3">
               {monthEvents.map((e) => {
                 const eventDay = new Date(e.starts_at);
-                // canonical_path sempre presente na v2
+                // v2: canonical_path sempre presente ou fallback para key
                 const detailHref = e.canonical_path
-                  ? (lang === 'pt'
-                    ? `/pt/eventos${e.canonical_path.replace('/events', '')}`
-                    : e.canonical_path)
-                  : `${getLocalizedRoute('events', lang)}/${e.event_id}`;
+                  ? (lang === 'pt' ? `/pt${e.canonical_path.replace('/events', '/eventos-zouk')}` : e.canonical_path)
+                  : generatePath(getLocalizedRoute('events-detail', lang), { id: e.event_id });
 
                 // v2: location sempre presente
                 const loc = e.location;
@@ -309,8 +307,8 @@ const EventsPage: React.FC = () => {
           <Music className="absolute -right-16 -bottom-16 text-white/5 w-96 h-96 rotate-12 relative z-10" />
           <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter">{t('home_press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-            <Link to={getLocalizedRoute('work-with-me', lang)} className="btn btn-primary px-10 py-4 rounded-xl font-bold uppercase">{t('contact')}</Link>
-            <Link to={getLocalizedRoute('press-kit', lang)} className="btn btn-outline border-white/10 px-10 py-4 rounded-xl font-bold uppercase">{t('press_kit')}</Link>
+            <Link to={getLocalizedRoute('booking', lang)} className="btn btn-primary px-10 py-4 rounded-xl font-bold uppercase">{t('contact')}</Link>
+            <Link to={getLocalizedRoute('presskit', lang)} className="btn btn-outline border-white/10 px-10 py-4 rounded-xl font-bold uppercase">{t('press_kit')}</Link>
           </div>
         </section>
       </div>

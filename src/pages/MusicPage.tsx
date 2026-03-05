@@ -6,7 +6,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
 import { useTrackBySlug } from '../hooks/useQueries';
 import { useParams, Link } from 'react-router-dom';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage } from '../config/routes';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 
@@ -23,13 +23,6 @@ const MusicPage: React.FC = () => {
   const currentLang = normalizeLanguage(i18n.language);
 
   const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
-
-  // Helper para rotas localizadas
-  const getRouteForKey = (key: string): string => {
-    const route = ROUTES_CONFIG.find(r => getLocalizedPaths(r, 'en')[0] === key);
-    if (!route) return `/${key}`;
-    return buildFullPath(getLocalizedPaths(route, currentLang)[0], currentLang);
-  };
 
   const streamingPlatforms = [
     {
@@ -69,7 +62,7 @@ const MusicPage: React.FC = () => {
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
-            <Link to={getRouteForKey('music')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
+            <Link to={getLocalizedRoute('music', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
               <ArrowLeft size={20} /> {t('music.back')}
             </Link>
 
@@ -121,7 +114,7 @@ const MusicPage: React.FC = () => {
       <HeadlessSEO
         title={`${t('music_page_title')} | DJ Zen Eyer`}
         description={t('music_page_meta_desc')}
-        url={`https://djzeneyer.com${currentLang === 'pt' ? '/pt/musica' : '/music'}`}
+        url={`https://djzeneyer.com${currentLang === 'pt' ? '/pt/musica-zouk' : '/zouk-music'}`}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">
@@ -209,7 +202,7 @@ const MusicPage: React.FC = () => {
               </h3>
               <p className="text-white/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
               <Link
-                to={getRouteForKey('support-the-artist')}
+                to={getLocalizedRoute('support', currentLang)}
                 className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
               >
                 {t('music.support_cta')} <ExternalLink size={16} />

@@ -226,111 +226,129 @@ const CheckoutPage: React.FC = () => {
                 <form id="checkout-form" onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.first_name')}</label>
+                      <label htmlFor="checkout-first-name" className="block text-sm text-white/60 mb-1">{t('form.first_name')}</label>
                       <input
                         type="text"
+                        id="checkout-first-name"
                         name="firstName"
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.firstName}
                         onChange={handleInputChange}
+                        autoComplete="given-name"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.last_name')}</label>
+                      <label htmlFor="checkout-last-name" className="block text-sm text-white/60 mb-1">{t('form.last_name')}</label>
                       <input
                         type="text"
+                        id="checkout-last-name"
                         name="lastName"
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.lastName}
                         onChange={handleInputChange}
+                        autoComplete="family-name"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.email')}</label>
+                      <label htmlFor="checkout-email" className="block text-sm text-white/60 mb-1">{t('form.email')}</label>
                       <input
                         type="email"
+                        id="checkout-email"
                         name="email"
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.email}
                         onChange={handleInputChange}
+                        autoComplete="email"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.phone')}</label>
+                      <label htmlFor="checkout-phone" className="block text-sm text-white/60 mb-1">{t('form.phone')}</label>
                       <input
                         type="tel"
+                        id="checkout-phone"
                         name="phone"
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.phone}
                         onChange={handleInputChange}
+                        autoComplete="tel"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm text-white/60 mb-1">{t('form.address')}</label>
+                    <label htmlFor="checkout-address" className="block text-sm text-white/60 mb-1">{t('form.address')}</label>
                     <input
                       type="text"
+                      id="checkout-address"
                       name="address"
                       required
                       className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                       value={formData.address}
                       onChange={handleInputChange}
+                      autoComplete="street-address"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.city')}</label>
+                      <label htmlFor="checkout-city" className="block text-sm text-white/60 mb-1">{t('form.city')}</label>
                       <input
                         type="text"
+                        id="checkout-city"
                         name="city"
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.city}
                         onChange={handleInputChange}
+                        autoComplete="address-level2"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.state')}</label>
+                      <label htmlFor="checkout-state" className="block text-sm text-white/60 mb-1">{t('form.state')}</label>
                       <input
                         type="text"
+                        id="checkout-state"
                         name="state"
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.state}
                         onChange={handleInputChange}
+                        autoComplete="address-level1"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.zip')}</label>
+                      <label htmlFor="checkout-zip" className="block text-sm text-white/60 mb-1">{t('form.zip')}</label>
                       <input
                         type="text"
+                        id="checkout-zip"
                         name="zip"
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.zip}
                         onChange={handleInputChange}
+                        autoComplete="postal-code"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-white/60 mb-1">{t('form.country')}</label>
+                      <label htmlFor="checkout-country" className="block text-sm text-white/60 mb-1">{t('form.country')}</label>
                       <input
                         type="text"
+                        id="checkout-country"
                         name="country"
                         required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
                         value={formData.country}
                         onChange={handleInputChange}
+                        autoComplete="country"
                       />
                     </div>
                   </div>
@@ -360,6 +378,7 @@ const CheckoutPage: React.FC = () => {
                       >
                         <input
                           type="radio"
+                          id={`payment-method-${method.id}`}
                           name="paymentMethod"
                           value={method.id}
                           checked={selectedPaymentMethod === method.id}

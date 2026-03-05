@@ -35,6 +35,8 @@ export const normalizeLanguage = (lang: string): Language => {
 };
 
 export interface RouteConfig {
+  /** Chave lógica única (ex: 'about', 'events') */
+  key: string;
   /** Componente da página (lazy loaded) */
   component: ComponentType;
   /** Caminhos por idioma */
@@ -99,6 +101,7 @@ const slug = (key: string, lang: Language): string | string[] => {
 export const ROUTES_CONFIG: RouteConfig[] = [
   // Home (Index)
   {
+    key: 'home',
     component: HomePage,
     paths: { en: '', pt: '' },
     isIndex: true,
@@ -106,58 +109,69 @@ export const ROUTES_CONFIG: RouteConfig[] = [
 
   // About
   {
+    key: 'about',
     component: AboutPage,
     paths: { en: slug('about', 'en') as string, pt: slug('about', 'pt') as string },
   },
 
   // Events (com rota dinâmica :id)
   {
+    key: 'events',
     component: EventsPage,
     paths: { en: slug('events', 'en') as string, pt: slug('events', 'pt') as string },
   },
   {
+    key: 'events-detail',
     component: EventsPage,
     paths: { en: `${slug('events', 'en')}/:id`, pt: `${slug('events', 'pt')}/:id` },
   },
 
   // Music (com rota dinâmica :slug)
   {
+    key: 'music',
     component: MusicPage,
     paths: { en: slug('music', 'en') as string, pt: slug('music', 'pt') as string },
   },
   {
+    key: 'music-detail',
     component: MusicPage,
     paths: { en: `${slug('music', 'en')}/:slug`, pt: `${slug('music', 'pt')}/:slug` },
   },
 
   // News / Blog
   {
+    key: 'news',
     component: NewsPage,
     paths: { en: slug('news', 'en') as string, pt: slug('news', 'pt') as string },
   },
   {
+    key: 'news-detail',
     component: NewsPage,
     paths: { en: `${slug('news', 'en')}/:slug`, pt: `${slug('news', 'pt')}/:slug` },
   },
 
   // Zen Tribe (com aliases)
   {
+    key: 'zentribe',
     component: ZenTribePage,
     paths: { en: slug('zentribe', 'en'), pt: slug('zentribe', 'pt') },
   },
 
   // Press Kit / Booking
   {
+    key: 'booking',
     component: PressKitPage,
     paths: { en: slug('booking', 'en') as string, pt: slug('booking', 'pt') as string },
   },
 
   // Shop (com wildcard para subrotas)
   {
+    key: 'product-detail',
     component: ProductPage,
     paths: { en: `${slug('shop', 'en')}/product/:slug`, pt: `${slug('shop', 'pt')}/produto/:slug` },
   },
   {
+    key: 'shop',
     component: ShopPage,
     paths: { en: slug('shop', 'en') as string, pt: slug('shop', 'pt') as string },
     hasWildcard: true,
@@ -165,108 +179,126 @@ export const ROUTES_CONFIG: RouteConfig[] = [
 
   // Cart / Carrinho
   {
+    key: 'cart',
     component: CartPage,
     paths: { en: slug('cart', 'en') as string, pt: slug('cart', 'pt') as string },
   },
 
   // Checkout / Finalizar Compra
   {
+    key: 'checkout',
     component: CheckoutPage,
     paths: { en: slug('checkout', 'en') as string, pt: slug('checkout', 'pt') as string },
   },
 
   // Tickets / Compra de Ingressos
   {
+    key: 'tickets',
     component: TicketsPage,
     paths: { en: slug('tickets', 'en') as string, pt: slug('tickets', 'pt') as string },
   },
 
   // Tickets Checkout / Finalizar Ingressos
   {
+    key: 'tickets-checkout',
     component: TicketsCheckoutPage,
     paths: { en: slug('tickets-checkout', 'en') as string, pt: slug('tickets-checkout', 'pt') as string },
   },
 
   // Dashboard
   {
+    key: 'dashboard',
     component: DashboardPage,
     paths: { en: slug('dashboard', 'en') as string, pt: slug('dashboard', 'pt') as string },
   },
 
   // My Account
   {
+    key: 'my-account',
     component: MyAccountPage,
     paths: { en: slug('my-account', 'en') as string, pt: slug('my-account', 'pt') as string },
   },
 
   // FAQ
   {
+    key: 'faq',
     component: FAQPage,
     paths: { en: slug('faq', 'en') as string, pt: slug('faq', 'pt') as string },
   },
 
   // Philosophy
   {
+    key: 'philosophy',
     component: PhilosophyPage,
     paths: { en: slug('philosophy', 'en') as string, pt: slug('philosophy', 'pt') as string },
   },
 
   // Press Kit (EPK + Media)
   {
+    key: 'presskit',
     component: MediaPage,
     paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
   },
 
   // Support the Artist
   {
+    key: 'support',
     component: SupportArtistPage,
     paths: { en: slug('support', 'en') as string, pt: slug('support', 'pt') as string },
   },
 
   // Privacy Policy
   {
+    key: 'privacy',
     component: PrivacyPolicyPage,
     paths: { en: slug('privacy', 'en') as string, pt: slug('privacy', 'pt') as string },
   },
 
   // Return Policy
   {
+    key: 'returns',
     component: ReturnPolicyPage,
     paths: { en: slug('returns', 'en') as string, pt: slug('returns', 'pt') as string },
   },
 
   // Terms of Use
   {
+    key: 'terms',
     component: TermsPage,
     paths: { en: slug('terms', 'en') as string, pt: slug('terms', 'pt') as string },
   },
 
   // Code of Conduct
   {
+    key: 'conduct',
     component: CodeOfConductPage,
     paths: { en: slug('conduct', 'en') as string, pt: slug('conduct', 'pt') as string },
   },
 
   // Zen Link (com aliases)
   {
+    key: 'zenlink',
     component: ZenLinkPage,
     paths: { en: slug('zenlink', 'en'), pt: slug('zenlink', 'pt') },
   },
 
   // Zouk Persona Quiz
   {
+    key: 'quiz',
     component: ZoukPersonaQuizPage,
     paths: { en: slug('quiz', 'en') as string, pt: slug('quiz', 'pt') as string },
   },
 
   // Password Reset
   {
+    key: 'reset-password',
     component: ResetPasswordPage,
     paths: { en: slug('reset-password', 'en') as string, pt: slug('reset-password', 'pt') as string },
   },
 
   // PayMe / Pagamentos
   {
+    key: 'payme',
     component: PayMePage,
     paths: { en: slug('payme', 'en') as string, pt: slug('payme', 'pt') as string },
   },
@@ -320,37 +352,61 @@ export const normalizeRouteKey = (key: string): string => {
 };
 
 /**
- * Lookup map for English paths to optimize getLocalizedRoute
- * O(1) access instead of O(N) linear search
+ * Lookup map for Logical Keys to optimize getLocalizedRoute
  */
-const EN_ROUTE_MAP = new Map<string, { route: RouteConfig; index: number }>();
+const KEY_ROUTE_MAP = new Map<string, RouteConfig>();
 
-// Initialize the map once at module load time
+/**
+ * Lookup map for all possible paths (including aliases) to Logical Keys
+ */
+const PATH_TO_KEY_MAP = new Map<string, string>();
+
+// Pre-calculate mappings
 ROUTES_CONFIG.forEach(route => {
-  const enPaths = getLocalizedPaths(route, 'en');
-  enPaths.forEach((path, index) => {
-    EN_ROUTE_MAP.set(path, { route, index });
+  // 1. Key Map
+  KEY_ROUTE_MAP.set(route.key, route);
+
+  // 2. Path Map (for reverse lookup)
+  Object.values(route.paths).forEach(p => {
+    const pathsArray = Array.isArray(p) ? p : [p];
+    pathsArray.forEach(path => {
+      const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+      if (cleanPath) PATH_TO_KEY_MAP.set(cleanPath, route.key);
+    });
   });
 });
 
 /**
- * Obtém o caminho localizado para uma rota, a partir de uma chave em inglês
+ * Tenta encontrar a chave lógica a partir de um caminho/slug
  */
-export const getLocalizedRoute = (key: string, lang: Language): string => {
-  const normalizedKey = normalizeRouteKey(key);
-  if (!normalizedKey) return buildFullPath('', lang);
+export const findKeyByPath = (path: string): string | undefined => {
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  if (!cleanPath) return 'home';
+  return PATH_TO_KEY_MAP.get(cleanPath);
+};
 
-  const entry = EN_ROUTE_MAP.get(normalizedKey);
+/**
+ * Obtém o caminho localizado para uma rota, a partir de sua CHAVE LÓGICA ou um PATH legado
+ */
+export const getLocalizedRoute = (keyOrPath: string, lang: Language): string => {
+  // 1. Tenta como chave direta
+  let route = KEY_ROUTE_MAP.get(keyOrPath);
 
-  if (!entry) {
-    return buildFullPath(normalizedKey, lang);
+  // 2. Se não encontrou, tenta descobrir a chave pelo path (Reverse Lookup)
+  if (!route) {
+    const discoveredKey = findKeyByPath(keyOrPath);
+    if (discoveredKey) {
+      route = KEY_ROUTE_MAP.get(discoveredKey);
+    }
   }
 
-  const { route, index: matchedIndex } = entry;
+  // 3. Se ainda não encontrou, fallback para o path original (preservando formato)
+  if (!route) {
+    return buildFullPath(keyOrPath, lang);
+  }
+
   const localizedPaths = getLocalizedPaths(route, lang);
-  const localizedPath =
-    localizedPaths[Math.max(0, Math.min(matchedIndex, localizedPaths.length - 1))] ??
-    localizedPaths[0];
+  const localizedPath = Array.isArray(localizedPaths) ? localizedPaths[0] : localizedPaths;
 
   return buildFullPath(localizedPath, lang);
 };

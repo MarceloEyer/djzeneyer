@@ -253,11 +253,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
                 {mode === 'register' && (
                   <div>
-                    <label className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.name')}</label>
+                    <label htmlFor="auth_username" className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.name')}</label>
                     <div className="relative group">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                       <input
                         type="text"
+                        id="auth_username"
+                        name="username"
                         value={username}
                         onChange={(e) => {
                           setUsername(e.target.value);
@@ -267,6 +269,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                           } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                         placeholder={t('auth.placeholders.name')}
                         disabled={loading}
+                        autoComplete="username"
                       />
                     </div>
                     {formErrors.username && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.username}</p>}
@@ -274,11 +277,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 )}
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.email')}</label>
+                  <label htmlFor="auth_email" className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.email')}</label>
                   <div className="relative group">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                     <input
                       type="email"
+                      id="auth_email"
+                      name="email"
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value);
@@ -288,6 +293,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                       placeholder={t('auth.placeholders.email')}
                       disabled={loading}
+                      autoComplete="email"
                     />
                   </div>
                   {formErrors.email && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.email}</p>}
@@ -295,7 +301,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
                 <div>
                   <div className="flex justify-between items-center mb-1.5 ml-1">
-                    <label className="text-xs font-bold uppercase text-white/50">{t('auth.labels.password')}</label>
+                    <label htmlFor="auth_password" className="text-xs font-bold uppercase text-white/50">{t('auth.labels.password')}</label>
                     {mode === 'login' && (
                       <button
                         type="button"
@@ -310,6 +316,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
                     <input
                       type={showPassword ? "text" : "password"}
+                      id="auth_password"
+                      name="password"
                       value={password}
                       onChange={(e) => {
                         setPassword(e.target.value);
@@ -319,11 +327,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
                       placeholder={t('auth.placeholders.password')}
                       disabled={loading}
+                      autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors focus:outline-none"
+                      aria-label={showPassword ? t('auth.aria.hide_password') : t('auth.aria.show_password')}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
