@@ -104,7 +104,6 @@ const DashboardContent = () => {
                     progress={gamipress.rank.progress}
                     label={t('dashboard.nextRank')}
                     subLabel={gamipress.rank.next.title}
-                    color="gold"
                   />
                 )}
               </div>
@@ -213,9 +212,6 @@ const DashboardContent = () => {
                         </div>
                         <div className="text-[10px] text-white/40 line-clamp-2 leading-tight uppercase font-bold">{quest.description}</div>
                       </div>
-                    </div>
-                    <div className="mt-4">
-                      <ManaProgressBar progress={15} color="blue" />
                     </div>
                   </motion.div>
                 ))}
