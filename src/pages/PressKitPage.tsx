@@ -267,11 +267,18 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
+                {[
+                  { src: '/images/artist/brazilian-zouk-dance-embrace.jpg', alt: 'Brazilian Zouk Dance Embrace' },
+                  { src: '/images/artist/dj-zen-eyer-performing-live.jpg', alt: 'DJ Zen Eyer Performing Live' },
+                  { src: '/images/artist/dj-zen-eyer-club-performance.jpg', alt: 'DJ Zen Eyer Club Performance' },
+                  { src: '/images/artist/dj-zen-eyer-winner-trophy.jpg', alt: 'DJ Zen Eyer Winner Trophy' },
+                  { src: '/images/artist/dj-zen-eyer-beach-brazilian-zouk.png', alt: 'DJ Zen Eyer Beach Zouk' },
+                  { src: '/images/artist/dj-zen-eyer-nature-portrait.jpg', alt: 'DJ Zen Eyer Nature Portrait' }
+                ].map((photo, i) => (
                   <motion.div key={i} className="aspect-square rounded-xl overflow-hidden border-2 border-white/10 hover:border-primary/50 transition-all cursor-pointer" whileHover={{ scale: 1.05 }}>
                     <img
-                      src={`/images/press-photo-${i}.svg`}
-                      alt={`Zen Eyer Press Photo ${i}`}
+                      src={photo.src}
+                      alt={photo.alt}
                       className="w-full h-full object-cover"
                       loading="lazy"
                       decoding="async"
