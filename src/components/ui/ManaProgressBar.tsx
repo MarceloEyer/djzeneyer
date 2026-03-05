@@ -50,29 +50,15 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
                 </div>
             </div>
 
-            {/* ── Progress Track (The Zen Way: Thin & Glowing) ────────────────── */}
-            <div
-                className="relative h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5"
-                style={{ background: THEME.track }}
-            >
+            {/* ── Progress Track (Original Zen Tribe Style: Simple & Clean) ────────── */}
+            <div className="h-2 w-full bg-background rounded-full overflow-hidden">
                 {/* ── Fill ───────────────────────────────────────────────────── */}
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${clampedProgress}%` }}
                     transition={{ type: 'spring', stiffness: 50, damping: 20 }}
-                    className="absolute inset-y-0 left-0 rounded-full"
-                    style={{
-                        background: `linear-gradient(90deg, ${THEME.fillStart}, ${THEME.fillEnd})`,
-                        boxShadow: `0 0 10px ${THEME.glow}`,
-                    }}
-                >
-                    {/* Subtle Shimmer Overlay */}
-                    <motion.div
-                        animate={{ x: ['-100%', '200%'] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                        className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg]"
-                    />
-                </motion.div>
+                    className="h-full bg-primary rounded-full"
+                />
             </div>
         </div>
     );

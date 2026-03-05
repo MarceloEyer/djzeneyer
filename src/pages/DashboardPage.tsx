@@ -251,43 +251,33 @@ const DashboardContent = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {allAchievements.map((ach) => (
                 <motion.div
                   key={ach.id}
-                  whileHover={{ scale: 1.05 }}
-                  className={`relative p-5 rounded-2xl border transition-all duration-300 cursor-default text-center group ${ach.earned
-                    ? 'bg-background/60 border-primary/20 shadow-lg'
-                    : 'bg-white/2 opacity-30 border-white/5 border-dashed lg:grayscale'
-                    }`}
+                  className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 ${ach.earned ? 'hover:bg-surface/70' : 'opacity-60 grayscale'}`}
                 >
-                  <div className={`w-16 h-16 mx-auto mb-4 flex items-center justify-center transition-all duration-500 ${ach.earned ? 'drop-shadow-[0_0_12px_rgba(99,102,241,0.3)] group-hover:scale-110' : ''}`}>
+                  <div className="text-4xl mb-3">
                     {ach.image ? (
-                      <img src={safeUrl(ach.image)} alt={ach.title} className="w-full h-full object-contain" />
+                      <img src={safeUrl(ach.image)} alt={ach.title} className="w-12 h-12 object-contain" />
                     ) : (
-                      <div className="text-4xl">{ach.earned ? '🏆' : '🔒'}</div>
+                      ach.earned ? '🏆' : '🔒'
                     )}
                   </div>
+                  <h4 className="font-display text-lg mb-1">{ach.title}</h4>
+                  <p className="text-sm text-white/70 mb-3">{ach.description}</p>
 
-                  <h4 className={`text-xs font-bold mb-1 line-clamp-1 font-display tracking-tight ${ach.earned ? 'text-white' : 'text-white/40'}`}>
-                    {ach.title}
-                  </h4>
-
-                  <p className="text-[9px] text-white/40 line-clamp-2 uppercase font-medium leading-tight mb-3">
-                    {ach.description}
-                  </p>
-
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    {ach.earned ? (
-                      <div className="text-[8px] font-bold text-success uppercase tracking-[0.2em] flex items-center justify-center gap-1 bg-success/10 px-2 py-0.5 rounded-full border border-success/20">
-                        <Award size={8} /> {t('dashboard.unlocked')}
-                      </div>
-                    ) : (
-                      <div className="text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] flex items-center justify-center gap-1 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-                        {t('zenTribe.unlockAtLevel', { level: '?' })}
-                      </div>
-                    )}
-                  </div>
+                  {ach.earned ? (
+                    <div className="text-xs text-success flex items-center">
+                      <Award size={12} className="mr-1" />
+                      {t('dashboard.unlocked')}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-white/30 flex items-center">
+                      <Zap size={12} className="mr-1" />
+                      {t('zenTribe.unlockAtLevel', { level: '?' })}
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
