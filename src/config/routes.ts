@@ -73,6 +73,7 @@ const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
 const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
+const PayMePage = lazy(() => import('../pages/PayMePage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 // ============================================================================
@@ -246,6 +247,12 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     component: ResetPasswordPage,
     paths: { en: 'reset-password', pt: 'recuperar-senha' },
+  },
+
+  // PayMe / Pagamentos
+  {
+    component: PayMePage,
+    paths: { en: 'payme', pt: 'pagamentos' },
   },
 ];
 
