@@ -57,60 +57,62 @@ const DashboardContent = () => {
   // Animation variants removed (unused after cleanup)
 
   return (
-    <div className="pt-24 pb-16 min-h-screen bg-black">
+    <div className="pt-24 pb-16 min-h-screen bg-background">
       <Helmet>
         <title>{`Dashboard - ${user.name} | DJ Zen Eyer`}</title>
       </Helmet>
       <div className="container mx-auto px-4 max-w-7xl">
 
         {/* --- HERO HEADER / RANK CARD --- */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <div className="relative overflow-hidden bg-surface/30 rounded-3xl p-6 md:p-10 border border-white/10 backdrop-blur-xl">
-            {/* Background Decorative Elemets */}
-            <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-[100px]" />
-            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-accent/10 rounded-full blur-[100px]" />
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+          <div className="relative overflow-hidden bg-surface glow rounded-[2rem] p-8 md:p-12 border border-white/5 backdrop-blur-2xl">
+            {/* Background Decorative Elemets - Refined */}
+            <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
+            <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-accent/5 rounded-full blur-[120px]" />
 
-            <div className="relative flex flex-col md:flex-row items-center gap-8">
+            <div className="relative flex flex-col md:flex-row items-center gap-10">
               <div className="relative group">
-                <div className="absolute -inset-1 bg-primary/40 rounded-full blur-md group-hover:bg-primary/60 transition duration-1000 group-hover:duration-200 animate-pulse" />
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-primary via-secondary to-accent rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
                 <img
                   src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
                   alt={user.name}
-                  className="relative w-32 h-32 rounded-full border-2 border-white/20 object-cover shadow-2xl"
+                  className="relative w-36 h-36 rounded-full border border-white/10 object-cover shadow-2xl"
                 />
-                <div className="absolute -bottom-2 -right-2 bg-orange-600 text-black font-black rounded-full w-10 h-10 flex items-center justify-center shadow-2xl scale-125 border-4 border-black">
+                <div className="absolute -bottom-1 -right-1 bg-secondary text-white font-bold rounded-full w-12 h-12 flex items-center justify-center shadow-2xl border-4 border-surface text-xl">
                   {earnedAchievements.length}
                 </div>
               </div>
 
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 font-display tracking-tight">
                   {t('dashboard.welcomeBack', { name: user?.display_name || user?.name || t('common.friend') })}
                 </h1>
-                <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mb-6">
-                  <div className="flex items-center gap-2 bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-sm font-bold">
-                    <Trophy size={16} /> {gamipress.rank.current.title}
+                <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3 bg-primary/10 text-primary border border-primary/20 px-5 py-2 rounded-full text-sm font-bold uppercase tracking-wider backdrop-blur-sm">
+                    <Trophy size={18} /> {gamipress.rank.current.title}
                   </div>
                   {gamipress.stats.streakFire && (
-                    <div className="flex items-center gap-2 bg-orange-500/20 text-orange-500 border border-orange-500/30 px-3 py-1 rounded-full text-sm font-bold animate-pulse">
-                      <Zap size={16} fill="currentColor" /> {gamipress.stats.streak} {t('dashboard.dayStreak')}
+                    <div className="flex items-center gap-3 bg-orange-500/10 text-orange-500 border border-orange-500/20 px-5 py-2 rounded-full text-sm font-bold animate-pulse uppercase tracking-wider backdrop-blur-sm">
+                      <Zap size={18} fill="currentColor" /> {gamipress.stats.streak} {t('dashboard.dayStreak')}
                     </div>
                   )}
                 </div>
 
                 {/* Rank Progression Real */}
                 {gamipress.rank.next && (
-                  <ManaProgressBar
-                    progress={gamipress.rank.progress}
-                    label={t('dashboard.nextRank')}
-                    subLabel={gamipress.rank.next.title}
-                  />
+                  <div className="max-w-md mx-auto md:mx-0">
+                    <ManaProgressBar
+                      progress={gamipress.rank.progress}
+                      label={t('dashboard.nextRank')}
+                      subLabel={gamipress.rank.next.title}
+                    />
+                  </div>
                 )}
               </div>
 
               <motion.button
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/music')}
-                className="btn btn-primary px-8 py-4 rounded-2xl shadow-[0_10px_30px_rgba(99,102,241,0.3)] font-black uppercase tracking-widest text-sm"
+                className="btn btn-primary px-10 py-5 rounded-2xl shadow-xl font-bold uppercase tracking-widest text-sm"
               >
                 {t('dashboard.boostXP')}
               </motion.button>
@@ -119,23 +121,23 @@ const DashboardContent = () => {
         </motion.div>
 
         {/* --- MAIN GRID --- */}
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-4 gap-8">
 
           {/* LEFT COL: Points & Stats */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-8">
             {/* Wallet / Points Card */}
-            <div className="card p-6 border-white/5 overflow-hidden relative">
-              <div className="absolute top-0 right-0 p-4 opacity-10"><Zap size={48} /></div>
-              <h3 className="text-sm font-black text-white/40 uppercase tracking-widest mb-6">{t('dashboard.yourWallet')}</h3>
-              <div className="space-y-6">
+            <div className="card glow p-8 border-white/5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-6 opacity-5"><Zap size={64} /></div>
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-[0.2em] mb-8 font-display">{t('dashboard.yourWallet')}</h3>
+              <div className="space-y-8">
                 {pointTypes.map(([slug, pt]) => (
-                  <motion.div key={slug} whileHover={{ x: 5 }} className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
-                      {pt.image ? <img src={safeUrl(pt.image)} className="w-8 h-8 object-contain" /> : <Star className="text-yellow-500" fill="currentColor" />}
+                  <motion.div key={slug} whileHover={{ x: 5 }} className="flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center transition-colors hover:bg-white/10">
+                      {pt.image ? <img src={safeUrl(pt.image)} className="w-9 h-9 object-contain" /> : <Star className="text-yellow-500" fill="currentColor" />}
                     </div>
                     <div>
-                      <div className="text-2xl font-black">{pt.amount}</div>
-                      <div className="text-xs font-bold text-white/40 uppercase leading-none">{pt.name}</div>
+                      <div className="text-3xl font-black font-display leading-tight">{pt.amount}</div>
+                      <div className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{pt.name}</div>
                     </div>
                   </motion.div>
                 ))}
@@ -144,9 +146,9 @@ const DashboardContent = () => {
 
 
             {/* Quick Actions */}
-            < div className="card p-6 bg-primary/5 border-primary/20" >
-              <h3 className="text-xs font-black uppercase tracking-tighter mb-4 text-primary">{t('dashboard.quickActions')}</h3>
-              <div className="space-y-2">
+            < div className="card p-8 bg-surface border-white/5" >
+              <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-primary font-display">{t('dashboard.quickActions')}</h3>
+              <div className="space-y-3">
                 {[
                   { icon: Music, label: t('dashboard.browseMusic'), path: '/music' },
                   { icon: Calendar, label: t('dashboard.viewEvents'), path: '/events' },
@@ -155,9 +157,9 @@ const DashboardContent = () => {
                   <button
                     key={i}
                     onClick={() => navigate(act.path)}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all text-sm font-bold group"
+                    className="w-full flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-primary/10 border border-white/5 hover:border-primary/30 transition-all text-sm font-bold group"
                   >
-                    <act.icon size={18} className="text-white/40 group-hover:text-primary transition-colors" />
+                    <act.icon size={20} className="text-white/40 group-hover:text-primary transition-colors" />
                     {act.label}
                   </button>
                 ))}
@@ -166,66 +168,68 @@ const DashboardContent = () => {
           </div >
 
           {/* CENTER COL: Activity Feed */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="card h-full min-h-[600px] flex flex-col p-6 border-white/5 bg-surface/20">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-black font-display flex items-center gap-3">
-                  <Clock className="text-primary" size={24} /> {t('dashboard.recentActivity')}
+          <div className="lg:col-span-2 space-y-8">
+            <div className="card h-full min-h-[600px] flex flex-col p-8 border-white/5 bg-surface glow">
+              <div className="flex items-center justify-between mb-10">
+                <h2 className="text-2xl font-bold font-display flex items-center gap-4">
+                  <Clock className="text-primary" size={28} /> {t('dashboard.recentActivity')}
                 </h2>
-                <div className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-black uppercase text-white/40 border border-white/10 flex items-center gap-2">
+                <div className="px-4 py-1.5 bg-background rounded-full text-[10px] font-bold uppercase text-white/40 border border-white/5 flex items-center gap-2 tracking-widest">
                   <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> {t('dashboard.live_feed')}
                 </div>
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 opacity-90">
                 <RecentActivity logs={gamipress.logs} hideHeader={true} />
               </div>
             </div>
           </div >
 
           {/* RIGHT COL: Quests / Locked Achievements */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="card p-6 border-white/5 h-full flex flex-col">
-              <h2 className="text-xl font-black font-display mb-6 flex items-center gap-3">
-                <Target className="text-accent" size={24} /> {t('dashboard.pendingQuests')}
+          <div className="lg:col-span-1 space-y-8">
+            <div className="card p-8 border-white/5 h-full flex flex-col bg-surface glow">
+              <h2 className="text-xl font-bold font-display mb-8 flex items-center gap-4">
+                <Target className="text-secondary" size={28} /> {t('dashboard.pendingQuests')}
               </h2>
 
               <div className="space-y-4 flex-1">
                 {lockedAchievements.map((quest, i) => (
                   <motion.div
                     key={quest.id}
-                    whileHover={{ scale: 1.02 }}
-                    className="relative p-4 rounded-2xl bg-surface/50 border border-white/5 hover:border-accent/30 transition-all"
+                    whileHover={{ scale: 1.02, x: 3 }}
+                    className="relative p-5 rounded-2xl bg-background/50 border border-white/5 hover:border-secondary/30 transition-all group"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center grayscale opacity-30 shrink-0">
-                        {quest.image ? <img src={safeUrl(quest.image)} className="w-6 h-6 object-contain" /> : <Star size={18} />}
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center grayscale opacity-30 shrink-0 group-hover:opacity-100 group-hover:grayscale-0 transition-all">
+                        {quest.image ? <img src={safeUrl(quest.image)} className="w-7 h-7 object-contain" /> : <Star size={20} />}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex justify-between items-start mb-1">
-                          <div className="text-sm font-black text-white/80 truncate leading-none">{quest.title}</div>
+                        <div className="flex justify-between items-start mb-1.5">
+                          <div className="text-sm font-bold text-white/90 truncate font-display">{quest.title}</div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-[10px] text-white/40 line-clamp-1 leading-tight uppercase font-medium tracking-tight pr-2">{quest.description}</div>
                           {quest.points_awarded > 0 && (
-                            <span className="text-[9px] font-black text-accent bg-accent/10 px-1.5 py-0.5 rounded-md border border-accent/20 flex-shrink-0">
+                            <span className="text-[9px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-md border border-secondary/20 flex-shrink-0">
                               +{quest.points_awarded} XP
                             </span>
                           )}
                         </div>
-                        <div className="text-[10px] text-white/40 line-clamp-2 leading-tight uppercase font-bold">{quest.description}</div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
                 {lockedAchievements.length === 0 && (
-                  <div className="text-center opacity-20 py-10">
-                    <Trophy size={48} className="mx-auto mb-2" />
-                    <p className="text-xs font-black uppercase tracking-widest">{t('dashboard.allCleared')}</p>
+                  <div className="text-center opacity-20 py-16">
+                    <Trophy size={64} className="mx-auto mb-4" />
+                    <p className="text-sm font-bold uppercase tracking-widest">{t('dashboard.allCleared')}</p>
                   </div>
                 )}
               </div>
 
               <button
                 onClick={() => navigate('/my-account')}
-                className="w-full mt-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all border border-white/5"
+                className="w-full mt-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 hover:text-white transition-all border border-white/5"
               >
                 {t('gamification.viewAll')}
               </button>
@@ -234,51 +238,53 @@ const DashboardContent = () => {
 
         </div>
 
-        {/* --- ACHIEVEMENTS GALLERY --- */}
+        {/* --- ACHIEVEMENTS GALLERY (ZEN SHOWCASE) --- */}
         <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12">
-          <div className="card p-8 border-white/5">
-            <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
-              <h2 className="text-2xl font-black font-display flex items-center gap-4">
-                <Award className="text-primary" size={32} /> {t('dashboard.yourAchievements')}
+          <div className="card p-10 border-white/5 bg-surface glow">
+            <div className="flex items-center justify-between mb-12 flex-wrap gap-6">
+              <h2 className="text-2xl md:text-3xl font-bold font-display flex items-center gap-4">
+                <Award className="text-primary" size={36} /> {t('dashboard.yourAchievements')}
               </h2>
-              <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-2xl flex items-center gap-3">
-                <div className="text-2xl font-black text-primary">{earnedAchievements.length}</div>
-                <div className="text-[10px] font-black uppercase leading-none text-white/50">{t('dashboard.unlocked')}<br />Achievements</div>
+              <div className="px-6 py-3 bg-primary/10 border border-primary/20 rounded-2xl flex items-center gap-4">
+                <div className="text-3xl font-black text-primary font-display">{earnedAchievements.length}</div>
+                <div className="text-[11px] font-bold uppercase tracking-wider leading-none text-white/50">{t('dashboard.unlocked')}<br />Achievements</div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
               {allAchievements.map((ach) => (
                 <motion.div
                   key={ach.id}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className={`relative p-5 rounded-3xl border transition-all cursor-default text-center group ${ach.earned
-                    ? 'bg-surface border-primary/20 shadow-xl shadow-primary/5'
-                    : 'bg-white/2 opacity-40 border-white/5 border-dashed'
+                  whileHover={{ scale: 1.05 }}
+                  className={`relative p-5 rounded-2xl border transition-all duration-300 cursor-default text-center group ${ach.earned
+                    ? 'bg-background/60 border-primary/20 shadow-lg'
+                    : 'bg-white/2 opacity-30 border-white/5 border-dashed lg:grayscale'
                     }`}
                 >
-                  {!ach.earned && <div className="absolute top-2 right-2 text-white/20"><Zap size={10} /></div>}
-                  <div className={`w-20 h-20 mx-auto mb-4 flex items-center justify-center transition-all ${ach.earned ? 'drop-shadow-[0_0_10px_rgba(99,102,241,0.3)] group-hover:scale-110' : 'grayscale brightness-50'}`}>
+                  <div className={`w-16 h-16 mx-auto mb-4 flex items-center justify-center transition-all duration-500 ${ach.earned ? 'drop-shadow-[0_0_12px_rgba(99,102,241,0.3)] group-hover:scale-110' : ''}`}>
                     {ach.image ? (
                       <img src={safeUrl(ach.image)} alt={ach.title} className="w-full h-full object-contain" />
                     ) : (
-                      <div className="w-full h-full rounded-2xl bg-white/5 flex items-center justify-center text-4xl">
-                        {ach.earned ? '🏆' : '🔒'}
-                      </div>
+                      <div className="text-4xl">{ach.earned ? '🏆' : '🔒'}</div>
                     )}
                   </div>
-                  <div className={`text-xs font-black mb-1 line-clamp-1 truncate uppercase ${ach.earned ? 'text-white' : 'text-white/40'}`}>
+
+                  <h4 className={`text-xs font-bold mb-1 line-clamp-1 font-display tracking-tight ${ach.earned ? 'text-white' : 'text-white/40'}`}>
                     {ach.title}
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    {ach.earned && (
-                      <div className="text-[8px] font-black text-success uppercase tracking-widest flex items-center justify-center gap-1">
+                  </h4>
+
+                  <p className="text-[9px] text-white/40 line-clamp-2 uppercase font-medium leading-tight mb-3">
+                    {ach.description}
+                  </p>
+
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    {ach.earned ? (
+                      <div className="text-[8px] font-bold text-success uppercase tracking-[0.2em] flex items-center justify-center gap-1 bg-success/10 px-2 py-0.5 rounded-full border border-success/20">
                         <Award size={8} /> {t('dashboard.unlocked')}
                       </div>
-                    )}
-                    {ach.points_awarded > 0 && (
-                      <div className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/5 border ${ach.earned ? 'text-primary border-primary/20' : 'text-white/20 border-white/5'}`}>
-                        +{ach.points_awarded} XP
+                    ) : (
+                      <div className="text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] flex items-center justify-center gap-1 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                        {t('zenTribe.unlockAtLevel', { level: '?' })}
                       </div>
                     )}
                   </div>
