@@ -13,8 +13,8 @@
 
 namespace ZenEyer\Game;
 
-if (!defined('ABSPATH'))
-    exit;
+if (!\defined('ABSPATH'))
+    \exit;
 
 use WP_Error;
 

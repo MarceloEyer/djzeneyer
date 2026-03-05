@@ -1,16 +1,8 @@
-<?php
-/**
- * Sitemap generator (CLEAN VERSION)
- *
- * @package Zen_SEO_Lite_Pro
- * @since 8.1.0 - Optimized for Headless Hybrid Strategy
- */
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 namespace ZenEyer\SEO;
+
+if (!\defined('ABSPATH')) {
+    \exit;
+}
 
 class Zen_SEO_Sitemap
 {
@@ -27,14 +19,14 @@ class Zen_SEO_Sitemap
 
     private function __construct()
     {
-        add_action('init', [__CLASS__, 'register_rewrite_rules']);
-        add_filter('query_vars', [$this, 'register_query_vars']);
-        add_action('template_redirect', [$this, 'render_sitemap'], 0);
-        add_filter('robots_txt', [$this, 'add_sitemap_to_robots'], 10, 2);
+        \add_action('init', [__CLASS__, 'register_rewrite_rules']);
+        \add_filter('query_vars', [$this, 'register_query_vars']);
+        \add_action('template_redirect', [$this, 'render_sitemap'], 0);
+        \add_filter('robots_txt', [$this, 'add_sitemap_to_robots'], 10, 2);
 
         // Clear cache hooks
-        add_action('save_post', [$this, 'clear_cache_on_save']);
-        add_action('update_option_zen_seo_global', [$this, 'clear_cache_on_settings_update']);
+        \add_action('save_post', [$this, 'clear_cache_on_save']);
+        \add_action('update_option_zen_seo_global', [$this, 'clear_cache_on_settings_update']);
     }
 
     /**
@@ -43,7 +35,7 @@ class Zen_SEO_Sitemap
      */
     public static function register_rewrite_rules()
     {
-        add_rewrite_rule('sitemap-dynamic\.xml$', 'index.php?zen_sitemap=1', 'top');
+        \add_rewrite_rule('sitemap-dynamic\.xml$', 'index.php?zen_sitemap=1', 'top');
     }
 
     /**
@@ -60,7 +52,7 @@ class Zen_SEO_Sitemap
      */
     public function render_sitemap()
     {
-        if (!get_query_var('zen_sitemap')) {
+        if (!\get_query_var('zen_sitemap')) {
             return;
         }
 
@@ -73,14 +65,14 @@ class Zen_SEO_Sitemap
         }
 
         // Set headers
-        if (!headers_sent()) {
-            status_header(200);
-            header('Content-Type: application/xml; charset=utf-8');
-            header('X-Robots-Tag: noindex, follow');
+        if (!\headers_sent()) {
+            \status_header(200);
+            \header('Content-Type: application/xml; charset=utf-8');
+            \header('X-Robots-Tag: noindex, follow');
         }
 
         echo $sitemap;
-        exit;
+        \exit;
     }
 
     /**
@@ -110,7 +102,7 @@ class Zen_SEO_Sitemap
         $post_types = Zen_SEO_Helpers::get_supported_post_types();
 
         // Remove 'page' to avoid duplication with static sitemap-pages.xml which handles React routes
-        $post_types = array_diff($post_types, ['page']);
+        $post_types = \array_diff($post_types, ['page']);
 
         // Query args
         $args = [
@@ -125,11 +117,11 @@ class Zen_SEO_Sitemap
         ];
 
         // If Polylang is active, get English posts only (translations will be added via hreflang)
-        if (function_exists('pll_languages_list')) {
+        if (\function_exists('pll_languages_list')) {
             $args['lang'] = Zen_SEO_Helpers::get_default_language();
         }
 
-        $posts = get_posts($args);
+        $posts = \get_posts($args);
 
         foreach ($posts as $post) {
             // Check if post should be indexed
@@ -149,15 +141,15 @@ class Zen_SEO_Sitemap
             // Get primary URL (default language)
             $default_lang = Zen_SEO_Helpers::get_default_language();
             $default_hreflang = Zen_SEO_Helpers::convert_lang_to_hreflang($default_lang);
-            $primary_url = $translations[$default_hreflang] ?? reset($translations);
+            $primary_url = $translations[$default_hreflang] ?? \reset($translations);
 
             if (!$primary_url) {
                 continue;
             }
 
             $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . esc_url($primary_url) . '</loc>' . "\n";
-            $xml .= '    <lastmod>' . get_post_modified_time('c', true, $post) . '</lastmod>' . "\n";
+            $xml .= '    <loc>' . \esc_url($primary_url) . '</loc>' . "\n";
+            $xml .= '    <lastmod>' . \get_post_modified_time('c', true, $post) . '</lastmod>' . "\n";
 
             // Priority based on post type
             $priority = $this->get_priority_for_post_type($post->post_type);
@@ -166,11 +158,11 @@ class Zen_SEO_Sitemap
 
             // Hreflang for all translations
             foreach ($translations as $lang => $url) {
-                $xml .= '    <xhtml:link rel="alternate" hreflang="' . esc_attr($lang) . '" href="' . esc_url($url) . '"/>' . "\n";
+                $xml .= '    <xhtml:link rel="alternate" hreflang="' . \esc_attr($lang) . '" href="' . \esc_url($url) . '"/>' . "\n";
             }
 
             // x-default
-            $xml .= '    <xhtml:link rel="alternate" hreflang="x-default" href="' . esc_url($primary_url) . '"/>' . "\n";
+            $xml .= '    <xhtml:link rel="alternate" hreflang="x-default" href="' . \esc_url($primary_url) . '"/>' . "\n";
 
             $xml .= '  </url>' . "\n";
         }
@@ -214,8 +206,8 @@ class Zen_SEO_Sitemap
         $rules .= "\n";
 
         // Aponta para os dois sitemaps (Estratégia Híbrida)
-        $rules .= "Sitemap: " . home_url('/sitemap-static.xml') . "\n";
-        $rules .= "Sitemap: " . home_url('/sitemap-dynamic.xml') . "\n";
+        $rules .= "Sitemap: " . \home_url('/sitemap-static.xml') . "\n";
+        $rules .= "Sitemap: " . \home_url('/sitemap-dynamic.xml') . "\n";
 
         return $rules;
     }
@@ -225,7 +217,7 @@ class Zen_SEO_Sitemap
      */
     public function clear_cache_on_save($post_id)
     {
-        if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id)) {
+        if (\wp_is_post_autosave($post_id) || \wp_is_post_revision($post_id)) {
             return;
         }
         Zen_SEO_Cache::clear_sitemap();

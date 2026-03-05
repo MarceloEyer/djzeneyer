@@ -6,11 +6,11 @@
  * @since 8.0.0
  */
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 namespace ZenEyer\SEO;
+
+if (!\defined('ABSPATH')) {
+    \exit;
+}
 
 class Zen_SEO_Helpers
 {
@@ -22,8 +22,8 @@ class Zen_SEO_Helpers
      */
     public static function get_global_settings()
     {
-        $settings = get_option('zen_seo_global', []);
-        return is_array($settings) ? $settings : [];
+        $settings = \get_option('zen_seo_global', []);
+        return \is_array($settings) ? $settings : [];
     }
 
     /**
@@ -34,8 +34,8 @@ class Zen_SEO_Helpers
      */
     public static function get_post_meta($post_id)
     {
-        $meta = get_post_meta($post_id, '_zen_seo_data', true);
-        return is_array($meta) ? $meta : [];
+        $meta = \get_post_meta($post_id, '_zen_seo_data', true);
+        return \is_array($meta) ? $meta : [];
     }
 
     /**
@@ -48,22 +48,22 @@ class Zen_SEO_Helpers
     {
         $translations = [];
 
-        if (!function_exists('pll_get_post_translations')) {
+        if (!\function_exists('pll_get_post_translations')) {
             // No Polylang, return current post only
-            $translations['en'] = get_permalink($post_id);
+            $translations['en'] = \get_permalink($post_id);
             return $translations;
         }
 
         $trans = pll_get_post_translations($post_id);
 
-        if (empty($trans) || !is_array($trans)) {
-            $translations['en'] = get_permalink($post_id);
+        if (empty($trans) || !\is_array($trans)) {
+            $translations['en'] = \get_permalink($post_id);
             return $translations;
         }
 
         foreach ($trans as $lang => $trans_id) {
             $hreflang = self::convert_lang_to_hreflang($lang);
-            $permalink = get_permalink($trans_id);
+            $permalink = \get_permalink($trans_id);
 
             if ($permalink) {
                 $translations[$hreflang] = $permalink;
@@ -98,8 +98,8 @@ class Zen_SEO_Helpers
      */
     public static function get_default_language()
     {
-        if (function_exists('pll_default_language')) {
-            return pll_default_language();
+        if (\function_exists('pll_default_language')) {
+            return \pll_default_language();
         }
         return 'en';
     }
@@ -111,8 +111,8 @@ class Zen_SEO_Helpers
      */
     public static function get_available_languages()
     {
-        if (function_exists('pll_languages_list')) {
-            return pll_languages_list();
+        if (\function_exists('pll_languages_list')) {
+            return \pll_languages_list();
         }
         return ['en'];
     }
@@ -128,7 +128,7 @@ class Zen_SEO_Helpers
         if (empty($url)) {
             return '';
         }
-        return esc_url_raw(trim($url));
+        return \esc_url_raw(\trim($url));
     }
 
     /**
@@ -140,13 +140,13 @@ class Zen_SEO_Helpers
      */
     public static function get_featured_image($post_id, $size = 'large')
     {
-        $image_id = get_post_thumbnail_id($post_id);
-
+        $image_id = \get_post_thumbnail_id($post_id);
+        \t\t
         if (!$image_id) {
             return '';
         }
 
-        $image = wp_get_attachment_image_src($image_id, $size);
+        $image = \wp_get_attachment_image_src($image_id, $size);
 
         return $image ? $image[0] : '';
     }
@@ -160,14 +160,14 @@ class Zen_SEO_Helpers
      */
     public static function generate_excerpt($content, $length = 160)
     {
-        $content = strip_tags($content);
-        $content = strip_shortcodes($content);
+        $content = \strip_tags($content);
+        $content = \strip_shortcodes($content);
 
-        if (strlen($content) <= $length) {
+        if (\strlen($content) <= $length) {
             return $content;
         }
 
-        return substr($content, 0, $length) . '...';
+        return \substr($content, 0, $length) . '...';
     }
 
     /**
@@ -178,7 +178,7 @@ class Zen_SEO_Helpers
     public static function is_supported_post_type()
     {
         $supported = ['post', 'page', 'flyers', 'remixes', 'product'];
-        return is_singular($supported);
+        return \is_singular($supported);
     }
 
     /**
@@ -188,7 +188,7 @@ class Zen_SEO_Helpers
      */
     public static function get_supported_post_types()
     {
-        return apply_filters('zen_seo_supported_post_types', [
+        return \apply_filters('zen_seo_supported_post_types', [
             'post',
             'page',
             'flyers',
@@ -207,7 +207,7 @@ class Zen_SEO_Helpers
     {
         // ISNI format: 0000 0001 2345 6789
         $pattern = '/^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/';
-        return preg_match($pattern, $isni) === 1;
+        return \preg_match($pattern, $isni) === 1;
     }
 
     /**
@@ -220,7 +220,7 @@ class Zen_SEO_Helpers
     {
         // CNPJ format: 00.000.000/0000-00
         $pattern = '/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/';
-        return preg_match($pattern, $cnpj) === 1;
+        return \preg_match($pattern, $cnpj) === 1;
     }
 
     /**
@@ -231,16 +231,16 @@ class Zen_SEO_Helpers
      */
     public static function log($message, $data = null)
     {
-        if (!defined('WP_DEBUG') || !WP_DEBUG) {
+        if (!\defined('WP_DEBUG') || !WP_DEBUG) {
             return;
         }
 
         $log_message = '[Zen SEO] ' . $message;
 
         if ($data !== null) {
-            $log_message .= ' | Data: ' . print_r($data, true);
+            $log_message .= ' | Data: ' . \print_r($data, true);
         }
 
-        error_log($log_message);
+        \error_log($log_message);
     }
 }

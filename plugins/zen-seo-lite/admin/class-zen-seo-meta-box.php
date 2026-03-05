@@ -1,16 +1,8 @@
-<?php
-/**
- * Meta box for post/page SEO settings
- *
- * @package Zen_SEO_Lite_Pro
- * @since 8.0.0
- */
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 namespace ZenEyer\SEO;
+
+if (!\defined('ABSPATH')) {
+    \exit;
+}
 
 class Zen_SEO_Meta_Box
 {
@@ -27,8 +19,8 @@ class Zen_SEO_Meta_Box
 
     private function __construct()
     {
-        add_action('add_meta_boxes', [$this, 'add_meta_boxes']);
-        add_action('save_post', [$this, 'save_meta_data'], 10, 2);
+        \add_action('add_meta_boxes', [$this, 'add_meta_boxes']);
+        \add_action('save_post', [$this, 'save_meta_data'], 10, 2);
     }
 
     /**
@@ -39,7 +31,7 @@ class Zen_SEO_Meta_Box
         $post_types = Zen_SEO_Helpers::get_supported_post_types();
 
         foreach ($post_types as $post_type) {
-            add_meta_box(
+            \add_meta_box(
                 'zen_seo_meta',
                 __('🔍 Zen SEO', 'zen-seo'),
                 [$this, 'render_meta_box'],
@@ -55,10 +47,10 @@ class Zen_SEO_Meta_Box
      */
     public function render_meta_box($post)
     {
-        wp_nonce_field('zen_seo_meta_box', 'zen_seo_nonce');
+        \wp_nonce_field('zen_seo_meta_box', 'zen_seo_nonce');
 
         $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
-        $post_type = get_post_type($post);
+        $post_type = \get_post_type($post);
 
         ?>
         <div class="zen-seo-meta-box">
@@ -131,8 +123,8 @@ class Zen_SEO_Meta_Box
                     <?php _e('SEO Title', 'zen-seo'); ?>
                 </label>
                 <input type="text" id="zen_seo_title" name="zen_seo[title]"
-                    value="<?php echo esc_attr($meta['title'] ?? ''); ?>"
-                    placeholder="<?php echo esc_attr(get_the_title($post)); ?>">
+                    value="<?php echo \esc_attr($meta['title'] ?? ''); ?>"
+                    placeholder="<?php echo \esc_attr(\get_the_title($post)); ?>">
                 <p class="description">
                     <?php _e('Leave empty to use post title. Recommended: 50-60 characters.', 'zen-seo'); ?>
                 </p>
@@ -144,7 +136,7 @@ class Zen_SEO_Meta_Box
                     <?php _e('Meta Description', 'zen-seo'); ?>
                 </label>
                 <textarea id="zen_seo_desc" name="zen_seo[desc]" rows="3"
-                    placeholder="<?php _e('Write a compelling description...', 'zen-seo'); ?>"><?php echo esc_textarea($meta['desc'] ?? ''); ?></textarea>
+                    placeholder="<?php _e('Write a compelling description...', 'zen-seo'); ?>"><?php echo \esc_textarea($meta['desc'] ?? ''); ?></textarea>
                 <p class="description">
                     <?php _e('Recommended: 150-160 characters. This appears in search results.', 'zen-seo'); ?>
                 </p>
@@ -155,8 +147,8 @@ class Zen_SEO_Meta_Box
                 <label for="zen_seo_image">
                     <?php _e('Open Graph Image URL', 'zen-seo'); ?>
                 </label>
-                <input type="url" id="zen_seo_image" name="zen_seo[image]" value="<?php echo esc_url($meta['image'] ?? ''); ?>"
-                    placeholder="<?php echo esc_url(Zen_SEO_Helpers::get_featured_image($post->ID)); ?>">
+                <input type="url" id="zen_seo_image" name="zen_seo[image]" value="<?php echo \esc_url($meta['image'] ?? ''); ?>"
+                    placeholder="<?php echo \esc_url(Zen_SEO_Helpers::get_featured_image($post->ID)); ?>">
                 <p class="description">
                     <?php _e('Leave empty to use featured image. Recommended: 1200x630px.', 'zen-seo'); ?>
                 </p>
@@ -165,7 +157,7 @@ class Zen_SEO_Meta_Box
             <!-- No Index -->
             <div class="zen-seo-field">
                 <label>
-                    <input type="checkbox" name="zen_seo[noindex]" value="1" <?php checked(!empty($meta['noindex']), true); ?>>
+                    <input type="checkbox" name="zen_seo[noindex]" value="1" <?php \checked(!empty($meta['noindex']), true); ?>>
                     <?php _e('No Index (hide from search engines)', 'zen-seo'); ?>
                 </label>
                 <p class="description">
@@ -183,7 +175,7 @@ class Zen_SEO_Meta_Box
                         <?php _e('Event Date', 'zen-seo'); ?>
                     </label>
                     <input type="date" id="zen_seo_event_date" name="zen_seo[event_date]"
-                        value="<?php echo esc_attr($meta['event_date'] ?? ''); ?>">
+                        value="<?php echo \esc_attr($meta['event_date'] ?? ''); ?>">
                 </div>
 
                 <div class="zen-seo-field">
@@ -191,7 +183,7 @@ class Zen_SEO_Meta_Box
                         <?php _e('Event Location', 'zen-seo'); ?>
                     </label>
                     <input type="text" id="zen_seo_event_location" name="zen_seo[event_location]"
-                        value="<?php echo esc_attr($meta['event_location'] ?? ''); ?>"
+                        value="<?php echo \esc_attr($meta['event_location'] ?? ''); ?>"
                         placeholder="<?php _e('São Paulo, Brazil', 'zen-seo'); ?>">
                 </div>
 
@@ -200,7 +192,7 @@ class Zen_SEO_Meta_Box
                         <?php _e('Ticket URL', 'zen-seo'); ?>
                     </label>
                     <input type="url" id="zen_seo_event_ticket" name="zen_seo[event_ticket]"
-                        value="<?php echo esc_url($meta['event_ticket'] ?? ''); ?>" placeholder="https://...">
+                        value="<?php echo \esc_url($meta['event_ticket'] ?? ''); ?>" placeholder="https://...">
                 </div>
             <?php endif; ?>
 
@@ -209,17 +201,17 @@ class Zen_SEO_Meta_Box
             <h3><?php _e('Search Preview', 'zen-seo'); ?></h3>
             <div class="zen-seo-preview">
                 <div class="zen-seo-preview-title" id="zen-preview-title">
-                    <?php echo esc_html($meta['title'] ?? get_the_title($post)); ?>
+                    <?php echo \esc_html($meta['title'] ?? \get_the_title($post)); ?>
                 </div>
                 <div class="zen-seo-preview-url">
-                    <?php echo esc_url(get_permalink($post)); ?>
+                    <?php echo \esc_url(\get_permalink($post)); ?>
                 </div>
                 <div class="zen-seo-preview-desc" id="zen-preview-desc">
                     <?php
                     if (!empty($meta['desc'])) {
-                        echo esc_html($meta['desc']);
+                        echo \esc_html($meta['desc']);
                     } else {
-                        echo esc_html(Zen_SEO_Helpers::generate_excerpt(get_post_field('post_content', $post)));
+                        echo \esc_html(Zen_SEO_Helpers::generate_excerpt(\get_post_field('post_content', $post)));
                     }
                     ?>
                 </div>
@@ -233,8 +225,8 @@ class Zen_SEO_Meta_Box
                     const previewTitle = document.getElementById('zen-preview-title');
                     const previewDesc = document.getElementById('zen-preview-desc');
 
-                    const defaultTitle = <?php echo json_encode(get_the_title($post)); ?>;
-                    const defaultDesc = <?php echo json_encode(Zen_SEO_Helpers::generate_excerpt(get_post_field('post_content', $post))); ?>;
+                    const defaultTitle = <?php echo \json_encode(\get_the_title($post)); ?>;
+                    const defaultDesc = <?php echo \json_encode(Zen_SEO_Helpers::generate_excerpt(\get_post_field('post_content', $post))); ?>;
 
                     if (titleInput && previewTitle) {
                         titleInput.addEventListener('input', function () {
@@ -259,20 +251,20 @@ class Zen_SEO_Meta_Box
     public function save_meta_data($post_id, $post)
     {
         // Security checks
-        if (!isset($_POST['zen_seo_nonce']) || !wp_verify_nonce($_POST['zen_seo_nonce'], 'zen_seo_meta_box')) {
+        if (!isset($_POST['zen_seo_nonce']) || !\wp_verify_nonce($_POST['zen_seo_nonce'], 'zen_seo_meta_box')) {
             return;
         }
 
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        if (\defined('DOING_AUTOSAVE') && \DOING_AUTOSAVE) {
             return;
         }
 
-        if (!current_user_can('edit_post', $post_id)) {
+        if (!\current_user_can('edit_post', $post_id)) {
             return;
         }
 
         // Don't save for revisions or autosaves
-        if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        if (\wp_is_post_revision($post_id) || \wp_is_post_autosave($post_id)) {
             return;
         }
 
@@ -292,16 +284,16 @@ class Zen_SEO_Meta_Box
                         break;
 
                     case 'desc':
-                        $sanitized[$key] = sanitize_textarea_field($value);
+                        $sanitized[$key] = \sanitize_textarea_field($value);
                         break;
 
                     default:
-                        $sanitized[$key] = sanitize_text_field($value);
+                        $sanitized[$key] = \sanitize_text_field($value);
                         break;
                 }
             }
 
-            update_post_meta($post_id, '_zen_seo_data', $sanitized);
+            \update_post_meta($post_id, '_zen_seo_data', $sanitized);
 
             // Clear caches
             Zen_SEO_Cache::clear_schema($post_id);
