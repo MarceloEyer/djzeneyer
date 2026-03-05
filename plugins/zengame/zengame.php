@@ -41,9 +41,39 @@ class ZenGame
         \add_action('rest_api_init', array($this, 'register_routes'));
         $this->init_cache_hooks();
         \add_action('admin_menu', array($this, 'add_settings_page'));
+        \add_action('wp_login', array($this, 'update_login_streak'), 10, 2);
 
         // SEO: Allow search engines to crawl API endpoints
         \add_filter('wp_robots', array($this, 'allow_api_indexing'));
+    }
+
+    /**
+     * Update login streak when user logs in
+     */
+    public function update_login_streak($user_login, $user)
+    {
+        $user_id = $user->ID;
+        $today = \current_time('Y-m-d');
+        $last_login = \get_user_meta($user_id, 'zen_last_login', true);
+        $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
+
+        if ($last_login === $today) {
+            return;
+        }
+
+        $yesterday = \date('Y-m-d', \strtotime('-1 day', \current_time('timestamp')));
+
+        if ($last_login === $yesterday) {
+            $streak++;
+        } else {
+            $streak = 1;
+        }
+
+        \update_user_meta($user_id, 'zen_last_login', $today);
+        \update_user_meta($user_id, 'zen_login_streak', $streak);
+
+        // Invalidate cache since stats changed
+        $this->clear_user_cache_on_gamipress($user_id);
     }
 
     /**
@@ -85,8 +115,7 @@ class ZenGame
      */
     public function check_auth($request)
     {
-        $user_id = $this->get_authenticated_user_id($request);
-        return $user_id > 0;
+        return $this->get_authenticated_user_id($request) > 0;
     }
 
     /**
@@ -130,13 +159,13 @@ class ZenGame
             return new \WP_Error('gamipress_missing', 'GamiPress not found', ['status' => 503]);
         }
 
-        $limit = \absint($request->get_param('limit')) ?: 50;
+        $limit = \max(1, \min(100, \absint($request->get_param('limit')) ?: 50));
         $period = $request->get_param('period') ?: 'all';
 
         $cache_key = 'djz_gamipress_' . self::CACHE_VERSION . '_leaderboard_' . $limit . '_' . $period;
 
         $cached = \get_transient($cache_key);
-        if ($cached !== false) {
+        if ($cached !== false && !isset($_GET['nocache'])) {
             return \rest_ensure_response($cached);
         }
 
@@ -144,7 +173,6 @@ class ZenGame
         $point_types = \gamipress_get_points_types();
         global $wpdb;
 
-        // Fetch all point types in fewer queries if possible, but keep structure for GamiPress compatibility
         foreach ($point_types as $slug => $pt) {
             if ($period !== 'all') {
                 $days = ($period === '30d') ? 30 : 7;
@@ -215,7 +243,6 @@ class ZenGame
         }
 
         $ttl = $this->get_cache_ttl();
-        $point_types = \function_exists('gamipress_get_points_types') ? \gamipress_get_points_types() : [];
         $gamipress_active = \defined('GAMIPRESS_VER');
         ?>
         <div class="wrap zen-diag-wrap">
@@ -246,7 +273,7 @@ class ZenGame
         $user_id = $this->get_authenticated_user_id($request);
 
         if (!$user_id) {
-            return new WP_Error('no_user', 'User not authenticated', ['status' => 401]);
+            return new \WP_Error('no_user', 'User not authenticated', ['status' => 401]);
         }
 
         $cache_key = 'djz_gamipress_dashboard_' . self::CACHE_VERSION . '_' . $user_id;
@@ -298,6 +325,8 @@ class ZenGame
             }
         }
 
+        $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
+
         $data = [
             'user_id' => $user_id,
             'points' => $point_data,
@@ -310,6 +339,8 @@ class ZenGame
             'stats' => [
                 'totalTracks' => $this->is_woo_active() ? $this->get_user_total_tracks($user_id) : 0,
                 'eventsAttended' => $this->is_woo_active() ? $this->get_user_events_attended($user_id) : 0,
+                'streak' => $streak,
+                'streakFire' => $streak > 1,
             ],
             'lastUpdate' => \current_time('mysql'),
             'version' => '1.2.1'
@@ -321,25 +352,37 @@ class ZenGame
 
     private function is_woo_active()
     {
-        return class_exists('WooCommerce');
+        return \class_exists('WooCommerce');
     }
 
     private function get_detailed_rank_info($user_id)
     {
-        $info = ['current' => null, 'next' => null, 'progress' => 0, 'requirements' => []];
-        if (!\function_exists('gamipress_get_user_rank'))
+        $info = [
+            'current' => [
+                'id' => 0,
+                'title' => \__('Zen Novice', 'zengame'),
+                'image' => ''
+            ],
+            'next' => null,
+            'progress' => 0,
+            'requirements' => []
+        ];
+
+        if (!\function_exists('gamipress_get_user_rank')) {
             return $info;
+        }
 
         $rank_types = \function_exists('gamipress_get_rank_types') ? \gamipress_get_rank_types() : [];
-        if (empty($rank_types))
+        if (empty($rank_types)) {
             return $info;
+        }
 
         $slug = \array_key_first($rank_types);
         $current = \gamipress_get_user_rank($user_id, $slug);
 
         if ($current) {
             $info['current'] = [
-                'id' => $current->ID,
+                'id' => (int) $current->ID,
                 'title' => $current->post_title,
                 'image' => \get_the_post_thumbnail_url($current->ID, 'thumbnail') ?: ''
             ];
@@ -373,7 +416,12 @@ class ZenGame
                                 }
                                 $percent = $required > 0 ? \min(100, \round(($current_val / $required) * 100)) : 100;
                                 $total_percent += $percent;
-                                $info['requirements'][] = ['title' => $req->post_title, 'current' => $current_val, 'required' => $required, 'percent' => $percent];
+                                $info['requirements'][] = [
+                                    'title' => $req->post_title,
+                                    'current' => $current_val,
+                                    'required' => $required,
+                                    'percent' => $percent
+                                ];
                             }
                             $info['progress'] = \round($total_percent / \count($requirements));
                         }
@@ -429,34 +477,44 @@ class ZenGame
 
     private function get_user_events_attended($user_id)
     {
-        global $wpdb;
+        if (!$this->is_woo_active()) {
+            return 0;
+        }
 
         $target_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
-        $placeholders = \implode(',', \array_fill(0, \count($target_slugs), '%s'));
 
-        // Optimize using JOIN to avoid N+1 and direct WC lookup
-        // This query works for both legacy and HPOS if we look at order items
-        $query = $wpdb->prepare(
-            "SELECT SUM(itemmeta_qty.meta_value) as total_qty
-             FROM {$wpdb->prefix}woocommerce_order_items as items
-             JOIN {$wpdb->prefix}woocommerce_order_itemmeta as itemmeta_qty ON items.order_item_id = itemmeta_qty.order_item_id
-             JOIN {$wpdb->prefix}woocommerce_order_itemmeta as itemmeta_product ON items.order_item_id = itemmeta_product.order_item_id
-             JOIN {$wpdb->posts} as orders ON items.order_id = orders.ID
-             JOIN {$wpdb->term_relationships} as tr ON itemmeta_product.meta_value = tr.object_id
-             JOIN {$wpdb->term_taxonomy} as tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
-             JOIN {$wpdb->terms} as t ON tt.term_id = t.term_id
-             WHERE orders.post_type = 'shop_order' 
-             AND orders.post_status IN ('wc-completed', 'wc-processing')
-             AND orders.post_author = %d
-             AND itemmeta_qty.meta_key = '_qty'
-             AND itemmeta_product.meta_key = '_product_id'
-             AND tt.taxonomy = 'product_cat'
-             AND t.slug IN ($placeholders)",
-            array_merge([$user_id], $target_slugs)
-        );
+        // Use standard WC_Order_Query for HPOS compatibility
+        $args = [
+            'customer' => $user_id,
+            'status' => ['completed', 'processing'],
+            'limit' => -1,
+            'return' => 'ids',
+        ];
 
-        $result = $wpdb->get_var($query);
-        return (int) $result;
+        $order_ids = \wc_get_orders($args);
+        $total_qty = 0;
+
+        foreach ($order_ids as $order_id) {
+            $order = \wc_get_order($order_id);
+            if (!$order)
+                continue;
+
+            foreach ($order->get_items() as $item) {
+                $product_id = $item->get_product_id();
+                $terms = \get_the_terms($product_id, 'product_cat');
+
+                if ($terms && !\is_wp_error($terms)) {
+                    foreach ($terms as $term) {
+                        if (\in_array($term->slug, $target_slugs)) {
+                            $total_qty += $item->get_quantity();
+                            break; // Se uma categoria bateu, já contamos esse item
+                        }
+                    }
+                }
+            }
+        }
+
+        return $total_qty;
     }
 
     private function init_cache_hooks()
