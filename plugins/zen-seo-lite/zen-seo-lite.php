@@ -55,6 +55,8 @@ final class Zen_SEO_Lite_Pro
 
     /**
      * Define plugin constants
+     *
+     * @return void
      */
     private function define_constants()
     {
@@ -70,6 +72,8 @@ final class Zen_SEO_Lite_Pro
 
     /**
      * Load required files
+     *
+     * @return void
      */
     private function load_dependencies()
     {
@@ -92,6 +96,8 @@ final class Zen_SEO_Lite_Pro
 
     /**
      * Initialize WordPress hooks
+     *
+     * @return void
      */
     private function init_hooks()
     {
@@ -108,6 +114,8 @@ final class Zen_SEO_Lite_Pro
 
     /**
      * Initialize plugin components after plugins are loaded
+     *
+     * @return void
      */
     public function init_components()
     {
@@ -145,6 +153,8 @@ final class Zen_SEO_Lite_Pro
 
     /**
      * Deactivation routine
+     *
+     * @return void
      */
     public function deactivate()
     {
@@ -154,6 +164,8 @@ final class Zen_SEO_Lite_Pro
 
     /**
      * Load translation files
+     *
+     * @return void
      */
     public function load_textdomain()
     {

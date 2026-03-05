@@ -31,7 +31,7 @@ class Zen_SEO_Cache
      *
      * @param string $key
      * @param mixed $data
-     * @param int $expiration
+     * @param int|null $expiration
      * @return bool
      */
     public static function set($key, $data, $expiration = null)
@@ -80,6 +80,8 @@ class Zen_SEO_Cache
 
     /**
      * Clear sitemap cache
+     *
+     * @return void
      */
     public static function clear_sitemap()
     {
@@ -91,6 +93,7 @@ class Zen_SEO_Cache
      * Clear schema cache for a post
      *
      * @param int $post_id
+     * @return void
      */
     public static function clear_schema($post_id)
     {
@@ -102,6 +105,7 @@ class Zen_SEO_Cache
      * Clear meta cache for a post
      *
      * @param int $post_id
+     * @return void
      */
     public static function clear_meta($post_id)
     {

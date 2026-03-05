@@ -90,6 +90,9 @@ class Zen_SEO_Meta_Tags
 
     /**
      * Render Open Graph tags
+     *
+     * @param array $data
+     * @return void
      */
     private function render_open_graph($data)
     {
@@ -131,7 +134,10 @@ class Zen_SEO_Meta_Tags
     }
 
     /**
-     * Render Twitter Card tags
+     * Twitter Card tags
+     *
+     * @param array $data
+     * @return void
      */
     private function render_twitter_card($data)
     {
@@ -163,6 +169,9 @@ class Zen_SEO_Meta_Tags
 
     /**
      * Render hreflang tags
+     *
+     * @param array $data
+     * @return void
      */
     private function render_hreflang($data)
     {
@@ -202,6 +211,8 @@ class Zen_SEO_Meta_Tags
 
     /**
      * Get page data for meta tags (Used by REST API and wp_head)
+     *
+     * @return array
      */
     public function get_page_data()
     {
@@ -215,6 +226,9 @@ class Zen_SEO_Meta_Tags
 
     /**
      * Get data for a specific post
+     *
+     * @param int $post_id
+     * @return array
      */
     public function get_post_data($post_id)
     {
@@ -251,6 +265,8 @@ class Zen_SEO_Meta_Tags
 
     /**
      * Get default global data
+     *
+     * @return array
      */
     public function get_default_data()
     {
@@ -279,6 +295,10 @@ class Zen_SEO_Meta_Tags
 
     /**
      * Finalize data with fallbacks and site name
+     *
+     * @param array $data
+     * @param array $settings
+     * @return array
      */
     private function finalize_data($data, $settings)
     {

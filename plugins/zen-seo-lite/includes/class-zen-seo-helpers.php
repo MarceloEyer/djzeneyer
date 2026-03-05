@@ -58,7 +58,7 @@ class Zen_SEO_Helpers
      * Get translations for a post (Polylang support)
      *
      * @param int $post_id
-     * @return array ['en' => 'url', 'pt-BR' => 'url']
+     * @return array<string, string> ['en' => 'url', 'pt-BR' => 'url']
      */
     public static function get_translations($post_id)
     {
@@ -207,7 +207,7 @@ class Zen_SEO_Helpers
     /**
      * Get supported post types
      *
-     * @return array
+     * @return array<string>
      */
     public static function get_supported_post_types()
     {

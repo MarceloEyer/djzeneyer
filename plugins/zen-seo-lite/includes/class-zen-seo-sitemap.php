@@ -33,6 +33,8 @@ class Zen_SEO_Sitemap
     /**
      * Register rewrite rules for sitemap
      * Changed to sitemap-dynamic.xml to avoid conflict with physical files
+     *
+     * @return void
      */
     public static function register_rewrite_rules()
     {
@@ -41,6 +43,9 @@ class Zen_SEO_Sitemap
 
     /**
      * Register query vars
+     *
+     * @param array<string> $vars
+     * @return array<string>
      */
     public function register_query_vars($vars)
     {
@@ -50,6 +55,8 @@ class Zen_SEO_Sitemap
 
     /**
      * Render sitemap
+     *
+     * @return void
      */
     public function render_sitemap()
     {
@@ -78,6 +85,8 @@ class Zen_SEO_Sitemap
 
     /**
      * Generate sitemap XML
+     *
+     * @return string
      */
     private function generate_sitemap()
     {
@@ -96,6 +105,8 @@ class Zen_SEO_Sitemap
 
     /**
      * Generate post URLs
+     *
+     * @return string
      */
     private function generate_post_urls()
     {
@@ -173,6 +184,9 @@ class Zen_SEO_Sitemap
 
     /**
      * Get priority for post type
+     *
+     * @param string $post_type
+     * @return string
      */
     private function get_priority_for_post_type($post_type)
     {
@@ -193,6 +207,10 @@ class Zen_SEO_Sitemap
      * FIX: Cast $public to string before comparison to prevent
      * "strpos(): Passing null to parameter #1" deprecation when
      * the blog_public option has not been set yet.
+     *
+     * @param string $output
+     * @param string|null $public
+     * @return string
      */
     public function add_sitemap_to_robots($output, $public)
     {

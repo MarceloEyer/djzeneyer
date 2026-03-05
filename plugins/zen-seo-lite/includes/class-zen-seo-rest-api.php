@@ -129,6 +129,9 @@ class Zen_SEO_REST_API
 
     /**
      * Get unified SEO data by URL
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response
      */
     public function get_meta_by_url($request)
     {
@@ -221,6 +224,9 @@ class Zen_SEO_REST_API
 
     /**
      * Get SEO data for a post
+     *
+     * @param array $object
+     * @return array
      */
     public function get_seo_data($object)
     {
@@ -240,6 +246,9 @@ class Zen_SEO_REST_API
 
     /**
      * Get Schema.org data for a post
+     *
+     * @param array $object
+     * @return array
      */
     public function get_schema_data($object)
     {
@@ -248,6 +257,9 @@ class Zen_SEO_REST_API
 
     /**
      * Get translations for a post
+     *
+     * @param array $object
+     * @return array
      */
     public function get_translations_data($object)
     {
@@ -256,6 +268,9 @@ class Zen_SEO_REST_API
 
     /**
      * Get global settings
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response
      */
     public function get_settings($request)
     {
@@ -273,6 +288,9 @@ class Zen_SEO_REST_API
 
     /**
      * Get sitemap data (for React to generate client-side sitemap)
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response
      */
     public function get_sitemap_data($request)
     {
@@ -325,6 +343,9 @@ class Zen_SEO_REST_API
 
     /**
      * Clear all caches
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response
      */
     public function clear_cache($request)
     {

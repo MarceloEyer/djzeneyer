@@ -1,0 +1,15 @@
+parameters:
+    level: 6
+    paths:
+        - includes
+        - admin
+    bootstrapFiles:
+        - zen-seo-lite.php
+    ignoreErrors:
+        - '#Function pll_.* not found\.#'
+        - '#Function wc_.* not found\.#'
+    excludePaths:
+        - vendor/*
+        - admin/js/*
+    scanFiles:
+        - zen-seo-lite.php

@@ -25,6 +25,8 @@ class Zen_SEO_Schema
 
     /**
      * Generate schema for current page
+     *
+     * @return array
      */
     public function generate_schema()
     {
@@ -40,6 +42,9 @@ class Zen_SEO_Schema
 
     /**
      * Generate schema for a specific post (used by REST API)
+     *
+     * @param int $post_id
+     * @return array
      */
     public function generate_schema_for_post($post_id)
     {
@@ -90,6 +95,8 @@ class Zen_SEO_Schema
 
     /**
      * Generate default global schema (for Home or unknown routes)
+     *
+     * @return array
      */
     public function generate_default_schema()
     {
@@ -115,6 +122,8 @@ class Zen_SEO_Schema
 
     /**
      * Generate Person schema (the artist)
+     *
+     * @return array
      */
     private function generate_person_schema()
     {
@@ -211,6 +220,8 @@ class Zen_SEO_Schema
 
     /**
      * Generate WebSite schema
+     *
+     * @return array
      */
     private function generate_website_schema()
     {
@@ -236,6 +247,9 @@ class Zen_SEO_Schema
 
     /**
      * Generate Breadcrumb schema
+     *
+     * @param \WP_Post|null $post
+     * @return array
      */
     private function generate_breadcrumb_schema($post = null)
     {
@@ -281,6 +295,9 @@ class Zen_SEO_Schema
 
     /**
      * Generate WebPage schema
+     *
+     * @param \WP_Post $post
+     * @return array
      */
     private function generate_webpage_schema($post)
     {
@@ -311,6 +328,9 @@ class Zen_SEO_Schema
 
     /**
      * Generate Event schema
+     *
+     * @param \WP_Post $post
+     * @return array|null
      */
     private function generate_event_schema($post)
     {
@@ -370,6 +390,9 @@ class Zen_SEO_Schema
 
     /**
      * Generate MusicRecording schema
+     *
+     * @param \WP_Post $post
+     * @return array
      */
     private function generate_music_schema($post)
     {
@@ -415,6 +438,9 @@ class Zen_SEO_Schema
 
     /**
      * Generate Product schema (WooCommerce)
+     *
+     * @param \WP_Post $post
+     * @return array|null
      */
     private function generate_product_schema($post)
     {
