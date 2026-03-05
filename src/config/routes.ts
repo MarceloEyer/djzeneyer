@@ -91,37 +91,37 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // About
   {
     component: AboutPage,
-    paths: { en: 'about', pt: 'sobre' },
+    paths: { en: 'about-zen-eyer', pt: 'sobre-zen-eyer' },
   },
 
   // Events (com rota dinâmica :id)
   {
     component: EventsPage,
-    paths: { en: 'events', pt: 'eventos' },
+    paths: { en: 'zouk-events', pt: 'eventos-zouk' },
   },
   {
     component: EventsPage,
-    paths: { en: 'events/:id', pt: 'eventos/:id' },
+    paths: { en: 'zouk-events/:id', pt: 'eventos-zouk/:id' },
   },
 
   // Music (com rota dinâmica :slug)
   {
     component: MusicPage,
-    paths: { en: 'music', pt: 'musica' },
+    paths: { en: 'zouk-music-remixes', pt: 'musicas-zouk' },
   },
   {
     component: MusicPage,
-    paths: { en: 'music/:slug', pt: 'musica/:slug' },
+    paths: { en: 'zouk-music-remixes/:slug', pt: 'musicas-zouk/:slug' },
   },
 
   // News / Blog
   {
     component: NewsPage,
-    paths: { en: 'news', pt: 'noticias' },
+    paths: { en: 'zouk-dance-news', pt: 'noticias-zouk' },
   },
   {
     component: NewsPage,
-    paths: { en: 'news/:slug', pt: 'noticias/:slug' },
+    paths: { en: 'zouk-dance-news/:slug', pt: 'noticias-zouk/:slug' },
   },
 
   // Zen Tribe (múltiplos aliases)
@@ -192,13 +192,13 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Philosophy
   {
     component: PhilosophyPage,
-    paths: { en: 'my-philosophy', pt: 'minha-filosofia' },
+    paths: { en: 'zouk-philosophy', pt: 'filosofia-zouk' },
   },
 
   // Media / Press
   {
     component: MediaPage,
-    paths: { en: 'media', pt: 'na-midia' },
+    paths: { en: 'press-media', pt: 'na-midia' },
   },
 
   // Support the Artist / Apoie o Artista
@@ -210,7 +210,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Privacy Policy / Política de Privacidade
   {
     component: PrivacyPolicyPage,
-    paths: { en: 'privacy-policy', pt: 'politica-de-privacidade' },
+    paths: { en: 'privacy-policy', pt: 'privacidade' },
   },
 
   // Return Policy / Reembolso

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, CreditCard, Landmark, Globe, Zap, Heart, Briefcase } from 'lucide-react';
-import { paymentMethods, PaymentMethod } from '../data/paymentMethods';
-import { ElectricBorder } from '../components/ui/ElectricBorder';
+import { paymentMethods } from '../data/paymentMethods';
 
 const PayMePage: React.FC = () => {
     const { t } = useTranslation();
@@ -41,9 +40,9 @@ const PayMePage: React.FC = () => {
 
                 <div className="grid gap-6">
                     {paymentMethods.map((method) => (
-                        <ElectricBorder key={method.id} active={activeAccordion === method.id}>
+                        <div key={method.id} className="w-full">
                             <div
-                                className={`card p-0 transition-all duration-300 ${activeAccordion === method.id ? 'bg-surface/90' : 'hover:bg-surface/50'}`}
+                                className={`card p-0 transition-all duration-300 border border-white/5 ${activeAccordion === method.id ? 'bg-surface/90 border-primary/30' : 'hover:bg-surface/50'}`}
                             >
                                 <button
                                     onClick={() => setActiveAccordion(activeAccordion === method.id ? null : method.id)}
@@ -62,7 +61,7 @@ const PayMePage: React.FC = () => {
                                         animate={{ rotate: activeAccordion === method.id ? 180 : 0 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        <Zap className={`w-5 h-5 transition-colors ${activeAccordion === method.id ? 'text-primary' : 'text-white/20'}`} />
+                                        <Copy className={`w-5 h-5 transition-colors ${activeAccordion === method.id ? 'text-primary' : 'text-white/20'}`} />
                                     </motion.div>
                                 </button>
 
@@ -108,7 +107,7 @@ const PayMePage: React.FC = () => {
                                     )}
                                 </AnimatePresence>
                             </div>
-                        </ElectricBorder>
+                        </div>
                     ))}
                 </div>
 
