@@ -1,0 +1,149 @@
+{
+    "comment": "SSOT — Única fonte de verdade dos slugs EN/PT. Edite APENAS este arquivo para mudar rotas.",
+    "routes": [
+        {
+            "key": "home",
+            "en": "",
+            "pt": ""
+        },
+        {
+            "key": "about",
+            "en": "about-dj-zen-eyer",
+            "pt": "sobre-dj-zen-eyer"
+        },
+        {
+            "key": "events",
+            "en": "zouk-events",
+            "pt": "eventos-zouk"
+        },
+        {
+            "key": "music",
+            "en": "zouk-music",
+            "pt": "musica-zouk"
+        },
+        {
+            "key": "news",
+            "en": "zouk-dance-news",
+            "pt": "noticias-zouk"
+        },
+        {
+            "key": "philosophy",
+            "en": "zouk-philosophy",
+            "pt": "filosofia-zouk"
+        },
+        {
+            "key": "zentribe",
+            "en": "zentribe",
+            "pt": "tribo-zen",
+            "aliases": {
+                "en": [
+                    "tribe",
+                    "zen-tribe"
+                ],
+                "pt": [
+                    "tribo"
+                ]
+            }
+        },
+        {
+            "key": "booking",
+            "en": "work-with-me",
+            "pt": "trabalhe-comigo"
+        },
+        {
+            "key": "presskit",
+            "en": "press-kit-dj-zen-eyer",
+            "pt": "kit-de-imprensa"
+        },
+        {
+            "key": "shop",
+            "en": "shop",
+            "pt": "loja"
+        },
+        {
+            "key": "support",
+            "en": "support-dj-zen-eyer",
+            "pt": "apoie-dj-zen-eyer"
+        },
+        {
+            "key": "zenlink",
+            "en": "zenlink",
+            "pt": "links-zen",
+            "aliases": {
+                "en": [
+                    "links"
+                ]
+            }
+        },
+        {
+            "key": "cart",
+            "en": "cart",
+            "pt": "carrinho"
+        },
+        {
+            "key": "checkout",
+            "en": "checkout",
+            "pt": "finalizar-compra"
+        },
+        {
+            "key": "tickets",
+            "en": "tickets",
+            "pt": "ingressos"
+        },
+        {
+            "key": "tickets-checkout",
+            "en": "tickets-checkout",
+            "pt": "finalizar-ingressos"
+        },
+        {
+            "key": "dashboard",
+            "en": "dashboard",
+            "pt": "painel"
+        },
+        {
+            "key": "my-account",
+            "en": "my-account",
+            "pt": "minha-conta"
+        },
+        {
+            "key": "faq",
+            "en": "faq",
+            "pt": "perguntas-frequentes"
+        },
+        {
+            "key": "privacy",
+            "en": "privacy-policy",
+            "pt": "privacidade"
+        },
+        {
+            "key": "returns",
+            "en": "return-policy",
+            "pt": "reembolso"
+        },
+        {
+            "key": "terms",
+            "en": "terms",
+            "pt": "termos"
+        },
+        {
+            "key": "conduct",
+            "en": "conduct",
+            "pt": "regras-de-conduta"
+        },
+        {
+            "key": "quiz",
+            "en": "quiz",
+            "pt": "perguntas"
+        },
+        {
+            "key": "reset-password",
+            "en": "reset-password",
+            "pt": "recuperar-senha"
+        },
+        {
+            "key": "payme",
+            "en": "payme",
+            "pt": "pagamentos"
+        }
+    ]
+}

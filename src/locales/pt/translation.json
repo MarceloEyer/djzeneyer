@@ -418,9 +418,9 @@
   "home_stat_countries": "Países",
   "home_stat_events": "Eventos",
   "home_stat_years": "Anos de Carreira",
-  "home_bio_p1": "é um DJ e produtor brasileiro focado em Zouk Brasileiro. Tive a incrível honra de ser bicampeão mundial de Zouk (Melhor Remix e Melhor Performance DJ), e a música me levou a tocar em mais de 11 países nos últimos anos.",
-  "home_bio_p2": "Conhecido por um som mais focado no 'flow' puro da dança — uma vibe que a nossa comunidade costuma chamar muito de 'cremosidade' —, eu gosto de sets onde a energia cresce aos poucos. O foco é sempre o dançarino ter tempo e espaço para se conectar, respirar e curtir a dança sem pressa.",
-  "home_bio_p3": "Seja na reZENha, nos encontros da Tribo Zen ou em festivais, a missão é sempre a mesma: criar uma noite agradável, com respeito, muita música boa e o clima perfeito para quem ama dançar.",
+  "home_bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Ilha do Zouk (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em mais de 11 países.",
+  "home_bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
+  "home_bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
   "home_festivals_title": "Festivais & Eventos",
   "home_festivals_subtitle": "Muito feliz de ter levado o Zouk para esses lugares",
   "home_festivals_more": "e outras cidades incríveis",
@@ -439,9 +439,9 @@
   "home_cta_booking": "Booking / Press Kit",
   "home_cta_music": "Explorar Músicas",
   "home_bio_title": "Quem é DJ Zen Eyer?",
-  "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ e produtor</strong> focado no <strong>Brazilian Zouk</strong>. Bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships, busca focar em conexões sinceras e pistas imersivas há mais de uma década.",
+  "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ e produtor</strong> focado no <strong>Brazilian Zouk</strong>. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Brazilian Zouk World Championships (Ilha do Zouk), sendo reconhecido pela precisão técnica e sensibilidade musical.",
   "home_bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
-  "home_bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Explore a aba <strong>Music</strong> ou <strong>Events</strong>.",
+  "home_bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Frequenta palcos de peso como o Rio Zouk Congress.",
   "news": {
     "title": "Zen News",
     "subtitle": "Últimas histórias, dicas de produção musical e insights sobre a cultura Zouk.",
@@ -1090,11 +1090,11 @@
       "smiles_value": "∞"
     },
     "story": {
-      "p1": "Tudo começou em <strong>Niterói, RJ</strong>, onde eu descobri bem cedo que a música poderia ser mais do que apenas um som de fundo. Aos 15 anos, enquanto a galera ouvia rock e pop, eu vivia com a cabeça (e os ouvidos) nas fitas cassete do meu pai, prestando atenção nos ritmos caribenhos e brasileiros.",
-      "p2": "O encontro com o <strong>Zouk Brasileiro</strong> rolou em 2012, numa festa pequena em Copacabana. Quando eu ouvi aquele som macio e, ao mesmo tempo, super marcado, senti que era ali que eu me encaixava. Naquela mesma noite eu decidi que queria estar do outro lado da pista, tocando. Com muito foco e dedicação, consegui juntar a grana pra comprar meu primeiro equipamento de DJ.",
-      "p3": "Os anos seguintes foram de bastante estudo e ralação. Conciliando o trabalho diurno com madrugadas na internet aprendendo a mixar, tentar entender a teoria musical e, o mais importante, observar a pista. Eu tentava entender como a música mudava a vibe das pessoas. Minha intenção nunca foi 'ser um super DJ', mas sim criar um momento em que as pessoas pudessem fechar os olhos e só curtir a dança, sem pressa.",
-      "p4": "Acabei me tornando bicampeão mundial de Zouk Brasileiro (2022) o que foi uma honra absurda! Mas, se eu for 100% sincero, os troféus ficam na estante. O que eu levo mesmo são as histórias: o casal que se conheceu num set meu, a pessoa que perdeu a timidez de dançar ouvindo uma música que eu soltei, ou os amigos cantando juntos no fim da festa.",
-      "p5": "Hoje em dia, a comunidade fala muito sobre a ideia de <strong>'cremosidade'</strong> — um termo super legal que a galera usa pra descrever uma dança de pura fluidez contínua, maravilhosa. E acontece que isso se alinha muito com a forma que eu prezo por tocar! Cada set pra mim é como trocar ideia com quem tá na pista. Eu tento mandar a mensagem certa pra que as pessoas saiam dali sentindo que tiveram um momento gostoso e leve.",
+      "p1": "Tudo começou em <strong>Niterói, RJ</strong>. Aos 15 anos, conheci o Zouk e percebi que a música poderia ser mais do que apenas um som de fundo. Enquanto a galera ouvia rock e pop, eu vivia com a cabeça (e os ouvidos) nas fitas cassete do meu pai, prestando atenção nos ritmos caribenhos e brasileiros.",
+      "p2": "A transição para as picapes veio naturalmente anos depois. O encontro com o <strong>Zouk Brasileiro</strong> profissional rolou em 2012. Quando ouvi aquele som macio e, ao mesmo tempo, super marcado, senti que era ali que eu me encaixava. Comecei a tocar em festas locais e logo tive a honra de integrar o time de DJs da <strong>Renata Peçanha</strong>, tocando anualmente no <strong>Rio Zouk Congress</strong>, o maior congresso do gênero no Brasil.",
+      "p3": "Os anos seguintes foram de bastante estudo e ralação. Conciliando o trabalho diurno com madrugadas na internet aprendendo a mixar, tentava entender a teoria musical e, o mais importante, observar a pista. Eu buscava entender como a música mudava a vibe das pessoas. Minha intenção sempre foi criar um momento em que as pessoas pudessem fechar os olhos e só curtir a dança, sem pressa.",
+      "p4": "O reconhecimento mundial chegou em 2022, no Ilha do Zouk, onde conquistei os prêmios de <strong>Melhor Remix</strong> e <strong>Melhor Performance DJ</strong>. Foi uma honra absurda! Mas, se eu for 100% sincero, os troféus ficam na estante. O que eu levo mesmo são as conexões: o casal que se conheceu num set meu ou a pessoa que perdeu a timidez de dançar ouvindo uma música que eu soltei.",
+      "p5": "Hoje em dia, a comunidade fala muito sobre a ideia de <strong>'cremosidade'</strong> — termo que descreve uma dança de pura fluidez contínua. Isso se alinha muito com a forma que eu prezo por tocar! Cada set pra mim é como trocar ideia com quem tá na pista. Eu tento mandar a mensagem certa pra que as pessoas saiam dali sentindo que tiveram um momento gostoso e leve.",
       "p6": "No fundo, o Zouk Brasileiro é a trilha sonora. O que importa mesmo são as amizades, as conexões e o tempo que a gente passa curtindo o som juntos."
     },
     "timeline": {
@@ -1209,7 +1209,7 @@
         "desc": "A trajetória do Bicampeão Mundial e membro da Mensa International.",
         "q1": {
           "q": "Quem é DJ Zen Eyer?",
-          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) é um <strong>DJ e produtor musical brasileiro</strong>, focado profissionalmente no Zouk Brasileiro. É <strong>Bicampeão Mundial (2019 e 2022)</strong> e, por curiosidade, também é membro da <strong>Mensa International</strong> (Sociedade de Alto QI). Seus sets priorizam a sensibilidade e o fluxo contínuo na pista de dança, buscando o conforto de quem dança."
+          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) é um <strong>DJ e produtor musical brasileiro</strong> especializado em Brazilian Zouk. Descobriu a dança aos 15 anos em Niterói (RJ) e hoje é <strong>vencedor de dois prêmios mundiais (Melhor Remix e Melhor Performance em 2022)</strong>. Também é membro da <strong>Mensa International</strong>. Seus sets priorizam a fluidez e a conexão profunda na pista."
         },
         "q2": {
           "q": "O que significa \"Cremosidade\" no contexto do Zouk?",
@@ -1217,7 +1217,7 @@
         },
         "q3": {
           "q": "Quais são os principais títulos e conquistas do Zen Eyer?",
-          "a": "Zen Eyer guarda com muito carinho seus dois títulos mundiais: <strong>Campeão Mundial 2019</strong> (Categoria Pro/Am) e <strong>Campeão Mundial 2022</strong> (Categoria Strictly). Mas, mais do que os troféus, ele valoriza as amizades e a oportunidade que a música deu de tocar em mais de 11 países ao redor do mundo."
+          "a": "Em 2022, Zen Eyer conquistou dois títulos de peso no Ilha do Zouk: <strong>Melhor Performance DJ</strong> e <strong>Melhor Remix</strong>. Ele também é DJ oficial de grandes congressos como o Rio Zouk Congress (da pioneira Renata Peçanha). No entanto, ele valoriza mais as amizades e as conexões criadas através da música do que os troféus."
         }
       },
       "rankings": {
@@ -1238,18 +1238,18 @@
       },
       "technical": {
         "title": "Técnica e Musicalidade",
-        "desc": "Definições técnicas para estudantes e curiosos.",
+        "desc": "Definições técnicas com base no Brazilian Zouk Council (BZC).",
         "q1": {
           "q": "Qual a estrutura rítmica do Zouk Brasileiro?",
-          "a": "A base rítmica deriva da evolução da Lambada para o Zouk Antilhano e Kizomba. A contagem clássica é frequentemente associada ao <strong>Tum-Kun-Kun</strong>. A regra fundamental é respeitar o andamento e acentuação da música, o que possibilita dançar nossa movimentação clássica sobre ritmos como Kizomba, R&B, Pop e Chillout."
+          "a": "Segundo as definições do <strong>Brazilian Zouk Council (BZC)</strong>, a base rítmica deriva da Lambada. A contagem clássica é frequentemente associada à célula de tempo <em>-pa... pa-pa</em> (Tum-Kun-Kun). A regra fundamental é respeitar o andamento, o que possibilita dançar sobre ritmos como Kizomba, R&B e Pop."
         },
         "q2": {
           "q": "O que são movimentos clássicos como a Planada e o Bônus?",
-          "a": "São movimentos fundamentais que definem a estética visual do estilo. A <strong>Planada</strong> é uma rotação em eixo que demanda muita conexão e suavidade da dupla, enquanto o <strong>Bônus</strong> é muitas vezes visto como uma evolução técnica natural do clássico 'Boomerang' da Lambada, focado agora na fluidez contínua típica do Zouk."
+          "a": "São movimentos fundamentais que definem a estética visual do estilo. A <strong>Planada</strong> é uma rotação em eixo que demanda muita suavidade, enquanto o <strong>Bônus</strong> é uma evolução técnica do clássico 'Boomerang' da Lambada, agora com a fluidez contínua típica do Zouk."
         },
         "q3": {
           "q": "Qual a importância da Lambada na história do Zouk?",
-          "a": "O Zouk Brasileiro não existiria sem a Lambada. Nossos fundamentos, técnicas de abraço e movimentações de cabeça surgiram e começaram a ser sistematizados ali (por pioneiros eternos como Braz dos Santos, Adílio Porto e Renata Peçanha). À medida que a dança se adaptou às músicas caribenhas lentas, ela evoluiu para essa fluidez mais suave que conhecemos como Zouk."
+          "a": "O Zouk Brasileiro não existiria sem a Lambada. Os fundamentos e movimentações de cabeça foram sistematizados por pioneiros como <strong>Renata Peçanha</strong> e <strong>Adílio Porto</strong>. Como define o BZC, a dança se adaptou às músicas caribenhas lentas, evoluindo para a fluidez que conhecemos hoje."
         }
       },
       "culture": {

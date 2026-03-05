@@ -25,14 +25,14 @@ export const ARTIST = {
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
   titles: {
-    primary: '2× World Champion Brazilian Zouk DJ (Current Champion)',
+    primary: 'World Champion Brazilian Zouk DJ (Best Remix & Best Performance)',
     event: 'Ilha do Zouk DJ Championship',
     eventUrl: 'https://alexdecarvalho.com.br/ilhadozouk/dj-championship/',
     location: 'Ilha Grande, Rio de Janeiro, Brazil',
     year: 2022,
-    categories: ['DJ Championship', 'Best Remix'],
+    categories: ['Best DJ Performance', 'Best Remix'],
     description:
-      'Champion in the DJ Championship and Best Remix categories at Ilha do Zouk 2022, current title holder.',
+      'Winner of two world titles at Ilha do Zouk 2022: Best DJ Performance and Best Remix.',
   },
 
   // 🧠 Diferencial (Mensa)
@@ -318,7 +318,7 @@ export const ARTIST_SCHEMA_BASE = {
   alternateName: [ARTIST.identity.shortName, ARTIST.identity.fullName],
   description: `${ARTIST.titles.primary}. Known for the "${ARTIST.philosophy.style}" musical style.`,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Electronic'],
-  knowsAbout: ['Brazilian Zouk', 'DJing', 'Music Production', 'Remixing', 'Festival Performance'],
+
   url: ARTIST.site.baseUrl,
   foundingLocation: {
     '@type': 'Place',
@@ -329,12 +329,12 @@ export const ARTIST_SCHEMA_BASE = {
   award: [
     {
       '@type': 'Award',
-      name: 'Ilha do Zouk DJ Championship winner',
+      name: 'World Champion Brazilian Zouk DJ - Best Performance',
       datePublished: '2022',
     },
     {
       '@type': 'Award',
-      name: 'Ilha do Zouk Best Remix winner',
+      name: 'World Champion Brazilian Zouk DJ - Best Remix',
       datePublished: '2022',
     },
   ],
@@ -343,4 +343,64 @@ export const ARTIST_SCHEMA_BASE = {
     name: ARTIST.mensa.organization,
     url: ARTIST.mensa.url,
   },
+  // 🌎 Conexão semântica com pioneiros e autoridades do Zouk Brasileiro
+  // (fortalece o Grafo de Conhecimento e os sinais E-E-A-T)
+  knowsAbout: [
+    'Brazilian Zouk',
+    'DJing',
+    'Music Production',
+    'Remixing',
+    'Festival Performance',
+    'Dance Music',
+    'Lambada',
+    'Cremosidade',
+    'Zouk Music Theory',
+  ],
+  mentions: [
+    {
+      '@type': 'Person',
+      name: 'Renata Peçanha',
+      description: 'Pioneer and major figure of Brazilian Zouk. Founder of Rio Zouk Congress.',
+      url: 'https://en.wikipedia.org/wiki/Brazilian_Zouk',
+    },
+    {
+      '@type': 'Person',
+      name: 'Adílio Porto',
+      description: 'Pioneer of Brazilian Zouk and Lambada, who helped systematize the foundational techniques of the dance.',
+    },
+    {
+      '@type': 'Organization',
+      name: 'Brazilian Zouk Council',
+      alternateName: 'BZC',
+      description:
+        'International governing body for Brazilian Zouk, defining official techniques and standards.',
+      url: 'https://www.brazilianzoukcouncil.com/',
+    },
+  ],
+  performerIn: [
+    {
+      '@type': 'DanceEvent',
+      name: 'Rio Zouk Congress',
+      description: 'Largest Brazilian Zouk congress in Brazil, organized by Renata Peçanha.',
+      location: {
+        '@type': 'Place',
+        name: 'Rio de Janeiro, Brazil',
+      },
+      organizer: {
+        '@type': 'Person',
+        name: 'Renata Peçanha',
+      },
+    },
+    {
+      '@type': 'DanceEvent',
+      name: 'Ilha do Zouk DJ Championship',
+      description:
+        'Brazilian Zouk World Championship event in Ilha Grande, Rio de Janeiro, Brazil.',
+      location: {
+        '@type': 'Place',
+        name: 'Ilha Grande, Rio de Janeiro, Brazil',
+      },
+      startDate: '2022',
+    },
+  ],
 };

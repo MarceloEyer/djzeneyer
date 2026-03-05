@@ -5,23 +5,27 @@
       "pt": ""
     },
     {
-      "en": "about-zen-eyer",
-      "pt": "sobre-zen-eyer"
+      "en": "about-dj-zen-eyer",
+      "pt": "sobre-dj-zen-eyer"
     },
     {
       "en": "zouk-events",
       "pt": "eventos-zouk"
     },
     {
-      "en": "zouk-music-remixes",
-      "pt": "musicas-zouk"
+      "en": "zouk-music",
+      "pt": "musica-zouk"
     },
     {
       "en": "zouk-dance-news",
       "pt": "noticias-zouk"
     },
     {
-      "en": "zen-tribe",
+      "en": "zouk-philosophy",
+      "pt": "filosofia-zouk"
+    },
+    {
+      "en": "zentribe",
       "pt": "tribo-zen"
     },
     {
@@ -29,24 +33,32 @@
       "pt": "trabalhe-comigo"
     },
     {
+      "en": "press-kit-dj-zen-eyer",
+      "pt": "kit-de-imprensa"
+    },
+    {
       "en": "shop",
       "pt": "loja"
     },
     {
+      "en": "support-dj-zen-eyer",
+      "pt": "apoie-dj-zen-eyer"
+    },
+    {
+      "en": "zenlink",
+      "pt": "links-zen"
+    },
+    {
+      "en": "dashboard",
+      "pt": "painel"
+    },
+    {
+      "en": "my-account",
+      "pt": "minha-conta"
+    },
+    {
       "en": "faq",
       "pt": "perguntas-frequentes"
-    },
-    {
-      "en": "zouk-philosophy",
-      "pt": "filosofia-zouk"
-    },
-    {
-      "en": "press-media",
-      "pt": "na-midia"
-    },
-    {
-      "en": "support-the-artist",
-      "pt": "apoie-o-artista"
     },
     {
       "en": "privacy-policy",
@@ -63,10 +75,6 @@
     {
       "en": "conduct",
       "pt": "regras-de-conduta"
-    },
-    {
-      "en": "links",
-      "pt": "ligacoes"
     },
     {
       "en": "quiz",

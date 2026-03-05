@@ -11,8 +11,13 @@
  * - Sincronizado com todas as páginas do WordPress
  * - Adicionadas rotas: Cart, Checkout, Return Policy, Support Artist, Tickets
  * - Slugs limpos e otimizados para SEO (sem sufixos -2)
- * * ATUALIZAÇÃO v3.1:
- * - Corrigido bug de i18n route switching (getAlternateLinks)
+ * * ATUALIZAÇÃO v4.0:
+ * - Slugs definitivos aprovados pelo usuário (março 2026)
+ * - About: about-dj-zen-eyer / sobre-dj-zen-eyer
+ * - Music: zouk-music / musica-zouk
+ * - Support: support-dj-zen-eyer / apoie-dj-zen-eyer
+ * - PressKit: press-kit-dj-zen-eyer / kit-de-imprensa
+ * - ZenLink: zenlink / links-zen
  */
 
 import { lazy, ComponentType } from 'react';
@@ -76,6 +81,17 @@ const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
 const PayMePage = lazy(() => import('../pages/PayMePage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
+import routesSlugs from './routes-slugs.json';
+
+// Helper: slug por key e idioma
+const slug = (key: string, lang: Language): string | string[] => {
+  const route = routesSlugs.routes.find(r => r.key === key);
+  if (!route) return '';
+  const base = route[lang] as string;
+  const aliases = (route.aliases as Record<string, string[]> | undefined)?.[lang] ?? [];
+  return aliases.length > 0 ? [base, ...aliases] : base;
+};
+
 // ============================================================================
 // ROUTES CONFIGURATION
 // ============================================================================
@@ -91,168 +107,168 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // About
   {
     component: AboutPage,
-    paths: { en: 'about-zen-eyer', pt: 'sobre-zen-eyer' },
+    paths: { en: slug('about', 'en') as string, pt: slug('about', 'pt') as string },
   },
 
   // Events (com rota dinâmica :id)
   {
     component: EventsPage,
-    paths: { en: 'zouk-events', pt: 'eventos-zouk' },
+    paths: { en: slug('events', 'en') as string, pt: slug('events', 'pt') as string },
   },
   {
     component: EventsPage,
-    paths: { en: 'zouk-events/:id', pt: 'eventos-zouk/:id' },
+    paths: { en: `${slug('events', 'en')}/:id`, pt: `${slug('events', 'pt')}/:id` },
   },
 
   // Music (com rota dinâmica :slug)
   {
     component: MusicPage,
-    paths: { en: 'zouk-music-remixes', pt: 'musicas-zouk' },
+    paths: { en: slug('music', 'en') as string, pt: slug('music', 'pt') as string },
   },
   {
     component: MusicPage,
-    paths: { en: 'zouk-music-remixes/:slug', pt: 'musicas-zouk/:slug' },
+    paths: { en: `${slug('music', 'en')}/:slug`, pt: `${slug('music', 'pt')}/:slug` },
   },
 
   // News / Blog
   {
     component: NewsPage,
-    paths: { en: 'zouk-dance-news', pt: 'noticias-zouk' },
+    paths: { en: slug('news', 'en') as string, pt: slug('news', 'pt') as string },
   },
   {
     component: NewsPage,
-    paths: { en: 'zouk-dance-news/:slug', pt: 'noticias-zouk/:slug' },
+    paths: { en: `${slug('news', 'en')}/:slug`, pt: `${slug('news', 'pt')}/:slug` },
   },
 
-  // Zen Tribe (múltiplos aliases)
+  // Zen Tribe (com aliases)
   {
     component: ZenTribePage,
-    paths: { en: ['zentribe', 'tribe', 'zen-tribe'], pt: ['tribo-zen', 'tribo'] },
+    paths: { en: slug('zentribe', 'en'), pt: slug('zentribe', 'pt') },
   },
 
-  // Press Kit / Work With Me
+  // Press Kit / Booking
   {
     component: PressKitPage,
-    paths: { en: 'work-with-me', pt: 'trabalhe-comigo' },
+    paths: { en: slug('booking', 'en') as string, pt: slug('booking', 'pt') as string },
   },
 
   // Shop (com wildcard para subrotas)
   {
     component: ProductPage,
-    paths: { en: 'shop/product/:slug', pt: 'loja/produto/:slug' },
+    paths: { en: `${slug('shop', 'en')}/product/:slug`, pt: `${slug('shop', 'pt')}/produto/:slug` },
   },
   {
     component: ShopPage,
-    paths: { en: 'shop', pt: 'loja' },
+    paths: { en: slug('shop', 'en') as string, pt: slug('shop', 'pt') as string },
     hasWildcard: true,
   },
 
   // Cart / Carrinho
   {
     component: CartPage,
-    paths: { en: 'cart', pt: 'carrinho' },
+    paths: { en: slug('cart', 'en') as string, pt: slug('cart', 'pt') as string },
   },
 
   // Checkout / Finalizar Compra
   {
     component: CheckoutPage,
-    paths: { en: 'checkout', pt: 'finalizar-compra' },
+    paths: { en: slug('checkout', 'en') as string, pt: slug('checkout', 'pt') as string },
   },
 
   // Tickets / Compra de Ingressos
   {
     component: TicketsPage,
-    paths: { en: 'tickets', pt: 'ingressos' },
+    paths: { en: slug('tickets', 'en') as string, pt: slug('tickets', 'pt') as string },
   },
 
   // Tickets Checkout / Finalizar Ingressos
   {
     component: TicketsCheckoutPage,
-    paths: { en: 'tickets-checkout', pt: 'finalizar-ingressos' },
+    paths: { en: slug('tickets-checkout', 'en') as string, pt: slug('tickets-checkout', 'pt') as string },
   },
 
   // Dashboard
   {
     component: DashboardPage,
-    paths: { en: 'dashboard', pt: 'painel' },
+    paths: { en: slug('dashboard', 'en') as string, pt: slug('dashboard', 'pt') as string },
   },
 
   // My Account
   {
     component: MyAccountPage,
-    paths: { en: 'my-account', pt: 'minha-conta' },
+    paths: { en: slug('my-account', 'en') as string, pt: slug('my-account', 'pt') as string },
   },
 
   // FAQ
   {
     component: FAQPage,
-    paths: { en: 'faq', pt: 'perguntas-frequentes' },
+    paths: { en: slug('faq', 'en') as string, pt: slug('faq', 'pt') as string },
   },
 
   // Philosophy
   {
     component: PhilosophyPage,
-    paths: { en: 'zouk-philosophy', pt: 'filosofia-zouk' },
+    paths: { en: slug('philosophy', 'en') as string, pt: slug('philosophy', 'pt') as string },
   },
 
-  // Media / Press
+  // Press Kit (EPK + Media)
   {
     component: MediaPage,
-    paths: { en: 'press-media', pt: 'na-midia' },
+    paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
   },
 
-  // Support the Artist / Apoie o Artista
+  // Support the Artist
   {
     component: SupportArtistPage,
-    paths: { en: 'support-the-artist', pt: 'apoie-o-artista' },
+    paths: { en: slug('support', 'en') as string, pt: slug('support', 'pt') as string },
   },
 
-  // Privacy Policy / Política de Privacidade
+  // Privacy Policy
   {
     component: PrivacyPolicyPage,
-    paths: { en: 'privacy-policy', pt: 'privacidade' },
+    paths: { en: slug('privacy', 'en') as string, pt: slug('privacy', 'pt') as string },
   },
 
-  // Return Policy / Reembolso
+  // Return Policy
   {
     component: ReturnPolicyPage,
-    paths: { en: 'return-policy', pt: 'reembolso' },
+    paths: { en: slug('returns', 'en') as string, pt: slug('returns', 'pt') as string },
   },
 
-  // Terms of Use / Termos
+  // Terms of Use
   {
     component: TermsPage,
-    paths: { en: 'terms', pt: 'termos' },
+    paths: { en: slug('terms', 'en') as string, pt: slug('terms', 'pt') as string },
   },
 
-  // Code of Conduct / Regras de Conduta
+  // Code of Conduct
   {
     component: CodeOfConductPage,
-    paths: { en: 'conduct', pt: 'regras-de-conduta' },
+    paths: { en: slug('conduct', 'en') as string, pt: slug('conduct', 'pt') as string },
   },
 
-  // Zen Link (Linktree Style)
+  // Zen Link (com aliases)
   {
     component: ZenLinkPage,
-    paths: { en: ['links', 'zenlink'], pt: 'ligacoes' },
+    paths: { en: slug('zenlink', 'en'), pt: slug('zenlink', 'pt') },
   },
 
   // Zouk Persona Quiz
   {
     component: ZoukPersonaQuizPage,
-    paths: { en: 'quiz', pt: 'perguntas' },
+    paths: { en: slug('quiz', 'en') as string, pt: slug('quiz', 'pt') as string },
   },
 
   // Password Reset
   {
     component: ResetPasswordPage,
-    paths: { en: 'reset-password', pt: 'recuperar-senha' },
+    paths: { en: slug('reset-password', 'en') as string, pt: slug('reset-password', 'pt') as string },
   },
 
   // PayMe / Pagamentos
   {
     component: PayMePage,
-    paths: { en: 'payme', pt: 'pagamentos' },
+    paths: { en: slug('payme', 'en') as string, pt: slug('payme', 'pt') as string },
   },
 ];
 

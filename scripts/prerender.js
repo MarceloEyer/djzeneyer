@@ -12,19 +12,22 @@ import puppeteer from 'puppeteer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 1. Carregar Rotas (SSOT)
+// 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
 let routesList = [];
-const ROUTES_DATA_PATH = join(__dirname, 'routes-data.json');
+const ROUTES_DATA_PATH = join(__dirname, '..', 'src', 'config', 'routes-slugs.json');
 try {
   if (existsSync(ROUTES_DATA_PATH)) {
     const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
     data.routes.forEach(r => {
-      routesList.push(r.en === '' ? '/' : `/${r.en}`);
-      routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
+      // Ignora rotas dinâmicas (com :param) — o prerender só cobre rotas estáticas
+      if (!r.en.includes(':') && !r.pt.includes(':')) {
+        routesList.push(r.en === '' ? '/' : `/${r.en}`);
+        routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
+      }
     });
     console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
   } else {
-    throw new Error('Arquivo routes-data.json não encontrado');
+    throw new Error('SSOT routes-slugs.json não encontrado em src/config/');
   }
 } catch (e) {
   console.error('❌ Erro na SSOT:', e.message);

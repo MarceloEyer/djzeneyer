@@ -9,19 +9,60 @@
  */
 
 import { useQuery, useMutation } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 import { buildApiUrl } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
 
-// ============================================================================
+
+// ----------------------------------------------------------------------------
 // TYPES
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 interface MenuItem {
   ID: number;
   title: string;
   url: string;
   target: string;
+}
+
+export interface ProfileUpdatePayload {
+  display_name?: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+}
+
+export interface UserProfile {
+  id: number;
+  email: string;
+  display_name: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+}
+
+export interface WCProduct {
+  id: number;
+  name: string;
+  slug: string;
+  price: string;
+  regular_price: string;
+  sale_price?: string;
+  type: string;
+  status: string;
+  short_description: string;
+  images: Array<{ src: string; alt: string }>;
+  categories: Array<{ id: number; name: string; slug: string }>;
+  stock_status: 'instock' | 'outofstock';
+  purchasable: boolean;
+  permalink: string;
+}
+
+export interface ShopPageViewModel {
+  products: WCProduct[];
+  featured?: WCProduct[];
+  collections?: Array<{ id: number; name: string; products: WCProduct[] }>;
 }
 
 import type {
@@ -135,23 +176,31 @@ export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchProductsFn = async (lang?: string, filters: Record<string, string> = {}) => {
+export const fetchProductsFn = async (
+  lang?: string,
+  filters: Record<string, string> = {}
+): Promise<WCProduct[]> => {
   const params: Record<string, string> = { per_page: '100', ...filters };
   if (lang) params.lang = lang;
   const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch products');
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 };
 
-export const fetchProductCollectionsFn = async (lang?: string, limit = 10) => {
+export const fetchProductCollectionsFn = async (
+  lang?: string,
+  limit = 10
+): Promise<ShopPageViewModel['collections']> => {
   const params: Record<string, string> = { limit: String(limit) };
   if (lang) params.lang = lang;
 
   const apiUrl = buildApiUrl('djzeneyer/v1/products/collections', params);
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch product collections');
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 };
 
 // ============================================================================
@@ -171,7 +220,10 @@ export const useMenuQuery = (lang: string) => {
 // EVENTS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useEventsQuery = (params: FetchEventsParams = {}, options = {}) => {
+export const useEventsQuery = (
+  params: FetchEventsParams = {},
+  options?: Partial<UseQueryOptions<ZenBitEventListItem[]>>
+) => {
   const normalizedParams: FetchEventsParams = {
     mode: params.mode ?? (params.upcomingOnly === false ? 'all' : 'upcoming'),
     days: params.days,
@@ -285,7 +337,10 @@ export function extractZenBitEventId(routeParam: string): string {
   return last;
 }
 
-export const useEventById = (routeParam?: string, options = {}) => {
+export const useEventById = (
+  routeParam?: string,
+  options?: Partial<UseQueryOptions<ZenBitEventDetail | null>>
+) => {
   // Normaliza: aceita ID puro ("12345678") ou canonical slug ("2025-06-20-...-12345678")
   const eventId = routeParam ? extractZenBitEventId(routeParam) : undefined;
 
@@ -320,9 +375,9 @@ export const useEventById = (routeParam?: string, options = {}) => {
 // ============================================================================
 
 export const useShopPageQuery = (lang?: string) => {
-  return useQuery({
+  return useQuery<ShopPageViewModel>({
     queryKey: ['shop_page', lang],
-    queryFn: async () => {
+    queryFn: async (): Promise<ShopPageViewModel> => {
       const apiUrl = buildApiUrl('djzeneyer/v1/shop/page', { lang: lang || 'en' });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error('Failed to fetch shop page view-model');
@@ -358,7 +413,7 @@ export const useCartQuery = () => {
     queryKey: QUERY_KEYS.cart.current,
     queryFn: async () => {
       const apiUrl = buildApiUrl('wc/store/v1/cart');
-      const nonce = (window as any).wpData?.nonce || '';
+      const nonce = window.wpData?.nonce ?? '';
 
       const res = await fetch(apiUrl, {
         headers: {
@@ -380,7 +435,7 @@ export const useAddToCartMutation = () => {
   return useMutation({
     mutationFn: async ({ productId, quantity }: { productId: number; quantity: number }) => {
       const apiUrl = buildApiUrl('wc/store/v1/cart/add-item');
-      const nonce = (window as any).wpData?.nonce || '';
+      const nonce = window.wpData?.nonce ?? '';
 
       const res = await fetch(apiUrl, {
         method: 'POST',
@@ -408,10 +463,9 @@ export const useAddToCartMutation = () => {
 
 export const useGamipressQuery = (userId?: number, token?: string) => {
   return useQuery({
-    // Use 0 or -1 as a placeholder for "self" in the query key if userId is not provided
-    queryKey: [...QUERY_KEYS.user.gamipress(userId || 0), token],
+    // Usa boolean do token na queryKey — evita colocar JWT longo no cache
+    queryKey: [...QUERY_KEYS.user.gamipress(userId || 0), !!token],
     queryFn: async (): Promise<ZenGameUserData | null> => {
-      // /me is for the current user, userId is ignored but kept for key compatibility
       const apiUrl = buildApiUrl('zengame/v1/me');
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -421,8 +475,8 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const wpData = (window as any).wpData || {};
-      if (wpData.nonce) headers['X-WP-Nonce'] = wpData.nonce;
+      const nonce = window.wpData?.nonce;
+      if (nonce) headers['X-WP-Nonce'] = nonce;
 
       const res = await fetch(apiUrl, { headers, credentials: 'include' });
       if (!res.ok) throw new Error(`Failed to fetch gamipress: ${res.status}`);
@@ -472,19 +526,17 @@ export const useZenGameLeaderboard = (limit = 10) => {
 // ============================================================================
 
 export const useProfileQuery = (token?: string) => {
-  return useQuery({
-    queryKey: ['user', 'profile', token],
-    queryFn: async () => {
+  return useQuery<UserProfile | null>({
+    queryKey: ['user', 'profile', !!token],
+    queryFn: async (): Promise<UserProfile | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
       const res = await fetch(apiUrl, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch profile');
       const data = await res.json();
-      return data.success ? data.data : null;
+      return data.success ? (data.data as UserProfile) : null;
     },
     enabled: !!token,
     staleTime: STALE_TIME.USER_PROFILE,
@@ -493,7 +545,7 @@ export const useProfileQuery = (token?: string) => {
 
 export const useUpdateProfileMutation = (token?: string) => {
   return useMutation({
-    mutationFn: async (profileData: any) => {
+    mutationFn: async (profileData: ProfileUpdatePayload) => {
       if (!token) throw new Error('No token provided');
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
       const res = await fetch(apiUrl, {
@@ -512,19 +564,17 @@ export const useUpdateProfileMutation = (token?: string) => {
 };
 
 export const useNewsletterStatusQuery = (token?: string) => {
-  return useQuery({
-    queryKey: ['user', 'newsletter', token],
-    queryFn: async () => {
+  return useQuery<boolean | null>({
+    queryKey: ['user', 'newsletter', !!token],
+    queryFn: async (): Promise<boolean | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/newsletter');
       const res = await fetch(apiUrl, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch newsletter status');
       const data = await res.json();
-      return data.success ? data.subscribed : false;
+      return data.success ? (data.subscribed as boolean) : false;
     },
     enabled: !!token,
     staleTime: STALE_TIME.USER_PROFILE,
