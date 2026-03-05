@@ -10,6 +10,7 @@ import { useEventsQuery } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
 import { getLocalizedRoute } from '../config/routes';
 import type { ZenBitEventListItem } from '../types/events';
+import patternSvg from '../assets/images/pattern.svg';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -138,7 +139,10 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
             >
               <Link to={detailHref}>
                 <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10"></div>
+                  <div
+                    className="absolute inset-0 opacity-10"
+                    style={{ backgroundImage: `url(${patternSvg})` }}
+                  ></div>
                   <time dateTime={event.starts_at} className="relative z-10 text-center drop-shadow-lg">
                     <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
                     <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>

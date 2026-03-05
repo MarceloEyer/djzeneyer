@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { Share2, RefreshCw, ChevronRight, Music, Heart, Zap, Sparkles, Coffee } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import patternSvg from '../assets/images/pattern.svg';
 
 // ============================================================================
 // DATA & LOGIC
@@ -216,7 +217,10 @@ const ZoukPersonaQuizPage: React.FC = () => {
       <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 relative overflow-hidden font-sans">
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-gray-900 to-black z-0" />
-        <div className="absolute inset-0 opacity-10 bg-[url('/images/pattern.svg')] z-0 pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-10 z-0 pointer-events-none"
+          style={{ backgroundImage: `url(${patternSvg})` }}
+        />
 
         <div className="relative z-10 w-full max-w-2xl">
 
