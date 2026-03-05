@@ -289,7 +289,10 @@ const EventsPage: React.FC = () => {
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16 px-4">
-          <h1 className="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tighter text-primary">{t('events_title')}</h1>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display uppercase text-white">
+            {lang === 'pt' ? 'Agenda de ' : 'Events '}
+            <span className="text-primary">{lang === 'pt' ? 'Eventos' : 'Schedule'}</span>
+          </h1>
         </header>
 
         <React.Suspense fallback={<EventSkeleton />}>
