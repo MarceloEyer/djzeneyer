@@ -105,6 +105,11 @@ async function prerender() {
           },
           body: JSON.stringify(mockData)
         });
+      } else if (reqUrl.includes('/wp-content/themes/zentheme/dist/')) {
+        // ⭐ REDIRECT THEME PATHS TO LOCALHOST: Ensure assets load during prerender
+        const localPath = reqUrl.split('/wp-content/themes/zentheme/dist/')[1];
+        const localUrl = `${CONFIG.serverBase}/${localPath}`;
+        request.continue({ url: localUrl });
       } else {
         request.continue();
       }
