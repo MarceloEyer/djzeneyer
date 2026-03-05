@@ -80,12 +80,14 @@ const ACHIEVEMENTS_DATA = [
 /**
  * BenefitCard - Card de benefícios
  */
-const BenefitCard = memo<{
+interface BenefitCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
   color: string;
-}>(({ icon, title, description, color }) => (
+}
+
+const BenefitCard = memo(({ icon, title, description, color }: BenefitCardProps) => (
   <motion.div
     className="card p-6 glow transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
     variants={{
@@ -109,11 +111,13 @@ BenefitCard.displayName = 'BenefitCard';
 /**
  * MembershipCard - Card de tier de membership
  */
-const MembershipCard = memo<{
+interface MembershipCardProps {
   tier: any;
   user: any;
   t: any;
-}>(({ tier, user, t }) => (
+}
+
+const MembershipCard = memo(({ tier, user, t }: MembershipCardProps) => (
   <motion.div
     className={`card overflow-hidden relative transition-all duration-300 hover:shadow-lg ${tier.popular ? 'border-2 border-secondary' : ''
       }`}
@@ -162,13 +166,15 @@ MembershipCard.displayName = 'MembershipCard';
 /**
  * AchievementCard - Card de conquista
  */
-const AchievementCard = memo<{
+interface AchievementCardProps {
   emoji: string;
   title: string;
   description: string;
   unlocked: boolean;
   t: any;
-}>(({ emoji, title, description, unlocked, t }) => (
+}
+
+const AchievementCard = memo(({ emoji, title, description, unlocked, t }: AchievementCardProps) => (
   <div className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 ${unlocked ? 'hover:bg-surface/70' : 'opacity-60'}`}>
     <div className="text-4xl mb-3">{emoji}</div>
     <h4 className="font-display text-lg mb-1">{title}</h4>

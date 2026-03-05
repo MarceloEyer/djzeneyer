@@ -39,22 +39,28 @@ function buildUrlEntry(url, date, priority = '0.8', ptUrl = null) {
 
 async function fetchEvents() {
   try {
-    console.log(`📡 Fetching events from ${API_URL}...`);
-    const response = await fetch(API_URL + '?mode=all&limit=200', {
+    // Busca direto no Bandsintown para contornar o WAF (Cloudflare 403) no Github Actions
+    const BIT_API_URL = 'https://rest.bandsintown.com/artists/djzeneyer/events?app_id=djzeneyer&date=upcoming';
+    console.log(`📡 Fetching events from ${BIT_API_URL}...`);
+    const response = await fetch(BIT_API_URL, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Referer': 'https://djzeneyer.com/',
-        'Origin': 'https://djzeneyer.com'
+        'Accept': 'application/json'
       }
     });
+
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No body');
       throw new Error(`HTTP error! status: ${response.status} - Body: ${errorText.substring(0, 200)}`);
     }
+
     const data = await response.json();
-    return Array.isArray(data) ? data : (data.events || []);
+    if (!Array.isArray(data)) return [];
+
+    // Mapeia o formato do Bandsintown para o formato que o gerador espera
+    return data.map(ev => ({
+      event_id: ev.id,
+      canonical_path: undefined // Vai assumir eventId como fallback
+    }));
   } catch (error) {
     console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error.message);
     return [];
