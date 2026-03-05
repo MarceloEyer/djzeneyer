@@ -1,78 +1,146 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 interface ElectricBorderProps {
     children: React.ReactNode;
     active?: boolean;
     className?: string;
     intensity?: number;
+    color?: string;
 }
 
 /**
- * ElectricBorder - Applies a sharp lightning-like SVG filter on a background layer.
- * Isola a distorção para não afetar o conteúdo principal (imagem).
+ * ElectricBorder — distorts a luminous gradient border, not the content.
+ * Updated to use the official DJ Zen Eyer Electric Blue (#0D96FF)
+ * Optimized for performance with reduced octaves and will-change hints.
  */
 export const ElectricBorder: React.FC<ElectricBorderProps> = ({
     children,
     active = true,
     className = '',
-    intensity = 30
+    intensity = 6,
+    color = '#0D96FF', // Official DJ Zen Eyer Electric Blue
 }) => {
-    const filterId = "lightning-bolt-filter";
+    const uid = useId().replace(/:/g, '');
+    const filterId = `eb-filter-${uid}`;
+    const glowId = `eb-glow-${uid}`;
 
     return (
-        <div className={`relative group ${className}`}>
-            {/* SVG Filter Definition */}
-            <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+        <div className={`relative group ${className}`} style={{ isolation: 'isolate' }}>
+            {/* ── SVG filter definitions ───────────────────────────────────────── */}
+            <svg
+                className="absolute w-0 h-0 pointer-events-none overflow-hidden"
+                aria-hidden="true"
+                focusable="false"
+            >
                 <defs>
-                    <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-                        {/* High frequency fractal noise for fine lightning details */}
-                        <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="4" seed="1" result="noise">
-                            <animate attributeName="seed" values="1;100" dur="1s" repeatCount="indefinite" />
+                    {/* Electric displacement filter — applied ONLY to the border layer */}
+                    <filter id={filterId} x="-30%" y="-30%" width="160%" height="160%" colorInterpolationFilters="sRGB">
+                        <feTurbulence
+                            type="turbulence"
+                            baseFrequency="0.035 0.06"
+                            numOctaves="3" // Optimized for better performance
+                            seed="3"
+                            result="noise"
+                        >
+                            <animate
+                                attributeName="seed"
+                                values="3;17;5;29;11;3"
+                                dur="0.4s"
+                                repeatCount="indefinite"
+                            />
                         </feTurbulence>
 
-                        {/* Thresholding with ColorMatrix to turn noise into sharp bolts */}
-                        <feColorMatrix in="noise" type="matrix" values="
-                            0 0 0 0 0
-                            0 0 0 0 0
-                            0 0 0 0 0
-                            18 -10 -10 -5 -1" result="bolts" />
+                        <feColorMatrix
+                            in="noise"
+                            type="matrix"
+                            values="0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 30 -12"
+                            result="sharpNoise"
+                        />
 
-                        {/* Blue-ish Electric Color */}
-                        <feFlood floodColor="#3b82f6" floodOpacity="1" result="blue" />
-                        <feComposite in="blue" in2="bolts" operator="in" result="coloredBolts" />
+                        <feDisplacementMap
+                            in="SourceGraphic"
+                            in2="sharpNoise"
+                            scale={intensity}
+                            xChannelSelector="R"
+                            yChannelSelector="G"
+                            result="displaced"
+                        />
 
-                        {/* Glow for the bolts */}
-                        <feGaussianBlur in="coloredBolts" stdDeviation="1.5" result="glow" />
+                        <feGaussianBlur in="displaced" stdDeviation="1.5" result="blurred" />
                         <feMerge>
-                            <feMergeNode in="glow" />
-                            <feMergeNode in="coloredBolts" />
+                            <feMergeNode in="blurred" />
+                            <feMergeNode in="displaced" />
                         </feMerge>
                     </filter>
+
+                    <radialGradient id={glowId} cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+                        <stop offset="100%" stopColor={color} stopOpacity="0" />
+                    </radialGradient>
                 </defs>
             </svg>
 
-            {/* Lightning Layer (Separated to not distort the image) */}
+            {/* ── Electric border layer (distorted, behind content) ───────────── */}
             {active && (
                 <div
-                    className="absolute -inset-4 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    aria-hidden="true"
+                    className="
+            absolute -inset-[3px] rounded-[inherit]
+            pointer-events-none
+            opacity-0 group-hover:opacity-100
+            transition-opacity duration-200
+            will-change-[filter,opacity]
+          "
+                    style={{ filter: `url(#${filterId})` }}
+                >
+                    <div
+                        className="absolute inset-0 rounded-[inherit]"
+                        style={{
+                            background: `conic-gradient(
+                from 0deg,
+                transparent 0%,
+                ${color} 15%,
+                #ffffff 22%,
+                ${color} 30%,
+                transparent 45%,
+                ${color}bb 60%,
+                #ffffff 65%,
+                ${color} 72%,
+                transparent 88%,
+                ${color}88 95%,
+                transparent 100%
+              )`,
+                            padding: '2px',
+                            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                            WebkitMaskComposite: 'xor',
+                            maskComposite: 'exclude',
+                        }}
+                    />
+                </div>
+            )}
+
+            {/* ── Atmospheric bloom (soft, no distortion) ─────────────────────── */}
+            {active && (
+                <div
+                    aria-hidden="true"
+                    className="
+            absolute -inset-6 rounded-[inherit]
+            pointer-events-none
+            opacity-0 group-hover:opacity-70
+            transition-all duration-500
+          "
                     style={{
-                        filter: `url(#${filterId})`,
+                        background: `radial-gradient(ellipse at center, ${color}33 0%, transparent 70%)`,
+                        filter: 'blur(8px)',
                     }}
                 />
             )}
 
-            {/* Main Content (Image stays sharp) */}
-            <div className="relative z-10 transition-all duration-500">
-                {children}
-            </div>
-
-            {/* Atmospheric Glow layers */}
-            {active && (
-                <>
-                    <div className="absolute inset-0 -z-10 rounded-[2.5rem] bg-primary/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    <div className="absolute -inset-1 -z-20 rounded-[2.6rem] bg-gradient-to-r from-primary via-secondary to-primary opacity-0 group-hover:opacity-20 blur-lg animate-pulse-slow" />
-                </>
-            )}
+            {/* ── Actual content — untouched by any filter ─────────────────────── */}
+            <div className="relative z-10">{children}</div>
         </div>
     );
 };
