@@ -100,6 +100,14 @@ Localizados em `.agents/skills/djzeneyer-context/`:
 - `scripts/pre-deploy-check.sh`: Script de validação prévia.
 - `scripts/new-page.sh`: Blueprint para novas páginas.
 
+### 4.1 Skills Especializadas (Awesome Skills)
+- `react-best-practices`: Regras de performance da Vercel.
+- `typescript-pro`: Tipagem avançada e segurança de tipos.
+- `wordpress-theme-development`: Padrões avançados de temas WP.
+- `clean-code`: Princípios de código limpo.
+- `tailwind-patterns`: Padrões modernos de design com Tailwind v4.
+- `seo-meta-optimizer`: Gerador de metadados otimizados para SEO.
+
 ---
 
 ## 5. Pipeline de Deploy
