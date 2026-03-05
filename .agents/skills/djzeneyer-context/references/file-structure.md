@@ -13,7 +13,7 @@
 
 ## ⚙️ Backend (WP Headless)
 - `inc/`: Logica core do tema.
-- `plugins/`: Plugins customizados (`zeneyer-auth`, `zen-bit`, `zen-ra`, `zen-seo-lite`).
+- `plugins/`: Plugins customizados (`zeneyer-auth`, `zen-bit`, `zen-seo-lite`).
 - `scripts/`: Scripts de automacao (`prerender.js`, `generate-sitemaps.js`).
 
 ## 🛡️ DevOps & CI/CD

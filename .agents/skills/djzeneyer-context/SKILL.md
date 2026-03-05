@@ -27,7 +27,6 @@ triggers:
   - HeadlessSEO
   - zeneyer-auth
   - zen-bit
-  - zen-ra
   - zen-seo-lite
   - MainLayout
   - Navbar
