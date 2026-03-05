@@ -194,10 +194,27 @@ class Zen_SEO_REST_API
 
         // Home Page check
         if (empty($path) || $path === 'pt' || $path === 'en') {
-            return \get_option('page_on_front');
+            return (int) \get_option('page_on_front');
         }
 
-        // TODO: Map SPA routes from settings here if needed
+        // Mapping React-only routes to WP Page equivalents or special IDs
+        $route_map = [
+            'zengame' => 'zen-game', // Slug in WP
+            'shop' => 'shop',     // Slug in WP (WooCommerce)
+            'zentribe' => 'zen-tribe',
+            'events' => 'zouk-events',
+            'eventos' => 'eventos-zouk',
+            'music' => 'zouk-music',
+            'musica' => 'musica-zouk',
+        ];
+
+        // Try to match path to a mapped slug
+        if (isset($route_map[$path])) {
+            $page = \get_page_by_path($route_map[$path]);
+            if ($page) {
+                return $page->ID;
+            }
+        }
 
         return 0;
     }

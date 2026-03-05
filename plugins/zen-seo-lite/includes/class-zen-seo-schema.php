@@ -63,6 +63,7 @@ class Zen_SEO_Schema
         // Core fragments
         $schema['@graph'][] = $this->generate_person_schema();
         $schema['@graph'][] = $this->generate_webpage_schema($post);
+        $schema['@graph'][] = $this->generate_breadcrumb_schema($post);
 
         // Type-specific logic
         switch ($post->post_type) {
@@ -230,6 +231,51 @@ class Zen_SEO_Schema
                 ],
                 'query-input' => 'required name=search_term_string'
             ]
+        ];
+    }
+
+    /**
+     * Generate Breadcrumb schema
+     */
+    private function generate_breadcrumb_schema($post = null)
+    {
+        $items = [];
+
+        // 1. Home
+        $items[] = [
+            '@type' => 'ListItem',
+            'position' => 1,
+            'name' => \__('Home', 'zen-seo'),
+            'item' => \home_url('/')
+        ];
+
+        if ($post) {
+            // 2. Post Type Archive (if applicable)
+            $post_type_obj = \get_post_type_object($post->post_type);
+            $position = 2;
+
+            if ($post_type_obj && $post_type_obj->has_archive) {
+                $items[] = [
+                    '@type' => 'ListItem',
+                    'position' => $position++,
+                    'name' => $post_type_obj->labels->name,
+                    'item' => \get_post_type_archive_link($post->post_type)
+                ];
+            }
+
+            // 3. Current Page
+            $items[] = [
+                '@type' => 'ListItem',
+                'position' => $position,
+                'name' => \get_the_title($post),
+                'item' => \get_permalink($post)
+            ];
+        }
+
+        return [
+            '@type' => 'BreadcrumbList',
+            '@id' => ($post ? \get_permalink($post) : \home_url('/')) . '#breadcrumb',
+            'itemListElement' => $items
         ];
     }
 
