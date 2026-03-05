@@ -152,15 +152,11 @@ async function prerender() {
         const html = await page.content();
 
         if (html.length > 500) {
-          // ⭐ REESCREVER CAMINHOS: De '/' (prerender) para o caminho do WordPress (PROD)
-          // Isso garante que os assets funcionem no servidor real do Hostinger
-          let processedHtml = html
-            .replace(/src="\/assets\//g, 'src="/wp-content/themes/zentheme/dist/assets/')
-            .replace(/href="\/assets\//g, 'href="/wp-content/themes/zentheme/dist/assets/');
-
-          const finalHtml = processedHtml.includes('name="prerender-generated"')
-            ? processedHtml
-            : processedHtml.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+          // ⭐ VITE BASE PATH: Agora o Vite já gera caminhos como '/wp-content/themes/zentheme/dist/assets/...'
+          // Não precisamos mais do replace manual, apenas injetamos a meta tag.
+          const finalHtml = html.includes('name="prerender-generated"')
+            ? html
+            : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
 
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
