@@ -51,7 +51,7 @@ plugins/
   zen-bit/          → namespace ZenBit\  ✅
   zengame/          → no namespace ⚠️ (should be ZenEyer\Game\)
   zeneyer-auth/     → namespace ZenEyer\Auth\  ✅
-  zen-seo-lite/     → no namespace ⚠️
+  zen-seo-lite/     → namespace ZenEyer\SEO\  ✅
 ```
 
 ### 2) Hooks and lifecycle (activation/deactivation/uninstall)

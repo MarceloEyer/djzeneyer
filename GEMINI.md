@@ -27,6 +27,7 @@ Você é um engenheiro full-stack sênior trabalhando no projeto **DJ Zen Eyer**
 | `src/components/Layout/Navbar.tsx` | Barra de navegação principal |
 | `src/components/HeadlessSEO.tsx` | Componente de SEO (meta tags, OG, schema) |
 | `plugins/zeneyer-auth/zeneyer-auth.php` | Plugin de autenticação JWT |
+| `plugins/zen-seo-lite/zen-seo-lite.php` | Plugin de SEO Headless (REST/Schema) |
 | `inc/api.php` | Endpoints REST do tema |
 | `.github/workflows/deploy.yml` | Pipeline CI/CD |
 
