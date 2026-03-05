@@ -8,8 +8,8 @@ interface ElectricBorderProps {
 }
 
 /**
- * ElectricBorder - Applies a turbulent displacement SVG filter to create an "Electric" effect.
- * Optimized for performance by using fewer octaves and CSS animations.
+ * ElectricBorder - Applies a sharp lightning-like SVG filter on a background layer.
+ * Isola a distorção para não afetar o conteúdo principal (imagem).
  */
 export const ElectricBorder: React.FC<ElectricBorderProps> = ({
     children,
@@ -17,54 +17,60 @@ export const ElectricBorder: React.FC<ElectricBorderProps> = ({
     className = '',
     intensity = 30
 }) => {
-    const filterId = "electric-turbo-filter";
+    const filterId = "lightning-bolt-filter";
 
     return (
         <div className={`relative group ${className}`}>
             {/* SVG Filter Definition */}
             <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
                 <defs>
-                    <filter id={filterId} colorInterpolationFilters="sRGB" x="-20%" y="-20%" width="140%" height="140%">
-                        {/* Turbulence for the "lightning" noise */}
-                        <feTurbulence type="turbulence" baseFrequency="0.03" numOctaves="3" result="noise1" seed="1" />
-                        <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1">
-                            <animate attributeName="dy" values="300; 0" dur="4s" repeatCount="indefinite" calcMode="linear" />
-                        </feOffset>
+                    <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
+                        {/* High frequency fractal noise for fine lightning details */}
+                        <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="4" seed="1" result="noise">
+                            <animate attributeName="seed" values="1;100" dur="1s" repeatCount="indefinite" />
+                        </feTurbulence>
 
-                        <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="2" result="noise2" seed="2" />
-                        <feOffset in="noise2" dx="0" dy="0" result="offsetNoise2">
-                            <animate attributeName="dx" values="0; -300" dur="5s" repeatCount="indefinite" calcMode="linear" />
-                        </feOffset>
+                        {/* Thresholding with ColorMatrix to turn noise into sharp bolts */}
+                        <feColorMatrix in="noise" type="matrix" values="
+                            0 0 0 0 0
+                            0 0 0 0 0
+                            0 0 0 0 0
+                            18 -10 -10 -5 -1" result="bolts" />
 
-                        <feComposite in="offsetNoise1" in2="offsetNoise2" operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" result="combinedNoise" />
+                        {/* Blue-ish Electric Color */}
+                        <feFlood floodColor="#3b82f6" floodOpacity="1" result="blue" />
+                        <feComposite in="blue" in2="bolts" operator="in" result="coloredBolts" />
 
-                        {/* The Displacement Map that creates the "Electric" shake on the borders */}
-                        <feDisplacementMap
-                            in="SourceGraphic"
-                            in2="combinedNoise"
-                            scale={active ? intensity : 0}
-                            xChannelSelector="R"
-                            yChannelSelector="G"
-                        />
+                        {/* Glow for the bolts */}
+                        <feGaussianBlur in="coloredBolts" stdDeviation="1.5" result="glow" />
+                        <feMerge>
+                            <feMergeNode in="glow" />
+                            <feMergeNode in="coloredBolts" />
+                        </feMerge>
                     </filter>
                 </defs>
             </svg>
 
-            {/* Main Content with Filter Applied */}
-            <div
-                className="relative z-10 transition-all duration-500"
-                style={{
-                    filter: active ? `url(#${filterId})` : 'none',
-                }}
-            >
+            {/* Lightning Layer (Separated to not distort the image) */}
+            {active && (
+                <div
+                    className="absolute -inset-4 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{
+                        filter: `url(#${filterId})`,
+                    }}
+                />
+            )}
+
+            {/* Main Content (Image stays sharp) */}
+            <div className="relative z-10 transition-all duration-500">
                 {children}
             </div>
 
-            {/* Glow layers to enhance the electric feel */}
+            {/* Atmospheric Glow layers */}
             {active && (
                 <>
-                    <div className="absolute inset-0 -z-10 rounded-[2.5rem] bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    <div className="absolute -inset-1 -z-20 rounded-[2.6rem] bg-gradient-to-r from-primary via-secondary to-primary opacity-0 group-hover:opacity-30 blur-lg animate-pulse-slow" />
+                    <div className="absolute inset-0 -z-10 rounded-[2.5rem] bg-primary/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    <div className="absolute -inset-1 -z-20 rounded-[2.6rem] bg-gradient-to-r from-primary via-secondary to-primary opacity-0 group-hover:opacity-20 blur-lg animate-pulse-slow" />
                 </>
             )}
         </div>
