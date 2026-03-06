@@ -3,36 +3,23 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import {
   User, Settings, ShoppingBag, Award, Music, LogOut,
-  Edit3, Bell, Shield, Lock, AlertCircle, Headphones,
-  Instagram, Facebook, Save, ChevronRight, Zap, Trophy, Loader2
+  Bell, AlertCircle, Instagram, Save, ChevronRight, Zap, Trophy, Loader2
 } from 'lucide-react';
 import { UserStatsCards, OrdersList, RecentActivity, MusicCollection } from '../components/account';
-import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
+import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation, useUserOrdersQuery } from '../hooks/useQueries';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { stripHtml } from '../utils/text';
 import ManaProgressBar from '../components/ui/ManaProgressBar';
+import { safeUrl } from '../utils/sanitize';
 
 // Interfaces
-interface Order {
-  id: number;
-  status: string;
-  date_created: string;
-  total: string;
-  line_items: Array<{
-    name: string;
-    quantity: number;
-    total: string;
-  }>;
-}
-
 interface UserStats {
   level: number;
   xp: number;
@@ -47,8 +34,6 @@ const MyAccountContent: React.FC = () => {
   const { user, loading, logout } = useUser();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const navigate = useNavigate();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loadingOrders, setLoadingOrders] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'overview';
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -126,6 +111,7 @@ const MyAccountContent: React.FC = () => {
   const { data: newsletterEnabled } = useNewsletterStatusQuery(user?.token);
   const updateProfile = useUpdateProfileMutation(user?.token);
   const updateNewsletter = useUpdateNewsletterMutation(user?.token);
+  const { data: orders = [], isLoading: loadingOrders } = useUserOrdersQuery(user?.id, user?.token, 5);
 
   // Sync profile data to form state
   useEffect(() => {
@@ -141,43 +127,14 @@ const MyAccountContent: React.FC = () => {
     }
   }, [profileData, user?.name]);
 
-  // Fetch orders
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!user?.token || !user?.id) {
-        setLoadingOrders(false);
-        return;
-      }
-
-      try {
-        const apiUrl = buildApiUrl(`wc/v3/orders`, { customer: String(user.id) });
-        const response = await fetch(apiUrl, {
-          headers: getAuthHeaders(user.token),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setOrders(data.slice(0, 5));
-        }
-      } catch (error) {
-        console.error('[MyAccountPage] Error fetching orders:', error);
-      } finally {
-        setLoadingOrders(false);
-      }
-    };
-
-    if (user?.isLoggedIn) {
-      fetchOrders();
-    }
-  }, [user]);
 
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/');
+      navigate(getLocalizedRoute('', currentLang));
     } catch (error) {
       console.error('[MyAccountPage] Erro no logout:', error);
-      navigate('/');
+      navigate(getLocalizedRoute('', currentLang));
     }
   };
 
@@ -199,13 +156,13 @@ const MyAccountContent: React.FC = () => {
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <p className="text-xl font-semibold text-white/90 mb-2">{t('dashboard.error_loading') || 'Error loading account data'}</p>
+          <p className="text-xl font-semibold text-white/90 mb-2">{t('dashboard.error_loading')}</p>
           <p className="text-sm text-white/40 mb-6">{errorGP}</p>
           <button
             onClick={() => window.location.reload()}
             className="btn btn-primary px-8 py-3 rounded-2xl font-black uppercase tracking-[0.2em] text-xs"
           >
-            {t('common.retry') || 'Retry'}
+            {t('common.retry')}
           </button>
         </motion.div>
       </div>
@@ -236,7 +193,7 @@ const MyAccountContent: React.FC = () => {
                 {t('dashboard.welcomeBack', { name: user?.display_name || user?.name || t('common.friend') })} 👋
               </h2>
               <p className="text-white/50 text-lg font-medium tracking-tight max-w-xl">
-                Your journey in the <span className="text-primary font-black uppercase tracking-widest">{t('nav.tribe')}</span> continues. {t('dashboard.diveDeep')}
+                {t('dashboard.journeyBegins')} {t('dashboard.diveDeep')}
               </p>
             </div>
 
@@ -310,9 +267,9 @@ const MyAccountContent: React.FC = () => {
                 >
                   <div className="relative z-10 flex flex-col items-center text-center">
                     <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-white/5'}`}>
-                      {ach?.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" alt={ach?.title || 'Achievement'} /> : <Award size={32} />}
+                      {ach?.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} /> : <Award size={32} />}
                     </div>
-                    <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || 'Unknown Achievement'}</h4>
+                    <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || t('account.achievement_unknown')}</h4>
                     <p className="text-sm text-white/40 mb-6 leading-relaxed">
                       {ach?.description ? stripHtml(ach.description) : ''}
                     </p>
@@ -389,7 +346,7 @@ const MyAccountContent: React.FC = () => {
                       value={profileForm.realName}
                       onChange={(e) => handleProfileChange('realName', e.target.value)}
                       className="input bg-black/40 border-white/5 focus:border-primary/50 py-4 px-6 rounded-2xl font-medium"
-                      placeholder="Full name"
+                      placeholder={t('account.profile.real_name')}
                     />
                   </div>
                   <div>
@@ -399,7 +356,7 @@ const MyAccountContent: React.FC = () => {
                       value={profileForm.preferredName}
                       onChange={(e) => handleProfileChange('preferredName', e.target.value)}
                       className="input bg-black/40 border-white/5 focus:border-primary/50 py-4 px-6 rounded-2xl font-medium"
-                      placeholder="Artist / Nickname"
+                      placeholder={t('account.profile.preferred_name')}
                     />
                   </div>
                 </div>
@@ -409,7 +366,7 @@ const MyAccountContent: React.FC = () => {
               <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-white/5 shadow-xl">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20"><Instagram className="text-secondary" size={24} /></div>
-                  <h3 className="text-xl font-black font-display tracking-tight uppercase">Presence</h3>
+                  <h3 className="text-xl font-black font-display tracking-tight uppercase">{t('account.profile.social')}</h3>
                 </div>
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -419,7 +376,7 @@ const MyAccountContent: React.FC = () => {
                         value={profileForm.instagramUrl}
                         onChange={(e) => handleProfileChange('instagramUrl', e.target.value)}
                         className="input bg-black/40 border-white/5 focus:border-secondary/50 py-4 px-5 rounded-2xl text-sm"
-                        placeholder="@instagram"
+                        placeholder={t('account.profile.instagram_placeholder')}
                       />
                     </div>
                     <div>
@@ -428,13 +385,13 @@ const MyAccountContent: React.FC = () => {
                         value={profileForm.facebookUrl}
                         onChange={(e) => handleProfileChange('facebookUrl', e.target.value)}
                         className="input bg-black/40 border-white/5 focus:border-secondary/50 py-4 px-5 rounded-2xl text-sm"
-                        placeholder="facebook.com/..."
+                        placeholder={t('account.profile.facebook_placeholder')}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 block mb-4 ml-1">Dance Specialty</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 block mb-4 ml-1">{t('account.profile.dance_role')}</label>
                     <div className="flex gap-3">
                       {['leader', 'follower'].map(role => (
                         <button
@@ -500,7 +457,7 @@ const MyAccountContent: React.FC = () => {
         );
 
       default:
-        return <div>Tab not found</div>;
+        return <div>{t('account.tabs.not_found')}</div>;
     }
   };
 
@@ -596,3 +553,4 @@ const MyAccountPage: React.FC = () => {
 };
 
 export default MyAccountPage;
+

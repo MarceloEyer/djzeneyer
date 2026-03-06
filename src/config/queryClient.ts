@@ -164,6 +164,7 @@ export const QUERY_KEYS = {
   /** Usuário */
   user: {
     profile: (userId?: number) => ['user', 'profile', userId] as const,
+    orders: (userId?: number, limit?: number) => ['user', 'orders', userId, limit] as const,
     gamipress: (userId: number) => ['user', 'gamipress', userId] as const,
     leaderboard: (limit?: number) => ['user', 'leaderboard', limit] as const,
   },
@@ -222,3 +223,4 @@ export const clearAllCache = () => {
 // ============================================================================
 
 export { STALE_TIME, CACHE_TIME };
+

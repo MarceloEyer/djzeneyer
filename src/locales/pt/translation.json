@@ -19,6 +19,7 @@
   },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
+    "error_loading": "N�o foi poss�vel carregar os dados do painel.",
     "welcomeBack": "Bem-vindo de volta, {{name}}",
     "journeyBegins": "Sua jornada na Zen Tribe continua.",
     "diveDeep": "Mergulhe fundo no derretimento.",
@@ -62,6 +63,7 @@
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
     "copy": "Copiar",
+    "retry": "Tentar novamente",
     "close": "Fechar",
     "opens_in_new_tab": "abre em nova aba",
     "platforms": {
@@ -1264,6 +1266,7 @@
     "meta_title": "Minha Conta | {{stageName}}",
     "meta_desc": "Gerencie seu perfil e acompanhe sua jornada na Zen Tribe.",
     "locked": "Bloqueado",
+    "achievement_unknown": "Conquista desconhecida",
     "no_achievements": "Nenhuma conquista ainda",
     "no_achievements_desc": "Comece a explorar o site e participar de eventos para ganhar conquistas!",
     "start_journey": "Começar Jornada",
@@ -1524,3 +1527,4 @@
     "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
   }
 }
+

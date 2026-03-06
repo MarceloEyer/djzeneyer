@@ -3,15 +3,18 @@
 > **Primary Hook:** `useQueries.ts`
 
 ## Rules
-1. **Single Source of Truth:** Todas as requisições `useQuery` devem ser definidas em `useQueries.ts`.
-2. **No Direct Fetch:** Nunca usar `fetch` ou `axios` dentro de componentes ou outros hooks.
-3. **No Business Logic:** Hooks de dados são apenas "pass-through". Se o dado precisa de filtro ou limpeza, isso deve ser feito no Plugin/Backend PHP.
-4. **Prefetch:** Usar `usePrefetchOnHover.ts` para otimizar navegação.
-4. **Cache:** Configurar `staleTime` generoso (~24h) para dados de baixo volume/mudança.
+1. **Single Source of Truth:** toda query/mutation de dados deve estar em `useQueries.ts`.
+2. **No Direct Fetch:** componentes/p�ginas n�o podem fazer `fetch` direto.
+3. **Backend Filters, Frontend Renders:** filtros e agrega��es devem vir do plugin/BFF.
+4. **Types First:** tipar payload/resposta (ex.: `WCOrder`, `ZenGameUserData`).
+5. **Cache Discipline:** usar `QUERY_KEYS` e `STALE_TIME` centralizados.
 
-## Guidelines
-- Separar hooks de UI (ex: `useDisclosure`) de hooks de dados.
-- Tipar rigorosamente os retornos da API WordPress.
+## Endpoints privados atuais (SPA)
+- `zeneyer-auth/v1/profile`
+- `zeneyer-auth/v1/newsletter`
+- `zengame/v1/me`
+- `wc/v3/orders` (via `useUserOrdersQuery`)
 
 ---
-*Centralize ou Morra: O `useQueries.ts` é o coração das comunicações.*
+*Se um endpoint novo aparecer na UI, o hook correspondente deve nascer aqui primeiro.*
+

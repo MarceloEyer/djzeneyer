@@ -1,16 +1,30 @@
 # Auth Plugin Context - /plugins/zeneyer-auth
 
-> **Responsibility:** Secure JWT-based Authentication for Headless WP.
+> **Responsabilidade:** autenticaÁ„o headless com JWT + Google OAuth + reset de senha.
 
-## Logic Flow
-1. **JWT Secret:** Gerenciado via vari√°veis de ambiente/PHP constants.
-2. **Endpoints:** Estende a REST API para `/zeneyer-auth/v1/login` e `/zeneyer-auth/v1/token/validate`.
-3. **Validation:** Intercepta requisi√ß√µes `wp_rest` para validar o Header `Authorization: Bearer <token>`.
+## Fluxo
+1. Emite e valida `Bearer JWT` para frontend SPA.
+2. Expıe endpoints REST em `zeneyer-auth/v1`.
+3. Integra sess„o WP/JWT via `check_auth` para rotas protegidas.
 
-## Rules
-1. **Dependencies:** Usa `firebase/php-jwt` via Composer. Rode `composer install --no-dev` para ambiente local.
-2. **Security:** Nunca exponha o Secret Key em logs ou erros.
-3. **Compatibility:** Deve funcionar em harmonia com o `src/hooks/Auth` do frontend.
+## Endpoints usados pelo frontend
+- `POST /auth/login`
+- `POST /auth/register`
+- `POST /auth/google`
+- `POST /auth/validate`
+- `GET /settings`
+- `GET|POST /profile`
+- `GET|POST /newsletter`
+- `POST /auth/password/reset`
+- `POST /auth/password/set`
+- `GET /session` (health/check de sess„o)
+
+## Regras
+1. DependÍncia: `firebase/php-jwt` via Composer.
+2. N„o expor secret JWT em logs/erros.
+3. Manter paridade de contrato com `src/contexts/UserContext.tsx`.
+4. Reset de senha deve manter rotas registradas em `class-rest-routes.php`.
 
 ---
-*Token quebrado = Usu√°rio logado deslogado. Teste sempre o login ap√≥s mudan√ßas.*
+*Token quebrado = sess„o quebrada. Sempre validar login, Google OAuth e reset apÛs mudanÁas.*
+

@@ -130,6 +130,19 @@ class Rest_Routes
             'callback' => [__CLASS__, 'toggle_newsletter'],
             'permission_callback' => [__CLASS__, 'check_auth'],
         ]);
+
+        // 11. Password Reset
+        register_rest_route(self::NAMESPACE , '/auth/password/reset', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'request_reset'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        register_rest_route(self::NAMESPACE , '/auth/password/set', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'set_password'],
+            'permission_callback' => '__return_true',
+        ]);
     }
 
     /**
@@ -788,3 +801,4 @@ class Rest_Routes
         }
     }
 }
+

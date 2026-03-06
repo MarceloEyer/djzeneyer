@@ -17,6 +17,7 @@
   },
   "dashboard": {
     "loading": "Syncing with the Zen Universe...",
+    "error_loading": "Could not load your dashboard data.",
     "welcomeBack": "Welcome Back, {{name}}",
     "journeyBegins": "Your journey in the Zen Tribe continues.",
     "diveDeep": "Dive deep into the melt.",
@@ -39,6 +40,12 @@
     "welcomeTribe": "Welcome to Zen Tribe!",
     "accountCreated": "Account created",
     "startExploring": "Start exploring!",
+    "stats": {
+      "mana": "Accumulated Mana",
+      "artifacts": "Artifacts Collected",
+      "ascension": "Ascension Level",
+      "events": "Portals Crossed"
+    },
     "timeAgo": {
       "years": "{{count}} years ago",
       "months": "{{count}} months ago",
@@ -54,6 +61,7 @@
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
     "copy": "Copy",
+    "retry": "Try again",
     "close": "Close",
     "opens_in_new_tab": "opens in new tab",
     "platforms": {
@@ -1320,7 +1328,8 @@
     "meta_desc": "Manage your Zen Tribe account, orders, and achievements",
     "page_title": "My Zen Account",
     "page_subtitle": "Manage your profile, orders, and Zen Tribe membership",
-    "locked": "Locked"
+    "locked": "Locked",
+    "achievement_unknown": "Unknown achievement"
   },
   "not_found": {
     "title": "Beat Not Found",
@@ -1516,3 +1525,4 @@
     "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
   }
 }
+

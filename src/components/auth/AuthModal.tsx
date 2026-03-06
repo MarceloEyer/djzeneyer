@@ -1,7 +1,7 @@
 // src/components/auth/AuthModal.tsx
 // VERSÃO DEFINITIVA: SEGURANÇA MÁXIMA (Turnstile + Honeypot) + UX PREMIUM
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
@@ -10,6 +10,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useUser } from '../../contexts/UserContext';
 import { getTurnstileSiteKey } from '../../config/api';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -24,9 +25,10 @@ interface FormErrors {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { login, register, googleLogin, googleClientId } = useUser();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   // Estados do Formulário
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -101,7 +103,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
       if (onSuccess) onSuccess();
       onClose();
-      navigate('/dashboard');
+      navigate(getLocalizedRoute('dashboard', currentLang));
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro:', err);
       setTurnstileToken('');
@@ -124,7 +126,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       await googleLogin(credentialResponse.credential);
       if (onSuccess) onSuccess();
       onClose();
-      navigate('/dashboard');
+      navigate(getLocalizedRoute('dashboard', currentLang));
     } catch (err: any) {
       console.error('❌ [AuthModal] Erro no Google Login:', err);
       setError(t('auth.errors.google_auth_failed'));
@@ -148,7 +150,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
   const handleForgotPassword = () => {
     onClose();
-    navigate('/reset-password');
+    navigate(getLocalizedRoute('reset-password', currentLang));
   };
 
   if (!isOpen) return null;
@@ -391,3 +393,4 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 };
 
 export default AuthModal;
+

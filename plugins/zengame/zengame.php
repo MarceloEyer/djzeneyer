@@ -4,7 +4,7 @@
  * Plugin URI:   https://djzeneyer.com
  * Description:  Gaming & Activity Bridge for DJ Zen Eyer — SSOT for GamiPress + WooCommerce
  *               headless gamification. Provides REST endpoints consumed by the React frontend.
- * Version:      1.3.7
+ * Version:      1.3.8
  * Author:       DJ Zen Eyer
  * Author URI:   https://djzeneyer.com
  * Text Domain:  zengame
@@ -35,6 +35,9 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * CHANGELOG
  * ═══════════════════════════════════════════════════════════════════════════════
+ * v1.3.8  2026-03-06
+ *   FEAT  Adds achievement_highlights (up to 6 cards) in /zengame/v1/me to keep highlight selection in the backend (Brain Principle).
+ *
  * v1.3.7  2026-03-06
  *   FIX   gamipress_award_points_to_user hook uses a closure wrapper to safely
  *         consume only $user_id (arg #1 of the 3-arg function signature), making
@@ -289,7 +292,7 @@ final class ZenGame
                 <h2 style="color:<?php echo $color; ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">
                     CENTRAL INTELLIGENCE
                 </h2>
-                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.3.7 // Snapshot 2026-03-06</p>
+                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.3.8 // Snapshot 2026-03-06</p>
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px;margin-top:35px;">
                     <?php
@@ -462,6 +465,7 @@ final class ZenGame
      *   achievements_earned: [],
      *   achievements_locked: [],
      *   recent_achievements: [],    // first 5 earned
+ *   achievement_highlights: [], // first 6 cards for dashboard spotlight
      *   logs               : [],
      *   stats              : { totalTracks, eventsAttended, streak, streakFire },
      *   engine_status      : { woo, gamipress, cache },
@@ -528,6 +532,7 @@ final class ZenGame
             'achievements_earned' => $achievements['earned'],
             'achievements_locked' => $achievements['locked'],
             'recent_achievements' => \array_slice($achievements['earned'], 0, 5),
+            'achievement_highlights' => \array_slice(\array_merge($achievements['earned'], $achievements['locked']), 0, 6),
             'logs' => $this->get_activity_logs($user_id),
             'stats' => [
                 'totalTracks' => $this->get_user_total_tracks($user_id),
@@ -541,7 +546,7 @@ final class ZenGame
                 'cache' => 'healthy',
             ],
             'lastUpdate' => \current_time('mysql'),
-            'version' => '1.3.7',
+            'version' => '1.3.8',
         ];
 
         \set_transient($cache_key, $data, $this->get_cache_ttl());
@@ -1190,3 +1195,4 @@ ZenGame::get_instance();
  * instance being available at deactivation time.
  */
 \register_deactivation_hook(__FILE__, [ZenGame::class, 'on_deactivation']);
+

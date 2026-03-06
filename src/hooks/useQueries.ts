@@ -10,7 +10,7 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
-import { buildApiUrl } from '../config/api';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
 
@@ -47,6 +47,18 @@ export interface UserProfile {
   instagram_url?: string;
   dance_role?: string[];
   gender?: '' | 'male' | 'female' | 'non-binary';
+}
+
+export interface WCOrder {
+  id: number;
+  status: string;
+  date_created: string;
+  total: string;
+  line_items: Array<{
+    name: string;
+    quantity: number;
+    total: string;
+  }>;
 }
 
 export interface WCProduct {
@@ -550,6 +562,27 @@ export const useProfileQuery = (token?: string) => {
   });
 };
 
+
+export const useUserOrdersQuery = (userId?: number, token?: string, limit = 5) => {
+  return useQuery<WCOrder[]>({
+    queryKey: [...QUERY_KEYS.user.orders(userId, limit), !!token],
+    queryFn: async (): Promise<WCOrder[]> => {
+      if (!token || !userId) return [];
+      const apiUrl = buildApiUrl('wc/v3/orders', {
+        customer: String(userId),
+        per_page: String(limit),
+      });
+      const res = await fetch(apiUrl, {
+        headers: getAuthHeaders(token),
+      });
+      if (!res.ok) throw new Error('Failed to fetch user orders');
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
+    enabled: Boolean(token && userId),
+    staleTime: STALE_TIME.USER_PROFILE,
+  });
+};
 export const useUpdateProfileMutation = (token?: string) => {
   return useMutation({
     mutationFn: async (profileData: ProfileUpdatePayload) => {
@@ -627,3 +660,4 @@ export const useSubscriptionMutation = () => {
     },
   });
 };
+

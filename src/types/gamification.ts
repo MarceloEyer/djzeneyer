@@ -65,6 +65,7 @@ export interface ZenGameUserData {
     achievements_earned: ZenGameAchievement[];
     achievements_locked: ZenGameAchievement[];
     recent_achievements: ZenGameAchievement[];
+    achievement_highlights?: ZenGameAchievement[];
 
     logs: ZenGameLog[];
     stats: ZenGameStats;
@@ -83,3 +84,4 @@ export interface ZenGameLeaderboardEntry {
 export interface ZenGameLeaderboard {
     [pointType: string]: ZenGameLeaderboardEntry[];
 }
+
