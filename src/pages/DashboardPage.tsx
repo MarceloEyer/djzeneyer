@@ -1,5 +1,5 @@
 // src/pages/DashboardPage.tsx
-// v20.0 - PREMIUM UI OVERHAUL + i18n + REAL API DATA
+// v21.0 - BUGFIX: error handling, redirect race condition, hardcoded string, dead guard
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Award, Music, Calendar, Clock,
   Zap, Trophy, Loader2, Star,
-  Gift, Target
+  Gift, Target, AlertCircle
 } from 'lucide-react';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { Helmet } from 'react-helmet-async';
@@ -28,13 +28,11 @@ const DashboardContent = () => {
   const navigate = useNavigate();
 
   // Hook de Dados Reais — consumido do GamiPressContext (singleton)
-  const { data: gamipress, loading } = useGamiPressContext();
+  // Agora também desestrutura `error` para tratamento de falha de API
+  const { data: gamipress, loading, error } = useGamiPressContext();
 
-  React.useEffect(() => {
-    if (!user?.isLoggedIn) {
-      navigate('/', { replace: true });
-    }
-  }, [user, navigate]);
+  // Redirect movido para DashboardPage (wrapper), removido daqui para
+  // evitar race condition: useEffect roda APÓS o render, causando flash.
 
   if (loading) {
     return (
@@ -47,6 +45,28 @@ const DashboardContent = () => {
     );
   }
 
+  // Trata erro de API (ex: 401 token expirado, timeout, 500)
+  // Antes: gamipress sempre era FALLBACK, erro nunca era exibido
+  if (error) {
+    return (
+      <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <p className="text-xl font-semibold text-white/90 mb-2">{t('dashboard.error_loading')}</p>
+          <p className="text-sm text-white/40 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn btn-primary px-8 py-3 rounded-2xl font-black uppercase tracking-[0.2em] text-xs"
+          >
+            {t('common.retry')}
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Guard: user ausente (não deve acontecer pois DashboardPage já bloqueia,
+  // mas mantido como safety net)
   if (!user || !gamipress) return null;
 
   const pointTypes = Object.entries(gamipress.points);
