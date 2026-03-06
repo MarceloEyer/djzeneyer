@@ -1,0 +1,109 @@
+# Skills & Context Review — DJ Zen Eyer (2026-03)
+
+## Objetivo
+
+Consolidar melhorias para arquivos de contexto/instrução (`AGENTS.md`, `GEMINI.md` e `src/**/CONTEXT.md`) e aumentar previsibilidade de entrega para agentes de IA com foco em qualidade.
+
+---
+
+## Diagnóstico rápido
+
+### Pontos fortes
+
+- Contexto de produto e stack está bem definido.
+- Regras críticas do projeto aparecem repetidas (i18n, SEO, React Query, lazy loading), reduzindo ambiguidade.
+- Há separação por domínio (`hooks`, `pages`, `components`, `config`, `locales`), útil para execução por escopo.
+
+### Gaps observados
+
+- Sobreposição de regras entre `AGENTS.md` e `GEMINI.md`, sem prioridade explícita por tópico.
+- Ausência de checklist operacional mínimo por tipo de tarefa (docs-only, refactor frontend, alteração PHP).
+- Ausência de matriz "Regra -> Arquivo fonte" para troubleshooting quando bots divergem.
+- Falta de critérios mensuráveis de "done" por mudança (payload, requests, cobertura de traduções).
+
+---
+
+## Propostas de melhoria (priorizadas)
+
+| Prioridade | Melhoria | Impacto esperado | Esforço |
+|---|---|---:|---:|
+| P0 | Criar `docs/AI_GOVERNANCE.md` como fonte canônica e apontar `AGENTS.md`/`GEMINI.md` para ele | Redução de conflito de instruções em ~60–80% | Baixo |
+| P0 | Adicionar checklist padrão por task type (frontend, backend, docs, tradução) | Menos retrabalho/revisões em ~30–50% | Baixo |
+| P1 | Definir orçamentos de performance (bundle inicial, TTFB API, tamanho de payload) | Disciplina de performance e redução de 10–25% no tempo de carregamento percebido | Médio |
+| P1 | Padronizar template de PR com seção fixa de avaliação de sugestões de outros bots | Melhor rastreabilidade e revisão cruzada | Baixo |
+| P2 | Criar scorecard de conformidade para IA (i18n, SEO, lazy loading, queries centralizadas) | Aumento de previsibilidade da qualidade em ~20–40% | Médio |
+
+---
+
+## Estimativas de melhoria de performance (auditáveis)
+
+> Premissa: ambiente de medição local de referência + staging de produção.
+
+| Ação | Métrica | Baseline atual | Meta | Como medir |
+|---|---|---:|---:|---|
+| Uso estrito de `_fields` + paginação API | Tamanho médio de payload REST | Medir endpoints `wp/v2/posts` e `wp/v2/remixes` | 25–45% menor | DevTools Network (HAR) + comparação por endpoint |
+| `staleTime`/cache mais agressivo | Requests repetidas por sessão | Medir navegação Home -> News -> Home -> News | 30–70% menor | DevTools Network com cache limpo e script de navegação fixo |
+| Prefetch em hover para rotas de alta intenção | Tempo até conteúdo visível na navegação interna | Medir rotas `/music`, `/events`, `/news` | 15–35% melhor | Lighthouse Navigation + trace de transição entre rotas |
+| Orçamento de bundle por rota lazy | JS carregado na primeira visita por rota | Levantar bytes iniciais por rota | 10–30% menor | `vite build` + analyzer por chunk/rota |
+| Auditoria de chaves i18n não usadas | Tamanho de dicionários i18n | Medir `src/locales/en/translation.json` e `pt/translation.json` | 5–15% menor | Script de inventário de chaves + diff de arquivos |
+
+Checklist de medição reproduzível:
+
+1. Limpar cache do navegador e rodar em rede estável.
+2. Executar 3 medições por cenário e usar mediana.
+3. Registrar commit, data e ambiente em planilha do time.
+4. Anexar evidência (HAR, Lighthouse JSON ou print) no PR.
+
+---
+
+## Modelo recomendado de governança de instruções
+
+### 1) Hierarquia explícita
+
+1. `docs/AI_GOVERNANCE.md` (fonte canônica de regras, procedimentos e critérios).
+2. `src/**/CONTEXT.md` (regras locais por domínio, com escopo explícito).
+3. `AGENTS.md` e `GEMINI.md` (ponte de persona/ferramenta referenciando a fonte canônica).
+
+### 2) Contrato mínimo por entrega
+
+- Build/lint executados quando houver alteração de código.
+- Paridade i18n PT/EN para texto novo visível.
+- Evidência de SEO (`HeadlessSEO`) quando a alteração envolver página.
+- Descrição objetiva de risco e rollback no PR.
+- Comentário obrigatório de avaliação de sugestões de outros bots no PR.
+
+### 3) Rubrica de qualidade para bots
+
+- Conformidade técnica (40%): arquitetura e padrões do projeto.
+- Confiabilidade (25%): validações e ausência de regressão.
+- Performance (20%): payload/query/bundle/cache.
+- Manutenibilidade (15%): legibilidade, documentação, rastreabilidade.
+
+---
+
+## Plano de adoção em 2 semanas
+
+| Semana | Entrega | Dono sugerido | Critério de aceite |
+|---|---|---|---|
+| 1 | Criar `docs/AI_GOVERNANCE.md` + template de PR unificado | Tech Lead | Documento publicado e referenciado por `AGENTS.md` e `GEMINI.md` |
+| 1 | Publicar checklist de task types | Frontend Lead | Checklist incorporado ao fluxo de PR |
+| 2 | Definir metas iniciais de desempenho por rota/API | Frontend + WP Lead | Baseline e meta por rota/endpoint documentados |
+| 2 | Rodar primeira auditoria de conformidade IA e ajustar lacunas | Equipe completa | Relatório com não conformidades e plano de ação |
+
+---
+
+## Comentário sugerido para PRs (padrão)
+
+```md
+### Avaliação de sugestões de outros bots
+- Sugestões aproveitadas: [listar]
+- Sugestões rejeitadas: [listar + justificativa técnica]
+- Risco residual: [baixo/médio/alto]
+- Próximos passos: [curto e objetivo]
+```
+
+---
+
+## Conclusão
+
+A base atual é forte, mas está pronta para um salto de maturidade com governança unificada, checklists operacionais e metas mensuráveis de performance. Isso reduz conflito entre agentes e eleva a consistência de entrega.

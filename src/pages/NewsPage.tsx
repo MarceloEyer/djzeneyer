@@ -9,6 +9,7 @@ import { generatePath } from 'react-router-dom';
 import { useNewsQuery, useNewsBySlug, WPPost } from '../hooks/useQueries';
 import { stripHtml } from '../utils/text';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { ARTIST } from '../data/artistData';
 
 // ============================================================================
 // HELPERS
@@ -54,12 +55,38 @@ const NewsPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DE POST ÚNICO ---
   if (!loading && slug && singlePost) {
+    const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
+    const postImage = safeUrl(
+      singlePost.featured_image_src_full ||
+      singlePost.featured_image_src ||
+      singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url,
+      '/images/zen-eyer-og-image.png'
+    );
+    const postUrl = `${origin}${generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: singlePost.slug })}`;
+
+    const articleSchema = {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": stripHtml(singlePost.title.rendered),
+      "image": [postImage],
+      "datePublished": singlePost.date,
+      "dateModified": singlePost.modified || singlePost.date,
+      "author": [{
+        "@type": "Person",
+        "name": singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')
+      }],
+      "url": postUrl
+    };
+
     return (
       <>
         <HeadlessSEO
           title={`${stripHtml(singlePost.title.rendered)} | ${t('news.title')}`}
           description={stripHtml(singlePost.excerpt.rendered)}
-          url={`${window.location.origin}${generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: singlePost.slug })}`}
+          url={postUrl}
+          image={postImage}
+          type="article"
+          schema={articleSchema}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
@@ -76,10 +103,10 @@ const NewsPage: React.FC = () => {
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost.title.rendered) }} />
 
-                {singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
+                {postImage !== '#' && (
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
                     <img
-                      src={safeUrl(singlePost.featured_image_src_full || singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url)}
+                      src={postImage}
                       className="w-full h-full object-cover"
                       alt={stripHtml(singlePost.title.rendered)}
                     />

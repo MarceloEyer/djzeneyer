@@ -5,6 +5,7 @@ import { useParams, Link, generatePath } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { ARTIST } from '../data/artistData';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { EventMedia } from '../components/Events/EventMedia';
@@ -97,12 +98,18 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
     country: '',
   };
 
+  const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
+  const eventImage = safeUrl(event.image, '/images/zen-eyer-og-image.png');
+
   return (
     <div className="max-w-4xl mx-auto">
       <HeadlessSEO
         title={`${event.title} | ${t('events.title')}`}
         description={event.description.substring(0, 160)}
-        url={`${window.location.origin}${generatePath(getLocalizedRoute('events-detail', lang), { id })}`}
+        url={`${origin}${generatePath(getLocalizedRoute('events-detail', lang), { id })}`}
+        image={eventImage}
+        type="event"
+        events={[{ ...event, image: eventImage }]}
       />
       <Link to={getLocalizedRoute('events', lang)} className="flex items-center gap-2 text-primary mb-8 font-extrabold uppercase tracking-widest text-sm hover:text-white transition-colors">
         <ArrowLeft size={18} /> {t('events_back')}
@@ -166,6 +173,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
 
 const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
+  const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
   const { data: events = [] } = useEventsQuery({
     mode: 'upcoming',
     days: 365,
@@ -210,7 +218,11 @@ const EventListContent = ({ lang }: { lang: string }) => {
       <HeadlessSEO
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
-        url={`${window.location.origin}${getLocalizedRoute('events', lang)}`}
+        url={`${origin}${getLocalizedRoute('events', lang)}`}
+        events={events.map((event) => ({
+          ...event,
+          image: safeUrl(event.image, '/images/zen-eyer-og-image.png'),
+        }))}
       />
       {groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
         const [y, m] = key.split('-');

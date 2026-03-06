@@ -111,6 +111,7 @@ export interface MusicTrack {
 export interface WPPost {
   id: number;
   date: string;
+  modified?: string;
   slug: string;
   title: { rendered: string };
   excerpt: { rendered: string };
@@ -315,7 +316,7 @@ export const useNewsBySlug = (slug?: string, lang?: string) => {
         slug,
         ...(lang ? { lang } : {}),
         // OPTIMIZATION: Replaced _embed=true with targeted fields
-        _fields: 'id,date,slug,title,content,excerpt,featured_image_src_full,author_name',
+        _fields: 'id,date,modified,slug,title,content,excerpt,featured_image_src,featured_image_src_full,author_name',
       });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error('Failed to fetch individual news post');

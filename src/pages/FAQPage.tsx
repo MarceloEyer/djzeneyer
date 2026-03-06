@@ -1,6 +1,7 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen, HeartPulse } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
@@ -56,11 +57,14 @@ const FAQItem = memo<{
 ));
 FAQItem.displayName = 'FAQItem';
 
+const CATEGORIES = ['djzeneyer', 'rankings', 'technical', 'culture', 'community'];
+
 // ============================================================================
 // COMPONENTE PRINCIPAL
 // ============================================================================
 const FAQPage: React.FC = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const [openIndex, setOpenIndex] = useState<string | null>(null);
 
   const handleToggle = (id: string) => {
@@ -70,9 +74,7 @@ const FAQPage: React.FC = () => {
 
 
   // Categorias mapeadas dinamicamente das traduções
-  const categories = ['djzeneyer', 'rankings', 'technical', 'culture', 'community'];
-
-  const faqData = categories.map(cat => ({
+  const faqData = useMemo(() => CATEGORIES.map(cat => ({
     category: cat,
     title: t(`faq.categories.${cat}.title`),
     description: t(`faq.categories.${cat}.desc`),
@@ -85,13 +87,16 @@ const FAQPage: React.FC = () => {
       question: t(`faq.categories.${cat}.${qKey}.q`),
       answer: t(`faq.categories.${cat}.${qKey}.a`)
     }))
-  }));
+  })), [t]);
 
   // SSR/Prerender context
-  const currentUrl = `${ARTIST.site.baseUrl}${location.pathname.endsWith('/') ? location.pathname : location.pathname + '/'}`;
+  const currentUrl = useMemo(
+    () => `${ARTIST.site.baseUrl}${location.pathname.endsWith('/') ? location.pathname : `${location.pathname}/`}`,
+    [location.pathname]
+  );
 
   // FAQ Schema JSON-LD
-  const faqSchema = {
+  const faqSchema = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -127,7 +132,7 @@ const FAQPage: React.FC = () => {
         ]
       }
     ]
-  };
+  }), [currentUrl, faqData]);
 
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20">
