@@ -3,7 +3,7 @@
  * Plugin Name: ZenGame Pro
  * Plugin URI: https://djzeneyer.com
  * Description: Gaming & Activity Bridge for DJ Zen Eyer (GamiPress + WooCommerce Headless integration).
- * Version: 1.3.5
+ * Version: 1.3.6
  * Author: DJ Zen Eyer
  * Author URI: https://djzeneyer.com
  * Text Domain: zengame
@@ -13,11 +13,12 @@
  *
  * @package ZenEyer\Game
  *
- * CHANGELOG v1.3.5:
- * - FIX: Replaced nonexistent gamipress_get_next_rank_id with priority sorting logic.
- * - FIX: Corrected get_user_achievements parameter to 'achievement_type' (singular).
- * - FIX: Updated hooks to catch points awards correctly.
- * - PERF: Leaderboard query alignment with verified DB structure.
+ * CHANGELOG v1.3.6:
+ * - FIX: Corrected points hook to gamipress_award_points_to_user (v1.3.5 error).
+ * - PERF: Leaderboard now queries usermeta directly (accurate balances).
+ * - FIX: Restored WooCommerce public API ($product->is_downloadable).
+ * - ADMIN: Version synchronization and snapshot update.
+ * - LIFECYCLE: Corrected deactivation hook reference.
  */
 
 namespace ZenEyer\Game;
@@ -74,9 +75,6 @@ final class ZenGame
 
         // HPOS Compatibility - Safter hook
         \add_action('before_woocommerce_init', [$this, 'declare_hpos_compatibility']);
-
-        // Lifecycle: Cleanup on deactivation
-        \register_deactivation_hook(__FILE__, [self::class, 'on_deactivation']);
 
         $this->init_cache_hooks();
     }
@@ -181,7 +179,7 @@ final class ZenGame
                     <div>
                         <h2 style="color:<?php echo $color; ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">CENTRAL
                             INTELLIGENCE</h2>
-                        <p style="color:#666; font-family: monospace;">ZenGame Pro v1.3.4 // Snapshot 2026-03-06</p>
+                        <p style="color:#666; font-family: monospace;">ZenGame Pro v1.3.6 // Snapshot 2026-03-06</p>
                     </div>
                 </div>
 
@@ -386,7 +384,7 @@ final class ZenGame
                 'cache' => 'healthy',
             ],
             'lastUpdate' => \current_time('mysql'),
-            'version' => '1.3.4',
+            'version' => '1.3.6',
         ];
 
         \set_transient($cache_key, $data, $this->get_cache_ttl());
@@ -415,24 +413,26 @@ final class ZenGame
 
         global $wpdb;
         foreach ($target_types as $slug => $pt) {
+            $meta_key = "_gamipress_{$slug}_points";
+
+            // Querying usermeta directly for real-time balances
             $results = $wpdb->get_results($wpdb->prepare(
-                "SELECT user_id, SUM(points) AS total_points FROM {$wpdb->prefix}gamipress_user_earnings 
-                 WHERE points_type = %s GROUP BY user_id ORDER BY total_points DESC LIMIT %d",
-                $slug,
+                "SELECT u.ID as user_id, u.display_name, CAST(m.meta_value AS SIGNED) as points 
+                 FROM {$wpdb->users} u
+                 JOIN {$wpdb->usermeta} m ON u.ID = m.user_id
+                 WHERE m.meta_key = %s AND CAST(m.meta_value AS SIGNED) > 0
+                 ORDER BY points DESC LIMIT %d",
+                $meta_key,
                 $limit
             ));
 
             $leaderboard[$slug] = [];
             if (\is_array($results)) {
                 foreach ($results as $row) {
-                    $user = \get_userdata((int) $row->user_id);
-                    if (!$user)
-                        continue;
-
                     $leaderboard[$slug][] = [
                         'user_id' => (int) $row->user_id,
-                        'display_name' => $user->display_name,
-                        'points' => (int) $row->total_points,
+                        'display_name' => $row->display_name,
+                        'points' => (int) $row->points,
                         'avatar' => \get_avatar_url((int) $row->user_id, ['size' => 64]),
                     ];
                 }
@@ -661,11 +661,10 @@ final class ZenGame
             if (!$order)
                 continue;
 
-            // HPOS Optimization: Orders might have many items, but we only load what we need.
+            // HPOS Optimization: Use Public API for downloadable check
             foreach ($order->get_items() as $item) {
-                // We use meta to check downloadable instead of full product load if possible
-                $product_id = $item->get_product_id();
-                if (\get_post_meta($product_id, '_downloadable', true) === 'yes') {
+                $product = $item->get_product();
+                if ($product && $product->is_downloadable()) {
                     $total += $item->get_quantity();
                 }
             }
@@ -727,8 +726,9 @@ final class ZenGame
     {
         \add_action('woocommerce_order_status_completed', [$this, 'clear_user_cache_by_order']);
 
-        // Hooks fired when earnings are updated
-        \add_action('gamipress_update_user_points', [$this, 'clear_user_cache_by_id'], 10, 1);
+        // Hooks fired when earnings/points are updated
+        // gamipress_award_points_to_user passes ($user_id, $amount, $points_type, $args)
+        \add_action('gamipress_award_points_to_user', [$this, 'clear_user_cache_by_id'], 10, 4);
         \add_action('gamipress_award_achievement', [$this, 'clear_user_cache_by_id'], 10, 1);
         \add_action('gamipress_set_user_rank', [$this, 'clear_user_cache_by_id'], 10, 1);
     }
@@ -788,3 +788,6 @@ final class ZenGame
 
 // Initialize the professional engine
 ZenGame::get_instance();
+
+// Lifecycle: Register cleanup at top-level to ensure __FILE__ reliability
+\register_deactivation_hook(__FILE__, [ZenGame::class, 'on_deactivation']);
