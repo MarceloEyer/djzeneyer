@@ -1,7 +1,7 @@
 # ZenGame Plugin Context — /plugins/zengame
 
 > **Responsibility:** Gaming & Activity Bridge (GamiPress + WooCommerce).
-> **Plugin version:** 1.3.7
+> **Plugin version:** 1.3.9
 
 ## Logic Flow
 
@@ -22,7 +22,7 @@
 
 | Assunto | Correto | Errado (não usar) |
 |---------|---------|-------------------|
-| Hook de pontos | `gamipress_award_points_to_user` | `gamipress_update_user_points` |
+| Hook de pontos | `gamipress_award_points_to_user` + compat `gamipress_update_user_points` | usar apenas um sem compatibilidade |
 | Arg do hook | closure wrapper, `accepted_args=3` | `[$this, 'method']` direto com 4 args |
 | Achievements | `achievement_type` (singular) | `achievement_types` (plural) |
 | Próximo rank | `get_posts()` ordenado por `menu_order` | `gamipress_get_next_rank_id()` (não existe) |

@@ -4,7 +4,7 @@
  * Plugin URI:   https://djzeneyer.com
  * Description:  Gaming & Activity Bridge for DJ Zen Eyer — SSOT for GamiPress + WooCommerce
  *               headless gamification. Provides REST endpoints consumed by the React frontend.
- * Version:      1.3.8
+ * Version:      1.3.9
  * Author:       DJ Zen Eyer
  * Author URI:   https://djzeneyer.com
  * Text Domain:  zengame
@@ -35,6 +35,11 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * CHANGELOG
  * ═══════════════════════════════════════════════════════════════════════════════
+ * v1.3.9  2026-03-06
+ *   FIX   Adds compatibility hooks for points/rank cache invalidation.
+ *   FIX   Reads both authorization header casings for JWT auth.
+ *   FIX   Enforces runtime clamp for leaderboard limit (1..100).
+ *
  * v1.3.8  2026-03-06
  *   FEAT  Adds achievement_highlights (up to 6 cards) in /zengame/v1/me to keep highlight selection in the backend (Brain Principle).
  *
@@ -292,7 +297,7 @@ final class ZenGame
                 <h2 style="color:<?php echo $color; ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">
                     CENTRAL INTELLIGENCE
                 </h2>
-                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.3.8 // Snapshot 2026-03-06</p>
+                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.3.9 // Snapshot 2026-03-06</p>
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px;margin-top:35px;">
                     <?php
@@ -435,7 +440,10 @@ final class ZenGame
         }
 
         // Fallback: JWT Bearer token (requires zeneyer-auth plugin).
-        $auth_header = $request->get_header('Authorization');
+        $auth_header = $request->get_header('authorization');
+        if (!$auth_header) {
+            $auth_header = $request->get_header('Authorization');
+        }
         if ($auth_header && \preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
             $token = \trim($matches[1]);
             if (\class_exists('\ZenEyer\Auth\Core\JWT_Manager')) {
@@ -546,7 +554,7 @@ final class ZenGame
                 'cache' => 'healthy',
             ],
             'lastUpdate' => \current_time('mysql'),
-            'version' => '1.3.8',
+            'version' => '1.3.9',
         ];
 
         \set_transient($cache_key, $data, $this->get_cache_ttl());
@@ -582,6 +590,7 @@ final class ZenGame
         }
 
         $limit = (int) $request->get_param('limit');
+        $limit = max(1, min(100, $limit > 0 ? $limit : 10));
         $type_param = (string) $request->get_param('point_type');
 
         $cache_key = 'djz_gamipress_leaderboard_' . self::CACHE_VERSION . '_' . $limit . '_' . ($type_param ?: 'all');
@@ -1054,12 +1063,16 @@ final class ZenGame
         \add_action('gamipress_award_points_to_user', function ($user_id) {
             $this->clear_user_cache_by_id((int) $user_id);
         }, 10, 3);
+        \add_action('gamipress_update_user_points', function ($user_id) {
+            $this->clear_user_cache_by_id((int) $user_id);
+        }, 10, 4);
 
         // GamiPress: invalidate when an achievement is awarded.
         \add_action('gamipress_award_achievement', [$this, 'clear_user_cache_by_id'], 10, 1);
 
         // GamiPress: invalidate when a rank is set.
         \add_action('gamipress_set_user_rank', [$this, 'clear_user_cache_by_id'], 10, 1);
+        \add_action('gamipress_update_user_rank', [$this, 'clear_user_cache_by_id'], 10, 1);
     }
 
     /**

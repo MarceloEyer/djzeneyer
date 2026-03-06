@@ -1,0 +1,60 @@
+﻿# AI_CONTEXT_INDEX.md - DJ Zen Eyer
+
+> Fonte canonica para agentes de IA neste repositorio.
+> Objetivo: zero conflito entre instrucoes, skills e contexto.
+
+## Ordem de precedencia (obrigatoria)
+1. **Codigo real do repositorio** (fonte final): `package.json`, `functions.php`, `inc/`, `plugins/*`, `src/*`
+2. **Este arquivo** (`AI_CONTEXT_INDEX.md`)
+3. `AGENTS.md`
+4. `GEMINI.md`
+5. `CONTEXT.md` e demais `*CONTEXT.md`
+6. `docs/*` (referencia operacional; pode conter historico)
+7. Skills em `.agents/skills/*` (guia de execucao; nunca sobrepoe codigo/indice)
+
+Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
+
+## Baseline tecnico canonico (2026-03-06)
+- Arquitetura: WordPress Headless (REST API) + React SPA
+- Frontend: React 18 + TypeScript + Vite 7 + Tailwind 3 + React Query v5 + React Router 7 + i18next
+- Backend: WordPress 6.0+ (recomendado 6.9+), PHP **8.1+** (zengame exige 8.1), WooCommerce, GamiPress
+- Node: 20+
+- Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
+
+## Regras globais (SSOT)
+1. Strings visiveis: sempre i18n (`t('chave')`) PT/EN
+2. Data fetching no frontend: hooks centralizados em `src/hooks/useQueries.ts`
+3. Nao usar `fetch()` diretamente em componentes de pagina; usar hooks React Query
+4. Paginas lazy-loaded com `React.lazy()` + `Suspense`
+5. SEO por pagina com `<HeadlessSEO />`
+6. Filtragem pesada no backend (query params/endpoint agregador), frontend apenas renderiza
+7. SQL sempre preparado e inputs sanitizados no PHP
+8. Nao atualizar ESLint para v10 (manter v9)
+9. Nao commitar `.env`, segredos ou credenciais
+
+## Endpoints canonicos (resumo)
+- Tema: `djzeneyer/v1`
+- Auth: `zeneyer-auth/v1` (aliases e rotas `/auth/*`)
+- Eventos: `zen-bit/v2`
+- Gamificacao: `zengame/v1`
+- SEO: `zen-seo/v1`
+
+## Decisoes de consolidacao (conflitos resolvidos)
+- `zen-ra` foi removido do projeto; qualquer referencia deve ser tratada como erro de documentacao
+- `zen-bit/v1` legado; usar `zen-bit/v2`
+- Namespace SEO canonico: `zen-seo/v1` (nao `zen-seo-lite/v1`)
+- `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
+- Tailwind canonico do projeto: v3; nao aplicar convencoes exclusivas de v4 sem migracao explicita
+
+## Fluxo para qualquer tarefa
+1. Ler este indice
+2. Ler `AGENTS.md`
+3. Ler o arquivo tecnico mais proximo da mudanca (`docs/ARCHITECTURE.md`, `docs/API.md`, etc.)
+4. Validar contra o codigo real antes de editar docs
+5. Se encontrou conflito, corrigir docs no mesmo PR
+
+## Checklist de atualizacao de contexto
+- Atualizou versoes? sincronizar `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `GEMINI.md`
+- Mudou endpoint/namespace? sincronizar `docs/API.md` e skills relacionadas
+- Mudou regra de arquitetura? sincronizar `CONTEXT.md` + skill `djzeneyer-context`
+

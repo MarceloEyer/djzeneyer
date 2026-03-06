@@ -1,50 +1,50 @@
-# Visão Geral da Arquitetura
+﻿# VisÃ£o Geral da Arquitetura
 
-**DJ Zen Eyer — Arquitetura Técnica**
+**DJ Zen Eyer â€” Arquitetura TÃ©cnica**
 
 ---
 
 ## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    USER (Browser)                        │
-└────────────────────┬────────────────────────────────────┘
-                     │
-                     ▼
-         ┌───────────────────────┐
-         │   CLOUDFLARE CDN      │ ◄── Edge Cache, SSL/TLS
-         │   (Cache + Security)   │     DDoS Protection
-         └───────────┬───────────┘
-                     │
-                     ▼
-    ┌────────────────────────────────────┐
-    │   HOSTINGER VPS (LiteSpeed)        │
-    │  ┌──────────────────────────────┐  │
-    │  │  FRONTEND (React SPA)        │  │
-    │  │  /dist/ (Static HTML)        │  │
-    │  └──────────────────────────────┘  │
-    │  ┌──────────────────────────────┐  │
-    │  │  BACKEND (WordPress API)     │  │
-    │  │  /wp-json/                   │  │
-    │  │  • REST API                  │  │
-    │  │  • Custom Plugins            │  │
-    │  │  • WooCommerce               │  │
-    │  │  • GamiPress                 │  │
-    │  └──────────────────────────────┘  │
-    │  ┌──────────────────────────────┐  │
-    │  │  DATABASE (MySQL)            │  │
-    │  │  • wp_posts, wp_users        │  │
-    │  │  • WooCommerce tables        │  │
-    │  │  • GamiPress tables          │  │
-    │  └──────────────────────────────┘  │
-    └────────────────────────────────────┘
-                     ▲
-                     │
-         ┌───────────────────────┐
-         │  GITHUB ACTIONS       │ ◄── CI/CD Pipeline
-         │  (Build & Deploy)     │     Automatic on push
-         └───────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                    USER (Browser)                        â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                     â”‚
+                     â–¼
+         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+         â”‚   CLOUDFLARE CDN      â”‚ â—„â”€â”€ Edge Cache, SSL/TLS
+         â”‚   (Cache + Security)   â”‚     DDoS Protection
+         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                     â”‚
+                     â–¼
+    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+    â”‚   HOSTINGER VPS (LiteSpeed)        â”‚
+    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+    â”‚  â”‚  FRONTEND (React SPA)        â”‚  â”‚
+    â”‚  â”‚  /dist/ (Static HTML)        â”‚  â”‚
+    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+    â”‚  â”‚  BACKEND (WordPress API)     â”‚  â”‚
+    â”‚  â”‚  /wp-json/                   â”‚  â”‚
+    â”‚  â”‚  â€¢ REST API                  â”‚  â”‚
+    â”‚  â”‚  â€¢ Custom Plugins            â”‚  â”‚
+    â”‚  â”‚  â€¢ WooCommerce               â”‚  â”‚
+    â”‚  â”‚  â€¢ GamiPress                 â”‚  â”‚
+    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+    â”‚  â”‚  DATABASE (MySQL)            â”‚  â”‚
+    â”‚  â”‚  â€¢ wp_posts, wp_users        â”‚  â”‚
+    â”‚  â”‚  â€¢ WooCommerce tables        â”‚  â”‚
+    â”‚  â”‚  â€¢ GamiPress tables          â”‚  â”‚
+    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                     â–²
+                     â”‚
+         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+         â”‚  GITHUB ACTIONS       â”‚ â—„â”€â”€ CI/CD Pipeline
+         â”‚  (Build & Deploy)     â”‚     Automatic on push
+         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
@@ -65,9 +65,9 @@ To ensure maximum performance and minimize payload sizes, the project follows a 
 ### 1. First Visit (SSR/SSG)
 
 ```
-User → Cloudflare (cache) → Serve pre-rendered HTML
-                          → React hydrates page
-                          → SPA takes control
+User â†’ Cloudflare (cache) â†’ Serve pre-rendered HTML
+                          â†’ React hydrates page
+                          â†’ SPA takes control
 ```
 
 - **HTML pre-rendered** for instant load
@@ -77,15 +77,15 @@ User → Cloudflare (cache) → Serve pre-rendered HTML
 ### 2. Client-Side Navigation (SPA)
 
 ```
-User clicks link → React Router intercepts
-                → fetch() data from WordPress API
-                → Smooth transition (no page reload)
+User clicks link â†’ React Router intercepts
+                â†’ fetch() data from WordPress API
+                â†’ Smooth transition (no page reload)
 ```
 
 ### 3. API Request
 
 ```
-React Component → fetch() → WordPress REST API → MySQL → JSON Response
+React Component â†’ fetch() â†’ WordPress REST API â†’ MySQL â†’ JSON Response
 ```
 
 ---
@@ -95,58 +95,58 @@ React Component → fetch() → WordPress REST API → MySQL → JSON Response
 ### Authentication (JWT + Google OAuth)
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ FRONTEND (React)                                     │
-│  [Login Form] ──────► AuthModal.tsx                 │
-│        │ POST /wp-json/zeneyer-auth/v1/login        │
-└────────┼──────────────────────────────────────────┘
-         ▼
-┌─────────────────────────────────────────────────────┐
-│ BACKEND (zeneyer-auth plugin)                       │
-│  • Validate credentials                             │
-│  • Generate JWT token (Firebase PHP-JWT)            │
-│  • Return: { token, user, expires }                 │
-└────────┬──────────────────────────────────────────┘
-         ▼
-┌─────────────────────────────────────────────────────┐
-│ FRONTEND (React)                                     │
-│  • Save token to localStorage                       │
-│  • Update UserContext                               │
-│  • Redirect to /dashboard                           │
-└─────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ FRONTEND (React)                                     â”‚
+â”‚  [Login Form] â”€â”€â”€â”€â”€â”€â–º AuthModal.tsx                 â”‚
+â”‚        â”‚ POST /wp-json/zeneyer-auth/v1/login        â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+         â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ BACKEND (zeneyer-auth plugin)                       â”‚
+â”‚  â€¢ Validate credentials                             â”‚
+â”‚  â€¢ Generate JWT token (Firebase PHP-JWT)            â”‚
+â”‚  â€¢ Return: { token, user, expires }                 â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+         â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ FRONTEND (React)                                     â”‚
+â”‚  â€¢ Save token to localStorage                       â”‚
+â”‚  â€¢ Update UserContext                               â”‚
+â”‚  â€¢ Redirect to /dashboard                           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### WooCommerce Cart
 
 ```
 React Component (ShopPage)
-    │
-    ├──► useCart() hook
-    │      │
-    │      ├──► ADD_TO_CART
-    │      │      └──► POST /wp-json/wc/store/v1/cart/add-item
-    │      │
-    │      ├──► GET_CART
-    │      │      └──► GET /wp-json/wc/store/v1/cart
-    │      │
-    │      └──► REMOVE_ITEM
-    │             └──► DELETE /wp-json/wc/store/v1/cart/items/:key
-    │
-    └──► CartContext updates global state
+    â”‚
+    â”œâ”€â”€â–º useCart() hook
+    â”‚      â”‚
+    â”‚      â”œâ”€â”€â–º ADD_TO_CART
+    â”‚      â”‚      â””â”€â”€â–º POST /wp-json/wc/store/v1/cart/add-item
+    â”‚      â”‚
+    â”‚      â”œâ”€â”€â–º GET_CART
+    â”‚      â”‚      â””â”€â”€â–º GET /wp-json/wc/store/v1/cart
+    â”‚      â”‚
+    â”‚      â””â”€â”€â–º REMOVE_ITEM
+    â”‚             â””â”€â”€â–º DELETE /wp-json/wc/store/v1/cart/items/:key
+    â”‚
+    â””â”€â”€â–º CartContext updates global state
 ```
 
 ### Gamification (GamiPress)
 
 ```
 DashboardPage.tsx
-    │
-    ├──► useGamiPress() hook
-    │      │
-    │      ├──► GET /wp-json/gamipress/v1/users/:id/points
-    │      ├──► GET /wp-json/gamipress/v1/users/:id/ranks
-    │      └──► GET /wp-json/gamipress/v1/users/:id/achievements
-    │
-    └──► Render:
+    â”‚
+    â”œâ”€â”€â–º useGamiPress() hook
+    â”‚      â”‚
+    â”‚      â”œâ”€â”€â–º GET /wp-json/gamipress/v1/users/:id/points
+    â”‚      â”œâ”€â”€â–º GET /wp-json/gamipress/v1/users/:id/ranks
+    â”‚      â””â”€â”€â–º GET /wp-json/gamipress/v1/users/:id/achievements
+    â”‚
+    â””â”€â”€â–º Render:
          - UserStatsCards (points, rank, achievements)
          - GamificationWidget (progress, badges)
 ```
@@ -159,56 +159,56 @@ DashboardPage.tsx
 
 ```
 src/
-├── App.tsx                    # Componente raiz (Rotas)
-├── main.tsx                   # Ponto de entrada
-│
-├── components/
-│   ├── AppRoutes.tsx         # Configuração de rotas
-│   ├── HeadlessSEO.tsx       # Gerenciador de SEO (crítico!)
-│   │
-│   ├── Layout/
-│   │   └── Navbar.tsx        # Navegação principal
-│   │
-│   ├── common/
-│   │   ├── Footer.tsx        # Rodapé
-│   │   └── UserMenu.tsx      # Menu do usuário
-│   │
-│   ├── auth/
-│   │   └── AuthModal.tsx     # Modal Login/Registro
-│   │
-│   └── account/
-│       ├── UserStatsCards.tsx
-│       ├── OrdersList.tsx
-│       └── RecentActivity.tsx
-│
-├── pages/                     # Páginas (lazy-loaded)
-│   ├── HomePage.tsx
-│   ├── ShopPage.tsx
-│   ├── EventsPage.tsx
-│   ├── MusicPage.tsx
-│   ├── NewsPage.tsx
-│   ├── DashboardPage.tsx
-│   └── ...
-│
-├── contexts/                  # Estado global
-│   ├── UserContext.tsx       # Autenticação
-│   ├── CartContext.tsx       # Carrinho WooCommerce
-│   └── MusicPlayerContext.tsx
-│
-├── hooks/                     # Hooks centralizados
-│   └── useQueries.ts         # TODOS os hooks React Query
-│
-├── layouts/
-│   └── MainLayout.tsx        # Layout principal (Navbar+Footer+Auth)
-│
-├── locales/                   # Traduções i18n
-│   ├── en/translation.json
-│   └── pt/translation.json
-│
-└── config/
-    ├── api.ts                # URLs da API (fonte de verdade)
-    ├── routes.ts             # Mapa de rotas EN/PT
-    └── siteConfig.ts         # Configuração do site
+â”œâ”€â”€ App.tsx                    # Componente raiz (Rotas)
+â”œâ”€â”€ main.tsx                   # Ponto de entrada
+â”‚
+â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ AppRoutes.tsx         # ConfiguraÃ§Ã£o de rotas
+â”‚   â”œâ”€â”€ HeadlessSEO.tsx       # Gerenciador de SEO (crÃ­tico!)
+â”‚   â”‚
+â”‚   â”œâ”€â”€ Layout/
+â”‚   â”‚   â””â”€â”€ Navbar.tsx        # NavegaÃ§Ã£o principal
+â”‚   â”‚
+â”‚   â”œâ”€â”€ common/
+â”‚   â”‚   â”œâ”€â”€ Footer.tsx        # RodapÃ©
+â”‚   â”‚   â””â”€â”€ UserMenu.tsx      # Menu do usuÃ¡rio
+â”‚   â”‚
+â”‚   â”œâ”€â”€ auth/
+â”‚   â”‚   â””â”€â”€ AuthModal.tsx     # Modal Login/Registro
+â”‚   â”‚
+â”‚   â””â”€â”€ account/
+â”‚       â”œâ”€â”€ UserStatsCards.tsx
+â”‚       â”œâ”€â”€ OrdersList.tsx
+â”‚       â””â”€â”€ RecentActivity.tsx
+â”‚
+â”œâ”€â”€ pages/                     # PÃ¡ginas (lazy-loaded)
+â”‚   â”œâ”€â”€ HomePage.tsx
+â”‚   â”œâ”€â”€ ShopPage.tsx
+â”‚   â”œâ”€â”€ EventsPage.tsx
+â”‚   â”œâ”€â”€ MusicPage.tsx
+â”‚   â”œâ”€â”€ NewsPage.tsx
+â”‚   â”œâ”€â”€ DashboardPage.tsx
+â”‚   â””â”€â”€ ...
+â”‚
+â”œâ”€â”€ contexts/                  # Estado global
+â”‚   â”œâ”€â”€ UserContext.tsx       # AutenticaÃ§Ã£o
+â”‚   â”œâ”€â”€ CartContext.tsx       # Carrinho WooCommerce
+â”‚   â””â”€â”€ MusicPlayerContext.tsx
+â”‚
+â”œâ”€â”€ hooks/                     # Hooks centralizados
+â”‚   â””â”€â”€ useQueries.ts         # TODOS os hooks React Query
+â”‚
+â”œâ”€â”€ layouts/
+â”‚   â””â”€â”€ MainLayout.tsx        # Layout principal (Navbar+Footer+Auth)
+â”‚
+â”œâ”€â”€ locales/                   # TraduÃ§Ãµes i18n
+â”‚   â”œâ”€â”€ en/translation.json
+â”‚   â””â”€â”€ pt/translation.json
+â”‚
+â””â”€â”€ config/
+    â”œâ”€â”€ api.ts                # URLs da API (fonte de verdade)
+    â”œâ”€â”€ routes.ts             # Mapa de rotas EN/PT
+    â””â”€â”€ siteConfig.ts         # ConfiguraÃ§Ã£o do site
 ```
 
 ### Lazy Loading Strategy
@@ -240,20 +240,20 @@ const ShopPage = lazy(() => import('./pages/ShopPage').then(m => ({ default: m.S
 
 ```
 wp-content/themes/djzeneyer-headless/
-├── functions.php              # Main entry point (loads /inc/)
-├── index.php                  # Serves React app
-├── header.php                 # HTML <head> injection
-├── footer.php                 # Closes HTML
-│
-└── inc/                       # Modular PHP functions
-    ├── setup.php              # Theme support, CORS, performance
-    ├── api.php                # Custom REST endpoints
-    ├── cpt.php                # Custom Post Types
-    ├── spa.php                # SPA routing integration
-    ├── vite.php               # Vite asset injection
-    ├── csp.php                # Content Security Policy
-    ├── cleanup.php            # Remove WP bloat
-    └── metaboxes.php          # Admin UI metaboxes
+â”œâ”€â”€ functions.php              # Main entry point (loads /inc/)
+â”œâ”€â”€ index.php                  # Serves React app
+â”œâ”€â”€ header.php                 # HTML <head> injection
+â”œâ”€â”€ footer.php                 # Closes HTML
+â”‚
+â””â”€â”€ inc/                       # Modular PHP functions
+    â”œâ”€â”€ setup.php              # Theme support, CORS, performance
+    â”œâ”€â”€ api.php                # Custom REST endpoints
+    â”œâ”€â”€ cpt.php                # Custom Post Types
+    â”œâ”€â”€ spa.php                # SPA routing integration
+    â”œâ”€â”€ vite.php               # Vite asset injection
+    â”œâ”€â”€ csp.php                # Content Security Policy
+    â”œâ”€â”€ cleanup.php            # Remove WP bloat
+    â””â”€â”€ metaboxes.php          # Admin UI metaboxes
 ```
 
 ### Custom REST Endpoints
@@ -272,10 +272,10 @@ GET /wp-json/zengame/v1/me
 GET /wp-json/zengame/v1/leaderboard
 
 // Events API (via Zen BIT plugin)
-GET /wp-json/zen-bit/v1/events
+GET /wp-json/zen-bit/v2/events
 
-// Recent Activity API (via Zen-RA plugin)
-GET /wp-json/zen-ra/v1/activity/:user_id
+// Gamificacao API (via ZenGame plugin)
+GET /wp-json/zengame/v1/me
 ```
 
 ---
@@ -349,25 +349,23 @@ GET  /wp-json/zeneyer-auth/v1/validate
 
 **Endpoint:**
 ```php
-GET /wp-json/zen-bit/v1/events
+GET /wp-json/zen-bit/v2/events
 ```
 
 ---
 
-### 4. Zen-RA (Recent Activity)
+### 4. ZenGame (Gamificacao)
 
-**File:** `plugins/zen-ra/zen-ra.php`
+**File:** `plugins/zengame/zengame.php`
 
-**Function:** Gamified user activity timeline.
+**Function:** Gamification brain (SSOT) para dashboard e leaderboard.
 
 **Data Sources:**
-- WooCommerce orders
-- GamiPress achievements
-- User milestones
+- Dados consolidados de GamiPress + WooCommerce
 
 **Endpoint:**
 ```php
-GET /wp-json/zen-ra/v1/activity/:user_id
+GET /wp-json/zengame/v1/me
 ```
 
 **Returns:**
@@ -406,21 +404,21 @@ GET /wp-json/zen-ra/v1/activity/:user_id
 
 ```bash
 npm run build
-  │
-  ├──► vite build (JS/CSS)
-  │
-  └──► scripts/prerender.js
-         │
-         ├──► Puppeteer launches local server
-         ├──► Navigates to each route:
-         │      /about → dist/about/index.html
-         │      /events → dist/events/index.html
-         │      /pt/about → dist/pt/about/index.html
-         │
-         └──► Final HTML contains:
-                • Complete meta tags
-                • Schema.org JSON-LD
-                • Indexable text content
+  â”‚
+  â”œâ”€â”€â–º vite build (JS/CSS)
+  â”‚
+  â””â”€â”€â–º scripts/prerender.js
+         â”‚
+         â”œâ”€â”€â–º Puppeteer launches local server
+         â”œâ”€â”€â–º Navigates to each route:
+         â”‚      /about â†’ dist/about/index.html
+         â”‚      /events â†’ dist/events/index.html
+         â”‚      /pt/about â†’ dist/pt/about/index.html
+         â”‚
+         â””â”€â”€â–º Final HTML contains:
+                â€¢ Complete meta tags
+                â€¢ Schema.org JSON-LD
+                â€¢ Indexable text content
 ```
 
 **Result:**
@@ -487,8 +485,8 @@ localStorage.setItem('preferredLanguage', 'pt');
 
 ```
 src/locales/
-├── en/translation.json
-└── pt/translation.json
+â”œâ”€â”€ en/translation.json
+â””â”€â”€ pt/translation.json
 ```
 
 **Usage:**
@@ -506,19 +504,19 @@ return <h1>{t('welcome')}</h1>;
 ### Caching Strategy
 
 ```
-┌─────────────────────────────────────────┐
-│ CLOUDFLARE (Edge Cache)                 │
-│ • HTML: 2 hours                         │
-│ • CSS/JS: 30 days (hash busting)       │
-│ • Images: 7 days                        │
-└──────────────┬──────────────────────────┘
-               ▼
-┌─────────────────────────────────────────┐
-│ LITESPEED CACHE (Server Cache)          │
-│ • HTML: 1 hour                          │
-│ • API Responses: 10 minutes             │
-│ • Database queries: 30 minutes          │
-└─────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ CLOUDFLARE (Edge Cache)                 â”‚
+â”‚ â€¢ HTML: 2 hours                         â”‚
+â”‚ â€¢ CSS/JS: 30 days (hash busting)       â”‚
+â”‚ â€¢ Images: 7 days                        â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+               â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ LITESPEED CACHE (Server Cache)          â”‚
+â”‚ â€¢ HTML: 1 hour                          â”‚
+â”‚ â€¢ API Responses: 10 minutes             â”‚
+â”‚ â€¢ Database queries: 30 minutes          â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### Bundle Optimization
@@ -535,14 +533,14 @@ return <h1>{t('welcome')}</h1>;
 
 ### Implemented Protections
 
-✅ **HTTPS Only** - All requests via SSL
-✅ **CORS Restrictive** - Only djzeneyer.com authorized
-✅ **Rate Limiting** - Brute force protection
-✅ **JWT Expiration** - 7 days max
-✅ **XSS Protection** - DOMPurify sanitization
-✅ **CSRF Protection** - WordPress nonces
-✅ **SQL Injection** - Prepared statements
-✅ **CSP Headers** - Content Security Policy active
+âœ… **HTTPS Only** - All requests via SSL
+âœ… **CORS Restrictive** - Only djzeneyer.com authorized
+âœ… **Rate Limiting** - Brute force protection
+âœ… **JWT Expiration** - 7 days max
+âœ… **XSS Protection** - DOMPurify sanitization
+âœ… **CSRF Protection** - WordPress nonces
+âœ… **SQL Injection** - Prepared statements
+âœ… **CSP Headers** - Content Security Policy active
 
 ---
 
@@ -552,11 +550,11 @@ return <h1>{t('welcome')}</h1>;
 
 ```bash
 npm run build
-  │
-  ├──► scripts/generate-sitemap.js  # Generate sitemap.xml
-  ├──► tsc                           # TypeScript compilation
-  ├──► vite build                    # Bundle React app
-  └──► scripts/prerender.js          # SSG (16 HTML files)
+  â”‚
+  â”œâ”€â”€â–º scripts/generate-sitemap.js  # Generate sitemap.xml
+  â”œâ”€â”€â–º tsc                           # TypeScript compilation
+  â”œâ”€â”€â–º vite build                    # Bundle React app
+  â””â”€â”€â–º scripts/prerender.js          # SSG (16 HTML files)
 ```
 
 ### CI/CD Pipeline
@@ -573,7 +571,7 @@ jobs:
   2. Setup Node.js 20
   3. npm ci (install)
   4. npm run build (compile)
-  5. rsync dist/ → Hostinger VPS
+  5. rsync dist/ â†’ Hostinger VPS
   6. Purge LiteSpeed Cache
   7. Ping sitemap to Google
 ```
@@ -584,9 +582,9 @@ jobs:
 
 ### Core Web Vitals
 
-- **LCP:** 1.6s ✅ (target: < 2.5s)
-- **FID:** 45ms ✅ (target: < 100ms)
-- **CLS:** 0.02 ✅ (target: < 0.1)
+- **LCP:** 1.6s âœ… (target: < 2.5s)
+- **FID:** 45ms âœ… (target: < 100ms)
+- **CLS:** 0.02 âœ… (target: < 0.1)
 
 ### Lighthouse Scores
 
@@ -611,4 +609,6 @@ jobs:
 ---
 
 **Atualizado:** Fevereiro 2026
-**Versão:** 2.2.0
+**VersÃ£o:** 2.2.0
+
+
