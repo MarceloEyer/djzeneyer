@@ -267,8 +267,9 @@ GET /wp-json/djzeneyer/v1/menu?lang=pt
 // Products API
 GET /wp-json/djzeneyer/v1/products?lang=pt
 
-// GamiPress API
-GET /wp-json/djzeneyer/v1/gamipress/:user_id
+// ZenGame API
+GET /wp-json/zengame/v1/me
+GET /wp-json/zengame/v1/leaderboard
 
 // Events API (via Zen BIT plugin)
 GET /wp-json/zen-bit/v1/events
