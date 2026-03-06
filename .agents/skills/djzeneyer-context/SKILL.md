@@ -99,15 +99,24 @@ plugins/
 ```
 
 **REST API Endpoints — Namespaces Precisos:**
-- `djzeneyer/v1` — Core theme (gamipress, activity, menu, config)
-- `zeneyer-auth/v1` — Autenticação JWT (login, register, refresh, validate)
-- `zen-bit/v2` — Bandsintown API (events, cached)
+- `djzeneyer/v1` — Core theme (activity, menu, config)
+- `zeneyer-auth/v1` — Autenticação JWT (v2.3.0 Master)
+- `zen-bit/v2` — Bandsintown API (events, cached, SWR)
+- `zengame/v1` — Gamificação (me, leaderboard, levels, achievements)
 - `zen-seo-lite/v1` — SEO dinâmico (metadata, sitemap)
-- `wc/store/v1` — WooCommerce (nativo, não tocar)
+- `wc/store/v1` — WooCommerce (nativo, usar obrigatoriamente `_fields`)
 
 **PROIBIDO:**
 - ❌ `zen-ra/v1` (depreciado, conflito de namespace)
 - ❌ Endpoints sem namespace (ex: `/wp-json/meu-endpoint`)
+- ❌ **Over-fetch:** Chamadas `wc/store/v1` sem o parâmetro `_fields`.
+- ❌ **Cookies puros em SPA:** Dashboards e ações de usuário devem usar `Authorization: Bearer`.
+
+### 3.3 Auth Bridge & Security Shield (v2.3.0)
+- **Global Auth:** O plugin `zeneyer-auth` v2.3.0 integra JWT ao Core. Endpoints nativos (`/wp/v2/*`) agora aceitam Bearer token.
+- **Security Shield:** Registro via REST exige Cloudflare Turnstile (`turnstileToken`). Se `ZEN_TURNSTILE_SECRET_KEY` não estiver no `wp-config.php`, o plugin bloqueia ativação.
+- **A Guilhotina:** O hook `user_register` remove usuários não-validados por `ZEN_AUTH_VALIDATED`. Nunca registre usuários via forms padrão do WP.
+- **Front-end Sync:** Antes de qualquer redirecionamento, valide o estado com `GET /zeneyer-auth/v1/session`.
 
 ---
 

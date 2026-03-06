@@ -174,12 +174,14 @@ wp-content/
     │   │   └── class-rest.php    → Endpoints zen-bit/v2
     │   └── uninstall.php
     │
-    ├── zeneyer-auth/             → JWT Authentication
-    │   ├── zeneyer-auth.php      → Main file (namespace ZenEyer\Auth\)
-    │   ├── inc/
-    │   │   ├── class-jwt.php     → JWT generation/validation
-    │   │   ├── class-user.php    → User creation/login logic
-    │   │   └── class-rest.php    → Endpoints zeneyer-auth/v1
+    ├── zeneyer-auth/             → JWT & Security Bridge (v2.3.0 Master)
+    │   ├── zeneyer-auth.php      → Main file (namespace ZenEyer\Auth\ ✅)
+    │   ├── includes/
+    │   │   ├── API/              → class-rest-routes.php (v1 aliases)
+    │   │   ├── Admin/            → class-settings-page.php
+    │   │   ├── Auth/             → class-password-auth.php, class-google-provider.php
+    │   │   ├── Core/             → class-jwt-manager.php, class-wp-auth-integration.php
+    │   │   └── class-activator.php → Turnstile key check
     │   └── uninstall.php
     │
     ├── zen-seo-lite/             → SEO dinâmico
@@ -189,8 +191,8 @@ wp-content/
     │   │   └── class-rest.php    → Endpoints zen-seo-lite/v1
     │   └── uninstall.php
     │
-    └── zengame/                  → ⚠️ Requer namespacing: ZenEyer\Game\
-        ├── zengame.php
+    ├── zengame/                  → Gaming & Activity Bridge (SSOT)
+    │   ├── zengame.php           → Main file (namespace ZenEyer\Game\ ✅)
         └── inc/
             └── [estrutura similar]
 ```

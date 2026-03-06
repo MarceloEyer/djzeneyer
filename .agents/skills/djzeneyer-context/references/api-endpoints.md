@@ -48,22 +48,65 @@ Response: [ { user_id, display_name, points, rank_name, avatar } ]
 
 ---
 
-## 🔐 Autenticação (`zeneyer-auth/v1`)
+## 🔐 Autenticação (`zeneyer-auth/v1`) — v2.3.0
+
+> [!NOTE]
+> **Auth Bridge:** Graças à v2.3.0, os endpoints nativos do WordPress (`/wp/v2/*`) agora aceitam `Authorization: Bearer` automaticamente.
 
 ### POST /login
-JWT Login via email + password. Cabeçalho `Authorization: Bearer` gerado aqui.
+JWT Login via email + password.
 ```
 POST /zeneyer-auth/v1/login
 Body: { email, password }
-Response: { token, user_email, user_nicename, user_display_name }
+Response: { success: true, data: { token, refresh_token, user } }
+```
+
+### GET /session
+Verifica o estado da sessão atual. **Essencial para o Frontend.**
+```
+GET /zen-bit/v1/session
+Headers: { Authorization: "Bearer {token}" }
+Response: { authenticated: true, user, roles, exp }
 ```
 
 ### GET /validate
-Validação de token atual.
+Validação rápida de token (legado).
 ```
 GET /zeneyer-auth/v1/validate
 Headers: { Authorization: "Bearer {token}" }
-Response: { valid: true, user_id }
+Response: { success: true, data: { valid: true, user } }
+```
+
+### GET /profile
+Dados estendidos do perfil (Real Name, Dance Role, Social).
+```
+GET /zeneyer-auth/v1/profile
+Headers: { Authorization: "Bearer {token}" }
+Response: { success: true, data: { id, email, real_name, dance_role, gender, ... } }
+```
+
+### POST /profile
+Atualiza metadados do perfil.
+```
+POST /zeneyer-auth/v1/profile
+Headers: { Authorization: "Bearer {token}" }
+Body: { real_name, preferred_name, dance_role, gender, ... }
+```
+
+### GET /newsletter
+Status de inscrição no MailPoet (ou User Meta fallback).
+```
+GET /zeneyer-auth/v1/newsletter
+Headers: { Authorization: "Bearer {token}" }
+Response: { success: true, subscribed: true, method: "mailpoet|user_meta" }
+```
+
+### POST /newsletter
+Ativa/Desativa inscrição.
+```
+POST /zeneyer-auth/v1/newsletter
+Headers: { Authorization: "Bearer {token}" }
+Body: { enabled: true|false }
 ```
 
 ---
@@ -130,11 +173,11 @@ GET /zen-seo-lite/v1/metadata?url=/events/slug
 | `mode` | upcoming\|past | Filtro de eventos (Zen BIT) |
 | `point_type`| slug | Filtro de leaderboard |
 | `lang` | en\|pt | Internacionalização |
-| `_fields` | csv | Otimização REST nativa |
+| `_fields` | csv | **Obrigatório** para `wc/store/v1` (otimização) |
 
 ---
 
 > [!IMPORTANT]
 > **Namespace Zen BIT:** Usar obrigatoriamente `v2` para suporte a SWR e JWT.
 > **Namespace ZenGame:** Usar `zengame/v1` em vez de `djzeneyer/v1` para isolamento do plugin.
-> **Auth:** Todos os endpoints `admin/*` e `/me` aceitam Bearer JWT.
+> **Auth:** Todos os endpoints privativos (`/me`, `admin/*`, `cart/*`) aceitam obrigatoriamente `Authorization: Bearer`.

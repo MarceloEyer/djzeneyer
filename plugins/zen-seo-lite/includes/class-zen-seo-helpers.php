@@ -84,7 +84,7 @@ class Zen_SEO_Helpers
             $permalink = \get_permalink($trans_id);
 
             if ($permalink) {
-                $translations[$hreflang] = $permalink;
+                $translations[$hreflang] = self::get_frontend_url($permalink);
             }
         }
 
@@ -249,6 +249,42 @@ class Zen_SEO_Helpers
         $pattern = '/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/';
 
         return \preg_match($pattern, $cnpj) === 1;
+    }
+
+    /**
+     * Convert backend URL to frontend production URL
+     *
+     * @param string $url
+     * @return string
+     */
+    public static function get_frontend_url($url)
+    {
+        if (empty($url)) {
+            return '';
+        }
+
+        $backend_url = \home_url('/');
+        $frontend_url = 'https://djzeneyer.com/';
+
+        return \str_replace($backend_url, $frontend_url, $url);
+    }
+
+    /**
+     * Get SPA route mapping
+     *
+     * @return array<string, string>
+     */
+    public static function get_mapped_routes()
+    {
+        return \apply_filters('zen_seo_mapped_routes', [
+            'zengame' => 'zen-game',
+            'shop' => 'shop',
+            'zentribe' => 'zen-tribe',
+            'events' => 'zouk-events',
+            'eventos' => 'eventos-zouk',
+            'music' => 'zouk-music',
+            'musica' => 'musica-zouk',
+        ]);
     }
 
     /**

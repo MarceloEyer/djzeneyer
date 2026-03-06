@@ -205,7 +205,7 @@ class Zen_SEO_Meta_Box
                     <?php echo \esc_html($meta['title'] ?? \get_the_title($post)); ?>
                 </div>
                 <div class="zen-seo-preview-url">
-                    <?php echo \esc_url(\get_permalink($post)); ?>
+                    <?php echo \esc_url(Zen_SEO_Helpers::get_frontend_url(\get_permalink($post))); ?>
                 </div>
                 <div class="zen-seo-preview-desc" id="zen-preview-desc">
                     <?php

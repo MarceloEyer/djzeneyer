@@ -138,8 +138,16 @@ class Zen_SEO_REST_API
         $url = $request->get_param('url');
         $lang = $request->get_param('lang');
 
-        // Try cache first
-        $cache_key = 'meta_url_v2_' . \md5($url . $lang);
+        // Validate Domain (Security Shield)
+        $allowed_domains = ['djzeneyer.com', \wp_parse_url(\home_url(), PHP_URL_HOST)];
+        $request_domain = \wp_parse_url($url, PHP_URL_HOST);
+
+        if (!in_array($request_domain, $allowed_domains)) {
+            return new \WP_Error('invalid_domain', 'Domain not authorized for SEO metadata', ['status' => 403]);
+        }
+
+        // Try cache first - Using sha256 for collision resistance
+        $cache_key = 'meta_v3_' . \hash('sha256', $url . $lang);
         $cached = Zen_SEO_Cache::get($cache_key);
         if ($cached) {
             return \rest_ensure_response(['success' => true, 'data' => $cached, 'cached' => true]);
@@ -201,15 +209,7 @@ class Zen_SEO_REST_API
         }
 
         // Mapping React-only routes to WP Page equivalents or special IDs
-        $route_map = [
-            'zengame' => 'zen-game', // Slug in WP
-            'shop' => 'shop',     // Slug in WP (WooCommerce)
-            'zentribe' => 'zen-tribe',
-            'events' => 'zouk-events',
-            'eventos' => 'eventos-zouk',
-            'music' => 'zouk-music',
-            'musica' => 'musica-zouk',
-        ];
+        $route_map = Zen_SEO_Helpers::get_mapped_routes();
 
         // Try to match path to a mapped slug
         if (isset($route_map[$path])) {
@@ -307,7 +307,7 @@ class Zen_SEO_REST_API
         $args = [
             'post_type' => $post_types,
             'post_status' => 'publish',
-            'posts_per_page' => 500, // Increased for Pro
+            'posts_per_page' => \apply_filters('zen_seo_sitemap_limit', 1000),
             'orderby' => 'modified',
             'order' => 'DESC',
         ];

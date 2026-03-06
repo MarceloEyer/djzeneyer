@@ -67,7 +67,7 @@ class Zen_Plugins_Overview
             array(
                 'name' => 'Zen SEO Lite Pro',
                 'path' => 'zen-seo-lite/zen-seo-lite.php',
-                'version' => '8.0.0',
+                'version' => '8.1.1',
                 'desc' => 'SEO profissional para WordPress Headless. Schema.org avançado, Sitemap multilíngue PT/EN e REST API completa para o React SPA.',
                 'icon' => 'dashicons-chart-line',
                 'color' => '#00d4ff',
@@ -81,7 +81,7 @@ class Zen_Plugins_Overview
             array(
                 'name' => 'ZenGame',
                 'path' => 'zengame/zengame.php',
-                'version' => '1.2.1',
+                'version' => '1.3.7',
                 'desc' => 'Bridge GamiPress para arquitetura headless. Agrega pontos, ranks, conquistas e atividades em um único endpoint com cache. Leaderboard público otimizado com JOIN.',
                 'icon' => 'dashicons-games',
                 'color' => '#ff6b35',
@@ -104,14 +104,14 @@ class Zen_Plugins_Overview
                     'POST ' . $rest_base . 'zeneyer-auth/v1/login' => 'Login usuário/senha → JWT',
                     'POST ' . $rest_base . 'zeneyer-auth/v1/google' => 'Login Google OAuth → JWT',
                     'POST ' . $rest_base . 'zeneyer-auth/v1/refresh' => 'Renovar token JWT',
-                    'GET ' . $rest_base . 'zeneyer-auth/v1/user' => 'Dados do user autenticado',
+                    'GET ' . $rest_base . 'zeneyer-auth/v1/session' => 'Check estado da sessão JWT',
                 ),
                 'docs_url' => \admin_url('admin.php?page=zeneyer-auth'),
             ),
             array(
                 'name' => 'Zen BIT (Events)',
                 'path' => 'zen-bit/zen-bit.php',
-                'version' => '3.0.0',
+                'version' => '3.1.0',
                 'desc' => 'Proxy inteligente da API Bandsintown com cache SWR, canonical paths e geração automática de Schema.org MusicEvent para SEO.',
                 'icon' => 'dashicons-tickets-alt',
                 'color' => '#00ff88',
@@ -253,7 +253,8 @@ class Zen_Plugins_Overview
                         <span>SEO Settings</span>
                         <span class="dashicons dashicons-external"></span>
                     </a>
-                    <a href="<?php echo \esc_url(\rest_url('zengame/v1/leaderboard')); ?>" target="_blank" class="zc-quick-card">
+                    <a href="<?php echo \esc_url(\rest_url('zengame/v1/leaderboard')); ?>" target="_blank"
+                        class="zc-quick-card">
                         <span class="dashicons dashicons-games"></span>
                         <span>Leaderboard</span>
                         <span class="dashicons dashicons-external"></span>
@@ -276,14 +277,14 @@ class Zen_Plugins_Overview
                     <strong>Zen Control</strong> v3.0.0 &nbsp;·&nbsp;
                     Desenvolvido por \u003ca href=\"https://djzeneyer.com\" target=\"_blank\"\u003eDJ Zen Eyer\u003c/a\u003e
                     \u0026nbsp;\u00b7\u0026nbsp; \u003c?php echo \\date('Y'); ?\u003e
-                \u003c/p\u003e
+                    \u003c/p\u003e
             </footer>
         </div>
 
         <style>
             /* ============================================================
-                                           ZEN CONTROL v3.0 — Mission Control Dashboard
-                                        ============================================================ */
+                                                   ZEN CONTROL v3.0 — Mission Control Dashboard
+                                                ============================================================ */
             :root {
                 --zc-bg: #06080f;
                 --zc-surface: #0d1020;
