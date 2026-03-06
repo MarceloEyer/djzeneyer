@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useUser } from '../contexts/UserContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import {
   Award, Music, Calendar, Clock,
   Zap, Trophy, Loader2, Star,
@@ -410,7 +410,6 @@ const DashboardContent = () => {
 const DashboardPage = () => {
   const { user, loading } = useUser();
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -424,8 +423,7 @@ const DashboardPage = () => {
   }
 
   if (!user?.isLoggedIn) {
-    navigate('/', { replace: true });
-    return null;
+    return <Navigate to="/" replace />;
   }
 
   return (

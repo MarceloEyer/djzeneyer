@@ -143,34 +143,33 @@ const MyAccountContent: React.FC = () => {
 
   // Fetch orders
   useEffect(() => {
+    const fetchOrders = async () => {
+      if (!user?.token || !user?.id) {
+        setLoadingOrders(false);
+        return;
+      }
+
+      try {
+        const apiUrl = buildApiUrl(`wc/v3/orders`, { customer: String(user.id) });
+        const response = await fetch(apiUrl, {
+          headers: getAuthHeaders(user.token),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data.slice(0, 5));
+        }
+      } catch (error) {
+        console.error('[MyAccountPage] Error fetching orders:', error);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+
     if (user?.isLoggedIn) {
       fetchOrders();
     }
   }, [user]);
-
-
-  const fetchOrders = async () => {
-    if (!user?.token) {
-      setLoadingOrders(false);
-      return;
-    }
-
-    try {
-      const apiUrl = buildApiUrl(`wc/v3/orders`, { customer: String(user.id) });
-      const response = await fetch(apiUrl, {
-        headers: getAuthHeaders(user.token),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(data.slice(0, 5));
-      }
-    } catch (error) {
-      console.error('[MyAccountPage] Error fetching orders:', error);
-    } finally {
-      setLoadingOrders(false);
-    }
-  };
 
   const handleLogout = async () => {
     try {
