@@ -90,10 +90,42 @@ const DashboardContent = () => {
                     <Trophy size={18} /> {gamipress.rank.current.title}
                   </div>
                   {gamipress.stats.streakFire && (
-                    <div className="flex items-center gap-3 bg-orange-500/20 text-orange-500 border border-orange-500/30 px-6 py-2.5 rounded-full text-xs font-black animate-pulse uppercase tracking-[0.2em] backdrop-blur-md">
-                      <Zap size={18} fill="currentColor" /> {gamipress.stats.streak} {t('dashboard.dayStreak')}
-                    </div>
+                    <motion.div
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="flex items-center gap-3 bg-orange-500/20 text-orange-500 border border-orange-500/30 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-[0.2em] backdrop-blur-md shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+                    >
+                      <Zap size={18} className="animate-pulse" fill="currentColor" /> {gamipress.stats.streak} {t('dashboard.dayStreak')}
+                    </motion.div>
                   )}
+                </div>
+
+                {/* Hero Stats Grid - Real Data from ZenGame v1.3.1 */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 max-w-2xl">
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm group hover:border-primary/50 transition-colors">
+                    <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">{t('dashboard.stats.mana')}</div>
+                    <div className="text-2xl font-black text-white group-hover:text-primary transition-colors">
+                      {gamipress.points[gamipress.main_points_slug]?.amount || 0}
+                    </div>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm group hover:border-secondary/50 transition-colors">
+                    <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">{t('dashboard.stats.artifacts')}</div>
+                    <div className="text-2xl font-black text-white group-hover:text-secondary transition-colors">
+                      {gamipress.stats.totalTracks}
+                    </div>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm group hover:border-accent/50 transition-colors">
+                    <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">{t('dashboard.stats.events')}</div>
+                    <div className="text-2xl font-black text-white group-hover:text-accent transition-colors">
+                      {gamipress.stats.eventsAttended}
+                    </div>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm group hover:border-orange-500/50 transition-colors">
+                    <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">{t('dashboard.stats.ascension')}</div>
+                    <div className="text-2xl font-black text-white group-hover:text-orange-500 transition-colors">
+                      {gamipress.rank.current.title.split(' ')[0]}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Rank Progression Real */}

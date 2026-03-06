@@ -48,6 +48,12 @@
       "hours": "{{count}} horas atrás",
       "minutes": "{{count}} minutos atrás",
       "seconds": "{{count}} segundos atrás"
+    },
+    "stats": {
+      "mana": "Mana Acumulada",
+      "artifacts": "Relíquias Encontradas",
+      "ascension": "Nível de Ascensão",
+      "events": "Portais Atravessados"
     }
   },
   "common": {
@@ -237,7 +243,8 @@
     "achievement": "Conquista",
     "startJourney": "Comece sua jornada para desbloquear conquistas!",
     "earnMoreXP": "Ganhar Mais XP",
-    "unlock_at": "Desbloqueie no nível {{level}}"
+    "unlock_at": "Desbloqueie no nível {{level}}",
+    "view_all_stats": "Ver Estatísticas Completas"
   },
   "_meta": {
     "version": "2.1.0",
