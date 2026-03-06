@@ -108,7 +108,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [getCart]);
 
-  const value = useMemo(() => ({ cart, getCart, removeItem, clearCart, loading }), [cart, getCart, removeItem, clearCart, loading]);
+  const value = useMemo<CartContextType>(() => ({ 
+    cart, 
+    getCart, 
+    removeItem, 
+    clearCart, 
+    loading 
+  }), [cart, getCart, removeItem, clearCart, loading]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
