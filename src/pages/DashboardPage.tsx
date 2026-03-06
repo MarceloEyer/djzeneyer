@@ -188,11 +188,11 @@ const DashboardContent = () => {
                   </motion.div>
                 ))}
               </div>
-            </div >
+            </div>
 
 
             {/* Quick Actions */}
-            < div className="card p-8 border-white/5 bg-surface/20 backdrop-blur-md" >
+            <div className="card p-8 border-white/5 bg-surface/20 backdrop-blur-md" >
               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 text-primary/60 font-display flex items-center gap-2">
                 <Target size={14} /> {t('dashboard.quickActions')}
               </h3>
@@ -212,8 +212,8 @@ const DashboardContent = () => {
                   </button>
                 ))}
               </div>
-            </div >
-          </div >
+            </div>
+          </div>
 
           {/* CENTER COL: Activity Feed */}
           <div className="lg:col-span-2 space-y-8">
@@ -236,7 +236,7 @@ const DashboardContent = () => {
                 <RecentActivity logs={gamipress.logs} hideHeader={true} />
               </div>
             </div>
-          </div >
+          </div>
 
           {/* RIGHT COL: Quests / Locked Achievements */}
           <div className="lg:col-span-1 space-y-8">
@@ -382,8 +382,8 @@ const DashboardContent = () => {
           </div>
         </motion.div>
 
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
