@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -72,7 +72,7 @@ const FAQPage: React.FC = () => {
   // Categorias mapeadas dinamicamente das traduções
   const categories = ['djzeneyer', 'rankings', 'technical', 'culture', 'community'];
 
-  const faqData = categories.map(cat => ({
+  const faqData = useMemo(() => categories.map(cat => ({
     category: cat,
     title: t(`faq.categories.${cat}.title`),
     description: t(`faq.categories.${cat}.desc`),
@@ -85,13 +85,13 @@ const FAQPage: React.FC = () => {
       question: t(`faq.categories.${cat}.${qKey}.q`),
       answer: t(`faq.categories.${cat}.${qKey}.a`)
     }))
-  }));
+  })), [t]);
 
   // SSR/Prerender context
   const currentUrl = `${ARTIST.site.baseUrl}${location.pathname.endsWith('/') ? location.pathname : location.pathname + '/'}`;
 
   // FAQ Schema JSON-LD
-  const faqSchema = {
+  const faqSchema = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -127,7 +127,7 @@ const FAQPage: React.FC = () => {
         ]
       }
     ]
-  };
+  }), [currentUrl, faqData]);
 
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20">

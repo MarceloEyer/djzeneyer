@@ -31,3 +31,7 @@
 ## 2025-03-04 - Memoize static data in React functional components
 **Learning:** `AboutPage.tsx` re-created the complex static arrays `ABOUT_SCHEMA`, `MILESTONES`, and `ACHIEVEMENTS_DATA` on every render cycle. Because they needed the `t` function from `useTranslation`, they could not be easily moved outside the component.
 **Action:** Use `useMemo(() => [...], [t])` to keep them within the component so they can access hooks while preventing unnecessary allocations and downstream re-renders on unrelated state changes.
+
+## 2025-03-05 - Avoid inline array manipulations during React renders
+**Learning:** `FAQPage.tsx` was executing complex array mapping (`.map`), flat mapping (`.flatMap`), and regex string replacement (`.replace`) directly inside the component body to generate `faqData` and `faqSchema`. This caused expensive CPU operations on every single render cycle.
+**Action:** Extract static arrays (like `CATEGORIES`) outside the component body. For derived data that depends on hooks (like `t` from `useTranslation` or `currentUrl`), wrap the expensive calculations in `useMemo` hooks with correct dependency arrays (`[t]` or `[currentUrl, faqData]`) to cache the result between renders.
