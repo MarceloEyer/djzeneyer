@@ -3,7 +3,7 @@
  * Plugin Name: Zen SEO Lite Pro
  * Plugin URI: https://djzeneyer.com
  * Description: SEO profissional para WordPress Headless com React SPA, Schema.org avançado, Sitemap multilíngue e REST API completa.
- * Version: 8.0.0
+ * Version: 8.1.1
  * Author: DJ Zen Eyer
  * Author URI: https://djzeneyer.com
  * Text Domain: zen-seo

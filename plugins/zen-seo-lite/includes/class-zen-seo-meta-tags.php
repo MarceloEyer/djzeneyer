@@ -244,7 +244,7 @@ class Zen_SEO_Meta_Tags
             'title' => !empty($meta['title']) ? $meta['title'] : \get_the_title($post),
             'description' => !empty($meta['desc']) ? $meta['desc'] :
                 Zen_SEO_Helpers::generate_excerpt(\get_post_field('post_content', $post)),
-            'canonical' => \get_permalink($post),
+            'canonical' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post)),
             'image' => !empty($meta['image']) ? $meta['image'] : Zen_SEO_Helpers::get_featured_image($post_id),
             'noindex' => !empty($meta['noindex']),
             'translations' => Zen_SEO_Helpers::get_translations($post_id),
@@ -277,7 +277,7 @@ class Zen_SEO_Meta_Tags
             'post_id' => null,
             'title' => \get_bloginfo('name'),
             'description' => \get_bloginfo('description'),
-            'canonical' => \esc_url(\home_url($request_uri)),
+            'canonical' => Zen_SEO_Helpers::get_frontend_url(\home_url($request_uri)),
             'image' => $settings['default_image'] ?? '',
             'og_type' => 'website',
             'locale' => 'en_US',

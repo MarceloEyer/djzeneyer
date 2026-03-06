@@ -136,9 +136,9 @@ class Zen_SEO_Schema
 
         $person = [
             '@type' => 'Person',
-            '@id' => \home_url('/#artist'),
+            '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist')),
             'name' => $name,
-            'url' => \home_url('/'),
+            'url' => Zen_SEO_Helpers::get_frontend_url(\home_url('/')),
             'jobTitle' => ['DJ', 'Music Producer', 'Remixer'],
             'knowsAbout' => ['Brazilian Zouk', 'Zouk', 'Kizomba', 'Music Production', 'DJing'],
             'gender' => 'Male',
@@ -227,18 +227,18 @@ class Zen_SEO_Schema
     {
         return [
             '@type' => 'WebSite',
-            '@id' => \home_url('/#website'),
-            'url' => \home_url('/'),
+            '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#website')),
+            'url' => Zen_SEO_Helpers::get_frontend_url(\home_url('/')),
             'name' => (string) \get_bloginfo('name'),
             'description' => (string) \get_bloginfo('description'),
             'publisher' => [
-                '@id' => \home_url('/#artist')
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
             ],
             'potentialAction' => [
                 '@type' => 'SearchAction',
                 'target' => [
                     '@type' => 'EntryPoint',
-                    'urlTemplate' => \home_url('/?s={search_term_string}')
+                    'urlTemplate' => Zen_SEO_Helpers::get_frontend_url(\home_url('/?s={search_term_string}'))
                 ],
                 'query-input' => 'required name=search_term_string'
             ]
@@ -260,7 +260,7 @@ class Zen_SEO_Schema
             '@type' => 'ListItem',
             'position' => 1,
             'name' => \__('Home', 'zen-seo'),
-            'item' => \home_url('/')
+            'item' => Zen_SEO_Helpers::get_frontend_url(\home_url('/'))
         ];
 
         if ($post) {
@@ -273,7 +273,7 @@ class Zen_SEO_Schema
                     '@type' => 'ListItem',
                     'position' => $position++,
                     'name' => $post_type_obj->labels->name,
-                    'item' => \get_post_type_archive_link($post->post_type)
+                    'item' => Zen_SEO_Helpers::get_frontend_url(\get_post_type_archive_link($post->post_type))
                 ];
             }
 
@@ -282,13 +282,13 @@ class Zen_SEO_Schema
                 '@type' => 'ListItem',
                 'position' => $position,
                 'name' => \get_the_title($post),
-                'item' => \get_permalink($post)
+                'item' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post))
             ];
         }
 
         return [
             '@type' => 'BreadcrumbList',
-            '@id' => ($post ? \get_permalink($post) : \home_url('/')) . '#breadcrumb',
+            '@id' => Zen_SEO_Helpers::get_frontend_url(($post ? \get_permalink($post) : \home_url('/')) . '#breadcrumb'),
             'itemListElement' => $items
         ];
     }
@@ -311,17 +311,17 @@ class Zen_SEO_Schema
 
         return [
             '@type' => 'WebPage',
-            '@id' => \get_permalink($post) . '#webpage',
-            'url' => \get_permalink($post),
+            '@id' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post)) . '#webpage',
+            'url' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post)),
             'name' => \sanitize_text_field((string) $title),
             'description' => \sanitize_text_field((string) $description),
             'datePublished' => \get_post_time('c', true, $post),
             'dateModified' => \get_post_modified_time('c', true, $post),
             'publisher' => [
-                '@id' => \home_url('/#artist')
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
             ],
             'isPartOf' => [
-                '@id' => \home_url('/#website')
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#website'))
             ]
         ];
     }
@@ -356,7 +356,7 @@ class Zen_SEO_Schema
             'eventStatus' => 'https://schema.org/EventScheduled',
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
             'performer' => [
-                '@id' => \home_url('/#artist')
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
             ],
         ];
 
@@ -378,7 +378,7 @@ class Zen_SEO_Schema
         }
 
         // Offers (ticket)
-        $ticket_url = !empty($meta['event_ticket']) ? $meta['event_ticket'] : \get_permalink($post);
+        $ticket_url = !empty($meta['event_ticket']) ? $meta['event_ticket'] : Zen_SEO_Helpers::get_frontend_url(\get_permalink($post));
         $event['offers'] = [
             '@type' => 'Offer',
             'url' => \esc_url((string) $ticket_url),
@@ -411,7 +411,7 @@ class Zen_SEO_Schema
             'description' => \sanitize_text_field((string) $description),
             'datePublished' => \get_post_time('c', true, $post),
             'byArtist' => [
-                '@id' => \home_url('/#artist')
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
             ],
         ];
 
@@ -462,12 +462,12 @@ class Zen_SEO_Schema
             'image' => \wp_get_attachment_url($product->get_image_id()),
             'offers' => [
                 '@type' => 'Offer',
-                'url' => \get_permalink($post),
+                'url' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post)),
                 'priceCurrency' => \get_woocommerce_currency(),
                 'price' => $product->get_price(),
                 'availability' => $product->is_in_stock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                 'seller' => [
-                    '@id' => \home_url('/#artist')
+                    '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
                 ]
             ]
         ];

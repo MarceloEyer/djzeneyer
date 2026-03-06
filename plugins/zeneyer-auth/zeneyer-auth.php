@@ -1,4 +1,5 @@
 <?php
+namespace ZenEyer\Auth;
 /**
  * Plugin Name:       ZenEyer Auth Pro
  * Plugin URI:        https://djzeneyer.com
@@ -21,9 +22,9 @@ if (!defined('ABSPATH')) {
 
 // Plugin constants
 define('ZENEYER_AUTH_VERSION', '2.3.0'); // JWT now works with native WP endpoints
-define('ZENEYER_AUTH_PATH', plugin_dir_path(__FILE__));
-define('ZENEYER_AUTH_URL', plugin_dir_url(__FILE__));
-define('ZENEYER_AUTH_BASENAME', plugin_basename(__FILE__));
+define('ZENEYER_AUTH_PATH', \plugin_dir_path(__FILE__));
+define('ZENEYER_AUTH_URL', \plugin_dir_url(__FILE__));
+define('ZENEYER_AUTH_BASENAME', \plugin_basename(__FILE__));
 
 // Load Composer dependencies (Firebase JWT)
 if (file_exists(ZENEYER_AUTH_PATH . 'vendor/autoload.php')) {

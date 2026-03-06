@@ -52,9 +52,10 @@ Embora o GamiPress tenha um add-on "Rest API Extended", o core expõe vários ca
 - `GET /wp-json/wp/v2/gamipress-logs`: Logs de atividades.
 
 ### Endpoint Customizado (DJ Zen Eyer)
-Atualmente implementado em `inc/api.php`:
-- `GET /wp-json/djzeneyer/v1/gamipress/user-data`
-- **Retorno**: Payload unificado com pontos, rank atual/próximo, feed de logs e conquistas (ganhas e bloqueadas).
+Implementado no plugin **ZenGame Pro** (`plugins/zengame/zengame.php`):
+- `GET /wp-json/zengame/v1/me`
+- **Retorno**: Payload unificado (Dashboard "Cremoso") com pontos, rank atual/próximo (com progresso e requisitos), feed de logs e conquistas categorizadas (ganhas e bloqueadas).
+- **Parâmetros**: `nocache=1` para forçar atualização.
 
 ---
 
