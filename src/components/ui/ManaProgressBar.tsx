@@ -20,7 +20,8 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
     label,
     subLabel,
 }) => {
-    const clampedProgress = Math.min(100, Math.max(0, progress));
+    const numericProgress = Number(progress) || 0;
+    const clampedProgress = Math.min(100, Math.max(0, numericProgress));
 
     return (
         <div className="w-full select-none group">
@@ -42,7 +43,7 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
                 )}
                 <div className="text-right">
                     <span
-                        className="text-lg font-black font-display tabular-nums bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(var(--color-primary),0.4)]"
+                        className="text-lg font-black font-display tabular-nums text-primary drop-shadow-[0_0_8px_rgba(var(--color-primary),0.4)]"
                     >
                         {clampedProgress}%
                     </span>
@@ -59,10 +60,9 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
                     initial={{ width: 0 }}
                     animate={{ width: `${clampedProgress}%` }}
                     transition={{ type: 'spring', stiffness: 45, damping: 15 }}
-                    className="h-full rounded-full relative group-hover:brightness-125 transition-all duration-700 overflow-hidden"
+                    className="h-full rounded-full relative group-hover:brightness-125 transition-all duration-700 overflow-hidden bg-primary"
                     style={{
-                        background: 'linear-gradient(to right, #00C2FF, #0057FF)',
-                        boxShadow: 'inset 0 0 8px rgba(255,255,255,0.4), 0 0 15px rgba(0,194,255,0.5)'
+                        boxShadow: 'inset 0 0 8px rgba(255,255,255,0.4), 0 0 15px rgba(var(--color-primary),0.5)'
                     }}
                 >
                     {/* 1. AAA Glossy Layer (Upper half lighter) */}

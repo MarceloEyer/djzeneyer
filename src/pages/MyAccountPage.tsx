@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import {
   User, Settings, ShoppingBag, Award, Music, LogOut,
   Edit3, Bell, Shield, Lock, AlertCircle, Headphones,
-  Instagram, Facebook, Save, ChevronRight, Zap
+  Instagram, Facebook, Save, ChevronRight, Zap, Trophy, Loader2
 } from 'lucide-react';
 import { UserStatsCards, OrdersList, RecentActivity, MusicCollection } from '../components/account';
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
@@ -52,7 +52,7 @@ const MyAccountContent: React.FC = () => {
   const initialTab = searchParams.get('tab') || 'overview';
   const [activeTab, setActiveTab] = useState(initialTab);
 
-  const { data: gamipress, loading: loadingGP } = useGamiPressContext();
+  const { data: gamipress, loading: loadingGP, error: errorGP } = useGamiPressContext();
 
   // Sync state correctly if parameter changes externally while page is mounted
   useEffect(() => {
@@ -193,14 +193,34 @@ const MyAccountContent: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-primary mx-auto mb-8 shadow-neon"></div>
-          <p className="text-2xl font-black font-display uppercase tracking-widest animate-pulse">{t('account.loading')}</p>
+          <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-2xl font-black font-display uppercase tracking-widest">{t('account.loading')}</p>
         </div>
       </div>
     );
   }
 
-  if (!user?.isLoggedIn) return null;
+  // Se a API do ZenGame/GamiPress falhar, mostramos um erro amigável na tela da conta
+  // para não quebrar a UI inteira (tela preta) quando o contexto tentar ler `rank` ou `points`.
+  if (errorGP && user?.isLoggedIn) {
+    return (
+      <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <p className="text-xl font-semibold text-white/90 mb-2">{t('dashboard.error_loading') || 'Error loading account data'}</p>
+          <p className="text-sm text-white/40 mb-6">{errorGP}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn btn-primary px-8 py-3 rounded-2xl font-black uppercase tracking-[0.2em] text-xs"
+          >
+            {t('common.retry') || 'Retry'}
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (!user?.isLoggedIn || !gamipress) return null;
 
   const tabs = [
     { id: 'overview', label: t('account.tabs.overview'), icon: User, color: 'primary' },
@@ -297,15 +317,15 @@ const MyAccountContent: React.FC = () => {
                     }`}
                 >
                   <div className="relative z-10 flex flex-col items-center text-center">
-                    <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach.earned ? 'bg-primary/10' : 'bg-white/5'}`}>
-                      {ach.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" /> : <Award size={32} />}
+                    <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-white/5'}`}>
+                      {ach?.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" alt={ach?.title || 'Achievement'} /> : <Award size={32} />}
                     </div>
-                    <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach.title}</h4>
+                    <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || 'Unknown Achievement'}</h4>
                     <p className="text-sm text-white/40 mb-6 leading-relaxed">
-                      {stripHtml(ach.description)}
+                      {ach?.description ? stripHtml(ach.description) : ''}
                     </p>
-                    <span className={`text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full border ${ach.earned ? 'bg-success/10 border-success/20 text-success' : 'bg-white/5 border-white/10 text-white/30'}`}>
-                      {ach.earned ? t('dashboard.unlocked') : t('account.locked')}
+                    <span className={`text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full border ${ach?.earned ? 'bg-success/10 border-success/20 text-success' : 'bg-white/5 border-white/10 text-white/30'}`}>
+                      {ach?.earned ? t('dashboard.unlocked') : t('account.locked')}
                     </span>
                   </div>
                 </motion.div>
