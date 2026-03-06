@@ -53,12 +53,30 @@ const MusicPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
   if (!singleLoading && slug && singleTrack) {
+    const trackImage = safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp');
+    const trackUrl = `${window.location.origin}${generatePath(getLocalizedRoute('music-detail', currentLang), { slug })}`;
+
+    const musicSchema = {
+      "@context": "https://schema.org",
+      "@type": "MusicRecording",
+      "name": singleTrack.title?.rendered || t('music.pageTitle'),
+      "image": trackImage,
+      "url": trackUrl,
+      "byArtist": {
+        "@type": "MusicGroup",
+        "name": ARTIST.identity.stageName
+      }
+    };
+
     return (
       <>
         <HeadlessSEO
           title={`${singleTrack.title?.rendered || t('music.pageTitle')} | Zen Music`}
           description={singleTrack.excerpt?.rendered || t('music.pageDesc')}
-          url={`${window.location.origin}${generatePath(getLocalizedRoute('music-detail', currentLang), { slug })}`}
+          url={trackUrl}
+          image={trackImage}
+          type="music.song"
+          schema={musicSchema}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">

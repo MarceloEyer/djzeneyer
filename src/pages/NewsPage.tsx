@@ -54,12 +54,31 @@ const NewsPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DE POST ÚNICO ---
   if (!loading && slug && singlePost) {
+    const postImage = safeUrl(singlePost.featured_image_src_full || singlePost.featured_image_src || singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url);
+    const postUrl = `${window.location.origin}${generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: singlePost.slug })}`;
+
+    const articleSchema = {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": stripHtml(singlePost.title.rendered),
+      "image": [postImage],
+      "datePublished": singlePost.date,
+      "dateModified": singlePost.modified,
+      "author": [{
+          "@type": "Person",
+          "name": singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')
+      }]
+    };
+
     return (
       <>
         <HeadlessSEO
           title={`${stripHtml(singlePost.title.rendered)} | ${t('news.title')}`}
           description={stripHtml(singlePost.excerpt.rendered)}
-          url={`${window.location.origin}${generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: singlePost.slug })}`}
+          url={postUrl}
+          image={postImage}
+          type="article"
+          schema={articleSchema}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">

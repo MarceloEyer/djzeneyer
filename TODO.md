@@ -5,9 +5,9 @@
 - [x] Corrigir trait PHP (`Trait-Username-Generator.php`)
 - [x] Centralizar hooks React Query em `useQueries.ts`
 - [x] Integrar i18n em todas as strings hardcoded
-- [ ] Implementar renderização de slug individual em `NewsPage.tsx`
-- [ ] Implementar renderização de evento individual em `EventsPage.tsx`
-- [ ] Implementar renderização de música individual em `MusicPage.tsx`
+- [x] Implementar renderização de slug individual em `NewsPage.tsx`
+- [x] Implementar renderização de evento individual em `EventsPage.tsx`
+- [x] Implementar renderização de música individual em `MusicPage.tsx`
 
 ## 🟡 Melhorias
 - [ ] Adicionar schema `BreadcrumbList` (JSON-LD) nas páginas
@@ -16,7 +16,7 @@
 - [ ] PWA — Service Worker + manifest.json
 - [ ] Push Notifications para novos lançamentos
 - [ ] Integração com Spotify API (top tracks)
-- [ ] Open Graph dinâmico por evento
+- [x] Open Graph dinâmico por evento
 
 ## 🟢 Infraestrutura
 - [x] Deploy automático via GitHub Actions

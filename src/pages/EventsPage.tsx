@@ -103,6 +103,9 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
         title={`${event.title} | ${t('events.title')}`}
         description={event.description.substring(0, 160)}
         url={`${window.location.origin}${generatePath(getLocalizedRoute('events-detail', lang), { id })}`}
+        image={event.image}
+        type="event"
+        events={[event]}
       />
       <Link to={getLocalizedRoute('events', lang)} className="flex items-center gap-2 text-primary mb-8 font-extrabold uppercase tracking-widest text-sm hover:text-white transition-colors">
         <ArrowLeft size={18} /> {t('events_back')}
@@ -211,6 +214,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
         url={`${window.location.origin}${getLocalizedRoute('events', lang)}`}
+        events={events}
       />
       {groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
         const [y, m] = key.split('-');
