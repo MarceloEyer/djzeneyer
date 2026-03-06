@@ -99,11 +99,22 @@ const DashboardContent = () => {
                 {/* Rank Progression Real */}
                 {gamipress.rank.next && (
                   <div className="max-w-md mx-auto md:mx-0">
-                    <ManaProgressBar
-                      progress={gamipress.rank.progress}
-                      label={t('dashboard.nextRank')}
-                      subLabel={gamipress.rank.next.title}
-                    />
+                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+                      <ManaProgressBar
+                        progress={gamipress.rank.progress}
+                        label={t('dashboard.nextRank')}
+                        subLabel={gamipress.rank.next.title}
+                      />
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {gamipress.rank.requirements.slice(0, 3).map((req, idx) => (
+                          <div key={idx} className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            <span className="text-[8px] font-black uppercase tracking-widest text-white/30">{req.title}</span>
+                            <span className="text-[10px] font-black text-white/90">{req.current}/{req.required}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
                   </div>
                 )}
               </div>

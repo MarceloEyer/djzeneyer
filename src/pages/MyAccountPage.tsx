@@ -229,7 +229,35 @@ const MyAccountContent: React.FC = () => {
             </div>
 
             {/* Quick Stats */}
-            <UserStatsCards stats={userStats} />
+            <div className="space-y-6">
+              {gamipress.rank.next && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-white/5 shadow-2xl overflow-hidden relative group"
+                >
+                  <div className="absolute top-0 right-0 p-6 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
+                    <Trophy size={100} fill="currentColor" />
+                  </div>
+                  <ManaProgressBar
+                    progress={gamipress.rank.progress}
+                    label={t('dashboard.nextRank')}
+                    subLabel={gamipress.rank.next.title}
+                  />
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {gamipress.rank.requirements.slice(0, 3).map((req, idx) => (
+                      <div key={idx} className="bg-white/5 px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{req.title}:</span>
+                        <span className="text-[10px] font-black text-white/90">{req.current}/{req.required}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+              <UserStatsCards stats={userStats} />
+            </div>
 
             {/* Recent Activity */}
             <div className="card p-10 border-white/5 bg-surface/30 backdrop-blur-xl">
