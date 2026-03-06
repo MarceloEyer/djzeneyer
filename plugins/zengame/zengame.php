@@ -3,7 +3,7 @@
  * Plugin Name: ZenGame Pro
  * Plugin URI: https://djzeneyer.com
  * Description: Gaming & Activity Bridge for DJ Zen Eyer (GamiPress + WooCommerce Headless integration).
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author: DJ Zen Eyer
  * Author URI: https://djzeneyer.com
  * Text Domain: zengame
@@ -37,7 +37,7 @@ final class ZenGame
     /**
      * Cache version to force invalidation on structural changes
      */
-    const CACHE_VERSION = 'v8';
+    const CACHE_VERSION = 'v10';
 
     /**
      * Get singleton instance
@@ -132,10 +132,6 @@ final class ZenGame
 
     /**
      * Register REST API routes
-     * 
-     * Endpoints:
-     * - GET /zengame/v1/me: Returns aggregated dashboard data (Points, Ranks, Achievements, Logs, Stats)
-     * - GET /zengame/v1/leaderboard: Returns public leaderboard for specific point types
      */
     public function register_routes()
     {
@@ -157,11 +153,11 @@ final class ZenGame
                 'limit' => [
                     'type' => 'integer',
                     'default' => 10,
-                    'sanitize_callback' => '\absint'
+                    'sanitize_callback' => 'absint'
                 ],
                 'point_type' => [
                     'type' => 'string',
-                    'sanitize_callback' => '\sanitize_key'
+                    'sanitize_callback' => 'sanitize_key'
                 ]
             ]
         ]);
@@ -186,7 +182,7 @@ final class ZenGame
             $auth_header = $request->get_header('Authorization');
             if ($auth_header && \preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
                 $token = \trim($matches[1]);
-                if (\class_exists('\ZenEyer\Auth\Core\JWT_Manager')) {
+                if (\class_exists('ZenEyer\Auth\Core\JWT_Manager')) {
                     $decoded = \ZenEyer\Auth\Core\JWT_Manager::validate_token($token);
                     if (!\is_wp_error($decoded) && isset($decoded->data->user_id)) {
                         $user_id = (int) $decoded->data->user_id;
@@ -248,7 +244,7 @@ final class ZenGame
                 <div class="welcome-panel-content">
                     <h2 style="color: #0D96FF; font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: -1px;">SYSTEM
                         STATUS: ONLINE</h2>
-                    <p class="about-description" style="color: #aaa;">Plugin Version 1.2.5 // Headless Bridge for DJ Zen Eyer
+                    <p class="about-description" style="color: #aaa;">Plugin Version 1.2.6 // Headless Bridge for DJ Zen Eyer
                     </p>
 
                     <div
@@ -335,14 +331,20 @@ final class ZenGame
         $main_slug = '';
         if (\function_exists('gamipress_get_points_types')) {
             $types = \gamipress_get_points_types();
-            foreach ($types as $slug => $pt) {
-                if (empty($main_slug))
-                    $main_slug = $slug;
-                $point_data[$slug] = [
-                    'name' => $pt['plural_name'],
-                    'amount' => (int) \gamipress_get_user_points($user_id, $slug),
-                    'image' => \get_the_post_thumbnail_url($pt['ID'], 'thumbnail') ?: ''
-                ];
+            if (\is_array($types)) {
+                foreach ($types as $slug => $pt) {
+                    if (empty($main_slug))
+                        $main_slug = $slug;
+
+                    $pt_id = \is_array($pt) ? ($pt['ID'] ?? 0) : ($pt->ID ?? 0);
+                    $pt_plural = \is_array($pt) ? ($pt['plural_name'] ?? $slug) : ($pt->plural_name ?? $slug);
+
+                    $point_data[$slug] = [
+                        'name' => $pt_plural,
+                        'amount' => \function_exists('gamipress_get_user_points') ? (int) \gamipress_get_user_points($user_id, $slug) : 0,
+                        'image' => $pt_id ? (\get_the_post_thumbnail_url($pt_id, 'thumbnail') ?: '') : ''
+                    ];
+                }
             }
         }
 
@@ -365,7 +367,7 @@ final class ZenGame
                 'streakFire' => $streak > 1,
             ],
             'lastUpdate' => \current_time('mysql'),
-            'version' => '1.2.5'
+            'version' => '1.2.6'
         ];
 
         \set_transient($cache_key, $data, $this->get_cache_ttl());
@@ -377,15 +379,24 @@ final class ZenGame
      */
     private function get_categorized_achievements($user_id)
     {
+        $info = ['earned' => [], 'locked' => []];
         if (!\function_exists('gamipress_get_achievement_types'))
-            return ['earned' => [], 'locked' => []];
+            return $info;
 
         $types = \array_keys(\gamipress_get_achievement_types());
-        $all = \get_posts(['post_type' => $types, 'numberposts' => 100, 'post_status' => 'publish']);
-        $earned_ids = \wp_list_pluck(\gamipress_get_user_achievements(['user_id' => $user_id, 'achievement_type' => $types]), 'post_id');
+        if (empty($types))
+            return $info;
 
-        $earned = [];
-        $locked = [];
+        $all = \get_posts(['post_type' => $types, 'numberposts' => 100, 'post_status' => 'publish']);
+
+        $earned_ids = [];
+        if (\function_exists('gamipress_get_user_achievements')) {
+            $user_achievements = \gamipress_get_user_achievements(['user_id' => $user_id, 'achievement_type' => $types]);
+            if (\is_array($user_achievements)) {
+                $earned_ids = \wp_list_pluck($user_achievements, 'post_id');
+            }
+        }
+
         foreach ($all as $post) {
             $is_earned = \in_array($post->ID, $earned_ids);
             $item = [
@@ -395,14 +406,22 @@ final class ZenGame
                 'image' => \get_the_post_thumbnail_url($post->ID, 'medium') ?: '',
                 'earned' => $is_earned,
                 'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
-                'date_earned' => $is_earned ? \gamipress_get_user_achievement_date_earned($user_id, $post->ID) : '',
+                'date_earned' => $is_earned ? ($this->get_achievement_date($user_id, $post->ID)) : '',
             ];
             if ($is_earned)
-                $earned[] = $item;
+                $info['earned'][] = $item;
             else
-                $locked[] = $item;
+                $info['locked'][] = $item;
         }
-        return ['earned' => $earned, 'locked' => $locked];
+        return $info;
+    }
+
+    private function get_achievement_date($user_id, $achievement_id)
+    {
+        if (\function_exists('gamipress_get_user_achievement_date_earned')) {
+            return \gamipress_get_user_achievement_date_earned($user_id, $achievement_id);
+        }
+        return '';
     }
 
     /**
@@ -413,14 +432,17 @@ final class ZenGame
         if (!\function_exists('gamipress_query_logs'))
             return [];
         $raw = \gamipress_query_logs(['user_id' => $user_id, 'limit' => 20]);
+        if (!\is_array($raw))
+            return [];
+
         $logs = [];
         foreach ($raw as $log) {
             $logs[] = [
-                'id' => (int) $log->log_id,
-                'type' => $log->type,
-                'description' => $log->title,
-                'date' => $log->date,
-                'points' => (int) $log->points
+                'id' => (int) ($log->log_id ?? 0),
+                'type' => $log->type ?? 'activity',
+                'description' => $log->title ?? '',
+                'date' => $log->date ?? '',
+                'points' => (int) ($log->points ?? 0)
             ];
         }
         return $logs;
@@ -438,7 +460,7 @@ final class ZenGame
             'requirements' => []
         ];
 
-        if (!\function_exists('gamipress_get_user_rank'))
+        if (!\function_exists('gamipress_get_user_rank') || !\function_exists('gamipress_get_rank_types'))
             return $info;
 
         $rank_types = \gamipress_get_rank_types();
@@ -455,31 +477,41 @@ final class ZenGame
                 'image' => \get_the_post_thumbnail_url($current->ID, 'thumbnail') ?: ''
             ];
 
-            $next_id = \gamipress_get_next_rank_id($current->ID);
-            if ($next_id) {
-                $next = \get_post($next_id);
-                $info['next'] = [
-                    'id' => (int) $next_id,
-                    'title' => $next->post_title ?? '',
-                    'image' => \get_the_post_thumbnail_url($next_id, 'thumbnail') ?: ''
-                ];
-
-                // Calculate progress based on requirements
-                $requirements = \gamipress_get_rank_requirements($next_id);
-                if (!empty($requirements)) {
-                    $total_pct = 0;
-                    foreach ($requirements as $req) {
-                        $req_obj = \gamipress_get_requirement($req->ID);
-                        $needed = (int) ($req_obj->times ?? 1);
-                        $got = (int) \gamipress_get_earnings_count(['user_id' => $user_id, 'requirement_id' => $req->ID]);
-                        $pct = $needed > 0 ? \min(100, \round(($got / $needed) * 100)) : 100;
-                        $total_pct += $pct;
-                        $info['requirements'][] = ['title' => $req->post_title, 'current' => $got, 'required' => $needed, 'percent' => $pct];
+            if (\function_exists('gamipress_get_next_rank_id')) {
+                $next_id = \gamipress_get_next_rank_id($current->ID);
+                if ($next_id) {
+                    $next = \get_post($next_id);
+                    if ($next) {
+                        $info['next'] = [
+                            'id' => (int) $next_id,
+                            'title' => $next->post_title ?? '',
+                            'image' => \get_the_post_thumbnail_url($next_id, 'thumbnail') ?: ''
+                        ];
                     }
-                    $info['progress'] = \round($total_pct / \count($requirements));
+
+                    if (\function_exists('gamipress_get_rank_requirements')) {
+                        $requirements = \gamipress_get_rank_requirements($next_id);
+                        if (\is_array($requirements) && !empty($requirements)) {
+                            $total_pct = 0;
+                            foreach ($requirements as $req) {
+                                if (!\function_exists('gamipress_get_requirement'))
+                                    continue;
+                                $req_obj = \gamipress_get_requirement($req->ID);
+                                $needed = (int) ($req_obj->times ?? 1);
+                                $got = 0;
+                                if (\function_exists('gamipress_get_earnings_count')) {
+                                    $got = (int) \gamipress_get_earnings_count(['user_id' => $user_id, 'requirement_id' => $req->ID]);
+                                }
+                                $pct = $needed > 0 ? \min(100, \round(($got / $needed) * 100)) : 100;
+                                $total_pct += $pct;
+                                $info['requirements'][] = ['title' => $req->post_title, 'current' => $got, 'required' => $needed, 'percent' => $pct];
+                            }
+                            $info['progress'] = \round($total_pct / \count($requirements));
+                        }
+                    }
+                } else {
+                    $info['progress'] = 100; // Max Rank
                 }
-            } else {
-                $info['progress'] = 100; // Max Rank
             }
         }
         return $info;
@@ -514,13 +546,15 @@ final class ZenGame
             $results = $wpdb->get_results($wpdb->prepare($query, $slug, $limit));
 
             $leaderboard[$slug] = [];
-            foreach ($results as $row) {
-                $leaderboard[$slug][] = [
-                    'user_id' => (int) $row->user_id,
-                    'display_name' => $row->display_name,
-                    'points' => (int) $row->points,
-                    'avatar' => \get_avatar_url($row->user_id, ['size' => 64])
-                ];
+            if (\is_array($results)) {
+                foreach ($results as $row) {
+                    $leaderboard[$slug][] = [
+                        'user_id' => (int) $row->user_id,
+                        'display_name' => $row->display_name,
+                        'points' => (int) $row->points,
+                        'avatar' => \get_avatar_url($row->user_id, ['size' => 64])
+                    ];
+                }
             }
         }
 
@@ -535,7 +569,8 @@ final class ZenGame
     {
         if (!\function_exists('wc_get_customer_available_downloads'))
             return 0;
-        return \count(\wc_get_customer_available_downloads($user_id));
+        $downloads = \wc_get_customer_available_downloads($user_id);
+        return \is_array($downloads) ? \count($downloads) : 0;
     }
 
     /**
@@ -543,7 +578,7 @@ final class ZenGame
      */
     private function get_user_events_attended($user_id)
     {
-        if (!$this->is_woo_active())
+        if (!$this->is_woo_active() || !\function_exists('wc_get_orders'))
             return 0;
 
         $target_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
@@ -555,17 +590,21 @@ final class ZenGame
         ]);
 
         $total_qty = 0;
-        foreach ($order_ids as $order_id) {
-            $order = \wc_get_order($order_id);
-            if (!$order)
-                continue;
-            foreach ($order->get_items() as $item) {
-                $terms = \get_the_terms($item->get_product_id(), 'product_cat');
-                if ($terms && !\is_wp_error($terms)) {
-                    foreach ($terms as $term) {
-                        if (\in_array($term->slug, $target_slugs)) {
-                            $total_qty += $item->get_quantity();
-                            break;
+        if (\is_array($order_ids)) {
+            foreach ($order_ids as $order_id) {
+                if (!\function_exists('wc_get_order'))
+                    continue;
+                $order = \wc_get_order($order_id);
+                if (!$order)
+                    continue;
+                foreach ($order->get_items() as $item) {
+                    $terms = \get_the_terms($item->get_product_id(), 'product_cat');
+                    if ($terms && !\is_wp_error($terms)) {
+                        foreach ($terms as $term) {
+                            if (\in_array($term->slug, $target_slugs)) {
+                                $total_qty += $item->get_quantity();
+                                break;
+                            }
                         }
                     }
                 }
@@ -576,7 +615,7 @@ final class ZenGame
 
     private function get_cache_ttl()
     {
-        return \get_option('zengame_cache_ttl', 86400);
+        return (int) \get_option('zengame_cache_ttl', 86400);
     }
     private function is_woo_active()
     {
@@ -597,6 +636,8 @@ final class ZenGame
     }
     public function clear_user_gamipress_cache($order_id)
     {
+        if (!\function_exists('wc_get_order'))
+            return;
         $order = \wc_get_order($order_id);
         if ($order && ($user_id = $order->get_user_id()))
             $this->clear_user_cache_on_gamipress($user_id);
