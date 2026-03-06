@@ -3,7 +3,7 @@
  * Plugin Name: Zen BIT - Bandsintown Events
  * Plugin URI:  https://djzeneyer.com
  * Description: Proxy Bandsintown com cache SWR, canonical paths, JSON-LD MusicEvent e admin health para arquitetura headless.
- * Version:     3.0.0
+ * Version:     3.1.0
  * Author:      Zen Eyer
  * Author URI:  https://djzeneyer.com
  * License:     GPL v2 or later
@@ -15,7 +15,7 @@ namespace ZenBit;
 if (!defined('ABSPATH'))
     exit;
 
-define('ZEN_BIT_VERSION', '3.0.0');
+define('ZEN_BIT_VERSION', '3.1.0');
 define('ZEN_BIT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZEN_BIT_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -53,6 +53,10 @@ if (!class_exists('Zen_BIT')) {
             }
             if (is_admin()) {
                 require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
+                new Zen_BIT_Admin();
+            } else {
+                // Registro de assets públicos para enfileiramento condicional
+                add_action('wp_enqueue_scripts', [Zen_BIT_Admin::class, 'register_public_assets']);
             }
         }
 
@@ -67,6 +71,15 @@ if (!class_exists('Zen_BIT')) {
             if (class_exists(__NAMESPACE__ . '\\Zen_BIT_Sitemap')) {
                 new Zen_BIT_Sitemap();
             }
+
+            // Shortcode [zen_bit_events] — Enfileiramento condicional
+            add_shortcode('zen_bit_events', [$this, 'render_shortcode']);
+        }
+
+        public function render_shortcode($atts): string
+        {
+            wp_enqueue_style('zen-bit-public');
+            return '<div id="zen-bit-events-root" class="zen-bit-events-container"></div>';
         }
 
         public function load_textdomain(): void
@@ -136,19 +149,19 @@ if (!class_exists('Zen_BIT')) {
             register_rest_route('zen-bit/v2', '/admin/fetch-now', [
                 'methods' => 'POST',
                 'callback' => [$api_class, 'admin_fetch_now'],
-                'permission_callback' => fn() => current_user_can('manage_options'),
+                'permission_callback' => [$api_class, 'check_admin_auth'],
             ]);
 
             register_rest_route('zen-bit/v2', '/admin/clear-cache', [
                 'methods' => 'POST',
                 'callback' => [$api_class, 'admin_clear_cache'],
-                'permission_callback' => fn() => current_user_can('manage_options'),
+                'permission_callback' => [$api_class, 'check_admin_auth'],
             ]);
 
             register_rest_route('zen-bit/v2', '/admin/health', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'admin_health'],
-                'permission_callback' => fn() => current_user_can('manage_options'),
+                'permission_callback' => [$api_class, 'check_admin_auth'],
             ]);
         }
 
