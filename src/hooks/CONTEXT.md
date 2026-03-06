@@ -13,8 +13,9 @@
 - `zeneyer-auth/v1/profile`
 - `zeneyer-auth/v1/newsletter`
 - `zengame/v1/me`
-- `wc/v3/orders` (via `useUserOrdersQuery`)
+- `zeneyer-auth/v1/orders` (via `useUserOrdersQuery`)
 
 ---
 *Se um endpoint novo aparecer na UI, o hook correspondente deve nascer aqui primeiro.*
+
 

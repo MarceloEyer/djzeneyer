@@ -131,7 +131,21 @@ class Rest_Routes
             'permission_callback' => [__CLASS__, 'check_auth'],
         ]);
 
-        // 11. Password Reset
+        // 11. My Orders (WooCommerce, authenticated)
+        register_rest_route(self::NAMESPACE , '/orders', [
+            'methods' => WP_REST_Server::READABLE,
+            'callback' => [__CLASS__, 'get_orders'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+            'args' => [
+                'limit' => [
+                    'type' => 'integer',
+                    'default' => 5,
+                    'sanitize_callback' => 'absint',
+                ],
+            ],
+        ]);
+
+        // 12. Password Reset
         register_rest_route(self::NAMESPACE , '/auth/password/reset', [
             'methods' => WP_REST_Server::CREATABLE,
             'callback' => [__CLASS__, 'request_reset'],
@@ -547,6 +561,60 @@ class Rest_Routes
     /**
      * Get profile data for a user
      */
+    /**
+     * Get current user WooCommerce orders (headless-safe BFF endpoint).
+     */
+    public static function get_orders($request)
+    {
+        $user_id = self::get_user_id_from_token($request);
+
+        if (!$user_id) {
+            return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
+        }
+
+        if (!function_exists('wc_get_orders')) {
+            return rest_ensure_response([
+                'success' => true,
+                'data' => [],
+            ]);
+        }
+
+        $limit = max(1, min(20, (int) $request->get_param('limit')));
+
+        $orders = wc_get_orders([
+            'customer_id' => $user_id,
+            'limit' => $limit,
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'return' => 'objects',
+        ]);
+
+        $payload = [];
+        foreach ($orders as $order) {
+            $line_items = [];
+            foreach ($order->get_items() as $item) {
+                $line_items[] = [
+                    'name' => (string) $item->get_name(),
+                    'quantity' => (int) $item->get_quantity(),
+                    'total' => (string) $item->get_total(),
+                ];
+            }
+
+            $date = $order->get_date_created();
+            $payload[] = [
+                'id' => (int) $order->get_id(),
+                'status' => (string) $order->get_status(),
+                'date_created' => $date ? $date->date('c') : '',
+                'total' => (string) $order->get_total(),
+                'line_items' => $line_items,
+            ];
+        }
+
+        return rest_ensure_response([
+            'success' => true,
+            'data' => $payload,
+        ]);
+    }
     private static function get_profile_data($user_id)
     {
         $user = get_userdata($user_id);

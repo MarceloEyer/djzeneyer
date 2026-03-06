@@ -568,19 +568,22 @@ export const useUserOrdersQuery = (userId?: number, token?: string, limit = 5) =
     queryKey: [...QUERY_KEYS.user.orders(userId, limit), !!token],
     queryFn: async (): Promise<WCOrder[]> => {
       if (!token || !userId) return [];
-      const apiUrl = buildApiUrl('wc/v3/orders', {
-        customer: String(userId),
-        per_page: String(limit),
+      const apiUrl = buildApiUrl('zeneyer-auth/v1/orders', {
+        limit: String(limit),
       });
       const res = await fetch(apiUrl, {
         headers: getAuthHeaders(token),
       });
       if (!res.ok) throw new Error('Failed to fetch user orders');
       const data = await res.json();
-      return Array.isArray(data) ? data : [];
+      if (data?.success && Array.isArray(data.data)) {
+        return data.data as WCOrder[];
+      }
+      return [];
     },
     enabled: Boolean(token && userId),
     staleTime: STALE_TIME.USER_PROFILE,
+    retry: false,
   });
 };
 export const useUpdateProfileMutation = (token?: string) => {
