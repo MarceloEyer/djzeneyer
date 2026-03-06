@@ -291,26 +291,42 @@ const DashboardContent = () => {
               {allAchievements.map((ach) => (
                 <motion.div
                   key={ach.id}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className={`relative group rounded-[2.5rem] p-8 border transition-all duration-500 overflow-hidden ${ach.earned
-                    ? 'bg-surface/50 border-primary/20 shadow-xl hover:border-primary/50'
-                    : 'bg-black/40 border-white/5 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 hover:border-white/20'
+                  whileHover={{ y: -8, scale: 1.03 }}
+                  className={`relative group rounded-[2rem] p-7 border transition-all duration-500 overflow-hidden ${ach.earned
+                    ? 'bg-[#0a0f16]/80 border-cyan-500/30 shadow-[0_0_30px_rgba(0,194,255,0.15)] hover:border-cyan-400/60'
+                    : 'bg-black/40 border-white/5 opacity-40 grayscale hover:opacity-90 hover:grayscale-0'
                     }`}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {/* Sweep Light Animation on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
 
                   <div className="relative z-10 flex flex-col items-center text-center">
-                    <div className={`w-28 h-28 rounded-[2rem] mb-8 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 ${ach.earned ? 'bg-primary/10 shadow-[0_0_20px_rgba(var(--color-primary),0.1)]' : 'bg-white/5 shadow-inner'
-                      }`}>
-                      {ach.image ? (
-                        <img src={safeUrl(ach.image)} alt={ach.title} className={`w-16 h-16 object-contain ${!ach.earned && 'opacity-40'}`} />
-                      ) : (
-                        <span className="text-5xl">{ach.earned ? '🏆' : '🔒'}</span>
+                    {/* Badge Artifact Container */}
+                    <div className="relative mb-8 pt-4">
+                      {ach.earned && (
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                          className="absolute inset-[-15px] border border-cyan-500/20 rounded-full border-dashed"
+                        />
                       )}
+                      <div className={`w-24 h-24 relative flex items-center justify-center transition-transform duration-500 group-hover:rotate-[5deg] ${ach.earned ? 'drop-shadow-[0_0_15px_rgba(0,194,255,0.6)]' : ''}`}>
+                        {/* Hexagonal Background Layer */}
+                        <div className={`absolute inset-0 rotate-45 rounded-2xl ${ach.earned ? 'bg-cyan-500/10 border-2 border-cyan-400/40' : 'bg-white/5 border border-white/10'}`} />
+                        <div className={`absolute inset-0 -rotate-45 rounded-2xl ${ach.earned ? 'bg-cyan-500/5 border-2 border-cyan-400/20' : 'bg-white/5 border border-white/5'}`} />
+
+                        <div className="relative z-10">
+                          {ach.image ? (
+                            <img src={safeUrl(ach.image)} alt={ach.title} className={`w-14 h-14 object-contain ${!ach.earned && 'opacity-20'}`} />
+                          ) : (
+                            <span className="text-4xl">{ach.earned ? '🏆' : '🔒'}</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
-                    <h4 className="font-black font-display text-2xl mb-3 tracking-tight group-hover:text-primary transition-colors">{ach.title}</h4>
-                    <p className="text-sm text-white/40 mb-8 min-h-[3rem] leading-relaxed font-medium">
+                    <h4 className="font-black font-display text-xl mb-2 tracking-tight group-hover:text-cyan-400 transition-colors uppercase">{ach.title}</h4>
+                    <p className="text-[11px] text-white/30 mb-6 min-h-[2.5rem] leading-tight font-medium uppercase tracking-wider">
                       {stripHtml(ach.description)}
                     </p>
 

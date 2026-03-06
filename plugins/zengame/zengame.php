@@ -61,6 +61,9 @@ final class ZenGame
         \add_action('admin_init', array($this, 'register_settings'));
         \add_action('admin_menu', array($this, 'add_admin_menu'));
 
+        // HPOS Compatibility
+        \add_action('before_woocommerce_init', array($this, 'declare_hpos_compatibility'));
+
         // Activity tracking hooks
         \add_action('wp_login', array($this, 'update_login_streak'), 10, 2);
 
@@ -69,6 +72,16 @@ final class ZenGame
 
         // SEO/Robots
         \add_filter('wp_robots', array($this, 'allow_api_indexing'));
+    }
+
+    /**
+     * Declare Compatibility with WooCommerce HPOS
+     */
+    public function declare_hpos_compatibility()
+    {
+        if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+        }
     }
 
     /**
@@ -581,35 +594,38 @@ final class ZenGame
         if (!$this->is_woo_active() || !\function_exists('wc_get_orders'))
             return 0;
 
+        // Versão Granular: Cache específico para stats de eventos (6 horas)
+        $cache_key = 'djz_stats_events_' . $user_id;
+        $cached = \get_transient($cache_key);
+        if ($cached !== false)
+            return (int) $cached;
+
         $target_slugs = ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass'];
-        $order_ids = \wc_get_orders([
+
+        // HPOS-Friendly Query
+        $orders = \wc_get_orders([
             'customer' => $user_id,
             'status' => ['completed', 'processing'],
             'limit' => -1,
-            'return' => 'ids',
         ]);
 
         $total_qty = 0;
-        if (\is_array($order_ids)) {
-            foreach ($order_ids as $order_id) {
-                if (!\function_exists('wc_get_order'))
-                    continue;
-                $order = \wc_get_order($order_id);
-                if (!$order)
-                    continue;
-                foreach ($order->get_items() as $item) {
-                    $terms = \get_the_terms($item->get_product_id(), 'product_cat');
-                    if ($terms && !\is_wp_error($terms)) {
-                        foreach ($terms as $term) {
-                            if (\in_array($term->slug, $target_slugs)) {
-                                $total_qty += $item->get_quantity();
-                                break;
-                            }
+        foreach ($orders as $order) {
+            foreach ($order->get_items() as $item) {
+                $product_id = $item->get_product_id();
+                $terms = \get_the_terms($product_id, 'product_cat');
+                if ($terms && !\is_wp_error($terms)) {
+                    foreach ($terms as $term) {
+                        if (\in_array($term->slug, $target_slugs)) {
+                            $total_qty += $item->get_quantity();
+                            break;
                         }
                     }
                 }
             }
         }
+
+        \set_transient($cache_key, $total_qty, 21600); // 6h cache
         return $total_qty;
     }
 
@@ -633,6 +649,7 @@ final class ZenGame
     public function clear_user_cache_on_gamipress($user_id)
     {
         \delete_transient('djz_gamipress_dashboard_' . self::CACHE_VERSION . '_' . $user_id);
+        \delete_transient('djz_stats_events_' . $user_id); // Invalida o cache granular de eventos também
     }
     public function clear_user_gamipress_cache($order_id)
     {

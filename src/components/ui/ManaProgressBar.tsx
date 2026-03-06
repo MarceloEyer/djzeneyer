@@ -50,39 +50,45 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
             </div>
 
             {/* ── Progress Track (MMORPG Style) ────────── */}
-            <div className="h-3.5 w-full bg-black/40 rounded-full overflow-hidden border border-white/5 relative p-[1px] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+            <div className="h-4 w-full bg-[#0a0f16] rounded-full overflow-hidden border border-white/10 relative p-[2px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.05)]">
+                {/* Gloss Overlay for the whole track */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none z-10" />
 
                 {/* ── Fill Container —————————————————————————————————————— */}
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${clampedProgress}%` }}
                     transition={{ type: 'spring', stiffness: 45, damping: 15 }}
-                    className="h-full bg-primary rounded-full relative group-hover:brightness-110 transition-all duration-500 overflow-hidden"
+                    className="h-full rounded-full relative group-hover:brightness-125 transition-all duration-700 overflow-hidden"
                     style={{
-                        boxShadow: '0 0 15px rgba(var(--color-primary), 0.4)'
+                        background: 'linear-gradient(to right, #00C2FF, #0057FF)',
+                        boxShadow: 'inset 0 0 8px rgba(255,255,255,0.4), 0 0 15px rgba(0,194,255,0.5)'
                     }}
                 >
-                    {/* 1. Dynamic Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary/30 to-primary/80" />
+                    {/* 1. AAA Glossy Layer (Upper half lighter) */}
+                    <div className="absolute top-0 left-0 right-0 h-[45%] bg-white/20 z-10" />
 
-                    {/* 2. Flare Animation (Shine moving across) */}
+                    {/* 2. Deep Gradient Body */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/30" />
+
+                    {/* 3. Flare Animation (Shine moving across) */}
                     <motion.div
                         initial={{ left: '-100%' }}
                         animate={{ left: '200%' }}
                         transition={{ repeat: Infinity, duration: 2.5, ease: 'linear', repeatDelay: 1 }}
-                        className="absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-25deg] blur-sm"
+                        className="absolute top-0 bottom-0 w-32 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg] blur-md z-20"
                     />
 
-                    {/* 3. Electric Edge / Sparkle Tip */}
+                    {/* 4. Electric Edge / Sparkle Tip */}
                     {clampedProgress > 0 && (
-                        <div className="absolute top-0 right-0 h-full">
-                            <div className="h-full w-[4px] bg-white blur-[1px] shadow-[0_0_10px_2px_rgba(255,255,255,0.8)]" />
-                            <div className="absolute top-1/2 -translate-y-1/2 right-0 w-2 h-full bg-white/20 blur-md rounded-full animate-pulse" />
+                        <div className="absolute top-0 right-0 h-full w-[10px] z-30">
+                            <div className="h-full w-full bg-gradient-to-l from-white via-cyan-200 to-transparent blur-[1px]" />
+                            <div className="absolute top-1/2 -translate-y-1/2 right-[-2px] w-4 h-6 bg-cyan-300/40 blur-xl rounded-full animate-pulse" />
                         </div>
                     )}
 
-                    {/* 4. Scanning lines (Micro-detail) */}
-                    <div className="absolute inset-0 opacity-[0.05] bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,white_2px,white_4px)] pointer-events-none" />
+                    {/* 5. Chamber Lines (Micro-segments) */}
+                    <div className="absolute inset-0 opacity-[0.1] bg-[repeating-linear-gradient(90deg,transparent,transparent_19px,black_20px)] pointer-events-none" />
                 </motion.div>
             </div>
         </div>
