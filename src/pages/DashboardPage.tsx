@@ -387,10 +387,31 @@ const DashboardContent = () => {
   );
 };
 
-const DashboardPage = () => (
-  <GamiPressProvider>
-    <DashboardContent />
-  </GamiPressProvider>
-);
+const DashboardPage = () => {
+  const { user, loading } = useUser();
+  const navigate = useNavigate();
+
+  if (loading) {
+    return (
+      <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+          <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-center text-white/80">Inicializando sessão...</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (!user?.isLoggedIn) {
+    navigate('/', { replace: true });
+    return null;
+  }
+
+  return (
+    <GamiPressProvider>
+      <DashboardContent />
+    </GamiPressProvider>
+  );
+};
 
 export default DashboardPage;
