@@ -1,5 +1,5 @@
 // src/contexts/CartContext.tsx
-import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useUser } from './UserContext';
 import { buildApiUrl } from '../config/api';
 
@@ -108,7 +108,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [getCart]);
 
-  const value = { cart, getCart, removeItem, clearCart, loading };
+  const value = useMemo(() => ({ cart, getCart, removeItem, clearCart, loading }), [cart, getCart, removeItem, clearCart, loading]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
