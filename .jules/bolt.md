@@ -31,3 +31,8 @@
 ## 2025-03-04 - Memoize static data in React functional components
 **Learning:** `AboutPage.tsx` re-created the complex static arrays `ABOUT_SCHEMA`, `MILESTONES`, and `ACHIEVEMENTS_DATA` on every render cycle. Because they needed the `t` function from `useTranslation`, they could not be easily moved outside the component.
 **Action:** Use `useMemo(() => [...], [t])` to keep them within the component so they can access hooks while preventing unnecessary allocations and downstream re-renders on unrelated state changes.
+
+## 2026-03-06 - [Context API Re-renders Optimization]
+
+**Learning:** Found that CartContext in `src/contexts/CartContext.tsx` was creating a new object literal `{ cart, getCart, removeItem, clearCart, loading }` on every render. Because this object is passed to `CartContext.Provider value={value}`, any state update within the Provider (e.g. `loading` changes) would cause *all* components consuming `useCart` to re-render, even if the relevant parts of the state hadn't changed.
+**Action:** When implementing Context API in React, always wrap the provider value in a `useMemo` hook, making sure to include all pieces of context state as dependencies. This ensures consumer components only re-render when the specific context state changes, not simply because the Provider component re-rendered.
