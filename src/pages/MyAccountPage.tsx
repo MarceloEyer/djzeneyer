@@ -16,6 +16,7 @@ import { UserStatsCards, OrdersList, RecentActivity, MusicCollection } from '../
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation } from '../hooks/useQueries';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { stripHtml } from '../utils/text';
 import ManaProgressBar from '../components/ui/ManaProgressBar';
 
@@ -115,10 +116,10 @@ const MyAccountContent: React.FC = () => {
 
   // Redirect se não logado
   useEffect(() => {
-    if (!loading && !user?.isLoggedIn) {
+    if (!loading && !loadingGP && !user?.isLoggedIn) {
       navigate(getLocalizedRoute('', currentLang));
     }
-  }, [user, loading, navigate, currentLang]);
+  }, [user, loading, loadingGP, navigate, currentLang]);
 
   // React Query Hooks
   const { data: profileData } = useProfileQuery(user?.token);
@@ -154,18 +155,10 @@ const MyAccountContent: React.FC = () => {
       return;
     }
 
-    const wpData = (window as any).wpData || { restUrl: '', nonce: '' };
-    if (!wpData.restUrl) {
-      setLoadingOrders(false);
-      return;
-    }
-
     try {
-      const response = await fetch(`${wpData.restUrl}wc/v3/orders?customer=${user.id}`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-          'X-WP-Nonce': wpData.nonce,
-        }
+      const apiUrl = buildApiUrl(`wc/v3/orders`, { customer: String(user.id) });
+      const response = await fetch(apiUrl, {
+        headers: getAuthHeaders(user.token),
       });
 
       if (response.ok) {

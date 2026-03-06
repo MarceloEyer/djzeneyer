@@ -409,6 +409,7 @@ const DashboardContent = () => {
 
 const DashboardPage = () => {
   const { user, loading } = useUser();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (loading) {
@@ -416,7 +417,7 @@ const DashboardPage = () => {
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
           <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
-          <p className="text-center text-white/80">Inicializando sessão...</p>
+          <p className="text-center text-white/80">{t('dashboard.loading')}</p>
         </motion.div>
       </div>
     );

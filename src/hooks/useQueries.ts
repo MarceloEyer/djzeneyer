@@ -40,6 +40,13 @@ export interface UserProfile {
   first_name?: string;
   last_name?: string;
   avatar_url?: string;
+  // Campos customizados do plugin ZenEyer Auth
+  real_name?: string;
+  preferred_name?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  dance_role?: string[];
+  gender?: '' | 'male' | 'female' | 'non-binary';
 }
 
 export interface WCProduct {
@@ -484,7 +491,7 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
     },
     staleTime: STALE_TIME.GAMIPRESS,
     refetchInterval: 60_000,
-    enabled: Boolean(token) || Boolean(userId),
+    enabled: Boolean(token),
     retry: false,
   });
 };
