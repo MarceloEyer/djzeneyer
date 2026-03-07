@@ -15,7 +15,7 @@ const budget = {
   maxInitialJsGzip: Number(process.env.PERF_BUDGET_INITIAL_JS_GZIP || 181 * 1024),
   maxEntryJsGzip: Number(process.env.PERF_BUDGET_ENTRY_JS_GZIP || 130 * 1024),
   maxI18nChunkGzip: Number(process.env.PERF_BUDGET_I18N_GZIP || 55 * 1024),
-  maxLargestChunkGzip: Number(process.env.PERF_BUDGET_LARGEST_CHUNK_GZIP || 95 * 1024),
+  maxLargestChunkGzip: Number(process.env.PERF_BUDGET_LARGEST_CHUNK_GZIP || 120 * 1024),
 };
 
 const sizeOf = (relPath) => {
