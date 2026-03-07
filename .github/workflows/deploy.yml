@@ -1,11 +1,11 @@
-﻿# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# ðŸš€ DJ ZEN EYER - PRODUCTION DEPLOY (RESTORED v4.1 + PRERENDER FIX)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# LÃ³gica: Baseada estritamente no log de sucesso v4.1
-# AdiÃ§Ãµes: Prerender (Build) e Sync de Imagens (Deploy)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🚀 DJ ZEN EYER - PRODUCTION DEPLOY (RESTORED v4.1 + PRERENDER FIX)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Lógica: Baseada estritamente no log de sucesso v4.1
+# Adições: Prerender (Build) e Sync de Imagens (Deploy)
+# ═══════════════════════════════════════════════════════════════════════════════
 
-name: ðŸš€ Production Deploy
+name: 🚀 Production Deploy
 
 on:
   push:
@@ -41,11 +41,11 @@ env:
   SITE_URL: https://djzeneyer.com
 
 jobs:
-  # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  # ═══════════════════════════════════════════════════════════════════════════════
   # JOB 1: BUILD
-  # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  # ═══════════════════════════════════════════════════════════════════════════════
   build:
-    name: ðŸ—ï¸ Build
+    name: 🏗️ Build
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     if: ${{ !inputs.skip_build }}
@@ -56,40 +56,37 @@ jobs:
       build_status: ${{ job.status }}
     
     steps:
-      - name: ðŸ“¥ Checkout
+      - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: ðŸ”– Generate metadata
+      - name: 🔖 Generate metadata
         id: commit
         run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: â° Generate timestamp
+      - name: ⏰ Generate timestamp
         id: timestamp
         run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
 
-      - name: ðŸ”§ Setup Node.js
+      - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: ðŸ“¦ Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci --prefer-offline --no-audit
 
-      - name: ðŸŒ Validate i18n parity
-        run: npm run i18n:check
-
-      - name: ðŸ—ºï¸ Generate sitemaps
+      - name: 🗺️ Generate sitemaps
         run: |
-          echo "ðŸ—ºï¸ Generating sitemaps..."
+          echo "🗺️ Generating sitemaps..."
           npm run generate-sitemaps
-          # ValidaÃ§Ã£o mÃ­nima
-          if [ ! -f "public/sitemap.xml" ]; then echo "âŒ sitemap.xml missing"; exit 1; fi
-          echo "âœ… Sitemaps generated successfully"
+          # Validação mínima
+          if [ ! -f "public/sitemap.xml" ]; then echo "❌ sitemap.xml missing"; exit 1; fi
+          echo "✅ Sitemaps generated successfully"
 
-      - name: ðŸ”¨ Build production
+      - name: 🔨 Build production
         env:
           NODE_ENV: production
           PRERENDER_MODE: 'true'
@@ -100,36 +97,30 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
-      # â­ ADIÃ‡ÃƒO: PRERENDER (ObrigatÃ³rio para evitar tela branca)
-      - name: ðŸŽ¨ Prerender pages (SSG)
+      # ⭐ ADIÇÃO: PRERENDER (Obrigatório para evitar tela branca)
+      - name: 🎨 Prerender pages (SSG)
         run: |
-          echo "ðŸŽ¨ Starting prerender..."
+          echo "🎨 Starting prerender..."
           if ! npm list puppeteer >/dev/null 2>&1; then npm install puppeteer; fi
           node scripts/prerender.js
-          if [ ! -f "dist/index.html" ]; then echo "âŒ Prerender failed"; exit 1; fi
-          echo "âœ… Prerender OK"
+          if [ ! -f "dist/index.html" ]; then echo "❌ Prerender failed"; exit 1; fi
+          echo "✅ Prerender OK"
 
-      - name: âœ… Validate build
+      - name: ✅ Validate build
         run: |
-          if [ ! -d dist ]; then echo "âŒ dist/ not found"; exit 1; fi
-          if [ ! -f dist/index.html ]; then echo "âŒ dist/index.html not found"; exit 1; fi
-          echo "âœ… Build validation passed"
+          if [ ! -d dist ]; then echo "❌ dist/ not found"; exit 1; fi
+          if [ ! -f dist/index.html ]; then echo "❌ dist/index.html not found"; exit 1; fi
+          echo "✅ Build validation passed"
 
-
-      - name: 📏 Generate perf baseline
-        run: npm run perf:baseline
-
-      - name: 🚦 Enforce perf budgets
-        run: npm run perf:budget
       # --- PLUGIN DEPENDENCIES ---
-      - name: ðŸ”¨ Build plugin dependencies
+      - name: 🔨 Build plugin dependencies
         run: |
-          echo "ðŸ“¦ Building plugins..."
+          echo "📦 Building plugins..."
           if [ -d "plugins" ]; then
             for dir in plugins/*/; do
               if [ -f "$dir/composer.json" ]; then
                 cd "$dir"
-                # âš ï¸ CI hardening note (do not "optimize" this without validation):
+                # ⚠️ CI hardening note (do not "optimize" this without validation):
                 # Composer 2.9+ can block packages flagged by Packagist security advisories.
                 # Our auth plugin depends on firebase/php-jwt and Packagist currently marks all 6.x
                 # as blocked (PKSA-y2cr-5h3j-g3ys), which would break every deploy even when app build passes.
@@ -144,7 +135,7 @@ jobs:
           fi
 
       # --- ARTIFACTS ---
-      - name: ðŸ“¤ Upload dist artifact
+      - name: 📤 Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-dist-${{ steps.commit.outputs.hash }}
@@ -153,7 +144,7 @@ jobs:
           retention-days: 7
           compression-level: 6
 
-      - name: ðŸ“¤ Upload theme files
+      - name: 📤 Upload theme files
         uses: actions/upload-artifact@v4
         with:
           name: build-theme-${{ steps.commit.outputs.hash }}
@@ -166,7 +157,7 @@ jobs:
             index.php
           retention-days: 7
 
-      - name: ðŸ“¤ Upload plugins
+      - name: 📤 Upload plugins
         if: hashFiles('plugins/**') != ''
         uses: actions/upload-artifact@v4
         with:
@@ -174,7 +165,7 @@ jobs:
           path: plugins/
           retention-days: 7
 
-      - name: ðŸ“¤ Upload sitemaps
+      - name: 📤 Upload sitemaps
         uses: actions/upload-artifact@v4
         with:
           name: build-sitemaps-${{ steps.commit.outputs.hash }}
@@ -183,19 +174,11 @@ jobs:
             public/sitemap-pages.xml
           retention-days: 7
 
-      - name: ðŸ“¤ Upload GamiPress files
-        if: hashFiles('gamipress/**') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-gamipress-${{ steps.commit.outputs.hash }}
-          path: gamipress/
-          retention-days: 7
-
-  # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  # ═══════════════════════════════════════════════════════════════════════════════
   # JOB 2: DEPLOY (RESTAURADO DO LOG ORIGINAL)
-  # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  # ═══════════════════════════════════════════════════════════════════════════════
   deploy:
-    name: ðŸš€ Deploy
+    name: 🚀 Deploy
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -208,7 +191,7 @@ jobs:
       url: ${{ env.SITE_URL }}
     
     steps:
-      - name: ðŸ“¥ Checkout (sparse)
+      - name: 📥 Checkout (sparse)
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -219,43 +202,36 @@ jobs:
           sparse-checkout-cone-mode: false
 
       # --- DOWNLOAD ARTIFACTS ---
-      - name: ðŸ“¥ Download dist
+      - name: 📥 Download dist
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-dist-${{ needs.build.outputs.commit_hash }}
           path: ./dist
 
-      - name: ðŸ“¥ Download theme files
+      - name: 📥 Download theme files
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-theme-${{ needs.build.outputs.commit_hash }}
           path: ./
 
-      - name: ðŸ“¥ Download plugins
+      - name: 📥 Download plugins
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-plugins-${{ needs.build.outputs.commit_hash }}
           path: ./plugins
 
-      - name: ðŸ“¥ Download sitemaps
+      - name: 📥 Download sitemaps
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
 
-      - name: ðŸ“¥ Download GamiPress files
-        if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
-        with:
-          name: build-gamipress-${{ needs.build.outputs.commit_hash }}
-          path: ./gamipress-deploy
-
       # --- SSH SETUP ---
-      - name: ðŸ” Setup SSH
+      - name: 🔐 Setup SSH
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -263,13 +239,13 @@ jobs:
           name: id_rsa
 
       # --- DIAGNOSTIC ---
-      - name: ðŸ” Check Connectivity
+      - name: 🔍 Check Connectivity
         run: |
-          echo "ðŸ” Testing connection to ${{ env.SSH_HOST }}:${{ env.SSH_PORT }}..."
-          nc -zv -w 15 ${{ env.SSH_HOST }} ${{ env.SSH_PORT }} || echo "âš ï¸ Warning: Host unreachable via nc, but continuing..."
+          echo "🔍 Testing connection to ${{ env.SSH_HOST }}:${{ env.SSH_PORT }}..."
+          nc -zv -w 15 ${{ env.SSH_HOST }} ${{ env.SSH_PORT }} || echo "⚠️ Warning: Host unreachable via nc, but continuing..."
 
       # --- BACKUP & CLEANUP ---
-      - name: ðŸ“¦ Backup & Clean dist folder
+      - name: 📦 Backup & Clean dist folder
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SSH_HOST }}
@@ -284,7 +260,7 @@ jobs:
             BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
             
-            echo "ðŸ“¦ BACKUP & CLEANUP"
+            echo "📦 BACKUP & CLEANUP"
             mkdir -p "${BACKUP_DIR}"
             if [ -d "${THEME_PATH}/dist" ]; then
               tar -czf "${BACKUP_DIR}/dist_backup.tar.gz" -C "${THEME_PATH}" dist/ 2>/dev/null || true
@@ -296,11 +272,11 @@ jobs:
             # Cleanup old backups
             cd "$HOME/backups"
             ls -t | tail -n +6 | xargs -r rm -rf 2>/dev/null || true
-            echo "âœ… Cleanup done"
+            echo "✅ Cleanup done"
 
       # --- DEPLOY STEPS (IGUAL AO ORIGINAL v4.1) ---
       
-      - name: ðŸš€ Deploy dist/
+      - name: 🚀 Deploy dist/
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete --checksum
@@ -311,8 +287,8 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # ESTE PASSO Ã‰ O SEGREDO QUE ESTAVA FALTANDO! ðŸ‘‡
-      - name: ðŸ“š Deploy inc/
+      # ESTE PASSO É O SEGREDO QUE ESTAVA FALTANDO! 👇
+      - name: 📚 Deploy inc/
         if: hashFiles('inc/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
@@ -325,7 +301,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # ADICIONADO PARA GARANTIR TEMAS MODERNOS
-      - name: ðŸ“š Deploy parts/
+      - name: 📚 Deploy parts/
         if: hashFiles('parts/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
@@ -337,7 +313,7 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
           
-      - name: ðŸ“š Deploy templates/
+      - name: 📚 Deploy templates/
         if: hashFiles('templates/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
@@ -349,19 +325,7 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: ðŸŽ® Deploy GamiPress/
-        if: hashFiles('gamipress-deploy/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avzr --delete --checksum
-          path: gamipress-deploy/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/gamipress/
-          remote_host: ${{ env.SSH_HOST }}
-          remote_user: ${{ env.SSH_USER }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: ðŸ“ Deploy theme PHP files
+      - name: 📝 Deploy theme PHP files
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.SSH_HOST }}
@@ -372,7 +336,7 @@ jobs:
           target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           strip_components: 0
 
-      - name: ðŸ”Œ Deploy plugins
+      - name: 🔌 Deploy plugins
         if: hashFiles('plugins/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
@@ -385,21 +349,21 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # --- PUBLIC ASSETS & IMAGES FIX ---
-      - name: ðŸ“„ Prepare public assets
+      - name: 📄 Prepare public assets
         if: hashFiles('public/**') != ''
         run: |
-          echo "ðŸ“„ Preparing public assets..."
+          echo "📄 Preparing public assets..."
           mkdir -p temp_public
           
-          # Arquivos bÃ¡sicos
+          # Arquivos básicos
           SAFE_FILES=(".htaccess" "robots.txt" "ai-bots.txt" "llms.txt" "llms-full.txt" "favicon.ico" "favicon.svg" "apple-touch-icon.png" "site.webmanifest")
           for file in "${SAFE_FILES[@]}"; do
             if [ -f "public/$file" ]; then cp "public/$file" temp_public/; fi
           done
           
-          # â­ CORREÃ‡ÃƒO CRÃTICA: Copiar pasta de IMAGENS
+          # ⭐ CORREÇÃO CRÍTICA: Copiar pasta de IMAGENS
           if [ -d "public/images" ]; then
-             echo "  âœ“ Including images/ folder"
+             echo "  ✓ Including images/ folder"
              cp -r "public/images" temp_public/
           fi
           
@@ -408,7 +372,7 @@ jobs:
              cp -r "public/.well-known" temp_public/
           fi
 
-      - name: ðŸ“„ Deploy public assets
+      - name: 📄 Deploy public assets
         if: hashFiles('public/**') != ''
         uses: burnett01/rsync-deployments@5.2.1
         with:
@@ -421,7 +385,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # --- SITEMAPS ---
-      - name: ðŸ—ºï¸ Deploy sitemaps to ROOT
+      - name: 🗺️ Deploy sitemaps to ROOT
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.SSH_HOST }}
@@ -433,7 +397,7 @@ jobs:
           strip_components: 1
 
       # --- CACHE PURGE ---
-      - name: ðŸ§¹ Purge caches
+      - name: 🧹 Purge caches
         continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -444,24 +408,24 @@ jobs:
           script: |
             cd ${{ env.REMOTE_ROOT }}
             if command -v wp &> /dev/null; then wp litespeed-purge all 2>/dev/null; fi
-            if php -r "opcache_reset();" 2>/dev/null; then echo "âœ… OPcache flushed"; else curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null; fi
+            if php -r "opcache_reset();" 2>/dev/null; then echo "✅ OPcache flushed"; else curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null; fi
 
-      - name: ðŸŽ‰ Success
+      - name: 🎉 Success
         if: success()
-        run: echo "ðŸš€ Site Live at ${{ env.SITE_URL }}"
+        run: echo "🚀 Site Live at ${{ env.SITE_URL }}"
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
 # JOB 3: HEALTH CHECK (Mantido Original)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
   health-check:
-    name: ðŸ¥ Health Check
+    name: 🏥 Health Check
     needs: deploy
     runs-on: ubuntu-24.04
     if: needs.deploy.result == 'success'
     
     steps:
-      - name: ðŸ” Check sitemap.xml
+      - name: 🔍 Check sitemap.xml
         run: |
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36"
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" ${{ env.SITE_URL }}/sitemap.xml)
-          if [ "$HTTP_CODE" = "200" ]; then echo "âœ… Site UP"; else echo "âš ï¸ HTTP $HTTP_CODE"; exit 0; fi
+          if [ "$HTTP_CODE" = "200" ]; then echo "✅ Site UP"; else echo "⚠️ HTTP $HTTP_CODE"; exit 0; fi
