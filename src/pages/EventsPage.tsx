@@ -210,7 +210,6 @@ const EventListContent = ({ lang }: { lang: string }) => {
     return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
   }, [filteredEvents]);
 
-  const [showToast, setShowToast] = React.useState(false);
 
   const share = (e: ZenBitEventListItem) => {
     const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.event_id}`;
