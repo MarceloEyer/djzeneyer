@@ -1,7 +1,7 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 /**
  * Sitemap Generator v7.0 - SIMPLIFIED
- * Gera sitemaps baseado em arquivo JSON est├ítico
+ * Gera sitemaps baseado em arquivo JSON estático
  */
 
 import fs from 'fs';
@@ -16,7 +16,7 @@ const API_URL = 'https://djzeneyer.com/wp-json/zen-bit/v2/events';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const ROUTES_DATA_PATH = path.resolve(__dirname, 'routes-data.json');
 
-console.log('­ƒù║´©Å  Sitemap Generator v8.0 - EVENTS SUPPORT\n');
+console.log('🗺️  Sitemap Generator v8.0 - EVENTS SUPPORT\n');
 
 function buildUrlEntry(url, date, priority = '0.8', ptUrl = null) {
   let entry = `
@@ -41,7 +41,7 @@ async function fetchEvents() {
   try {
     // Busca direto no Bandsintown para contornar o WAF (Cloudflare 403) no Github Actions
     const BIT_API_URL = 'https://rest.bandsintown.com/artists/djzeneyer/events?app_id=djzeneyer&date=upcoming';
-    console.log(`­ƒôí Fetching events from ${BIT_API_URL}...`);
+    console.log(`📡 Fetching events from ${BIT_API_URL}...`);
     const response = await fetch(BIT_API_URL, {
       headers: {
         'Accept': 'application/json'
@@ -62,7 +62,7 @@ async function fetchEvents() {
       canonical_path: undefined // Vai assumir eventId como fallback
     }));
   } catch (error) {
-    console.warn('\nÔØî SITEMAP ERROR: Could not fetch events:', error.message);
+    console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error.message);
     return [];
   }
 }
@@ -90,7 +90,7 @@ async function generateSitemaps() {
     }
     pagesXml += '\n</urlset>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), pagesXml);
-    console.log(`Ô£à sitemap-pages.xml created (${pageCount} URLs)`);
+    console.log(`✅ sitemap-pages.xml created (${pageCount} URLs)`);
 
     // 2. Events Sitemap
     const events = await fetchEvents();
@@ -108,7 +108,7 @@ async function generateSitemaps() {
 
         if (!relativePath) continue;
 
-        // Constru├¡mos os URLs conforme as rotas definidas no routes.ts
+        // Construímos os URLs conforme as rotas definidas no routes.ts
         const enEventUrl = `${BASE_URL}/events/${relativePath}/`;
         const ptEventUrl = `${BASE_URL}/pt/eventos/${relativePath}/`;
 
@@ -120,7 +120,7 @@ async function generateSitemaps() {
       }
       eventsXml += '\n</urlset>';
       fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-events.xml'), eventsXml);
-      console.log(`Ô£à sitemap-events.xml created (${eventCount} URLs)`);
+      console.log(`✅ sitemap-events.xml created (${eventCount} URLs)`);
     }
 
     // 3. Index Sitemap
@@ -141,16 +141,16 @@ async function generateSitemaps() {
 
     sitemapIndex += '\n</sitemapindex>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), sitemapIndex);
-    console.log('Ô£à sitemap.xml index created');
+    console.log('✅ sitemap.xml index created');
 
-    console.log('\nÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ');
-    console.log('Ô£à Sitemap generation complete!');
-    console.log(`­ƒôä Total: ${pageCount + eventCount} URLs`);
-    console.log(`­ƒôì Location: ${PUBLIC_DIR}`);
-    console.log('ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ\n');
+    console.log('\n════════════════════════════════════════');
+    console.log('✅ Sitemap generation complete!');
+    console.log(`📄 Total: ${pageCount + eventCount} URLs`);
+    console.log(`📍 Location: ${PUBLIC_DIR}`);
+    console.log('════════════════════════════════════════\n');
 
   } catch (error) {
-    console.error('ÔØî Error:', error);
+    console.error('❌ Error:', error);
     process.exit(1);
   }
 }
