@@ -96,15 +96,6 @@ export default defineConfig(({ command, mode }) => {
               return 'motion';
             }
 
-            if (
-              id.includes('react-router') ||
-              id.includes('/react/') ||
-              id.includes('/react-dom/') ||
-              id.includes('@tanstack/react-query')
-            ) {
-              return 'vendor-core';
-            }
-
             return 'vendor';
           },
         },
@@ -112,3 +103,4 @@ export default defineConfig(({ command, mode }) => {
     },
   };
 });
+
