@@ -1,5 +1,5 @@
 // src/contexts/UserContext.tsx - VERSÃO ATUALIZADA COM TURNSTILE
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { clearAllCache } from '../config/queryClient';
 
 interface WordPressUser {
@@ -108,17 +108,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // ========================================================================
   // HELPERS
   // ========================================================================
-  const saveSession = (userData: WordPressUser, token: string) => {
+  const saveSession = useCallback((userData: WordPressUser, token: string) => {
     const userWithStatus = { ...userData, isLoggedIn: true, token };
     setUser(userWithStatus);
     localStorage.setItem('zen_jwt', token);
     localStorage.setItem('zen_user', JSON.stringify(userWithStatus));
-  };
+  }, []);
 
   // ========================================================================
   // LOGIN COM EMAIL/SENHA
   // ========================================================================
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -148,12 +148,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, saveSession]);
 
   // ========================================================================
   // REGISTRO (ATUALIZADO)
   // ========================================================================
-  const register = async (name: string, email: string, password: string, turnstileToken?: string) => {
+  const register = useCallback(async (name: string, email: string, password: string, turnstileToken?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -189,12 +189,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, saveSession]);
 
   // ========================================================================
   // GOOGLE LOGIN (CRÍTICO)
   // ========================================================================
-  const googleLogin = async (idToken: string) => {
+  const googleLogin = useCallback(async (idToken: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -237,22 +237,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, saveSession]);
 
   // ========================================================================
   // LOGOUT
   // ========================================================================
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('zen_jwt');
     localStorage.removeItem('zen_user');
     clearAllCache();
-  };
+  }, []);
 
   // ========================================================================
   // PASSWORD RESET
   // ========================================================================
-  const requestPasswordReset = async (email: string) => {
+  const requestPasswordReset = useCallback(async (email: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -273,9 +273,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
 
-  const resetPassword = async (key: string, login: string, password: string) => {
+  const resetPassword = useCallback(async (key: string, login: string, password: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -296,29 +296,45 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
 
-  const clearError = () => setError(null);
+  const clearError = useCallback(() => setError(null), []);
+
+  // ⚡ Bolt: Wrapped context value with useMemo to prevent unnecessary re-renders of all consumer components when Provider re-renders.
+  const value = useMemo(() => ({
+    user,
+    googleClientId,
+    isAuthenticated: !!user,
+    loading,
+    loadingInitial,
+    error,
+    login,
+    register,
+    googleLogin,
+    logout,
+    requestPasswordReset,
+    resetPassword,
+    clearError
+  }), [
+    user,
+    googleClientId,
+    loading,
+    loadingInitial,
+    error,
+    login,
+    register,
+    googleLogin,
+    logout,
+    requestPasswordReset,
+    resetPassword,
+    clearError
+  ]);
 
   // ========================================================================
   // PROVIDER
   // ========================================================================
   return (
-    <UserContext.Provider value={{
-      user,
-      googleClientId,
-      isAuthenticated: !!user,
-      loading,
-      loadingInitial,
-      error,
-      login,
-      register,
-      googleLogin,
-      logout,
-      requestPasswordReset,
-      resetPassword,
-      clearError
-    }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );

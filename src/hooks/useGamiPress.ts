@@ -1,6 +1,7 @@
 // src/hooks/useGamiPress.ts
 // v8.0 - REACT QUERY MIGRATION (replaces manual fetch + useState + setInterval)
 
+import { useMemo, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { useGamipressQuery } from './useQueries';
 import type { ZenGameUserData } from '../types/gamification';
@@ -61,13 +62,17 @@ export const useGamiPress = (): GamiPressHookResponse => {
 
   const resolved: GamiPressData = (data as GamiPressData) ?? FALLBACK;
 
-  return {
+  // ⚡ Bolt: Wrapped refresh function with useCallback to keep the reference stable.
+  const refresh = useCallback(() => { refetch(); }, [refetch]);
+
+  // ⚡ Bolt: Wrapped return value with useMemo to prevent unnecessary re-renders of consuming components (like GamiPressContext Provider).
+  return useMemo(() => ({
     data: resolved,
     loading: isLoading,
     error: error ? (error as Error).message : null,
-    refresh: () => { refetch(); },
+    refresh,
     // Legacy mapping (uses dynamic slug from backend)
     mainPoints: resolved.points[resolved.main_points_slug]?.amount ?? 0,
     currentRank: resolved.rank.current.title,
-  };
+  }), [resolved, isLoading, error, refresh]);
 };
