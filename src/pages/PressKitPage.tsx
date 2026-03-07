@@ -83,7 +83,7 @@ MediaKitCard.displayName = 'MediaKitCard';
 // 3. COMPONENTE PRINCIPAL
 // ============================================================================
 const PressKitPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const location = useLocation();
 
   const currentPath = location.pathname;
