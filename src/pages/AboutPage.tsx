@@ -1,4 +1,4 @@
-// src/pages/AboutPage.tsx - VERSÃƒO FINAL HEADLESS E OTIMIZADA
+// src/pages/AboutPage.tsx - VERSAO FINAL HEADLESS E OTIMIZADA
 
 import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
