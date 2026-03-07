@@ -1,5 +1,5 @@
-{
-    "comment": "SSOT — Única fonte de verdade dos slugs EN/PT. Edite APENAS este arquivo para mudar rotas.",
+﻿{
+    "comment": "SSOT ÔÇö ├Ünica fonte de verdade dos slugs EN/PT. Edite APENAS este arquivo para mudar rotas.",
     "routes": [
         {
             "key": "home",
