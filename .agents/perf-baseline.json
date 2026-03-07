@@ -1,0 +1,183 @@
+{
+  "generatedAt": "2026-03-07T04:47:59.823Z",
+  "entryKeys": [
+    "index.html"
+  ],
+  "totals": {
+    "jsRaw": 939007,
+    "jsGzip": 300407,
+    "jsBrotli": 263207,
+    "cssRaw": 0,
+    "cssGzip": 0,
+    "cssBrotli": 0,
+    "initialJsRaw": 560663,
+    "initialJsGzip": 180194,
+    "initialJsBrotli": 159060
+  },
+  "topJsByRaw": [
+    {
+      "key": "_vendor-tNW4oCG9.js",
+      "file": "assets/vendor-tNW4oCG9.js",
+      "raw": 192349,
+      "gzip": 62824,
+      "brotli": 55667,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "_vendor-core-C_OhNTIW.js",
+      "file": "assets/vendor-core-C_OhNTIW.js",
+      "raw": 173240,
+      "gzip": 56644,
+      "brotli": 49617,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "_quiz-BpmbHUsr.js",
+      "file": "assets/quiz-BpmbHUsr.js",
+      "raw": 77348,
+      "gzip": 23060,
+      "brotli": 19841,
+      "isEntry": false,
+      "isDynamicEntry": true
+    },
+    {
+      "key": "src/locales/pt/translation.json",
+      "file": "assets/translation-DED0vYbI.js",
+      "raw": 73382,
+      "gzip": 26276,
+      "brotli": 23044,
+      "isEntry": false,
+      "isDynamicEntry": true
+    },
+    {
+      "key": "src/locales/en/translation.json",
+      "file": "assets/translation-DxBnAbLl.js",
+      "raw": 67492,
+      "gzip": 24528,
+      "brotli": 20289,
+      "isEntry": false,
+      "isDynamicEntry": true
+    },
+    {
+      "key": "_i18n-BbRUnZVk.js",
+      "file": "assets/i18n-BbRUnZVk.js",
+      "raw": 60869,
+      "gzip": 19325,
+      "brotli": 17487,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "_motion-CfMSogwA.js",
+      "file": "assets/motion-CfMSogwA.js",
+      "raw": 31202,
+      "gzip": 10578,
+      "brotli": 9596,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "index.html",
+      "file": "assets/index-BeWWgR2u.js",
+      "raw": 25655,
+      "gzip": 7763,
+      "brotli": 6852,
+      "isEntry": true,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "src/pages/MyAccountPage.tsx",
+      "file": "assets/MyAccountPage-DWkjvxaY.js",
+      "raw": 20613,
+      "gzip": 5360,
+      "brotli": 4722,
+      "isEntry": false,
+      "isDynamicEntry": true
+    },
+    {
+      "key": "src/pages/EventsPage.tsx",
+      "file": "assets/EventsPage-CyrBayO2.js",
+      "raw": 14030,
+      "gzip": 4216,
+      "brotli": 3734,
+      "isEntry": false,
+      "isDynamicEntry": true
+    },
+    {
+      "key": "src/pages/PressKitPage.tsx",
+      "file": "assets/PressKitPage-Db0bdtx6.js",
+      "raw": 13563,
+      "gzip": 3670,
+      "brotli": 3181,
+      "isEntry": false,
+      "isDynamicEntry": true
+    },
+    {
+      "key": "src/pages/ZenTribePage.tsx",
+      "file": "assets/ZenTribePage-BFkeBv5i.js",
+      "raw": 12342,
+      "gzip": 3209,
+      "brotli": 2783,
+      "isEntry": false,
+      "isDynamicEntry": true
+    }
+  ],
+  "initialJsRows": [
+    {
+      "key": "_vendor-tNW4oCG9.js",
+      "file": "assets/vendor-tNW4oCG9.js",
+      "raw": 192349,
+      "gzip": 62824,
+      "brotli": 55667,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "_vendor-core-C_OhNTIW.js",
+      "file": "assets/vendor-core-C_OhNTIW.js",
+      "raw": 173240,
+      "gzip": 56644,
+      "brotli": 49617,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "_quiz-BpmbHUsr.js",
+      "file": "assets/quiz-BpmbHUsr.js",
+      "raw": 77348,
+      "gzip": 23060,
+      "brotli": 19841,
+      "isEntry": false,
+      "isDynamicEntry": true
+    },
+    {
+      "key": "_i18n-BbRUnZVk.js",
+      "file": "assets/i18n-BbRUnZVk.js",
+      "raw": 60869,
+      "gzip": 19325,
+      "brotli": 17487,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "_motion-CfMSogwA.js",
+      "file": "assets/motion-CfMSogwA.js",
+      "raw": 31202,
+      "gzip": 10578,
+      "brotli": 9596,
+      "isEntry": false,
+      "isDynamicEntry": false
+    },
+    {
+      "key": "index.html",
+      "file": "assets/index-BeWWgR2u.js",
+      "raw": 25655,
+      "gzip": 7763,
+      "brotli": 6852,
+      "isEntry": true,
+      "isDynamicEntry": false
+    }
+  ]
+}
