@@ -30,6 +30,10 @@
 - `zen-seo/v1`
 
 ## Preferencias do projeto
-- Sem gradientes
+- Gradientes sutis/neon permitidos (sem gradientes em texto)
+- Sem player de musica interno (apenas links externos)
 - Solucoes simples e robustas
-- Cache persistente no backend quando aplicavel
+- Tom de voz: Conversa próxima, humilde e generosa ("Amigo Zen")
+- Prioridade Máxima: Velocidade de carregamento e facilidade de audição (links diretos pro Spotify)
+- Filtro de Estados: Facilitar para fãs locais encontrarem eventos
+

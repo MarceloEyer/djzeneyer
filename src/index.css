@@ -248,15 +248,6 @@
     @apply border-error focus:ring-error;
   }
 
-  /* ========== AUDIO PLAYER ========== */
-  .audio-progress {
-    @apply relative h-1 w-full bg-white/20 rounded-full overflow-hidden cursor-pointer;
-  }
-
-  .audio-progress-bar {
-    background: linear-gradient(90deg, rgb(var(--color-primary)), rgb(var(--color-secondary)));
-    @apply absolute top-0 left-0 h-full rounded-full transition-all duration-100;
-  }
 
   /* ========== EFFECTS ========== */
   .glow {

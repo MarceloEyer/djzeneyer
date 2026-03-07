@@ -181,9 +181,26 @@ const EventListContent = ({ lang }: { lang: string }) => {
     lang,
   }, { suspense: true });
 
+  const [selectedRegion, setSelectedRegion] = useState<string>('all');
+  const [showToast, setShowToast] = useState(false);
+
+  // Extrai regiões únicas (Estados)
+  const regions = useMemo(() => {
+    const r = new Set<string>();
+    events.forEach(e => {
+      if (e.location?.region) r.add(e.location.region);
+    });
+    return Array.from(r).sort();
+  }, [events]);
+
+  const filteredEvents = useMemo(() => {
+    if (selectedRegion === 'all') return events;
+    return events.filter(e => e.location?.region === selectedRegion);
+  }, [events, selectedRegion]);
+
   const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
     const groups: Record<string, ZenBitEventListItem[]> = {};
-    events.forEach((e: ZenBitEventListItem) => {
+    filteredEvents.forEach((e: ZenBitEventListItem) => {
       const date = new Date(e.starts_at);
       if (isNaN(date.getTime())) return;
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -191,7 +208,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
       groups[key].push(e);
     });
     return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [events]);
+  }, [filteredEvents]);
 
   const [showToast, setShowToast] = React.useState(false);
 
@@ -224,52 +241,79 @@ const EventListContent = ({ lang }: { lang: string }) => {
           image: safeUrl(event.image, '/images/zen-eyer-og-image.png'),
         }))}
       />
-      {groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
-        const [y, m] = key.split('-');
-        const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
-        const monthShort = MONTH_NAMES[Number(m) - 1];
-        const name = t(`events_month_${monthShort}`);
-        return (
-          <section key={key}>
-            <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
-              {name} <span className="text-white/60 drop-shadow-sm">{y}</span>
-              <div className="h-px flex-1 bg-white/5" />
-            </h2>
-            <div className="space-y-3">
-              {monthEvents.map((e) => {
-                const eventDay = new Date(e.starts_at);
-                // Normaliza o link do detalhe usando SSOT para evitar 404
-                const identifier = e.canonical_path
-                  ? e.canonical_path.split('/').pop() || e.event_id
-                  : e.event_id;
+      {/* Filter Bar */}
+      {regions.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
+          <button
+            onClick={() => setSelectedRegion('all')}
+            className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+          >
+            {t('common.all', 'Todos')}
+          </button>
+          {regions.map(region => (
+            <button
+              key={region}
+              onClick={() => setSelectedRegion(region)}
+              className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+            >
+              {region}
+            </button>
+          ))}
+        </div>
+      )}
 
-                const detailHref = generatePath(getLocalizedRoute('events-detail', lang), { id: identifier });
+      {filteredEvents.length === 0 ? (
+        <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5">
+          <p className="text-white/40">{t('events_no_results_filter', 'Nenhum evento encontrado para este filtro.')}</p>
+        </div>
+      ) : (
+        groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
+          const [y, m] = key.split('-');
+          const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+          const monthShort = MONTH_NAMES[Number(m) - 1];
+          const name = t(`events_month_${monthShort}`);
+          return (
+            <section key={key}>
+              <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
+                {name} <span className="text-white/60 drop-shadow-sm">{y}</span>
+                <div className="h-px flex-1 bg-white/5" />
+              </h2>
+              <div className="space-y-3">
+                {monthEvents.map((e) => {
+                  const eventDay = new Date(e.starts_at);
+                  // Normaliza o link do detalhe usando SSOT para evitar 404
+                  const identifier = e.canonical_path
+                    ? e.canonical_path.split('/').pop() || e.event_id
+                    : e.event_id;
 
-                // v2: location sempre presente
-                const loc = e.location;
+                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang), { id: identifier });
 
-                return (
-                  <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
-                    <div className="text-3xl font-black min-w-[50px]">{String(eventDay.getDate()).padStart(2, '0')}</div>
-                    <div className="flex-1">
-                      <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.country ? `, ${loc.country}` : ''}</div>
-                      <Link to={detailHref}>
-                        <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
-                      </Link>
+                  // v2: location sempre presente
+                  const loc = e.location;
+
+                  return (
+                    <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
+                      <div className="text-3xl font-black min-w-[50px]">{String(eventDay.getDate()).padStart(2, '0')}</div>
+                      <div className="flex-1">
+                        <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${loc.country})` : ''}</div>
+                        <Link to={detailHref}>
+                          <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
+                        </Link>
+                      </div>
+                      <div className="flex gap-2">
+                        <AddCalendarMenu event={e as unknown as import('../types/events').ZenBitEventDetail} variant="ghost" />
+                        <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
+                          <Share2 size={16} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <AddCalendarMenu event={e as unknown as import('../types/events').ZenBitEventDetail} variant="ghost" />
-                      <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
-                        <Share2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        );
-      })}
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })
+      )}
 
       <Toast
         message={t('link_copied')}

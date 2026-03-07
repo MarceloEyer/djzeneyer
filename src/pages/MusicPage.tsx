@@ -102,7 +102,12 @@ const MusicPage: React.FC = () => {
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     {singleTrack.links?.spotify && (
-                      <a href={safeUrl(singleTrack.links.spotify)} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2">
+                      <a
+                        href={safeUrl(singleTrack.links.spotify)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2 relative overflow-hidden group/btn shadow-[0_0_20px_rgba(29,185,84,0.3)] hover:shadow-[0_0_30px_rgba(29,185,84,0.5)] transition-all bg-[#1DB954] text-black border-none"
+                      >
                         <Play fill="currentColor" size={18} /> {t('common.platforms.spotify')}
                       </a>
                     )}
@@ -161,25 +166,59 @@ const MusicPage: React.FC = () => {
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {streamingPlatforms.map((platform, index) => (
+          <div className="space-y-6 mb-16">
+            {/* Spotify - Featured Hero */}
+            {streamingPlatforms.filter(p => p.name === 'Spotify').map((platform) => (
               <motion.a
                 key={platform.name}
                 href={safeUrl(platform.url)}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 + 0.3 }}
-                className={`flex items-center justify-between p-6 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center justify-between p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 flex justify-center">{platform.icon}</div>
-                  <span className="text-xl font-bold font-display uppercase tracking-wider">{platform.name}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-6 relative z-10">
+                  <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-black rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <SpotifyIcon />
+                  </div>
+                  <div>
+                    <span className="block text-2xl md:text-3xl font-black font-display uppercase tracking-widest text-[#1DB954] mb-1">
+                      {platform.name}
+                    </span>
+                    <span className="text-white/40 text-sm font-bold uppercase tracking-widest">{t('music.listen_now_on', 'Ouça Agora no Spotify')}</span>
+                  </div>
                 </div>
-                <ExternalLink size={20} className="text-white/20 group-hover:text-white/60 transition-colors" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <Play fill="white" className="text-white scale-150 opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0 duration-500 hidden md:block" />
+                  <ExternalLink size={24} className="text-[#1DB954] group-hover:text-white transition-colors" />
+                </div>
               </motion.a>
             ))}
+
+            {/* Other Platforms Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {streamingPlatforms.filter(p => p.name !== 'Spotify').map((platform, index) => (
+                <motion.a
+                  key={platform.name}
+                  href={safeUrl(platform.url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 + 0.3 }}
+                  className={`flex items-center justify-between p-5 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 flex justify-center opacity-70 group-hover:opacity-100 transition-opacity">{platform.icon}</div>
+                    <span className="text-sm font-bold font-display uppercase tracking-wider">{platform.name}</span>
+                  </div>
+                  <ExternalLink size={16} className="text-white/10 group-hover:text-white/40 transition-colors" />
+                </motion.a>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
