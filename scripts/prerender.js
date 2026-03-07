@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * SSR PRERENDER v20.0 - BASE PATH FIXED
+ * SSR PRERENDER v19.0 - API INTERCEPTION OPTIMIZED
  */
 
 import { spawn } from 'child_process';
@@ -12,22 +12,19 @@ import puppeteer from 'puppeteer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
+// 1. Carregar Rotas (SSOT)
 let routesList = [];
-const ROUTES_DATA_PATH = join(__dirname, '..', 'src', 'config', 'routes-slugs.json');
+const ROUTES_DATA_PATH = join(__dirname, 'routes-data.json');
 try {
   if (existsSync(ROUTES_DATA_PATH)) {
     const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
     data.routes.forEach(r => {
-      // Ignora rotas dinâmicas (com :param) — o prerender só cobre rotas estáticas
-      if (!r.en.includes(':') && !r.pt.includes(':')) {
-        routesList.push(r.en === '' ? '/' : `/${r.en}`);
-        routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
-      }
+      routesList.push(r.en === '' ? '/' : `/${r.en}`);
+      routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
     });
     console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
   } else {
-    throw new Error('SSOT routes-slugs.json não encontrado em src/config/');
+    throw new Error('Arquivo routes-data.json não encontrado');
   }
 } catch (e) {
   console.error('❌ Erro na SSOT:', e.message);
@@ -36,7 +33,7 @@ try {
 
 const CONFIG = {
   serverBase: 'http://localhost:5173',
-  distDir: join(__dirname, '..', 'dist'),
+  distDir: join(process.cwd(), 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
   routes: routesList
@@ -93,37 +90,20 @@ async function prerender() {
         if (reqUrl.includes('/posts')) mockData = [{ id: 1, title: { rendered: 'Build Preview' }, slug: 'preview', date: new Date().toISOString() }];
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
-        if (reqUrl.includes('/v1/menu')) mockData = [];
-        if (reqUrl.includes('/zen-bit/v2/events')) mockData = { success: true, events: [] };
         if (reqUrl.includes('/zen-seo/v1/settings')) mockData = { success: true, data: { real_name: "DJ Zen Eyer", default_og_image: "" } };
 
         request.respond({
           status: 200,
           contentType: 'application/json',
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'X-Requested-With': 'XMLHttpRequest' // Adicionado para tentar contornar bloqueios
-          },
           body: JSON.stringify(mockData)
         });
-      } else if (reqUrl.includes('/wp-content/themes/zentheme/dist/')) {
-        // ⭐ REDIRECT THEME PATHS TO LOCALHOST: Ensure assets load during prerender
-        const localPath = reqUrl.split('/wp-content/themes/zentheme/dist/')[1];
-        const localUrl = `${CONFIG.serverBase}/${localPath}`;
-        request.continue({ url: localUrl });
       } else {
         request.continue();
       }
     });
 
     page.on('console', msg => {
-      const text = msg.text();
-      // Silenciar erros de assets (imagens/svgs) para não sujar o log principal
-      if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
-        console.log(`[JS ERROR]: ${text}`);
-      }
+      if (msg.type() === 'error') console.log(`[JS ERROR]: ${msg.text()}`);
     });
 
     let successCount = 0;
@@ -155,11 +135,15 @@ async function prerender() {
         const html = await page.content();
 
         if (html.length > 500) {
-          // ⭐ VITE BASE PATH: Agora o Vite já gera caminhos como '/wp-content/themes/zentheme/dist/assets/...'
-          // Não precisamos mais do replace manual, apenas injetamos a meta tag.
-          const finalHtml = html.includes('name="prerender-generated"')
-            ? html
-            : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+          // ⭐ REESCREVER CAMINHOS: De '/' (prerender) para o caminho do WordPress (PROD)
+          // Isso garante que os assets funcionem no servidor real do Hostinger
+          let processedHtml = html
+            .replace(/src="\/assets\//g, 'src="/wp-content/themes/zentheme/dist/assets/')
+            .replace(/href="\/assets\//g, 'href="/wp-content/themes/zentheme/dist/assets/');
+
+          const finalHtml = processedHtml.includes('name="prerender-generated"')
+            ? processedHtml
+            : processedHtml.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
 
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
