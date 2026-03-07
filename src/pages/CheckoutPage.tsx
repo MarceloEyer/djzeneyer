@@ -89,7 +89,7 @@ const CheckoutPage: React.FC = () => {
     e.preventDefault();
 
     if (!selectedPaymentMethod) {
-      alert(t('checkout.select_payment'));
+      alert(t('common.checkout.select_payment'));
       return;
     }
 
@@ -149,7 +149,7 @@ const CheckoutPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      alert(error instanceof Error ? error.message : t('checkout.generic_error'));
+      alert(error instanceof Error ? error.message : t('common.checkout.generic_error'));
     } finally {
       setIsProcessing(false);
     }
@@ -187,12 +187,12 @@ const CheckoutPage: React.FC = () => {
           <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle size={40} className="text-primary" />
           </div>
-          <h1 className="text-3xl font-bold mb-4 font-display">{t('checkout.success_title')}</h1>
+          <h1 className="text-3xl font-bold mb-4 font-display">{t('common.checkout.success_title')}</h1>
           <p className="text-white/70 mb-8">
-            {t('checkout.success_desc')}
+            {t('common.checkout.success_desc')}
           </p>
           <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary w-full">
-            {t('checkout.back_shop')}
+            {t('common.checkout.back_shop')}
           </Link>        </motion.div>
       </div>
     );
@@ -201,14 +201,14 @@ const CheckoutPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={t('checkout.title')}
-        description={t('checkout.description')}
+        title={t('common.checkout.title')}
+        description={t('common.checkout.description')}
         isHomepage={false}
       />
 
       <div className="min-h-screen pt-24 pb-12 bg-background text-white">
         <div className="container mx-auto px-4 max-w-6xl">
-          <h1 className="text-3xl font-bold mb-8 font-display">{t('checkout.title')}</h1>
+          <h1 className="text-3xl font-bold mb-8 font-display">{t('common.checkout.title')}</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Checkout Form */}
@@ -220,13 +220,13 @@ const CheckoutPage: React.FC = () => {
               >
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">1</span>
-                  {t('checkout.billing')}
+                  {t('common.checkout.billing')}
                 </h2>
 
                 <form id="checkout-form" onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-first-name" className="block text-sm text-white/60 mb-1">{t('form.first_name')}</label>
+                      <label htmlFor="checkout-first-name" className="block text-sm text-white/60 mb-1">{t('common.form.first_name')}</label>
                       <input
                         type="text"
                         id="checkout-first-name"
@@ -239,7 +239,7 @@ const CheckoutPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="checkout-last-name" className="block text-sm text-white/60 mb-1">{t('form.last_name')}</label>
+                      <label htmlFor="checkout-last-name" className="block text-sm text-white/60 mb-1">{t('common.form.last_name')}</label>
                       <input
                         type="text"
                         id="checkout-last-name"
@@ -255,7 +255,7 @@ const CheckoutPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-email" className="block text-sm text-white/60 mb-1">{t('form.email')}</label>
+                      <label htmlFor="checkout-email" className="block text-sm text-white/60 mb-1">{t('common.form.email')}</label>
                       <input
                         type="email"
                         id="checkout-email"
@@ -268,7 +268,7 @@ const CheckoutPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="checkout-phone" className="block text-sm text-white/60 mb-1">{t('form.phone')}</label>
+                      <label htmlFor="checkout-phone" className="block text-sm text-white/60 mb-1">{t('common.form.phone')}</label>
                       <input
                         type="tel"
                         id="checkout-phone"
@@ -282,7 +282,7 @@ const CheckoutPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="checkout-address" className="block text-sm text-white/60 mb-1">{t('form.address')}</label>
+                    <label htmlFor="checkout-address" className="block text-sm text-white/60 mb-1">{t('common.form.address')}</label>
                     <input
                       type="text"
                       id="checkout-address"
@@ -297,7 +297,7 @@ const CheckoutPage: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-city" className="block text-sm text-white/60 mb-1">{t('form.city')}</label>
+                      <label htmlFor="checkout-city" className="block text-sm text-white/60 mb-1">{t('common.form.city')}</label>
                       <input
                         type="text"
                         id="checkout-city"
@@ -310,7 +310,7 @@ const CheckoutPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="checkout-state" className="block text-sm text-white/60 mb-1">{t('form.state')}</label>
+                      <label htmlFor="checkout-state" className="block text-sm text-white/60 mb-1">{t('common.form.state')}</label>
                       <input
                         type="text"
                         id="checkout-state"
@@ -326,7 +326,7 @@ const CheckoutPage: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-zip" className="block text-sm text-white/60 mb-1">{t('form.zip')}</label>
+                      <label htmlFor="checkout-zip" className="block text-sm text-white/60 mb-1">{t('common.form.zip')}</label>
                       <input
                         type="text"
                         id="checkout-zip"
@@ -339,7 +339,7 @@ const CheckoutPage: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="checkout-country" className="block text-sm text-white/60 mb-1">{t('form.country')}</label>
+                      <label htmlFor="checkout-country" className="block text-sm text-white/60 mb-1">{t('common.form.country')}</label>
                       <input
                         type="text"
                         id="checkout-country"
@@ -363,7 +363,7 @@ const CheckoutPage: React.FC = () => {
               >
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">2</span>
-                  {t('checkout.payment')}
+                  {t('common.checkout.payment')}
                 </h2>
 
                 <div className="space-y-4">
@@ -392,13 +392,13 @@ const CheckoutPage: React.FC = () => {
                       </label>
                     ))
                   ) : (
-                    <div className="text-white/60 italic">{t('checkout.no_payments')}</div>
+                    <div className="text-white/60 italic">{t('common.checkout.no_payments')}</div>
                   )}
                 </div>
 
                 <div className="mt-4 flex items-center gap-2 text-sm text-white/60">
                   <Lock size={14} />
-                  {t('checkout.secure_msg')}
+                  {t('common.checkout.secure_msg')}
                 </div>
               </motion.div>
             </div>
@@ -412,7 +412,7 @@ const CheckoutPage: React.FC = () => {
                 className="bg-surface p-6 rounded-xl border border-white/10 sticky top-24"
               >
                 <h2 className="text-xl font-bold mb-4 border-b border-white/10 pb-4">
-                  {t('checkout.summary')}
+                  {t('common.checkout.summary')}
                 </h2>
 
                 {cart?.items && cart.items.length > 0 ? (
@@ -431,17 +431,17 @@ const CheckoutPage: React.FC = () => {
                 ) : (
                   <div className="text-center py-4 mb-4 text-white/40">
                     <AlertCircle className="mx-auto mb-2" />
-                    {t('cart.empty')}
+                    {t('common.cart.empty')}
                   </div>
                 )}
 
                 <div className="space-y-2 mb-6 text-sm border-t border-white/10 pt-4">
                   <div className="flex justify-between text-white/70">
-                    <span>{t('cart.subtotal')}</span>
+                    <span>{t('common.cart.subtotal')}</span>
                     <span>{formatPrice(cart?.totals?.total_price || '0')}</span>
                   </div>
                   <div className="flex justify-between text-white/70">
-                    <span>{t('cart.total')}</span>
+                    <span>{t('common.cart.total')}</span>
                     <span className="text-primary font-bold text-lg">{formatPrice(cart?.totals?.total_price || '0')}</span>
                   </div>
                 </div>
@@ -455,7 +455,7 @@ const CheckoutPage: React.FC = () => {
                   {isProcessing ? (
                     <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                   ) : (
-                    t('checkout.place_order')
+                    t('common.checkout.place_order')
                   )}
                 </button>
               </motion.div>

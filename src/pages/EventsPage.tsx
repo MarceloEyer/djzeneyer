@@ -74,7 +74,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
   }
 
   const share = () => {
-    // canonical_url do detalhe já contém o origin; fallback via event_id
+    // canonical_url do detalhe jÃ¡ contÃ©m o origin; fallback via event_id
     const canonical = event.canonical_url ||
       `${window.location.origin}${getLocalizedRoute('events', lang)}/${event.event_id || ''}`;
     if (navigator.share) {
@@ -104,7 +104,7 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
   return (
     <div className="max-w-4xl mx-auto">
       <HeadlessSEO
-        title={`${event.title} | ${t('events.title')}`}
+        title={`${event.title} | ${t('nav.events')}`}
         description={event.description.substring(0, 160)}
         url={`${origin}${generatePath(getLocalizedRoute('events-detail', lang), { id })}`}
         image={eventImage}
@@ -184,7 +184,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [showToast, setShowToast] = useState(false);
 
-  // Extrai regiões únicas (Estados)
+  // Extrai regiÃµes Ãºnicas (Estados)
   const regions = useMemo(() => {
     const r = new Set<string>();
     events.forEach((e: ZenBitEventListItem) => {

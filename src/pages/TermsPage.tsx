@@ -10,74 +10,74 @@ const TermsPage: React.FC = () => {
   const sections = [
     {
       icon: CheckCircle,
-      title: t('terms_page.acceptance'),
-      content: t('terms_page.acceptance_desc')
+      title: t('legal.terms_page.acceptance'),
+      content: t('legal.terms_page.acceptance_desc')
     },
     {
       icon: Scale,
-      title: t('terms_page.license'),
-      content: t('terms_page.license_desc')
+      title: t('legal.terms_page.license'),
+      content: t('legal.terms_page.license_desc')
     },
     {
       icon: AlertCircle,
-      title: t('terms_page.disclaimer'),
-      content: t('terms_page.disclaimer_desc')
+      title: t('legal.terms_page.disclaimer'),
+      content: t('legal.terms_page.disclaimer_desc')
     },
     {
       icon: Ban,
-      title: t('terms_page.limitations'),
-      content: t('terms_page.limitations_desc')
+      title: t('legal.terms_page.limitations'),
+      content: t('legal.terms_page.limitations_desc')
     }
   ];
 
   const additionalTerms = [
     {
-      title: t('terms_page.intellectual_property'),
+      title: t('legal.terms_page.intellectual_property'),
       points: [
-        t('terms_page.ip_content'),
-        t('terms_page.ip_protected'),
-        t('terms_page.ip_unauthorized'),
-        t('terms_page.ip_reproduce')
+        t('legal.terms_page.ip_content'),
+        t('legal.terms_page.ip_protected'),
+        t('legal.terms_page.ip_unauthorized'),
+        t('legal.terms_page.ip_reproduce')
       ]
     },
     {
-      title: t('terms_page.user_conduct'),
+      title: t('legal.terms_page.user_conduct'),
       points: [
-        t('terms_page.conduct_lawful'),
-        t('terms_page.conduct_access'),
-        t('terms_page.conduct_bots'),
-        t('terms_page.conduct_malware'),
-        t('terms_page.conduct_respect')
+        t('legal.terms_page.conduct_lawful'),
+        t('legal.terms_page.conduct_access'),
+        t('legal.terms_page.conduct_bots'),
+        t('legal.terms_page.conduct_malware'),
+        t('legal.terms_page.conduct_respect')
       ]
     },
     {
-      title: t('terms_page.purchases'),
+      title: t('legal.terms_page.purchases'),
       points: [
-        t('terms_page.purchases_availability'),
-        t('terms_page.purchases_prices'),
-        t('terms_page.purchases_cancel'),
-        t('terms_page.purchases_processing'),
-        t('terms_page.purchases_refunds')
+        t('legal.terms_page.purchases_availability'),
+        t('legal.terms_page.purchases_prices'),
+        t('legal.terms_page.purchases_cancel'),
+        t('legal.terms_page.purchases_processing'),
+        t('legal.terms_page.purchases_refunds')
       ]
     },
     {
-      title: t('terms_page.accounts'),
+      title: t('legal.terms_page.accounts'),
       points: [
-        t('terms_page.accounts_confidential'),
-        t('terms_page.accounts_responsibility'),
-        t('terms_page.accounts_accurate'),
-        t('terms_page.accounts_suspend'),
-        t('terms_page.accounts_notify')
+        t('legal.terms_page.accounts_confidential'),
+        t('legal.terms_page.accounts_responsibility'),
+        t('legal.terms_page.accounts_accurate'),
+        t('legal.terms_page.accounts_suspend'),
+        t('legal.terms_page.accounts_notify')
       ]
     },
     {
-      title: t('terms_page.third_party_links'),
+      title: t('legal.terms_page.third_party_links'),
       points: [
-        t('terms_page.links_contain'),
-        t('terms_page.links_no_control'),
-        t('terms_page.links_no_endorsement'),
-        t('terms_page.links_risk'),
-        t('terms_page.links_review')
+        t('legal.terms_page.links_contain'),
+        t('legal.terms_page.links_no_control'),
+        t('legal.terms_page.links_no_endorsement'),
+        t('legal.terms_page.links_risk'),
+        t('legal.terms_page.links_review')
       ]
     }
   ];
@@ -85,8 +85,8 @@ const TermsPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{t('terms_page.title')} | {t('common.artist_name')}</title>
-        <meta name="description" content={t('terms_page.subtitle')} />
+        <title>{t('legal.terms_page.title')} | {t('common.artist_name')}</title>
+        <meta name="description" content={t('legal.terms_page.subtitle')} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
@@ -103,10 +103,10 @@ const TermsPage: React.FC = () => {
               <FileText size={40} className="text-primary" />
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              {t('terms_page.title').split(' ')[0]} <span className="text-primary">{t('terms_page.title').split(' ').slice(1).join(' ')}</span>
+              {t('legal.terms_page.title').split(' ')[0]} <span className="text-primary">{t('legal.terms_page.title').split(' ').slice(1).join(' ')}</span>
             </h1>
             <p className="text-white/70">
-              {t('terms_page.last_updated')}: <span className="text-primary font-semibold">{t('terms_page.last_updated_date')}</span>
+              {t('legal.terms_page.last_updated')}: <span className="text-primary font-semibold">{t('legal.terms_page.last_updated_date')}</span>
             </p>
           </motion.div>
 
@@ -118,10 +118,10 @@ const TermsPage: React.FC = () => {
             className="card p-8 mb-8 border-l-4 border-primary"
           >
             <p className="text-lg text-white/80 leading-relaxed mb-4">
-              {t('terms_page.introduction')}
+              {t('legal.terms_page.introduction')}
             </p>
             <p className="text-white/70 leading-relaxed">
-              {t('terms_page.introduction_agreement')}
+              {t('legal.terms_page.introduction_agreement')}
             </p>
           </motion.div>
 
@@ -157,7 +157,7 @@ const TermsPage: React.FC = () => {
               <ul className="space-y-3">
                 {term.points.map((point, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="text-primary mt-1.5">•</span>
+                    <span className="text-primary mt-1.5">â€¢</span>
                     <span className="text-white/70 leading-relaxed">{point}</span>
                   </li>
                 ))}
@@ -172,12 +172,12 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.1 }}
             className="card p-8 mb-6"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">10. {t('terms_page.governing_law')}</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">10. {t('legal.terms_page.governing_law')}</h2>
             <p className="text-white/70 leading-relaxed mb-4">
-              {t('terms_page.law_brazil')}
+              {t('legal.terms_page.law_brazil')}
             </p>
             <p className="text-white/70 leading-relaxed">
-              {t('terms_page.law_consent')}
+              {t('legal.terms_page.law_consent')}
             </p>
           </motion.div>
 
@@ -188,9 +188,9 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.2 }}
             className="card p-8 mb-6"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">11. {t('terms_page.modifications')}</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">11. {t('legal.terms_page.modifications')}</h2>
             <p className="text-white/70 leading-relaxed">
-              {t('terms_page.modifications_desc')}
+              {t('legal.terms_page.modifications_desc')}
             </p>
           </motion.div>
 
@@ -201,15 +201,15 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.3 }}
             className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
           >
-            <h2 className="text-2xl font-display font-bold mb-4">{t('terms_page.questions')}</h2>
+            <h2 className="text-2xl font-display font-bold mb-4">{t('legal.terms_page.questions')}</h2>
             <p className="text-white/70 mb-6">
-              {t('terms_page.questions_desc')}
+              {t('legal.terms_page.questions_desc')}
             </p>
             <div className="space-y-2 text-white/80">
               <p><strong>{t('common.artist_name')}</strong></p>
-              <p>{t('terms_page.contact_company')}</p>
+              <p>{t('legal.terms_page.contact_company')}</p>
               <p>{t('media_page.cnpj')}: {t('common.cnpj')}</p>
-              <p>{t('terms_page.contact_location')}</p>
+              <p>{t('legal.terms_page.contact_location')}</p>
               <a
                 href="mailto:contact@djzeneyer.com"
                 className="text-primary hover:underline inline-block mt-2"
@@ -226,7 +226,7 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.4 }}
             className="text-center text-white/50 text-sm mt-8"
           >
-            <p>{t('terms_page.acceptance_footer')}</p>
+            <p>{t('legal.terms_page.acceptance_footer')}</p>
           </motion.div>
         </div>
       </div>

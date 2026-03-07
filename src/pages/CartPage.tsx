@@ -61,8 +61,8 @@ const CartPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={t('cart.title')}
-        description={t('cart.description')}
+        title={t('common.cart.title')}
+        description={t('common.cart.description')}
         isHomepage={false}
       />
 
@@ -75,7 +75,7 @@ const CartPage: React.FC = () => {
           >
             <h1 className="text-3xl md:text-4xl font-bold font-display flex items-center gap-3">
               <ShoppingCart className="text-primary" />
-              {t('cart.title')}
+              {t('common.cart.title')}
             </h1>
           </motion.div>
 
@@ -86,10 +86,10 @@ const CartPage: React.FC = () => {
               className="text-center py-16 bg-surface rounded-xl border border-white/10"
             >
               <ShoppingCart size={64} className="mx-auto mb-4 text-white/20" />
-              <h2 className="text-xl font-semibold mb-2">{t('cart.empty')}</h2>
-              <p className="text-white/60 mb-8">{t('cart.empty_desc')}</p>
+              <h2 className="text-xl font-semibold mb-2">{t('common.cart.empty')}</h2>
+              <p className="text-white/60 mb-8">{t('common.cart.empty_desc')}</p>
               <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary">
-                {t('cart.continue_shopping')}
+                {t('common.cart.continue_shopping')}
               </Link>
             </motion.div>
           ) : (
@@ -123,7 +123,7 @@ const CartPage: React.FC = () => {
                         <button
                           onClick={() => removeItem(item.key)}
                           className="text-white/40 hover:text-error transition-colors p-1"
-                          aria-label={t('cart.remove_item')}
+                          aria-label={t('common.cart.remove_item')}
                         >
                           <Trash2 size={18} />
                         </button>
@@ -131,7 +131,7 @@ const CartPage: React.FC = () => {
 
                       <div className="flex justify-between items-center mt-2">
                         <div className="text-sm text-white/60">
-                          {t('cart.qty')}: {item.quantity}
+                          {t('common.cart.qty')}: {item.quantity}
                         </div>
                         <div className="font-bold text-primary">
                           {formatPrice(item.totals?.line_total || item.price)}
@@ -151,22 +151,22 @@ const CartPage: React.FC = () => {
               >
                 <div className="bg-surface p-6 rounded-xl border border-white/10 sticky top-24">
                   <h2 className="text-xl font-bold mb-4 border-b border-white/10 pb-4">
-                    {t('cart.summary')}
+                    {t('common.cart.summary')}
                   </h2>
 
                   <div className="space-y-2 mb-4 text-sm">
                     <div className="flex justify-between text-white/70">
-                      <span>{t('cart.subtotal')}</span>
+                      <span>{t('common.cart.subtotal')}</span>
                       <span>{formatPrice(cart.totals?.total_price || '0')}</span>
                     </div>
                     <div className="flex justify-between text-white/70">
-                      <span>{t('cart.shipping')}</span>
-                      <span>{t('cart.shipping_calc')}</span>
+                      <span>{t('common.cart.shipping')}</span>
+                      <span>{t('common.cart.shipping_calc')}</span>
                     </div>
                   </div>
 
                   <div className="flex justify-between text-xl font-bold border-t border-white/10 pt-4 mb-6">
-                    <span>{t('cart.total')}</span>
+                    <span>{t('common.cart.total')}</span>
                     <span className="text-primary">{formatPrice(cart.totals?.total_price || '0')}</span>
                   </div>
 
@@ -174,7 +174,7 @@ const CartPage: React.FC = () => {
                     to={getLocalizedRoute('checkout', currentLang)}
                     className="btn btn-primary w-full flex items-center justify-center gap-2 py-3 text-lg"
                   >
-                    {t('cart.checkout')}
+                    {t('common.cart.checkout')}
                     <ArrowRight size={20} />
                   </Link>
                 </div>

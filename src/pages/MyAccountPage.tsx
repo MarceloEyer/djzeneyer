@@ -66,7 +66,7 @@ const MyAccountContent: React.FC = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
 
-  // 🎮 Computar estatísticas do usuário COM DADOS REAIS DO BRAIN (GamiPress)
+  // ðŸŽ® Computar estatÃ­sticas do usuÃ¡rio COM DADOS REAIS DO BRAIN (GamiPress)
   const userStats: UserStats = useMemo(() => {
     if (!user || !gamipress) {
       return {
@@ -99,7 +99,7 @@ const MyAccountContent: React.FC = () => {
     };
   }, [user, gamipress, t]);
 
-  // Redirect se não logado
+  // Redirect se nÃ£o logado
   useEffect(() => {
     if (!loading && !loadingGP && !user?.isLoggedIn) {
       navigate(getLocalizedRoute('', currentLang));
@@ -149,8 +149,8 @@ const MyAccountContent: React.FC = () => {
     );
   }
 
-  // Se a API do ZenGame/GamiPress falhar, mostramos um erro amigável na tela da conta
-  // para não quebrar a UI inteira (tela preta) quando o contexto tentar ler `rank` ou `points`.
+  // Se a API do ZenGame/GamiPress falhar, mostramos um erro amigÃ¡vel na tela da conta
+  // para nÃ£o quebrar a UI inteira (tela preta) quando o contexto tentar ler `rank` ou `points`.
   if (errorGP && user?.isLoggedIn) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
@@ -190,7 +190,7 @@ const MyAccountContent: React.FC = () => {
                 <Zap size={100} fill="currentColor" className="text-primary" />
               </div>
               <h2 className="text-4xl md:text-5xl font-black font-display mb-4 tracking-tighter">
-                {t('dashboard.welcomeBack', { name: user?.display_name || user?.name || t('common.friend') })} 👋
+                {t('dashboard.welcomeBack', { name: user?.display_name || user?.name || t('common.friend') })} ðŸ‘‹
               </h2>
               <p className="text-white/50 text-lg font-medium tracking-tight max-w-xl">
                 {t('dashboard.journeyBegins')} {t('dashboard.diveDeep')}
@@ -450,7 +450,7 @@ const MyAccountContent: React.FC = () => {
                 className="btn bg-white/5 hover:bg-red-500/20 hover:text-red-500 border border-white/5 hover:border-red-500/30 px-10 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-xs transition-all"
               >
                 <LogOut size={18} className="mr-3" />
-                {t('common.logout')}
+                {t('nav.logout')}
               </button>
             </div>
           </motion.div>
@@ -518,7 +518,7 @@ const MyAccountContent: React.FC = () => {
 
                 {/* Sidebar Footer Info */}
                 <div className="mt-12 pt-8 border-t border-white/5 text-center text-[9px] font-black uppercase tracking-[0.4em] text-white/10 group-hover:text-white/20 transition-colors">
-                  Zen Tribe v2.1.0 · 2026
+                  Zen Tribe v2.1.0 Â· 2026
                 </div>
               </div>
             </aside>

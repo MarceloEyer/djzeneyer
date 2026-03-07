@@ -129,7 +129,7 @@ const ProductPage: React.FC = () => {
           <p className="opacity-70">{error}</p>
           <Link to={shopPath} className="mt-6 btn btn-primary inline-flex items-center gap-2">
             <ArrowLeft size={18} />
-            {t('checkout.back_shop')}
+            {t('common.checkout.back_shop')}
           </Link>
         </div>
       </div>
@@ -156,7 +156,7 @@ const ProductPage: React.FC = () => {
         <div className="container mx-auto px-4 py-10">
           <Link to={shopPath} className="inline-flex items-center gap-2 text-white/70 hover:text-primary mb-6">
             <ArrowLeft size={18} />
-            {t('checkout.back_shop')}
+            {t('common.checkout.back_shop')}
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
