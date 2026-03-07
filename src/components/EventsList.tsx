@@ -1,8 +1,7 @@
-// src/components/EventsList.tsx
+﻿// src/components/EventsList.tsx
 // ARQUITETURA V2: VISUAL LIMPO + PAYLOAD ENXUTO + SEO CANONICAL
 
 import { useMemo, memo } from 'react';
-import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -109,11 +108,8 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
           // --- COMPACT CARD (used in Home) ---
           if (variant === 'compact') {
             return (
-              <motion.article
+              <article
                 key={event.event_id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
                 className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
               >
                 <Link to={detailHref} className="flex items-start gap-4 p-4">
@@ -130,22 +126,19 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="flex-shrink-0 text-white/40" />
-                        <span className="truncate">{eventLocation} • {formattedTime}</span>
+                        <span className="truncate">{eventLocation} â€¢ {formattedTime}</span>
                       </div>
                     </div>
                   </div>
                 </Link>
-              </motion.article>
+              </article>
             );
           }
 
           // --- FULL CARD ---
           return (
-            <motion.article
+            <article
               key={event.event_id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
               className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden bg-surface/30 border border-white/5 rounded-2xl"
             >
               <Link to={detailHref}>
@@ -182,7 +175,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                   </div>
                 </div>
               </Link>
-            </motion.article>
+            </article>
           );
         })}
       </div>

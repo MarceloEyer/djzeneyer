@@ -1,8 +1,9 @@
-import i18n from 'i18next';
+﻿import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 type SupportedLang = 'en' | 'pt';
+type SupportedNamespace = 'translation' | 'quiz';
 type TranslationLoader = () => Promise<Record<string, unknown>>;
 
 const normalizeLanguage = (lang: string): SupportedLang => {
@@ -10,9 +11,19 @@ const normalizeLanguage = (lang: string): SupportedLang => {
   return normalized.startsWith('pt') ? 'pt' : 'en';
 };
 
-const translationLoaders: Record<SupportedLang, TranslationLoader> = {
-  en: async () => (await import('./locales/en/translation.json')).default as Record<string, unknown>,
-  pt: async () => (await import('./locales/pt/translation.json')).default as Record<string, unknown>,
+const namespaceLoaders: Record<SupportedLang, Record<SupportedNamespace, TranslationLoader>> = {
+  en: {
+    translation: async () => (await import('./locales/en/translation.json')).default as Record<string, unknown>,
+    quiz: async () => (await import('./locales/en/quiz.json')).default as Record<string, unknown>,
+  },
+  pt: {
+    translation: async () => (await import('./locales/pt/translation.json')).default as Record<string, unknown>,
+    quiz: async () => (await import('./locales/pt/quiz.json')).default as Record<string, unknown>,
+  },
+};
+
+const normalizeNamespace = (ns: string): SupportedNamespace => {
+  return ns === 'quiz' ? 'quiz' : 'translation';
 };
 
 i18n
@@ -20,13 +31,15 @@ i18n
     type: 'backend',
     read: async (
       language: string,
-      _namespace: string,
+      namespace: string,
       callback: (error: Error | null, data: false | Record<string, unknown>) => void
     ) => {
-      const normalized = normalizeLanguage(language);
+      const normalizedLanguage = normalizeLanguage(language);
+      const normalizedNamespace = normalizeNamespace(namespace);
 
       try {
-        const translations = await translationLoaders[normalized]();
+        const loader = namespaceLoaders[normalizedLanguage][normalizedNamespace];
+        const translations = await loader();
         callback(null, translations);
       } catch (error) {
         callback(error as Error, false);
@@ -38,7 +51,7 @@ i18n
   .init({
     fallbackLng: 'en',
     supportedLngs: ['en', 'pt'],
-    ns: ['translation'],
+    ns: ['translation', 'quiz'],
     defaultNS: 'translation',
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,
@@ -54,6 +67,7 @@ i18n
     interpolation: { escapeValue: false },
     react: {
       useSuspense: true,
+      nsMode: 'fallback',
     },
   });
 

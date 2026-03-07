@@ -1,0 +1,94 @@
+﻿{
+    "quiz":  {
+                 "personas":  {
+                                  "lambadeiro":  {
+                                                     "title":  "The Lambadeiro ðŸŒªï¸",
+                                                     "subtitle":  "Speed, Whips \u0026 Hair Flips",
+                                                     "description":  "You don\u0027t just dance, you spin. The faster the beat, the happier you are. Your neck movements are legendary, and you treat every song like it\u0027s 180 BPM. You honor the roots of Zouk.",
+                                                     "shareText":  "I\u0027m the Lambadeiro! ðŸŒªï¸ Fast beats and hair flips. Which Zouk persona are you?"
+                                                 },
+                                  "cremoso":  {
+                                                  "title":  "The Creamy One ðŸ¦",
+                                                  "subtitle":  "Smooth, Slow \u0026 Connected",
+                                                  "description":  "You are the definition of \u0027Gostosinho\u0027. You prefer slow jams, R\u0026B, and close embrace. For you, Zouk is about connection and flow. If there\u0027s space between you and your partner, you\u0027re doing it wrong.",
+                                                  "shareText":  "I\u0027m The Creamy One! ðŸ¦ Smooth and connected. Which Zouk persona are you?"
+                                              },
+                                  "tecnico":  {
+                                                  "title":  "The Technician ðŸ“",
+                                                  "subtitle":  "Precision, Angles \u0026 Drills",
+                                                  "description":  "You know the difference between a cambre and a torsion. You probably judge people\u0027s frame silently. Your dance is clean, precise, and visually perfect, likely because you\u0027ve taken 500 privates.",
+                                                  "shareText":  "I\u0027m The Technician! ðŸ“ Perfect frame and precision. Which Zouk persona are you?"
+                                              },
+                                  "fritador":  {
+                                                   "title":  "The Headbanger ðŸ¤˜",
+                                                   "subtitle":  "Beats, Trance \u0026 Energy",
+                                                   "description":  "Give you a dark room and a heavy beat, and you\u0027re in heaven. You love Neozouk, complex rhythms, and energetic movements. You\u0027re probably sweating by the second song.",
+                                                   "shareText":  "I\u0027m The Headbanger! ðŸ¤˜ Dark rooms and heavy beats. Which Zouk persona are you?"
+                                               },
+                                  "rolezeiro":  {
+                                                    "title":  "The Socializer ðŸ¥‚",
+                                                    "subtitle":  "Talks more than dances",
+                                                    "description":  "You\u0027re at the party for the vibes. You dance 3 songs and spend 2 hours talking by the bar. You know everyone\u0027s name and all the gossip. The party doesn\u0027t start until you arrive.",
+                                                    "shareText":  "I\u0027m The Socializer! ðŸ¥‚ Here for the gossip and vibes. Which Zouk persona are you?"
+                                                }
+                              },
+                 "questions":  {
+                                   "q1":  {
+                                              "text":  "The DJ drops a super slow R\u0026B remix. What do you do?",
+                                              "options":  {
+                                                              "o1":  "Close my eyes and embrace the \u0027cremosidade\u0027.",
+                                                              "o2":  "Use it to practice my slow-motion head movements.",
+                                                              "o3":  "Go to the bar to get a drink.",
+                                                              "o4":  "Try to dance double-time anyway."
+                                                          }
+                                          },
+                                   "q2":  {
+                                              "text":  "What is your favorite accessory for a dance party?",
+                                              "options":  {
+                                                              "o1":  "A towel and extra t-shirts.",
+                                                              "o2":  "Comfortable shoes for spinning.",
+                                                              "o3":  "A breath mint and nice perfume.",
+                                                              "o4":  "My phone to record demos."
+                                                          }
+                                          },
+                                   "q3":  {
+                                              "text":  "Someone asks you for a dance. What are you thinking?",
+                                              "options":  {
+                                                              "o1":  "Do they know how to lead/follow a tilter?",
+                                                              "o2":  "I hope they like fast spins!",
+                                                              "o3":  "Let\u0027s see if we have connection.",
+                                                              "o4":  "Sure, but I need to finish this conversation first."
+                                                          }
+                                          },
+                                   "q4":  {
+                                              "text":  "What is your Zouk pet peeve?",
+                                              "options":  {
+                                                              "o1":  "People who don\u0027t protect the head.",
+                                                              "o2":  "Music that is too slow.",
+                                                              "o3":  "Music that has no beat/energy.",
+                                                              "o4":  "When the party ends too early."
+                                                          }
+                                          },
+                                   "q5":  {
+                                              "text":  "Ideally, how does a dance end?",
+                                              "options":  {
+                                                              "o1":  "With a perfect dip and clean exit.",
+                                                              "o2":  "With a long, lingering hug.",
+                                                              "o3":  "Sweating and out of breath.",
+                                                              "o4":  "With a high-five and a \u0027let\u0027s get water\u0027."
+                                                          }
+                                          }
+                               },
+                 "ui":  {
+                            "question_count":  "Question {{current}} of {{total}}",
+                            "complete":  "{{percent}}% Complete",
+                            "share_result":  "Share Result",
+                            "take_again":  "Take Again",
+                            "take_quiz_at":  "Take the quiz at:",
+                            "copied":  "Link copied!",
+                            "meta_title":  "Zouk Persona Quiz | {{stageName}}",
+                            "meta_desc":  "Who are you on the dance floor? Take the Zouk Persona Quiz to find out if you\u0027re a Lambadeiro, Technician, or the Creamy One!"
+                        }
+             }
+}
+

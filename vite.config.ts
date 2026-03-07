@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+﻿import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteCompression from 'vite-plugin-compression';
 import path from 'path';
@@ -27,9 +27,7 @@ export default defineConfig(({ command, mode }) => {
 
     publicDir: 'public',
 
-    // 🚀 BASE PATH: Importante para o Headless WordPress
-    // Em produção, os assets ficam na pasta do tema.
-    // No dev local (npm run dev), usamos '/' para o Preview funcionar sem subpastas.
+    // BASE PATH para o Headless WordPress
     base: command === 'serve' ? '/' : '/wp-content/themes/zentheme/dist/',
 
     resolve: {
@@ -44,7 +42,7 @@ export default defineConfig(({ command, mode }) => {
       emptyOutDir: true,
       target: 'es2020',
 
-      // 🔒 PULO DO GATO ANTI-EVAL
+      // Minificação com hardening para evitar transformações inseguras
       minify: 'terser',
       sourcemap: false,
 
@@ -52,7 +50,6 @@ export default defineConfig(({ command, mode }) => {
         compress: {
           drop_console: true,
           drop_debugger: true,
-          // Segurança
           evaluate: false,
           unsafe: false,
         },
@@ -61,15 +58,54 @@ export default defineConfig(({ command, mode }) => {
         },
       },
 
+      modulePreload: {
+        resolveDependencies: (_url, deps) => {
+          // Evita pré-carregar chunks estritamente opcionais (auth/quiz)
+          return deps.filter(
+            (dep) =>
+              !dep.includes('AuthModal') &&
+              !dep.includes('auth-vendors') &&
+              !dep.includes('ZoukPersonaQuizPage') &&
+              !dep.includes('quiz')
+          );
+        },
+      },
+
       rollupOptions: {
         output: {
           assetFileNames: 'assets/[name]-[hash].[ext]',
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
-          manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-            i18n: ['i18next', 'react-i18next'],
-            motion: ['framer-motion'],
+          manualChunks(id) {
+            if (!id.includes('node_modules')) {
+              if (id.includes('ZoukPersonaQuizPage') || id.includes('/locales/') && id.includes('quiz.json')) {
+                return 'quiz';
+              }
+              return undefined;
+            }
+
+            if (id.includes('@react-oauth/google') || id.includes('@marsidev/react-turnstile')) {
+              return 'auth-vendors';
+            }
+
+            if (id.includes('i18next') || id.includes('react-i18next')) {
+              return 'i18n';
+            }
+
+            if (id.includes('framer-motion')) {
+              return 'motion';
+            }
+
+            if (
+              id.includes('react-router') ||
+              id.includes('/react/') ||
+              id.includes('/react-dom/') ||
+              id.includes('@tanstack/react-query')
+            ) {
+              return 'vendor-core';
+            }
+
+            return 'vendor';
           },
         },
       },

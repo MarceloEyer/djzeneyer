@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -35,48 +35,48 @@ interface Question {
 const PERSONAS: Record<PersonaType, PersonaResult> = {
   lambadeiro: {
     id: 'lambadeiro',
-    title: 'The Lambadeiro 🌪️',
+    title: 'The Lambadeiro ðŸŒªï¸',
     subtitle: 'Speed, Whips & Hair Flips',
     description: "You don't just dance, you spin. The faster the beat, the happier you are. Your neck movements are legendary, and you treat every song like it's 180 BPM. You honor the roots of Zouk.",
     color: 'from-yellow-500 to-orange-600',
     icon: <Zap size={40} />,
-    shareText: "I'm the Lambadeiro! 🌪️ Fast beats and hair flips. Which Zouk persona are you?",
+    shareText: "I'm the Lambadeiro! ðŸŒªï¸ Fast beats and hair flips. Which Zouk persona are you?",
   },
   cremoso: {
     id: 'cremoso',
-    title: 'The Creamy One 🍦',
+    title: 'The Creamy One ðŸ¦',
     subtitle: 'Smooth, Slow & Connected',
     description: "You are the definition of 'Gostosinho'. You prefer slow jams, R&B, and close embrace. For you, Zouk is about connection and flow. If there's space between you and your partner, you're doing it wrong.",
     color: 'from-pink-500 to-purple-600',
     icon: <Heart size={40} />,
-    shareText: "I'm The Creamy One! 🍦 Smooth and connected. Which Zouk persona are you?",
+    shareText: "I'm The Creamy One! ðŸ¦ Smooth and connected. Which Zouk persona are you?",
   },
   tecnico: {
     id: 'tecnico',
-    title: 'The Technician 📐',
+    title: 'The Technician ðŸ“',
     subtitle: 'Precision, Angles & Drills',
     description: "You know the difference between a cambre and a torsion. You probably judge people's frame silently. Your dance is clean, precise, and visually perfect, likely because you've taken 500 privates.",
     color: 'from-blue-500 to-cyan-600',
     icon: <Sparkles size={40} />,
-    shareText: "I'm The Technician! 📐 Perfect frame and precision. Which Zouk persona are you?",
+    shareText: "I'm The Technician! ðŸ“ Perfect frame and precision. Which Zouk persona are you?",
   },
   fritador: {
     id: 'fritador',
-    title: 'The Headbanger 🤘',
+    title: 'The Headbanger ðŸ¤˜',
     subtitle: 'Beats, Trance & Energy',
     description: "Give you a dark room and a heavy beat, and you're in heaven. You love Neozouk, complex rhythms, and energetic movements. You're probably sweating by the second song.",
     color: 'from-red-600 to-purple-900',
     icon: <Music size={40} />,
-    shareText: "I'm The Headbanger! 🤘 Dark rooms and heavy beats. Which Zouk persona are you?",
+    shareText: "I'm The Headbanger! ðŸ¤˜ Dark rooms and heavy beats. Which Zouk persona are you?",
   },
   rolezeiro: {
     id: 'rolezeiro',
-    title: 'The Socializer 🥂',
+    title: 'The Socializer ðŸ¥‚',
     subtitle: 'Talks more than dances',
     description: "You're at the party for the vibes. You dance 3 songs and spend 2 hours talking by the bar. You know everyone's name and all the gossip. The party doesn't start until you arrive.",
     color: 'from-green-500 to-teal-600',
     icon: <Coffee size={40} />,
-    shareText: "I'm The Socializer! 🥂 Here for the gossip and vibes. Which Zouk persona are you?",
+    shareText: "I'm The Socializer! ðŸ¥‚ Here for the gossip and vibes. Which Zouk persona are you?",
   },
 };
 
@@ -138,7 +138,7 @@ const QUESTIONS: Question[] = [
 // ============================================================================
 
 const ZoukPersonaQuizPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'quiz']);
   const currentLang = normalizeLanguage(i18n.language);
   const quizUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('quiz', currentLang)}`;
 
@@ -324,3 +324,4 @@ const ZoukPersonaQuizPage: React.FC = () => {
 };
 
 export default ZoukPersonaQuizPage;
+

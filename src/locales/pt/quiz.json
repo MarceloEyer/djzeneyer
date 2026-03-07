@@ -1,0 +1,95 @@
+﻿{
+    "quiz":  {
+                 "personas":  {
+                                  "lambadeiro":  {
+                                                     "title":  "O Lambadeiro ðŸŒªï¸",
+                                                     "subtitle":  "Velocidade, Chicotes e Cabelo",
+                                                     "description":  "VocÃª nÃ£o apenas danÃ§a, vocÃª gira. Quanto mais rÃ¡pida a batida, mais feliz vocÃª fica. Seus movimentos de cabeÃ§a sÃ£o lendÃ¡rios e vocÃª trata cada mÃºsica como se fosse 180 BPM. VocÃª honra as raÃ­zes do Zouk.",
+                                                     "shareText":  "Eu sou o Lambadeiro! ðŸŒªï¸ Batidas rÃ¡pidas e \u0027hair flips\u0027. Qual Ã© o seu persona do Zouk?"
+                                                 },
+                                  "cremoso":  {
+                                                  "title":  "O Cremoso ðŸ¦",
+                                                  "subtitle":  "Fluidez, ConexÃ£o e LentidÃ£o",
+                                                  "description":  "VocÃª Ã© a definiÃ§Ã£o de \u0027Gostosinho\u0027. VocÃª prefere faixas lentas, R\u0026B e abraÃ§o fechado. Para vocÃª, Zouk Ã© sobre conexÃ£o e fluxo. Se houver espaÃ§o entre vocÃª e seu parceiro, algo estÃ¡ errado.",
+                                                  "shareText":  "Eu sou o Cremoso! ðŸ¦ Muita fluidez e conexÃ£o. Qual Ã© o seu persona do Zouk?"
+                                              },
+                                  "tecnico":  {
+                                                  "title":  "O TÃ©cnico ðŸ“",
+                                                  "subtitle":  "PrecisÃ£o, Ã‚ngulos e Drills",
+                                                  "description":  "VocÃª sabe a diferenÃ§a entre um cambrÃ© e uma torÃ§Ã£o. VocÃª provavelmente julga o frame das pessoas silenciosamente. Sua danÃ§a Ã© limpa, precisa e visualmente perfeita, provavelmente porque vocÃª jÃ¡ fez 500 aulas particulares.",
+                                                  "shareText":  "Eu sou o TÃ©cnico! ðŸ“ Frame perfeito e precisÃ£o. Qual Ã© o seu persona do Zouk?"
+                                              },
+                                  "fritador":  {
+                                                   "title":  "O Fritador ðŸ¤˜",
+                                                   "subtitle":  "Batidas, Transe e Energia",
+                                                   "description":  "Te dÃ£o uma sala escura e uma batida pesada, e vocÃª estÃ¡ no cÃ©u. VocÃª ama Neozouk, ritmos complexos e movimentos energÃ©ticos. VocÃª provavelmente jÃ¡ estÃ¡ suando na segunda mÃºsica.",
+                                                   "shareText":  "Eu sou O Fritador! ðŸ¤˜ Sala escura e batidas pesadas. Qual Ã© o seu persona do Zouk?"
+                                               },
+                                  "rolezeiro":  {
+                                                    "title":  "O Rolezeiro ðŸ¥‚",
+                                                    "subtitle":  "Fala mais do que danÃ§a",
+                                                    "description":  "VocÃª estÃ¡ na festa pela vibe. VocÃª danÃ§a 3 mÃºsicas e passa 2 horas conversando no bar. VocÃª sabe o nome de todo mundo e todas as fofocas. A festa sÃ³ comeÃ§a quando vocÃª chega.",
+                                                    "shareText":  "Eu sou o Rolezeiro! ðŸ¥‚ Aqui pela fofoca e pela vibe. Qual Ã© o seu persona do Zouk?"
+                                                }
+                              },
+                 "questions":  {
+                                   "q1":  {
+                                              "text":  "O DJ toca um remix de R\u0026B super lento. O que vocÃª faz?",
+                                              "options":  {
+                                                              "o1":  "Fecho os olhos e abraÃ§o a \u0027cremosidade\u0027.",
+                                                              "o2":  "Aproveito para praticar meus movimentos de cabeÃ§a em cÃ¢mera lenta.",
+                                                              "o3":  "Vou ao bar pegar uma bebida.",
+                                                              "o4":  "Tento danÃ§ar no dobro do tempo de qualquer maneira."
+                                                          }
+                                          },
+                                   "q2":  {
+                                              "text":  "Qual Ã© o seu acessÃ³rio favorito para uma festa de danÃ§a?",
+                                              "options":  {
+                                                              "o1":  "Uma toalha e camisetas extras.",
+                                                              "o2":  "Sapatos confortÃ¡veis para girar.",
+                                                              "o3":  "Uma bala de hortelÃ£ e um bom perfume.",
+                                                              "o4":  "Meu celular para gravar demonstraÃ§Ãµes."
+                                                          }
+                                          },
+                                   "q3":  {
+                                              "text":  "AlguÃ©m te tira para danÃ§ar. O que vocÃª estÃ¡ pensando?",
+                                              "options":  {
+                                                              "o1":  "Eles sabem como conduzir/seguir um tilter?",
+                                                              "o2":  "Espero que gostem de giros rÃ¡pidos!",
+                                                              "o3":  "Vamos ver se temos conexÃ£o.",
+                                                              "o4":  "Claro, mas preciso terminar esta conversa primeiro."
+                                                          }
+                                          },
+                                   "q4":  {
+                                              "text":  "O que mais te irrita no Zouk?",
+                                              "options":  {
+                                                              "o1":  "Pessoas que nÃ£o protegem a cabeÃ§a.",
+                                                              "o2":  "MÃºsica que Ã© muito lenta.",
+                                                              "o3":  "MÃºsica que nÃ£o tem batida/energia.",
+                                                              "o4":  "Quando a festa termina cedo demais."
+                                                          }
+                                          },
+                                   "q5":  {
+                                              "text":  "Idealmente, como termina uma danÃ§a?",
+                                              "options":  {
+                                                              "o1":  "Com um mergulho perfeito e uma saÃ­da limpa.",
+                                                              "o2":  "Com um abraÃ§o longo e demorado.",
+                                                              "o3":  "Suado e sem fÃ´lego.",
+                                                              "o4":  "Com um \u0027high-five\u0027 e um \u0027vamos beber Ã¡gua\u0027."
+                                                          }
+                                          }
+                               },
+                 "ui":  {
+                            "question_count":  "Pergunta {{current}} de {{total}}",
+                            "complete":  "{{percent}}% ConcluÃ­do",
+                            "you_are":  "VocÃª Ã©...",
+                            "share_result":  "Compartilhar Resultado",
+                            "take_again":  "Fazer Novamente",
+                            "take_quiz_at":  "FaÃ§a o quiz em:",
+                            "copied":  "Link copiado!",
+                            "meta_title":  "Quiz: Qual seu Persona? | {{stageName}}",
+                            "meta_desc":  "Quem Ã© vocÃª na pista de danÃ§a? FaÃ§a o Quiz de Persona do Zouk e descubra se vocÃª Ã© um Lambadeiro, TÃ©cnico ou o Cremoso!"
+                        }
+             }
+}
+

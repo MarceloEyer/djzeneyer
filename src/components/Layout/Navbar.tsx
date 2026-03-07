@@ -1,4 +1,4 @@
-// src/components/Layout/Navbar.tsx
+﻿// src/components/Layout/Navbar.tsx
 // Optimized Navbar: SSR Security + UX + Performance
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -17,7 +17,6 @@ import {
     Info,
     ChevronRight,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from '../common/UserMenu';
 import { useMenu } from '../../hooks/useMenu';
@@ -93,7 +92,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate, onPrefe
         ? `group flex items-center justify-between p-4 rounded-xl transition-all duration-300 border border-transparent`
         : `relative group nav-link py-2 text-white/80 hover:text-white transition-colors`;
 
-    const activeMobileClass = "bg-primary/10 border-white/5";
+    const activeMobileClass = 'bg-primary/10 border-white/5';
 
     const handleMouseEnter = () => {
         if (onPrefetch && !isExternal) {
@@ -213,7 +212,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                 visuals: getLinkVisuals(safeUrl),
             };
         });
-    }, [menuItems, currentLang]);
+    }, [menuItems, currentLang, t]);
 
 
     return (
@@ -251,34 +250,35 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                 </div>
             </header>
 
-            <AnimatePresence>
-                {isMenuOpen && (
-                    <>
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMenuOpen(false)} className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden" />
-                        <motion.div initial={{ y: '-100%' }} animate={{ y: 0 }} exit={{ y: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-white/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto">
-                            <nav className="flex flex-col space-y-3 mb-6">
-                                {processedMenuItems.map(item => (
-                                    <MenuItem
-                                        key={item.ID}
-                                        item={item}
-                                        isMobile={true}
-                                        onNavigate={() => setIsMenuOpen(false)}
-                                        onPrefetch={handlePrefetch}
-                                    />
-                                ))}
-                            </nav>
-                            <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
-                                {user?.isLoggedIn ? <UserMenu /> : (
-                                    <button onClick={handleLoginButtonClick} className="w-full btn btn-primary py-3 flex items-center justify-center space-x-2 shadow-lg shadow-primary/20">
-                                        <LogIn size={18} /> <span className="font-bold">{t('nav.join_the_tribe')}</span>
-                                    </button>
-                                )}
-                                <div className="flex justify-center"><LanguageSelector /></div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+            {isMenuOpen && (
+                <>
+                    <div
+                        onClick={() => setIsMenuOpen(false)}
+                        className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden opacity-100 transition-opacity duration-200"
+                    />
+                    <div className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-white/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto translate-y-0 transition-transform duration-300">
+                        <nav className="flex flex-col space-y-3 mb-6">
+                            {processedMenuItems.map(item => (
+                                <MenuItem
+                                    key={item.ID}
+                                    item={item}
+                                    isMobile={true}
+                                    onNavigate={() => setIsMenuOpen(false)}
+                                    onPrefetch={handlePrefetch}
+                                />
+                            ))}
+                        </nav>
+                        <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
+                            {user?.isLoggedIn ? <UserMenu /> : (
+                                <button onClick={handleLoginButtonClick} className="w-full btn btn-primary py-3 flex items-center justify-center space-x-2 shadow-lg shadow-primary/20">
+                                    <LogIn size={18} /> <span className="font-bold">{t('nav.join_the_tribe')}</span>
+                                </button>
+                            )}
+                            <div className="flex justify-center"><LanguageSelector /></div>
+                        </div>
+                    </div>
+                </>
+            )}
         </>
     );
 });
