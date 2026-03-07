@@ -58,3 +58,16 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Mudou endpoint/namespace? sincronizar `docs/API.md` e skills relacionadas
 - Mudou regra de arquitetura? sincronizar `CONTEXT.md` + skill `djzeneyer-context`
 
+
+## Politica de Atualizacao de Contexto e Skills (Obrigatoria)
+- Toda mudanca importante de comportamento, arquitetura, endpoint, contrato de API, fluxo de negocio, seguranca ou deploy DEVE atualizar a documentacao canonica no mesmo PR/commit.
+- Ordem minima de atualizacao:
+  1. Codigo real (fonte final)
+  2. `AI_CONTEXT_INDEX.md` (se impacta regra global, baseline, endpoint ou fluxo)
+  3. Documento tecnico especifico (`docs/ARCHITECTURE.md`, `docs/API.md`, `docs/CONFIGURATION.md`, etc.)
+  4. Skill relacionada em `.agents/skills/*` quando instrucoes da skill ficarem desatualizadas
+- Nao concluir tarefa estrutural sem sincronizar contexto.
+- Se nao houver mudanca relevante de comportamento, registrar explicitamente que "nenhuma atualizacao de contexto foi necessaria".
+
+## Regra operacional adicional (2026-03)
+10. Build de frontend deve passar em `npm run perf:budget` para evitar regressao de bundle.

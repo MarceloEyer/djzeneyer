@@ -811,3 +811,58 @@ If you need more context:
 
 ## When to Use
 This skill is applicable to execute the workflow or actions described in the overview.
+
+---
+
+## DJ Zen Eyer - Project Override (Mandatory)
+
+When generating social content for this repository, enforce this profile.
+
+### Strategic objective
+- Long-term objective: become the most recognized DJ in the world for this niche.
+- Main KPI: more international invitations.
+- Secondary KPI: Instagram growth (baseline ~7k, milestone 20k).
+- Additional milestone KPIs: high-engagement reels reaching ~1M and Spotify toward ~1M streams.
+
+### Audience priority
+1. Zouk dancers.
+2. Dance teachers.
+3. Event organizers.
+
+### Messaging framework
+- Reciprocity-first messaging: DJ Zen Eyer offers practical value first (often free), and only then presents paid options when relevant.
+- Speak as a close friend who helps the community.
+- Avoid classic ad pressure and over-optimized funnel language.
+
+### Content priorities
+- Music guides for classes and training.
+- Mood-based curation sets (relax, workout, pre-party, after-party, romantic).
+- Agenda by state/region.
+- Extended versions for DJs only as a secondary niche offer.
+
+### Platform emphasis for music distribution copy
+1. Spotify: authorials, covers, authorized remixes.
+2. SoundCloud: sets and unofficial remixes.
+3. YouTube.
+4. Apple Music.
+5. Download: mainly for DJs.
+
+### Forbidden language and tactics
+- Avoid phrases like:
+  - "Nao perca"
+  - "Corra antes que acabe"
+  - "Oferta imperdivel"
+  - "Garanta ja"
+  - "Clique aqui"
+  - "Solicite um orcamento"
+- No fake scarcity.
+- No manipulative persuasion.
+- No inflated claims.
+
+### Authority posture
+- Use proof, not self-praise.
+- Preferred proof: major events, countries played, awards, testimonials, full dance floor videos.
+
+### Ethical constraint
+- Never treat the community only as customers.
+- Reciprocity principle: contribute first, help genuinely, and let monetization happen as a voluntary consequence of trust and delivery.

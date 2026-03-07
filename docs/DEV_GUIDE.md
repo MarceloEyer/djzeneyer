@@ -102,3 +102,28 @@ npm run lint     # ESLint 9 (NÃO atualizar para 10)
 ---
 
 **Atualizado:** Fevereiro 2026
+
+---
+
+## Performance Budget (Novo)
+
+Este projeto agora possui verificacao automatica de regressao de bundle.
+
+Comandos locais:
+
+```bash
+npm run perf:baseline
+npm run perf:budget
+```
+
+O que cada comando faz:
+- `perf:baseline`: gera `.agents/perf-baseline.json` com tamanhos de bundles (raw/gzip/brotli).
+- `perf:budget`: falha o processo se os limites de performance forem ultrapassados.
+
+Limites padrao atuais:
+- `maxInitialJsGzip`: 181 KB
+- `maxLargestChunkGzip`: 120 KB
+- `maxEntryJsGzip`: 130 KB
+- `maxI18nChunkGzip`: 55 KB
+
+Esses checks tambem rodam no CI (workflow de deploy), para evitar regressao silenciosa.

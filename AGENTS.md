@@ -43,3 +43,8 @@
 npm run lint
 npm run build
 ```
+
+## Governanca de Contexto (Obrigatoria)
+10. Sempre que houver mudanca importante (arquitetura, API, fluxo, seguranca, deploy), atualizar no mesmo trabalho os arquivos de contexto/documentacao correspondentes.
+11. Se a mudanca afetar instrucoes de skills, atualizar tambem a skill relevante em `.agents/skills/*`.
+12. Nao encerrar mudanca estrutural sem sincronizar contexto.

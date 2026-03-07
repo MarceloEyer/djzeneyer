@@ -248,3 +248,56 @@ rewrite it until it feels obvious.
 ## When to Use
 
 This skill is applicable to execute the workflow or actions described in the overview.
+
+---
+
+## DJ Zen Eyer - Project Override (Mandatory)
+
+When this repository is the active workspace, apply these rules by default.
+
+### Brand objective and tone
+- Objective: global recognition with humility, closeness, and service.
+- Voice: friendly, human, generous, grounded, non-arrogant.
+- Positioning line preference: "A DJ dedicated to zouk who puts music and community first."
+
+### Audience priority
+1. Zouk dancers.
+2. Dance teachers.
+3. Event organizers.
+
+### Offer-first writing system
+- Replace hard-sell CTAs with practical offers.
+- Preferred CTA style examples:
+  - "I prepared this for you."
+  - "If this helps your training, use it."
+  - "Here is a guide you can apply today."
+- Never force urgency when urgency is not real.
+
+### Prohibited patterns
+- Do not use fake scarcity or countdown pressure.
+- Do not use manipulative promises.
+- Do not self-declare "best in the world" claims.
+- Do not write generic ad language like:
+  - "Nao perca"
+  - "Corra antes que acabe"
+  - "Oferta imperdivel"
+  - "Garanta ja"
+  - "Clique aqui"
+  - "Solicite um orcamento"
+
+### Evidence-based authority
+- Prefer evidence blocks: awards, countries/events played, testimonials, crowd-response videos, streams.
+- Let readers infer authority from facts.
+
+### Monetization stance
+- Reciprocity-first: DJ Zen Eyer offers practical value first (often free) before any paid ask.
+- The expected outcome is voluntary reciprocity: people who felt helped may choose to donate, buy products, or buy tickets.
+- Paid offers are acceptable only when they provide clear, fair, high-custom-value delivery (custom edits, commissioned tracks, courses).
+
+### Copy QA gate (before final delivery)
+Confirm all items are true:
+1. Useful offer appears before any ask.
+2. No manipulative urgency.
+3. No exaggerated outcomes.
+4. Language feels like a trusted friend, not a sales funnel.
+5. Facts are verifiable.

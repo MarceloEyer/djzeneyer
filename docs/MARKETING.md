@@ -7,7 +7,7 @@ Estratégias de marketing e crescimento focadas no público real: **dançarinos(
 ## 🏆 Diferenciais Únicos (USPs)
 
 1. **"A pressa é inimiga da cremosidade"** — Bordão exclusivo. Explorar em merchandising, reels e assinatura de marca.
-2. **Bicampeão Mundial de Brazilian Zouk** — Usar "2× World Champion" em **toda** bio (IG, Spotify, YouTube, Bandsintown).
+2. **Bicampeão Mundial de Brazilian Zouk** — Destacar conquistas com fatos e contexto, sem tom de autoafirmação.
 3. **Tribo Zen** — Comunidade exclusiva. Acesso antecipado, grupo VIP, recompensas via gamificação do site.
 4. **Bilíngue** — PT + EN alcança a comunidade global de Zouk (Brasil + Europa + EUA + Ásia).
 5. **Membro da Mensa** — Diferencial intelectual raro no mundo da música. Usar em press kits.
@@ -97,3 +97,61 @@ Estratégias de marketing e crescimento focadas no público real: **dançarinos(
 ---
 
 **Atualizado:** Fevereiro 2026
+
+---
+
+## Project Voice and Growth Guardrails (2026-03-07)
+
+### North star
+- Become the most recognized DJ in the world for this niche, with humility and real service.
+- Primary growth signal: more international invitations.
+- Secondary growth signal: Instagram growth (baseline ~7k, milestone 20k).
+
+### Publics in priority order
+1. People who love dancing zouk.
+2. Dance teachers (music adoption in classes and performances).
+3. Event organizers (booking and long-term relationships).
+
+### Offer-first positioning (instead of traditional CTA)
+- Always lead with practical help and useful offers.
+- Replace pressure language with service language.
+- Preferred framing: "I prepared this for you", "If this helps, use it", "Here is what you may be looking for".
+
+### Platform hierarchy for music page messaging
+1. Spotify (authorials, covers, authorized remixes)
+2. SoundCloud (sets and unofficial remixes)
+3. YouTube
+4. Apple Music
+5. Download (primarily for DJs)
+
+### Content offers to prioritize
+- Music guides for classes/training.
+- Mood curation sets (relax, workout, pre-party, after-party, romantic).
+- Agenda by state/region.
+- Extended versions for DJs when relevant.
+
+### Language to avoid
+- "Nao perca"
+- "Corra antes que acabe"
+- "Oferta imperdivel"
+- "Garanta ja"
+- "Clique aqui"
+- "Solicite um orcamento"
+
+### Authority style
+- Show facts and evidence, never self-proclaim superiority.
+- Use: major events played, countries played, awards, testimonials, full dance floor videos.
+- Avoid: "I am the best DJ in the world"-style self-praise.
+
+### Monetization philosophy
+- Reciprocity-first: DJ Zen Eyer offers real value first (often free) to help people before any paid ask.
+- The expected dynamic is natural reciprocity: after being helped, part of the audience chooses to give back by their own decision.
+- Main monetization: donations, products, and ticket commissions.
+- Premium paid offers only when there is clear and fair custom value (custom edits, specific commissioned tracks, courses).
+
+### Ethical boundaries (non-negotiable)
+- Never fabricate or exaggerate results.
+- Never use fake scarcity.
+- Never use manipulative marketing.
+- Never treat community only as customers.
+- Deliver more value than promised whenever possible.

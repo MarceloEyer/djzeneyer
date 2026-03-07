@@ -612,3 +612,31 @@ jobs:
 **VersÃ£o:** 2.2.0
 
 
+
+---
+
+## Governanca de Mudancas (Obrigatoria)
+- Mudou arquitetura, fluxo critico, endpoint ou regra de negocio: atualizar este arquivo no mesmo PR/commit.
+- Mudou contrato de API: atualizar tambem `docs/API.md`.
+- Mudou regra global de engenharia/contexto: atualizar `AI_CONTEXT_INDEX.md` e, se necessario, `AGENTS.md`.
+- Mudou procedimento operacional recorrente de IA: atualizar skill relacionada em `.agents/skills/*`.
+
+---
+
+## i18n por Namespace (Atualizacao 2026-03)
+
+A carga de traducoes foi segmentada por namespace para reduzir impacto no carregamento inicial.
+
+Namespaces ativos:
+- `translation` (geral)
+- `quiz` (conteudo exclusivo do quiz)
+
+Arquivos:
+- `src/locales/en/translation.json`
+- `src/locales/pt/translation.json`
+- `src/locales/en/quiz.json`
+- `src/locales/pt/quiz.json`
+
+Regra pratica:
+- Paginas comuns usam `useTranslation()` (namespace default `translation`).
+- Paginas que precisam do quiz carregam `useTranslation(['translation', 'quiz'])`.

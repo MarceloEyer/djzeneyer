@@ -110,3 +110,24 @@ VITE_SITE_URL=https://djzeneyer.com
 ---
 
 **Atualizado:** Fevereiro 2026
+
+---
+
+## Performance Budget no CI (Atualizacao 2026-03)
+
+O pipeline inclui validacao automatica de performance apos build:
+
+```bash
+npm run perf:baseline
+npm run perf:budget
+```
+
+Script de budget: `scripts/check-performance-budget.mjs`
+
+Limites padrao:
+- `PERF_BUDGET_INITIAL_JS_GZIP` default: `181 * 1024`
+- `PERF_BUDGET_LARGEST_CHUNK_GZIP` default: `120 * 1024`
+- `PERF_BUDGET_ENTRY_JS_GZIP` default: `130 * 1024`
+- `PERF_BUDGET_I18N_GZIP` default: `55 * 1024`
+
+Todos podem ser sobrescritos por variaveis de ambiente no CI.
