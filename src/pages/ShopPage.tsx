@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { useShopPageQuery, useProductsQuery, useAddToCartMutation } from '../hooks/useQueries';
+import { useShopPageQuery, useAddToCartMutation } from '../hooks/useQueries';
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
@@ -94,19 +94,19 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
         >
           <div className="flex items-center gap-3">
             <div className="h-6 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(13,150,255,0.5)]" />
-            <span className="text-white font-black tracking-tighter text-sm md:text-base uppercase flex items-center gap-2">
-              DJ ZEN EYER <span className="text-white/40">ORIGINAL</span>
+            <span className="text-white font-black tracking-tighter text-xs md:text-sm uppercase flex items-center gap-2 bg-black/35 border border-white/20 rounded-full px-3 py-1 backdrop-blur-sm">
+              DJ ZEN EYER <span className="text-white/60">{t('shop.hero_badge', 'Original')}</span>
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black font-display text-white leading-[0.9] drop-shadow-2xl">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black font-display text-white leading-[0.92] drop-shadow-2xl max-w-4xl text-balance">
             {product.name}
           </h1>
 
-          <div className="flex items-center gap-4 text-sm md:text-lg">
+          <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-base">
             <span className="text-primary font-bold">{t('shop.match_score')}</span>
             <span className="text-white/60">2024</span>
-            <span className="border border-white/40 px-1.5 py-0.5 text-xs text-white/80 rounded">
+            <span className="border border-white/40 px-2 py-1 text-[11px] md:text-xs text-white/85 rounded-full bg-black/35">
               {t('shop.cremosidade_level')}
             </span>
             <span className="text-white/60">HD</span>
@@ -136,7 +136,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
               className="flex items-center gap-2 bg-white/20 text-white px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg backdrop-blur-md hover:bg-white/30 transition-colors border border-white/10"
             >
               <Info size={24} />
-              {t('nav.about')}
+              {t('shop.product_details')}
             </Link>
           </div>
         </motion.div>
@@ -178,7 +178,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-black/20 group-hover/card:bg-transparent transition-colors" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent group-hover/card:from-black/35 transition-colors" />
           {product.on_sale && (
             <div className="absolute top-2 right-2 bg-error text-white px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter">
               {t('badge_sale')}
@@ -186,7 +186,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
           )}
         </Link>
 
-        <div className="p-4 bg-surface opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-100 border-t border-white/5">
+        <div className="p-4 bg-surface/95 md:opacity-0 md:group-hover/card:opacity-100 transition-opacity duration-300 delay-100 border-t border-white/5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2">
               <button
@@ -206,7 +206,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
               <Link
                 to={`${productBasePath}/${product.slug}`}
                 className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
-                title={t('nav.about')}
+                title={t('shop.product_details')}
               >
                 <Plus size={16} />
               </Link>
@@ -220,9 +220,9 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
             {product.name}
           </h3>
 
-          <div className="flex items-center gap-2 text-[10px] md:text-xs text-white/60">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs text-white/60">
             <span className="text-green-500 font-bold">{t('shop.match_score')}</span>
-            <span className="border border-white/30 px-1 rounded-sm uppercase tracking-tighter scale-90 origin-left">
+            <span className="border border-white/30 px-1.5 rounded-sm uppercase tracking-tighter">
               {t('shop.cremosidade_level')}
             </span>
           </div>
@@ -355,7 +355,7 @@ const ShopPage: React.FC = () => {
   const isPortuguese = i18n.language.startsWith('pt');
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
-  const { data: shopData, isLoading: loading, error, refetch } = useShopPageQuery(currentLang);
+  const { data: shopData, isLoading: loading } = useShopPageQuery(currentLang);
   const addToCartMutation = useAddToCartMutation();
   const [addingToCart, setAddingToCart] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
@@ -397,7 +397,11 @@ const ShopPage: React.FC = () => {
   // Removed the `if (error)` block as error handling is now per-query and not aggregated in a single `error` state.
 
   return (
-    <div className="min-h-screen bg-[#141414] text-white">
+    <div className="min-h-screen bg-[#141414] text-white relative overflow-x-clip">
+      <div className="pointer-events-none absolute inset-0 opacity-70">
+        <div className="absolute -top-40 left-[-15%] h-[460px] w-[460px] rounded-full bg-primary/15 blur-3xl" />
+        <div className="absolute top-[28%] right-[-12%] h-[420px] w-[420px] rounded-full bg-cyan-500/10 blur-3xl" />
+      </div>
       <Helmet>
         <title>{t('shop.page_title')} | {t('common.artist_name')}</title>
         <meta name="description" content={t('shop.page_meta_desc')} />
