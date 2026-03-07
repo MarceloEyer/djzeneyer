@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
-import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { normalizeLanguage } from '../config/routes';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -33,13 +33,6 @@ const YoutubeMusicIcon = () => (
 );
 
 // --- Animation variants ---
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.3 },
-  },
-};
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
@@ -141,7 +134,6 @@ const SmartMusicCard = () => {
 
 export const ZenLinkPage = () => {
   const { t, i18n } = useTranslation();
-  const currentLang = normalizeLanguage(i18n.language);
 
   const MAIN_LINKS = [
     { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: ARTIST.social.spotify.url, icon: <Music2 className="h-5 w-5" />, highlight: true },

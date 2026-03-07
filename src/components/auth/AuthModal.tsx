@@ -247,7 +247,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-4">
                 <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} aria-hidden="true">
                   <label htmlFor="user_website_trap">{t('auth.labels.honeypot')}</label>
                   <input

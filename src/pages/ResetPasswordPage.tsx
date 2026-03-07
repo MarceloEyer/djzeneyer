@@ -39,7 +39,7 @@ const ResetPasswordPage: React.FC = () => {
         try {
             await requestPasswordReset(email);
             setSuccess(true);
-        } catch (err) {
+        } catch {
             // Erro já tratado pelo context
         }
     };
@@ -63,7 +63,7 @@ const ResetPasswordPage: React.FC = () => {
             // Redirecionar após alguns segundos respeitando o idioma
             const homePath = i18n.language.startsWith('pt') ? '/pt/' : '/';
             setTimeout(() => navigate(homePath), 5000);
-        } catch (err) {
+        } catch {
             // Erro já tratado pelo context
         }
     };

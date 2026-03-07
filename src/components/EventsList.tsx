@@ -1,5 +1,4 @@
-﻿```typescript
-// src/components/EventsList.tsx
+﻿// src/components/EventsList.tsx
 // ARQUITETURA V2: VISUAL LIMPO + PAYLOAD ENXUTO + SEO CANONICAL
 
 import React, { useState } from 'react';
@@ -61,8 +60,8 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
         <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
           {[...Array(limit)].map((_, i) => (
             <div
-              key={`skeleton - ${ i } `}
-              className={`animate - pulse bg - surface / 30 border border - white / 5 rounded - xl overflow - hidden ${ variant === 'compact' ? 'h-[106px]' : 'h-[360px]' } `}
+              key={`skeleton-${i}`}
+              className={`animate-pulse bg-surface/30 border border-white/5 rounded-xl overflow-hidden ${variant === 'compact' ? 'h-[106px]' : 'h-[360px]'}`}
             >
               <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
             </div>
@@ -95,7 +94,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
         {visibleEvents.map((event) => {
           const eventDate = new Date(event.starts_at);
           const loc = event.location;
-          const eventLocation = `${ loc.city }, ${ loc.country || '' } `;
+          const eventLocation = `${loc.city}, ${loc.country || ''}`;
 
           const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' }, currentLocale);
           const formattedTime = formatTime(eventDate, currentLocale);
@@ -103,82 +102,82 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
           // Canonical Link handling
           const detailHref = event.canonical_path
             ? (lang === 'pt'
-              ? `/ pt / eventos${ event.canonical_path.replace('/events', '') } `
+              ? `/pt/eventos${event.canonical_path.replace('/events', '')}`
               : event.canonical_path)
-            : `${ getLocalizedRoute('events', lang) }/${event.event_id}`;
+            : `${getLocalizedRoute('events', lang)}/${event.event_id}`;
 
-// --- COMPACT CARD (used in Home) ---
-if (variant === 'compact') {
-  return (
-    <article
-      key={event.event_id}
-      className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
-    >
-      <Link to={detailHref} className="flex items-start gap-4 p-4">
-        <time dateTime={event.starts_at} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]">
-          <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
-          <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
-        </time>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
-          <div className="space-y-1 text-sm text-white/70 text-left">
-            <div className="flex items-center gap-2">
-              <MapPin size={14} className="flex-shrink-0 text-primary" />
-              <span className="truncate">{loc.venue || loc.city}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock size={14} className="flex-shrink-0 text-white/40" />
-              <span className="truncate">{eventLocation} â€¢ {formattedTime}</span>
-            </div>
-          </div>
-        </div>
-      </Link>
-    </article>
-  );
-}
+          // --- COMPACT CARD (used in Home) ---
+          if (variant === 'compact') {
+            return (
+              <article
+                key={event.event_id}
+                className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
+              >
+                <Link to={detailHref} className="flex items-start gap-4 p-4">
+                  <time dateTime={event.starts_at} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]">
+                    <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
+                    <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
+                  </time>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+                    <div className="space-y-1 text-sm text-white/70 text-left">
+                      <div className="flex items-center gap-2">
+                        <MapPin size={14} className="flex-shrink-0 text-primary" />
+                        <span className="truncate">{loc.venue || loc.city}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock size={14} className="flex-shrink-0 text-white/40" />
+                        <span className="truncate">{eventLocation} â€¢ {formattedTime}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </article>
+            );
+          }
 
-// --- FULL CARD ---
-return (
-  <article
-    key={event.event_id}
-    className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden bg-surface/30 border border-white/5 rounded-2xl"
-  >
-    <Link to={detailHref}>
-      <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{ backgroundImage: `url(${patternSvg})` }}
-        ></div>
-        <time dateTime={event.starts_at} className="relative z-10 text-center drop-shadow-lg">
-          <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
-          <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
-          <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
-        </time>
-      </div>
+          // --- FULL CARD ---
+          return (
+            <article
+              key={event.event_id}
+              className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden bg-surface/30 border border-white/5 rounded-2xl"
+            >
+              <Link to={detailHref}>
+                <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
+                  <div
+                    className="absolute inset-0 opacity-10"
+                    style={{ backgroundImage: `url(${patternSvg})` }}
+                  ></div>
+                  <time dateTime={event.starts_at} className="relative z-10 text-center drop-shadow-lg">
+                    <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
+                    <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
+                    <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
+                  </time>
+                </div>
 
-      <div className="p-6">
-        <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
-        <div className="space-y-2 mb-4 text-sm text-white/70">
-          <div className="flex items-start gap-2">
-            <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
-            <div>
-              <div className="font-semibold text-white">{loc.venue || t('loc_to_be_defined')}</div>
-              <div>{eventLocation}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Calendar size={16} className="flex-shrink-0 text-white/40" />
-            <span>{formattedDate}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock size={16} className="flex-shrink-0 text-white/40" />
-            <span>{formattedTime}</span>
-          </div>
-        </div>
-      </div>
-    </Link>
-  </article>
-);
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+                  <div className="space-y-2 mb-4 text-sm text-white/70">
+                    <div className="flex items-start gap-2">
+                      <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
+                      <div>
+                        <div className="font-semibold text-white">{loc.venue || t('loc_to_be_defined')}</div>
+                        <div>{eventLocation}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={16} className="flex-shrink-0 text-white/40" />
+                      <span>{formattedDate}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock size={16} className="flex-shrink-0 text-white/40" />
+                      <span>{formattedTime}</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </article>
+          );
         })}
       </div >
     </div >

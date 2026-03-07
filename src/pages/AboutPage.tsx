@@ -50,7 +50,7 @@ const AboutPage: React.FC = () => {
         about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
       },
     ],
-  }), [t, currentUrl]);
+  }), [t]);
 
   const MILESTONES = useMemo(() => [
     {

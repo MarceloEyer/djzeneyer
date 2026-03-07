@@ -95,7 +95,7 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
         // mas o safelist é prioritário para componentes sensíveis.
 
         return trimmedUrl;
-    } catch (e) {
+    } catch {
         // Se não for uma URL válida (ex: caminhos internos complexos), mas contém esquemas perigosos, bloqueamos
         if (/^(javascript|data|vbscript|file|about):/i.test(trimmedUrl)) {
             return fallback;
@@ -128,7 +128,7 @@ export const safeRedirect = (url: string | undefined | null, fallback: string = 
         if (TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
             return url;
         }
-    } catch (e) {
+    } catch {
         // Se o parse falhar e não for interno, por segurança retornamos o fallback
     }
 

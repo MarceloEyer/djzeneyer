@@ -102,12 +102,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate, onPrefe
 
     const activeMobileClass = 'bg-primary/10 border-white/5';
 
-    const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        if (onPrefetch && !isExternal) {
-            onPrefetch(safeUrl);
-        }
-    };
-
     if (isExternal) {
         return (
             <a

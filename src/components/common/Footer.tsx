@@ -111,7 +111,7 @@ const Footer: React.FC = () => {
           {/* 4. Newsletter */}
           <div className="lg:col-span-1">
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
-            <form onSubmit={handleSubscribe} className="space-y-3">
+            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <input
                 type="email"
                 id="footer_newsletter_email"
