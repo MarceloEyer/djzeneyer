@@ -78,6 +78,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --prefer-offline --no-audit
 
+      - name: 🌐 Validate i18n parity
+        run: npm run i18n:check
+
       - name: 🗺️ Generate sitemaps
         run: |
           echo "🗺️ Generating sitemaps..."

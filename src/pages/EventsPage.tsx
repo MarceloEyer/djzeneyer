@@ -247,7 +247,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
             onClick={() => setSelectedRegion('all')}
             className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
           >
-            {t('common.all', 'Todos')}
+            {t('common.all')}
           </button>
           {regions.map(region => (
             <button
@@ -263,7 +263,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
       {filteredEvents.length === 0 ? (
         <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5">
-          <p className="text-white/40">{t('events_no_results_filter', 'Nenhum evento encontrado para este filtro.')}</p>
+          <p className="text-white/40">{t('events_no_results_filter')}</p>
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {

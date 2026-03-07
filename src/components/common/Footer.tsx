@@ -88,7 +88,7 @@ const Footer: React.FC = () => {
               <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
               <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_shop', 'Shop')}</Link></li>
+              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_shop')}</Link></li>
               <li><Link to={getLocalizedRoute('support-the-artist', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</Link></li>
             </ul>
           </div>
@@ -98,12 +98,12 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
               <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
-              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_news', 'News & Blog')}</Link></li>
-              <li><Link to={getLocalizedRoute('my-philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_philosophy', 'My Philosophy')}</Link></li>
-              <li><Link to={getLocalizedRoute('work-with-me', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_work_with_me', 'Work With Me')}</Link></li>
-              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_media', 'Na Mídia')}</Link></li>
+              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_news')}</Link></li>
+              <li><Link to={getLocalizedRoute('my-philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_philosophy')}</Link></li>
+              <li><Link to={getLocalizedRoute('work-with-me', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_work_with_me')}</Link></li>
+              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_media')}</Link></li>
               <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_conduct', 'Regras de Conduta')}</Link></li>
+              <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_conduct')}</Link></li>
             </ul>
           </div>
 

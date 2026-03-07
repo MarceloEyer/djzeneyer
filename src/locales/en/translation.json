@@ -133,7 +133,8 @@
     "footer_subscribe_success": "Subscription successful!",
     "footer_subscribe_error": "Error during subscription.",
     "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
-    "friend": "Zen Friend"
+    "friend": "Zen Friend",
+    "all": "All"
   },
   "events": {
     "title_part1": "Events",
@@ -468,6 +469,7 @@
     "artist_tag": "A DJ Zen Eyer Production",
     "about_track": "About the Track",
     "hub_subtitle": "Access high-quality streams, exclusive remixes, and direct downloads.",
+    "listen_now_on": "Listen now on",
     "steal_button": "Grab & Go",
     "steal_desc": "Download my latest tracks and edits directly. No gatekeeping, just pure Zouk vibes.",
     "steal_cta": "Grab Music",
@@ -1137,6 +1139,7 @@
   "events_not_found": "Event not found",
   "events_not_found_desc": "The event you are looking for might have been removed or is no longer available.",
   "events_no_results": "No events found matching your search.",
+  "events_no_results_filter": "No events found for this filter.",
   "events_month_jan": "January",
   "events_month_feb": "February",
   "events_month_mar": "March",

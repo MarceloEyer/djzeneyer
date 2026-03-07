@@ -19,7 +19,7 @@
   },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
-    "error_loading": "N�o foi poss�vel carregar os dados do painel.",
+    "error_loading": "N�o foi poss�vel carregar os dados do painel.",
     "welcomeBack": "Bem-vindo de volta, {{name}}",
     "journeyBegins": "Sua jornada na Zen Tribe continua.",
     "diveDeep": "Mergulhe fundo no derretimento.",
@@ -135,7 +135,8 @@
     "footer_subscribe_success": "Inscrição realizada com sucesso!",
     "footer_subscribe_error": "Erro ao realizar inscrição.",
     "footer_copyright": "© {{year}} DJ Zen Eyer. Todos os direitos reservados.",
-    "friend": "Amigo Zen"
+    "friend": "Amigo Zen",
+    "all": "Todos"
   },
   "events": {
     "title_part1": "Agenda de",
@@ -471,6 +472,7 @@
     "artist_tag": "Uma Produção DJ Zen Eyer",
     "about_track": "Sobre a Música",
     "hub_subtitle": "Acesse streams de alta qualidade, remixes exclusivos e downloads diretos.",
+    "listen_now_on": "Ouça agora no",
     "steal_button": "Baixar & Curtir",
     "steal_desc": "Baixe minhas últimas tracks e edições diretamente. Sem travas, apenas a pura vibração do Zouk.",
     "steal_cta": "Baixar Música",
@@ -1151,6 +1153,7 @@
   "events_not_found": "Evento não encontrado",
   "events_not_found_desc": "O evento que você está procurando pode ter sido removido ou não está mais disponível.",
   "events_no_results": "Nenhum evento encontrado para sua busca.",
+  "events_no_results_filter": "Nenhum evento encontrado para este filtro.",
   "events_month_jan": "Janeiro",
   "events_month_feb": "Fevereiro",
   "events_month_mar": "Março",

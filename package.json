@@ -11,6 +11,7 @@
     "build:full": "npm run generate-sitemaps && npm run build && npm run prerender",
     "preview": "vite preview",
     "lint": "eslint .",
+    "i18n:check": "node scripts/check-i18n-parity.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {

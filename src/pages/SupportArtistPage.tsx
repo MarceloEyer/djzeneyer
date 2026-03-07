@@ -21,7 +21,7 @@ const SupportArtistPage = () => {
         ...(['usd', 'eur', 'gbp'] as const).map((currency) => {
           const acc = ARTIST.payment.interGlobal[currency];
           return {
-            country: t(`support.inter.${currency}`, `${currency.toUpperCase()} Bank Account`),
+            country: t(`support.inter.${currency}`),
             details: currency === 'usd' ? [
               { label: t('support.accountName'), value: acc.accountName },
               { label: t('support.bank'), value: (acc as any).bankName },
@@ -41,7 +41,7 @@ const SupportArtistPage = () => {
         }),
         // Local Brazil
         {
-          country: t('support.inter.brazil', 'Brazil (Local)'),
+          country: t('support.inter.brazil'),
           details: [
             { label: t('support.accountName'), value: ARTIST.payment.interGlobal.brazil.accountName },
             { label: t('support.cpf'), value: ARTIST.payment.interGlobal.brazil.cpf },
@@ -64,7 +64,7 @@ const SupportArtistPage = () => {
       email: ARTIST.payment.wise.email,
       accounts: [
         {
-          country: t('support.wise.eur', 'Euro Bank Account (EUR - Wise)'),
+          country: t('support.wise.eur'),
           details: [
             { label: t('support.accountName'), value: ARTIST.payment.wise.eur.accountName },
             { label: t('support.iban'), value: ARTIST.payment.wise.eur.iban },
@@ -118,19 +118,19 @@ const SupportArtistPage = () => {
       <div className="container mx-auto px-4">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white drop-shadow-2xl">
-            {t('payme.heading', t('support.header.title', 'Support the Music'))}
+            {t('support.header.title')}
           </h1>
           <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-            {t('payme.description', t('support.header.description', "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."))}
+            {t('support.header.description')}
           </p>
           <div className="mt-4 text-primary font-bold">
-            {t('payme.subtitle', 'Connect, Support & Collaborate')}
+            {t('payme.subtitle')}
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-16">
           <h2 className="text-2xl md:text-3xl font-bold font-display mb-8 text-center">
-            {t('support.reasons.title', 'Why Your Support Matters')}
+            {t('support.reasons.title')}
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {supportReasons.map((reason, index) => (
@@ -147,7 +147,7 @@ const SupportArtistPage = () => {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <h2 className="text-2xl md:text-3xl font-bold font-display mb-8 text-center">
-            {t('support.payment.title', 'Payment Methods')}
+            {t('support.payment.title')}
           </h2>
 
           <div className="space-y-6">
@@ -164,7 +164,7 @@ const SupportArtistPage = () => {
                           {method.title}
                           {method.priority === 1 && (
                             <span className="text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-                              {t('support.preferred', 'Preferred')}
+                              {t('support.preferred')}
                             </span>
                           )}
                         </h3>
@@ -195,7 +195,7 @@ const SupportArtistPage = () => {
                             ))}
                             {(account as any).bankAddress && (
                               <div className="bg-surface/30 rounded-lg p-4 md:col-span-2">
-                                <div className="text-sm text-white/50 mb-1">{t('support.bankAddress', 'Bank Address')}</div>
+                                <div className="text-sm text-white/50 mb-1">{t('support.bankAddress')}</div>
                                 <div className="font-mono text-white font-bold">{(account as any).bankAddress}</div>
                               </div>
                             )}
@@ -209,14 +209,14 @@ const SupportArtistPage = () => {
                     <div className="space-y-4">
                       {method.email && (
                         <div className="bg-surface/30 rounded-lg p-4">
-                          <div className="text-sm text-white/50 mb-1">{t('support.email', 'Email')}</div>
+                          <div className="text-sm text-white/50 mb-1">{t('support.email')}</div>
                           <div className="font-mono text-white font-bold">{method.email}</div>
                         </div>
                       )}
 
                       {(method as any).phone && (
                         <div className="bg-surface/30 rounded-lg p-4">
-                          <div className="text-sm text-white/50 mb-1">{t('support.phone', 'Phone / Key')}</div>
+                          <div className="text-sm text-white/50 mb-1">{t('support.phone')}</div>
                           <div className="font-mono text-white font-bold">{(method as any).phone}</div>
                         </div>
                       )}
@@ -224,7 +224,7 @@ const SupportArtistPage = () => {
                       {method.link && (
                         <a href={method.link} target="_blank" rel="noopener noreferrer" className="btn btn-primary w-full justify-center">
                           <DollarSign size={20} />
-                          {t('support.sendPayment', 'Send Payment via')} {method.title}
+                          {t('support.sendPayment')} {method.title}
                         </a>
                       )}
                     </div>
@@ -237,19 +237,19 @@ const SupportArtistPage = () => {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="mt-16 card p-8 text-center bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30">
           <Banknote className="mx-auto mb-4 text-primary" size={48} />
-          <h3 className="text-2xl font-bold mb-4">{t('support.business.title', 'Event Bookings & Business Inquiries')}</h3>
+          <h3 className="text-2xl font-bold mb-4">{t('support.business.title')}</h3>
           <p className="text-white/70 mb-6 max-w-2xl mx-auto">
-            {t('support.business.description', 'For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.')}
+            {t('support.business.description')}
           </p>
           <a href="mailto:contato@djzeneyer.com?subject=Event Booking Inquiry" className="btn btn-primary inline-flex items-center gap-2">
             <CheckCircle2 size={20} />
-            {t('support.business.contact', 'Contact for Bookings')}
+            {t('support.business.contact')}
           </a>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="mt-12 text-center">
           <p className="text-xl text-white/70 italic">
-            {t('support.thankYou', '✨ Your support keeps the music alive. Thank you! ✨')}
+            {t('support.thankYou')}
           </p>
         </motion.div>
       </div>

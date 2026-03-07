@@ -188,7 +188,7 @@ const MusicPage: React.FC = () => {
                     <span className="block text-2xl md:text-3xl font-black font-display uppercase tracking-widest text-[#1DB954] mb-1">
                       {platform.name}
                     </span>
-                    <span className="text-white/40 text-sm font-bold uppercase tracking-widest">{t('music.listen_now_on', 'Ouça Agora no Spotify')}</span>
+                    <span className="text-white/40 text-sm font-bold uppercase tracking-widest">{t('music.listen_now_on')}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 relative z-10">

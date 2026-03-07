@@ -95,7 +95,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
           <div className="flex items-center gap-3">
             <div className="h-6 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(13,150,255,0.5)]" />
             <span className="text-white font-black tracking-tighter text-xs md:text-sm uppercase flex items-center gap-2 bg-black/35 border border-white/20 rounded-full px-3 py-1 backdrop-blur-sm">
-              DJ ZEN EYER <span className="text-white/60">{t('shop.hero_badge', 'Original')}</span>
+              DJ ZEN EYER <span className="text-white/60">{t('badge_featured')}</span>
             </span>
           </div>
 
