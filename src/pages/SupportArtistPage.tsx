@@ -5,7 +5,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
 
 const SupportArtistPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const paymentMethods = [
     {

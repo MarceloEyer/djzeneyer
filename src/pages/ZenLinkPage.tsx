@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, getWhatsAppUrl } from '../data/artistData';
-import { normalizeLanguage } from '../config/routes';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -133,7 +132,7 @@ const SmartMusicCard = () => {
 };
 
 export const ZenLinkPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const MAIN_LINKS = [
     { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: ARTIST.social.spotify.url, icon: <Music2 className="h-5 w-5" />, highlight: true },

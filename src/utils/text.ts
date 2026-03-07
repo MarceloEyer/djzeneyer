@@ -10,7 +10,7 @@ export const stripHtml = (html: string): string => {
         try {
             const doc = new DOMParser().parseFromString(html, 'text/html');
             return doc.body.textContent || '';
-        } catch (e) {
+        } catch {
             // Fallback if DOMParser fails
         }
     }

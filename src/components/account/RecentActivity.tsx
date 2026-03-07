@@ -29,7 +29,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
         hour: '2-digit',
         minute: '2-digit'
       }).format(date);
-    } catch (e) {
+    } catch {
       return dateString;
     }
   };

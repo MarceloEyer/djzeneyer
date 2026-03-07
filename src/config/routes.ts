@@ -504,8 +504,7 @@ export const findRouteByPath = (path: string, lang: Language): RouteConfig | und
  * CORRIGIDO v3.1: Agora retorna paths localizados corretos
  */
 export const getAlternateLinks = (
-  currentPath: string,
-  currentLang: string
+  currentPath: string
 ): Record<string, string> => {
   const alternates: Record<string, string> = {};
 

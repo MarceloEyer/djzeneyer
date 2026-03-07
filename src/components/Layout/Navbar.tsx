@@ -87,10 +87,9 @@ interface MenuItemProps {
     item: MenuItemData;
     isMobile: boolean;
     onNavigate: () => void;
-    onPrefetch?: (url: string) => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate, onPrefetch }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate }) => {
     const { t } = useTranslation();
     const { safeUrl, safeTitle, visuals, target } = item;
     const isExternal = safeUrl.startsWith('http');

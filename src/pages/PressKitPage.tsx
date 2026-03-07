@@ -104,18 +104,6 @@ const PressKitPage: React.FC = () => {
     `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t('presskit.contact.whatsapp_message'))}`,
     [t]);
 
-  [t]);
-
-  // PERSON_SCHEMA code removed as it was unused
-  "image": "https://djzeneyer.com/wp-content/uploads/2025/12/ZenEyer-2026.png",
-    "sameAs": RELEVANT_LINKS.map(l => l.url),
-      "memberOf": { "@type": "Organization", "name": "Mensa International" },
-  "award": [
-    { "@type": "Award", "name": "World Champion DJ (Ilha do Zouk 2022)", "datePublished": "2022" },
-    { "@type": "Award", "name": "Best Remix (Ilha do Zouk 2022)", "datePublished": "2022" }
-  ]
-}), [t, RELEVANT_LINKS]);
-
 const stats = useMemo(() => [
   { number: "11+", label: t('presskit.stats.countries'), icon: <Globe size={32} />, color: "bg-gradient-to-br from-blue-500 to-blue-700" },
   { number: "50K+", label: t('presskit.stats.people'), icon: <Users size={32} />, color: "bg-gradient-to-br from-purple-500 to-purple-700" },

@@ -107,7 +107,6 @@ const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
 
-  const isPortuguese = i18n.language?.startsWith('pt');
   const currentLang = normalizeLanguage(i18n.language);
   const currentUrl = ARTIST.site.baseUrl;
 
