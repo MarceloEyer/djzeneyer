@@ -46,7 +46,7 @@ const MyAccountContent: React.FC = () => {
     if (tab && tab !== activeTab) {
       setActiveTab(tab);
     }
-  }, [searchParams]);
+  }, [searchParams, activeTab]);
 
   // Handle manual tab switching and URL update
   const handleTabChange = (tabId: string) => {
@@ -256,7 +256,7 @@ const MyAccountContent: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...gamipress.achievements_earned, ...gamipress.achievements_locked].map((ach: any) => (
+              {[...gamipress.achievements_earned, ...gamipress.achievements_locked].map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
                 <motion.div
                   key={ach.id}
                   whileHover={{ y: -5, scale: 1.02 }}
@@ -300,7 +300,7 @@ const MyAccountContent: React.FC = () => {
       case 'music':
         return <MusicCollection />;
 
-      case 'settings':
+      case 'settings': {
         const handleProfileChange = (field: string, value: string | string[]) => {
           setProfileForm(prev => ({ ...prev, [field]: value }));
           setProfileSaved(false);
@@ -455,6 +455,7 @@ const MyAccountContent: React.FC = () => {
             </div>
           </motion.div>
         );
+      }
 
       default:
         return <div>{t('account.tabs.not_found')}</div>;

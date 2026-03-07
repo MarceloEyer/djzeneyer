@@ -21,7 +21,6 @@
  */
 
 import { lazy, ComponentType } from 'react';
-import { matchPath, generatePath } from 'react-router-dom';
 
 // ============================================================================
 // TYPES

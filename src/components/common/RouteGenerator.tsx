@@ -6,12 +6,12 @@
  */
 
 import { Route } from 'react-router-dom';
-import { Fragment } from 'react';
-import { 
-  ROUTES_CONFIG, 
+import React from 'react';
+import {
+  ROUTES_CONFIG,
   NOT_FOUND_COMPONENT,
   getLocalizedPaths,
-  type Language 
+  type Language
 } from '../../config/routes';
 import MainLayout from '../../layouts/MainLayout';
 

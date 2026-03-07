@@ -7,7 +7,7 @@ import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
-import { sanitizeHtml, safeUrl, safeRedirect } from '../utils/sanitize';
+import { sanitizeHtml, safeRedirect } from '../utils/sanitize';
 
 interface PaymentMethod {
   id: string;
@@ -147,9 +147,9 @@ const CheckoutPage: React.FC = () => {
         await clearCart();
         setOrderSuccess(true);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Checkout error:', error);
-      alert(error.message || t('checkout.generic_error'));
+      alert(error instanceof Error ? error.message : t('checkout.generic_error'));
     } finally {
       setIsProcessing(false);
     }
@@ -417,7 +417,7 @@ const CheckoutPage: React.FC = () => {
 
                 {cart?.items && cart.items.length > 0 ? (
                   <div className="space-y-4 mb-6">
-                    {cart.items.map((item: any) => (
+                    {cart.items.map((item: { key?: string; id?: string; quantity: number; name: string; price: string | number; totals?: { line_total: string | number } }) => (
                       <div key={item.key || item.id} className="flex justify-between items-start text-sm">
                         <span className="text-white/80 line-clamp-2 pr-4">
                           {item.quantity}x {item.name}

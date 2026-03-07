@@ -75,8 +75,16 @@ const LanguageSelector: React.FC = React.memo(() => {
     );
 });
 
+interface MenuItemData {
+    safeUrl: string;
+    safeTitle: string;
+    visuals?: { icon: JSX.Element; color: string; bg: string };
+    target?: string;
+    [key: string]: unknown;
+}
+
 interface MenuItemProps {
-    item: any;
+    item: MenuItemData;
     isMobile: boolean;
     onNavigate: () => void;
     onPrefetch?: (url: string) => void;
@@ -94,7 +102,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate, onPrefe
 
     const activeMobileClass = 'bg-primary/10 border-white/5';
 
-    const handleMouseEnter = () => {
+    const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (onPrefetch && !isExternal) {
             onPrefetch(safeUrl);
         }
@@ -124,7 +132,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate, onPrefe
             to={safeUrl}
             end
             onClick={onNavigate}
-            onMouseEnter={handleMouseEnter}
             className={({ isActive }) => `${commonClass} ${isMobile && isActive ? activeMobileClass : ''} ${!isMobile && isActive ? 'text-primary font-medium' : ''}`}
         >
             {({ isActive }) => (

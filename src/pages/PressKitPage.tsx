@@ -4,9 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getHrefLangUrls } from '../utils/seo';
 import { sanitizeHtml } from '../utils/sanitize';
-import { getLocalizedRoute } from '../config/routes';
 import {
   Download,
   Phone,
@@ -58,7 +56,7 @@ const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; co
 ));
 StatCard.displayName = 'StatCard';
 
-const MediaKitCard = memo<{ icon: React.ReactNode; title: string; description: string; path: string; isExternal?: boolean; t: any }>(({ icon, title, description, path, isExternal, t }) => (
+const MediaKitCard = memo<{ icon: React.ReactNode; title: string; description: string; path: string; isExternal?: boolean; t: (key: string) => string }>(({ icon, title, description, path, isExternal, t }) => (
   <motion.a
     href={path}
     download={!isExternal}

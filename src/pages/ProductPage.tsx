@@ -48,7 +48,7 @@ const ProductPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const baseUrl = (window as any).wpData?.restUrl || `${window.location.origin}/wp-json/`;
+    const baseUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || `${window.location.origin}/wp-json/`;
     const apiUrl = `${baseUrl}djzeneyer/v1/products?slug=${encodeURIComponent(slug)}&lang=${currentLang}`;
 
     try {
@@ -62,17 +62,18 @@ const ProductPage: React.FC = () => {
         setProduct(nextProduct);
         setActiveImage(nextProduct.images?.[0]?.src || null);
       }
-    } catch (err: any) {
-      console.error('Error fetching product:', err);
-      setError(err.message || t('shop.generic_error'));
+    } catch (err) {
+      const error = err as Error;
+      console.error('Error fetching product:', error);
+      setError(error.message || t('shop.generic_error'));
     } finally {
       setLoading(false);
     }
-  }, [slug, t]);
+  }, [slug, t, currentLang]);
 
   useEffect(() => {
     fetchProduct();
-  }, [slug, t, currentLang]);
+  }, [fetchProduct]);
   const addToCart = async () => {
     if (!product) return;
     setAddingToCart(true);
@@ -81,7 +82,7 @@ const ProductPage: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': (window as any).wpData?.nonce || '',
+          'X-WP-Nonce': (window as unknown as { wpData?: { nonce: string } }).wpData?.nonce || '',
         },
         credentials: 'include',
         body: JSON.stringify({ id: product.id, quantity: 1 }),

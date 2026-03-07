@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Youtube, Calendar, ShoppingBag, Mail, Phone,
+  Youtube, Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
   Instagram, Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle, Music2
 } from 'lucide-react';

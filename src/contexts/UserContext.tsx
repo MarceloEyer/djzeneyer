@@ -1,5 +1,5 @@
 // src/contexts/UserContext.tsx - VERSÃO ATUALIZADA COM TURNSTILE
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, ReactNode } from 'react';
 import { clearAllCache } from '../config/queryClient';
 
 interface WordPressUser {
@@ -103,7 +103,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     init();
-  }, []);
+  }, [logout, API_URL]);
 
   // ========================================================================
   // HELPERS
@@ -141,10 +141,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       saveSession(json.data.user, json.data.token);
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro no login:', err);
-      setError(err.message);
-      throw err;
+    } catch (err) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro no login:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -182,10 +183,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       saveSession(json.data.user, json.data.token);
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro no registro:', err);
-      setError(err.message);
-      throw err;
+    } catch (err) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro no registro:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -230,10 +232,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       saveSession(json.data.user, json.data.token);
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Google Login falhou:', err);
-      setError(err.message);
-      throw err;
+    } catch (err) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Google Login falhou:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -242,12 +245,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // ========================================================================
   // LOGOUT
   // ========================================================================
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('zen_jwt');
     localStorage.removeItem('zen_user');
     clearAllCache();
-  };
+  }, []);
 
   // ========================================================================
   // PASSWORD RESET
@@ -266,10 +269,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!json.success) {
         throw new Error(json.message || 'Erro ao solicitar reset de senha');
       }
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro ao solicitar reset:', err);
-      setError(err.message);
-      throw err;
+    } catch (err) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro ao solicitar reset:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -289,10 +293,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!json.success) {
         throw new Error(json.message || 'Erro ao definir nova senha');
       }
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro ao resetar senha:', err);
-      setError(err.message);
-      throw err;
+    } catch (err) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro ao resetar senha:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }

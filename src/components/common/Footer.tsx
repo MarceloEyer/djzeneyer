@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Instagram, Youtube, Music2, MessageCircle, Send, Facebook } from 'lucide-react';
+import { Music, Instagram, Youtube, Music2, MessageCircle, Facebook } from 'lucide-react';
 import { ARTIST } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { useSubscriptionMutation } from '../../hooks/useQueries';
@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
 
   const { mutate: subscribe, isPending: isSubmitting } = useSubscriptionMutation();
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitMessage(null);
     setSubmitSuccess(null);
@@ -35,8 +35,9 @@ const Footer: React.FC = () => {
         setSubmitSuccess(true);
         setEmail('');
       },
-      onError: (err: any) => {
-        setSubmitMessage(err.message || t('footer_subscribe_error'));
+      onError: (err: unknown) => {
+        const error = err as Error;
+        setSubmitMessage(error.message || t('footer_subscribe_error'));
         setSubmitSuccess(false);
       },
     });

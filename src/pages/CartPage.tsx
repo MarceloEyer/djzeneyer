@@ -7,6 +7,17 @@ import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 
+interface CartItem {
+  key: string;
+  id: number;
+  name: string;
+  quantity: number;
+  price: string | number;
+  images?: { src: string }[];
+  totals?: { line_total: string | number };
+  [key: string]: unknown;
+}
+
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { cart, loading, removeItem } = useCart();
@@ -90,7 +101,7 @@ const CartPage: React.FC = () => {
                 animate="visible"
                 className="lg:col-span-2 space-y-4"
               >
-                {cart.items.map((item: any) => (
+                {cart.items.map((item: CartItem) => (
                   <motion.div
                     key={item.key || item.id}
                     variants={itemVariants}

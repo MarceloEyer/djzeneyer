@@ -11,7 +11,6 @@ import { useShopPageQuery, useAddToCartMutation } from '../hooks/useQueries';
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
-  AlertCircle,
   ChevronLeft,
   ChevronRight,
   Play,

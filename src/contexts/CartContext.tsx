@@ -1,11 +1,21 @@
 // src/contexts/CartContext.tsx
-import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
-import { useUser } from './UserContext';
+import React, { createContext, useState, useContext, ReactNode, useCallback, useMemo } from 'react';
 import { buildApiUrl } from '../config/api';
 
 // Interface para os dados do carrinho que virão da API
-interface CartData {
-  items: any[]; // Simplificado, pode ser detalhado depois
+export interface CartItem {
+  key: string;
+  id: number;
+  name: string;
+  quantity: number;
+  price: string | number;
+  images?: { src: string }[];
+  totals?: { line_total: string | number };
+  [key: string]: unknown;
+}
+
+export interface CartData {
+  items: CartItem[];
   totals: {
     total_price: string;
   };
@@ -22,7 +32,6 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { user } = useUser();
   const [cart, setCart] = useState<CartData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -39,8 +48,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const responseData = await response.json();
       if (!response.ok) throw new Error(responseData.message || 'Falha ao buscar carrinho');
       setCart(responseData);
-    } catch (err: any) {
-      console.error("[CartContext] Erro ao buscar carrinho:", err);
+    } catch (err) {
+      const error = err as Error;
+      console.error("[CartContext] Erro ao buscar carrinho:", error);
     } finally {
       setLoading(false);
     }
@@ -56,7 +66,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': (window as any).wpData?.nonce || ''
+          'X-WP-Nonce': ((window as unknown) as { wpData?: { nonce: string } }).wpData?.nonce || ''
         },
         credentials: 'include',
       });
@@ -69,8 +79,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Update cart state after removal
       await getCart();
 
-    } catch (err: any) {
-      console.error("[CartContext] Error removing item:", err);
+    } catch (err) {
+      const error = err as Error;
+      console.error("[CartContext] Error removing item:", error);
     } finally {
       setLoading(false);
     }
@@ -87,7 +98,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': (window as any).wpData?.nonce || ''
+          'X-WP-Nonce': ((window as unknown) as { wpData?: { nonce: string } }).wpData?.nonce || ''
         },
         credentials: 'include',
       });
@@ -101,19 +112,20 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // We call getCart() to ensure we have the correct empty state structure (totals, etc)
       await getCart();
 
-    } catch (err: any) {
-      console.error("[CartContext] Error clearing cart:", err);
+    } catch (err) {
+      const error = err as Error;
+      console.error("[CartContext] Error clearing cart:", error);
     } finally {
       setLoading(false);
     }
   }, [getCart]);
 
-  const value = useMemo<CartContextType>(() => ({ 
-    cart, 
-    getCart, 
-    removeItem, 
-    clearCart, 
-    loading 
+  const value = useMemo<CartContextType>(() => ({
+    cart,
+    getCart,
+    removeItem,
+    clearCart,
+    loading
   }), [cart, getCart, removeItem, clearCart, loading]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

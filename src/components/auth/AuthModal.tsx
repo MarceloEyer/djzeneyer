@@ -21,7 +21,14 @@ interface AuthModalProps {
 interface FormErrors {
   email?: string;
   password?: string;
+  password?: string;
   username?: string;
+}
+
+interface GoogleCredentialResponse {
+  credential?: string;
+  clientId?: string;
+  select_by?: string;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
@@ -77,7 +84,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   };
 
   // --- Handlers ---
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -104,16 +111,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       if (onSuccess) onSuccess();
       onClose();
       navigate(getLocalizedRoute('dashboard', currentLang));
-    } catch (err: any) {
-      console.error('❌ [AuthModal] Erro:', err);
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('❌ [AuthModal] Erro:', error);
       setTurnstileToken('');
-      setError(err.message || t('auth.errors.auth_generic_error'));
+      setError(error.message || t('auth.errors.auth_generic_error'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse: GoogleCredentialResponse) => {
     if (!credentialResponse.credential) {
       setError(t('auth.errors.google_no_credential'));
       return;
@@ -127,7 +135,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       if (onSuccess) onSuccess();
       onClose();
       navigate(getLocalizedRoute('dashboard', currentLang));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [AuthModal] Erro no Google Login:', err);
       setError(t('auth.errors.google_auth_failed'));
     } finally {

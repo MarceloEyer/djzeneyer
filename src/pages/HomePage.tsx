@@ -10,7 +10,6 @@ import {
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getHrefLangUrls } from '../utils/seo';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
@@ -42,7 +41,7 @@ interface FestivalBadgeProps {
 interface ZenGlobalSettings {
   real_name?: string;
   default_og_image?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // ============================================================================
@@ -110,13 +109,12 @@ const HomePage: React.FC = () => {
 
   const isPortuguese = i18n.language?.startsWith('pt');
   const currentLang = normalizeLanguage(i18n.language);
-  const currentPath = '/';
   const currentUrl = ARTIST.site.baseUrl;
 
   // --- FETCH PLUGIN SETTINGS (Integration) ---
   useEffect(() => {
     // Tenta pegar a URL da API do ambiente ou usa fallback
-    const wpRestUrl = (window as any).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
+    const wpRestUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
 
     fetch(`${wpRestUrl}/zen-seo/v1/settings`)
       .then(res => res.json())
@@ -210,7 +208,7 @@ const HomePage: React.FC = () => {
         }
       }
     ],
-  }), [isPortuguese, currentUrl, seoSettings]);
+  }), [seoSettings]);
 
   return (
     <>
@@ -277,7 +275,7 @@ const HomePage: React.FC = () => {
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
-              {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as any)} icon={stat.icon} />)}
+              {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as unknown as Parameters<typeof t>[0]) as string} icon={stat.icon} />)}
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
@@ -370,7 +368,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {FEATURES_DATA.map(feature => (
-              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as any)} description={t(feature.descKey as any)} variants={ITEM_VARIANTS} />
+              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as unknown as Parameters<typeof t>[0]) as string} description={t(feature.descKey as unknown as Parameters<typeof t>[0]) as string} variants={ITEM_VARIANTS} />
             ))}
           </motion.div>
         </div>

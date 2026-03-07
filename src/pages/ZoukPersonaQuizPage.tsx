@@ -27,7 +27,6 @@ interface Question {
   id: number;
   text: string;
   options: {
-    text: string;
     points: Partial<Record<PersonaType, number>>;
   }[];
 }

@@ -1,15 +1,3 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { HeadlessSEO } from '../components/HeadlessSEO';
-import { Calendar, Clock, ArrowRight, TrendingUp, Hash, ArrowLeft } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { buildFullPath, ROUTES_CONFIG, getLocalizedPaths, normalizeLanguage, getLocalizedRoute } from '../config/routes';
-import { generatePath } from 'react-router-dom';
-import { useNewsQuery, useNewsBySlug, WPPost } from '../hooks/useQueries';
-import { stripHtml } from '../utils/text';
-import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { ARTIST } from '../data/artistData';
 
 // ============================================================================
 // HELPERS

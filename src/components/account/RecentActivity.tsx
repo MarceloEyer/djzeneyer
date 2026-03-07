@@ -6,7 +6,7 @@
  */
 
 import React, { memo } from 'react';
-import { Award, Music, Calendar, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { Music, Calendar, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ZenGameLog } from '../../types/gamification';
 

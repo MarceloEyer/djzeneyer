@@ -34,7 +34,7 @@ const TicketsPage: React.FC = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       setLoading(true);
-      const baseUrl = (window as any).wpData?.restUrl || `${window.location.origin}/wp-json/`;
+      const baseUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || `${window.location.origin}/wp-json/`;
       const apiUrl = `${baseUrl}djzeneyer/v1/products?lang=${currentLang}`;
 
       try {

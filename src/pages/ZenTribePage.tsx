@@ -25,7 +25,7 @@ import { useUser } from '../contexts/UserContext';
 /**
  * Schema.org Organization (Tribo Zen)
  */
-const getOrganizationSchema = (t: any) => ({
+const getOrganizationSchema = (t: (key: string) => string) => ({
   "@type": "Organization",
   "@id": "https://djzeneyer.com/zentribe#organization",
   "name": t('zenTribe.schema.organization_name'),
@@ -112,9 +112,9 @@ BenefitCard.displayName = 'BenefitCard';
  * MembershipCard - Card de tier de membership
  */
 interface MembershipCardProps {
-  tier: any;
-  user: any;
-  t: any;
+  tier: Record<string, unknown>;
+  user: Record<string, unknown> | null;
+  t: (key: string) => string;
 }
 
 const MembershipCard = memo(({ tier, user, t }: MembershipCardProps) => (
@@ -171,7 +171,7 @@ interface AchievementCardProps {
   title: string;
   description: string;
   unlocked: boolean;
-  t: any;
+  t: (key: string) => string;
 }
 
 const AchievementCard = memo(({ emoji, title, description, unlocked, t }: AchievementCardProps) => (
@@ -453,8 +453,8 @@ const ZenTribePage: React.FC = () => {
                     <AchievementCard
                       key={index}
                       emoji={achievement.emoji}
-                      title={t(achievement.titleKey as any)}
-                      description={t(achievement.descKey as any)}
+                      title={t(achievement.titleKey)}
+                      description={t(achievement.descKey)}
                       unlocked={achievement.unlocked}
                       t={t}
                     />

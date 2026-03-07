@@ -235,9 +235,9 @@ const EventListContent = ({ lang }: { lang: string }) => {
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
         url={`${origin}${getLocalizedRoute('events', lang)}`}
-        events={events.map((event: any) => ({
+        events={events.map((event: Record<string, unknown>) => ({
           ...event,
-          image: (event as any).image || '/images/zen-eyer-og-image.png',
+          image: event.image as string || '/images/zen-eyer-og-image.png',
         }))}
       />
       {/* Filter Bar */}

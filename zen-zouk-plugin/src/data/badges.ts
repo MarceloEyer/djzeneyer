@@ -1,5 +1,16 @@
 import type { Badge } from '../types';
 
+export interface BadgeConditionProgress {
+  streak: number;
+  [key: string]: unknown;
+}
+
+export interface BadgeConditionCompleted {
+  levelId?: number;
+  reflection?: string;
+  [key: string]: unknown;
+}
+
 export const BADGES: Badge[] = [
   {
     id: 'badge_day1',
@@ -121,16 +132,16 @@ export const BADGES: Badge[] = [
 
 export const checkNewBadges = (
   currentBadges: string[],
-  progress: any,
-  completed: any[]
+  progress: BadgeConditionProgress,
+  completed: BadgeConditionCompleted[]
 ): string[] => {
   const newBadges: string[] = [];
-  
+
   BADGES.forEach(badge => {
     if (!currentBadges.includes(badge.id) && badge.condition(progress, completed)) {
       newBadges.push(badge.id);
     }
   });
-  
+
   return newBadges;
 };

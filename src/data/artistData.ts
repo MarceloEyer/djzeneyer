@@ -286,9 +286,6 @@ export const ARTIST = {
 // 🛠️ HELPERS EXPORTADOS
 // ============================================================================
 
-const getFullTitle = () =>
-  `${ARTIST.identity.stageName} - ${ARTIST.titles.primary}`;
-
 export const getWhatsAppUrl = (message?: string) => {
   const defaultMsg =
     'Olá Zen Eyer! Gostaria de conversar sobre booking.';

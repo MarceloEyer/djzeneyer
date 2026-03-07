@@ -24,11 +24,11 @@ const SupportArtistPage = () => {
             country: t(`support.inter.${currency}`),
             details: currency === 'usd' ? [
               { label: t('support.accountName'), value: acc.accountName },
-              { label: t('support.bank'), value: (acc as any).bankName },
-              { label: t('support.accountNumber'), value: (acc as any).accountNumber },
-              { label: t('support.achRouting'), value: (acc as any).achRouting },
-              { label: t('support.wireRouting'), value: (acc as any).wireRouting },
-              { label: t('support.bankAddress'), value: (acc as any).bankAddress },
+              { label: t('support.bank'), value: (acc as Record<string, unknown>).bankName as string },
+              { label: t('support.accountNumber'), value: (acc as Record<string, unknown>).accountNumber as string },
+              { label: t('support.achRouting'), value: (acc as Record<string, unknown>).achRouting as string },
+              { label: t('support.wireRouting'), value: (acc as Record<string, unknown>).wireRouting as string },
+              { label: t('support.bankAddress'), value: (acc as Record<string, unknown>).bankAddress as string },
             ] : [
               { label: t('support.accountName'), value: acc.accountName },
               { label: t('support.beneficiaryBank'), value: acc.beneficiaryBank },
@@ -193,10 +193,10 @@ const SupportArtistPage = () => {
                                 <div className="font-mono text-white font-bold">{detail.value}</div>
                               </div>
                             ))}
-                            {(account as any).bankAddress && (
+                            {(account as Record<string, unknown>).bankAddress && (
                               <div className="bg-surface/30 rounded-lg p-4 md:col-span-2">
                                 <div className="text-sm text-white/50 mb-1">{t('support.bankAddress')}</div>
-                                <div className="font-mono text-white font-bold">{(account as any).bankAddress}</div>
+                                <div className="font-mono text-white font-bold">{(account as Record<string, unknown>).bankAddress as string}</div>
                               </div>
                             )}
                           </div>
@@ -214,10 +214,10 @@ const SupportArtistPage = () => {
                         </div>
                       )}
 
-                      {(method as any).phone && (
+                      {(method as Record<string, unknown>).phone && (
                         <div className="bg-surface/30 rounded-lg p-4">
                           <div className="text-sm text-white/50 mb-1">{t('support.phone')}</div>
-                          <div className="font-mono text-white font-bold">{(method as any).phone}</div>
+                          <div className="font-mono text-white font-bold">{(method as Record<string, unknown>).phone as string}</div>
                         </div>
                       )}
 

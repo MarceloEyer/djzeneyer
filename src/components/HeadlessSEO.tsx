@@ -6,8 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
-import { getAlternateLinks, Language, normalizeLanguage } from '../config/routes';
-import { ensureTrailingSlash, HrefLang } from '../utils/seo';
+import { getAlternateLinks, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 
 // ============================================================================
@@ -20,6 +19,25 @@ export interface PreloadItem {
   media?: string;
   type?: string;
   crossOrigin?: string;
+}
+
+export interface EventSchemaData {
+  title?: string | { rendered?: string };
+  name?: string;
+  starts_at?: string;
+  event_date?: string;
+  start_date?: string;
+  ends_at?: string;
+  end_date?: string;
+  location?: { venue?: string; city?: string; country?: string };
+  event_location?: string;
+  event_ticket?: string;
+  tickets?: { url?: string }[];
+  offers?: { url?: string }[];
+  image?: string;
+  description?: string;
+  desc?: string;
+  [key: string]: unknown;
 }
 
 interface ZenSeoPluginData {
@@ -49,7 +67,7 @@ interface HeadlessSEOProps {
   locale?: 'en_US' | 'pt_BR';
   leadAnswer?: string;
   faqs?: { q: string; a: string }[]; // NOVO: Suporte a FAQ Schema
-  events?: any[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
+  events?: EventSchemaData[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
 }
 
 // ============================================================================
@@ -160,7 +178,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const isProfileType = type === 'profile';
 
   // Schema Generation (Mantido igual)
-  let finalSchema: any = schema;
+  let finalSchema: Record<string, unknown> | undefined = schema as Record<string, unknown> | undefined;
   if (!finalSchema && isHomepage) {
     finalSchema = {
       '@context': 'https://schema.org',
@@ -192,7 +210,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
   // 4. Advanced Schema Logic (Breadcrumbs, FAQ, Events)
   if (!schema) {
-    const graph: any[] = [];
+    const graph: Record<string, unknown>[] = [];
     const siteUrlClean = baseUrl.replace(/\/$/, '');
 
     // 4.1 BreadcrumbList (Automatic)
@@ -243,8 +261,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         const locName = event.location?.venue || event.event_location || 'TBA';
 
         // Offers mapping
-        let eventOffers: any = undefined;
-        const ticketUrl = event.event_ticket || (event.tickets && event.tickets[0]) || (event.offers && event.offers[0]?.url);
+        let eventOffers: Record<string, unknown> | undefined = undefined;
+        const ticketUrl = event.event_ticket || (event.tickets && event.tickets[0]?.url) || (event.offers && event.offers[0]?.url);
 
         if (ticketUrl) {
           eventOffers = {
