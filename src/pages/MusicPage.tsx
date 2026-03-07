@@ -1,6 +1,6 @@
 // src/pages/MusicPage.tsx
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
@@ -22,10 +22,11 @@ const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
   const currentLang = normalizeLanguage(i18n.language);
+  const prefersReducedMotion = useReducedMotion();
 
   const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
 
-  const streamingPlatforms = [
+  const streamingPlatforms = useMemo(() => [
     {
       name: 'Spotify',
       icon: <SpotifyIcon />,
@@ -50,9 +51,18 @@ const MusicPage: React.FC = () => {
       url: ARTIST.social.youtube.url,
       color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50'
     }
-  ];
+  ], []);
 
-  // --- RENDERIZAÇÃO DE FAIXA ÚNICA (DETALHE) ---
+  const spotifyPlatform = useMemo(
+    () => streamingPlatforms.find((platform) => platform.name === 'Spotify'),
+    [streamingPlatforms]
+  );
+  const secondaryPlatforms = useMemo(
+    () => streamingPlatforms.filter((platform) => platform.name !== 'Spotify'),
+    [streamingPlatforms]
+  );
+
+  // --- RENDERIZACAO DE FAIXA UNICA (DETALHE) ---
   if (!singleLoading && slug && singleTrack) {
     const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
     const trackImage = safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp');
@@ -146,8 +156,8 @@ const MusicPage: React.FC = () => {
 
           <div className="text-center mb-16">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
               className="mb-6"
             >
               <h1 className="text-5xl md:text-8xl font-black font-display tracking-tighter uppercase">
@@ -157,9 +167,9 @@ const MusicPage: React.FC = () => {
               </h1>
             </motion.div>
             <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              initial={prefersReducedMotion ? false : { opacity: 0 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+              transition={prefersReducedMotion ? undefined : { delay: 0.2 }}
               className="text-xl text-white/60"
             >
               {t('music.hub_subtitle')}
@@ -168,15 +178,15 @@ const MusicPage: React.FC = () => {
 
           <div className="space-y-6 mb-16">
             {/* Spotify - Featured Hero */}
-            {streamingPlatforms.filter(p => p.name === 'Spotify').map((platform) => (
+            {spotifyPlatform && (
               <motion.a
-                key={platform.name}
-                href={safeUrl(platform.url)}
+                key={spotifyPlatform.name}
+                href={safeUrl(spotifyPlatform.url)}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
+                transition={prefersReducedMotion ? undefined : { duration: 0.5 }}
                 className="flex items-center justify-between p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -186,7 +196,7 @@ const MusicPage: React.FC = () => {
                   </div>
                   <div>
                     <span className="block text-2xl md:text-3xl font-black font-display uppercase tracking-widest text-[#1DB954] mb-1">
-                      {platform.name}
+                      {spotifyPlatform.name}
                     </span>
                     <span className="text-white/40 text-sm font-bold uppercase tracking-widest">{t('music.listen_now_on')}</span>
                   </div>
@@ -196,19 +206,19 @@ const MusicPage: React.FC = () => {
                   <ExternalLink size={24} className="text-[#1DB954] group-hover:text-white transition-colors" />
                 </div>
               </motion.a>
-            ))}
+            )}
 
             {/* Other Platforms Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {streamingPlatforms.filter(p => p.name !== 'Spotify').map((platform, index) => (
+              {secondaryPlatforms.map((platform, index) => (
                 <motion.a
                   key={platform.name}
                   href={safeUrl(platform.url)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 + 0.3 }}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                  transition={prefersReducedMotion ? undefined : { delay: index * 0.1 + 0.3 }}
                   className={`flex items-center justify-between p-5 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
                 >
                   <div className="flex items-center gap-3">
@@ -224,9 +234,9 @@ const MusicPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Download / Steal Card */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={prefersReducedMotion ? undefined : { delay: 0.7 }}
               className="bg-red-500/5 border border-red-500/10 rounded-3xl p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -248,9 +258,9 @@ const MusicPage: React.FC = () => {
 
             {/* Support / Coffee Card */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={prefersReducedMotion ? undefined : { delay: 0.8 }}
               className="bg-primary/5 border border-primary/10 rounded-3xl p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">

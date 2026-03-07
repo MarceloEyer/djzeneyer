@@ -379,14 +379,8 @@
                   "back":  "Voltar para o Hub",
                   "artist_tag":  "Uma ProduÃ§Ã£o DJ Zen Eyer",
                   "about_track":  "Sobre a MÃºsica",
-                  "hub_subtitle":  "Acesse streams de alta qualidade, remixes exclusivos e downloads diretos.",
-                  "listen_now_on":  "OuÃ§a agora no",
                   "steal_button":  "Baixar \u0026 Curtir",
-                  "steal_desc":  "Baixe minhas Ãºltimas tracks e ediÃ§Ãµes diretamente. Sem travas, apenas a pura vibraÃ§Ã£o do Zouk.",
                   "steal_cta":  "Baixar MÃºsica",
-                  "support_button":  "Apoie a Arte",
-                  "support_desc":  "Se minha mÃºsica te move, considere apoiar produÃ§Ãµes futuras com uma doaÃ§Ã£o.",
-                  "support_cta":  "Apoiar Artista",
                   "hero":  {
                                "badge":  "ProduÃ§Ãµes Originais \u0026 Remixes",
                                "title":  "Minha",
@@ -410,7 +404,13 @@
                                 "releaseDate":  "LanÃ§amento",
                                 "playPreview":  "Play Preview",
                                 "pausePreview":  "Pause Preview"
-                            }
+                            },
+                  "listen_now_on":  "Ouça agora no",
+                  "hub_subtitle":  "Preparei cada playlist com muito carinho e cuidado. Escolha sua plataforma favorita e vamos curtir esse som juntos!",
+                  "steal_desc":  "Aqui você encontra algumas tracks e edições exclusivas para baixar e tocar onde quiser. Se você é DJ, aproveite o download direto!",
+                  "support_button":  "Gostaria de me apoiar?",
+                  "support_desc":  "Se minha música te toca e você quiser ajudar a manter esse projeto vivo, qualquer apoio é bem-vindo e me ajuda muito a continuar criando!",
+                  "support_cta":  "Contribuir com o Zen"
               },
     "press":  {
                   "page_title":  "Press Kit",
@@ -1061,7 +1061,6 @@
     "events_not_found":  "Evento nÃ£o encontrado",
     "events_not_found_desc":  "O evento que vocÃª estÃ¡ procurando pode ter sido removido ou nÃ£o estÃ¡ mais disponÃ­vel.",
     "events_no_results":  "Nenhum evento encontrado para sua busca.",
-    "events_no_results_filter":  "Nenhum evento encontrado para este filtro.",
     "events_month_jan":  "Janeiro",
     "events_month_feb":  "Fevereiro",
     "events_month_mar":  "MarÃ§o",
@@ -1436,6 +1435,6 @@
                                      "contact":  "Contato para ContrataÃ§Ãµes"
                                  },
                     "thankYou":  "âœ¨ Seu apoio mantÃ©m a mÃºsica viva. Obrigado! âœ¨"
-                }
+                },
+    "events_no_results_filter":  "Puxa, não encontrei nenhum evento nesse estado. Que tal olhar a agenda completa?"
 }
-

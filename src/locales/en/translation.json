@@ -377,14 +377,8 @@
                   "back":  "Back to Hub",
                   "artist_tag":  "A DJ Zen Eyer Production",
                   "about_track":  "About the Track",
-                  "hub_subtitle":  "Access high-quality streams, exclusive remixes, and direct downloads.",
-                  "listen_now_on":  "Listen now on",
                   "steal_button":  "Grab \u0026 Go",
-                  "steal_desc":  "Download my latest tracks and edits directly. No gatekeeping, just pure Zouk vibes.",
                   "steal_cta":  "Grab Music",
-                  "support_button":  "Fuel the Art",
-                  "support_desc":  "If my music moves you, consider supporting future productions with a donation.",
-                  "support_cta":  "Support Artist",
                   "dj_tool_kit":  "DJ Tool Kit",
                   "dj_tool_kit_desc":  "Access high-quality downloads, edits and exclusive tools for DJs.",
                   "dj_tool_kit_cta":  "Access Downloads",
@@ -413,7 +407,13 @@
                                 "releaseDate":  "Release",
                                 "playPreview":  "Play Preview",
                                 "pausePreview":  "Pause Preview"
-                            }
+                            },
+                  "listen_now_on":  "Listen now on",
+                  "hub_subtitle":  "I\u0027ve prepared every playlist with love and care. Choose your favorite platform and let\u0027s enjoy some music together!",
+                  "steal_desc":  "Here you can find some exclusive tracks and edits to download and play wherever you want. If you\u0027re a DJ, take advantage of the direct download!",
+                  "support_button":  "Would you like to support me?",
+                  "support_desc":  "If my music touches you and you want to help keep this project alive, any support is welcome and helps me a lot to keep creating!",
+                  "support_cta":  "Support the Zen"
               },
     "press":  {
                   "page_title":  "Press Kit",
@@ -1048,7 +1048,6 @@
     "events_not_found":  "Event not found",
     "events_not_found_desc":  "The event you are looking for might have been removed or is no longer available.",
     "events_no_results":  "No events found matching your search.",
-    "events_no_results_filter":  "No events found for this filter.",
     "events_month_jan":  "January",
     "events_month_feb":  "February",
     "events_month_mar":  "March",
@@ -1435,6 +1434,6 @@
                                      "contact":  "Contact for Bookings"
                                  },
                     "thankYou":  "âœ¨ Your support keeps the music alive. Thank you! âœ¨"
-                }
+                },
+    "events_no_results_filter":  "Sorry, I couldn\u0027t find any events in this state. Maybe check the full schedule?"
 }
-

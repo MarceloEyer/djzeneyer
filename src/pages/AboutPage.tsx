@@ -1,7 +1,7 @@
-// src/pages/AboutPage.tsx - VERSÃO FINAL HEADLESS E OTIMIZADA
+// src/pages/AboutPage.tsx - VERSÃƒO FINAL HEADLESS E OTIMIZADA
 
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Music2,
   Globe,
@@ -20,7 +20,7 @@ import { ARTIST_SCHEMA_BASE, ARTIST, getWhatsAppUrl } from '../data/artistData';
 import { sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
-// SCHEMA.ORG PARA A PÁGINA ABOUT
+// SCHEMA.ORG PARA A PAGINA ABOUT
 // ============================================================================
 
 // ============================================================================
@@ -29,10 +29,11 @@ import { sanitizeHtml } from '../utils/sanitize';
 
 const AboutPage: React.FC = () => {
   const { t } = useTranslation();
+  const prefersReducedMotion = useReducedMotion();
   const currentPath = '/about';
   const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
 
-  // SCHEMA.ORG PARA A PÁGINA ABOUT
+  // SCHEMA.ORG PARA A PAGINA ABOUT
   const ABOUT_SCHEMA = useMemo(() => ({
     '@context': 'https://schema.org',
     '@graph': [
@@ -215,13 +216,13 @@ const AboutPage: React.FC = () => {
               {MILESTONES.map((milestone, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 18, scale: 0.98 }}
+                  whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  transition={prefersReducedMotion ? undefined : { duration: 0.35, delay: index * 0.06, ease: "easeOut" }}
                   className="relative"
                 >
-                  <div className="card p-6 md:p-8 hover:border-primary/50 transition-all">
+                  <div className="card p-6 md:p-8 hover:border-primary/50 transition-all duration-300">
                     <div className="flex items-start gap-6">
                       <div
                         className={`flex-shrink-0 w-16 h-16 rounded-full ${milestone.color} flex items-center justify-center`}
@@ -265,7 +266,7 @@ const AboutPage: React.FC = () => {
               <p className="text-lg text-white/80 leading-relaxed italic">
                 {t('about.philosophy.quote')}
               </p>
-              <div className="mt-8 text-white/60 font-semibold">— {ARTIST.identity.stageName}</div>
+              <div className="mt-8 text-white/60 font-semibold">- {ARTIST.identity.stageName}</div>
             </motion.div>
           </div>
         </section>

@@ -187,7 +187,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
   // Extrai regiões únicas (Estados)
   const regions = useMemo(() => {
     const r = new Set<string>();
-    events.forEach(e => {
+    events.forEach((e: ZenBitEventListItem) => {
       if (e.location?.region) r.add(e.location.region);
     });
     return Array.from(r).sort();
@@ -195,7 +195,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   const filteredEvents = useMemo(() => {
     if (selectedRegion === 'all') return events;
-    return events.filter(e => e.location?.region === selectedRegion);
+    return events.filter((e: ZenBitEventListItem) => e.location?.region === selectedRegion);
   }, [events, selectedRegion]);
 
   const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
@@ -235,9 +235,9 @@ const EventListContent = ({ lang }: { lang: string }) => {
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
         url={`${origin}${getLocalizedRoute('events', lang)}`}
-        events={events.map((event) => ({
+        events={events.map((event: any) => ({
           ...event,
-          image: safeUrl(event.image, '/images/zen-eyer-og-image.png'),
+          image: (event as any).image || '/images/zen-eyer-og-image.png',
         }))}
       />
       {/* Filter Bar */}
@@ -249,7 +249,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
           >
             {t('common.all')}
           </button>
-          {regions.map(region => (
+          {regions.map((region: string) => (
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
