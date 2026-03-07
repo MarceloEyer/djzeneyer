@@ -55,15 +55,19 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
         {variant === 'full' && showTitle && (
           <div className="h-9 w-48 bg-white/5 animate-pulse rounded-lg mx-auto mb-8" />
         )}
-        <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
-          {[...Array(limit)].map((_, i) => (
-            <div
-              key={`skeleton-${i}`}
-              className={`animate-pulse bg-surface/30 border border-white/5 rounded-xl overflow-hidden ${variant === 'compact' ? 'h-[106px]' : 'h-[360px]'}`}
-            >
-              <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
-            </div>
-          ))}
+        <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg-grid-cols-3 gap-6"}>
+          {Array.from({ length: limit }).map((_, i) => {
+            const skeletonHeight = variant === 'compact' ? 'h-[106px]' : 'h-[360px]';
+
+            return (
+              <div
+                key={`skeleton-${i}`}
+                className={`animate-pulse bg-surface/30 border border-white/5 rounded-xl overflow-hidden ${skeletonHeight}`}
+              >
+                <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -77,8 +81,8 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
       </div>
     );
   }
-
   const visibleEvents = events.slice(0, limit);
+
 
   return (
     <div className="w-full">
