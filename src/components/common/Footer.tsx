@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Instagram, Youtube, Music2, MessageCircle, Facebook, Send } from 'lucide-react';
+import { Music, Instagram, Youtube, Music2, MessageCircle, Facebook, SendHorizontal } from 'lucide-react';
 import { ARTIST } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { useSubscriptionMutation } from '../../hooks/useQueries';
@@ -90,7 +90,7 @@ const Footer: React.FC = () => {
               <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
               <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
               <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_shop')}</Link></li>
-              <li><Link to={getLocalizedRoute('support-the-artist', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</Link></li>
+              <li><Link to={getLocalizedRoute('support', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</Link></li>
             </ul>
           </div>
 
@@ -100,9 +100,9 @@ const Footer: React.FC = () => {
             <ul className="space-y-2.5">
               <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
               <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_news')}</Link></li>
-              <li><Link to={getLocalizedRoute('my-philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_philosophy')}</Link></li>
-              <li><Link to={getLocalizedRoute('work-with-me', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_work_with_me')}</Link></li>
-              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_media')}</Link></li>
+              <li><Link to={getLocalizedRoute('philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_philosophy')}</Link></li>
+              <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_work_with_me')}</Link></li>
+              <li><Link to={getLocalizedRoute('presskit', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_media')}</Link></li>
               <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
               <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_conduct')}</Link></li>
             </ul>
@@ -129,7 +129,7 @@ const Footer: React.FC = () => {
                 className="w-full btn btn-primary flex items-center justify-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
-                <Send size={16} />
+                <SendHorizontal size={16} />
                 <span>{isSubmitting ? t('loading') : t('footer_subscribe')}</span>
               </button>
             </form>
@@ -146,8 +146,8 @@ const Footer: React.FC = () => {
           <p>{t('footer_copyright', { year: currentYear })}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
-            <Link to={getLocalizedRoute('privacy-policy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
-            <span>•</span>
+            <Link to={getLocalizedRoute('privacy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
+            <span>&bull;</span>
             <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
           </div>
 
@@ -166,3 +166,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
