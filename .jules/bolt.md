@@ -36,3 +36,8 @@
 
 **Learning:** Found that CartContext in `src/contexts/CartContext.tsx` was creating a new object literal `{ cart, getCart, removeItem, clearCart, loading }` on every render. Because this object is passed to `CartContext.Provider value={value}`, any state update within the Provider (e.g. `loading` changes) would cause *all* components consuming `useCart` to re-render, even if the relevant parts of the state hadn't changed.
 **Action:** When implementing Context API in React, always wrap the provider value in a `useMemo` hook, making sure to include all pieces of context state as dependencies. This ensures consumer components only re-render when the specific context state changes, not simply because the Provider component re-rendered.
+
+## 2026-03-07 - Context API Re-renders Optimization (User & GamiPress)
+
+**Learning:** Both `UserContext.Provider` and `GamiPressContext.Provider` were passing unmemoized objects as their `value` props. Furthermore, the `useGamiPress` custom hook was returning a new object on every render. This creates a performance bottleneck where any update in the provider (or even its parent component) forces a cascading re-render of every component in the tree that consumes these contexts, regardless of whether the actual data they use changed.
+**Action:** Consistently apply React memoization patterns at context boundaries. Wrap context provider values in `useMemo`. When a custom hook acts as a context provider value (like `useGamiPress`), its return object must also be wrapped in `useMemo`, and any exposed functions must be stabilized with `useCallback`.
