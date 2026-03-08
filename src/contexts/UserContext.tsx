@@ -43,6 +43,16 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const API_URL = `${window.location.origin}/wp-json/zeneyer-auth/v1`;
 
   // ========================================================================
+  // LOGOUT
+  // ========================================================================
+  const logout = useCallback(() => {
+    setUser(null);
+    localStorage.removeItem('zen_jwt');
+    localStorage.removeItem('zen_user');
+    clearAllCache();
+  }, []);
+
+  // ========================================================================
   // INICIALIZAÇÃO
   // ========================================================================
   useEffect(() => {
@@ -242,15 +252,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // ========================================================================
-  // LOGOUT
-  // ========================================================================
-  const logout = useCallback(() => {
-    setUser(null);
-    localStorage.removeItem('zen_jwt');
-    localStorage.removeItem('zen_user');
-    clearAllCache();
-  }, []);
+
 
   // ========================================================================
   // PASSWORD RESET

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { getAlternateLinks, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
+import { ensureTrailingSlash } from '../utils/seo';
 
 // ============================================================================
 // 1. INTERFACES

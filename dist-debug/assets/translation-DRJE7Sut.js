@@ -1,0 +1,525 @@
+const nav = { "home": "Home", "about": "About", "events": "Events", "music": "Music", "tribe": "Zen Tribe", "presskit": "Work With Me", "shop": "Shop", "sign_in": "Sign In", "logout": "Logout", "dashboard": "Dashboard", "my_account": "My Account", "join_the_tribe": "Join the Tribe", "privacy": "Privacy Policy", "terms": "Terms of Use" };
+const dashboard = { "loading": "Syncing with the Zen Universe...", "error_loading": "Could not load your dashboard data.", "welcomeBack": "Welcome Back, {{name}}", "journeyBegins": "Your journey in the Zen Tribe continues.", "diveDeep": "Dive deep into the melt.", "rank_new_member": "New Member", "rank_zen_novice": "Zen Novice", "nextRank": "Progression to", "boostXP": "Boost Your XP", "yourWallet": "Your Zen Wallet", "quickActions": "Quick Actions", "browseMusic": "Browse Music Central", "viewEvents": "Global Event Agenda", "visitShop": "Visit Apparel Shop", "recentActivity": "Recent Activity", "live_feed": "Live Feed", "pendingQuests": "Pending Quests", "allCleared": "All Quests Cleared!", "yourAchievements": "Your Achievements", "unlocked": "Unlocked", "dayStreak": "Day Streak", "welcomeTribe": "Welcome to Zen Tribe!", "accountCreated": "Account created", "startExploring": "Start exploring!", "stats": { "mana": "Accumulated Mana", "artifacts": "Artifacts Collected", "ascension": "Ascension Level", "events": "Portals Crossed" }, "timeAgo": { "years": "{{count}} years ago", "months": "{{count}} months ago", "days": "{{count}} days ago", "hours": "{{count}} hours ago", "minutes": "{{count}} minutes ago", "seconds": "{{count}} seconds ago" } };
+const common = { "artist_name": "DJ Zen Eyer", "legal_name": "Marcelo Eyer Fernandes", "cnpj": "44.063.765/0001-46", "isni": "0000 0005 2893 1015", "copy": "Copy", "retry": "Try again", "close": "Close", "opens_in_new_tab": "opens in new tab", "platforms": { "spotify": "SPOTIFY", "soundcloud": "SOUNDCLOUD" }, "cart": { "title": "Shopping Cart", "description": "Review your selected items.", "empty": "Your cart is empty", "empty_desc": "Looks like you haven't added any items yet.", "continue_shopping": "Continue Shopping", "remove_item": "Remove item", "qty": "Qty", "summary": "Order Summary", "subtotal": "Subtotal", "shipping": "Shipping", "shipping_calc": "Calculated at checkout", "total": "Total", "checkout": "Proceed to Checkout" }, "checkout": { "title": "Checkout", "description": "Securely complete your purchase.", "billing": "Billing Details", "payment": "Payment Method", "summary": "Your Order", "place_order": "Place Order", "select_payment": "Please select a payment method.", "error_failed": "Checkout failed", "generic_error": "An error occurred during checkout.", "success_title": "Order Confirmed!", "success_desc": "Thank you for your purchase. You will receive an email confirmation shortly.", "back_shop": "Return to Shop", "no_payments": "No payment methods available.", "secure_msg": "Your payment information is encrypted and secure.", "tickets_title": "Secure Checkout - Tickets" }, "form": { "first_name": "First Name", "last_name": "Last Name", "email": "Email Address", "phone": "Phone", "address": "Address", "city": "City", "state": "State", "zip": "ZIP Code", "country": "Country" }, "footer_privacy": "Privacy Policy", "footer_terms": "Terms of Use", "footer_bio": "Exploring connection through music. Remixing Brazilian Zouk vibes for the world.", "footer_quick_links": "Quick Links", "footer_events": "Events", "footer_music": "Music", "footer_zen_tribe_info": "About Zen Tribe", "footer_shop": "Shop", "footer_support_artist": "Support the Artist", "footer_discover_more": "Discover More", "footer_about": "About", "footer_news": "News & Blog", "footer_philosophy": "My Philosophy", "footer_work_with_me": "Work With Me", "footer_media": "Press & Media", "footer_conduct": "Code of Conduct", "footer_join_newsletter": "Join our Newsletter", "footer_email_placeholder": "Your best email", "footer_subscribe": "Subscribe", "footer_subscribe_success": "Subscription successful!", "footer_subscribe_error": "Error during subscription.", "footer_copyright": "Â© {{year}} DJ Zen Eyer. All rights reserved.", "friend": "Zen Friend", "all": "All" };
+const events = { "title_part1": "Events", "title_part2": "Schedule" };
+const gamification = { "zenTribe": "Zen Tribe", "yourProgress": "Your Progress", "viewAll": "View All", "level": "Level", "totalPoints": "Total Points", "xpToNext": "{{count}} XP to next level", "maxLevel": "Max level reached!", "achievements": "Achievements", "achievement": "Achievement", "startJourney": "Start your journey to unlock achievements!", "earnMoreXP": "Earn More XP", "unlock_at": "Unlock at level {{level}}" };
+const _meta = { "version": "2.1.0", "lastUpdated": "2025-12-03", "language": "en-US", "maintainers": ["DJ Zen Eyer Team"], "notes": "Official English translations. LEGACY FILE - Do not change key names without updating all components." };
+const loading = "Loading...";
+const error = "Error";
+const success = "Success";
+const auth = { "login": { "title": "Welcome Back", "subtitle": "Sign in to access your Zen Tribe account", "email": "Email", "emailPlaceholder": "your@email.com", "password": "Password", "passwordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢", "submit": "Sign In", "no_account": "Don't have an account?", "create_now": "Create Account", "forgot_password": "Forgot password?" }, "register": { "title": "Join the Tribe", "subtitle": "Create your account and unlock exclusive content", "fullName": "Full Name", "fullNamePlaceholder": "John Doe", "confirmPassword": "Confirm Password", "confirmPasswordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢", "submit": "Create Account", "has_account": "Already have an account?", "login_now": "Sign in here" }, "placeholders": { "name": "Your name", "email": "your@email.com", "password": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" }, "reset_password": { "title_set": "New Password", "title_request": "Recover Access", "subtitle_set": "Choose a strong password for your security", "subtitle_request": "We will send a recovery link to your email", "success_title": "All set!", "success_set": "Your password has been changed successfully. You will be redirected shortly.", "success_request": "If the email exists in our records, you will receive the link soon. Please also check your spam folder.", "back_home": "Back to home", "back_login": "Back to Login", "email_label": "Registered Email", "email_placeholder": "your@email.com", "submit_request": "Send Reset Link", "password_label": "New Password", "password_placeholder": "Minimum 6 characters", "confirm_label": "Confirm Password", "confirm_placeholder": "Repeat new password", "submit_set": "Save New Password", "error_email_required": "Email is required", "error_password_length": "Password must be at least 6 characters", "error_password_mismatch": "Passwords do not match" }, "errors": { "email_required": "Email is required", "email_invalid": "Invalid email", "password_required": "Password is required", "password_min": "Minimum 6 characters", "name_required": "Name is required", "security_check": "Please wait for security verification.", "google_no_credential": "Google credential not received", "google_auth_failed": "Google authentication failed.", "auth_generic_error": "Error authenticating. Check your credentials.", "google_connect_error": "Failed to connect with Google", "invalidEmail": "Please enter a valid email address.", "passwordsDoNotMatch": "Passwords do not match.", "generic": "Authentication failed. Please try again." }, "success": { "loginSuccess": "Login successful! Redirecting...", "registerSuccess": "Account created successfully! Redirecting...", "googleSuccess": "Google login successful! Redirecting..." }, "labels": { "name": "Name", "email": "Email", "password": "Password", "honeypot": "If you are human, do not fill this field" }, "welcomeBack": "Welcome Back", "createAccount": "Create Account", "loginSubtitle": "Sign in to your Zen Tribe account", "registerSubtitle": "Join the Zen Tribe community", "name": "Name", "email": "Email", "password": "Password", "namePlaceholder": "Your name", "emailPlaceholder": "your@email.com", "or_continue_with_email": "or continue with email", "processing": "Processing...", "noAccount": "Don't have an account?", "hasAccount": "Already have an account?", "connectingServer": "Connecting...", "aria": { "hide_password": "auth.aria.hide_password", "show_password": "auth.aria.show_password" } };
+const zenlink = { "listen_now": "Listen Now", "choose_platform": "Choose your platform", "seo_description": "Connect with DJ Zen Eyer â€” 2Ã— World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!", "soundcloud_subtitle": "Sets & Remixes", "youtube_subtitle": "Live sets & tutorials", "book_title": "Book Me", "book_subtitle": "Festivals, congresses & private events", "shop_subtitle": "Exclusive merch & tracks", "tiktok_subtitle": "Cremosidade in 15 seconds", "instagram_subtitle": "Daily life & behind the scenes", "events_title": "Events Schedule", "events_subtitle": "Follow my global schedule", "hero_subtitle": "Brazilian Zouk Two-Time World Champion", "quiz_title": "Zouk Persona Quiz", "quiz_subtitle": "Discover your unique dance style", "booking_subtitle": "zenlink.booking_subtitle", "booking_title": "zenlink.booking_title", "contact_direct": "zenlink.contact_direct", "spotify_subtitle": "zenlink.spotify_subtitle", "spotify_title": "zenlink.spotify_title" };
+const social = { "instagram": "Instagram", "youtube": "YouTube", "tiktok": "TikTok", "soundcloud": "SoundCloud", "spotify": "Spotify", "apple_music": "Apple Music", "musicbrainz": "MusicBrainz", "wikidata": "Wikidata", "discogs": "Discogs", "resident_advisor": "Resident Advisor" };
+const badge_featured = "Featured";
+const badge_new = "New";
+const badge_sale = "Sale";
+const join_now_button = "Join Now";
+const explore_music_button = "Explore Music";
+const play_featured_mix = "Play Featured Mix";
+const upcoming_events = "Upcoming Events";
+const home_page_title = "DJ Zen Eyer | 2Ã— World Champion Brazilian Zouk DJ & Producer";
+const home_page_meta_desc = "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.";
+const home_headline = "Experience the <1>Zen</1> in Brazilian Zouk";
+const home_subheadline = "Transforming dance floors into immersive audio experiences";
+const home_welcome = "Welcome to DJ Zen Eyer";
+const home_tagline = "Brazilian Zouk DJ & Producer";
+const home_cta = "Explore My Music";
+const home_features_title = "Why Join the Zen Tribe?";
+const home_features_subtitle = "Unlock exclusive benefits and be part of an engaged community";
+const home_feat_exclusive_title = "Exclusive Music";
+const home_feat_exclusive_desc = "Early access to releases and exclusive remixes";
+const home_feat_achievements_title = "Achievements & Rewards";
+const home_feat_achievements_desc = "Earn XP, unlock badges, and level up";
+const home_feat_community_title = "Active Community";
+const home_feat_community_desc = "Connect with music lovers and DJ Zen Eyer";
+const home_cta_title = "Ready to Join the Zen Tribe?";
+const home_cta_subtitle = "Join thousands of members and transform your experience";
+const hero_title = "DJ Zen Eyer";
+const hero_subtitle = "Brazilian Zouk";
+const hero_cta = "Listen Now";
+const hero_cta_secondary = "View Events";
+const home_hero_badge = "2Ã— World Champion - Zouk World Championships";
+const home_hero_title = "DJ Zen Eyer";
+const home_hero_subtitle = "2Ã— World Champion Brazilian Zouk DJ & Producer";
+const home_hero_slogan = "Haste is the enemy of creaminess";
+const home_hero_cta_text = "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.";
+const home_stat_champion = "World Champion";
+const home_stat_countries = "Countries";
+const home_stat_events = "Events";
+const home_stat_years = "Years Active";
+const home_bio_p1 = "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in over 11 countries.";
+const home_bio_p2 = "Known for a sound focused on the pure 'flow' of the dance â€” a vibe our community affectionately calls 'cremosidade' â€”, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.";
+const home_bio_p3 = "Whether at reZENha, at Renata PeÃ§anha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.";
+const home_festivals_title = "Performed at International Festivals";
+const home_festivals_subtitle = "Recognized at major Zouk events worldwide";
+const home_festivals_more = "many more";
+const home_press_title = "For Press & Media";
+const home_press_desc = "Complete press kit, high-resolution photos, releases, and interviews available.";
+const home_press_cta = "DOWNLOAD PRESS KIT 2025";
+const home_booking_title = "Bookers & Promoters";
+const home_booking_desc = "Available for congresses, festivals, workshops, and exclusive events in Brazil and abroad.";
+const home_booking_cta = "REQUEST QUOTE";
+const home_authority_title = "Verified Profiles";
+const home_tribe_title = "Join the";
+const home_tribe_highlight = "Zen Tribe";
+const home_tribe_subtitle = "No rush here. Just prolonged melting.";
+const home_tribe_cta = "Join the Tribe";
+const home_cta_soundcloud = "Listen on SoundCloud";
+const home_cta_booking = "Booking / Press Kit";
+const home_cta_music = "Explore Music";
+const home_bio_title = "Who is DJ Zen Eyer?";
+const home_bio_intro = "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>DJ and producer</strong> focused on <strong>Brazilian Zouk</strong>. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.";
+const home_bio_style = 'Known for his "creamy" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>"Zenâ€¦ Zenâ€¦ Zenâ€¦ Eyerâ€¦ Eyerâ€¦"</em> is already a classic at festivals.';
+const home_bio_mensa = 'Member of <strong>Mensa International</strong>, he creates perfect emotional journeys for the "flow" in dance. He is a regular at major stages like Rio Zouk Congress.';
+const news_page_title = "Zen News | Insights & Updates";
+const news_page_meta_desc = "Official news, releases, and articles about the Brazilian Zouk universe by DJ Zen Eyer.";
+const news = { "title": "Zen News", "subtitle": "Latest stories, music production tips, and insights on Zouk culture.", "live_feed": "Live Feed", "curatorship": "Content Curatorship", "zouk_production": "Brazilian Zouk & Music Production", "back_to_list": "BACK TO NEWS", "by": "By", "read_full": "READ FULL STORY", "latest_stories": "Latest Stories", "read_more": "Read More", "end_reached": "You've reached the end of recent updates.", "view_archive": "View Full Archive", "featured": "Featured", "default_author": "Zen Eyer", "read_time": "{{min}} min read", "label": "News" };
+const music_page_title = "Music Hub";
+const music_page_meta_desc = "Listen to the latest mixes and productions by DJ Zen Eyer";
+const music = { "pageTitle": "Music Hub", "pageDesc": "Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer.", "hub_title_rich": "<0>Streaming</0> Hub", "back": "Back to Hub", "artist_tag": "A DJ Zen Eyer Production", "about_track": "About the Track", "steal_button": "Grab & Go", "steal_cta": "Grab Music", "dj_tool_kit": "DJ Tool Kit", "dj_tool_kit_desc": "Access high-quality downloads, edits and exclusive tools for DJs.", "dj_tool_kit_cta": "Access Downloads", "collections_title": "Music Collection", "collections_desc": "Exclusive tracks, mixes and playlists curated by DJ Zen Eyer", "hero": { "badge": "Original Productions & Remixes", "title": "My", "titleHighlight": "Music", "subtitle": "Explore my latest tracks, exclusive remixes, and downloadable content.", "cta": "Free downloads for the Zen Tribe!" }, "filters": { "all": "All Tracks", "sets": "Sets", "nacional": "Nacional", "cremoso": "Cremoso", "black": "Black", "tradicional": "Tradicional" }, "track": { "download": "Download", "share": "Share", "duration": "Duration", "bpm": "BPM", "releaseDate": "Release", "playPreview": "Play Preview", "pausePreview": "Pause Preview" }, "listen_now_on": "Listen now on", "hub_subtitle": "I've prepared every playlist with love and care. Choose your favorite platform and let's enjoy some music together!", "steal_desc": "Here you can find some exclusive tracks and edits to download and play wherever you want. If you're a DJ, take advantage of the direct download!", "support_button": "Would you like to support me?", "support_desc": "If my music touches you and you want to help keep this project alive, any support is welcome and helps me a lot to keep creating!", "support_cta": "Support the Zen" };
+const press = { "page_title": "Press Kit", "page_meta_desc": "Official press kit for DJ Zen Eyer. Download high-res photos, bio, and technical rider.", "bio_title": "The Artist", "bio_subtitle": "BicampeÃ£o Mundial & Music Curator", "stats_title": "Quick Stats", "stats_experience": "Years of Experience", "stats_tours": "International Tours", "stats_remixes": "Official Remixes", "stats_championships": "World Titles", "download_title": "Media Assets", "download_photos": "High-Res Photos", "download_epk": "Official EPK (PDF)", "download_logos": "Logo Pack", "gallery_title": "Visual Journey", "contact_title": "Booking & Inquiries", "contact_subtitle": "Let's bring the Zen Experience to your event.", "contact_cta": "Contact Management", "fact_sheet": "Technical Rider", "fact_sheet_desc": "All the technical requirements for a flawless performance." };
+const shop = { "page_title": "Shop", "page_meta_desc": "Event tickets, exclusive merchandise, and more", "title": "Zen Tribe Shop", "subtitle": "Exclusive merchandise and event tickets", "all_products": "All Products", "featured_title": "Featured Products", "empty_cta": "No products available at the moment", "add_to_cart": "Add to Cart", "buy_now": "BUY NOW", "buy_button": "BUY NOW", "in_stock": "In Stock", "out_of_stock": "Out of Stock", "error_fetch": "Error loading products", "error_unknown": "Unknown error", "adding_text": "Adding...", "product_added": "Product added to cart!", "match_score": "98% Match", "cremosidade_level": "Cremosidade Level: High", "new_releases": "New Releases", "top_picks": "Curated Selection", "back_to_shop": "Back to Shop", "product_not_found": "Product not found", "product_details": "Product details", "starting_at": "Starting at", "free_shipping": "Free Shipping", "free_shipping_desc": "Orders over $50", "secure_payment": "Secure Payment", "secure_payment_desc": "100% Protected", "exclusive_items": "Exclusive Items", "exclusive_items_desc": "Limited Edition", "fast_delivery": "Fast Delivery", "fast_delivery_desc": "2-3 Business Days", "hot_near_you": "New on Zen Shop", "benefits": { "instant_delivery": "Instant Delivery", "instant_delivery_desc": "Tickets and digital access sent immediately", "secure_payment": "Secure Payment", "secure_payment_desc": "Total security in processing", "tribe_perks": "Tribe Perks", "tribe_perks_desc": "Exclusive discounts for members", "vip_support": "VIP Support", "vip_support_desc": "Direct WhatsApp support 24/7" }, "generic_error": "shop.generic_error" };
+const tribe_page_title = "Zen Tribe";
+const tribe_page_meta_desc = "Join the Zen Tribe community and become part of the family";
+const zenTribe = { "pageTitle": "Zen Tribe - Exclusive Community", "pageDesc": "Join the Zen Tribe and get access to exclusive content, VIP events, and much more!", "badge": "Exclusive Community", "welcome": "Welcome to", "tribe": "Zen Tribe", "subtitle": "An exclusive community for true music lovers. Earn points, unlock achievements, and enjoy amazing benefits.", "schema": { "organization_name": "Zen Tribe - Global Brazilian Zouk Community", "organization_desc": "Exclusive community for Brazilian Zouk lovers, offering early access to music, VIP events and gamified reward system.", "organization_slogan": "Connecting souls through Brazilian Zouk" }, "joinNow": "Join Now", "learnMore": "Learn More", "unlockAtLevel": "Unlock at level {{level}}", "mostPopular": "Most Popular", "upgradeNow": "Upgrade Now", "unlocked": "Unlocked", "viewMemberships": "View Memberships", "whyJoin": "Why Join the Zen Tribe?", "chooseMembership": "Choose Your Tribe Membership", "selectTier": "Select the membership tier that fits your journey with DJ Zen Eyer's music", "levelUpTitle": "Level Up Your Music Journey", "levelUpDesc": "The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.", "xpTitle": "Experience Points (XP)", "xpDesc": "Earn XP for every action you take, from listening to tracks to attending events.", "badgesTitle": "Digital Badges", "badgesDesc": "Unlock collectible badges for special achievements and milestones in your journey.", "rewardsTitle": "Rewards & Perks", "rewardsDesc": "Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.", "streaksTitle": "Daily Streaks", "streaksDesc": "Maintain your engagement streak for bonus XP and special streak-only rewards.", "achievementShowcase": "Achievement Showcase", "currentLevel": "Current Level", "zenApprentice": "Zen Apprentice", "progressToLevel": "Progress to Level 4", "stats": { "members": "Members", "tracks": "Tracks", "events": "Events", "achievements": "Achievements" }, "tabs": { "benefits": "Benefits", "achievements": "Achievements", "challenges": "Challenges" }, "benefits": { "exclusiveMusic": { "title": "Exclusive Music", "desc": "Early access to releases and exclusive remixes before anyone else." }, "earlyAccess": { "title": "Early Access", "desc": "Buy event tickets before general sale." }, "merchandise": { "title": "Exclusive Merchandise", "desc": "Discounts on official products and limited editions." }, "community": { "title": "Private Community", "desc": "Access to exclusive Tribe members group." }, "vipStatus": { "title": "VIP Status", "desc": "Special privileges at live events." }, "behindScenes": { "title": "Behind the Scenes", "desc": "Exclusive behind-the-scenes content and creative process." } }, "achievements": { "firstTrack": { "title": "First Track", "desc": "Downloaded your first song" }, "firstEvent": { "title": "First Event", "desc": "Attended your first event" }, "collector": { "title": "Collector", "desc": "Downloaded 10 tracks" }, "legend": { "title": "Legend", "desc": "Reached maximum level" }, "streak": { "title": "Fire Streak", "desc": "7 consecutive active days" }, "marketer": { "title": "Ambassador", "desc": "Shared 5 times" } }, "challenges": { "downloadTracks": { "title": "Download 5 Tracks", "desc": "Download 5 different songs" }, "attendEvents": { "title": "Attend 3 Events", "desc": "Attend 3 DJ Zen Eyer events" }, "shareContent": { "title": "Share 10 Times", "desc": "Share content 10 times on social media" } }, "cta": { "title": "Ready to Elevate Your Experience?", "subtitle": "Join thousands of Zen Tribe members and unlock all exclusive benefits!", "button": "Join the Tribe Now" }, "tiers": { "novice": { "name": "Zen Novice", "price": "Free", "feature1": "Access to public music releases", "feature2": "Create and share playlists", "feature3": "Join community discussions", "feature4": "Basic profile and badges" }, "voyager": { "name": "Zen Voyager", "price": "$9.99/month", "feature1": "All Zen Novice features", "feature2": "Exclusive weekly music drops", "feature3": "Early access to event tickets", "feature4": "Advanced achievement system", "feature5": "Discounts on merchandise" }, "master": { "name": "Zen Master", "price": "$19.99/month", "feature1": "All Zen Voyager features", "feature2": "VIP access to all live events", "feature3": "Monthly exclusive live streams", "feature4": "Personalized playlists from DJ Zen Eyer", "feature5": "Zen Master digital badge collection", "feature6": "Meet & greet opportunities" } }, "aria": { "learnMore": "zenTribe.aria.learnMore", "viewMemberships": "zenTribe.aria.viewMemberships" } };
+const philosophy = { "page_title": "Artistic Philosophy", "style_title": "The Style", "mission_title": "Mission", "coming_soon_title": "Vision", "coming_soon_desc": "Complete artistic manifesto of {{name}} is being updated for the 2026 world tour." };
+const dashboard_page_title = "Dashboard";
+const dashboard_page_meta_desc = "Your personal Zen Tribe dashboard";
+const media_page = { "title": "Media & Press Kit", "subtitle": "Official media resources and press information for DJ Zen Eyer", "quick_facts": "Quick Facts", "artist_name": "Artist Name", "legal_name": "Legal Name", "genre": "Genre", "location": "Location", "cnpj": "CNPJ", "isni": "ISNI", "press_highlights": "Press Highlights", "world_champion": "2Ã— World Champion Brazilian Zouk DJ", "world_champion_desc": "Marcelo Eyer, known as DJ Zen Eyer, is a two-time World Champion in Brazilian Zouk, bringing unique energy to dance floors worldwide.", "international_performances": "International Performances", "international_performances_desc": "DJ Zen Eyer has performed at major festivals and events across Brazil, Europe, and the Americas, specializing in Brazilian Zouk music.", "media_assets": "Media Assets", "high_res_photos": "High-Resolution Photos", "high_res_photos_desc": "Professional photos for press and promotional use", "official_bio": "Official Biography", "official_bio_desc": "Complete artist bio in multiple languages", "press_kit_pdf": "Press Kit PDF", "press_kit_pdf_desc": "Downloadable press kit with full information", "coming_soon": "Coming Soon", "download": "Download", "press_inquiries": "Press Inquiries", "press_inquiries_desc": "For press inquiries, interviews, or media requests, please contact our press office:", "contact_press_office": "Contact Press Office", "verified_profiles": "Verified Profiles", "source_official_bio": "Official Bio", "source_performance_history": "Performance History", "year_range": "2020-2024", "genre_value": "Brazilian Zouk", "location_value": "SÃ£o Paulo, Brazil" };
+const conduct_page = { "title": "Code of Conduct", "subtitle": "Learn about our expectations and standards for respectful behavior.", "last_updated": "Last updated", "last_updated_date": "January 2026", "commitment": "Our Commitment", "commitment_intro": "DJ Zen Eyer is committed to creating a welcoming, safe, and inclusive environment for all members of our community. This Code of Conduct applies to all interactions within our community, including events, online platforms, and any spaces associated with DJ Zen Eyer.", "commitment_participation": "By participating in our community, you agree to abide by this Code of Conduct. We expect all community members to help create a positive environment where everyone feels respected and valued.", "principles": "Core Principles", "respect_title": "Respect & Inclusion", "respect_desc": "Treat everyone with respect, kindness, and empathy. We celebrate diversity and welcome people of all backgrounds, identities, and experiences.", "respect_inclusive": "Use inclusive language", "respect_viewpoints": "Be respectful of different viewpoints", "respect_welcome": "Welcome newcomers warmly", "respect_celebrate": "Celebrate our diverse community", "community_title": "Community First", "community_desc": "We are a community built on the love of Brazilian Zouk and music. Support each other, share knowledge, and help create a positive environment.", "community_support": "Support fellow dancers and artists", "community_share": "Share knowledge and experiences", "community_contribute": "Contribute positively to discussions", "community_maintain": "Help maintain a welcoming atmosphere", "safety_title": "Safety & Consent", "safety_desc": "Everyone deserves to feel safe and comfortable. Consent is paramount in all interactions, both online and at events.", "safety_ask": "Always ask before physical contact", "safety_boundaries": "Respect personal boundaries", "safety_speak": "Speak up if you feel uncomfortable", "safety_report": "Report any concerning behavior", "prohibited": "Prohibited Behavior", "prohibited_intro": "The following behaviors are strictly prohibited and will result in consequences as outlined below:", "harassment_title": "Harassment & Discrimination", "harassment_1": "Any form of harassment based on race, ethnicity, gender, sexual orientation, disability, age, religion, or any other protected characteristic", "harassment_2": "Sexual harassment, unwanted advances, or inappropriate comments", "harassment_3": "Bullying, intimidation, or threatening behavior", "harassment_4": "Stalking or unwanted persistent contact", "disruptive_title": "Disruptive Behavior", "disruptive_1": "Spam, trolling, or deliberately derailing conversations", "disruptive_2": "Sharing false or misleading information", "disruptive_3": "Promoting hate groups or extremist ideologies", "disruptive_4": "Engaging in illegal activities or promoting illegal content", "privacy_title": "Privacy Violations", "privacy_1": "Sharing someone's personal information without consent (doxxing)", "privacy_2": "Recording or photographing people without permission", "privacy_3": "Sharing private conversations publicly", "privacy_4": "Impersonating others or creating fake accounts", "reporting": "Reporting Violations", "reporting_intro": "If you experience or witness behavior that violates this Code of Conduct, please report it immediately. All reports will be treated with confidentiality and seriousness.", "reporting_how": "How to Report:", "reporting_events": "At events: Speak to event staff or organizers immediately", "reporting_online": "Online: Use the report function on the platform", "reporting_email": "Email:", "reporting_after": "What Happens After a Report:", "reporting_acknowledge": "We will acknowledge receipt within 24-48 hours", "reporting_investigate": "We will investigate the incident thoroughly and impartially", "reporting_action": "We will take appropriate action based on our findings", "reporting_followup": "We will follow up with you about the outcome (as appropriate)", "enforcement": "Enforcement & Consequences", "enforcement_intro": "Violations of this Code of Conduct may result in the following consequences, depending on the severity and frequency of the violation:", "consequence_first": "First Offense (Minor)", "consequence_first_action": "Warning", "consequence_first_desc": "Verbal or written warning with explanation of the violation", "consequence_repeated": "Repeated or Serious Offense", "consequence_repeated_action": "Temporary Suspension", "consequence_repeated_desc": "Temporary removal from events, platform, or community spaces", "consequence_severe": "Severe or Persistent Violation", "consequence_severe_action": "Permanent Ban", "consequence_severe_desc": "Permanent removal from all DJ Zen Eyer events and community spaces", "scope": "Scope", "scope_intro": "This Code of Conduct applies to all spaces managed by DJ Zen Eyer, including but not limited to:", "scope_events": "Live events and performances", "scope_online": "Online communities and social media groups", "scope_website": "Official website and digital platforms", "scope_workshops": "Workshops, classes, and educational content", "scope_representing": "Any space representing DJ Zen Eyer", "contact": "Questions or Concerns?", "contact_intro": "If you have questions about this Code of Conduct or need to report a violation:", "contact_button": "Contact Us", "acknowledgment": "By participating in our community, you acknowledge that you have read and agree to follow this Code of Conduct and understand the consequences of violations.", "together": "Together, we create a better community." };
+const privacy_page = { "title": "Privacy Policy", "seo": { "title": "Privacy Policy | DJ Zen Eyer", "description": "Privacy Policy for DJ Zen Eyer official website. Learn how we collect, use, and protect your personal information." }, "last_updated": "Last updated", "last_updated_date": "January 2026", "intro_p1": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.", "intro_p2": "By using our website, you consent to the data practices described in this policy. If you do not agree with the terms of this Privacy Policy, please do not access the website.", "sections": { "collection": { "title": "1. Information We Collect", "items": ["Personal identification information (name, email address, phone number)", "Usage data and analytics (pages visited, time spent, interactions)", "Device information (browser type, operating system, IP address)", "Cookies and tracking technologies for enhanced user experience", "Payment information (processed securely through third-party processors)"] }, "usage": { "title": "2. How We Use Your Information", "items": ["To provide and maintain our services", "To notify you about changes to our services", "To provide customer support and respond to inquiries", "To send promotional emails and newsletters (with your consent)", "To analyze usage patterns and improve our website and services", "To detect, prevent, and address technical issues and security threats"] }, "security": { "title": "3. Data Security", "items": ["We implement industry-standard security measures to protect your data", "SSL/TLS encryption for all data transmission", "Regular security audits and vulnerability assessments", "Restricted access to personal information on a need-to-know basis", "However, no method of transmission over the Internet is 100% secure"] }, "sharing": { "title": "4. Data Sharing and Disclosure", "items": ["We do not sell your personal information to third parties", "We may share data with trusted service providers who assist in operations", "We may disclose information when required by law or to protect our rights", "Analytics partners may receive aggregated, anonymized data", "Payment processors handle transaction data according to their own policies"] }, "rights": { "title": "5. Your Rights", "items": ["Access: Request a copy of your personal data", "Correction: Request correction of inaccurate or incomplete data", "Deletion: Request deletion of your personal data (subject to legal obligations)", "Opt-out: Unsubscribe from marketing communications at any time", "Data portability: Request transfer of your data to another service"] } }, "cookies_title": "6. Cookies and Tracking Technologies", "cookies_p1": "We use cookies and similar tracking technologies to track activity on our website and hold certain information. Cookies are files with a small amount of data that may include an anonymous unique identifier.", "cookies_p2": "You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our website.", "third_party_title": "7. Third-Party Services", "third_party_p1": "We may employ third-party companies and individuals to facilitate our services, provide services on our behalf, or assist us in analyzing how our service is used. These third parties may have access to your personal information to perform tasks on our behalf and are obligated not to disclose or use it for any other purpose.", "third_party_analytics": "Analytics: Google Analytics", "third_party_payments": "Payment Processing: Stripe, PayPal", "third_party_email": "Email Services: MailPoet", "lgpd_title": "8. LGPD Compliance (Brazilian Law)", "lgpd_p1": "We comply with the Brazilian General Data Protection Law (LGPD - Lei Geral de ProteÃ§Ã£o de Dados). As a Brazilian entity, we are committed to:", "lgpd_items": ["Processing data lawfully, fairly, and transparently", "Collecting data only for specified, explicit, and legitimate purposes", "Keeping data accurate and up to date", "Retaining data only as long as necessary"], "changes_title": "9. Changes to This Privacy Policy", "changes_p1": 'We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date. You are advised to review this Privacy Policy periodically for any changes.', "contact_title": "10. Contact Us", "contact_p1": "If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us at:", "contact_name": "Marcelo Eyer Fernandes", "contact_location": "SÃ£o Paulo, SP - Brazil" };
+const terms_page = { "title": "Terms of Use", "seo": { "title": "Terms of Use | DJ Zen Eyer", "description": "Terms of Use for DJ Zen Eyer official website. Read the terms and conditions governing the use of our services." }, "last_updated": "Last updated", "last_updated_date": "January 2026", "intro_p1": "Welcome to the official website of DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). These Terms of Use govern your access to and use of our website, services, and content.", "intro_p2": "By accessing or using our website, you agree to comply with and be bound by these terms. If you do not agree to these terms, please do not use our website.", "sections": { "acceptance": { "title": "1. Acceptance of Terms", "content": "By accessing and using this website (djzeneyer.com), you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these Terms of Use, please do not use this website. We reserve the right to modify these terms at any time, and such modifications shall be effective immediately upon posting on this website." }, "license": { "title": "2. Use License", "content": `Permission is granted to temporarily access the materials (information or software) on DJ Zen Eyer's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not: (a) modify or copy the materials; (b) use the materials for any commercial purpose, or for any public display (commercial or non-commercial); (c) attempt to decompile or reverse engineer any software contained on DJ Zen Eyer's website; (d) remove any copyright or other proprietary notations from the materials; or (e) transfer the materials to another person or "mirror" the materials on any other server.` }, "disclaimer": { "title": "3. Disclaimer", "content": "The materials on DJ Zen Eyer's website are provided on an 'as is' basis. DJ Zen Eyer makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, DJ Zen Eyer does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its website or otherwise relating to such materials or on any sites linked to this site." }, "limitations": { "title": "4. Limitations", "content": "In no event shall DJ Zen Eyer or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on DJ Zen Eyer's website, even if DJ Zen Eyer or a DJ Zen Eyer authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you." } }, "additional": { "ip": { "title": "Intellectual Property", "items": ["All content, including but not limited to text, graphics, logos, images, audio clips, and software, is the property of DJ Zen Eyer (Marcelo Eyer Fernandes) or its content suppliers.", "The content is protected by Brazilian and international copyright laws.", "Unauthorized use of any materials may violate copyright, trademark, and other laws.", "You may not reproduce, distribute, display, or create derivative works without express written permission."] }, "conduct": { "title": "User Conduct", "items": ["You agree not to use the website for any unlawful purpose or in any way that interrupts, damages, or impairs the service.", "You will not attempt to gain unauthorized access to any portion of the website.", "You will not use automated systems (bots, scrapers) without permission.", "You will not upload or transmit viruses or any other type of malicious code.", "You will respect the privacy and rights of other users."] }, "purchases": { "title": "Purchases and Payments", "items": ["All purchases are subject to availability and confirmation of payment.", "Prices are subject to change without notice.", "We reserve the right to refuse or cancel any order.", "Payment processing is handled by secure third-party processors.", "Refund and cancellation policies are outlined at the time of purchase."] }, "accounts": { "title": "User Accounts", "items": ["You are responsible for maintaining the confidentiality of your account credentials.", "You agree to accept responsibility for all activities that occur under your account.", "You must provide accurate and complete information when creating an account.", "We reserve the right to suspend or terminate accounts that violate these terms.", "You must notify us immediately of any unauthorized use of your account."] }, "links": { "title": "Third-Party Links", "items": ["This website may contain links to third-party websites.", "DJ Zen Eyer has no control over and assumes no responsibility for third-party content.", "The presence of links does not imply endorsement.", "You access third-party sites at your own risk.", "Please review the terms and privacy policies of any third-party sites."] } }, "governing_law_title": "10. Governing Law", "governing_law_p1": "These Terms of Use shall be governed by and construed in accordance with the laws of Brazil, without regard to its conflict of law provisions. Any legal action or proceeding arising under these terms will be brought exclusively in the courts located in SÃ£o Paulo, Brazil.", "governing_law_p2": "By using this website, you consent to the jurisdiction and venue of such courts in SÃ£o Paulo, Brazil.", "modifications_title": "11. Modifications to Terms", "modifications_p1": "DJ Zen Eyer reserves the right to revise these Terms of Use at any time without prior notice. By continuing to use this website after changes are posted, you agree to be bound by the revised terms. We encourage you to periodically review this page for the latest information on our terms.", "contact_questions": "Questions About These Terms?", "contact_intro": "If you have any questions about these Terms of Use, please contact us:", "acceptance_p1": "By using this website, you acknowledge that you have read and understood these Terms of Use", "acceptance_p2": "and agree to be bound by them." };
+const payme = { "title": "Support DJ Zen Eyer", "description": "Support DJ Zen Eyer through donations and collaborations.", "heading": "Support DJ Zen Eyer", "subtitle": "Connect, Support & Collaborate", "method_selection": "Choose your preferred payment method...", "sections": { "contractors": { "desc": "payme.sections.contractors.desc", "title": "payme.sections.contractors.title" }, "donors": { "desc": "payme.sections.donors.desc", "title": "payme.sections.donors.title" } } };
+const footer_rights = "All rights reserved.";
+const footer_about = "About";
+const footer_news = "News";
+const footer_philosophy = "My Philosophy";
+const footer_work_with_me = "Work With Me";
+const footer_media = "Media";
+const footer_conduct = "Code of Conduct";
+const footer_shop = "Shop";
+const footer_contact = "Contact";
+const footer_privacy_policy = "Privacy Policy";
+const footer_terms_of_use = "Terms of Use";
+const footer_quick_links = "Quick Links";
+const footer_discover_more = "Discover More";
+const footer_music_philosophy = "Music Philosophy";
+const footer_press_kit_booking = "Press Kit / Booking";
+const footer_support_artist = "Support Artist";
+const footer_join_newsletter = "Join Newsletter";
+const footer_newsletter_desc = "Get exclusive updates, new releases and VIP access to events directly in your email.";
+const footer_email_placeholder = "Your email address";
+const footer_subscribe = "Subscribe";
+const footer_zen_tribe_info = "Zen Tribe Info";
+const footer_home = "Home";
+const footer_music = "Music";
+const footer_events = "Events";
+const footer_contact_text = "Contact";
+const events_found = "events found";
+const error_loading = "Could not load the schedule";
+const events_search_results = "Results for";
+const events_venue = "Venue";
+const footer_bio = "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.";
+const footer_tagline = "Haste is the enemy of cremosity. One beat at a time.";
+const footer_subscribe_success = "Thanks for subscribing! Keep an eye on your inbox.";
+const footer_subscribe_error = "Failed to subscribe. Please try again.";
+const footer_copyright = "Â© {{year}} DJ Zen Eyer. Haste is the enemy of cremosity.";
+const footer_legal_name = "Marcelo Eyer Fernandes 44063765000146";
+const about = { "seo": { "title": "About DJ Zen Eyer | Brazilian Zouk DJ & Producer", "description": "Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his signature cremosidade style.", "name": "About DJ Zen Eyer", "keywords": "DJ Zen Eyer, world champion DJ, music philosophy, cremosidade, Brazilian Zouk history, Mensa member, music producer bio", "lead_answer": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a Mensa member and award-winning DJ who brings emotional depth and technical precision to Brazilian Zouk music globally." }, "hero": { "badge": "MY STORY", "title": "The <1>Journey</1>", "subtitle": "From passion for music to connecting with thousands of souls through Brazilian Zouk" }, "stats": { "passion": "Years of passion", "passion_value": "15+", "events": "Intimate events", "events_value": "200+", "stories": "Shared stories", "stories_value": "10K+", "smiles": "Created smiles", "smiles_value": "âˆž" }, "story": { "p1": "It all started in <strong>NiterÃ³i, RJ</strong>. At age 15, I discovered Zouk and realized that music could be more than just background noise. While others were listening to rock and pop, I lived with my head (and ears) in my father's cassette tapes, paying attention to Caribbean and Brazilian rhythms.", "p2": "The transition to the DJ booth came naturally years later. The professional encounter with <strong>Brazilian Zouk</strong> happened in 2012. When I heard that rhythmic, smooth, yet highly marked sound, I felt that was where I belonged. I started playing local parties and soon had the honor of joining <strong>Renata PeÃ§anha's</strong> team of DJs, playing annually at the <strong>Rio Zouk Congress</strong>, the largest congress of the genre in Brazil.", "p3": "The following years were of intense study and hard work. Balancing a day job with late nights on the internet learning to mix, trying to understand music theory and, most importantly, observing the dance floor. I sought to understand how music changed people's vibe. My intention was always to create a moment where people could close their eyes and just enjoy the dance, without rush.", "p4": "World recognition arrived in 2022 at Ilha do Zouk, where I won the awards for <strong>Best Remix</strong> and <strong>Best DJ Performance</strong>. It was an incredible honor! But, to be 100% honest, the trophies stay on the shelf. What I truly take with me are the connections: the couple who met during my set or the person who lost their shyness of dancing listening to a track I played.", "p5": "Nowadays, the community talks a lot about the idea of <strong>'cremosidade'</strong> â€” a term describing dance with pure continuous flow. This aligns perfectly with the way I value playing! Each set for me is like having a conversation with whoever is on the floor. I try to send the right message so that people leave feeling like they had a pleasant and light moment.", "p6": "Ultimately, Brazilian Zouk is the soundtrack. What really matters are the friendships, the connections, and the time we spend enjoying the sound together." }, "timeline": { "title": "Some <1>Cool Milestones</1>", "m1": { "title": "How It All Started", "desc": "At age 15, listening to my father's cassette tapes in NiterÃ³i (RJ), I started getting a taste for Caribbean rhythms and messing around with my first music software on the computer." }, "m2": { "title": "First Zouk", "desc": "In 2012, I went to a party in Copacabana and heard Zouk for the first time. It was a really awesome connection and I decided I wanted to be part of that." }, "m3": { "title": "Diving In", "desc": "After a lot of splitting my time between a regular job and the nightlife, I decided to try living just from music. There was a lot of studying, many empty dance floors, and a lot of persistence." }, "m4": { "title": "World Championship", "desc": "Being able to play for people abroad and receiving the world title was proof that putting my heart into it (and preferring the slow beat) was worth it." } }, "philosophy": { "title": "My <1>Philosophy</1>", "quote": `"Music is my way of creating a safe space where people can be who they truly are. It doesn't just touch the ears - it touches the soul. Every beat, every transition, every silence is thought so that someone on the dance floor feels: 'This is about me. This is for me.'"` }, "cta": { "title": "Let's <1>Talk?</1>", "desc": "If you identified with this story or want to know more about the philosophy behind my music, I love meeting people who also believe in the power of connection through art.", "button": "Share Your Story", "whatsapp_msg": "Hello Zen! I saw your story on the website and would like to share mine as well." } };
+const philosophy_page = { "title": "My Music Philosophy", "style_title": "Cremosidade", "mission_title": "Mission", "coming_soon_title": "Coming Soon", "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!" };
+const footer_location = "NiterÃ³i, RJ - Brazil";
+const footer_contact_label = "Contact";
+const events_categories = "Categories";
+const events_page_title = "DJ Zen Eyer Events | 2Ã— World Champion Brazilian Zouk";
+const events_page_meta_desc = "Follow DJ Zen Eyer's global schedule. Experience the 'cremosidade' at the world's top Brazilian Zouk festivals. Book your tickets and join the Zen Tribe! âœ“";
+const events_filter_placeholder = "Filter by city or event...";
+const events_back = "Back to Events";
+const events_not_found = "Event not found";
+const events_not_found_desc = "The event you are looking for might have been removed or is no longer available.";
+const events_no_results = "No events found matching your search.";
+const events_month_jan = "January";
+const events_month_feb = "February";
+const events_month_mar = "March";
+const events_month_apr = "April";
+const events_month_may = "May";
+const events_month_jun = "June";
+const events_month_jul = "July";
+const events_month_aug = "August";
+const events_month_sep = "September";
+const events_month_oct = "October";
+const events_month_nov = "November";
+const events_month_dec = "December";
+const tba = "TBA";
+const share = "Share";
+const link_copied = "Link copied to clipboard!";
+const faq = { "badge": "Knowledge Base", "title": "Frequent <1>Questions</1>", "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.", "seo": { "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.", "keywords": "Zouk Brasileiro FAQ, o que Ã© zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bÃ´nus zouk, renata peÃ§anha zouk, adÃ­lio porto, lambada history" }, "categories": { "djzeneyer": { "title": "DJ Zen Eyer & Career", "desc": "The journey of the Two-Time World Champion and Mensa International member.", "q1": { "q": "Who is DJ Zen Eyer?", "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in NiterÃ³i (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor." }, "q2": { "q": 'What does "Cremosidade" (Creaminess) mean in the context of Zouk?', "a": '"Creaminess" is a term widely used and loved by our dance community to describe when music and movement flow without interruptions. Musically, this translates to the vibe of a smoother sound, longer transitions, and a Contemporary Zouk focused on deep, relaxed connection.' }, "q3": { "q": "What are Zen Eyer's main titles and achievements?", "a": "In 2022, Zen Eyer won two prestigious titles at Ilha do Zouk: <strong>Best DJ Performance</strong> and <strong>Best Remix</strong>. He is also an official DJ for major congresses like Rio Zouk Congress (by pioneer Renata PeÃ§anha). However, he values friendships and the connections created through music more than the trophies." } }, "rankings": { "title": "World Scene & Rankings", "desc": "Curatorship about the current scene and culture.", "q1": { "q": "Who are the best Zouk DJs in the world?", "a": "Music and dance are purely subjective arts, so there is no such thing as 'the best' when everything depends on your personal taste! The Brazilian Zouk scene is full of incredibly talented DJs worldwide. Each professional brings their own signature, and whether you like dancing with more energy or more calmness, you will certainly find your favorite DJ on the dance floor." }, "q2": { "q": "What are the most important events and festivals?", "a": "Brazilian Zouk is lucky to have a super passionate global community. Today, we have excellent events happening in Latin America, Europe, North America, Asia, and Oceania. Choosing the 'best festival' depends heavily on the kind of tourism you want to do, the classes you wish to take, and, of course, the friends you want to reunite with! There's always an amazing place with Zouk playing near you." }, "q3": { "q": "Why is Brazilian Zouk considered so addictive?", "a": "Zouk's 'addictiveness' comes from the unique combination of <strong>expressive freedom</strong> and <strong>deep connection</strong>. Brazilian Zouk allows for organic beat interpretation across various musical genres, and this encounter of fluid movement with a good embrace releases oxytocin and generates the famous 'flow' sensation." } }, "technical": { "title": "Technique and Musicality", "desc": "Technical definitions based on the Brazilian Zouk Council (BZC).", "q1": { "q": "What is the rhythmic structure of Brazilian Zouk?", "a": "According to <strong>Brazilian Zouk Council (BZC)</strong> definitions, the rhythmic base derives from Lambada. The classic count is often associated with the <em>-pa... pa-pa</em> (Tum-Kun-Kun) time cell. The fundamental rule is to respect the tempo, which makes it possible to dance over rhythms like Kizomba, R&B, and Pop." }, "q2": { "q": "What are classic movements like Planada and BÃ´nus?", "a": "These are fundamental movements that define the style's visual aesthetic. <strong>Planada</strong> is an axis rotation that demands a lot of smoothness, while <strong>BÃ´nus</strong> is a technical evolution of the classic Lambada 'Boomerang', now with the continuous flow typical of Zouk." }, "q3": { "q": "What is the importance of Lambada in Zouk history?", "a": "Brazilian Zouk would not exist without Lambada. The fundamentals and head movements were systematized by pioneers like <strong>Renata PeÃ§anha</strong> and <strong>AdÃ­lio Porto</strong>. As the BZC defines, the dance adapted to slow Caribbean songs, evolving into the flow we know today." } }, "culture": { "title": "Culture and History", "desc": "Curiosities, milestones and etiquette of the movement.", "q1": { "q": "Why did the name change to 'Brazilian Zouk' outside the country?", "a": "In Brazil, this whole evolution of Lambada movements danced to Caribbean Zouk music affectionately became just 'Let's dance Zouk'. When exporting the dance, the term 'Brazilian' helped differentiate that the dance we do comes from Brazil, even though it's frequently danced to Caribbean music and, more recently, to global contemporary songs." }, "q2": { "q": "Is Brazilian Zouk the same as Lambada?", "a": "No, but they are blood relatives. Brazilian Zouk shares DNA and pure fundamentals from Lambada, but evolved in parallel through the 90s and 2000s in slower musical tempos, nowadays prioritizing a more elongated fluidity and different breathing and connection dynamics." }, "q3": { "q": "Is there specific etiquette on the Zouk floor?", "a": "Yes, and the main one is <strong>consent and care</strong>! It's a very close connection dance with head movements. Leading must be safe, pleasant, and never forced. The best dance floor is the one where everyone respects each other, invites different friends to dance, and shares smiles." } }, "community": { "title": "Zen Tribe & Booking", "desc": "How to join the movement and send a message.", "q1": { "q": "What is the Zen Tribe?", "a": "The <strong>Zen Tribe</strong> is the project where we unite with other people who enjoy the dance floor vibe. Participants of the project get behind-the-scenes access (edits, full sets, and career content)." }, "q2": { "q": "How to book DJ Zen Eyer for my event?", "a": "We travel the world playing, just send a message via email or official WhatsApp, no matter where it is. Regarding workshops on DJing and music in dance, we also teach them." }, "q3": { "q": "Can I use your music in Instagram/YouTube videos?", "a": "<strong>Yes!</strong> Usage is free for dancers and teachers. I just ask that you tag <strong>@djzeneyer</strong> so I can repost and promote your work. For large-scale commercial use, please contact for licensing." } } }, "not_found": "Didn't find what you were looking for?", "cta_whatsapp": "Talk on WhatsApp", "cta_email": "Send Email" };
+const account = { "tabs": { "overview": "Overview", "orders": "Orders", "achievements": "Achievements", "music": "My Music", "settings": "Settings", "not_found": "Tab not found" }, "stats": { "level_title": "Level", "level_value": "Level {{level}}", "xp_title": "Experience Points", "xp_to_next_rank": "{{count}} XP to next level", "xp_max": "Max level reached!", "achievements_title": "Achievements", "unlocked_recently": "{{count}} unlocked recently", "keep_exploring": "Keep exploring!" }, "profile": { "title": "Account Details", "real_name": "Full Name", "real_name_hint": "for certificates and tickets", "preferred_name": "Artist / Preferred Name", "preferred_name_hint": "how the Tribe sees you", "email": "Email Frequency", "facebook": "Facebook Profile", "facebook_placeholder": "URL or Username", "instagram": "Instagram", "instagram_placeholder": "@username", "dance_role": "Dance Specialty", "dance_role_hint": "optional", "leader": "Leader", "follower": "Follower", "gender": "Gender / Identity", "male": "Male", "female": "Female", "non_binary": "Non-binary", "save": "Save Changes", "saving": "Saving...", "saved": "Profile Updated!", "identity": "Identity", "social": "Social Connection", "success": "Success!", "milestones": "Mastered {{count}} Milestones" }, "newsletter": { "title": "Newsletter Tribe", "desc": "Get exclusive tracks & events directly in your inbox.", "enabled": "Enabled", "disabled": "Disabled" }, "loading": "Loading your Zen account...", "no_achievements": "No achievements yet", "no_achievements_desc": "Start exploring and engaging to unlock your first achievements!", "start_journey": "Start Your Journey", "music": { "title": "My Music Collection", "browse": "Browse Music", "empty_title": "Your music library", "empty_desc": "Access exclusive tracks, mixes, and playlists curated by DJ Zen Eyer", "explore": "Explore Music" }, "security": { "title": "Security", "change_password": "Change Password" }, "danger": { "title": "Danger Zone", "desc": "Once you log out, you'll need to sign in again to access your account.", "logout": "Logout" }, "notifications": { "title": "Notifications", "events": "Email notifications for new events", "achievements": "Achievement updates", "marketing": "Marketing emails" }, "meta_title": "My Account | {{stageName}}", "meta_desc": "Manage your Zen Tribe account, orders, and achievements", "page_title": "My Zen Account", "page_subtitle": "Manage your profile, orders, and Zen Tribe membership", "locked": "Locked", "achievement_unknown": "Unknown achievement", "orders": { "browse_shop": "Ir para a Loja", "continue_shopping": "Continuar Comprando", "loading": "Carregando pedidos...", "no_orders": "Nenhum pedido encontrado", "no_orders_desc": "Você ainda não realizou nenhum pedido na nossa loja.", "order_number": "Pedido #{{id}}", "title": "Meu Histórico de Pedidos" } };
+const not_found = { "title": "Beat Not Found", "text": "The track you're looking for seems to have been remixed or moved to another frequency.", "home": "Home", "music": "Music", "events": "Events", "tribe": "Zen Tribe", "cta": "Back to Homepage" };
+const legal = { "return_policy": { "page_title": "Return & Refund Policy", "page_meta_desc": "Our policy on returns and refunds for products and tickets.", "h1": "Return & Refund Policy", "intro": "At DJ Zen Eyer, we want you to be completely satisfied with your purchase. However, we understand that sometimes things don't work out. Please read our policy below regarding returns and refunds.", "digital_title": "1. Digital Products", "digital_text": "Due to the nature of digital products (music downloads, sample packs, presets), all sales are final. Once a file has been downloaded, we cannot offer a refund. If you have technical issues with a file, please contact support.", "tickets_title": "2. Event Tickets", "tickets_text": "Tickets for events are generally non-refundable unless the event is cancelled or significantly rescheduled.", "cancellations_label": "Cancellations:", "cancellations_text": "If an event is cancelled, you will receive a full refund automatically.", "transfers_label": "Transfers:", "transfers_text": "You may transfer your ticket to another person up to 24 hours before the event starts. Please contact us to process the name change.", "rescheduling_label": "Rescheduling:", "rescheduling_text": "If an event is rescheduled, your ticket will be valid for the new date. If you cannot attend the new date, you may request a refund within 14 days of the announcement.", "merch_title": "3. Physical Merchandise", "merch_text": "For physical items (t-shirts, hoodies, accessories), we accept returns within 30 days of delivery.", "merch_c1": "Items must be unworn, unwashed, and in their original condition.", "merch_c2": "You are responsible for return shipping costs unless the item arrived damaged or incorrect.", "merch_c3": "Refunds are processed to the original payment method within 5-10 business days after we receive the return.", "last_updated": "Last updated", "last_updated_date": "January 2024", "request_text": "Para iniciar uma solicitação de devolução ou reembolso, envie um e-mail para", "request_text_2": "com o número do seu pedido e detalhes do problema.", "request_title": "4. Como solicitar um reembolso" }, "terms_page": { "acceptance": "legal.terms_page.acceptance", "acceptance_desc": "legal.terms_page.acceptance_desc", "acceptance_footer": "legal.terms_page.acceptance_footer", "accounts": "legal.terms_page.accounts", "accounts_accurate": "legal.terms_page.accounts_accurate", "accounts_confidential": "legal.terms_page.accounts_confidential", "accounts_notify": "legal.terms_page.accounts_notify", "accounts_responsibility": "legal.terms_page.accounts_responsibility", "accounts_suspend": "legal.terms_page.accounts_suspend", "conduct_access": "legal.terms_page.conduct_access", "conduct_bots": "legal.terms_page.conduct_bots", "conduct_lawful": "legal.terms_page.conduct_lawful", "conduct_malware": "legal.terms_page.conduct_malware", "conduct_respect": "legal.terms_page.conduct_respect", "contact_company": "legal.terms_page.contact_company", "contact_location": "legal.terms_page.contact_location", "disclaimer": "legal.terms_page.disclaimer", "disclaimer_desc": "legal.terms_page.disclaimer_desc", "governing_law": "legal.terms_page.governing_law", "intellectual_property": "legal.terms_page.intellectual_property", "introduction": "legal.terms_page.introduction", "introduction_agreement": "legal.terms_page.introduction_agreement", "ip_content": "legal.terms_page.ip_content", "ip_protected": "legal.terms_page.ip_protected", "ip_reproduce": "legal.terms_page.ip_reproduce", "ip_unauthorized": "legal.terms_page.ip_unauthorized", "last_updated": "legal.terms_page.last_updated", "last_updated_date": "legal.terms_page.last_updated_date", "law_brazil": "legal.terms_page.law_brazil", "law_consent": "legal.terms_page.law_consent", "license": "legal.terms_page.license", "license_desc": "legal.terms_page.license_desc", "limitations": "legal.terms_page.limitations", "limitations_desc": "legal.terms_page.limitations_desc", "links_contain": "legal.terms_page.links_contain", "links_no_control": "legal.terms_page.links_no_control", "links_no_endorsement": "legal.terms_page.links_no_endorsement", "links_review": "legal.terms_page.links_review", "links_risk": "legal.terms_page.links_risk", "modifications": "legal.terms_page.modifications", "modifications_desc": "legal.terms_page.modifications_desc", "purchases": "legal.terms_page.purchases", "purchases_availability": "legal.terms_page.purchases_availability", "purchases_cancel": "legal.terms_page.purchases_cancel", "purchases_prices": "legal.terms_page.purchases_prices", "purchases_processing": "legal.terms_page.purchases_processing", "purchases_refunds": "legal.terms_page.purchases_refunds", "questions": "legal.terms_page.questions", "questions_desc": "legal.terms_page.questions_desc", "subtitle": "legal.terms_page.subtitle", "third_party_links": "legal.terms_page.third_party_links", "title": "legal.terms_page.title", "user_conduct": "legal.terms_page.user_conduct" } };
+const home = { "seo": { "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music Producer, Zen Tribe", "lead_answer": "DJ Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance." }, "shows": { "title": "Upcoming Events", "cta": "View All Events" }, "festivals": { "presence": "International Festival Presence", "many_more": "many more" }, "press": { "title": "Press & Media", "desc": "Complete press kit, high-resolution photos, releases, and interviews available.", "cta": "DOWNLOAD PRESS KIT 2025" }, "bookers": { "title": "Bookers & Promoters", "desc": "Available for congresses, festivals, workshops, and exclusive events worldwide.", "cta": "REQUEST QUOTE" }, "verified": "Verified Profiles", "tribe": { "title": "Join the Zen Tribe", "desc": "Access exclusive content, behind-the-scenes, and be part of the official DJ Zen Eyer community." } };
+const presskit = { "page_title": "Official Press Kit | DJ Zen Eyer", "page_meta_desc": "Official EPK of DJ Zen Eyer. Two-time Brazilian Zouk world champion. Photos, bio, logos, and contact information for booking.", "tag": "Official Press Kit 2026", "title_prefix": "Official", "title_suffix": "EPK", "role": "DJ & Music Producer", "subtitle": "2Ã— World Champion Brazilian Zouk", "stats": { "countries": "Countries Played", "people": "People Impacted", "streams": "Total Streams", "years": "Years of Career" }, "bio": { "title": "The Sonic Journey", "p1": "<strong>DJ Zen Eyer</strong> is a global reference in Brazilian Zouk, known for his unique approach that prioritizes connection and 'flow' on the dance floor.", "p2": "With performances in over 11 countries and international awards, he created the 'Cremosidade' concept â€” sets that evolve gradually, respecting the dancer's pace.", "p3": "Member of Mensa International, Zen uses his sharp perception to curate perfect emotional journeys, whether at major festivals or intimate Zen Tribe sessions.", "quickStats": { "cremosidade": "Cremosidade", "cremosidade_desc": "Total focus on connection", "repertoire": "Repertoire", "repertoire_desc": "Exclusive & original edits", "connection": "Connection", "connection_desc": "Impeccable floor reading", "global": "Global", "global_desc": "International experience" } }, "media": { "title": "Media & Downloads", "subtitle": "High-resolution resources for promoters and press.", "photos": "Official Photos", "photos_desc": "Updated gallery for promotional material.", "bio": "Complete Bio (PDF)", "bio_desc": "History, awards, and technical details.", "logos": "Logos & Identity", "logos_desc": "Brand guidelines and vector files.", "access": "Access Gallery", "download": "Download File" }, "gallery": { "title": "Photo Gallery", "subtitle": "Moments captured at festivals around the world.", "cta": "View All at Photos.djzeneyer" }, "contact": { "title": "Contact & Booking", "subtitle": "Interested in bringing the Zen experience to your event?", "base": "Base", "availability": "Availability", "availability_value": "Worldwide", "genre": "Main Genre", "links": "Useful Links & Social Media", "whatsapp_message": "Hello Zen Eyer! I'd like to talk about a possible collaboration or booking. How can we proceed?" } };
+const events_add_google = "Add to Calendar";
+const support = { "inter": { "title": "Inter Global Account (Preferred)", "description": "US and Brazil bank accounts for international and local payments", "usd": "US Bank Account (USD)", "eur": "Euro Bank Account (EUR)", "gbp": "Pound Bank Account (GBP)", "brazil": "Brazil (Local)" }, "accountName": "Account Name", "bank": "Bank", "accountNumber": "Account Number", "achRouting": "ACH Routing", "wireRouting": "Wire Routing", "bankAddress": "Bank Address", "beneficiaryBank": "Beneficiary Bank", "swiftCode": "SWIFT/BIC Code", "intermediary": "Intermediary Bank", "swiftInter": "Intermediary SWIFT", "iban": "IBAN", "cpf": "CPF", "branch": "Branch", "account": "Account", "pixKey": "PIX Key", "wise": { "title": "Wise (TransferWise)", "description": "Low-fee international transfers to multiple currencies", "eur": "Euro Bank Account (EUR - Wise)" }, "paypal": { "title": "PayPal", "description": "Quick and easy payments worldwide" }, "reasons": { "title": "Why Your Support Matters", "music": { "title": "Support New Music", "description": "Help produce and release new Brazilian Zouk tracks" }, "community": { "title": "Community Growth", "description": "Support workshops, events, and educational content" }, "worldwide": { "title": "Worldwide Presence", "description": "Enable international tours and collaborations" } }, "seo": { "title": "Support DJ Zen Eyer | Payment Information", "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.", "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj" }, "header": { "title": "Support the Music", "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference." }, "payment": { "title": "Payment Methods" }, "preferred": "Preferred", "email": "Email", "phone": "Phone / Key", "sendPayment": "Send Payment via", "business": { "title": "Event Bookings & Business Inquiries", "description": "For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.", "contact": "Contact for Bookings" }, "thankYou": "âœ¨ Your support keeps the music alive. Thank you! âœ¨" };
+const events_no_results_filter = "Sorry, I couldn't find any events in this state. Maybe check the full schedule?";
+const quiz = { "personas": { "lambadeiro": { "title": "The Lambadeiro 🌪️", "subtitle": "Speed, Whips & Hair Flips", "description": "You don't just dance, you spin. The faster the beat, the happier you are. Your neck movements are legendary, and you treat every song like it's 180 BPM. You honor the roots of Zouk.", "shareText": "I'm the Lambadeiro! 🌪️ Fast beats and hair flips. Which Zouk persona are you?" }, "cremoso": { "title": "The Creamy One 🍦", "subtitle": "Smooth, Slow & Connected", "description": "You are the definition of 'Gostosinho'. You prefer slow jams, R&B, and close embrace. For you, Zouk is about connection and flow. If there's space between you and your partner, you're doing it wrong.", "shareText": "I'm The Creamy One! 🍦 Smooth and connected. Which Zouk persona are you?" }, "tecnico": { "title": "The Technician 📐", "subtitle": "Precision, Angles & Drills", "description": "You know the difference between a cambre and a torsion. You probably judge people's frame silently. Your dance is clean, precise, and visually perfect, likely because you've taken 500 privates.", "shareText": "I'm The Technician! 📐 Perfect frame and precision. Which Zouk persona are you?" }, "fritador": { "title": "The Headbanger 🤘", "subtitle": "Beats, Trance & Energy", "description": "Give you a dark room and a heavy beat, and you're in heaven. You love Neozouk, complex rhythms, and energetic movements. You're probably sweating by the second song.", "shareText": "I'm The Headbanger! 🤘 Dark rooms and heavy beats. Which Zouk persona are you?" }, "rolezeiro": { "title": "The Socializer 🥂", "subtitle": "Talks more than dances", "description": "You're at the party for the vibes. You dance 3 songs and spend 2 hours talking by the bar. You know everyone's name and all the gossip. The party doesn't start until you arrive.", "shareText": "I'm The Socializer! 🥂 Here for the gossip and vibes. Which Zouk persona are you?" } }, "questions": { "q1": { "text": "The DJ drops a super slow R&B remix. What do you do?", "options": { "o1": "Close my eyes and embrace the 'cremosidade'.", "o2": "Use it to practice my slow-motion head movements.", "o3": "Go to the bar to get a drink.", "o4": "Try to dance double-time anyway." } }, "q2": { "text": "What is your favorite accessory for a dance party?", "options": { "o1": "A towel and extra t-shirts.", "o2": "Comfortable shoes for spinning.", "o3": "A breath mint and nice perfume.", "o4": "My phone to record demos." } }, "q3": { "text": "Someone asks you for a dance. What are you thinking?", "options": { "o1": "Do they know how to lead/follow a tilter?", "o2": "I hope they like fast spins!", "o3": "Let's see if we have connection.", "o4": "Sure, but I need to finish this conversation first." } }, "q4": { "text": "What is your Zouk pet peeve?", "options": { "o1": "People who don't protect the head.", "o2": "Music that is too slow.", "o3": "Music that has no beat/energy.", "o4": "When the party ends too early." } }, "q5": { "text": "Ideally, how does a dance end?", "options": { "o1": "With a perfect dip and clean exit.", "o2": "With a long, lingering hug.", "o3": "Sweating and out of breath.", "o4": "With a high-five and a 'let's get water'." } } }, "ui": { "question_count": "Question {{current}} of {{total}}", "complete": "{{percent}}% Complete", "share_result": "Share Result", "take_again": "Take Again", "take_quiz_at": "Take the quiz at:", "copied": "Link copied!", "meta_title": "Zouk Persona Quiz | {{stageName}}", "meta_desc": "Who are you on the dance floor? Take the Zouk Persona Quiz to find out if you're a Lambadeiro, Technician, or the Creamy One!", "you_are": "Você é..." } };
+const contact = "contact";
+const event_desc_fallback = "event_desc_fallback";
+const events_noEvents = "events_noEvents";
+const events_subtitle = "events_subtitle";
+const events_title = "events_title";
+const events_view_details = "events_view_details";
+const loc_to_be_defined = "loc_to_be_defined";
+const press_kit = "press_kit";
+const price_free = "price_free";
+const translation = {
+  nav,
+  dashboard,
+  common,
+  events,
+  gamification,
+  _meta,
+  loading,
+  error,
+  success,
+  auth,
+  zenlink,
+  social,
+  badge_featured,
+  badge_new,
+  badge_sale,
+  join_now_button,
+  explore_music_button,
+  play_featured_mix,
+  upcoming_events,
+  home_page_title,
+  home_page_meta_desc,
+  home_headline,
+  home_subheadline,
+  home_welcome,
+  home_tagline,
+  home_cta,
+  home_features_title,
+  home_features_subtitle,
+  home_feat_exclusive_title,
+  home_feat_exclusive_desc,
+  home_feat_achievements_title,
+  home_feat_achievements_desc,
+  home_feat_community_title,
+  home_feat_community_desc,
+  home_cta_title,
+  home_cta_subtitle,
+  hero_title,
+  hero_subtitle,
+  hero_cta,
+  hero_cta_secondary,
+  home_hero_badge,
+  home_hero_title,
+  home_hero_subtitle,
+  home_hero_slogan,
+  home_hero_cta_text,
+  home_stat_champion,
+  home_stat_countries,
+  home_stat_events,
+  home_stat_years,
+  home_bio_p1,
+  home_bio_p2,
+  home_bio_p3,
+  home_festivals_title,
+  home_festivals_subtitle,
+  home_festivals_more,
+  home_press_title,
+  home_press_desc,
+  home_press_cta,
+  home_booking_title,
+  home_booking_desc,
+  home_booking_cta,
+  home_authority_title,
+  home_tribe_title,
+  home_tribe_highlight,
+  home_tribe_subtitle,
+  home_tribe_cta,
+  home_cta_soundcloud,
+  home_cta_booking,
+  home_cta_music,
+  home_bio_title,
+  home_bio_intro,
+  home_bio_style,
+  home_bio_mensa,
+  news_page_title,
+  news_page_meta_desc,
+  news,
+  music_page_title,
+  music_page_meta_desc,
+  music,
+  press,
+  shop,
+  tribe_page_title,
+  tribe_page_meta_desc,
+  zenTribe,
+  philosophy,
+  dashboard_page_title,
+  dashboard_page_meta_desc,
+  media_page,
+  conduct_page,
+  privacy_page,
+  terms_page,
+  payme,
+  footer_rights,
+  footer_about,
+  footer_news,
+  footer_philosophy,
+  footer_work_with_me,
+  footer_media,
+  footer_conduct,
+  footer_shop,
+  footer_contact,
+  footer_privacy_policy,
+  footer_terms_of_use,
+  footer_quick_links,
+  footer_discover_more,
+  footer_music_philosophy,
+  footer_press_kit_booking,
+  footer_support_artist,
+  footer_join_newsletter,
+  footer_newsletter_desc,
+  footer_email_placeholder,
+  footer_subscribe,
+  footer_zen_tribe_info,
+  footer_home,
+  footer_music,
+  footer_events,
+  footer_contact_text,
+  events_found,
+  error_loading,
+  events_search_results,
+  events_venue,
+  footer_bio,
+  footer_tagline,
+  footer_subscribe_success,
+  footer_subscribe_error,
+  footer_copyright,
+  footer_legal_name,
+  about,
+  philosophy_page,
+  footer_location,
+  footer_contact_label,
+  events_categories,
+  events_page_title,
+  events_page_meta_desc,
+  events_filter_placeholder,
+  events_back,
+  events_not_found,
+  events_not_found_desc,
+  events_no_results,
+  events_month_jan,
+  events_month_feb,
+  events_month_mar,
+  events_month_apr,
+  events_month_may,
+  events_month_jun,
+  events_month_jul,
+  events_month_aug,
+  events_month_sep,
+  events_month_oct,
+  events_month_nov,
+  events_month_dec,
+  tba,
+  share,
+  link_copied,
+  faq,
+  account,
+  not_found,
+  legal,
+  home,
+  presskit,
+  events_add_google,
+  support,
+  events_no_results_filter,
+  quiz,
+  contact,
+  event_desc_fallback,
+  events_noEvents,
+  events_subtitle,
+  events_title,
+  events_view_details,
+  loc_to_be_defined,
+  press_kit,
+  price_free
+};
+export {
+  _meta,
+  about,
+  account,
+  auth,
+  badge_featured,
+  badge_new,
+  badge_sale,
+  common,
+  conduct_page,
+  contact,
+  dashboard,
+  dashboard_page_meta_desc,
+  dashboard_page_title,
+  translation as default,
+  error,
+  error_loading,
+  event_desc_fallback,
+  events,
+  events_add_google,
+  events_back,
+  events_categories,
+  events_filter_placeholder,
+  events_found,
+  events_month_apr,
+  events_month_aug,
+  events_month_dec,
+  events_month_feb,
+  events_month_jan,
+  events_month_jul,
+  events_month_jun,
+  events_month_mar,
+  events_month_may,
+  events_month_nov,
+  events_month_oct,
+  events_month_sep,
+  events_noEvents,
+  events_no_results,
+  events_no_results_filter,
+  events_not_found,
+  events_not_found_desc,
+  events_page_meta_desc,
+  events_page_title,
+  events_search_results,
+  events_subtitle,
+  events_title,
+  events_venue,
+  events_view_details,
+  explore_music_button,
+  faq,
+  footer_about,
+  footer_bio,
+  footer_conduct,
+  footer_contact,
+  footer_contact_label,
+  footer_contact_text,
+  footer_copyright,
+  footer_discover_more,
+  footer_email_placeholder,
+  footer_events,
+  footer_home,
+  footer_join_newsletter,
+  footer_legal_name,
+  footer_location,
+  footer_media,
+  footer_music,
+  footer_music_philosophy,
+  footer_news,
+  footer_newsletter_desc,
+  footer_philosophy,
+  footer_press_kit_booking,
+  footer_privacy_policy,
+  footer_quick_links,
+  footer_rights,
+  footer_shop,
+  footer_subscribe,
+  footer_subscribe_error,
+  footer_subscribe_success,
+  footer_support_artist,
+  footer_tagline,
+  footer_terms_of_use,
+  footer_work_with_me,
+  footer_zen_tribe_info,
+  gamification,
+  hero_cta,
+  hero_cta_secondary,
+  hero_subtitle,
+  hero_title,
+  home,
+  home_authority_title,
+  home_bio_intro,
+  home_bio_mensa,
+  home_bio_p1,
+  home_bio_p2,
+  home_bio_p3,
+  home_bio_style,
+  home_bio_title,
+  home_booking_cta,
+  home_booking_desc,
+  home_booking_title,
+  home_cta,
+  home_cta_booking,
+  home_cta_music,
+  home_cta_soundcloud,
+  home_cta_subtitle,
+  home_cta_title,
+  home_feat_achievements_desc,
+  home_feat_achievements_title,
+  home_feat_community_desc,
+  home_feat_community_title,
+  home_feat_exclusive_desc,
+  home_feat_exclusive_title,
+  home_features_subtitle,
+  home_features_title,
+  home_festivals_more,
+  home_festivals_subtitle,
+  home_festivals_title,
+  home_headline,
+  home_hero_badge,
+  home_hero_cta_text,
+  home_hero_slogan,
+  home_hero_subtitle,
+  home_hero_title,
+  home_page_meta_desc,
+  home_page_title,
+  home_press_cta,
+  home_press_desc,
+  home_press_title,
+  home_stat_champion,
+  home_stat_countries,
+  home_stat_events,
+  home_stat_years,
+  home_subheadline,
+  home_tagline,
+  home_tribe_cta,
+  home_tribe_highlight,
+  home_tribe_subtitle,
+  home_tribe_title,
+  home_welcome,
+  join_now_button,
+  legal,
+  link_copied,
+  loading,
+  loc_to_be_defined,
+  media_page,
+  music,
+  music_page_meta_desc,
+  music_page_title,
+  nav,
+  news,
+  news_page_meta_desc,
+  news_page_title,
+  not_found,
+  payme,
+  philosophy,
+  philosophy_page,
+  play_featured_mix,
+  press,
+  press_kit,
+  presskit,
+  price_free,
+  privacy_page,
+  quiz,
+  share,
+  shop,
+  social,
+  success,
+  support,
+  tba,
+  terms_page,
+  tribe_page_meta_desc,
+  tribe_page_title,
+  upcoming_events,
+  zenTribe,
+  zenlink
+};
+//# sourceMappingURL=translation-DRJE7Sut.js.map

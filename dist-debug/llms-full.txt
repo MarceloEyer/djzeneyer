@@ -1,0 +1,109 @@
+﻿# DJ Zen Eyer - Full Profile
+
+> Comprehensive technical, professional, and intellectual background of DJ Zen Eyer (Marcelo Eyer Fernandes). This document is optimized for deep reasoning and detailed context injection into LLM sessions.
+
+## Professional Identity
+
+DJ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** (2x World Champion in DJing and Best Remix, 2022). He is a pivotal figure in the global Brazilian Zouk scene, known for pioneering the "Cremosidade" transition style.
+
+## Key Identifiers
+
+- Full name: Marcelo Eyer Fernandes
+- Stage name: DJ Zen Eyer
+- Wikidata: Q136551855
+- MusicBrainz: 13afa63c-8164-4697-9cad-c5100062a154
+- ISNI: 0000 0005 2893 1015
+- Website: https://djzeneyer.com
+
+## Site Map (Canonical URLs)
+
+### English
+| Page | URL |
+|------|-----|
+| Home | https://djzeneyer.com/ |
+| About DJ Zen Eyer | https://djzeneyer.com/about-dj-zen-eyer |
+| Zouk Music | https://djzeneyer.com/zouk-music |
+| Zouk Events | https://djzeneyer.com/zouk-events |
+| Zouk Dance News | https://djzeneyer.com/zouk-dance-news |
+| Zouk Philosophy | https://djzeneyer.com/zouk-philosophy |
+| Press Kit | https://djzeneyer.com/press-kit-dj-zen-eyer |
+| Work With Me (Booking) | https://djzeneyer.com/work-with-me |
+| Zen Tribe | https://djzeneyer.com/zentribe |
+| Shop | https://djzeneyer.com/shop |
+| Support DJ Zen Eyer | https://djzeneyer.com/support-dj-zen-eyer |
+| ZenLink | https://djzeneyer.com/zenlink |
+
+### PortuguÃªs
+| PÃ¡gina | URL |
+|--------|-----|
+| Home | https://djzeneyer.com/pt/ |
+| Sobre DJ Zen Eyer | https://djzeneyer.com/pt/sobre-dj-zen-eyer |
+| MÃºsica Zouk | https://djzeneyer.com/pt/musica-zouk |
+| Eventos Zouk | https://djzeneyer.com/pt/eventos-zouk |
+| NotÃ­cias Zouk | https://djzeneyer.com/pt/noticias-zouk |
+| Filosofia Zouk | https://djzeneyer.com/pt/filosofia-zouk |
+| Kit de Imprensa | https://djzeneyer.com/pt/kit-de-imprensa |
+| Trabalhe Comigo (Booking) | https://djzeneyer.com/pt/trabalhe-comigo |
+| Tribo Zen | https://djzeneyer.com/pt/tribo-zen |
+| Loja | https://djzeneyer.com/pt/loja |
+| Apoie DJ Zen Eyer | https://djzeneyer.com/pt/apoie-dj-zen-eyer |
+| Links Zen | https://djzeneyer.com/pt/links-zen |
+
+## AI Visibility Glossary (AI SEO / GEO / AEO)
+
+- **SEO para IAs (AI discoverability SEO):** Content optimization focused on being correctly interpreted, trusted, and recommended by AI assistants like ChatGPT, Perplexity, and Gemini.
+- **GEO (Generative Engine Optimization):** Optimization for citations and mentions inside generative AI responses.
+- **AEO (Answer Engine Optimization):** Optimization for direct-answer engines, prioritizing concise passages, high-confidence factual snippets, and structured answers.
+
+### Practical signal strategy for this project
+
+- Maintain canonical entities (DJ Zen Eyer, Marcelo Eyer Fernandes, Zen Eyer) as one single identity across pages and metadata.
+- Publish concise Q&A blocks and glossary definitions to increase answer extraction probability.
+- Keep llms.txt / llms-full.txt updated with high-precision facts, identifiers, and official links.
+- Reinforce trust signals: verifiable awards, external knowledge graph IDs, and consistent sameAs references.
+
+## Intellectual & Technical Background
+
+- **Mensa International:** Admitted as a member of the high-IQ society (top 2%).
+- **Dual Career Path:** Simultaneously a professional musician and a Full-stack Software Engineer. He personally architects the headless ecosystem of his platform.
+
+## Technical Infrastructure
+
+- **Frontend SPA:** React 18, Vite 7, Tailwind CSS, Framer Motion, React Router 7, i18next (EN/PT).
+- **Backend CMS:** WordPress 6.0+ via REST API in headless mode. PHP 8.3, MariaDB.
+- **Plugins:** WooCommerce, GamiPress, Polylang, MailPoet, LiteSpeed Cache, ZenEyer Auth, Zen BIT, Zen SEO Lite Pro.
+- **Infrastructure:** Hostinger VPS (LiteSpeed), Cloudflare CDN, GitHub Actions CI/CD.
+- **AI Readiness:** JSON-LD (MusicGroup Schema), automated Hreflang (EN/PT), llms.txt, llms-full.txt, ai-bots.txt, dedicated AI context endpoint.
+
+## Career Milestones
+
+- **Global Presence:** Performed in over 11 countries across 4 continents.
+- **Major Stages:** Prague Zouk Congress, Dutch Zouk, Zurich Zouk Congress, LA Zouk Marathon.
+- **Rio Zouk Congress:** Official DJ at Renata PeÃ§anha's Rio Zouk Congress, the largest Brazilian Zouk congress in Brazil.
+- **Authority:** Verified presence on Wikidata (Q136551855), MusicBrainz, ISNI, and the Google Knowledge Graph.
+
+## Musical Philosophy: Cremosidade
+
+A distinctive musical movement focused on:
+- **Flow:** Continuous transitions without emotional breaks.
+- **Fusion:** Integrating traditional Zouk roots with modern electronic textures.
+- **Experience:** Curating sets that feel like a single, cohesive journey for the dancer.
+
+## Brazilian Zouk Community Connections
+
+- **Renata PeÃ§anha:** Pioneer of Brazilian Zouk and founder of Rio Zouk Congress. DJ Zen Eyer plays annually at her congress.
+- **AdÃ­lio Porto:** Pioneer who helped systematize the foundational techniques of Brazilian Zouk.
+- **Brazilian Zouk Council (BZC):** International governing body defining official Brazilian Zouk techniques and standards. Website: https://www.brazilianzoukcouncil.com/
+
+## Direct Links & Resources
+
+- [Official SoundCloud](https://soundcloud.com/djzeneyer): Primary hub for live sets and remixes.
+- [Spotify Artist Profile](https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw): Published original tracks and official releases.
+- [Press Kit](https://djzeneyer.com/press-kit-dj-zen-eyer): Assets and riders for international promoters.
+- [Kit de Imprensa (PT)](https://djzeneyer.com/pt/kit-de-imprensa): Materiais para imprensa e organizadores brasileiros.
+- [Zen Tribe Community](https://djzeneyer.com/zentribe): Exclusive member-only platform and digital community.
+- [Wikidata](https://www.wikidata.org/wiki/Q136551855): Verifiable structured data.
+- [MusicBrainz](https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154): Discography and music industry identifiers.
+
+Last updated: March 2026
+

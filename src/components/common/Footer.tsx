@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Instagram, Youtube, Music2, MessageCircle, Facebook } from 'lucide-react';
+import { Music, Instagram, Youtube, Music2, MessageCircle, Facebook, Send } from 'lucide-react';
 import { ARTIST } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { useSubscriptionMutation } from '../../hooks/useQueries';

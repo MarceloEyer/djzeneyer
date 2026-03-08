@@ -49,9 +49,11 @@ let viteProcess = null;
 function startDevServer() {
   return new Promise(async (resolve, reject) => {
     console.log('🚀 Iniciando Vite Preview...');
-    viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
+    const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    viteProcess = spawn(command, ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
       stdio: 'inherit',
+      shell: process.platform === 'win32',
       env: { ...process.env, FORCE_COLOR: '1', PRERENDER_MODE: 'true' },
     });
     viteProcess.on('error', reject);
@@ -124,6 +126,10 @@ async function prerender() {
       if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
         console.log(`[JS ERROR]: ${text}`);
       }
+    });
+
+    page.on('pageerror', err => {
+        console.log(`[PAGE FATAL ERROR]: ${err.toString()}`);
     });
 
     let successCount = 0;
