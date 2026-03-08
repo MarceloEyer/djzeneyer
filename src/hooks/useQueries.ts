@@ -61,6 +61,8 @@ export interface WCOrder {
   }>;
 }
 
+import { ProductImage, ProductCategory } from '../types/product';
+
 export interface WCProduct {
   id: number;
   name: string;
@@ -68,19 +70,24 @@ export interface WCProduct {
   price: string;
   regular_price: string;
   sale_price?: string;
+  on_sale?: boolean;
   type: string;
   status: string;
   short_description: string;
-  images: Array<{ src: string; alt: string }>;
-  categories: Array<{ id: number; name: string; slug: string }>;
-  stock_status: 'instock' | 'outofstock';
+  images: ProductImage[];
+  categories: ProductCategory[];
+  stock_status: 'instock' | 'outofstock' | string;
   purchasable: boolean;
   permalink: string;
+  lang?: string;
 }
 
 export interface ShopPageViewModel {
   products: WCProduct[];
   featured?: WCProduct[];
+  new_releases?: WCProduct[];
+  best_sellers?: WCProduct[];
+  curated?: WCProduct[];
   collections?: Array<{ id: number; name: string; products: WCProduct[] }>;
 }
 

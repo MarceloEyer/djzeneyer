@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { useShopPageQuery, useAddToCartMutation } from '../hooks/useQueries';
+import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
@@ -22,23 +22,9 @@ import {
   Plus
 } from 'lucide-react';
 
-import { ProductImage, ProductCategory } from '../types/product';
 
 // --- Interfaces (Idealmente em src/types/index.ts) ---
-interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  price: string;
-  regular_price: string;
-  sale_price: string;
-  on_sale: boolean;
-  images: ProductImage[];
-  stock_status: string;
-  lang: string;
-  short_description?: string;
-  categories?: ProductCategory[];
-}
+type Product = WCProduct;
 
 // --- Componente de Carrossel Horizontal ---
 // --- Netflix-style Paging Indicator ---
@@ -383,7 +369,9 @@ const ShopPage: React.FC = () => {
       : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
   }, [isPortuguese]);
 
-  const featuredProduct = shopData?.featured || null;
+  const featuredProduct = Array.isArray(shopData?.featured) 
+    ? shopData.featured[0] 
+    : (shopData?.featured || null);
   const newReleases = shopData?.new_releases || [];
   const bestSellers = shopData?.best_sellers || [];
   const curatedSelection = shopData?.curated || [];
