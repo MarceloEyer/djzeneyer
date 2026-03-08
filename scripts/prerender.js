@@ -49,9 +49,11 @@ let viteProcess = null;
 function startDevServer() {
   return new Promise(async (resolve, reject) => {
     console.log('🚀 Iniciando Vite Preview...');
-    viteProcess = spawn('npx', ['vite', 'preview', '--port', '5173', '--host'], {
+    const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    viteProcess = spawn(command, ['vite', 'preview', '--port', '5173', '--host'], {
       cwd: process.cwd(),
       stdio: 'inherit',
+      shell: process.platform === 'win32',
       env: { ...process.env, FORCE_COLOR: '1', PRERENDER_MODE: 'true' },
     });
     viteProcess.on('error', reject);

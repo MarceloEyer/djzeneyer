@@ -43,6 +43,23 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const API_URL = `${window.location.origin}/wp-json/zeneyer-auth/v1`;
 
   // ========================================================================
+  // HELPERS & LOGOUT (HOISTED FOR INITIALIZATION)
+  // ========================================================================
+  const logout = useCallback(() => {
+    setUser(null);
+    localStorage.removeItem('zen_jwt');
+    localStorage.removeItem('zen_user');
+    clearAllCache();
+  }, []);
+
+  const saveSession = useCallback((userData: WordPressUser, token: string) => {
+    const userWithStatus = { ...userData, isLoggedIn: true, token };
+    setUser(userWithStatus);
+    localStorage.setItem('zen_jwt', token);
+    localStorage.setItem('zen_user', JSON.stringify(userWithStatus));
+  }, []);
+
+  // ========================================================================
   // INICIALIZAÇÃO
   // ========================================================================
   useEffect(() => {
@@ -105,15 +122,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     init();
   }, [API_URL, logout]);
 
-  // ========================================================================
-  // HELPERS
-  // ========================================================================
-  const saveSession = useCallback((userData: WordPressUser, token: string) => {
-    const userWithStatus = { ...userData, isLoggedIn: true, token };
-    setUser(userWithStatus);
-    localStorage.setItem('zen_jwt', token);
-    localStorage.setItem('zen_user', JSON.stringify(userWithStatus));
-  }, []);
+
 
   // ========================================================================
   // LOGIN COM EMAIL/SENHA
@@ -141,10 +150,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       saveSession(json.data.user, json.data.token);
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro no login:', err);
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro no login:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -182,10 +192,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       saveSession(json.data.user, json.data.token);
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro no registro:', err);
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro no registro:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -230,24 +241,17 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       saveSession(json.data.user, json.data.token);
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Google Login falhou:', err);
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Google Login falhou:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, [API_URL, saveSession]);
 
-  // ========================================================================
-  // LOGOUT
-  // ========================================================================
-  const logout = useCallback(() => {
-    setUser(null);
-    localStorage.removeItem('zen_jwt');
-    localStorage.removeItem('zen_user');
-    clearAllCache();
-  }, []);
+
 
   // ========================================================================
   // PASSWORD RESET
@@ -266,10 +270,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!json.success) {
         throw new Error(json.message || 'Erro ao solicitar reset de senha');
       }
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro ao solicitar reset:', err);
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro ao solicitar reset:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -289,10 +294,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!json.success) {
         throw new Error(json.message || 'Erro ao definir nova senha');
       }
-    } catch (err: any) {
-      console.error('[UserContext] ❌ Erro ao resetar senha:', err);
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error('[UserContext] ❌ Erro ao resetar senha:', error);
+      setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
