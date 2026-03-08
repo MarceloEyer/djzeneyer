@@ -39,7 +39,7 @@ triggers:
   - LiteSpeed
   - Cloudflare
   - prerender
-version: "1.2.0"
+version: '1.2.0'
 author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 ---
 
@@ -63,6 +63,7 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 ## 2. Stack TÃ©cnica Completa
 
 ### Frontend (React 18 SPA)
+
 - **Vite 7**: Build tool principal.
 - **TypeScript**: Strict mode obrigatÃ³rio.
 - **React Query (TanStack v5)**: Ãšnica forma de data fetching permitida (`useQueries.ts`).
@@ -71,6 +72,7 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 - **i18next**: TraduÃ§Ã£o dinÃ¢mica PT/EN.
 
 ### Backend (WP 6.9+ / PHP 8.3)
+
 - **Headless**: WP nÃ£o renderiza HTML.
 - **WooCommerce 10.5+**: HPOS ativo.
 - **GamiPress**: GamificaÃ§Ã£o brain.
@@ -81,6 +83,7 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 ## 3. Regras de Ouro (Core Rules)
 
 ### 3.1 Frontend
+
 - **Zero Hardcoding**: Use `t('key')` para toda string visÃ­vel.
 - **Lazy Loading**: `React.lazy()` obrigatÃ³rio para todas as pÃ¡ginas.
 - **useQueries.ts â€” SSOT**: Arquivo Ãºnico em `src/hooks/useQueries.ts` contÃ©m TODOS os hooks de dados. Nunca use `fetch()` solto em componentes.
@@ -90,6 +93,7 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 ### 3.2 Backend â€” Namespacing ObrigatÃ³rio
 
 **Todos** os plugins devem estar em namespace. PadrÃ£o:
+
 ```
 plugins/
   zen-bit/          â†’ namespace ZenBit\Core, ZenBit\API, ZenBit\Cache
@@ -99,6 +103,7 @@ plugins/
 ```
 
 **REST API Endpoints â€” Namespaces Precisos:**
+
 - `djzeneyer/v1` â€” Core theme (activity, menu, config)
 - `zeneyer-auth/v1` â€” AutenticaÃ§Ã£o JWT (v2.3.0 Master)
 - `zen-bit/v2` â€” Bandsintown API (events, cached, SWR)
@@ -107,20 +112,33 @@ plugins/
 - `wc/store/v1` â€” WooCommerce (nativo, usar obrigatoriamente `_fields`)
 
 **PROIBIDO:**
+
 - âŒ Endpoints sem namespace (ex: `/wp-json/meu-endpoint`)
 - âŒ **Over-fetch:** Chamadas `wc/store/v1` sem o parÃ¢metro `_fields`.
 - âŒ **Cookies puros em SPA:** Dashboards e aÃ§Ãµes de usuÃ¡rio devem usar `Authorization: Bearer`.
 
 ### 3.3 Auth Bridge & Security Shield (v2.3.0)
+
 - **Global Auth:** O plugin `zeneyer-auth` v2.3.0 integra JWT ao Core. Endpoints nativos (`/wp/v2/*`) agora aceitam Bearer token.
 - **Security Shield:** Registro via REST exige Cloudflare Turnstile (`turnstileToken`). Se `ZEN_TURNSTILE_SECRET_KEY` nÃ£o estiver no `wp-config.php`, o plugin bloqueia ativaÃ§Ã£o.
 - **A Guilhotina:** O hook `user_register` remove usuÃ¡rios nÃ£o-validados por `ZEN_AUTH_VALIDATED`. Nunca registre usuÃ¡rios via forms padrÃ£o do WP.
 - **Front-end Sync:** Antes de qualquer redirecionamento, valide o estado com `GET /zeneyer-auth/v1/session`.
 
+### 3.4 Resiliência Técnica e Padronização de Tipos (v1.2.1)
+
+- **Harden Data Strategy:** A REST API do WordPress é inconsistente. Campos como "Featured" ou "Destaque" podem retornar Objeto ou Array. O frontend **deve** usar `Array.isArray()` para normalizar o dado antes de qualquer acesso a propriedades.
+- **Contract-First Development (SSOT):** O arquivo `src/hooks/useQueries.ts` é o contrato único (SSOT). Se um componente precisa de um dado novo do backend, ele **deve** ser tipado no `useQueries.ts` primeiro. É proibido criar interfaces locais em componentes que se sobrepõem ao contrato global.
+- **Hydration & Prerender Safety:**
+  - Avisos no console de "Prop mismatch" ou "Invalid attribute" durante a hidratação quebram o SEO.
+  - Atributos nativos de imagem (ex: `fetchPriority`) devem ser escritos em `camelCase`. Atributos `lowercase` da DOM pura (ex: `fetchpriority`) são permitidos apenas se não houver alias no React, mas para performance, seguir o padrão React.
+- **Zero Debt Merge Policy:** Proibido merge com warnings de TypeScript, imports não utilizados ou tipagem `any` para silenciar falhas de mapeamento de dados do backend.
+
 ---
 
 ## 4. ReferÃªncias e Scripts
+
 Localizados em `.agents/skills/djzeneyer-context/`:
+
 - `references/api-endpoints.md`: Guia completo com todos os endpoints.
 - `references/file-structure.md`: Mapa de pastas do projeto.
 - `scripts/pre-deploy-check.sh`: ValidaÃ§Ã£o prÃ©via (lint, tipos, arquivos).
@@ -128,6 +146,7 @@ Localizados em `.agents/skills/djzeneyer-context/`:
 - `scripts/new-page.sh`: Blueprint para novas pÃ¡ginas React.
 
 ### 4.1 Skills Especializadas (Power Pack)
+
 - `@seo-audit`: Crawlability, meta tags, indexaÃ§Ã£o.
 - `@schema-markup`: JSON-LD e validaÃ§Ã£o (crucial para `zen-seo-lite`).
 - `@ai-seo`: OtimizaÃ§Ã£o para E-E-A-T e respostas de IA (Zen **adora** visitas de IA).
@@ -151,18 +170,19 @@ Localizados em `.agents/skills/djzeneyer-context/`:
 2. **Frontend (React):** Recebe dados filtrados, renderiza apenas
 
 **Exemplo â€” Listagem de Eventos:**
+
 ```php
 // âœ… Backend â€” filtra por data/status
 register_rest_route('zen-bit/v2', '/events', [
     'callback' => function(WP_REST_Request $request) {
         $status = sanitize_text_field($request->get_param('status'));
         $date_from = sanitize_text_field($request->get_param('date_from'));
-        
+
         $events = get_cached_bandsintown_events([
             'status' => $status,
             'date_from' => $date_from,
         ]);
-        
+
         return rest_ensure_response($events);
     },
     'methods' => 'GET',
@@ -172,21 +192,22 @@ register_rest_route('zen-bit/v2', '/events', [
 ```typescript
 // âœ… Frontend â€” sÃ³ renderiza, nunca filtra
 export const useEventsList = (status?: string) => {
-    return useQuery({
-        queryKey: ['events', status],
-        queryFn: async () => {
-            const params = new URLSearchParams();
-            if (status) params.append('status', status);
-            const res = await fetch(`${API_BASE}/zen-bit/v2/events?${params}`);
-            return res.json();
-        },
-    });
+  return useQuery({
+    queryKey: ['events', status],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (status) params.append('status', status);
+      const res = await fetch(`${API_BASE}/zen-bit/v2/events?${params}`);
+      return res.json();
+    },
+  });
 };
 ```
 
 ---
 
 ## 6. Pipeline de Deploy
+
 - **Trigger**: Push para `main`.
 - **Build**: `npm run build` gera `dist/`.
 - **Prerender**: Via Puppeteer (`scripts/prerender.js`) â€” CRÃTICO para SEO.
@@ -196,6 +217,7 @@ export const useEventsList = (status?: string) => {
 ---
 
 ## 7. ProibiÃ§Ãµes Absolutas
+
 - âŒ **Gradientes**: Use cores sÃ³lidas + opacidade.
 - âŒ **ESLint v10**: Manter v9.39.2 (incompatibilidade com plugins).
 - âŒ **Python**: Conflita com Pylance (quebra IntelliSense TypeScript).
@@ -207,26 +229,33 @@ export const useEventsList = (status?: string) => {
 ## 8. Troubleshooting Comum
 
 ### Prerender falha (White Screen)
+
 **Sintoma:** Deploy sucesso, mas site mostra branco ou 500 no frontend.
 **Causa:** Timeout no Puppeteer ou API indisponÃ­vel durante build.
 **SoluÃ§Ã£o:**
+
 1. Aumentar timeout em `scripts/prerender.js`: `navigationOptions.timeout = 60000`
 2. Verificar se WordPress estÃ¡ online: `curl https://djzeneyer.com/wp-json/wp/v2/posts`
 3. Adicionar fallback de dados vazios em pÃ¡ginas crÃ­ticas
 
 ### Deploy bem-sucedido, mas 404 no site
+
 **Sintoma:** GitHub Actions passa, mas URLs retornam 404.
 **Causa:** rsync nÃ£o sincronizou corretamente ou `dist/` vazio.
 **SoluÃ§Ã£o:**
+
 1. Verificar se `dist/` nÃ£o estÃ¡ vazio: `ls -la dist/`
 2. Validar rsync path: `THEME_PATH=./wp-content/themes/zentheme` estÃ¡ correto
 3. SSH para server: `ssh prod "ls -la ./wp-content/themes/zentheme/dist/"`
 
 ### CORS error no Frontend
+
 **Sintoma:** `Access-Control-Allow-Origin` missing no console.
 **Causa:** `allowed_http_origins` filter nÃ£o registrado ou origin nÃ£o whitelisted.
 **SoluÃ§Ã£o:**
+
 1. Verificar em `inc/cors.php` ou plugin de auth:
+
 ```php
 add_filter('allowed_http_origins', function($origins) {
     $origins[] = 'https://djzeneyer.com';
@@ -234,14 +263,18 @@ add_filter('allowed_http_origins', function($origins) {
     return $origins;
 });
 ```
+
 2. Incluir protocol + domain completo (nÃ£o usar `*` com credentials)
 
 ### Namespace conflictando
+
 **Sintoma:** Fatal error "cannot declare class X (previously declared)".
 **Causa:** Plugin registrando namespace duplicado ou falta de namespace.
 **SoluÃ§Ã£o:**
+
 1. Rodar `scripts/verify-namespaces.sh`
 2. Verificar em cada `plugin-file.php`:
+
 ```php
 <?php
 namespace ZenBit\Core; // âœ… Sempre primeiro
@@ -267,12 +300,10 @@ defined('ABSPATH') || exit;
 Se houver conflito entre este skill e `AI_CONTEXT_INDEX.md`, siga `AI_CONTEXT_INDEX.md`.
 
 Correcoes obrigatorias:
+
 - Plugin de gamificacao ativo no repo: `zengame` (`zengame/v1`). `zen-ra` foi removido do projeto e qualquer mencao deve ser corrigida.
 - Namespace SEO canonico: `zen-seo/v1`.
 - Namespace de eventos canonico: `zen-bit/v2`.
 - PHP baseline do projeto: 8.1+ (compativel com `zengame`).
 - ⚠️ **localStorage/sessionStorage**: permitido apenas para sessao/idioma e com revisao de seguranca.
 - Projeto usa Tailwind v3 no momento; nao aplicar regras exclusivas de v4 sem migracao explicita.
-
-
-
