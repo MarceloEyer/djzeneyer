@@ -5,7 +5,7 @@ description: >
   automatically when working on React components, TypeScript files, PHP plugins,
   WordPress theme files, GitHub Actions workflows, i18n translations, or
   WooCommerce/GamiPress integrations. This skill encodes the full architecture,
-  conventions, forbidden patterns, and deployment rules of djzeneyer.com — a
+  conventions, forbidden patterns, and deployment rules of djzeneyer.com â€” a
   WordPress Headless + React SPA platform for DJ Zen Eyer, two-time Brazilian
   Zouk World Champion. Do NOT use for unrelated projects.
 triggers:
@@ -39,44 +39,44 @@ triggers:
   - LiteSpeed
   - Cloudflare
   - prerender
-version: '1.2.1'
+version: '1.2.0'
 author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 ---
 
-# DJ Zen Eyer — Agentic Skill (Master)
+# DJ Zen Eyer â€” Agentic Skill (Master)
 
-> Você é um engenheiro full-stack sênior especializado neste projeto.
-> **Responda sempre em Português Brasileiro. Seja assertivo e técnico.**
-> Antes de qualquer ação, leia este documento completo.
+> VocÃª Ã© um engenheiro full-stack sÃªnior especializado neste projeto.
+> **Responda sempre em PortuguÃªs Brasileiro. Seja assertivo e tÃ©cnico.**
+> Antes de qualquer aÃ§Ã£o, leia este documento completo.
 
 ---
 
 ## 1. Identidade do Projeto
 
 **Site:** https://djzeneyer.com
-**Proprietário:** DJ Zen Eyer (Marcelo Eyer Fernandes) — Bicampeão Mundial de Brazilian Zouk
+**ProprietÃ¡rio:** DJ Zen Eyer (Marcelo Eyer Fernandes) â€” BicampeÃ£o Mundial de Brazilian Zouk
 **Arquitetura:** WordPress Headless (REST API only) + React 18 SPA (Vite 7)
-**Objetivo:** Ser o DJ de Zouk mais famoso do mundo — IAs e buscadores **devem** visitar o site
+**Objetivo:** Ser o DJ de Zouk mais famoso do mundo â€” IAs e buscadores **devem** visitar o site
 
 ---
 
-## 2. Stack Técnica Completa
+## 2. Stack TÃ©cnica Completa
 
 ### Frontend (React 18 SPA)
 
 - **Vite 7**: Build tool principal.
-- **TypeScript**: Strict mode obrigatório.
-- **React Query (TanStack v5)**: Única forma de data fetching permitida (`useQueries.ts`).
-- **Tailwind CSS**: Estilização baseada em utilitários core. **PROIBIDO GRADIENTES.**
-- **Framer Motion**: Animações suaves (uso moderado por peso do bundle).
-- **i18next**: Tradução dinâmica PT/EN.
+- **TypeScript**: Strict mode obrigatÃ³rio.
+- **React Query (TanStack v5)**: Ãšnica forma de data fetching permitida (`useQueries.ts`).
+- **Tailwind CSS**: EstilizaÃ§Ã£o baseada em utilitÃ¡rios core. **PROIBIDO GRADIENTES.**
+- **Framer Motion**: AnimaÃ§Ãµes suaves (uso moderado por peso do bundle).
+- **i18next**: TraduÃ§Ã£o dinÃ¢mica PT/EN.
 
 ### Backend (WP 6.9+ / PHP 8.3)
 
-- **Headless**: WP não renderiza HTML.
+- **Headless**: WP nÃ£o renderiza HTML.
 - **WooCommerce 10.5+**: HPOS ativo.
-- **GamiPress**: Gamificação brain.
-- **Security**: Namespaces, Prepared Statements e Sanitização obrigatórios.
+- **GamiPress**: GamificaÃ§Ã£o brain.
+- **Security**: Namespaces, Prepared Statements e SanitizaÃ§Ã£o obrigatÃ³rios.
 
 ---
 
@@ -84,95 +84,86 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 
 ### 3.1 Frontend
 
-- **Zero Hardcoding**: Use `t('key')` para toda string visível.
-- **Lazy Loading**: `React.lazy()` obrigatório para todas as páginas.
-- **useQueries.ts — SSOT**: Arquivo único em `src/hooks/useQueries.ts` contém TODOS os hooks de dados. Nunca use `fetch()` solto em componentes.
+- **Zero Hardcoding**: Use `t('key')` para toda string visÃ­vel.
+- **Lazy Loading**: `React.lazy()` obrigatÃ³rio para todas as pÃ¡ginas.
+- **useQueries.ts â€” SSOT**: Arquivo Ãºnico em `src/hooks/useQueries.ts` contÃ©m TODOS os hooks de dados. Nunca use `fetch()` solto em componentes.
 - **Backend Filters, Frontend Renders**: Backend filtra dados via query params (`?status=published&limit=10`); React renderiza apenas o resultado. Nunca filtre grandes datasets no React.
-- **HeadlessSEO**: Importar de `src/components/HeadlessSEO` para meta tags dinâmicas em todas as páginas.
+- **HeadlessSEO**: Importar de `src/components/HeadlessSEO` para meta tags dinÃ¢micas em todas as pÃ¡ginas.
 
-### 3.2 Backend — Namespacing Obrigatório
+### 3.2 Backend â€” Namespacing ObrigatÃ³rio
 
-**Todos** os plugins devem estar em namespace. Padrão:
+**Todos** os plugins devem estar em namespace. PadrÃ£o:
 
 ```
 plugins/
-  zen-bit/          → namespace ZenBit\Core, ZenBit\API, ZenBit\Cache
-  zengame/          → namespace ZenEyer\Game\ (DEVE ser adicionado)
-  zeneyer-auth/     → namespace ZenEyer\Auth\ ✅
-  zen-seo-lite/     → namespace ZenEyer\SEO\ ✅
+  zen-bit/          â†’ namespace ZenBit\Core, ZenBit\API, ZenBit\Cache
+  zengame/          â†’ namespace ZenEyer\Game\ (DEVE ser adicionado)
+  zeneyer-auth/     â†’ namespace ZenEyer\Auth\ âœ…
+  zen-seo-lite/     â†’ namespace ZenEyer\SEO\ âœ…
 ```
 
-**REST API Endpoints — Namespaces Precisos:**
+**REST API Endpoints â€” Namespaces Precisos:**
 
-- `djzeneyer/v1` — Core theme (activity, menu, config)
-- `zeneyer-auth/v1` — Autenticação JWT (v2.3.0 Master)
-- `zen-bit/v2` — Bandsintown API (events, cached, SWR)
-- `zengame/v1` — Gamificação (me, leaderboard, levels, achievements)
-- `zen-seo/v1` — SEO dinâmico (metadata, sitemap)
-- `wc/store/v1` — WooCommerce (nativo, usar obrigatoriamente `_fields`)
+- `djzeneyer/v1` â€” Core theme (activity, menu, config)
+- `zeneyer-auth/v1` â€” AutenticaÃ§Ã£o JWT (v2.3.0 Master)
+- `zen-bit/v2` â€” Bandsintown API (events, cached, SWR)
+- `zengame/v1` â€” GamificaÃ§Ã£o (me, leaderboard, levels, achievements)
+- `zen-seo/v1` â€” SEO dinÃ¢mico (metadata, sitemap)
+- `wc/store/v1` â€” WooCommerce (nativo, usar obrigatoriamente `_fields`)
 
 **PROIBIDO:**
 
-- ❌ Endpoints sem namespace (ex: `/wp-json/meu-endpoint`)
-- ❌ **Over-fetch:** Chamadas `wc/store/v1` sem o parâmetro `_fields`.
-- ❌ **Cookies puros em SPA:** Dashboards e ações de usuário devem usar `Authorization: Bearer`.
+- âŒ Endpoints sem namespace (ex: `/wp-json/meu-endpoint`)
+- âŒ **Over-fetch:** Chamadas `wc/store/v1` sem o parÃ¢metro `_fields`.
+- âŒ **Cookies puros em SPA:** Dashboards e aÃ§Ãµes de usuÃ¡rio devem usar `Authorization: Bearer`.
 
 ### 3.3 Auth Bridge & Security Shield (v2.3.0)
 
 - **Global Auth:** O plugin `zeneyer-auth` v2.3.0 integra JWT ao Core. Endpoints nativos (`/wp/v2/*`) agora aceitam Bearer token.
-- **Security Shield:** Registro via REST exige Cloudflare Turnstile (`turnstileToken`). Se `ZEN_TURNSTILE_SECRET_KEY` não estiver no `wp-config.php`, o plugin bloqueia ativação.
-- **A Guilhotina:** O hook `user_register` remove usuários não-validados por `ZEN_AUTH_VALIDATED`. Nunca registre usuários via forms padrão do WP.
+- **Security Shield:** Registro via REST exige Cloudflare Turnstile (`turnstileToken`). Se `ZEN_TURNSTILE_SECRET_KEY` nÃ£o estiver no `wp-config.php`, o plugin bloqueia ativaÃ§Ã£o.
+- **A Guilhotina:** O hook `user_register` remove usuÃ¡rios nÃ£o-validados por `ZEN_AUTH_VALIDATED`. Nunca registre usuÃ¡rios via forms padrÃ£o do WP.
 - **Front-end Sync:** Antes de qualquer redirecionamento, valide o estado com `GET /zeneyer-auth/v1/session`.
-
-### 3.4 Resiliência Técnica e Padronização de Tipos (v1.2.1)
-
-- **Harden Data Strategy:** A REST API do WordPress é inconsistente. Campos como "Featured" ou "Destaque" podem retornar Objeto ou Array. O frontend **deve** usar `Array.isArray()` para normalizar o dado antes de qualquer acesso a propriedades.
-- **Contract-First Development (SSOT):** O arquivo `src/hooks/useQueries.ts` é o contrato único (SSOT). Se um componente precisa de um dado novo do backend, ele **deve** ser tipado no `useQueries.ts` primeiro. É proibido criar interfaces locais em componentes que se sobrepõem ao contrato global.
-- **Hydration & Prerender Safety:**
-  - Avisos no console de "Prop mismatch" ou "Invalid attribute" durante a hidratação quebram o SEO.
-  - Atributos nativos de imagem (ex: `fetchPriority`) devem ser escritos em `camelCase`. Atributos `lowercase` da DOM pura (ex: `fetchpriority`) são permitidos apenas se não houver alias no React, mas para performance, seguir o padrão React.
-- **Zero Debt Merge Policy:** Proibido merge com warnings de TypeScript, imports não utilizados ou tipagem `any` para silenciar falhas de mapeamento de dados do backend.
 
 ---
 
-## 4. Referências e Scripts
+## 4. ReferÃªncias e Scripts
 
 Localizados em `.agents/skills/djzeneyer-context/`:
 
 - `references/api-endpoints.md`: Guia completo com todos os endpoints.
 - `references/file-structure.md`: Mapa de pastas do projeto.
-- `scripts/pre-deploy-check.sh`: Validação prévia (lint, tipos, arquivos).
+- `scripts/pre-deploy-check.sh`: ValidaÃ§Ã£o prÃ©via (lint, tipos, arquivos).
 - `scripts/verify-namespaces.sh`: Valida namespacing de todos os plugins.
-- `scripts/new-page.sh`: Blueprint para novas páginas React.
+- `scripts/new-page.sh`: Blueprint para novas pÃ¡ginas React.
 
 ### 4.1 Skills Especializadas (Power Pack)
 
-- `@seo-audit`: Crawlability, meta tags, indexação.
-- `@schema-markup`: JSON-LD e validação (crucial para `zen-seo-lite`).
-- `@ai-seo`: Otimização para E-E-A-T e respostas de IA (Zen **adora** visitas de IA).
-- `@social-content`: Conteúdo para redes (Zouk/Eventos).
+- `@seo-audit`: Crawlability, meta tags, indexaÃ§Ã£o.
+- `@schema-markup`: JSON-LD e validaÃ§Ã£o (crucial para `zen-seo-lite`).
+- `@ai-seo`: OtimizaÃ§Ã£o para E-E-A-T e respostas de IA (Zen **adora** visitas de IA).
+- `@social-content`: ConteÃºdo para redes (Zouk/Eventos).
 - `@copywriting`: Copy persuasiva (landing pages, shop).
 - `@react-patterns`: UI, loading states, error handling.
-- `@tailwind-patterns`: Estilização avançada (sem gradientes!).
+- `@tailwind-patterns`: EstilizaÃ§Ã£o avanÃ§ada (sem gradientes!).
 - `@auth-implementation-patterns`: JWT e OAuth2 (zeneyer-auth).
 - `@web-quality-skills`: Performance, Core Web Vitals.
-- `@backend-security-coder`: PHP seguro (Prepared Statements, sanitização).
-- `@typescript-pro`: Tipagem avançada.
+- `@backend-security-coder`: PHP seguro (Prepared Statements, sanitizaÃ§Ã£o).
+- `@typescript-pro`: Tipagem avanÃ§ada.
 - `@clean-code`: Qualidade e manutenibilidade.
 
 ---
 
-## 5. Padrão: Backend Filters, Frontend Renders
+## 5. PadrÃ£o: Backend Filters, Frontend Renders
 
-**Regra crítica:**
+**Regra crÃ­tica:**
 
 1. **Backend (PHP):** Valida, filtra via query params, retorna JSON limpo
 2. **Frontend (React):** Recebe dados filtrados, renderiza apenas
 
-**Exemplo — Listagem de Eventos:**
+**Exemplo â€” Listagem de Eventos:**
 
 ```php
-// ✅ Backend — filtra por data/status
+// âœ… Backend â€” filtra por data/status
 register_rest_route('zen-bit/v2', '/events', [
     'callback' => function(WP_REST_Request $request) {
         $status = sanitize_text_field($request->get_param('status'));
@@ -190,7 +181,7 @@ register_rest_route('zen-bit/v2', '/events', [
 ```
 
 ```typescript
-// ✅ Frontend — só renderiza, nunca filtra
+// âœ… Frontend â€” sÃ³ renderiza, nunca filtra
 export const useEventsList = (status?: string) => {
   return useQuery({
     queryKey: ['events', status],
@@ -210,19 +201,19 @@ export const useEventsList = (status?: string) => {
 
 - **Trigger**: Push para `main`.
 - **Build**: `npm run build` gera `dist/`.
-- **Prerender**: Via Puppeteer (`scripts/prerender.js`) — CRÍTICO para SEO.
+- **Prerender**: Via Puppeteer (`scripts/prerender.js`) â€” CRÃTICO para SEO.
 - **Deploy**: rsync para Hostinger VPS via GitHub Actions (porta 65002).
-- **Health Check**: Validação automática pós-deploy (HTTP 200, REST API online).
+- **Health Check**: ValidaÃ§Ã£o automÃ¡tica pÃ³s-deploy (HTTP 200, REST API online).
 
 ---
 
-## 7. Proibições Absolutas
+## 7. ProibiÃ§Ãµes Absolutas
 
-- ❌ **Gradientes**: Use cores sólidas + opacidade.
-- ❌ **ESLint v10**: Manter v9.39.2 (incompatibilidade com plugins).
-- ❌ **Python**: Conflita com Pylance (quebra IntelliSense TypeScript).
+- âŒ **Gradientes**: Use cores sÃ³lidas + opacidade.
+- âŒ **ESLint v10**: Manter v9.39.2 (incompatibilidade com plugins).
+- âŒ **Python**: Conflita com Pylance (quebra IntelliSense TypeScript).
 - ⚠️ **localStorage/sessionStorage**: permitido apenas para sessao/idioma e com revisao de seguranca.
-- ❌ **Endpoints sem namespace**: SEMPRE `{namespace}/{version}/{resource}`.
+- âŒ **Endpoints sem namespace**: SEMPRE `{namespace}/{version}/{resource}`.
 
 ---
 
@@ -241,7 +232,7 @@ export const useEventsList = (status?: string) => {
 
 ### Caracteres estranhos nas traduções (Encoding)
 
-**Sintoma:** Acentos aparecendo como símbolos (Música, Navegação).
+**Sintoma:** Acentos aparecendo como símbolos (MÃºsica, NavegaÃ§Ã£o).
 **Causa:** Arquivo `translation.json` salvo com encoding errado (UTF-8 bytes interpretados como ISO-8859-1).
 **Solução:**
 
@@ -259,18 +250,18 @@ export const useEventsList = (status?: string) => {
 ### Deploy bem-sucedido, mas 404 no site
 
 **Sintoma:** GitHub Actions passa, mas URLs retornam 404.
-**Causa:** rsync não sincronizou corretamente ou `dist/` vazio.
-**Solução:**
+**Causa:** rsync nÃ£o sincronizou corretamente ou `dist/` vazio.
+**SoluÃ§Ã£o:**
 
-1. Verificar se `dist/` não está vazio: `ls -la dist/`
-2. Validar rsync path: `THEME_PATH=./wp-content/themes/zentheme` está correto
+1. Verificar se `dist/` nÃ£o estÃ¡ vazio: `ls -la dist/`
+2. Validar rsync path: `THEME_PATH=./wp-content/themes/zentheme` estÃ¡ correto
 3. SSH para server: `ssh prod "ls -la ./wp-content/themes/zentheme/dist/"`
 
 ### CORS error no Frontend
 
 **Sintoma:** `Access-Control-Allow-Origin` missing no console.
-**Causa:** `allowed_http_origins` filter não registrado ou origin não whitelisted.
-**Solução:**
+**Causa:** `allowed_http_origins` filter nÃ£o registrado ou origin nÃ£o whitelisted.
+**SoluÃ§Ã£o:**
 
 1. Verificar em `inc/cors.php` ou plugin de auth:
 
@@ -282,35 +273,35 @@ add_filter('allowed_http_origins', function($origins) {
 });
 ```
 
-2. Incluir protocol + domain completo (não usar `*` com credentials)
+2. Incluir protocol + domain completo (nÃ£o usar `*` com credentials)
 
 ### Namespace conflictando
 
 **Sintoma:** Fatal error "cannot declare class X (previously declared)".
 **Causa:** Plugin registrando namespace duplicado ou falta de namespace.
-**Solução:**
+**SoluÃ§Ã£o:**
 
 1. Rodar `scripts/verify-namespaces.sh`
 2. Verificar em cada `plugin-file.php`:
 
 ```php
 <?php
-namespace ZenBit\Core; // ✅ Sempre primeiro
+namespace ZenBit\Core; // âœ… Sempre primeiro
 defined('ABSPATH') || exit;
 ```
 
 ---
 
-## 9. Checklist Pré-Deploy
+## 9. Checklist PrÃ©-Deploy
 
 - [ ] `npm run lint` passa
 - [ ] `npm run type-check` passa
 - [ ] `npm run build` gera `dist/`
 - [ ] `scripts/verify-namespaces.sh` retorna OK
 - [ ] `public/robots.txt` e `public/sitemap.xml` existem
-- [ ] `scripts/routes-config.json` atualizado com novas páginas
-- [ ] Tradução em `src/locales/pt/translation.json` e `en/translation.json`
-- [ ] Nenhum `console.log()` em código de produção
+- [ ] `scripts/routes-config.json` atualizado com novas pÃ¡ginas
+- [ ] TraduÃ§Ã£o em `src/locales/pt/translation.json` e `en/translation.json`
+- [ ] Nenhum `console.log()` em cÃ³digo de produÃ§Ã£o
 - [ ] Nenhuma secret em `.env` (usar GitHub Secrets)
 
 ## ERRATA 2026-03-06 (Canonico)

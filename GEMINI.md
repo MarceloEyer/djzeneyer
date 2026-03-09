@@ -24,12 +24,8 @@
 6. Backend filtra; frontend renderiza
 7. Nao migrar ESLint para v10
 8. Nao usar segredos no git
-9. **Resiliência de Dados**: Sempre validar se campos "Featured" do WordPress retornam Objeto ou Array (harden para ambos).
-10. **Tipagem useQueries**: Interfaces no `useQueries.ts` são o Contrato Único (SSOT). Proibido inventar campos em componentes sem atualizar o Contrato.
-11. **Atributos React**: Usar `camelCase` (ex: `fetchPriority`). Atributos `lowercase` da DOM quebram a tipagem e o Prerender.
-12. **Zero Debt**: Proibido merge com warnings de TypeScript ou imports não utilizados em páginas principais.
-13. **Segurança de Build**: Build local (`npm run build`) obrigatório antes de push (evita travamento de Prerender).
-14. **Integridade i18n**: Arquivos i18n (`translation.json`) DEVEM ser salvos em UTF-8 (Strict).
+9. Build local (`npm run build`) obrigatorio antes de push (evita travamento de Prerender)
+10. Arquivos i18n (`translation.json`) DEVEM ser salvos em UTF-8 (Strict)
 
 ## Namespaces Canonicos
 

@@ -38,17 +38,11 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
   // React Query: v2 defaults
-  const {
-    data: events = [],
-    isLoading: loading,
-    error,
-  } = useEventsQuery(
-    {
-      mode: 'upcoming',
-      limit,
-      lang,
-    }
-  ); // Home page usually non-suspense for better LCP
+  const { data: events = [], isLoading: loading, error } = useEventsQuery({
+    mode: 'upcoming',
+    limit,
+    lang
+  }); // Home page usually non-suspense for better LCP
 
   if (error) {
     console.error('Error fetching events:', error);
@@ -61,13 +55,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
         {variant === 'full' && showTitle && (
           <div className="h-9 w-48 bg-white/5 animate-pulse rounded-lg mx-auto mb-8" />
         )}
-        <div
-          className={
-            variant === 'compact'
-              ? 'space-y-3'
-              : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-          }
-        >
+        <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
           {Array.from({ length: limit }).map((_, i) => {
             const skeletonHeight = variant === 'compact' ? 'h-[106px]' : 'h-[360px]';
 
@@ -95,6 +83,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   }
   const visibleEvents = events.slice(0, limit);
 
+
   return (
     <div className="w-full">
       {variant === 'full' && showTitle && (
@@ -103,23 +92,13 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
         </h2>
       )}
 
-      <div
-        className={
-          variant === 'compact'
-            ? 'space-y-3'
-            : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-        }
-      >
-        {visibleEvents.map(event => {
+      <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
+        {visibleEvents.map((event) => {
           const eventDate = new Date(event.starts_at);
           const loc = event.location;
           const eventLocation = `${loc.city}, ${loc.country || ''}`;
 
-          const formattedDate = formatDate(
-            eventDate,
-            { day: 'numeric', month: 'long', year: 'numeric' },
-            currentLocale
-          );
+          const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' }, currentLocale);
           const formattedTime = formatTime(eventDate, currentLocale);
 
           // Canonical Link handling — SINCRONIZADO COM EVENTSPAGE PARA EVITAR 404
@@ -127,9 +106,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
             ? event.canonical_path.split('/').pop() || event.event_id
             : event.event_id;
 
-          const detailHref = generatePath(getLocalizedRoute('events-detail', lang), {
-            id: identifier,
-          });
+          const detailHref = generatePath(getLocalizedRoute('events-detail', lang), { id: identifier });
 
           // --- COMPACT CARD (used in Home) ---
           if (variant === 'compact') {
@@ -139,20 +116,12 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                 className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
               >
                 <Link to={detailHref} className="flex items-start gap-4 p-4">
-                  <time
-                    dateTime={event.starts_at}
-                    className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]"
-                  >
+                  <time dateTime={event.starts_at} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]">
                     <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
-                    <div className="text-xs uppercase text-white/60">
-                      {formatDate(eventDate, { month: 'short' }, currentLocale)}
-                    </div>
+                    <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
                   </time>
                   <div className="flex-1 min-w-0">
-                    <h3
-                      className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
-                    />
+                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
                     <div className="space-y-1 text-sm text-white/70 text-left">
                       <div className="flex items-center gap-2">
                         <MapPin size={14} className="flex-shrink-0 text-primary" />
@@ -160,9 +129,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="flex-shrink-0 text-white/40" />
-                        <span className="truncate">
-                          {eventLocation} • {formattedTime}
-                        </span>
+                        <span className="truncate">{eventLocation} • {formattedTime}</span>
                       </div>
                     </div>
                   </div>
@@ -178,45 +145,63 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
               className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden bg-surface/30 border border-white/5 rounded-2xl"
             >
               <Link to={detailHref}>
-                <div className="relative h-48 bg-gradient-to-br from-primary/20 to-purple-900/20 flex items-center justify-center overflow-hidden">
-                  <div
-                    className="absolute inset-0 opacity-10"
-                    style={{ backgroundImage: `url(${patternSvg})` }}
-                  ></div>
-                  <time
-                    dateTime={event.starts_at}
-                    className="relative z-10 text-center drop-shadow-lg"
-                  >
-                    <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
-                    <div className="text-xl uppercase text-white/90 font-semibold">
-                      {formatDate(eventDate, { month: 'short' }, currentLocale)}
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  {event.image_url ? (
+                    <img
+                      src={event.image_url}
+                      alt=""
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-surface-light flex items-center justify-center relative">
+                      <div
+                        className="absolute inset-0 opacity-10"
+                        style={{ backgroundImage: `url(${patternSvg})` }}
+                      />
+                      <Calendar size={40} className="text-white/10 group-hover:scale-110 transition-transform" />
                     </div>
-                    <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
-                  </time>
+                  )}
+                  {/* Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+
+                  {/* Date Badge */}
+                  <div className="absolute top-4 left-4">
+                    <div className="bg-background/80 backdrop-blur-md border border-white/10 rounded-lg p-2 text-center min-w-[60px]">
+                      <div className="text-xl font-bold text-primary leading-none">{eventDate.getDate()}</div>
+                      <div className="text-[10px] uppercase font-semibold text-white/70 mt-1">
+                        {formatDate(eventDate, { month: 'short' }, currentLocale)}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="p-6">
                   <h3
-                    className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white"
+                    className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors h-[3.5rem] flex items-center"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
                   />
-                  <div className="space-y-2 mb-4 text-sm text-white/70">
-                    <div className="flex items-start gap-2">
-                      <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
-                      <div>
+
+                  <div className="space-y-3 text-sm text-white/60">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <MapPin size={14} className="text-primary" />
+                      </div>
+                      <div className="min-w-0">
                         <div className="font-semibold text-white">
                           {loc.venue || t('loc_to_be_defined')}
                         </div>
-                        <div>{eventLocation}</div>
+                        <div className="truncate text-xs">{eventLocation}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} className="flex-shrink-0 text-white/40" />
-                      <span>{formattedDate}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} className="flex-shrink-0 text-white/40" />
-                      <span>{formattedTime}</span>
+
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
+                        <Clock size={14} className="text-white/40" />
+                      </div>
+                      <div className="text-xs uppercase tracking-wider font-medium text-white/80">
+                        {formattedTime}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -230,4 +215,3 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
 }
 
 export const EventsList = memo(EventsListInner);
-EventsList.displayName = 'EventsList';
