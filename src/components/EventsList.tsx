@@ -1,7 +1,7 @@
 ﻿// src/components/EventsList.tsx
 // ARQUITETURA V2: VISUAL LIMPO + PAYLOAD ENXUTO + SEO CANONICAL
 
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import { Link, generatePath } from 'react-router-dom';
@@ -47,8 +47,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
       mode: 'upcoming',
       limit,
       lang,
-    },
-    { suspense: false }
+    }
   ); // Home page usually non-suspense for better LCP
 
   if (error) {
@@ -162,7 +161,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="flex-shrink-0 text-white/40" />
                         <span className="truncate">
-                          {eventLocation} â€¢ {formattedTime}
+                          {eventLocation} • {formattedTime}
                         </span>
                       </div>
                     </div>
