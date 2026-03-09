@@ -4,7 +4,7 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, generatePath } from 'react-router-dom';
 import { useEventsQuery } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
 import { getLocalizedRoute } from '../config/routes';
@@ -38,11 +38,18 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
   // React Query: v2 defaults
-  const { data: events = [], isLoading: loading, error } = useEventsQuery({
-    mode: 'upcoming',
-    limit,
-    lang
-  }, { suspense: false }); // Home page usually non-suspense for better LCP
+  const {
+    data: events = [],
+    isLoading: loading,
+    error,
+  } = useEventsQuery(
+    {
+      mode: 'upcoming',
+      limit,
+      lang,
+    },
+    { suspense: false }
+  ); // Home page usually non-suspense for better LCP
 
   if (error) {
     console.error('Error fetching events:', error);
@@ -55,7 +62,13 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
         {variant === 'full' && showTitle && (
           <div className="h-9 w-48 bg-white/5 animate-pulse rounded-lg mx-auto mb-8" />
         )}
-        <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg-grid-cols-3 gap-6"}>
+        <div
+          className={
+            variant === 'compact'
+              ? 'space-y-3'
+              : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+          }
+        >
           {Array.from({ length: limit }).map((_, i) => {
             const skeletonHeight = variant === 'compact' ? 'h-[106px]' : 'h-[360px]';
 
@@ -83,7 +96,6 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   }
   const visibleEvents = events.slice(0, limit);
 
-
   return (
     <div className="w-full">
       {variant === 'full' && showTitle && (
@@ -92,21 +104,33 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
         </h2>
       )}
 
-      <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
-        {visibleEvents.map((event) => {
+      <div
+        className={
+          variant === 'compact'
+            ? 'space-y-3'
+            : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+        }
+      >
+        {visibleEvents.map(event => {
           const eventDate = new Date(event.starts_at);
           const loc = event.location;
           const eventLocation = `${loc.city}, ${loc.country || ''}`;
 
-          const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' }, currentLocale);
+          const formattedDate = formatDate(
+            eventDate,
+            { day: 'numeric', month: 'long', year: 'numeric' },
+            currentLocale
+          );
           const formattedTime = formatTime(eventDate, currentLocale);
 
-          // Canonical Link handling
-          const detailHref = event.canonical_path
-            ? (lang === 'pt'
-              ? `/pt/eventos${event.canonical_path.replace('/events', '')}`
-              : event.canonical_path)
-            : `${getLocalizedRoute('events', lang)}/${event.event_id}`;
+          // Canonical Link handling — SINCRONIZADO COM EVENTSPAGE PARA EVITAR 404
+          const identifier = event.canonical_path
+            ? event.canonical_path.split('/').pop() || event.event_id
+            : event.event_id;
+
+          const detailHref = generatePath(getLocalizedRoute('events-detail', lang), {
+            id: identifier,
+          });
 
           // --- COMPACT CARD (used in Home) ---
           if (variant === 'compact') {
@@ -116,12 +140,20 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                 className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
               >
                 <Link to={detailHref} className="flex items-start gap-4 p-4">
-                  <time dateTime={event.starts_at} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]">
+                  <time
+                    dateTime={event.starts_at}
+                    className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]"
+                  >
                     <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
-                    <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
+                    <div className="text-xs uppercase text-white/60">
+                      {formatDate(eventDate, { month: 'short' }, currentLocale)}
+                    </div>
                   </time>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+                    <h3
+                      className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
+                    />
                     <div className="space-y-1 text-sm text-white/70 text-left">
                       <div className="flex items-center gap-2">
                         <MapPin size={14} className="flex-shrink-0 text-primary" />
@@ -129,7 +161,9 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock size={14} className="flex-shrink-0 text-white/40" />
-                        <span className="truncate">{eventLocation} â€¢ {formattedTime}</span>
+                        <span className="truncate">
+                          {eventLocation} â€¢ {formattedTime}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -150,20 +184,30 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                     className="absolute inset-0 opacity-10"
                     style={{ backgroundImage: `url(${patternSvg})` }}
                   ></div>
-                  <time dateTime={event.starts_at} className="relative z-10 text-center drop-shadow-lg">
+                  <time
+                    dateTime={event.starts_at}
+                    className="relative z-10 text-center drop-shadow-lg"
+                  >
                     <div className="text-6xl font-bold text-primary">{eventDate.getDate()}</div>
-                    <div className="text-xl uppercase text-white/90 font-semibold">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
+                    <div className="text-xl uppercase text-white/90 font-semibold">
+                      {formatDate(eventDate, { month: 'short' }, currentLocale)}
+                    </div>
                     <div className="text-sm text-white/80">{eventDate.getFullYear()}</div>
                   </time>
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+                  <h3
+                    className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors text-white"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
+                  />
                   <div className="space-y-2 mb-4 text-sm text-white/70">
                     <div className="flex items-start gap-2">
                       <MapPin size={16} className="flex-shrink-0 mt-0.5 text-primary" />
                       <div>
-                        <div className="font-semibold text-white">{loc.venue || t('loc_to_be_defined')}</div>
+                        <div className="font-semibold text-white">
+                          {loc.venue || t('loc_to_be_defined')}
+                        </div>
                         <div>{eventLocation}</div>
                       </div>
                     </div>
@@ -181,8 +225,8 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
             </article>
           );
         })}
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
 
