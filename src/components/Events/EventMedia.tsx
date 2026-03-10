@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { safeUrl } from '../../utils/sanitize';
-import { Calendar, Music } from 'lucide-react';
+import { Music } from 'lucide-react';
+import patternSvg from '../../assets/images/pattern.svg';
 
 interface EventMediaProps {
     image?: string;
@@ -13,7 +14,7 @@ interface EventMediaProps {
 
 /**
  * EventMedia - Displays event image with ElectricBorder effect.
- * If image is missing, renders a dynamic "Poster" fallback.
+ * If image is missing, renders a dynamic "Smart Poster" fallback.
  */
 export const EventMedia: React.FC<EventMediaProps> = ({
     image,
@@ -32,27 +33,46 @@ export const EventMedia: React.FC<EventMediaProps> = ({
     }) : '';
 
     const renderFallback = () => (
-        <div className="w-full h-full bg-surface relative flex flex-col items-center justify-center p-8 text-center overflow-hidden border border-white/10 rounded-[2.5rem]">
-            {/* Background decoration */}
-            <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                <Music className="absolute -right-10 -bottom-10 w-64 h-64 rotate-12 text-primary" />
-                <Calendar className="absolute -left-10 -top-10 w-48 h-48 -rotate-12 text-secondary" />
-            </div>
+        <div className="w-full h-full bg-gradient-to-br from-surface to-background relative flex flex-col items-center justify-center p-8 text-center overflow-hidden border border-white/5 rounded-[2.5rem]">
+            {/* Subtle Texture */}
+            <div
+                className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style={{ backgroundImage: `url(${patternSvg})`, backgroundSize: '30px' }}
+            />
 
-            {/* Content */}
-            <div className="relative z-10 space-y-4 px-6">
-                <div className="w-16 h-1 bg-primary mx-auto mb-6 rounded-full opacity-50" />
-                {title && <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tighter font-display text-white leading-[0.9] break-words drop-shadow-lg" dangerouslySetInnerHTML={{ __html: title }} />}
-                <div className="space-y-1">
-                    {formattedDate && <p className="text-primary font-bold uppercase tracking-[0.2em] text-sm">{formattedDate}</p>}
-                    {venue && <p className="text-white/40 uppercase tracking-widest text-xs">{venue}</p>}
+            {/* Poster Content */}
+            <div className="relative z-10 w-full space-y-6">
+                <div className="w-12 h-1 bg-primary/30 mx-auto rounded-full" />
+
+                <h3
+                    className="text-4xl md:text-6xl font-black uppercase tracking-tighter font-display text-white leading-[0.85] break-words"
+                    style={{ textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+                    dangerouslySetInnerHTML={{ __html: title }}
+                />
+
+                <div className="pt-4 space-y-2 opacity-60">
+                    {formattedDate && (
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+                            {formattedDate}
+                        </p>
+                    )}
+                    {venue && (
+                        <p className="text-[10px] uppercase tracking-[0.15em] font-medium max-w-[200px] mx-auto line-clamp-2">
+                            {venue}
+                        </p>
+                    )}
+                </div>
+
+                <div className="pt-8">
+                     <Music className="w-6 h-6 mx-auto text-white/10" />
                 </div>
             </div>
 
-            {/* Overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent pointer-events-none" />
+            {/* Edge highlights */}
+            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
         </div>
     );
+
 
     return (
         <div className={`aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 ${className}`}>

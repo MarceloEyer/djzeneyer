@@ -41,3 +41,7 @@
 
 **Learning:** Both `UserContext.Provider` and `GamiPressContext.Provider` were passing unmemoized objects as their `value` props. Furthermore, the `useGamiPress` custom hook was returning a new object on every render. This creates a performance bottleneck where any update in the provider (or even its parent component) forces a cascading re-render of every component in the tree that consumes these contexts, regardless of whether the actual data they use changed.
 **Action:** Consistently apply React memoization patterns at context boundaries. Wrap context provider values in `useMemo`. When a custom hook acts as a context provider value (like `useGamiPress`), its return object must also be wrapped in `useMemo`, and any exposed functions must be stabilized with `useCallback`.
+
+## 2026-03-08 - UseMemo on Array Data
+**Learning:** Found that large data object definitions utilizing `t` were being recreated every render cycle in `ZenTribePage.tsx`. Attempting to micro-optimize tiny array traversals (like `find` + `filter` -> `for` loops) proved detrimental due to dependency complexities triggering unnecessary renders, and violating micro-optimization guidelines.
+**Action:** When implementing static array mapping and data definitions that rely on React contexts such as translations (`useTranslation()`), apply `useMemo` and attach `t` as a dependency to avoid re-rendering heavy allocations without sacrificing maintainability for imperceptible loop improvements.

@@ -290,7 +290,9 @@ final class ZenGame
 
         ?>
         <div class="wrap">
-            <h1>ZenGame // <span style="color:<?php echo $color; ?>;"><?php echo $status; ?></span></h1>
+            <h1>ZenGame // <span style="color:<?php echo $color; ?>;">
+                    <?php echo $status; ?>
+                </span></h1>
             <div class="welcome-panel"
                 style="background:#111;color:#fff;padding:40px;border-radius:12px;border:1px solid #333;box-shadow:0 10px 30px rgba(0,0,0,.5);">
 
@@ -473,7 +475,7 @@ final class ZenGame
      *   achievements_earned: [],
      *   achievements_locked: [],
      *   recent_achievements: [],    // first 5 earned
- *   achievement_highlights: [], // first 6 cards for dashboard spotlight
+     *   achievement_highlights: [], // first 6 cards for dashboard spotlight
      *   logs               : [],
      *   stats              : { totalTracks, eventsAttended, streak, streakFire },
      *   engine_status      : { woo, gamipress, cache },
@@ -905,7 +907,7 @@ final class ZenGame
             return (int) $cached;
         }
 
-        // Fetch orders directly to avoid N+1 wc_get_order queries in the loop.
+        // Fetch full order objects directly to avoid N+1 wc_get_order queries in the loop.
         $orders = \wc_get_orders([
             'customer' => $user_id,
             'status' => ['completed'],
@@ -971,17 +973,22 @@ final class ZenGame
         ]);
 
         $total = 0;
+        $term_cache = []; // Cache terms per product ID to avoid N+1 queries.
         foreach ($orders as $order) {
             if (!$order) {
                 continue;
             }
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
-                $term_slugs = \wp_get_object_terms(
-                    $product_id,
-                    'product_cat',
-                    ['fields' => 'slugs']
-                );
+
+                if (!isset($term_cache[$product_id])) {
+                    $term_cache[$product_id] = \wp_get_object_terms(
+                        $product_id,
+                        'product_cat',
+                        ['fields' => 'slugs']
+                    );
+                }
+                $term_slugs = $term_cache[$product_id];
 
                 if ($term_slugs && !\is_wp_error($term_slugs)) {
                     foreach ($term_slugs as $t_slug) {

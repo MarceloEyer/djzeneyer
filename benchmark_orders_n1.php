@@ -1,4 +1,7 @@
 <?php
+if (php_sapi_name() !== 'cli') {
+    die('This script can only be run from the command line.');
+}
 // Mock functions to test logic and overhead
 function wc_get_orders($args) {
     if ($args['return'] ?? '' === 'ids') {

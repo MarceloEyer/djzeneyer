@@ -98,7 +98,6 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
           const loc = event.location;
           const eventLocation = `${loc.city}, ${loc.country || ''}`;
 
-          const formattedDate = formatDate(eventDate, { day: 'numeric', month: 'long', year: 'numeric' }, currentLocale);
           const formattedTime = formatTime(eventDate, currentLocale);
 
           // Canonical Link handling — SINCRONIZADO COM EVENTSPAGE PARA EVITAR 404
@@ -146,22 +145,19 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
             >
               <Link to={detailHref}>
                 <div className="relative aspect-[16/9] overflow-hidden">
-                  {event.image_url ? (
-                    <img
-                      src={event.image_url}
-                      alt=""
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
+                  <div className="w-full h-full bg-gradient-to-br from-surface to-background flex items-center justify-center relative p-6 text-center group-hover:scale-105 transition-transform duration-500">
+                    <div
+                      className="absolute inset-0 opacity-[0.03]"
+                      style={{ backgroundImage: `url(${patternSvg})`, backgroundSize: '30px' }}
                     />
-                  ) : (
-                    <div className="w-full h-full bg-surface-light flex items-center justify-center relative">
-                      <div
-                        className="absolute inset-0 opacity-10"
-                        style={{ backgroundImage: `url(${patternSvg})` }}
+                    <div className="relative z-10 w-full">
+                      <h3 
+                         className="text-2xl font-black uppercase tracking-tighter font-display text-white/90 leading-[0.9] break-words line-clamp-3"
+                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} 
                       />
-                      <Calendar size={40} className="text-white/10 group-hover:scale-110 transition-transform" />
+                       <div className="mt-3 w-8 h-0.5 bg-primary/30 mx-auto rounded-full" />
                     </div>
-                  )}
+                  </div>
                   {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
 

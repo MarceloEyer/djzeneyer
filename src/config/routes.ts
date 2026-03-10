@@ -68,7 +68,6 @@ const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
 const FAQPage = lazy(() => import('../pages/FAQPage'));
 const PhilosophyPage = lazy(() => import('../pages/PhilosophyPage'));
 const NewsPage = lazy(() => import('../pages/NewsPage'));
-const MediaPage = lazy(() => import('../pages/MediaPage'));
 const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicyPage'));
 const ReturnPolicyPage = lazy(() => import('../pages/ReturnPolicyPage'));
 const TermsPage = lazy(() => import('../pages/TermsPage'));
@@ -235,7 +234,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Press Kit (EPK + Media)
   {
     key: 'presskit',
-    component: MediaPage,
+    component: PressKitPage,
     paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
   },
 
@@ -382,27 +381,30 @@ export const findKeyByPath = (path: string): string | undefined => {
   const cleanPath = normalizeRouteKey(path);
   if (!cleanPath) return 'home';
 
-  // 1. Busca exata
+  // 1. Busca exata (slug primário)
   const exact = PATH_TO_KEY_MAP.get(cleanPath);
   if (exact) return exact;
 
-  // 2. Busca por prefixo (para rotas de detalhe dinâmicas)
-  // Ordenar por extensao do path para pegar o match mais específico primeiro
-  const sortedPaths = Array.from(PATH_TO_KEY_MAP.entries()).sort((a, b) => b[0].length - a[0].length);
-
-  for (const [p, key] of sortedPaths) {
-    if (cleanPath.startsWith(p + '/')) {
-      // Mapeamento automático para rotas de detalhe
-      if (key === 'events') return 'events-detail';
-      if (key === 'music') return 'music-detail';
-      if (key === 'news') return 'news-detail';
-      if (key === 'shop') return 'product-detail';
-      return key;
+  // 2. Busca manual em todas as configs (slugs e aliases)
+  for (const route of ROUTES_CONFIG) {
+    const allPaths = [
+      ...getLocalizedPaths(route, 'en'),
+      ...getLocalizedPaths(route, 'pt')
+    ];
+    
+    for (const p of allPaths) {
+      if (!p) continue;
+      const cleanP = p.replace(/\/$/, '');
+      if (cleanPath === cleanP || cleanPath.startsWith(cleanP + '/')) {
+        // Mapeamento automático para rotas de detalhe
+        if (route.key === 'events') return 'events-detail';
+        if (route.key === 'music') return 'music-detail';
+        if (route.key === 'news') return 'news-detail';
+        if (route.key === 'shop') return 'product-detail';
+        return route.key;
+      }
     }
   }
-
-  // 3. Fallback: Se for a própria chave
-  if (KEY_ROUTE_MAP.has(cleanPath)) return cleanPath;
 
   return undefined;
 };
@@ -453,103 +455,67 @@ export const getRoutesForLanguage = (lang: Language) => {
 };
 
 /**
- * Cached structure for finding routes by path efficiently
- * Reduces O(N) nested loops and string allocations down to a single linear array iteration
- */
-interface RouteMatch {
-  config: RouteConfig;
-  exactPath: string;
-  prefixPath: string;
-}
-
-const buildRouteMatchCache = (): Record<Language, RouteMatch[]> => {
-  const cache: Record<Language, RouteMatch[]> = { en: [], pt: [] };
-  const langs: Language[] = ['en', 'pt'];
-
-  for (const lang of langs) {
-    for (const route of ROUTES_CONFIG) {
-      const paths = getLocalizedPaths(route, lang);
-      for (const p of paths) {
-        const fullPath = buildFullPath(p, lang);
-        cache[lang].push({
-          config: route,
-          exactPath: fullPath,
-          prefixPath: fullPath + '/'
-        });
-      }
-    }
-  }
-
-  return cache;
-};
-
-const routeMatchCache = buildRouteMatchCache();
-
-/**
  * Encontra a rota correspondente a um caminho
  */
 export const findRouteByPath = (path: string, lang: Language): RouteConfig | undefined => {
-  const matches = routeMatchCache[lang];
-  for (let i = 0; i < matches.length; i++) {
-    const match = matches[i];
-    if (path === match.exactPath || path.startsWith(match.prefixPath)) {
-      return match.config;
-    }
-  }
-  return undefined;
+  return ROUTES_CONFIG.find(route => {
+    const paths = getLocalizedPaths(route, lang);
+    return paths.some(p => {
+      const fullPath = buildFullPath(p, lang);
+      return path === fullPath || path.startsWith(fullPath + '/');
+    });
+  });
 };
 
 /**
  * Retorna links alternativos para o path atual
- * CORRIGIDO v3.1: Agora retorna paths localizados corretos
+ * VERSÃO DEFINITIVA: Robusta contra 404 e slugs variados
  */
 export const getAlternateLinks = (
-  currentPath: string
+  currentPath: string,
+  currentLang?: Language
 ): Record<string, string> => {
-  const alternates: Record<string, string> = {};
+  const alternates: Record<string, string> = { en: '/', pt: '/pt/', 'x-default': '/' };
 
-  if (!currentPath || currentPath === '/') {
-    return { en: '/', pt: '/pt/' };
+  if (!currentPath || currentPath === '/' || currentPath === '/pt' || currentPath === '/pt/') {
+    return alternates;
   }
 
-  // Remove o prefixo de idioma e barras extras
-  const cleanPath = currentPath
-    .replace(/^\/pt\//, '') // Remove /pt/ se existir
-    .replace(/^\//, '') // Remove / inicial
-    .replace(/\/$/, ''); // Remove / final
+  // Identifica a chave lógica da página atual
+  const key = findKeyByPath(currentPath);
+  if (!key) {
+    // Fallback inteligente se não encontrar a chave
+    const clean = currentPath.replace(/^\/pt\//, '/').replace(/^\/pt$/, '/');
+    return {
+      en: clean,
+      pt: clean === '/' ? '/pt/' : `/pt${clean}`,
+      'x-default': clean
+    };
+  }
 
-  for (const route of ROUTES_CONFIG) {
-    // Pega os paths em inglês
-    const pathsEn = getLocalizedPaths(route, 'en');
-    const enPath = Array.isArray(pathsEn) ? pathsEn[0] : pathsEn;
+  const route = KEY_ROUTE_MAP.get(key) || KEY_ROUTE_MAP.get(key.replace('-detail', ''));
+  if (!route) return alternates;
 
-    // Pega os paths em português
-    const pathsPt = getLocalizedPaths(route, 'pt');
-    const ptPath = Array.isArray(pathsPt) ? pathsPt[0] : pathsPt;
+  // Pega os slugs primários
+  const enSlug = Array.isArray(route.paths.en) ? route.paths.en[0] : route.paths.en;
+  const ptSlug = Array.isArray(route.paths.pt) ? route.paths.pt[0] : route.paths.pt;
 
-    // Verifica se o cleanPath corresponde ao path em inglês
-    if (cleanPath === enPath || cleanPath.startsWith(enPath + '/')) {
-      const suffix = cleanPath.slice(enPath.length);
-      alternates.en = enPath ? `/${enPath}${suffix}` : `/${suffix}`;
-      alternates.pt = ptPath ? `/pt/${ptPath}${suffix}` : `/pt/${suffix}`;
-      alternates['x-default'] = alternates.en;
-      return alternates;
-    }
-
-    // Verifica se o cleanPath corresponde ao path em português
-    if (cleanPath === ptPath || cleanPath.startsWith(ptPath + '/')) {
-      const suffix = cleanPath.slice(ptPath.length);
-      alternates.en = enPath ? `/${enPath}${suffix}` : `/${suffix}`;
-      alternates.pt = ptPath ? `/pt/${ptPath}${suffix}` : `/pt/${suffix}`;
-      alternates['x-default'] = alternates.en;
-      return alternates;
+  // Calcula o sufixo dinâmico (ID do evento, slug da noticia, etc)
+  let suffix = '';
+  const currentClean = normalizeRouteKey(currentPath);
+  
+  // Encontra qual slug (ou alias) deu match para calcular o sufixo corretamente
+  const allCurrentLangPaths = getLocalizedPaths(route, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
+  for (const p of allCurrentLangPaths) {
+    if (currentClean.startsWith(p + '/')) {
+      suffix = currentClean.slice(p.length);
+      break;
     }
   }
 
-  // Fallback: retorna o path atual se não encontrar
-  return {
-    en: currentPath.replace(/^\/pt/, ''),
-    pt: currentPath.startsWith('/pt') ? currentPath : `/pt${currentPath}`,
-    'x-default': currentPath.replace(/^\/pt/, ''),
-  };
+  alternates.en = buildFullPath(`${enSlug}${suffix}`, 'en');
+  alternates.pt = buildFullPath(`${ptSlug}${suffix}`, 'pt');
+  alternates['x-default'] = alternates.en;
+
+  return alternates;
 };

@@ -95,44 +95,15 @@ const FAQPage: React.FC = () => {
     [location.pathname]
   );
 
-  // FAQ Schema JSON-LD
-  const faqSchema = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "FAQPage",
-        "@id": `${currentUrl}#faqpage`,
-        "mainEntity": faqData.flatMap(category =>
-          category.questions.map(q => ({
-            "@type": "Question",
-            "name": q.question,
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": q.answer.replace(/<[^>]*>/g, '') // Texto limpo para robots/LLMs
-            }
-          }))
-        )
-      },
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${currentUrl}#breadcrumb`,
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": ARTIST.site.baseUrl
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "FAQ",
-            "item": currentUrl
-          }
-        ]
-      }
-    ]
-  }), [currentUrl, faqData]);
+  // Extract FAQs for the HeadlessSEO component to generate the FAQPage schema
+  const faqList = useMemo(() => {
+    return faqData.flatMap(category =>
+      category.questions.map(q => ({
+        q: q.question,
+        a: q.answer.replace(/<[^>]*>/g, '') // Clean text for robots/LLMs
+      }))
+    );
+  }, [faqData]);
 
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20">
@@ -140,7 +111,7 @@ const FAQPage: React.FC = () => {
         title={t('faq.title')}
         description={t('faq.subtitle')}
         url={safeUrl(currentUrl, ARTIST.site.baseUrl)}
-        schema={faqSchema}
+        faqs={faqList}
         keywords={t('faq.seo.keywords')}
         leadAnswer={t('faq.seo.lead_answer')}
       />

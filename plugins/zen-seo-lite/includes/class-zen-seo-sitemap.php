@@ -124,7 +124,7 @@ class Zen_SEO_Sitemap
             'orderby' => 'modified',
             'order' => 'DESC',
             'no_found_rows' => true,
-            'update_post_meta_cache' => false,
+            'update_post_meta_cache' => true,
             'update_post_term_cache' => false,
         ];
 
@@ -214,8 +214,9 @@ class Zen_SEO_Sitemap
      */
     public function add_sitemap_to_robots($output, $public)
     {
+        $public = (string) $public;
         // FIX: coerce $public to string; it can be null on fresh installs
-        if ((string) $public === '0') {
+        if ($public === '0') {
             return "User-agent: *\nDisallow: /\n";
         }
 

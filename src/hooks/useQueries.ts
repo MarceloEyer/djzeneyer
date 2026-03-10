@@ -12,6 +12,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
+import { type Language } from '../config/routes';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
 
 
@@ -366,6 +367,7 @@ export function extractZenBitEventId(routeParam: string): string {
 
 export const useEventById = (
   routeParam?: string,
+  lang?: Language,
   options?: Partial<UseQueryOptions<ZenBitEventDetail | null>>
 ) => {
   // Normaliza: aceita ID puro ("12345678") ou canonical slug ("2025-06-20-...-12345678")
@@ -373,11 +375,12 @@ export const useEventById = (
 
   return useQuery({
     // queryKey usa routeParam original para diferenciar entradas de cache distintas
-    queryKey: QUERY_KEYS.events.detail(routeParam || ''),
+    queryKey: [...QUERY_KEYS.events.detail(routeParam || ''), lang],
     queryFn: async (): Promise<ZenBitEventDetail | null> => {
       if (!eventId) return null;
       try {
-        const apiUrl = buildApiUrl(`zen-bit/v2/events/${eventId}`);
+        const idStr = String(eventId);
+        const apiUrl = buildApiUrl(`zen-bit/v2/events/${idStr}`, { lang });
         const res = await fetch(apiUrl);
         if (!res.ok) {
           console.error(`Event Detail API ${res.status}`);

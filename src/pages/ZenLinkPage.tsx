@@ -170,6 +170,8 @@ export const ZenLinkPage = () => {
                     src={`${ARTIST.site.baseUrl}/images/zen-eyer-profile.jpg`}
                     alt={ARTIST.identity.stageName}
                     className="relative h-20 w-20 rounded-2xl border border-white/20 object-cover"
+                    loading="lazy"
+                    decoding="async"
                     onError={(e) => { e.currentTarget.src = `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`; }}
                   />
                 </div>
