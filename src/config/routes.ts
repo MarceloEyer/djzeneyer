@@ -502,47 +502,42 @@ export const findRouteByPath = (path: string, lang: Language): RouteConfig | und
 /**
  * Retorna links alternativos para o path atual
  * CORRIGIDO v3.1: Agora retorna paths localizados corretos
+ * OTIMIZADO v3.2: Usa routeMatchCache para lookup O(1) em vez de varredura linear
  */
 export const getAlternateLinks = (
-  currentPath: string
+  currentPath: string,
+  currentLang?: Language
 ): Record<string, string> => {
-  const alternates: Record<string, string> = {};
-
   if (!currentPath || currentPath === '/') {
-    return { en: '/', pt: '/pt/' };
+    return { en: '/', pt: '/pt/', 'x-default': '/' };
   }
 
-  // Remove o prefixo de idioma e barras extras
-  const cleanPath = currentPath
-    .replace(/^\/pt\//, '') // Remove /pt/ se existir
-    .replace(/^\//, '') // Remove / inicial
-    .replace(/\/$/, ''); // Remove / final
+  // Se não foi passado, determinamos pelo path
+  const lang: Language = currentLang || (currentPath.startsWith('/pt/') || currentPath === '/pt' ? 'pt' : 'en');
 
-  for (const route of ROUTES_CONFIG) {
-    // Pega os paths em inglês
-    const pathsEn = getLocalizedPaths(route, 'en');
-    const enPath = Array.isArray(pathsEn) ? pathsEn[0] : pathsEn;
+  const matches = routeMatchCache[lang];
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    if (currentPath === match.exactPath || currentPath.startsWith(match.prefixPath)) {
+      const route = match.config;
 
-    // Pega os paths em português
-    const pathsPt = getLocalizedPaths(route, 'pt');
-    const ptPath = Array.isArray(pathsPt) ? pathsPt[0] : pathsPt;
+      // Pega os paths primários em inglês e português
+      const pathsEn = getLocalizedPaths(route, 'en');
+      const enPath = Array.isArray(pathsEn) ? pathsEn[0] : pathsEn;
 
-    // Verifica se o cleanPath corresponde ao path em inglês
-    if (cleanPath === enPath || cleanPath.startsWith(enPath + '/')) {
-      const suffix = cleanPath.slice(enPath.length);
-      alternates.en = enPath ? `/${enPath}${suffix}` : `/${suffix}`;
-      alternates.pt = ptPath ? `/pt/${ptPath}${suffix}` : `/pt/${suffix}`;
-      alternates['x-default'] = alternates.en;
-      return alternates;
-    }
+      const pathsPt = getLocalizedPaths(route, 'pt');
+      const ptPath = Array.isArray(pathsPt) ? pathsPt[0] : pathsPt;
 
-    // Verifica se o cleanPath corresponde ao path em português
-    if (cleanPath === ptPath || cleanPath.startsWith(ptPath + '/')) {
-      const suffix = cleanPath.slice(ptPath.length);
-      alternates.en = enPath ? `/${enPath}${suffix}` : `/${suffix}`;
-      alternates.pt = ptPath ? `/pt/${ptPath}${suffix}` : `/pt/${suffix}`;
-      alternates['x-default'] = alternates.en;
-      return alternates;
+      const suffix = currentPath.slice(match.exactPath.length);
+
+      const altEn = enPath ? `/${enPath}${suffix}` : `/${suffix}`;
+      const altPt = ptPath ? `/pt/${ptPath}${suffix}` : `/pt/${suffix}`;
+
+      return {
+        en: altEn,
+        pt: altPt,
+        'x-default': altEn,
+      };
     }
   }
 
