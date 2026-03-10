@@ -102,7 +102,13 @@ const MusicPage: React.FC = () => {
                   <img
                     src={safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp')}
                     className="w-full h-full object-cover"
-                    alt={singleTrack.title?.rendered || ''}
+                    alt={
+                      singleTrack.title?.rendered
+                        ? t('common.image_alts.music_track', {
+                            title: stripHtml(singleTrack.title.rendered),
+                          })
+                        : t('common.image_alts.music_track', { title: 'New Track' })
+                    }
                   />
                 </div>
 
@@ -111,9 +117,9 @@ const MusicPage: React.FC = () => {
                   <p className="text-primary font-bold mb-8 tracking-widest uppercase">{t('music.artist_tag')}</p>
 
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    {singleTrack.links?.spotify && (
+                    {(singleTrack.links as any)?.spotify && (
                       <a
-                        href={safeUrl(singleTrack.links.spotify)}
+                        href={safeUrl((singleTrack.links as any).spotify)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2 relative overflow-hidden group/btn shadow-[0_0_20px_rgba(29,185,84,0.3)] hover:shadow-[0_0_30px_rgba(29,185,84,0.5)] transition-all bg-[#1DB954] text-black border-none"
@@ -121,8 +127,13 @@ const MusicPage: React.FC = () => {
                         <Play fill="currentColor" size={18} /> {t('common.platforms.spotify')}
                       </a>
                     )}
-                    {singleTrack.links?.soundcloud && (
-                      <a href={safeUrl(singleTrack.links.soundcloud)} target="_blank" rel="noopener noreferrer" className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20">
+                    {(singleTrack.links as any)?.soundcloud && (
+                      <a
+                        href={safeUrl((singleTrack.links as any).soundcloud)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20"
+                      >
                         <Cloud size={18} /> {t('common.platforms.soundcloud')}
                       </a>
                     )}
