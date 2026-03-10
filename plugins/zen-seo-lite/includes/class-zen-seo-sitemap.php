@@ -214,8 +214,9 @@ class Zen_SEO_Sitemap
      */
     public function add_sitemap_to_robots($output, $public)
     {
+        $public = (string) $public;
         // FIX: coerce $public to string; it can be null on fresh installs
-        if ((string) $public === '0') {
+        if ($public === '0') {
             return "User-agent: *\nDisallow: /\n";
         }
 
