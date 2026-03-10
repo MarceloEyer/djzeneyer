@@ -1,16 +1,27 @@
 {
+  "id": "/",
   "name": "DJ Zen Eyer",
   "short_name": "Zen Eyer",
   "description": "Brazilian Zouk DJ & Producer | Live Events, Shows & Classes worldwide",
   "start_url": "/",
   "scope": "/",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "theme_color": "#0A0E27",
   "background_color": "#0A0E27",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["music", "entertainment", "lifestyle"],
+  "categories": [
+    "music",
+    "entertainment",
+    "lifestyle"
+  ],
   "icons": [
     {
       "src": "/favicon.svg",
@@ -21,12 +32,6 @@
     {
       "src": "/favicon-96x96.png",
       "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/favicon-120x120.png",
-      "sizes": "120x120",
       "type": "image/png",
       "purpose": "any"
     },
@@ -51,16 +56,16 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshots/desktop-1.jpg",
-      "sizes": "1280x720",
+      "form_factor": "wide",
       "type": "image/jpeg",
-      "form_factor": "wide"
+      "sizes": "1920x1080",
+      "src": "/images/artist/dj-zen-eyer-official-hero.jpg"
     },
     {
-      "src": "/screenshots/mobile-1.jpg",
-      "sizes": "750x1334",
+      "form_factor": "narrow",
       "type": "image/jpeg",
-      "form_factor": "narrow"
+      "sizes": "2481x3297",
+      "src": "/images/artist/dj-zen-eyer-club-performance.jpg"
     }
   ],
   "shortcuts": [

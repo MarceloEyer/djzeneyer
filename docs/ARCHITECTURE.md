@@ -1,4 +1,4 @@
-﻿# VisÃ£o Geral da Arquitetura
+# VisÃ£o Geral da Arquitetura
 
 **DJ Zen Eyer â€” Arquitetura TÃ©cnica**
 
@@ -527,6 +527,12 @@ return <h1>{t('welcome')}</h1>;
 - **Gzip compression**
 - **Image optimization** (WebP, explicit dimensions)
 
+### Web App Install Support
+
+- site.webmanifest e icones PWA sao publicados na raiz da SPA (/site.webmanifest)
+- O HTML principal referencia o manifesto para instalacao em Android/Chrome/Edge e melhor integracao mobile
+- Nao ha service worker ativo nesta etapa; o site pode ser instalado, mas nao anuncia suporte offline/cache de app
+
 ---
 
 ## Security
@@ -597,7 +603,7 @@ jobs:
 
 ## Future Improvements
 
-- [ ] PWA (Progressive Web App)
+- [ ] PWA offline (service worker + cache strategy)
 - [ ] Push notifications
 - [ ] Dark mode toggle
 - [ ] React Native mobile app
