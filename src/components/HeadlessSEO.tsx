@@ -252,8 +252,9 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
     // 4.3 Event Schema (If on events page or specific event)
     if (events && events.length > 0) {
-      events.forEach((event) => {
+      const musicEvents = events.map((event) => {
         const eventTitle = event.title?.rendered || event.title || event.name || 'Zouk Event';
+        const canonicalUrl = event.canonical_url || event.url || undefined;
         const startDate = event.starts_at || event.event_date || event.start_date;
         const endDate = event.ends_at || event.end_date;
 
@@ -273,9 +274,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           };
         }
 
-        graph.push({
-          '@type': 'Event',
+        return {
+          '@type': 'MusicEvent',
           name: eventTitle,
+          ...(canonicalUrl ? { url: canonicalUrl } : {}),
           startDate: startDate,
           ...(endDate ? { endDate } : {}),
           eventStatus: 'https://schema.org/EventScheduled',
@@ -295,13 +297,31 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           image: event.image || finalImage,
           description: (event.description || event.desc || '').replace(/<[^>]*>?/gm, '').substring(0, 300),
           performer: {
-            '@type': 'Person',
+            '@type': 'MusicGroup',
             name: ARTIST.identity.stageName,
-            sameAs: ARTIST.social.instagram
+            sameAs: ARTIST.social.instagram.url || ARTIST.social.instagram
           },
           ...(eventOffers ? { offers: eventOffers } : {}),
+        };
+      }).filter(e => !!e.startDate); // Ensure required startDate
+
+      if (musicEvents.length > 1) {
+        graph.push({
+          '@type': 'EventSeries',
+          name: `${ARTIST.identity.stageName} World Tour`,
+          url: finalUrl,
+          description: `Official tour dates and upcoming performances for ${ARTIST.identity.stageName}.`,
+          performer: {
+            '@type': 'MusicGroup',
+            name: ARTIST.identity.stageName,
+            url: ARTIST.site.baseUrl,
+            sameAs: ARTIST.social.instagram.url || ARTIST.social.instagram
+          },
+          subEvent: musicEvents
         });
-      });
+      } else if (musicEvents.length === 1) {
+        graph.push(musicEvents[0]);
+      }
     }
 
     // Combine with WebPage base
