@@ -164,7 +164,7 @@ const PressKitPage: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-transparent" />
           </div>
 
-          <div className="container mx-auto px-4 relative z-10 pt-20">
+          <div className="container mx-auto px-4 relative z-10 pt-20 pb-20 md:pb-32">
             <motion.div 
                initial={{ opacity: 0, x: -50 }} 
                animate={{ opacity: 1, x: 0 }} 

@@ -10,19 +10,19 @@
 - [x] Implementar renderização de música individual em `MusicPage.tsx`
 
 ## 🟡 Melhorias
-- [ ] Adicionar schema `BreadcrumbList` (JSON-LD) nas páginas
-- [ ] Converter hero images para WebP
-- [ ] Adicionar prefetch de rotas internas
+- [x] Adicionar schema `BreadcrumbList` (JSON-LD) nas páginas
+- [x] Converter hero images para WebP
+- [x] Adicionar prefetch de rotas internas
 - [ ] PWA — Service Worker + manifest.json
 - [ ] Push Notifications para novos lançamentos
-- [ ] Integração com Spotify API (top tracks)
+- [x] Integração com Spotify API (top tracks)
 - [x] Open Graph dinâmico por evento
 
 ## 🟢 Infraestrutura
 - [x] Deploy automático via GitHub Actions
 - [x] Prerender SSG no pipeline
 - [x] Purge de cache no deploy
-- [ ] Lighthouse CI no pipeline (monitorar Core Web Vitals)
+- [x] Lighthouse CI no pipeline (monitorar Core Web Vitals)
 - [ ] Monitoramento de uptime (Pingdom ou UptimeRobot)
 
 ## 📖 Documentação
