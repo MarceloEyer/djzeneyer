@@ -333,7 +333,7 @@
   "home_stat_countries": "Countries",
   "home_stat_events": "Events",
   "home_stat_years": "Years Active",
-  "home_bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in over 11 countries.",
+  "home_bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 10 countries.",
   "home_bio_p2": "Known for a sound focused on the pure 'flow' of the dance â€” a vibe our community affectionately calls 'cremosidade' â€”, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
   "home_bio_p3": "Whether at reZENha, at Renata PeÃ§anha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
   "home_festivals_title": "Performed at International Festivals",
@@ -1011,11 +1011,11 @@
       "passion": "Years of passion",
       "passion_value": "15+",
       "events": "Intimate events",
-      "events_value": "200+",
-      "stories": "Shared stories",
-      "stories_value": "10K+",
+      "events_value": "500+",
+      "stories": "Unique connections",
+      "stories_value": "Thousands",
       "smiles": "Created smiles",
-      "smiles_value": "âˆž"
+      "smiles_value": "∞"
     },
     "story": {
       "p1": "It all started in <strong>NiterÃ³i, RJ</strong>. At age 15, I discovered Zouk and realized that music could be more than just background noise. While others were listening to rock and pop, I lived with my head (and ears) in my father's cassette tapes, paying attention to Caribbean and Brazilian rhythms.",
@@ -1403,23 +1403,23 @@
     "title_prefix": "Official",
     "title_suffix": "EPK",
     "role": "DJ & Music Producer",
-    "subtitle": "2Ã— World Champion Brazilian Zouk",
+    "subtitle": "2× World Champion Brazilian Zouk",
     "stats": {
-      "countries": "Countries Played",
-      "people": "People Impacted",
-      "streams": "Total Streams",
-      "years": "Years of Career"
+      "countries": "Countries",
+      "events": "Events Played",
+      "titles": "World Titles",
+      "mensa": "Mensa Member"
     },
     "bio": {
       "title": "The Sonic Journey",
       "p1": "<strong>DJ Zen Eyer</strong> is a global reference in Brazilian Zouk, known for his unique approach that prioritizes connection and 'flow' on the dance floor.",
-      "p2": "With performances in over 11 countries and international awards, he created the 'Cremosidade' concept â€” sets that evolve gradually, respecting the dancer's pace.",
-      "p3": "Member of Mensa International, Zen uses his sharp perception to curate perfect emotional journeys, whether at major festivals or intimate Zen Tribe sessions.",
+      "p2": "Having performed in 10 countries and won international awards, he created the 'Cremosidade' concept — sets that evolve gradually, respecting the dancer's timing.",
+      "p3": "A member of Mensa International, Zen uses his keen perception to curate perfect emotional journeys, whether at major festivals or intimate Zen Tribe sessions.",
       "quickStats": {
         "cremosidade": "Cremosidade",
         "cremosidade_desc": "Total focus on connection",
         "repertoire": "Repertoire",
-        "repertoire_desc": "Exclusive & original edits",
+        "repertoire_desc": "Exclusive and original edits",
         "connection": "Connection",
         "connection_desc": "Impeccable floor reading",
         "global": "Global",
@@ -1509,11 +1509,16 @@
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
-      "title": "Support the Music",
+      "title": "Support the <0>Music</0>",
       "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
     },
     "payment": {
-      "title": "Payment Methods"
+      "title": "Payment Methods",
+      "by_currency": "Choose your Currency",
+      "brl_title": "Real (BRL/PIX)",
+      "usd_title": "US Dollar (USD)",
+      "eur_title": "Euro (EUR)",
+      "gbp_title": "British Pound (GBP)"
     },
     "preferred": "Preferred",
     "email": "Email",

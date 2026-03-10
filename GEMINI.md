@@ -25,7 +25,7 @@
 7. Nao migrar ESLint para v10
 8. Nao usar segredos no git
 9. Build local (`npm run build`) obrigatorio antes de push (evita travamento de Prerender)
-10. Arquivos i18n (`translation.json`) DEVEM ser salvos em UTF-8 (Strict)
+10. Arquivos i18n (`translation.json`) DEVEM ser salvos em UTF-8 (Strict). **PROIBIDO** qualquer caractere estranho ou mojibake (ex: Ã§, Ã£). Use acentos normais.
 
 ## Namespaces Canonicos
 
