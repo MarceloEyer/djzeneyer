@@ -160,7 +160,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
   const finalUrl = safeUrl(ensureTrailingSlash(absoluteUrl));
 
-  // FIX: Imagem padrão robusta se nada for passado
   const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`;
   const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl), defaultImage);
 
