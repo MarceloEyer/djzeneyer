@@ -400,10 +400,15 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta property="og:url" content={finalUrl} />
 
       {/* FIX: Garante que as imagens sempre apareçam */}
-      <meta property="og:image" content={finalImage} />
-      <meta property="og:image:secure_url" content={finalImage} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
+      {finalImage && (
+        <>
+          <meta property="og:image" content={finalImage} />
+          {finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
+          <meta property="og:image:alt" content={finalTitle} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+        </>
+      )}
 
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
