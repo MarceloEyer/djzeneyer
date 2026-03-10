@@ -48,10 +48,10 @@ const EventDetailSkeleton = () => (
 const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const { t } = useTranslation();
   const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
-  const { data: event } = useEventById(id, { lang: lang as Language });
+  const { data: event } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
 
-  if (!event) return <div className="text-center py-20 text-white/40">{t('event_not_found')}</div>;
+  if (!event) return <div className="text-center py-20 text-white/40">{t('events_not_found')}</div>;
 
   const eventDate = new Date(event.starts_at);
   const isValidDate = !isNaN(eventDate.getTime());
@@ -329,13 +329,6 @@ const EventsPage: React.FC = () => {
         </React.Suspense>
 
         <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-white/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
-          <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
-            <img
-              src="/images/artist/dj-zen-eyer-club-performance.jpg"
-              alt=""
-              className="w-full h-full object-cover grayscale"
-            />
-          </div>
           <Music className="absolute -right-8 -bottom-8 text-white/5 w-48 h-48 rotate-12 z-10" />
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home_press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">

@@ -176,7 +176,7 @@
       "email": "Email",
       "emailPlaceholder": "seu@email.com",
       "password": "Senha",
-      "passwordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
+      "passwordPlaceholder": "••••••••",
       "submit": "Entrar",
       "no_account": "Não tem uma conta?",
       "create_now": "Criar Conta",
@@ -188,7 +188,7 @@
       "fullName": "Nome Completo",
       "fullNamePlaceholder": "João Silva",
       "confirmPassword": "Confirmar Senha",
-      "confirmPasswordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
+      "confirmPasswordPlaceholder": "••••••••",
       "submit": "Criar Conta",
       "has_account": "Já tem uma conta?",
       "login_now": "Entre aqui"
@@ -196,7 +196,7 @@
     "placeholders": {
       "name": "Seu nome",
       "email": "seu@email.com",
-      "password": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+      "password": "••••••••"
     },
     "reset_password": {
       "title_set": "Nova Senha",
@@ -338,7 +338,7 @@
   "home_stat_events": "Eventos",
   "home_stat_years": "Experiência",
   "home_bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Ilha do Zouk (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 10 países.",
-  "home_bio_p2": "Conhecido por um som focado no 'flow' puro da dança â€” a vibe que a nossa comunidade chama de 'cremosidade' â€”, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
+  "home_bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
   "home_bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
   "home_festivals_title": "Festivais & Eventos",
   "home_festivals_subtitle": "Muito feliz de ter levado o Zouk para esses lugares",
@@ -359,7 +359,7 @@
   "home_cta_music": "Explorar Músicas",
   "home_bio_title": "Quem é DJ Zen Eyer?",
   "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ e produtor</strong> focado no <strong>Brazilian Zouk</strong>. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Brazilian Zouk World Championships (Ilha do Zouk), sendo reconhecido pela precisão técnica e sensibilidade musical.",
-  "home_bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zenâ€¦ Zenâ€¦ Zenâ€¦ Eyerâ€¦ Eyerâ€¦\"</em> já é um clássico nos festivais.",
+  "home_bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
   "home_bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Frequenta palcos de peso como o Rio Zouk Congress.",
   "news": {
     "title": "Zen News",
@@ -998,10 +998,6 @@
       "subtitle": "Da paixão pela música à conexão com milhares de almas através do Zouk Brasileiro"
     },
     "stats": {
-      "passion": "Anos de paixão",
-      "passion_value": "15+",
-      "events": "Eventos íntimos",
-      "events_value": "500+",
       "stories": "Conexão",
       "stories_value": "Vera",
       "smiles": "Sorrisos criados",

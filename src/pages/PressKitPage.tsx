@@ -158,7 +158,7 @@ const PressKitPage: React.FC = () => {
             <img 
                src="/images/artist/dj-zen-eyer-official-hero.jpg" 
                alt="" 
-               className="w-full h-full object-cover opacity-40 grayscale"
+               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/60 to-[#0a0a0a]" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-transparent" />
@@ -192,11 +192,11 @@ const PressKitPage: React.FC = () => {
               <div className="flex flex-wrap gap-4 no-print">
                  <button 
                    onClick={handleDownloadPDF} 
-                   className="btn btn-primary btn-lg flex items-center gap-3 px-8"
+                   className="btn btn-primary btn-lg flex items-center gap-3 px-8 shadow-xl shadow-primary/20"
                  >
                    <Download size={20} /> {t('presskit.media.download')} EPK
                  </button>
-                 <a href="#media-kit" className="btn btn-outline btn-lg px-8">
+                 <a href="#media-kit" className="btn btn-outline btn-lg px-8 border-white/20 hover:bg-white/5 transition-all">
                    Downloads
                  </a>
               </div>

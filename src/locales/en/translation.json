@@ -173,7 +173,7 @@
       "email": "Email",
       "emailPlaceholder": "your@email.com",
       "password": "Password",
-      "passwordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
+      "passwordPlaceholder": "••••••••",
       "submit": "Sign In",
       "no_account": "Don't have an account?",
       "create_now": "Create Account",
@@ -185,7 +185,7 @@
       "fullName": "Full Name",
       "fullNamePlaceholder": "John Doe",
       "confirmPassword": "Confirm Password",
-      "confirmPasswordPlaceholder": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢",
+      "confirmPasswordPlaceholder": "••••••••",
       "submit": "Create Account",
       "has_account": "Already have an account?",
       "login_now": "Sign in here"
@@ -193,7 +193,7 @@
     "placeholders": {
       "name": "Your name",
       "email": "your@email.com",
-      "password": "â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+      "password": "••••••••"
     },
     "reset_password": {
       "title_set": "New Password",
@@ -265,7 +265,7 @@
   "zenlink": {
     "listen_now": "Listen Now",
     "choose_platform": "Choose your platform",
-    "seo_description": "Connect with DJ Zen Eyer â€” 2Ã— World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!",
+    "seo_description": "Connect with DJ Zen Eyer — 2x World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!",
     "soundcloud_subtitle": "Sets & Remixes",
     "youtube_subtitle": "Live sets & tutorials",
     "book_title": "Book Me",
@@ -303,7 +303,7 @@
   "explore_music_button": "Explore Music",
   "play_featured_mix": "Play Featured Mix",
   "upcoming_events": "Upcoming Events",
-  "home_page_title": "DJ Zen Eyer | 2Ã— World Champion Brazilian Zouk DJ & Producer",
+  "home_page_title": "DJ Zen Eyer | 2x World Champion Brazilian Zouk DJ & Producer",
   "home_page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
   "home_headline": "Experience the <1>Zen</1> in Brazilian Zouk",
   "home_subheadline": "Transforming dance floors into immersive audio experiences",
@@ -324,9 +324,9 @@
   "hero_subtitle": "Brazilian Zouk",
   "hero_cta": "Listen Now",
   "hero_cta_secondary": "View Events",
-  "home_hero_badge": "2Ã— World Champion - Zouk World Championships",
+  "home_hero_badge": "2x World Champion - Zouk World Championships",
   "home_hero_title": "DJ Zen Eyer",
-  "home_hero_subtitle": "2Ã— World Champion Brazilian Zouk DJ & Producer",
+  "home_hero_subtitle": "2x World Champion Brazilian Zouk DJ & Producer",
   "home_hero_slogan": "Haste is the enemy of creaminess",
   "home_hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
   "home_stat_champion": "World Champion",
@@ -334,8 +334,8 @@
   "home_stat_events": "Events",
   "home_stat_years": "Years Active",
   "home_bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 10 countries.",
-  "home_bio_p2": "Known for a sound focused on the pure 'flow' of the dance â€” a vibe our community affectionately calls 'cremosidade' â€”, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
-  "home_bio_p3": "Whether at reZENha, at Renata PeÃ§anha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
+  "home_bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
+  "home_bio_p3": "Whether at reZENha, at Renata Peçanha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
   "home_festivals_title": "Performed at International Festivals",
   "home_festivals_subtitle": "Recognized at major Zouk events worldwide",
   "home_festivals_more": "many more",
@@ -355,7 +355,7 @@
   "home_cta_music": "Explore Music",
   "home_bio_title": "Who is DJ Zen Eyer?",
   "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>DJ and producer</strong> focused on <strong>Brazilian Zouk</strong>. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.",
-  "home_bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zenâ€¦ Zenâ€¦ Zenâ€¦ Eyerâ€¦ Eyerâ€¦\"</em> is already a classic at festivals.",
+  "home_bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> is already a classic at festivals.",
   "home_bio_mensa": "Member of <strong>Mensa International</strong>, he creates perfect emotional journeys for the \"flow\" in dance. He is a regular at major stages like Rio Zouk Congress.",
   "news_page_title": "Zen News | Insights & Updates",
   "news_page_meta_desc": "Official news, releases, and articles about the Brazilian Zouk universe by DJ Zen Eyer.",
@@ -428,7 +428,7 @@
     "page_title": "Press Kit",
     "page_meta_desc": "Official press kit for DJ Zen Eyer. Download high-res photos, bio, and technical rider.",
     "bio_title": "The Artist",
-    "bio_subtitle": "BicampeÃ£o Mundial & Music Curator",
+    "bio_subtitle": "Bicampeão Mundial & Music Curator",
     "stats_title": "Quick Stats",
     "stats_experience": "Years of Experience",
     "stats_tours": "International Tours",
@@ -665,7 +665,7 @@
     "cnpj": "CNPJ",
     "isni": "ISNI",
     "press_highlights": "Press Highlights",
-    "world_champion": "2Ã— World Champion Brazilian Zouk DJ",
+    "world_champion": "2x World Champion Brazilian Zouk DJ",
     "world_champion_desc": "Marcelo Eyer, known as DJ Zen Eyer, is a two-time World Champion in Brazilian Zouk, bringing unique energy to dance floors worldwide.",
     "international_performances": "International Performances",
     "international_performances_desc": "DJ Zen Eyer has performed at major festivals and events across Brazil, Europe, and the Americas, specializing in Brazilian Zouk music.",
@@ -686,7 +686,7 @@
     "source_performance_history": "Performance History",
     "year_range": "2020-2024",
     "genre_value": "Brazilian Zouk",
-    "location_value": "SÃ£o Paulo, Brazil"
+    "location_value": "São Paulo, Brazil"
   },
   "conduct_page": {
     "title": "Code of Conduct",
@@ -839,7 +839,7 @@
     "third_party_payments": "Payment Processing: Stripe, PayPal",
     "third_party_email": "Email Services: MailPoet",
     "lgpd_title": "8. LGPD Compliance (Brazilian Law)",
-    "lgpd_p1": "We comply with the Brazilian General Data Protection Law (LGPD - Lei Geral de ProteÃ§Ã£o de Dados). As a Brazilian entity, we are committed to:",
+    "lgpd_p1": "We comply with the Brazilian General Data Protection Law (LGPD - Lei Geral de Proteção de Dados). As a Brazilian entity, we are committed to:",
     "lgpd_items": [
       "Processing data lawfully, fairly, and transparently",
       "Collecting data only for specified, explicit, and legitimate purposes",
@@ -851,7 +851,7 @@
     "contact_title": "10. Contact Us",
     "contact_p1": "If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us at:",
     "contact_name": "Marcelo Eyer Fernandes",
-    "contact_location": "SÃ£o Paulo, SP - Brazil"
+    "contact_location": "São Paulo, SP - Brazil"
   },
   "terms_page": {
     "title": "Terms of Use",
@@ -933,8 +933,8 @@
       }
     },
     "governing_law_title": "10. Governing Law",
-    "governing_law_p1": "These Terms of Use shall be governed by and construed in accordance with the laws of Brazil, without regard to its conflict of law provisions. Any legal action or proceeding arising under these terms will be brought exclusively in the courts located in SÃ£o Paulo, Brazil.",
-    "governing_law_p2": "By using this website, you consent to the jurisdiction and venue of such courts in SÃ£o Paulo, Brazil.",
+    "governing_law_p1": "These Terms of Use shall be governed by and construed in accordance with the laws of Brazil, without regard to its conflict of law provisions. Any legal action or proceeding arising under these terms will be brought exclusively in the courts located in São Paulo, Brazil.",
+    "governing_law_p2": "By using this website, you consent to the jurisdiction and venue of such courts in São Paulo, Brazil.",
     "modifications_title": "11. Modifications to Terms",
     "modifications_p1": "DJ Zen Eyer reserves the right to revise these Terms of Use at any time without prior notice. By continuing to use this website after changes are posted, you agree to be bound by the revised terms. We encourage you to periodically review this page for the latest information on our terms.",
     "contact_questions": "Questions About These Terms?",
@@ -1008,28 +1008,24 @@
       "subtitle": "From passion for music to connecting with thousands of souls through Brazilian Zouk"
     },
     "stats": {
-      "passion": "Years of passion",
-      "passion_value": "15+",
-      "events": "Intimate events",
-      "events_value": "500+",
       "stories": "Connection",
       "stories_value": "Real",
       "smiles": "Created smiles",
       "smiles_value": "∞"
     },
     "story": {
-      "p1": "It all started in <strong>NiterÃ³i, RJ</strong>. At age 15, I discovered Zouk and realized that music could be more than just background noise. While others were listening to rock and pop, I lived with my head (and ears) in my father's cassette tapes, paying attention to Caribbean and Brazilian rhythms.",
-      "p2": "The transition to the DJ booth came naturally years later. The professional encounter with <strong>Brazilian Zouk</strong> happened in 2012. When I heard that rhythmic, smooth, yet highly marked sound, I felt that was where I belonged. I started playing local parties and soon had the honor of joining <strong>Renata PeÃ§anha's</strong> team of DJs, playing annually at the <strong>Rio Zouk Congress</strong>, the largest congress of the genre in Brazil.",
+      "p1": "It all started in <strong>Niterói, RJ</strong>. At age 15, I discovered Zouk and realized that music could be more than just background noise. While others were listening to rock and pop, I lived with my head (and ears) in my father's cassette tapes, paying attention to Caribbean and Brazilian rhythms.",
+      "p2": "The transition to the DJ booth came naturally years later. The professional encounter with <strong>Brazilian Zouk</strong> happened in 2012. When I heard that rhythmic, smooth, yet highly marked sound, I felt that was where I belonged. I started playing local parties and soon had the honor of joining <strong>Renata Peçanha's</strong> team of DJs, playing annually at the <strong>Rio Zouk Congress</strong>, the largest congress of the genre in Brazil.",
       "p3": "The following years were of intense study and hard work. Balancing a day job with late nights on the internet learning to mix, trying to understand music theory and, most importantly, observing the dance floor. I sought to understand how music changed people's vibe. My intention was always to create a moment where people could close their eyes and just enjoy the dance, without rush.",
       "p4": "World recognition arrived in 2022 at Ilha do Zouk, where I won the awards for <strong>Best Remix</strong> and <strong>Best DJ Performance</strong>. It was an incredible honor! But, to be 100% honest, the trophies stay on the shelf. What I truly take with me are the connections: the couple who met during my set or the person who lost their shyness of dancing listening to a track I played.",
-      "p5": "Nowadays, the community talks a lot about the idea of <strong>'cremosidade'</strong> â€” a term describing dance with pure continuous flow. This aligns perfectly with the way I value playing! Each set for me is like having a conversation with whoever is on the floor. I try to send the right message so that people leave feeling like they had a pleasant and light moment.",
+      "p5": "Nowadays, the community talks a lot about the idea of <strong>'cremosidade'</strong> — a term describing dance with pure continuous flow. This aligns perfectly with the way I value playing! Each set for me is like having a conversation with whoever is on the floor. I try to send the right message so that people leave feeling like they had a pleasant and light moment.",
       "p6": "Ultimately, Brazilian Zouk is the soundtrack. What really matters are the friendships, the connections, and the time we spend enjoying the sound together."
     },
     "timeline": {
       "title": "Some <1>Cool Milestones</1>",
       "m1": {
         "title": "How It All Started",
-        "desc": "At age 15, listening to my father's cassette tapes in NiterÃ³i (RJ), I started getting a taste for Caribbean rhythms and messing around with my first music software on the computer."
+        "desc": "At age 15, listening to my father's cassette tapes in Niterói (RJ), I started getting a taste for Caribbean rhythms and messing around with my first music software on the computer."
       },
       "m2": {
         "title": "First Zouk",
@@ -1062,10 +1058,10 @@
     "coming_soon_title": "Coming Soon",
     "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!"
   },
-  "footer_location": "NiterÃ³i, RJ - Brazil",
+  "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
   "events_categories": "Categories",
-  "events_page_title": "DJ Zen Eyer Events | 2Ã— World Champion Brazilian Zouk",
+  "events_page_title": "DJ Zen Eyer Events | 2x World Champion Brazilian Zouk",
   "events_page_meta_desc": "Follow DJ Zen Eyer's global schedule. Experience the 'cremosidade' at the world's top Brazilian Zouk festivals. Book your tickets and join the Zen Tribe! âœ“",
   "events_filter_placeholder": "Filter by city or event...",
   "events_back": "Back to Events",
@@ -1093,7 +1089,7 @@
     "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
     "seo": {
       "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
-      "keywords": "Zouk Brasileiro FAQ, o que Ã© zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bÃ´nus zouk, renata peÃ§anha zouk, adÃ­lio porto, lambada history"
+      "keywords": "Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adÃ­lio porto, lambada history"
     },
     "categories": {
       "djzeneyer": {
@@ -1101,7 +1097,7 @@
         "desc": "The journey of the Two-Time World Champion and Mensa International member.",
         "q1": {
           "q": "Who is DJ Zen Eyer?",
-          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in NiterÃ³i (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor."
+          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in Niterói (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor."
         },
         "q2": {
           "q": "What does \"Cremosidade\" (Creaminess) mean in the context of Zouk?",
@@ -1109,7 +1105,7 @@
         },
         "q3": {
           "q": "What are Zen Eyer's main titles and achievements?",
-          "a": "In 2022, Zen Eyer won two prestigious titles at Ilha do Zouk: <strong>Best DJ Performance</strong> and <strong>Best Remix</strong>. He is also an official DJ for major congresses like Rio Zouk Congress (by pioneer Renata PeÃ§anha). However, he values friendships and the connections created through music more than the trophies."
+          "a": "In 2022, Zen Eyer won two prestigious titles at Ilha do Zouk: <strong>Best DJ Performance</strong> and <strong>Best Remix</strong>. He is also an official DJ for major congresses like Rio Zouk Congress (by pioneer Renata Peçanha). However, he values friendships and the connections created through music more than the trophies."
         }
       },
       "rankings": {
@@ -1136,12 +1132,12 @@
           "a": "According to <strong>Brazilian Zouk Council (BZC)</strong> definitions, the rhythmic base derives from Lambada. The classic count is often associated with the <em>-pa... pa-pa</em> (Tum-Kun-Kun) time cell. The fundamental rule is to respect the tempo, which makes it possible to dance over rhythms like Kizomba, R&B, and Pop."
         },
         "q2": {
-          "q": "What are classic movements like Planada and BÃ´nus?",
-          "a": "These are fundamental movements that define the style's visual aesthetic. <strong>Planada</strong> is an axis rotation that demands a lot of smoothness, while <strong>BÃ´nus</strong> is a technical evolution of the classic Lambada 'Boomerang', now with the continuous flow typical of Zouk."
+          "q": "What are classic movements like Planada and Bônus?",
+          "a": "These are fundamental movements that define the style's visual aesthetic. <strong>Planada</strong> is an axis rotation that demands a lot of smoothness, while <strong>Bônus</strong> is a technical evolution of the classic Lambada 'Boomerang', now with the continuous flow typical of Zouk."
         },
         "q3": {
           "q": "What is the importance of Lambada in Zouk history?",
-          "a": "Brazilian Zouk would not exist without Lambada. The fundamentals and head movements were systematized by pioneers like <strong>Renata PeÃ§anha</strong> and <strong>AdÃ­lio Porto</strong>. As the BZC defines, the dance adapted to slow Caribbean songs, evolving into the flow we know today."
+          "a": "Brazilian Zouk would not exist without Lambada. The fundamentals and head movements were systematized by pioneers like <strong>Renata Peçanha</strong> and <strong>AdÃ­lio Porto</strong>. As the BZC defines, the dance adapted to slow Caribbean songs, evolving into the flow we know today."
         }
       },
       "culture": {
