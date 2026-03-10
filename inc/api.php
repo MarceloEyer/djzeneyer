@@ -529,7 +529,6 @@ add_action('admin_init', function () {
     if (!isset($_GET['djz_clear_cache']) || !current_user_can('manage_options'))
         return;
 
-    // Fix: CSRF protection
     check_admin_referer('djz_clear_cache');
 
     global $wpdb;
@@ -586,7 +585,6 @@ function djz_prime_thumbnails_cache($ids)
         _prime_post_caches($ids, false, true);
     }
 }
-
 
 /**
  * Shop Page View-Model Endpoint (Aggregated & Cached)
