@@ -49,7 +49,7 @@ export const ARTIST = {
     countriesPlayed: 10,
     eventsPlayed: 500,
     streamsTotal: 'Milhares',
-    followersTotal: 'Em crescimento',
+    followersTotal: 'Conta Verificada',
     lastUpdated: new Date().toISOString().split('T')[0],
   },
 
