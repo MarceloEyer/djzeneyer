@@ -905,17 +905,15 @@ final class ZenGame
             return (int) $cached;
         }
 
-        // Fetch only IDs to minimise memory; load each order individually below.
-        $order_ids = \wc_get_orders([
+        // Fetch full order objects directly to avoid N+1 wc_get_order queries.
+        $orders = \wc_get_orders([
             'customer' => $user_id,
             'status' => ['completed'],
             'limit' => -1,
-            'return' => 'ids',
         ]);
 
         $total = 0;
-        foreach ($order_ids as $oid) {
-            $order = \wc_get_order($oid);
+        foreach ($orders as $order) {
             if (!$order) {
                 continue;
             }
@@ -966,26 +964,29 @@ final class ZenGame
             'pass',
         ];
 
-        $order_ids = \wc_get_orders([
+        $orders = \wc_get_orders([
             'customer' => $user_id,
             'status' => ['completed', 'processing'],
             'limit' => -1,
-            'return' => 'ids',
         ]);
 
         $total = 0;
-        foreach ($order_ids as $oid) {
-            $order = \wc_get_order($oid);
+        $term_cache = []; // Cache terms per product ID to avoid N+1 queries.
+        foreach ($orders as $order) {
             if (!$order) {
                 continue;
             }
             foreach ($order->get_items() as $item) {
                 $product_id = $item->get_product_id();
-                $term_slugs = \wp_get_object_terms(
-                    $product_id,
-                    'product_cat',
-                    ['fields' => 'slugs']
-                );
+
+                if (!isset($term_cache[$product_id])) {
+                    $term_cache[$product_id] = \wp_get_object_terms(
+                        $product_id,
+                        'product_cat',
+                        ['fields' => 'slugs']
+                    );
+                }
+                $term_slugs = $term_cache[$product_id];
 
                 if ($term_slugs && !\is_wp_error($term_slugs)) {
                     foreach ($term_slugs as $t_slug) {
