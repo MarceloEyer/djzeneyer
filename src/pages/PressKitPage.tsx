@@ -31,7 +31,7 @@ import {
 // ============================================================================
 const PRESS_LINKS = {
   photos: "https://photos.djzeneyer.com",
-  epk: "/media/dj-zen-eyer-epk.pdf",
+  epk: "/media/dj-zen-eyer-bio.pdf",
   logos: "/media/dj-zen-eyer-logos.zip"
 };
 
@@ -205,8 +205,13 @@ const PressKitPage: React.FC = () => {
         </div>
 
         {/* Stats Section - Floating */}
-        <div className="container mx-auto px-4 relative z-20 -mt-20">
-          <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+        <div className="container mx-auto px-4 relative z-20 -mt-10 md:-mt-20">
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-6" 
+            initial={{ opacity: 0, y: 30 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.5 }}
+          >
             {stats.map((stat, index) => (
               <StatCard key={index} {...stat} />
             ))}
