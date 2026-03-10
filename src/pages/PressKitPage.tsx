@@ -110,7 +110,7 @@ const PressKitPage: React.FC = () => {
 
   const stats = useMemo(() => [
     { number: ARTIST.stats.countriesPlayed.toString(), label: t('presskit.stats.countries'), icon: <Globe size={32} />, color: "bg-gradient-to-br from-blue-500/80 to-blue-700/80" },
-    { number: `+${ARTIST.stats.eventsPlayed}`, label: t('presskit.stats.events'), icon: <Users size={32} />, color: "bg-gradient-to-br from-purple-500/80 to-purple-700/80" },
+    { number: `${ARTIST.stats.yearsActive}+`, label: t('presskit.stats.years'), icon: <Calendar size={32} />, color: "bg-gradient-to-br from-purple-500/80 to-purple-700/80" },
     { number: "2", label: t('presskit.stats.titles'), icon: <Award size={32} />, color: "bg-gradient-to-br from-pink-500/80 to-pink-700/80" },
     { number: "Mensa", label: t('presskit.stats.mensa'), icon: <Star size={32} />, color: "bg-gradient-to-br from-green-500/80 to-green-700/80" }
   ], [t]);

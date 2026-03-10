@@ -1012,10 +1012,10 @@
       "passion_value": "15+",
       "events": "Intimate events",
       "events_value": "500+",
-      "stories": "My greatest wealth",
-      "stories_value": "Every connection",
+      "stories": "Connection",
+      "stories_value": "Real",
       "smiles": "Created smiles",
-      "smiles_value": "Countless"
+      "smiles_value": "∞"
     },
     "story": {
       "p1": "It all started in <strong>NiterÃ³i, RJ</strong>. At age 15, I discovered Zouk and realized that music could be more than just background noise. While others were listening to rock and pop, I lived with my head (and ears) in my father's cassette tapes, paying attention to Caribbean and Brazilian rhythms.",
@@ -1406,7 +1406,7 @@
     "subtitle": "2× World Champion Brazilian Zouk",
     "stats": {
       "countries": "Countries",
-      "events": "Events Played",
+      "years": "Years on the Road",
       "titles": "World Titles",
       "mensa": "Mensa Member"
     },

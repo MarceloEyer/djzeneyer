@@ -47,9 +47,6 @@ export const ARTIST = {
   stats: {
     yearsActive: CURRENT_YEAR - START_YEAR,
     countriesPlayed: 10,
-    eventsPlayed: 500,
-    streamsTotal: 'Milhares',
-    followersTotal: 'Conta Verificada',
     lastUpdated: new Date().toISOString().split('T')[0],
   },
 
