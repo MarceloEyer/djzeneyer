@@ -46,14 +46,14 @@ export const ARTIST = {
   // 📊 Estatísticas (estimativas / não conflitam com fontes externas)
   stats: {
     yearsActive: CURRENT_YEAR - START_YEAR,
-    countriesPlayed: 11,
-    eventsPlayed: (CURRENT_YEAR - START_YEAR) * 50,
-    streamsTotal: 'N/A',
-    followersTotal: 'N/A',
+    countriesPlayed: 10,
+    eventsPlayed: 500,
+    streamsTotal: 'Milhares',
+    followersTotal: 'Em crescimento',
     lastUpdated: new Date().toISOString().split('T')[0],
   },
 
-  // 🌎 Festivais de Destaque
+  // 🌍 Festivais de Destaque
   // Datas adicionadas baseadas nos anos informados e calendário típico dos eventos
   // NOTA: Datas mantidas intencionalmente no passado para fins de autoridade/histórico.
   // NÃO ATUALIZAR para datas futuras estimadas a menos que confirmado.
@@ -63,49 +63,70 @@ export const ARTIST = {
       country: 'Australia',
       flag: '🇦🇺',
       url: 'https://www.onezoukcongress.com/',
-      date: '2022-05-19', // Edição de 2022 (Maio)
+      date: '2022-05-19',
     },
     {
       name: 'Dutch Zouk',
       country: 'Netherlands',
       flag: '🇳🇱',
       url: 'https://www.dutchzouk.nl/',
-      date: '2025-10-15', // Edição de 2025 (Outubro)
+      date: '2025-10-15',
     },
     {
       name: 'Prague Zouk Congress',
       country: 'Czech Republic',
       flag: '🇨🇿',
       url: 'https://www.praguezoukcongress.com/',
-      date: '2017-07-27', // Edição de 2017 (Julho/Agosto)
+      date: '2017-07-27',
     },
     {
       name: 'LA Zouk Marathon',
       country: 'United States',
       flag: '🇺🇸',
       url: 'https://www.lazoukmarathon.com/',
-      date: '2024-06-07', // Edição de 2024 (Junho)
+      date: '2024-06-07',
     },
     {
       name: 'Zurich Zouk Congress',
       country: 'Switzerland',
       flag: '🇨🇭',
       url: 'https://www.zurichzoukcongress.com/',
-      date: '2023-09-22', // Data estimada baseada no calendário anual (Setembro)
+      date: '2023-09-22',
+    },
+    {
+      name: 'Berlin Zouk Congress',
+      country: 'Germany',
+      flag: '🇩🇪',
+      url: 'https://www.berlinzoukcongress.com/',
+      date: '2022-06-15',
+    },
+    {
+      name: 'Portugal Zouk Congress',
+      country: 'Portugal',
+      flag: '🇵🇹',
+      url: 'https://www.portugalzouk.com/',
+      date: '2022-10-01',
     },
     {
       name: 'Rio Zouk Congress',
       country: 'Brazil',
       flag: '🇧🇷',
       url: 'https://www.riozoukcongress.com/',
-      date: '2025-01-10', // Edição de 2025 (Janeiro)
+      date: '2025-01-10',
+    },
+    {
+      name: 'Russian Zouk Congress (Online)',
+      country: 'Russia',
+      flag: '🇷🇺',
+      url: 'https://vk.com/zoukrussia',
+      date: '2021-11-15',
     },
     {
       name: 'IZC Brazil',
       country: 'Brazil',
       flag: '🇧🇷',
       url: 'https://www.instagram.com/izcbrazil/',
-      date: '2024-01-20', // Data estimada (Geralmente segue a temporada de Janeiro/Fev)
+      date: '2024-01-20',
     },
     {
       name: 'Polish Zouk Festival - Katowice',
@@ -113,7 +134,7 @@ export const ARTIST = {
       flag: '🇵🇱',
       url: 'https://www.polishzoukfestival.pl/',
       upcoming: true,
-      date: '2025-11-20', // Data estimada para edição futura
+      date: '2025-11-20',
     },
   ] as Festival[],
 

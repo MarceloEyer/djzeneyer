@@ -2,13 +2,12 @@ import React, { memo, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useParams, Link, generatePath } from 'react-router-dom';
-import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
+import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
-import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { sanitizeHtml } from '../utils/sanitize';
 import { ARTIST } from '../data/artistData';
-import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
+import { MapPin, Share2, ArrowLeft, Music } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
-import { EventMedia } from '../components/Events/EventMedia';
 import { Toast } from '../components/common/Toast';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 
@@ -38,45 +37,28 @@ const EventDetailSkeleton = () => (
       <div className="space-y-6">
         <div className="h-12 w-3/4 bg-white/5 rounded-xl" />
         <div className="space-y-3">
-          <div className="h-6 w-1/2 bg-white/5 rounded" />
-          <div className="h-6 w-1/2 bg-white/5 rounded" />
+          <div className="h-4 bg-white/5 rounded w-1/2" />
+          <div className="h-4 bg-white/5 rounded w-1/3" />
         </div>
-        <div className="h-32 w-full bg-white/5 rounded-2xl" />
-        <div className="h-14 w-full bg-white/5 rounded-xl" />
       </div>
     </div>
   </div>
 );
 
-interface EventDetailProps {
-  id: string;
-  lang: string;
-}
-
-const EventDetailContent = ({ id, lang }: EventDetailProps) => {
+const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const { t } = useTranslation();
-  const { data: event } = useEventById(id, { suspense: true });
+  const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
+  const { data: event } = useEventById(id, { lang: lang as Language });
   const [showToast, setShowToast] = useState(false);
 
-  if (!event) {
-    return (
-      <div className="max-w-4xl mx-auto py-20 text-center animate-in fade-in duration-500">
-        <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary">
-          <Calendar size={40} />
-        </div>
-        <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter">{t('events_not_found')}</h2>
-        <p className="text-white/40 mb-8 max-w-md mx-auto">{t('events_not_found_desc')}</p>
-        <Link to={getLocalizedRoute('events', lang)} className="btn btn-outline border-white/10 px-8 py-3 rounded-xl font-bold uppercase transition-all hover:bg-white/5 inline-flex items-center gap-2">
-          <ArrowLeft size={18} /> {t('events_back')}
-        </Link>
-      </div>
-    );
-  }
+  if (!event) return <div className="text-center py-20 text-white/40">{t('event_not_found')}</div>;
+
+  const eventDate = new Date(event.starts_at);
+  const isValidDate = !isNaN(eventDate.getTime());
+  const loc = event.location;
 
   const share = () => {
-    // canonical_url do detalhe jÃ¡ contÃ©m o origin; fallback via event_id
-    const canonical = event.canonical_url ||
-      `${window.location.origin}${getLocalizedRoute('events', lang)}/${event.event_id || ''}`;
+    const canonical = event.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
     if (navigator.share) {
       navigator.share({ title: event.title, url: canonical });
     } else {
@@ -85,55 +67,53 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
     }
   };
 
-  // Suporte dual: v2 usa starts_at, fallback para datetime (v1 local)
-  const rawDate = event.starts_at || (event as Record<string, string>).datetime || '';
-  const eventDate = new Date(rawDate);
-  const isValidDate = !isNaN(eventDate.getTime());
-
-  // Suporte dual: v2 usa location.venue, fallback para venue.name
-  const loc = event.location ?? {
-    venue: (event as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.name ?? '',
-    city: (event as ZenBitEventDetail & { venue?: { name: string; city: string } }).venue?.city ?? '',
-    region: '',
-    country: '',
-  };
-
-  const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
-  const eventImage = safeUrl(event.image, '/images/zen-eyer-og-image.png');
-
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
       <HeadlessSEO
-        title={`${event.title} | ${t('nav.events')}`}
-        description={event.description.substring(0, 160)}
-        url={`${origin}${generatePath(getLocalizedRoute('events-detail', lang), { id })}`}
-        image={eventImage}
-        type="event"
-        events={[{ ...event, image: eventImage }]}
+        title={event.title}
+        description={event.description?.substring(0, 160) || ''}
+        url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
+        image={event.image || undefined}
+        events={[event]}
       />
-      <Link to={getLocalizedRoute('events', lang)} className="flex items-center gap-2 text-primary mb-8 font-extrabold uppercase tracking-widest text-sm hover:text-white transition-colors">
-        <ArrowLeft size={18} /> {t('events_back')}
+
+      <Link
+        to={getLocalizedRoute('events', lang as Language)}
+        className="inline-flex items-center gap-2 text-white/60 hover:text-primary mb-12 transition-colors font-bold uppercase tracking-widest text-xs"
+      >
+        <ArrowLeft size={16} /> {t('common.back_to_list', { defaultValue: 'Back to list' })}
       </Link>
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
-        <div className="relative group">
-          <EventMedia
-            image={event.image}
-            title={event.title}
-            date={rawDate}
-            venue={loc.venue}
-          />
+
+      <div className="grid lg:grid-cols-12 gap-12 items-start">
+        {/* Event Poster/Image */}
+        <div className="lg:col-span-5 relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+          <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
+            {event.image ? (
+              <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-surface flex items-center justify-center text-white/10">
+                <Music size={80} />
+              </div>
+            )}
+            <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black via-black/60 to-transparent">
+              <div className="inline-block px-4 py-1 rounded-full bg-primary text-black font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
+                {t('events.featured', { defaultValue: 'Featured Event' })}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col justify-center">
-          <div className="flex items-center gap-2 text-primary font-black uppercase tracking-[0.2em] text-xs mb-6">
-            <div className="w-8 h-px bg-primary/30" />
-            {isValidDate ? eventDate.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) : t('tba')}
+        {/* Content */}
+        <div className="lg:col-span-7 bg-surface/30 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 text-white/5 pointer-events-none">
+            <Music size={120} className="rotate-12" />
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter text-white leading-[0.9]" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+          <div className="relative z-10">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-8 leading-[0.9] tracking-tighter uppercase whitespace-pre-line" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
 
-          <div className="space-y-5 mb-10">
-            <div className="flex items-center gap-4 text-white/80">
+            <div className="flex items-center gap-4 text-white/80 mb-4">
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
                 <Calendar size={20} />
               </div>
@@ -148,10 +128,9 @@ const EventDetailContent = ({ id, lang }: EventDetailProps) => {
               <span className="font-bold">{loc.venue}{loc.city ? `, ${loc.city}` : ''}</span>
             </div>
 
-            <div className="prose prose-invert mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || event.content || '') }} />
+            <div className="prose prose-invert mt-10 mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || '') }} />
 
             <div className="space-y-4">
-              {/* Tickets button removed by user request */}
               <AddCalendarMenu event={event} variant="primary" />
 
               <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
@@ -178,13 +157,13 @@ const EventListContent = ({ lang }: { lang: string }) => {
     mode: 'upcoming',
     days: 365,
     limit: 50,
-    lang,
-  }, { suspense: true });
+    lang: lang as Language,
+  });
 
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [showToast, setShowToast] = useState(false);
 
-  // Extrai regiÃµes Ãºnicas (Estados)
+  // Extrai regiões únicas (Estados)
   const regions = useMemo(() => {
     const r = new Set<string>();
     events.forEach((e: ZenBitEventListItem) => {
@@ -212,7 +191,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
 
   const share = (e: ZenBitEventListItem) => {
-    const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang)}/${e.event_id}`;
+    const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${e.event_id}`;
     if (navigator.share) {
       navigator.share({ title: e.title, url: canonical });
     } else {
@@ -234,11 +213,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
       <HeadlessSEO
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
-        url={`${origin}${getLocalizedRoute('events', lang)}`}
-        events={events.map((event: Record<string, unknown>) => ({
-          ...event,
-          image: event.image as string || '/images/zen-eyer-og-image.png',
-        }))}
+        url={`${origin}${getLocalizedRoute('events', lang as Language)}`}
+        events={events as any}
       />
       {/* Filter Bar */}
       {regions.length > 0 && (
@@ -270,7 +246,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
           const [y, m] = key.split('-');
           const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
           const monthShort = MONTH_NAMES[Number(m) - 1];
-          const name = t(`events_month_${monthShort}`);
+          const name = t(`events_month_${monthShort}` as any);
           return (
             <section key={key}>
               <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
@@ -280,14 +256,11 @@ const EventListContent = ({ lang }: { lang: string }) => {
               <div className="space-y-3">
                 {monthEvents.map((e) => {
                   const eventDay = new Date(e.starts_at);
-                  // Normaliza o link do detalhe usando SSOT para evitar 404
                   const identifier = e.canonical_path
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
 
-                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang), { id: identifier });
-
-                  // v2: location sempre presente
+                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang as Language), { id: identifier });
                   const loc = e.location;
 
                   return (
@@ -300,7 +273,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                         </Link>
                       </div>
                       <div className="flex gap-2">
-                        <AddCalendarMenu event={e as unknown as import('../types/events').ZenBitEventDetail} variant="ghost" />
+                        <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" />
                         <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
                           <Share2 size={16} />
                         </button>
@@ -355,7 +328,7 @@ const EventsPage: React.FC = () => {
           <EventListContent lang={lang} />
         </React.Suspense>
 
-        <section className="mt-40 p-12 md:p-24 text-center bg-surface border border-white/5 rounded-[3rem] relative overflow-hidden group">
+        <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-white/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
           <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
             <img
               src="/images/artist/dj-zen-eyer-club-performance.jpg"
@@ -363,11 +336,11 @@ const EventsPage: React.FC = () => {
               className="w-full h-full object-cover grayscale"
             />
           </div>
-          <Music className="absolute -right-16 -bottom-16 text-white/5 w-96 h-96 rotate-12 relative z-10" />
-          <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter">{t('home_press_title')}</h2>
-          <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-            <Link to={getLocalizedRoute('booking', lang)} className="btn btn-primary px-10 py-4 rounded-xl font-bold uppercase">{t('contact')}</Link>
-            <Link to={getLocalizedRoute('presskit', lang)} className="btn btn-outline border-white/10 px-10 py-4 rounded-xl font-bold uppercase">{t('press_kit')}</Link>
+          <Music className="absolute -right-8 -bottom-8 text-white/5 w-48 h-48 rotate-12 z-10" />
+          <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home_press_title')}</h2>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
+            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
+            <Link to={getLocalizedRoute('presskit', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 rounded-xl font-bold text-sm">Press Kit</Link>
           </div>
         </section>
       </div>

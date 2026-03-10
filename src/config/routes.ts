@@ -159,7 +159,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Press Kit / Booking
   {
     key: 'booking',
-    component: PressKitPage,
+    component: MediaPage,
     paths: { en: slug('booking', 'en') as string, pt: slug('booking', 'pt') as string },
   },
 
@@ -235,7 +235,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Press Kit (EPK + Media)
   {
     key: 'presskit',
-    component: MediaPage,
+    component: PressKitPage,
     paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
   },
 
