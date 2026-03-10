@@ -6,7 +6,7 @@ import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/r
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
 import { ARTIST } from '../data/artistData';
-import { MapPin, Share2, ArrowLeft, Music } from 'lucide-react';
+import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { Toast } from '../components/common/Toast';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
