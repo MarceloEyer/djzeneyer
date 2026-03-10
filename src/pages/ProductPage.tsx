@@ -48,7 +48,9 @@ const ProductPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const baseUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || `${window.location.origin}/wp-json/`;
+    const baseUrl =
+      (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl ||
+      `${window.location.origin}/wp-json/`;
     const apiUrl = `${baseUrl}djzeneyer/v1/products?slug=${encodeURIComponent(slug)}&lang=${currentLang}`;
 
     try {
@@ -98,18 +100,21 @@ const ProductPage: React.FC = () => {
     }
   };
 
-  const formatPrice = useCallback((price: string) => {
-    if (!price) return 'R$ 0,00';
-    const numPrice = parseFloat(price);
-    const locale = isPortuguese ? 'pt-BR' : 'en-US';
-    return isNaN(numPrice)
-      ? price
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
-  }, [isPortuguese]);
+  const formatPrice = useCallback(
+    (price: string) => {
+      if (!price) return 'R$ 0,00';
+      const numPrice = parseFloat(price);
+      const locale = isPortuguese ? 'pt-BR' : 'en-US';
+      return isNaN(numPrice)
+        ? price
+        : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
+    },
+    [isPortuguese]
+  );
 
   const gallery = useMemo(() => {
     if (!product?.images?.length) return [];
-    return product.images.filter((img) => img?.src);
+    return product.images.filter(img => img?.src);
   }, [product?.images]);
 
   if (loading) {
@@ -138,14 +143,17 @@ const ProductPage: React.FC = () => {
 
   // Optimization: Use large or medium_large for main image if available, fallback to full src
   const mainImageObject = product.images?.[0];
-  const optimizedMainImage = mainImageObject?.sizes?.large || mainImageObject?.sizes?.medium_large || mainImageObject?.src;
+  const optimizedMainImage =
+    mainImageObject?.sizes?.large || mainImageObject?.sizes?.medium_large || mainImageObject?.src;
 
   const mainImage = activeImage || optimizedMainImage || placeholderImage;
 
   return (
     <>
       <Helmet>
-        <title>{product.name} | {t('common.artist_name')}</title>
+        <title>
+          {product.name} | {t('common.artist_name')}
+        </title>
         <meta
           name="description"
           content={product.short_description || product.description || product.name}
@@ -154,7 +162,10 @@ const ProductPage: React.FC = () => {
 
       <div className="min-h-screen bg-background text-white pb-20">
         <div className="container mx-auto px-4 py-10">
-          <Link to={shopPath} className="inline-flex items-center gap-2 text-white/70 hover:text-primary mb-6">
+          <Link
+            to={shopPath}
+            className="inline-flex items-center gap-2 text-white/70 hover:text-primary mb-6"
+          >
             <ArrowLeft size={18} />
             {t('common.checkout.back_shop')}
           </Link>
@@ -164,7 +175,11 @@ const ProductPage: React.FC = () => {
               <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
                 <img
                   src={safeUrl(mainImage)}
-                  alt={product.name || ''}
+                  alt={
+                    product.name
+                      ? `DJ Zen Eyer Official Store - ${product.name}`
+                      : 'DJ Zen Eyer Official Product'
+                  }
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -177,7 +192,11 @@ const ProductPage: React.FC = () => {
                       onClick={() => setActiveImage(img.src)}
                       className={`rounded-lg overflow-hidden border ${activeImage === img.src ? 'border-primary' : 'border-white/10'}`}
                     >
-                      <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" />
+                      <img
+                        src={safeUrl(img.sizes?.thumbnail || img.src)}
+                        alt={img.alt || product.name}
+                        className="w-full h-full object-cover"
+                      />
                     </button>
                   ))}
                 </div>
@@ -186,7 +205,7 @@ const ProductPage: React.FC = () => {
 
             <div>
               <div className="flex flex-wrap gap-2 mb-4">
-                {product.categories?.map((category) => (
+                {product.categories?.map(category => (
                   <span
                     key={category.id}
                     className="text-xs px-3 py-1 rounded-full bg-white/10 border border-white/10 text-white/80"
@@ -196,9 +215,7 @@ const ProductPage: React.FC = () => {
                 ))}
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-bold mb-4 font-display">
-                {product.name}
-              </h1>
+              <h1 className="text-3xl md:text-5xl font-bold mb-4 font-display">{product.name}</h1>
 
               {product.short_description && (
                 <div
@@ -236,9 +253,7 @@ const ProductPage: React.FC = () => {
               {product.description && (
                 <div className="prose prose-invert max-w-none mt-8">
                   <h2 className="text-2xl font-bold mb-4">{t('shop.product_details')}</h2>
-                  <div
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }}
-                  />
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }} />
                 </div>
               )}
             </div>

@@ -18,7 +18,10 @@ import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 const EventSkeleton = () => (
   <div className="space-y-6">
     {[1, 2, 3].map(i => (
-      <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
+      <div
+        key={i}
+        className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6"
+      >
         <div className="w-12 h-12 bg-white/5 rounded-full" />
         <div className="flex-1 space-y-3">
           <div className="h-4 bg-white/5 rounded w-1/4" />
@@ -58,7 +61,9 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const loc = event.location;
 
   const share = () => {
-    const canonical = event.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
+    const canonical =
+      event.canonical_url ||
+      `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
     if (navigator.share) {
       navigator.share({ title: event.title, url: canonical });
     } else {
@@ -111,29 +116,47 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
           </div>
 
           <div className="relative z-10">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-8 leading-[0.9] tracking-tighter uppercase whitespace-pre-line" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+            <h1
+              className="text-4xl md:text-5xl lg:text-6xl font-black mb-8 leading-[0.9] tracking-tighter uppercase whitespace-pre-line"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
+            />
 
             <div className="flex items-center gap-4 text-white/80 mb-4">
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
                 <Calendar size={20} />
               </div>
               <span className="font-bold">
-                {isValidDate ? eventDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }) : t('tba')}
+                {isValidDate
+                  ? eventDate.toLocaleDateString(lang, {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })
+                  : t('tba')}
               </span>
             </div>
             <div className="flex items-center gap-4 text-white/80">
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
                 <MapPin size={20} />
               </div>
-              <span className="font-bold">{loc.venue}{loc.city ? `, ${loc.city}` : ''}</span>
+              <span className="font-bold">
+                {loc.venue}
+                {loc.city ? `, ${loc.city}` : ''}
+              </span>
             </div>
 
-            <div className="prose prose-invert mt-10 mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || '') }} />
+            <div
+              className="prose prose-invert mt-10 mb-10 text-white/60 leading-relaxed text-lg"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || '') }}
+            />
 
             <div className="space-y-4">
               <AddCalendarMenu event={event} variant="primary" />
 
-              <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
+              <button
+                onClick={share}
+                className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs"
+              >
                 <Share2 size={18} /> {t('share')}
               </button>
             </div>
@@ -141,11 +164,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         </div>
       </div>
 
-      <Toast
-        message={t('link_copied')}
-        isVisible={showToast}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast message={t('link_copied')} isVisible={showToast} onClose={() => setShowToast(false)} />
     </div>
   );
 };
@@ -189,9 +208,10 @@ const EventListContent = ({ lang }: { lang: string }) => {
     return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
   }, [filteredEvents]);
 
-
   const share = (e: ZenBitEventListItem) => {
-    const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${e.event_id}`;
+    const canonical =
+      e.canonical_url ||
+      `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${e.event_id}`;
     if (navigator.share) {
       navigator.share({ title: e.title, url: canonical });
     } else {
@@ -244,7 +264,20 @@ const EventListContent = ({ lang }: { lang: string }) => {
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
           const [y, m] = key.split('-');
-          const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+          const MONTH_NAMES = [
+            'jan',
+            'feb',
+            'mar',
+            'apr',
+            'may',
+            'jun',
+            'jul',
+            'aug',
+            'sep',
+            'oct',
+            'nov',
+            'dec',
+          ];
           const monthShort = MONTH_NAMES[Number(m) - 1];
           const name = t(`events_month_${monthShort}` as any);
           return (
@@ -254,27 +287,48 @@ const EventListContent = ({ lang }: { lang: string }) => {
                 <div className="h-px flex-1 bg-white/5" />
               </h2>
               <div className="space-y-3">
-                {monthEvents.map((e) => {
+                {monthEvents.map(e => {
                   const eventDay = new Date(e.starts_at);
                   const identifier = e.canonical_path
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
 
-                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang as Language), { id: identifier });
+                  const detailHref = generatePath(
+                    getLocalizedRoute('events-detail', lang as Language),
+                    { id: identifier }
+                  );
                   const loc = e.location;
 
                   return (
-                    <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
-                      <div className="text-3xl font-black min-w-[50px]">{String(eventDay.getDate()).padStart(2, '0')}</div>
+                    <div
+                      key={e.event_id}
+                      className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group"
+                    >
+                      <div className="text-3xl font-black min-w-[50px]">
+                        {String(eventDay.getDate()).padStart(2, '0')}
+                      </div>
                       <div className="flex-1">
-                        <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${loc.country})` : ''}</div>
+                        <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
+                          <MapPin size={10} /> {loc.city}
+                          {loc.region ? `, ${loc.region}` : ''}
+                          {loc.country ? ` (${loc.country})` : ''}
+                        </div>
                         <Link to={detailHref}>
-                          <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
+                          <h3
+                            className="text-xl font-bold uppercase group-hover:text-primary transition-colors"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }}
+                          />
                         </Link>
                       </div>
                       <div className="flex gap-2">
-                        <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" />
-                        <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
+                        <AddCalendarMenu
+                          event={e as unknown as ZenBitEventDetail}
+                          variant="ghost"
+                        />
+                        <button
+                          onClick={() => share(e)}
+                          className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all"
+                        >
                           <Share2 size={16} />
                         </button>
                       </div>
@@ -287,11 +341,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         })
       )}
 
-      <Toast
-        message={t('link_copied')}
-        isVisible={showToast}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast message={t('link_copied')} isVisible={showToast} onClose={() => setShowToast(false)} />
     </div>
   );
 };
@@ -320,7 +370,8 @@ const EventsPage: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16 px-4">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 font-display uppercase text-white tracking-tighter">
-            {t('events.title_part1')} <span className="text-primary">{t('events.title_part2')}</span>
+            {t('events.title_part1')}{' '}
+            <span className="text-primary">{t('events.title_part2')}</span>
           </h1>
         </header>
 
@@ -332,15 +383,27 @@ const EventsPage: React.FC = () => {
           <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
             <img
               src="/images/artist/dj-zen-eyer-club-performance.jpg"
-              alt=""
+              alt="DJ Zen Eyer club performance live"
               className="w-full h-full object-cover grayscale"
             />
           </div>
           <Music className="absolute -right-8 -bottom-8 text-white/5 w-48 h-48 rotate-12 z-10" />
-          <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home_press_title')}</h2>
+          <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">
+            {t('home_press_title')}
+          </h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
-            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <Link to={getLocalizedRoute('presskit', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 rounded-xl font-bold text-sm">Press Kit</Link>
+            <Link
+              to={getLocalizedRoute('booking', lang as Language)}
+              className="btn btn-primary px-10 py-3 rounded-xl font-bold uppercase text-sm"
+            >
+              {t('contact')}
+            </Link>
+            <Link
+              to={getLocalizedRoute('presskit', lang as Language)}
+              className="btn btn-outline border-white/10 px-10 py-3 rounded-xl font-bold text-sm"
+            >
+              Press Kit
+            </Link>
           </div>
         </section>
       </div>
