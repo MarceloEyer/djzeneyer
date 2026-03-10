@@ -10,7 +10,7 @@
 // ✅ Performance maximizada (sem re-renders desnecessários)
 // ============================================================================
 
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -198,7 +198,7 @@ const ZenTribePage: React.FC = () => {
   const { user } = useUser();
 
   // Membership tiers (com tradução)
-  const membershipTiers = [
+  const membershipTiers = useMemo(() => [
     {
       name: t('zenTribe.tiers.novice.name'),
       price: t('zenTribe.tiers.novice.price'),
@@ -241,7 +241,7 @@ const ZenTribePage: React.FC = () => {
       icon: <Shield size={24} aria-hidden="true" />,
       popular: false,
     },
-  ];
+  ], [t]);
 
   // Scroll to section
   const scrollToSection = (id: string) => {
@@ -255,6 +255,8 @@ const ZenTribePage: React.FC = () => {
   const currentPath = '/zentribe';
   const currentUrl = 'https://djzeneyer.com' + currentPath;
 
+  const schema = useMemo(() => getOrganizationSchema(t), [t]);
+
   return (
     <>
       {/* ====================================================================== */}
@@ -266,7 +268,7 @@ const ZenTribePage: React.FC = () => {
         url={currentUrl}
         image="https://djzeneyer.com/images/zen-tribe-og.jpg"
         ogType="website"
-        schema={getOrganizationSchema(t)}
+        schema={schema}
         keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, DJ Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
       />
 
