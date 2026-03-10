@@ -905,17 +905,15 @@ final class ZenGame
             return (int) $cached;
         }
 
-        // Fetch only IDs to minimise memory; load each order individually below.
-        $order_ids = \wc_get_orders([
+        // Fetch orders directly to avoid N+1 wc_get_order queries in the loop.
+        $orders = \wc_get_orders([
             'customer' => $user_id,
             'status' => ['completed'],
             'limit' => -1,
-            'return' => 'ids',
         ]);
 
         $total = 0;
-        foreach ($order_ids as $oid) {
-            $order = \wc_get_order($oid);
+        foreach ($orders as $order) {
             if (!$order) {
                 continue;
             }
@@ -966,16 +964,14 @@ final class ZenGame
             'pass',
         ];
 
-        $order_ids = \wc_get_orders([
+        $orders = \wc_get_orders([
             'customer' => $user_id,
             'status' => ['completed', 'processing'],
             'limit' => -1,
-            'return' => 'ids',
         ]);
 
         $total = 0;
-        foreach ($order_ids as $oid) {
-            $order = \wc_get_order($oid);
+        foreach ($orders as $order) {
             if (!$order) {
                 continue;
             }
