@@ -13,6 +13,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { useEventsQuery } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
@@ -110,6 +111,8 @@ const HomePage: React.FC = () => {
   const currentLang = normalizeLanguage(i18n.language);
   const currentUrl = ARTIST.site.baseUrl;
 
+  const { data: upcomingEvents = [] } = useEventsQuery({ mode: 'upcoming', limit: 10, lang: currentLang });
+
   // --- FETCH PLUGIN SETTINGS (Integration) ---
   useEffect(() => {
     // Tenta pegar a URL da API do ambiente ou usa fallback
@@ -172,21 +175,24 @@ const HomePage: React.FC = () => {
             "skills": "Audio Engineering, Remixing, Mastering"
           },
         ],
-        "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
-          "@type": "MusicEvent",
-          "name": f.name,
-          "startDate": f.date,
-          "location": {
-            "@type": "Place",
-            "name": f.country,
-            "address": {
-              "@type": "PostalAddress",
-              "addressCountry": f.country
-            }
-          },
-          "eventStatus": "https://schema.org/EventScheduled",
-          "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
-        })),
+        "performerIn": FESTIVALS_HIGHLIGHT.map(f => {
+          const isPast = new Date(f.date) < new Date();
+          return {
+            "@type": "MusicEvent",
+            "name": f.name,
+            "startDate": f.date,
+            "location": {
+              "@type": "Place",
+              "name": f.country,
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": f.country
+              }
+            },
+            ...(isPast ? {} : { "eventStatus": "https://schema.org/EventScheduled" }),
+            "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
+          };
+        }),
       },
       {
         "@type": "WebPage",
@@ -205,9 +211,51 @@ const HomePage: React.FC = () => {
           "@type": "BreadcrumbList",
           "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": ARTIST.site.baseUrl }]
         }
-      }
+      },
+      ...upcomingEvents.map((e: any) => {
+        const startDate = e.starts_at || e.event_date;
+        const endDate = e.ends_at || e.end_date;
+        const locName = e.location?.venue || e.event_location || "TBA";
+        const ticketUrl = e.event_ticket || (e.tickets && e.tickets[0]?.url) || (e.offers && e.offers[0]?.url);
+
+        let eventOffers = undefined;
+        if (ticketUrl) {
+          eventOffers = {
+            "@type": "Offer",
+            "url": ticketUrl,
+            "availability": "https://schema.org/InStock",
+            "validFrom": startDate
+          };
+        }
+
+        return {
+          "@type": "MusicEvent",
+          "name": e.title?.rendered || e.title || e.name || "DJ Zen Eyer Event",
+          ...(e.canonical_url || e.url ? { "url": e.canonical_url || e.url } : {}),
+          "startDate": startDate,
+          ...(endDate ? { "endDate": endDate } : {}),
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": locName.toLowerCase().includes('online')
+            ? "https://schema.org/OnlineEventAttendanceMode"
+            : "https://schema.org/OfflineEventAttendanceMode",
+          "location": {
+            "@type": "Place",
+            "name": locName,
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": locName,
+              "addressLocality": e.location?.city || "",
+              "addressCountry": e.location?.country || ""
+            }
+          },
+          "image": e.image || seoSettings?.default_og_image || `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+          "description": (e.description || e.desc || "").replace(/<[^>]*>?/gm, "").substring(0, 300),
+          "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` },
+          ...(eventOffers ? { "offers": eventOffers } : {})
+        };
+      })
     ],
-  }), [seoSettings]);
+  }), [seoSettings, upcomingEvents]);
 
   return (
     <>

@@ -319,6 +319,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           },
           subEvent: musicEvents
         });
+        // Push individual events alongside EventSeries so Google reliably lists them as Events
+        graph.push(...musicEvents);
       } else if (musicEvents.length === 1) {
         graph.push(musicEvents[0]);
       }
