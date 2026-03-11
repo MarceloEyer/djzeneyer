@@ -143,19 +143,8 @@ class Zen_SEO_Sitemap
                 $thumbnail_ids[] = $thumb_id;
             }
         }
-        if (!empty($thumbnail_ids)) {
-            if (\function_exists('_prime_post_caches')) {
-                \_prime_post_caches($thumbnail_ids, false, true);
-            } else {
-                \update_meta_cache('post', $thumbnail_ids);
-                \get_posts([
-                    'post__in' => $thumbnail_ids,
-                    'post_type' => 'attachment',
-                    'post_status' => 'any',
-                    'posts_per_page' => -1,
-                    'update_post_term_cache' => false,
-                ]);
-            }
+        if (!empty($thumbnail_ids) && \function_exists('_prime_post_caches')) {
+            \_prime_post_caches($thumbnail_ids, false, true);
         }
 
         foreach ($posts as $post) {
