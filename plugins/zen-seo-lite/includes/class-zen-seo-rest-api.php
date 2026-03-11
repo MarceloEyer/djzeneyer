@@ -311,7 +311,7 @@ class Zen_SEO_REST_API
             'orderby' => 'modified',
             'order' => 'DESC',
             'update_post_meta_cache' => true,
-            'update_post_term_cache' => true,
+            'update_post_term_cache' => \function_exists('pll_languages_list'), // Only prime term cache if Polylang needs to map translations
         ];
 
         $posts = \get_posts($args);
