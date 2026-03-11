@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { safeUrl, sanitizeHtml } from '../../utils/sanitize';
+import { safeUrl, sanitizeTitleHtml } from '../../utils/sanitize';
+import { stripHtml } from '../../utils/text';
 import { Music } from 'lucide-react';
 import patternSvg from '../../assets/images/pattern.svg';
 
@@ -47,7 +48,7 @@ export const EventMedia: React.FC<EventMediaProps> = ({
                 <h3
                     className="text-4xl md:text-6xl font-black uppercase tracking-tighter font-display text-white leading-[0.85] break-words"
                     style={{ textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(title) }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeTitleHtml(title) }}
                 />
 
                 <div className="pt-4 space-y-2 opacity-60">
@@ -80,7 +81,7 @@ export const EventMedia: React.FC<EventMediaProps> = ({
                 <img
                     src={safeUrl(image)}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    alt={title}
+                    alt={stripHtml(title)}
                     onError={(e) => {
                         // Fallback if image fails to load
                         (e.target as HTMLImageElement).style.display = 'none';
