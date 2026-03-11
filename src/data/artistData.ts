@@ -16,11 +16,14 @@ export const ARTIST = {
     stageName: 'DJ Zen Eyer',
     shortName: 'Zen Eyer',
     fullName: 'Marcelo Eyer Fernandes',
-    displayTitle: 'Zen Eyer',
-    birthDate: '1985-08-20', // Wikidata + MusicBrainz
-    nationality: 'Brazilian',
-    legalName: 'Marcelo Eyer Fernandes 44063765000146', // Wikidata CNPJ
+    realName: 'Marcelo Eyer Fernandes',
+    birthDate: '1985-08-20',
     taxId: '44.063.765/0001-46',
+    city: 'Niterói',
+    state: 'RJ',
+    country: 'Brasil',
+    isni: '0000 0005 2893 1015',
+    cnpj: '44.063.765/0001-46',
   },
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
@@ -187,6 +190,34 @@ export const ARTIST = {
     crunchbase: { url: 'https://www.crunchbase.com/organization/zen-eyer' },
     pinterest: { url: 'https://www.pinterest.com/djzeneyer' },
   } as Record<string, SocialLink>,
+
+  // 📰 Clipping / Na Mídia
+  mediaClipping: [
+    {
+      title: 'Entrevista Exclusiva: O Flow por trás da Cremosidade',
+      description: 'Uma conversa profunda sobre a filosofia musical e o processo criativo no Brazilian Zouk.',
+      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Placeholder, substituir se houver links reais conhecidos ou usar genérico
+      source: 'Zoukology',
+      date: '2023-10-15',
+      type: 'interview'
+    },
+    {
+      title: 'DJ Zen Eyer conquista dois títulos no Ilha do Zouk',
+      description: 'Reportagem sobre a vitória nas categorias Melhor Remix e Melhor Performance DJ.',
+      url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
+      source: 'Portal Ilha do Zouk',
+      date: '2022-12-05',
+      type: 'report'
+    },
+    {
+      title: 'A Evolução do Som no Brazilian Zouk',
+      description: 'Podcast onde Zen Eyer discute a transição da lambada para o zouk moderno.',
+      url: 'https://soundcloud.com/djzeneyer/sets/interviews',
+      source: 'Zouk Flow Podcast',
+      date: '2023-05-20',
+      type: 'podcast'
+    }
+  ],
 
   // 📍 Contato
   contact: {

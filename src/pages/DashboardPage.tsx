@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useUser } from '../contexts/UserContext';
@@ -85,48 +85,58 @@ const DashboardContent = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 max-w-7xl space-y-8">
-        <section className="rounded-[2rem] border border-white/10 bg-surface/40 p-6 md:p-8 backdrop-blur-xl">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-surface/40 p-6 md:p-8 backdrop-blur-xl">
+          {/* Decorative Background Image */}
+          <div className="absolute -right-20 -top-20 h-64 w-64 opacity-20 blur-2xl lg:opacity-30 lg:h-96 lg:w-96">
+             <img src="/zen_tribe_dashboard_welcome_1773245829455.png" className="h-full w-full object-cover rounded-full" alt="Decorative" />
+          </div>
+
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
-              <img
-                src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
-                alt={user.name}
-                className="h-20 w-20 rounded-2xl border border-white/10 object-cover"
-              />
+              <div className="relative">
+                <img
+                  src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
+                  alt={user.name}
+                  className="relative z-10 h-20 w-20 rounded-2xl border border-white/10 object-cover shadow-2xl"
+                />
+                <div className="absolute -bottom-2 -right-2 z-20 rounded-lg bg-primary p-1 shadow-lg">
+                  <Zap size={12} className="text-white fill-white" />
+                </div>
+              </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-black font-display tracking-tight">
-                  {t('dashboard.welcomeBack', { name: user.display_name || user.name || t('common.friend') })}
+                <h1 className="text-3xl md:text-4xl font-black font-display tracking-tight text-white">
+                  {t('dashboard.welcomeBack', { name: (user.display_name || user.name || t('common.friend')) as string })}
                 </h1>
-                <p className="mt-2 text-white/60">{t('dashboard.journeyBegins')}</p>
+                <p className="mt-2 text-white/50">{t('dashboard.journeyBegins')}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:w-auto">
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40">{t('dashboard.stats.mana')}</div>
+              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.mana')}</div>
                 <div className="text-xl font-black mt-1">{mainPoints}</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40">{t('dashboard.stats.artifacts')}</div>
+              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.artifacts')}</div>
                 <div className="text-xl font-black mt-1">{gamipress.stats.totalTracks}</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40">{t('dashboard.stats.events')}</div>
+              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.events')}</div>
                 <div className="text-xl font-black mt-1">{gamipress.stats.eventsAttended}</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40">{t('dashboard.stats.ascension')}</div>
+              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.ascension')}</div>
                 <div className="text-xl font-black mt-1 truncate">{gamipress.rank.current.title}</div>
               </div>
             </div>
           </div>
 
           {gamipress.rank.next && (
-            <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+            <div className="mt-8 rounded-2xl border border-primary/20 bg-primary/5 p-6 backdrop-blur-md">
               <ManaProgressBar
                 progress={gamipress.rank.progress}
                 label={t('dashboard.nextRank')}
-                subLabel={gamipress.rank.next.title}
+                subLabel={`${gamipress.rank.next.title} (${gamipress.rank.requirements[0]?.current || 0} / ${gamipress.rank.requirements[0]?.required || 0} XP)`}
               />
             </div>
           )}

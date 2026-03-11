@@ -8,33 +8,22 @@ import { ARTIST } from '../data/artistData';
 const MediaPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const pressHighlights = [
-    {
-      title: t('media_page.world_champion'),
-      description: t('media_page.world_champion_desc'),
-      source: t('media_page.source_official_bio'),
-      year: "2023"
-    },
-    {
-      title: t('media_page.international_performances'),
-      description: t('media_page.international_performances_desc'),
-      source: t('media_page.source_performance_history'),
-      year: t('media_page.year_range')
-    }
-  ];
+  const clippingData = (ARTIST as any).mediaClipping || [];
 
   const mediaAssets = [
     {
       title: t('media_page.high_res_photos'),
       description: t('media_page.high_res_photos_desc'),
       icon: ImageIcon,
-      available: false
+      available: true,
+      url: 'https://photos.djzeneyer.com'
     },
     {
       title: t('media_page.official_bio'),
       description: t('media_page.official_bio_desc'),
       icon: Newspaper,
-      available: true
+      available: true,
+      url: '/media/dj-zen-eyer-bio.pdf'
     },
     {
       title: t('media_page.press_kit_pdf'),
@@ -46,158 +35,160 @@ const MediaPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('media_page.title')} | DJ Zen Eyer</title>
-        <meta name="description" content={t('media_page.subtitle')} />
-        <meta name="robots" content="index, follow" />
-      </Helmet>
+      <HeadlessSEO
+        title={`${t('media_page.title')} | ${ARTIST.identity.stageName}`}
+        description={t('media_page.subtitle')}
+        image="/images/zen-eyer-og-image.svg"
+      />
 
-      <div className="min-h-screen pt-24 pb-16">
-        <div className="container mx-auto px-4">
+      <div className="min-h-screen pt-32 pb-24 bg-background relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 max-w-6xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
-              {t('media_page.title').split('&')[0]} & <span className="text-primary">{t('media_page.title').split('&')[1] || 'Press Kit'}</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
+              <Newspaper size={16} /> {t('media_page.verified_profiles')}
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black font-display mb-8 text-white tracking-tighter uppercase leading-[0.9]">
+              {t('media_page.title').split('&')[0]} <span className="text-primary">&</span> {t('media_page.title').split('&')[1] || 'Clipping'}
             </h1>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
               {t('media_page.subtitle')}
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="card mb-16 p-8"
-          >
-            <h2 className="text-2xl font-display font-bold mb-6">{t('media_page.quick_facts')}</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.artist_name')}</h3>
-                <p className="text-lg font-semibold">{t('common.artist_name')}</p>
-              </div>
-              <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.legal_name')}</h3>
-                <p className="text-lg font-semibold">{t('common.legal_name')}</p>
-              </div>
-              <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.genre')}</h3>
-                <p className="text-lg font-semibold">{t('media_page.genre_value')}</p>
-              </div>
-              <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.location')}</h3>
-                <p className="text-lg font-semibold">{t('media_page.location_value')}</p>
-              </div>
-              <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.cnpj')}</h3>
-                <p className="text-lg font-semibold font-mono">{t('common.cnpj')}</p>
-              </div>
-              <div>
-                <h3 className="text-sm text-white/60 uppercase tracking-wider mb-2">{t('media_page.isni')}</h3>
-                <p className="text-lg font-semibold font-mono">{t('common.isni')}</p>
+          <div className="grid lg:grid-cols-3 gap-12">
+            {/* Main Content: Clipping List */}
+            <div className="lg:col-span-2 space-y-8">
+              <h2 className="text-3xl font-black font-display text-white uppercase tracking-widest mb-8 border-l-4 border-primary pl-6">
+                {t('media_page.press_highlights')}
+              </h2>
+              
+              <div className="grid gap-6">
+                {clippingData.map((item: any, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <a 
+                      href={item.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group block card p-6 bg-surface/30 backdrop-blur-md border hover:border-primary/50 transition-all"
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="px-3 py-1 rounded-full bg-white/5 text-primary text-xs font-bold uppercase tracking-widest border border-white/5 group-hover:bg-primary/20 transition-colors">
+                          {item.type}
+                        </span>
+                        <span className="text-white/40 text-xs font-mono">{item.date}</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-primary transition-colors tracking-tight">
+                        {item.title}
+                      </h3>
+                      <p className="text-white/60 text-sm mb-4 line-clamp-2 leading-relaxed">
+                        {item.description}
+                      </p>
+                      <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-primary/70">
+                        <span>{item.source}</span>
+                        <span className="flex items-center gap-1 group-hover:gap-2 transition-all">
+                          Read More <ExternalLink size={14} />
+                        </span>
+                      </div>
+                    </a>
+                  </motion.div>
+                ))}
               </div>
             </div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-16"
-          >
-            <h2 className="text-3xl font-display font-bold mb-8">{t('media_page.press_highlights')}</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {pressHighlights.map((item, index) => (
-                <div key={index} className="card p-6 border-l-4 border-primary">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-xl font-bold">{item.title}</h3>
-                    <span className="text-sm text-white/50 font-mono">{item.year}</span>
-                  </div>
-                  <p className="text-white/70 mb-3">{item.description}</p>
-                  <p className="text-sm text-primary">{item.source}</p>
+            {/* Sidebar: Assets & Quick Facts */}
+            <div className="space-y-12">
+              <section>
+                <h3 className="text-xl font-black font-display text-white uppercase tracking-widest mb-6">
+                  {t('media_page.media_assets')}
+                </h3>
+                <div className="grid gap-4">
+                  {mediaAssets.map((asset, index) => (
+                    <div key={index} className="card p-5 bg-surface/50 border-white/5 hover:border-primary/30 transition-all flex items-center gap-4">
+                      <div className={`p-3 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 text-primary`}>
+                        <asset.icon size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-white text-sm uppercase">{asset.title}</h4>
+                        <p className="text-white/40 text-xs line-clamp-1">{asset.description}</p>
+                      </div>
+                      {asset.available ? (
+                        <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                          <Download size={18} />
+                        </a>
+                      ) : (
+                        <span className="text-[10px] text-white/20 uppercase font-black">{t('media_page.coming_soon')}</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </motion.div>
+              </section>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mb-16"
-          >
-            <h2 className="text-3xl font-display font-bold mb-8">{t('media_page.media_assets')}</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {mediaAssets.map((asset, index) => (
-                <div key={index} className="card p-6 text-center">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${asset.available ? 'bg-primary/20' : 'bg-white/5'
-                    }`}>
-                    <asset.icon size={28} className={asset.available ? 'text-primary' : 'text-white/30'} />
-                  </div>
-                  <h3 className="text-lg font-bold mb-2">{asset.title}</h3>
-                  <p className="text-white/60 text-sm mb-4">{asset.description}</p>
-                  {asset.available ? (
-                    <button className="btn btn-primary btn-sm w-full">
-                      <Download size={16} className="mr-2" />
-                      {t('media_page.download')}
-                    </button>
-                  ) : (
-                    <span className="text-xs text-white/40 uppercase tracking-wider">{t('media_page.coming_soon')}</span>
-                  )}
+              <section className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl p-8 border border-white/5">
+                <h3 className="text-xl font-black font-display text-white uppercase tracking-widest mb-6">
+                  {t('media_page.quick_facts')}
+                </h3>
+                <div className="space-y-6">
+                  {[
+                    { label: t('media_page.artist_name'), value: ARTIST.identity.stageName },
+                    { label: t('media_page.legal_name'), value: ARTIST.identity.fullName },
+                    { label: t('media_page.genre'), value: t('media_page.genre_value') },
+                    { label: t('media_page.location'), value: t('media_page.location_value') },
+                    { label: t('media_page.cnpj'), value: ARTIST.identity.taxId },
+                  ].map((fact, i) => (
+                    <div key={i} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                      <div className="text-[10px] text-primary font-black uppercase tracking-[0.2em] mb-1">{fact.label}</div>
+                      <div className="text-white font-bold text-sm">{fact.value}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </motion.div>
+              </section>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="card p-8 text-center"
-          >
-            <h2 className="text-3xl font-display font-bold mb-4">{t('media_page.press_inquiries')}</h2>
-            <p className="text-white/70 mb-6 max-w-2xl mx-auto">
-              {t('media_page.press_inquiries_desc')}
-            </p>
-            <a
-              href={`mailto:${ARTIST.contact.email}`}
-              className="btn btn-primary btn-lg inline-flex items-center gap-2"
-            >
-              <ExternalLink size={20} />
-              {t('media_page.contact_press_office')}
+              <section className="card p-8 bg-primary/10 border-primary/20 text-center">
+                <h3 className="text-xl font-black font-display text-white uppercase tracking-tight mb-4">
+                  {t('media_page.press_inquiries')}
+                </h3>
+                <p className="text-white/60 text-sm mb-6 leading-relaxed">
+                  {t('media_page.press_inquiries_desc')}
+                </p>
+                <a
+                  href={`mailto:${ARTIST.contact.email}`}
+                  className="btn btn-primary btn-sm w-full justify-center px-6 py-4 font-black uppercase tracking-widest"
+                >
+                  {t('media_page.contact_press_office')}
+                </a>
+              </section>
+            </div>
+          </div>
+
+          {/* Social Proof / Footer IDs */}
+          <div className="mt-32 pt-16 border-t border-white/5 flex flex-wrap justify-center gap-8 md:gap-16 opacity-40 hover:opacity-100 transition-opacity">
+            <a href={ARTIST.identifiers.wikidataUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
+              <span className="font-display font-black text-xl tracking-tighter">Wikidata</span>
+              <ExternalLink size={14} />
             </a>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-16 text-center"
-          >
-            <p className="text-white/50 mb-4">{t('media_page.verified_profiles')}</p>
-            <div className="flex justify-center gap-6 flex-wrap">
-              <a
-                href="https://www.wikidata.org/wiki/Q136551855"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/60 hover:text-primary transition-colors flex items-center gap-2"
-              >
-                Wikidata <ExternalLink size={14} />
-              </a>
-              <a
-                href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/60 hover:text-primary transition-colors flex items-center gap-2"
-              >
-                MusicBrainz <ExternalLink size={14} />
-              </a>
-            </div>
-          </motion.div>
+            <a href={ARTIST.identifiers.musicbrainzUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
+               <span className="font-display font-black text-xl tracking-tighter">MusicBrainz</span>
+               <ExternalLink size={14} />
+             </a>
+             <a href={ARTIST.identifiers.discogsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
+               <span className="font-display font-black text-xl tracking-tighter">Discogs</span>
+               <ExternalLink size={14} />
+             </a>
+          </div>
         </div>
       </div>
     </>

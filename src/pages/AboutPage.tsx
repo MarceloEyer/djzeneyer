@@ -121,10 +121,11 @@ const AboutPage: React.FC = () => {
       />
 
       {/* Layout visual */}
-      <div className="min-h-screen bg-gradient-to-br from-background via-surface/20 to-background text-white">
+      <div className="min-h-screen bg-background text-white">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-surface/10 to-accent/10 blur-3xl" />
+        <div className="pt-40 pb-24 min-h-screen bg-background relative overflow-hidden md:pt-48">
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
           <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -153,7 +154,7 @@ const AboutPage: React.FC = () => {
               </p>
             </motion.div>
           </div>
-        </section>
+        </div>
 
         {/* Stats Section */}
         <section className="py-16 px-4">

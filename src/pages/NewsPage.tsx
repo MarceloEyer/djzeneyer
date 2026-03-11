@@ -1,3 +1,20 @@
+import React from 'react';
+import { useParams, Link, generatePath } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
+import { motion } from 'framer-motion';
+import { 
+  Calendar, 
+  ArrowLeft, 
+  ArrowRight, 
+  Clock, 
+  Hash,
+} from 'lucide-react';
+import { useNewsQuery, useNewsBySlug } from '../hooks/useQueries';
+import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { ARTIST } from '../data/artistData';
+import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { stripHtml } from '../utils/text';
 
 // ============================================================================
 // HELPERS
@@ -25,7 +42,8 @@ const formatDate = (dateString: string, lang: string = 'pt-BR') => {
 // COMPONENT
 // ============================================================================
 const NewsPage: React.FC = () => {
-  const { slug } = useParams<{ slug?: string }>();
+  const params = useParams();
+  const slug = params.slug;
   const { i18n, t } = useTranslation();
   const normalizedLanguage = normalizeLanguage(i18n.language);
 
@@ -138,7 +156,9 @@ const NewsPage: React.FC = () => {
                 {t('news.live_feed')}
               </motion.div>
               <h1 className="text-5xl md:text-7xl font-black font-display tracking-tight text-white">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">{t('news.title')}</span>
+                <Trans i18nKey="news.title">
+                  Latest <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">Stories</span>
+                </Trans>
               </h1>
             </div>
             <div className="text-right text-white/50 text-sm hidden md:block">
@@ -201,11 +221,11 @@ const NewsPage: React.FC = () => {
                 </motion.article>
               )}
 
-              <div className="mb-8 flex items-center gap-2 text-xl font-display font-bold text-white/90">
-                <TrendingUp className="text-primary" />
-                <span>{t('news.latest_stories')}</span>
-              </div>
-
+              <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-16">
+                <Trans i18nKey="news.latest_stories_title">
+                  Trending <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">News</span>
+                </Trans>
+              </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {secondaryPosts.map((post, index) => (
                   <motion.article
