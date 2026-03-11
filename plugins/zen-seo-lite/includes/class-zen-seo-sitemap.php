@@ -144,7 +144,18 @@ class Zen_SEO_Sitemap
             }
         }
         if (!empty($thumbnail_ids)) {
-            \_prime_post_caches($thumbnail_ids, false, true);
+            if (\function_exists('_prime_post_caches')) {
+                \_prime_post_caches($thumbnail_ids, false, true);
+            } else {
+                \update_meta_cache('post', $thumbnail_ids);
+                \get_posts([
+                    'post__in' => $thumbnail_ids,
+                    'post_type' => 'attachment',
+                    'post_status' => 'any',
+                    'posts_per_page' => -1,
+                    'update_post_term_cache' => false,
+                ]);
+            }
         }
 
         foreach ($posts as $post) {
