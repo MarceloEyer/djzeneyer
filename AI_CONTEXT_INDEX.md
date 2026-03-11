@@ -3,6 +3,15 @@
 > Fonte canonica para agentes de IA neste repositorio.
 > Objetivo: zero conflito entre instrucoes, skills e contexto.
 
+## 🛡️ AI SAFEGUARDS & PROHIBITIONS (STRICT)
+- **DO NOT** delete or modify these vital bot/dev directories: `.bolt`, `.jules`, `.devcontainer`. They are NOT obsolete.
+- **DO NOT** remove or assume the PWA/Manifest logic (`site.webmanifest`, service workers) is a mistake. It is a legitimate user implementation.
+- **DO NOT** remove individual rendering logic (slugs/detail pages) for News, Events, or Products. They are essential for SEO and sharing.
+- **DO NOT** label features as "hallucinations" or "lies" without verifying:
+  1. The physical existence of files in `public/`, `src/`, etc.
+  2. The actual code logic in components.
+- **AUTONOMY LIMIT:** Never perform bulk deletions of configuration directories or core architectural patterns without explicit confirmation.
+
 ## Ordem de precedencia (obrigatoria)
 1. **Codigo real do repositorio** (fonte final): `package.json`, `functions.php`, `inc/`, `plugins/*`, `src/*`
 2. **Este arquivo** (`AI_CONTEXT_INDEX.md`)

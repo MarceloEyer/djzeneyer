@@ -7,15 +7,13 @@
 - [x] Integrar i18n em todas as strings hardcoded
 - [x] Implementar renderização de slug individual em `NewsPage.tsx`
 - [x] Implementar renderização de evento individual em `EventsPage.tsx`
-- [x] Implementar renderização de música individual em `MusicPage.tsx`
 
 ## 🟡 Melhorias
 - [x] Adicionar schema `BreadcrumbList` (JSON-LD) nas páginas
 - [x] Converter hero images para WebP
 - [x] Adicionar prefetch de rotas internas
-- [ ] PWA — Service Worker + manifest.json
+- [x] PWA — Service Worker + manifest.json
 - [ ] Push Notifications para novos lançamentos
-- [ ] Integração com Spotify API (top tracks)
 - [x] Open Graph dinâmico por evento
 
 ## 🟢 Infraestrutura

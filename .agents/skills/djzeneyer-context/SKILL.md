@@ -215,6 +215,10 @@ export const useEventsList = (status?: string) => {
 - ⚠️ **localStorage/sessionStorage**: permitido apenas para sessao/idioma e com revisao de seguranca.
 - ❌ **Endpoints sem namespace**: SEMPRE `{namespace}/{version}/{resource}`.
 - ❌ **Mojibake / Erros de Encoding**: Proibido caracteres estranhos (Ã§, Ã£) em arquivos `translation.json`. Use acentos normais em UTF-8.
+- ❌ **Exclusão de Diretórios Vitalícios**: PROIBIDO deletar `.bolt`, `.jules` ou `.devcontainer`. Não são obsoletos.
+- ❌ **Remoção de PWA/Manifest**: PROIBIDO remover lógica de PWA (`site.webmanifest`) ou service workers.
+- ❌ **Remoção de Paginas Detalhe**: PROIBIDO remover renderização de slug/evento individual em `NewsPage` e `EventsPage`.
+- ❌ **Linguagem de "Alucinação"**: Nunca rotule código funcional como erro de IA sem checar os arquivos físicos.
 
 ---
 
