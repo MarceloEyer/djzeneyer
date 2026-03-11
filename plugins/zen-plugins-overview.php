@@ -129,7 +129,7 @@ class Zen_Plugins_Overview
     public function render_overview_page()
     {
         $php_version = \phpversion();
-        $wp_version = \get_bloginfo('version');
+        $wp_version = (string) \get_bloginfo('version');
         $memory = \size_format(\wp_convert_hr_to_bytes(\WP_MEMORY_LIMIT));
         $db_version = $GLOBALS['wpdb']->db_version();
         $plugins = $this->get_plugins_data();

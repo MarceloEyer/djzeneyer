@@ -439,7 +439,7 @@ class Rest_Routes
             'data' => [
                 'google_client_id' => isset($options['google_client_id']) ? $options['google_client_id'] : '',
                 'registration_enabled' => get_option('users_can_register'),
-                'site_name' => get_bloginfo('name'),
+                'site_name' => (string) get_bloginfo('name'),
             ],
         ]);
     }

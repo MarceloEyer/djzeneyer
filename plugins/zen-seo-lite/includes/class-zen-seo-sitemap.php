@@ -125,7 +125,7 @@ class Zen_SEO_Sitemap
             'order' => 'DESC',
             'no_found_rows' => true,
             'update_post_meta_cache' => true,
-            'update_post_term_cache' => false,
+            'update_post_term_cache' => true,
         ];
 
         // If Polylang is active, get English posts only (translations will be added via hreflang)

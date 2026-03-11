@@ -141,7 +141,7 @@ final class Zen_SEO_Lite_Pro
 
         // Default options
         $defaults = [
-            'real_name' => \get_bloginfo('name'),
+            'real_name' => (string) \get_bloginfo('name'),
         ];
 
         if (!\get_option('zen_seo_global')) {

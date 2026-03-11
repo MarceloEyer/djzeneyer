@@ -310,6 +310,8 @@ class Zen_SEO_REST_API
             'posts_per_page' => \apply_filters('zen_seo_sitemap_limit', 1000),
             'orderby' => 'modified',
             'order' => 'DESC',
+            'update_post_meta_cache' => true,
+            'update_post_term_cache' => true,
         ];
 
         $posts = \get_posts($args);
