@@ -1,12 +1,12 @@
 ﻿# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-# ConfiguraÃ§Ã£o CodeRabbit - DJ Zen Eyer (WordPress Headless + Plugins + React Vite)
+# Configuração CodeRabbit - DJ Zen Eyer (WordPress Headless + Plugins + React Vite)
 
 language: pt-BR
 
 tone_instructions: >
-  Responda sempre em portuguÃªs brasileiro.
-  Seja direto, tÃ©cnico e construtivo.
-  Use emojis com moderaÃ§Ã£o para indicar severidade (ðŸ”´ crÃ­tico, ðŸŸ¡ atenÃ§Ã£o, ðŸŸ¢ ok).
+  Responda sempre em português brasileiro.
+  Seja direto, técnico e construtivo.
+  Use emojis com moderação para indicar severidade (🔴 crítico, 🟡 atenção, 🟢 ok).
 
 early_access: true
 
@@ -21,17 +21,17 @@ reviews:
   changed_files_summary: true
   labeling_instructions:
     - label: "bug-fix"
-      instructions: "CorreÃ§Ã£o de bug"
+      instructions: "Correção de bug"
     - label: "feature"
       instructions: "Nova funcionalidade"
     - label: "refactor"
-      instructions: "RefatoraÃ§Ã£o sem mudanÃ§a de comportamento"
+      instructions: "Refatoração sem mudança de comportamento"
     - label: "docs"
-      instructions: "AlteraÃ§Ã£o apenas em documentaÃ§Ã£o"
+      instructions: "Alteração apenas em documentação"
     - label: "deploy"
-      instructions: "AlteraÃ§Ã£o em CI/CD ou deploy"
+      instructions: "Alteração em CI/CD ou deploy"
     - label: "i18n"
-      instructions: "InternacionalizaÃ§Ã£o ou traduÃ§Ã£o"
+      instructions: "Internacionalização ou tradução"
   
   auto_review:
     enabled: true
@@ -57,89 +57,89 @@ reviews:
       instructions: |
         - Foque fortemente em tipos TypeScript, hooks React e gerenciamento de estado.
         - Verifique acessibilidade (ARIA, teclado, contraste de cores) em todos os componentes.
-        - Valide uso de classes Tailwind para consistÃªncia e evite estilos duplicados.
-        - Sinalize qualquer manipulaÃ§Ã£o direta do DOM que nÃ£o use React sem necessidade clara.
-        - Prefira funÃ§Ãµes puras e testÃ¡veis; evite efeitos colaterais ocultos.
-        - Cheque imports desnecessÃ¡rios e otimize tree-shaking do Vite.
+        - Valide uso de classes Tailwind para consistência e evite estilos duplicados.
+        - Sinalize qualquer manipulação direta do DOM que não use React sem necessidade clara.
+        - Prefira funções puras e testáveis; evite efeitos colaterais ocultos.
+        - Cheque imports desnecessários e otimize tree-shaking do Vite.
 
     - path: "src/pages/**"
       instructions: |
-        - Valide que roteamento funciona com backend WordPress headless (slugs, localizaÃ§Ãµes).
-        - Verifique que tags SEO (titles, meta, OpenGraph) sÃ£o preenchidas a partir de dados headless.
-        - Confirme uso correto de i18next para todas as strings visÃ­veis ao usuÃ¡rio.
-        - Teste padrÃµes de renderizaÃ§Ã£o assÃ­ncrona e tratamento de erros.
+        - Valide que roteamento funciona com backend WordPress headless (slugs, localizações).
+        - Verifique que tags SEO (titles, meta, OpenGraph) são preenchidas a partir de dados headless.
+        - Confirme uso correto de i18next para todas as strings visíveis ao usuário.
+        - Teste padrões de renderização assíncrona e tratamento de erros.
 
-    # Tema WordPress + funÃ§Ãµes PHP customizadas
+    # Tema WordPress + funções PHP customizadas
     - path: "inc/**"
       instructions: |
-        - Valide hooks e filtros WordPress seguindo boas prÃ¡ticas para setups headless.
+        - Valide hooks e filtros WordPress seguindo boas práticas para setups headless.
         - Verifique endpoints REST contra SQL injection e XSS.
-        - Garanta que lÃ³gica de negÃ³cios nÃ£o depende de HTML tradicional de tema; foco em API/headless.
-        - Sugira refatoraÃ§Ã£o de funÃ§Ãµes muito grandes em funÃ§Ãµes menores e reutilizÃ¡veis.
-        - Cheque sanitizaÃ§Ã£o/escaping de dados de usuÃ¡rio ou WordPress.
+        - Garanta que lógica de negócios não depende de HTML tradicional de tema; foco em API/headless.
+        - Sugira refatoração de funções muito grandes em funções menores e reutilizáveis.
+        - Cheque sanitização/escaping de dados de usuário ou WordPress.
 
     - path: "*.php"
       instructions: |
-        - Verifique escaping/sanitizaÃ§Ã£o adequados para dados do WordPress ou entrada do usuÃ¡rio.
-        - Evite funÃ§Ãµes descontinuadas ou APIs antigas de WordPress/PHP.
-        - Valide que headers de seguranÃ§a e configuraÃ§Ãµes headless nÃ£o sÃ£o quebrados.
-        - Confirme que senhas, tokens e chaves nunca sÃ£o hardcoded.
-        - Priorize performance em queries e caches quando aplicÃ¡vel.
+        - Verifique escaping/sanitização adequados para dados do WordPress ou entrada do usuário.
+        - Evite funções descontinuadas ou APIs antigas de WordPress/PHP.
+        - Valide que headers de segurança e configurações headless não são quebrados.
+        - Confirme que senhas, tokens e chaves nunca são hardcoded.
+        - Priorize performance em queries e caches quando aplicável.
 
     # Plugin de SEO Zen
     - path: "plugins/zen-seo-lite/**"
       instructions: |
-        - Garanta que geraÃ§Ã£o de sitemap, schema.org e metatags Ã© compatÃ­vel com ambiente headless.
-        - Verifique impacto de performance e evite queries pesadas em geraÃ§Ã£o de SEO.
-        - Valide que nÃ£o hÃ¡ duplicaÃ§Ã£o de tags com frontend React.
-        - Cheque que breadcrumbs e structured data funcionam com URLs dinÃ¢micas.
+        - Garanta que geração de sitemap, schema.org e metatags é compatível com ambiente headless.
+        - Verifique impacto de performance e evite queries pesadas em geração de SEO.
+        - Valide que não há duplicação de tags com frontend React.
+        - Cheque que breadcrumbs e structured data funcionam com URLs dinâmicas.
 
-    # Plugin de AutenticaÃ§Ã£o
+    # Plugin de Autenticação
     - path: "plugins/zeneyer-auth/**"
       instructions: |
-        - Cheque fluxos JWT + Google OAuth e armazenamento de tokens (cookies/headers) com foco em seguranÃ§a.
-        - Verifique proteÃ§Ã£o contra CSRF, XSS e session fixation.
+        - Cheque fluxos JWT + Google OAuth e armazenamento de tokens (cookies/headers) com foco em segurança.
+        - Verifique proteção contra CSRF, XSS e session fixation.
         - Confirme que senhas nunca aparecem em logs ou responses.
-        - Valide expiraÃ§Ã£o de tokens e refresh token flow.
-        - Sugira logs mÃ­nimos de auditoria para operaÃ§Ãµes sensÃ­veis de autenticaÃ§Ã£o.
+        - Valide expiração de tokens e refresh token flow.
+        - Sugira logs mínimos de auditoria para operações sensíveis de autenticação.
 
     # Plugin Bandsintown Integration
     - path: "plugins/zen-bit/**"
       instructions: |
-        - Verifique chamadas Ã  API do Bandsintown (timeouts, tratamento de erro, retry logic).
-        - Valide que dados recebidos sÃ£o sanitizados antes de ir para frontend headless.
-        - Cheque cache de dados de shows e sincronizaÃ§Ã£o com CMS.
-        - Garanta que falhas de API nÃ£o quebram o site (fallback gracioso).
+        - Verifique chamadas à API do Bandsintown (timeouts, tratamento de erro, retry logic).
+        - Valide que dados recebidos são sanitizados antes de ir para frontend headless.
+        - Cheque cache de dados de shows e sincronização com CMS.
+        - Garanta que falhas de API não quebram o site (fallback gracioso).
 
     # Plugin de Recompensas (WooCommerce + GamiPress)
+    - path: "plugins/zengame/**"
       instructions: |
-        - Garanta que dados de WooCommerce e GamiPress sÃ£o acessados de forma performÃ¡tica.
-        - Verifique que endpoints nÃ£o expÃµem informaÃ§Ãµes sensÃ­veis de usuÃ¡rios.
-        - Confirme que regras de gamificaÃ§Ã£o funcionam corretamente com integraÃ§Ãµes.
-        - Cheque sincronizaÃ§Ã£o de dados entre WooCommerce, GamiPress e frontend.
+        - Garanta que dados de WooCommerce e GamiPress são acessados de forma performática.
+        - Verifique que endpoints não expõem informações sensíveis de usuários.
+        - Confirme que regras de gamificação funcionam corretamente com integrações.
+        - Cheque sincronização de dados entre WooCommerce, GamiPress e frontend.
 
     # GitHub Actions e CI/CD
     - path: ".github/workflows/**"
       instructions: |
-        - Valide que pipeline de deploy nÃ£o expÃµe segredos (tokens, senhas, API keys).
-        - Cheque se passos de build/test cobrem scripts React e verificaÃ§Ãµes bÃ¡sicas de PHP.
-        - Sugira melhorias em cache do build para Vite/Tailwind e dependÃªncias.
-        - Confirme que variÃ¡veis de ambiente sÃ£o tratadas com seguranÃ§a.
+        - Valide que pipeline de deploy não expõe segredos (tokens, senhas, API keys).
+        - Cheque se passos de build/test cobrem scripts React e verificações básicas de PHP.
+        - Sugira melhorias em cache do build para Vite/Tailwind e dependências.
+        - Confirme que variáveis de ambiente são tratadas com segurança.
 
-    # Scripts de automaÃ§Ã£o
+    # Scripts de automação
     - path: "scripts/**"
       instructions: |
-        - Revise scripts de automaÃ§Ã£o pensando em idempotÃªncia e seguranÃ§a.
+        - Revise scripts de automação pensando em idempotência e segurança.
         - Garanta que chamadas remotas (APIs, SSH, rsync) tratam erros corretamente.
-        - Verifique logs e outputs para dados sensÃ­veis expostos.
+        - Verifique logs e outputs para dados sensíveis expostos.
 
-    # DocumentaÃ§Ã£o
+    # Documentação
     - path: "docs/**"
       instructions: |
-        - Foque em clareza, consistÃªncia de termos e passos verificÃ¡veis de setup.
-        - Garanta que instruÃ§Ãµes para plugins WordPress, headless e CI refletem cÃ³digo atual.
-        - Confirme que links e referÃªncias nÃ£o estÃ£o quebrados.
+        - Foque em clareza, consistência de termos e passos verificáveis de setup.
+        - Garanta que instruções para plugins WordPress, headless e CI refletem código atual.
+        - Confirme que links e referências não estão quebrados.
 
 chat:
   auto_reply: true
-
