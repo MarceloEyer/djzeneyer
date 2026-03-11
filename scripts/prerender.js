@@ -96,7 +96,22 @@ async function prerender() {
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
         if (reqUrl.includes('/v1/menu')) mockData = [];
-        if (reqUrl.includes('/zen-bit/v2/events')) mockData = { success: true, events: [] };
+        if (reqUrl.includes('/zen-bit/v2/events')) {
+          const nextMonth = new Date();
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          mockData = {
+            success: true,
+            events: [
+              {
+                event_id: "prerender-mock-1",
+                title: "Prerender Zouk Festival",
+                starts_at: nextMonth.toISOString(),
+                location: { venue: "Mock Venue", city: "Prerender City", country: "Matrix" },
+                canonical_url: "https://djzeneyer.com/events/prerender-mock-1"
+              }
+            ]
+          };
+        }
         if (reqUrl.includes('/zen-seo/v1/settings')) mockData = { success: true, data: { real_name: "DJ Zen Eyer", default_og_image: "" } };
 
         request.respond({
