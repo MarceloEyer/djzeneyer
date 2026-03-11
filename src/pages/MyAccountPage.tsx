@@ -2,7 +2,7 @@
 // v20.0 - PREMIUM UI OVERHAUL + UNIFIED MANA BAR + MUSIC COLLECTION
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';;
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { Helmet } from 'react-helmet-async';
@@ -154,7 +154,7 @@ const MyAccountContent: React.FC = () => {
   if (errorGP && user?.isLoggedIn) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
+        <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <p className="text-xl font-semibold text-white/90 mb-2">{t('dashboard.error_loading')}</p>
           <p className="text-sm text-white/40 mb-6">{errorGP}</p>
@@ -164,7 +164,7 @@ const MyAccountContent: React.FC = () => {
           >
             {t('common.retry')}
           </button>
-        </motion.div>
+        </m.div>
       </div>
     );
   }
@@ -183,7 +183,7 @@ const MyAccountContent: React.FC = () => {
     switch (activeTab) {
       case 'overview':
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
+          <m.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
             {/* Welcome Section */}
             <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/5 to-transparent rounded-[2rem] p-10 border border-primary/10 group">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-1000">
@@ -200,7 +200,7 @@ const MyAccountContent: React.FC = () => {
             {/* Quick Stats */}
             <div className="space-y-6">
               {gamipress.rank.next && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -223,7 +223,7 @@ const MyAccountContent: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </m.div>
               )}
               <UserStatsCards stats={userStats} />
             </div>
@@ -236,7 +236,7 @@ const MyAccountContent: React.FC = () => {
               </h3>
               <RecentActivity logs={gamipress.logs} />
             </div>
-          </motion.div>
+          </m.div>
         );
 
       case 'orders':
@@ -244,7 +244,7 @@ const MyAccountContent: React.FC = () => {
 
       case 'achievements':
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+          <m.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
             <div className="flex justify-between items-end mb-4">
               <div>
                 <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2">{t('dashboard.yourAchievements')}</h2>
@@ -257,7 +257,7 @@ const MyAccountContent: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...gamipress.achievements_earned, ...gamipress.achievements_locked].map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
-                <motion.div
+                <m.div
                   key={ach.id}
                   whileHover={{ y: -5, scale: 1.02 }}
                   className={`relative rounded-[2rem] p-8 border transition-all duration-500 overflow-hidden ${ach.earned
@@ -277,7 +277,7 @@ const MyAccountContent: React.FC = () => {
                       {ach?.earned ? t('dashboard.unlocked') : t('account.locked')}
                     </span>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
 
@@ -294,7 +294,7 @@ const MyAccountContent: React.FC = () => {
                 />
               </div>
             )}
-          </motion.div>
+          </m.div>
         );
 
       case 'music':
@@ -327,7 +327,7 @@ const MyAccountContent: React.FC = () => {
         };
 
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+          <m.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
             <h2 className="text-4xl font-black font-display tracking-tighter mb-10">{t('account.tabs.settings')}</h2>
 
             {/* Profile Form Grid */}
@@ -426,7 +426,7 @@ const MyAccountContent: React.FC = () => {
                   onClick={() => updateNewsletter.mutate(!newsletterEnabled)}
                   className={`w-14 h-8 rounded-full relative transition-colors ${newsletterEnabled ? 'bg-primary' : 'bg-white/10'}`}
                 >
-                  <motion.div
+                  <m.div
                     animate={{ x: newsletterEnabled ? 28 : 4 }}
                     className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
                   />
@@ -453,7 +453,7 @@ const MyAccountContent: React.FC = () => {
                 {t('nav.logout')}
               </button>
             </div>
-          </motion.div>
+          </m.div>
         );
       }
 
@@ -526,7 +526,7 @@ const MyAccountContent: React.FC = () => {
             {/* --- MAIN CONTENT --- */}
             <main className="lg:flex-1 min-h-[700px]">
               <AnimatePresence mode="wait">
-                <motion.div
+                <m.div
                   key={activeTab}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -534,7 +534,7 @@ const MyAccountContent: React.FC = () => {
                   transition={{ duration: 0.4, ease: "circOut" }}
                 >
                   {renderTabContent()}
-                </motion.div>
+                </m.div>
               </AnimatePresence>
             </main>
 

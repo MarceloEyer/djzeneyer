@@ -1,7 +1,7 @@
 // src/pages/AboutPage.tsx - VERSAO FINAL HEADLESS E OTIMIZADA
 
 import React, { useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion, m } from 'framer-motion';;
 import {
   Music2,
   Globe,
@@ -126,13 +126,13 @@ const AboutPage: React.FC = () => {
         <section className="relative pt-32 pb-20 px-4 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-surface/10 to-accent/10 blur-3xl" />
           <div className="container mx-auto max-w-6xl relative z-10">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="text-center"
             >
-              <motion.div
+              <m.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
@@ -142,7 +142,7 @@ const AboutPage: React.FC = () => {
                   <Sparkles className="inline-block mr-2" size={16} />
                   {t('about.hero.badge')}
                 </div>
-              </motion.div>
+              </m.div>
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
                 <Trans i18nKey="about.hero.title">
                   A <span className="text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text">Jornada</span>
@@ -151,7 +151,7 @@ const AboutPage: React.FC = () => {
               <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
                 {t('about.hero.subtitle')}
               </p>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
@@ -160,7 +160,7 @@ const AboutPage: React.FC = () => {
           <div className="container mx-auto max-w-6xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {ACHIEVEMENTS_DATA.map((item, index) => (
-                <motion.div
+                <m.div
                   key={index}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -173,7 +173,7 @@ const AboutPage: React.FC = () => {
                     {item.value}
                   </div>
                   <div className="text-white/60 text-sm">{item.label}</div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
@@ -182,7 +182,7 @@ const AboutPage: React.FC = () => {
         {/* Story Section */}
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl">
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -194,14 +194,14 @@ const AboutPage: React.FC = () => {
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p4')) }} />
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p5')) }} />
               <p className="text-primary font-semibold" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p6')) }} />
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         {/* Timeline Section */}
         <section className="py-20 px-4 bg-surface/30">
           <div className="container mx-auto max-w-5xl">
-            <motion.h2
+            <m.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -210,11 +210,11 @@ const AboutPage: React.FC = () => {
               <Trans i18nKey="about.timeline.title">
                 Momentos que <span className="text-gradient">Mudaram Tudo</span>
               </Trans>
-            </motion.h2>
+            </m.h2>
 
             <div className="space-y-12">
               {MILESTONES.map((milestone, index) => (
-                <motion.div
+                <m.div
                   key={index}
                   initial={prefersReducedMotion ? false : { opacity: 0, y: 18, scale: 0.98 }}
                   whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
@@ -242,7 +242,7 @@ const AboutPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
@@ -251,7 +251,7 @@ const AboutPage: React.FC = () => {
         {/* Philosophy Section */}
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl">
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -267,14 +267,14 @@ const AboutPage: React.FC = () => {
                 {t('about.philosophy.quote')}
               </p>
               <div className="mt-8 text-white/60 font-semibold">- {ARTIST.identity.stageName}</div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         {/* CTA Section */}
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -290,7 +290,7 @@ const AboutPage: React.FC = () => {
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
                 {t('about.cta.desc')}
               </p>
-              <motion.a
+              <m.a
                 href={getWhatsAppUrl(t('about.cta.whatsapp_msg'))}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -300,8 +300,8 @@ const AboutPage: React.FC = () => {
               >
                 <Envelope className="w-5 h-5" />
                 {t('about.cta.button')}
-              </motion.a>
-            </motion.div>
+              </m.a>
+            </m.div>
           </div>
         </section>
       </div>

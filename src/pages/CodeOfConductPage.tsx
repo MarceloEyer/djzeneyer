@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { Heart, Users, Shield, AlertTriangle, Ban, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -103,7 +103,7 @@ const CodeOfConductPage: React.FC = () => {
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -118,10 +118,10 @@ const CodeOfConductPage: React.FC = () => {
             <p className="text-white/70">
               {t('conduct_page.last_updated')}: <span className="text-primary font-semibold">{lastUpdated}</span>
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Introduction */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -134,10 +134,10 @@ const CodeOfConductPage: React.FC = () => {
             <p className="text-white/70 leading-relaxed">
               {t('conduct_page.commitment_participation')}
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Core Principles */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -146,7 +146,7 @@ const CodeOfConductPage: React.FC = () => {
             <h2 className="text-3xl font-display font-bold mb-8 text-center">{t('conduct_page.principles')}</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {principles.map((principle, index) => (
-                <motion.div
+                <m.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -166,13 +166,13 @@ const CodeOfConductPage: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Prohibited Behavior */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
@@ -189,7 +189,7 @@ const CodeOfConductPage: React.FC = () => {
             </p>
             <div className="space-y-6">
               {prohibitedBehavior.map((category, index) => (
-                <motion.div
+                <m.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -205,13 +205,13 @@ const CodeOfConductPage: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Reporting */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
@@ -266,10 +266,10 @@ const CodeOfConductPage: React.FC = () => {
                 </ul>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Consequences */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.1 }}
@@ -281,7 +281,7 @@ const CodeOfConductPage: React.FC = () => {
             </p>
             <div className="space-y-4">
               {consequences.map((consequence, index) => (
-                <motion.div
+                <m.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -296,13 +296,13 @@ const CodeOfConductPage: React.FC = () => {
                     <p className="text-primary font-semibold mb-2">{consequence.action}</p>
                     <p className="text-white/70 text-sm">{consequence.description}</p>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Scope */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.5 }}
@@ -334,10 +334,10 @@ const CodeOfConductPage: React.FC = () => {
                 <span>{t('conduct_page.scope_representing')}</span>
               </li>
             </ul>
-          </motion.div>
+          </m.div>
 
           {/* Contact */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.6 }}
@@ -357,10 +357,10 @@ const CodeOfConductPage: React.FC = () => {
               <Mail size={20} />
               {t('conduct_page.contact_button')}
             </a>
-          </motion.div>
+          </m.div>
 
           {/* Acknowledgment */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.7 }}
@@ -368,7 +368,7 @@ const CodeOfConductPage: React.FC = () => {
           >
             <p>{t('conduct_page.acknowledgment')}</p>
             <p className="pt-4 text-white/70">{t('conduct_page.together')} 💙</p>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </>

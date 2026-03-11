@@ -1,5 +1,5 @@
 import React, { useState, memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { useTranslation, Trans } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -16,7 +16,7 @@ const FAQItem = memo<{
   isOpen: boolean;
   onToggle: () => void;
 }>(({ question, answer, isOpen, onToggle }: { question: string; answer: string; isOpen: boolean; onToggle: () => void }) => (
-  <motion.div
+  <m.div
     className="bg-surface/30 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-primary/30 transition-all duration-300"
     initial={{ opacity: 0, y: 10 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -30,16 +30,16 @@ const FAQItem = memo<{
       <h3 className="text-lg font-bold text-white pr-4 group-hover:text-primary transition-colors font-display">
         {question}
       </h3>
-      <motion.div
+      <m.div
         animate={{ rotate: isOpen ? 180 : 0 }}
         transition={{ duration: 0.3 }}
         className="flex-shrink-0"
       >
         <ChevronDown className="text-primary/70 group-hover:text-primary transition-colors" size={24} />
-      </motion.div>
+      </m.div>
     </button>
 
-    <motion.div
+    <m.div
       initial={false}
       animate={{
         height: isOpen ? 'auto' : 0,
@@ -52,8 +52,8 @@ const FAQItem = memo<{
         className="px-6 pb-6 text-white/80 leading-relaxed prose prose-invert max-w-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-white border-t border-white/5 pt-4"
         dangerouslySetInnerHTML={{ __html: sanitizeHtml(answer) }}
       />
-    </motion.div>
-  </motion.div>
+    </m.div>
+  </m.div>
 ));
 FAQItem.displayName = 'FAQItem';
 
@@ -119,7 +119,7 @@ const FAQPage: React.FC = () => {
       <div className="container mx-auto px-4">
 
         {/* Header */}
-        <motion.div
+        <m.div
           className="text-center mb-20"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -136,12 +136,12 @@ const FAQPage: React.FC = () => {
           <p className="text-xl text-white/50 max-w-2xl mx-auto">
             {t('faq.subtitle')}
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Conteúdo do FAQ */}
         <div className="max-w-4xl mx-auto space-y-16">
           {faqData.map((category, catIndex) => (
-            <motion.div
+            <m.div
               key={category.category}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -176,12 +176,12 @@ const FAQPage: React.FC = () => {
                   );
                 })}
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
 
         {/* CTA Footer */}
-        <motion.div
+        <m.div
           className="mt-24 text-center border-t border-white/10 pt-16"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -196,7 +196,7 @@ const FAQPage: React.FC = () => {
               <Globe size={18} /> {t('faq.cta_email')}
             </a>
           </div>
-        </motion.div>
+        </m.div>
 
       </div>
     </div>

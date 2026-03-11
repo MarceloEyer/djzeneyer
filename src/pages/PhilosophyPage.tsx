@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Heart, Music2, Sparkles } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
@@ -17,7 +17,7 @@ const PhilosophyPage: React.FC = () => {
 
       <div className="min-h-screen pt-24 pb-16 px-4 bg-background text-white">
         <div className="container mx-auto max-w-4xl text-center">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -58,7 +58,7 @@ const PhilosophyPage: React.FC = () => {
                 {t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
               </p>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </>

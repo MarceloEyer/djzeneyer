@@ -3,7 +3,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, Variants } from 'framer-motion';
+import { Variants, m } from 'framer-motion';;
 import { Trans, useTranslation } from 'react-i18next';
 import {
   PlayCircle, Calendar, Users, Music, Award, Trophy,
@@ -77,19 +77,19 @@ const ITEM_VARIANTS: Variants = {
 // ============================================================================
 
 const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
-  <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
+  <m.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
     <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
     <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
     <div className="text-sm text-white/70 uppercase tracking-wider">{label}</div>
-  </motion.div>
+  </m.div>
 ));
 
 const FeatureCard = React.memo(({ icon, title, description, variants }: FeatureCardProps) => (
-  <motion.article className="card p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
+  <m.article className="card p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-white/70">{description}</p>
-  </motion.article>
+  </m.article>
 ));
 
 const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
@@ -231,7 +231,7 @@ const HomePage: React.FC = () => {
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-20 pb-12" aria-label="Introduction">
         <div className="absolute inset-0 z-0 bg-black">
-          <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
+          <m.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
             <picture>
               <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.webp" />
               <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
@@ -246,38 +246,38 @@ const HomePage: React.FC = () => {
                 decoding="async"
               />
             </picture>
-          </motion.div>
+          </m.div>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div className="max-w-4xl mx-auto" initial="hidden" animate="visible" variants={CONTAINER_VARIANTS}>
-            <motion.div variants={ITEM_VARIANTS} className="mb-6">
+          <m.div className="max-w-4xl mx-auto" initial="hidden" animate="visible" variants={CONTAINER_VARIANTS}>
+            <m.div variants={ITEM_VARIANTS} className="mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
                 <Trophy size={16} />
                 <span className="font-semibold">{t('home_hero_badge')}</span>
               </div>
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={ITEM_VARIANTS} className="mb-4">
+            <m.div variants={ITEM_VARIANTS} className="mb-4">
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight">
                 <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
               </h1>
-            </motion.div>
+            </m.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
+            <m.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
               {t('home_hero_subtitle')}
-            </motion.p>
+            </m.p>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
+            <m.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
               "{t('home_hero_slogan')}"
-            </motion.p>
+            </m.p>
 
-            <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
+            <m.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
               {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as any)} icon={stat.icon} />)}
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
+            <m.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
               <a
                 href={ARTIST.social.soundcloud.url}
                 target="_blank"
@@ -296,9 +296,9 @@ const HomePage: React.FC = () => {
                 <Mail size={22} />
                 <span>{t('home_cta_booking')}</span>
               </Link>
-            </motion.div>
+            </m.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
+            <m.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
               <Trans
                 i18nKey="home_hero_cta_text"
                 components={[
@@ -309,46 +309,46 @@ const HomePage: React.FC = () => {
                   />
                 ]}
               />
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
         </div>
 
-        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
+        <m.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
           <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2" />
           </div>
-        </motion.div>
+        </m.div>
       </section>
 
       {/* BIO SECTION */}
       <section className="py-20 bg-surface" id="about">
         <div className="container mx-auto px-4">
-          <motion.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
-            <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
+          <m.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
+            <m.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
               <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home_bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-white/90">
                 <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_intro')) }} />
               </div>
               <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_style')) }} />
               <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_mensa')) }} />
-            </motion.article>
-          </motion.div>
+            </m.article>
+          </m.div>
         </div>
       </section>
 
       {/* UPCOMING EVENTS PREVIEW */}
       <section className="py-16 bg-background border-y border-white/5">
         <div className="container mx-auto px-4">
-          <motion.div className="max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
-            <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
+          <m.div className="max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
+            <m.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
               {t('home.shows.title')}
-            </motion.h2>
+            </m.h2>
 
-            <motion.div variants={ITEM_VARIANTS} className="mb-8">
+            <m.div variants={ITEM_VARIANTS} className="mb-8">
               <EventsList limit={3} showTitle={false} variant="compact" />
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
+            <m.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
               <Link to={getLocalizedRoute('events', currentLang)} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
                 <span>{t('home.shows.cta')}</span>
@@ -357,36 +357,36 @@ const HomePage: React.FC = () => {
                 <ExternalLink size={18} />
                 <span>Bandsintown</span>
               </a>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </div>
       </section>
 
       {/* FEATURES GRID */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+          <m.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {FEATURES_DATA.map(feature => (
               <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as any)} description={t(feature.descKey as any)} variants={ITEM_VARIANTS} />
             ))}
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
       {/* FESTIVALS / SOCIAL PROOF */}
       <section className="py-20 bg-surface">
         <div className="container mx-auto px-4">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS} className="text-center">
-            <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-2 font-display">
+          <m.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS} className="text-center">
+            <m.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-2 font-display">
               {t('home.festivals.presence')}
-            </motion.h2>
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
+            </m.h2>
+            <m.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
               {FESTIVALS_HIGHLIGHT.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
                 <span>+{t('home.festivals.many_more')}</span>
               </span>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </div>
       </section>
 
@@ -394,7 +394,7 @@ const HomePage: React.FC = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
+            <m.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
@@ -402,8 +402,8 @@ const HomePage: React.FC = () => {
               <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {t('home.press.cta')} →
               </Link>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
+            </m.div>
+            <m.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
@@ -411,7 +411,7 @@ const HomePage: React.FC = () => {
               <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {t('home.bookers.cta')} →
               </Link>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -419,14 +419,14 @@ const HomePage: React.FC = () => {
       {/* AUTHORITY LINKS */}
       <section className="py-12 bg-background border-t border-white/5">
         <div className="container mx-auto px-4 text-center">
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
               <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
               <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
@@ -434,21 +434,21 @@ const HomePage: React.FC = () => {
       <section className="py-24 relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
 
-        <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
-          <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
+        <m.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
+          <m.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
             <Trans i18nKey="home.tribe.title">
               Junte-se à <span className="text-primary">Zen Tribe</span>
             </Trans>
-          </motion.h2>
-          <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
+          </m.h2>
+          <m.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
             {t('home.tribe.desc')}
-          </motion.p>
-          <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
+          </m.p>
+          <m.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
             <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">
               {t('nav.tribe')}
             </Link>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </section>
     </>
   );

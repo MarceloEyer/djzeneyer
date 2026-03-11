@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
@@ -179,7 +179,7 @@ const CheckoutPage: React.FC = () => {
   if (orderSuccess) {
     return (
       <div className="min-h-screen pt-24 pb-12 bg-background text-white flex flex-col items-center justify-center text-center px-4">
-        <motion.div
+        <m.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="bg-surface p-8 rounded-2xl border border-primary/20 max-w-md w-full"
@@ -193,7 +193,7 @@ const CheckoutPage: React.FC = () => {
           </p>
           <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary w-full">
             {t('common.checkout.back_shop')}
-          </Link>        </motion.div>
+          </Link>        </m.div>
       </div>
     );
   }
@@ -213,7 +213,7 @@ const CheckoutPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Checkout Form */}
             <div className="lg:col-span-2">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-surface p-6 md:p-8 rounded-xl border border-white/10 mb-8"
@@ -353,9 +353,9 @@ const CheckoutPage: React.FC = () => {
                     </div>
                   </div>
                 </form>
-              </motion.div>
+              </m.div>
 
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -400,12 +400,12 @@ const CheckoutPage: React.FC = () => {
                   <Lock size={14} />
                   {t('common.checkout.secure_msg')}
                 </div>
-              </motion.div>
+              </m.div>
             </div>
 
             {/* Order Summary Sidebar */}
             <div className="lg:col-span-1">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
@@ -458,7 +458,7 @@ const CheckoutPage: React.FC = () => {
                     t('common.checkout.place_order')
                   )}
                 </button>
-              </motion.div>
+              </m.div>
             </div>
           </div>
         </div>

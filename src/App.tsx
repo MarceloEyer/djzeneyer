@@ -1,4 +1,5 @@
 ﻿import { Suspense } from 'react';
+import { LazyMotion, domAnimation } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { UserProvider } from './contexts/UserContext';
@@ -15,6 +16,7 @@ function App() {
         <UserProvider>
           <CartProvider>
             <LanguageWrapper>
+              <LazyMotion features={domAnimation}>
               <Suspense
                 fallback={
                   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -25,6 +27,7 @@ function App() {
                 {/* Toda a lógica de rotas está encapsulada aqui */}
                 <AppRoutes />
               </Suspense>
+              </LazyMotion>
             </LanguageWrapper>
           </CartProvider>
         </UserProvider>

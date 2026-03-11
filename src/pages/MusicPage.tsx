@@ -1,6 +1,6 @@
 // src/pages/MusicPage.tsx
 import React, { useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion, m } from 'framer-motion';;
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
@@ -166,7 +166,7 @@ const MusicPage: React.FC = () => {
         <div className="container mx-auto px-4 max-w-5xl">
 
           <div className="text-center mb-16">
-            <motion.div
+            <m.div
               initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
               className="mb-6"
@@ -176,21 +176,21 @@ const MusicPage: React.FC = () => {
                   <span className="text-primary">Streaming</span> Hub
                 </Trans>
               </h1>
-            </motion.div>
-            <motion.p
+            </m.div>
+            <m.p
               initial={prefersReducedMotion ? false : { opacity: 0 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1 }}
               transition={prefersReducedMotion ? undefined : { delay: 0.2 }}
               className="text-xl text-white/60"
             >
               {t('music.hub_subtitle')}
-            </motion.p>
+            </m.p>
           </div>
 
           <div className="space-y-6 mb-16">
             {/* Spotify - Featured Hero */}
             {spotifyPlatform && (
-              <motion.a
+              <m.a
                 key={spotifyPlatform.name}
                 href={safeUrl(spotifyPlatform.url)}
                 target="_blank"
@@ -216,13 +216,13 @@ const MusicPage: React.FC = () => {
                   <Play fill="white" className="text-white scale-150 opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0 duration-500 hidden md:block" />
                   <ExternalLink size={24} className="text-[#1DB954] group-hover:text-white transition-colors" />
                 </div>
-              </motion.a>
+              </m.a>
             )}
 
             {/* Other Platforms Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {secondaryPlatforms.map((platform, index) => (
-                <motion.a
+                <m.a
                   key={platform.name}
                   href={safeUrl(platform.url)}
                   target="_blank"
@@ -237,14 +237,14 @@ const MusicPage: React.FC = () => {
                     <span className="text-sm font-bold font-display uppercase tracking-wider">{platform.name}</span>
                   </div>
                   <ExternalLink size={16} className="text-white/10 group-hover:text-white/40 transition-colors" />
-                </motion.a>
+                </m.a>
               ))}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Download / Steal Card */}
-            <motion.div
+            <m.div
               initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
               transition={prefersReducedMotion ? undefined : { delay: 0.7 }}
@@ -265,10 +265,10 @@ const MusicPage: React.FC = () => {
               >
                 {t('music.steal_cta')} <ExternalLink size={16} />
               </a>
-            </motion.div>
+            </m.div>
 
             {/* Support / Coffee Card */}
-            <motion.div
+            <m.div
               initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
               transition={prefersReducedMotion ? undefined : { delay: 0.8 }}
@@ -287,7 +287,7 @@ const MusicPage: React.FC = () => {
               >
                 {t('music.support_cta')} <ExternalLink size={16} />
               </Link>
-            </motion.div>
+            </m.div>
           </div>
 
         </div>

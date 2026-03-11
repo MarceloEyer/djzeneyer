@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';;
 import { Copy, Check, CreditCard, Landmark, Globe, Zap, Heart, Briefcase } from 'lucide-react';
 import { paymentMethods } from '../data/paymentMethods';
 
@@ -25,7 +25,7 @@ const PayMePage: React.FC = () => {
     return (
         <div className="min-h-screen pt-24 pb-12 px-4">
             <div className="max-w-4xl mx-auto">
-                <motion.div
+                <m.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-12"
@@ -36,7 +36,7 @@ const PayMePage: React.FC = () => {
                     <p className="text-white/70 text-lg max-w-2xl mx-auto">
                         {t('payme.subtitle')}
                     </p>
-                </motion.div>
+                </m.div>
 
                 <div className="grid gap-6">
                     {paymentMethods.map((method) => (
@@ -57,17 +57,17 @@ const PayMePage: React.FC = () => {
                                             <p className="text-sm text-white/50">{t(method.descriptionKey)}</p>
                                         </div>
                                     </div>
-                                    <motion.div
+                                    <m.div
                                         animate={{ rotate: activeAccordion === method.id ? 180 : 0 }}
                                         transition={{ duration: 0.3 }}
                                     >
                                         <Copy className={`w-5 h-5 transition-colors ${activeAccordion === method.id ? 'text-primary' : 'text-white/20'}`} />
-                                    </motion.div>
+                                    </m.div>
                                 </button>
 
                                 <AnimatePresence>
                                     {activeAccordion === method.id && (
-                                        <motion.div
+                                        <m.div
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: 'auto', opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
@@ -103,7 +103,7 @@ const PayMePage: React.FC = () => {
                                                     );
                                                 })}
                                             </div>
-                                        </motion.div>
+                                        </m.div>
                                     )}
                                 </AnimatePresence>
                             </div>

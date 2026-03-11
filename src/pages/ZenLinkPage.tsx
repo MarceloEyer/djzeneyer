@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';;
 import {
   Youtube, Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
@@ -73,8 +73,8 @@ const SmartMusicCard = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <motion.div variants={itemVariants} className="w-full">
-      <motion.button
+    <m.div variants={itemVariants} className="w-full">
+      <m.button
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
@@ -91,15 +91,15 @@ const SmartMusicCard = () => {
               <p className="text-gray-400 text-sm">{t('zenlink.choose_platform')}</p>
             </div>
           </div>
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
+          <m.div animate={{ rotate: isOpen ? 180 : 0 }}>
             <ChevronDown className="w-5 h-5 text-gray-400" />
-          </motion.div>
+          </m.div>
         </div>
-      </motion.button>
+      </m.button>
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -107,7 +107,7 @@ const SmartMusicCard = () => {
           >
             <div className="pt-2 space-y-2">
               {MUSIC_PLATFORMS.map((platform) => (
-                <motion.a
+                <m.a
                   key={platform.name}
                   href={platform.url}
                   target="_blank"
@@ -121,13 +121,13 @@ const SmartMusicCard = () => {
                     <span className="text-white font-medium">{platform.name}</span>
                   </div>
                   <ExternalLinkIcon className="w-4 h-4 text-gray-500" />
-                </motion.a>
+                </m.a>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -153,7 +153,7 @@ export const ZenLinkPage = () => {
 
       <main className="min-h-screen bg-[#05060A] text-zinc-100 font-sans selection:bg-fuchsia-500/30">
         <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-10 pt-8">
-          <motion.header
+          <m.header
             initial={{ opacity: 0, y: -24 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
@@ -189,9 +189,9 @@ export const ZenLinkPage = () => {
                 “{ARTIST.philosophy.slogan}”
               </p>
             </div>
-          </motion.header>
+          </m.header>
 
-          <motion.section
+          <m.section
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="mb-6 grid grid-cols-2 gap-2"
@@ -202,12 +202,12 @@ export const ZenLinkPage = () => {
                 <span className="truncate">{fact.label}</span>
               </div>
             ))}
-          </motion.section>
+          </m.section>
 
           <section className="space-y-3">
             <SmartMusicCard />
             {MAIN_LINKS.map((link, index) => (
-              <motion.a
+              <m.a
                 key={link.title}
                 href={link.url}
                 target="_blank"
@@ -231,11 +231,11 @@ export const ZenLinkPage = () => {
                   </div>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-fuchsia-300" />
                 </div>
-              </motion.a>
+              </m.a>
             ))}
           </section>
 
-          <motion.footer
+          <m.footer
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="mt-8 space-y-3"
@@ -257,7 +257,7 @@ export const ZenLinkPage = () => {
               <Sparkles className="h-4 w-4 text-amber-400" />
               Website Oficial: djzeneyer.com
             </a>
-          </motion.footer>
+          </m.footer>
         </div>
       </main>
     </>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { Newspaper, ExternalLink, Download, Image as ImageIcon } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 
@@ -54,7 +54,7 @@ const MediaPage: React.FC = () => {
 
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -66,9 +66,9 @@ const MediaPage: React.FC = () => {
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
               {t('media_page.subtitle')}
             </p>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -101,9 +101,9 @@ const MediaPage: React.FC = () => {
                 <p className="text-lg font-semibold font-mono">{t('common.isni')}</p>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -122,9 +122,9 @@ const MediaPage: React.FC = () => {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -151,9 +151,9 @@ const MediaPage: React.FC = () => {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -170,9 +170,9 @@ const MediaPage: React.FC = () => {
               <ExternalLink size={20} />
               {t('media_page.contact_press_office')}
             </a>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
@@ -197,7 +197,7 @@ const MediaPage: React.FC = () => {
                 MusicBrainz <ExternalLink size={14} />
               </a>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </>

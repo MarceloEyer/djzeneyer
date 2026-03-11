@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 
 interface ManaProgressBarProps {
   progress: number;
@@ -46,7 +46,7 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
       <div className="relative h-4 w-full overflow-hidden rounded-full border border-white/10 bg-[#0a0f16] p-[2px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.05)]">
         <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-white/10 to-transparent" />
 
-        <motion.div
+        <m.div
           initial={{ width: 0 }}
           animate={{ width: `${clampedProgress}%` }}
           transition={{ type: 'spring', stiffness: 70, damping: 20 }}
@@ -59,7 +59,7 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/30" />
 
           {clampedProgress > 0 && (
-            <motion.div
+            <m.div
               initial={{ left: '-100%' }}
               animate={{ left: '200%' }}
               transition={{ repeat: Infinity, duration: 2.5, ease: 'linear', repeatDelay: 1 }}
@@ -75,7 +75,7 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
           )}
 
           <div className="pointer-events-none absolute inset-0 opacity-[0.1] [background:repeating-linear-gradient(90deg,transparent,transparent_19px,black_20px)]" />
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

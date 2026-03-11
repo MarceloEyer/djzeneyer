@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { useUser } from '../contexts/UserContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import {
@@ -43,10 +43,10 @@ const DashboardContent = () => {
   if (loading) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
+        <m.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
           <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
           <p className="text-xl font-semibold text-white/90">{t('dashboard.loading')}</p>
-        </motion.div>
+        </m.div>
       </div>
     );
   }
@@ -54,7 +54,7 @@ const DashboardContent = () => {
   if (error) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md px-4">
+        <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md px-4">
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <p className="text-xl font-semibold text-white/90 mb-2">{t('dashboard.error_loading')}</p>
           <p className="text-sm text-white/40 mb-6">{error}</p>
@@ -64,7 +64,7 @@ const DashboardContent = () => {
           >
             {t('common.retry')}
           </button>
-        </motion.div>
+        </m.div>
       </div>
     );
   }
@@ -243,10 +243,10 @@ const DashboardPage = () => {
   if (loading) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+        <m.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
           <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
           <p className="text-center text-white/80">{t('dashboard.loading')}</p>
-        </motion.div>
+        </m.div>
       </div>
     );
   }

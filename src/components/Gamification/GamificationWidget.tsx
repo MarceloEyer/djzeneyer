@@ -1,7 +1,7 @@
 // src/components/Gamification/GamificationWidget.tsx
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { Star, Award, Zap, TrendingUp } from 'lucide-react';
 import { useGamiPressContext } from '../../contexts/GamiPressContext';
 import { Link } from 'react-router-dom';
@@ -51,7 +51,7 @@ const GamificationWidget: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Level */}
-        <motion.div
+        <m.div
           whileHover={{ scale: 1.05 }}
           className="bg-black/30 rounded-lg p-4 border border-primary/20"
         >
@@ -61,10 +61,10 @@ const GamificationWidget: React.FC = () => {
           </div>
           <p className="text-3xl font-black">{level}</p>
           <p className="text-xs text-white/40 truncate">{rank || t('dashboard.rank_zen_novice')}</p>
-        </motion.div>
+        </m.div>
 
         {/* Points */}
-        <motion.div
+        <m.div
           whileHover={{ scale: 1.05 }}
           className="bg-black/30 rounded-lg p-4 border border-secondary/20"
         >
@@ -74,7 +74,7 @@ const GamificationWidget: React.FC = () => {
           </div>
           <p className="text-3xl font-black text-secondary">{points}</p>
           <p className="text-xs text-white/40">{t('gamification.totalPoints')}</p>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* XP Progress Bar */}
@@ -84,7 +84,7 @@ const GamificationWidget: React.FC = () => {
           <span className="text-white/60">{t('gamification.level')} {level + 1}</span>
         </div>
         <div className="h-2 bg-black/30 rounded-full overflow-hidden">
-          <motion.div
+          <m.div
             className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progressPercent}%` }}
@@ -112,7 +112,7 @@ const GamificationWidget: React.FC = () => {
         {safeAchievements.length > 0 ? (
           <div className="flex gap-2 flex-wrap">
             {safeAchievements.slice(0, 6).map((achievement, index) => (
-              <motion.div
+              <m.div
                 key={achievement?.id || index}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${achievement?.earned
@@ -130,7 +130,7 @@ const GamificationWidget: React.FC = () => {
                 ) : (
                   <Award size={16} className={achievement?.earned ? 'text-white' : 'text-white/30'} />
                 )}
-              </motion.div>
+              </m.div>
             ))}
           </div>
         ) : (

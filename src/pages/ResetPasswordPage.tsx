@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';;
 import { Mail, Lock, Loader2, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/UserContext';
@@ -79,7 +79,7 @@ const ResetPasswordPage: React.FC = () => {
             <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[120px] animate-pulse" />
             <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-secondary/20 rounded-full blur-[120px] animate-pulse" />
 
-            <motion.div
+            <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full max-w-md relative z-10"
@@ -104,7 +104,7 @@ const ResetPasswordPage: React.FC = () => {
                 <div className="bg-surface/80 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
                     <AnimatePresence mode="wait">
                         {success ? (
-                            <motion.div
+                            <m.div
                                 key="success"
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
@@ -126,9 +126,9 @@ const ResetPasswordPage: React.FC = () => {
                                     <ArrowLeft size={18} />
                                     {t('auth.reset_password.back_home')}
                                 </Link>
-                            </motion.div>
+                            </m.div>
                         ) : (
-                            <motion.div key="form" exit={{ opacity: 0, x: -20 }}>
+                            <m.div key="form" exit={{ opacity: 0, x: -20 }}>
                                 {(error || fieldError) && (
                                     <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm flex items-start gap-3">
                                         <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
@@ -225,11 +225,11 @@ const ResetPasswordPage: React.FC = () => {
                                         {t('auth.reset_password.back_login')}
                                     </Link>
                                 </div>
-                            </motion.div>
+                            </m.div>
                         )}
                     </AnimatePresence>
                 </div>
-            </motion.div>
+            </m.div>
         </div>
     );
 };

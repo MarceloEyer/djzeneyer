@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';;
 import { Helmet } from 'react-helmet-async';
 import { Share2, RefreshCw, ChevronRight, Music, Heart, Zap, Sparkles, Coffee } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
@@ -226,7 +226,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
           <AnimatePresence mode="wait">
             {!result ? (
               // QUESTION VIEW
-              <motion.div
+              <m.div
                 key={currentQuestion}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -241,7 +241,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
 
                 {/* Progress Bar */}
                 <div className="w-full bg-gray-700 h-2 rounded-full mb-8 overflow-hidden">
-                  <motion.div
+                  <m.div
                     className="bg-primary h-full rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${((currentQuestion) / QUESTIONS.length) * 100}%` }}
@@ -254,7 +254,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
 
                 <div className="space-y-4">
                   {QUESTIONS[currentQuestion].options.map((option, index) => (
-                    <motion.button
+                    <m.button
                       key={index}
                       whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' }}
                       whileTap={{ scale: 0.98 }}
@@ -263,27 +263,27 @@ const ZoukPersonaQuizPage: React.FC = () => {
                     >
                       <span className="text-lg">{t(`quiz.questions.q${QUESTIONS[currentQuestion].id}.options.o${index + 1}`)}</span>
                       <ChevronRight className="opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
-                    </motion.button>
+                    </m.button>
                   ))}
                 </div>
-              </motion.div>
+              </m.div>
             ) : (
               // RESULT VIEW
-              <motion.div
+              <m.div
                 key="result"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className={`bg-gradient-to-br ${result.color} p-1 rounded-2xl shadow-2xl`}
               >
                 <div className="bg-gray-900 rounded-xl p-8 md:p-12 text-center h-full">
-                  <motion.div
+                  <m.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1, rotate: 360 }}
                     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                     className={`w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-tr ${result.color} flex items-center justify-center text-white`}
                   >
                     {result.icon}
-                  </motion.div>
+                  </m.div>
 
                   <h3 className="text-white/60 uppercase tracking-widest text-sm font-bold mb-2">{t('quiz.ui.you_are')}</h3>
                   <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
@@ -312,7 +312,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 

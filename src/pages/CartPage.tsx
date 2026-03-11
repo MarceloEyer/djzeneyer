@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { useTranslation } from 'react-i18next';
 import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -68,7 +68,7 @@ const CartPage: React.FC = () => {
 
       <div className="min-h-screen pt-24 pb-12 bg-background text-white">
         <div className="container mx-auto px-4 max-w-4xl">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
@@ -77,10 +77,10 @@ const CartPage: React.FC = () => {
               <ShoppingCart className="text-primary" />
               {t('common.cart.title')}
             </h1>
-          </motion.div>
+          </m.div>
 
           {isEmpty ? (
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center py-16 bg-surface rounded-xl border border-white/10"
@@ -91,18 +91,18 @@ const CartPage: React.FC = () => {
               <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary">
                 {t('common.cart.continue_shopping')}
               </Link>
-            </motion.div>
+            </m.div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Cart Items List */}
-              <motion.div
+              <m.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
                 className="lg:col-span-2 space-y-4"
               >
                 {cart.items.map((item: CartItem) => (
-                  <motion.div
+                  <m.div
                     key={item.key || item.id}
                     variants={itemVariants}
                     className="flex gap-4 p-4 bg-surface rounded-lg border border-white/10"
@@ -138,12 +138,12 @@ const CartPage: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 ))}
-              </motion.div>
+              </m.div>
 
               {/* Order Summary */}
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
@@ -178,7 +178,7 @@ const CartPage: React.FC = () => {
                     <ArrowRight size={20} />
                   </Link>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           )}
         </div>

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { Music, Play, Download, ExternalLink } from 'lucide-react';
 import { useTracksQuery } from '../../hooks/useQueries';
 import { safeUrl } from '../../utils/sanitize';
@@ -45,7 +45,7 @@ export const MusicCollection: React.FC = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {displayTracks.map((track) => (
-                    <motion.div
+                    <m.div
                         key={track.id}
                         whileHover={{ y: -4, backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
                         className="group flex items-center gap-5 p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-primary/20 transition-all shadow-lg overflow-hidden relative"
@@ -85,7 +85,7 @@ export const MusicCollection: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                    </motion.div>
+                    </m.div>
                 ))}
             </div>
 

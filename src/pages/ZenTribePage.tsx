@@ -11,7 +11,7 @@
 // ============================================================================
 
 import React, { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
@@ -87,7 +87,7 @@ interface BenefitCardProps {
 }
 
 const BenefitCard = memo(({ icon, title, description, color }: BenefitCardProps) => (
-  <motion.div
+  <m.div
     className="card p-6 glow transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
     variants={{
       hidden: { y: 20, opacity: 0 },
@@ -103,7 +103,7 @@ const BenefitCard = memo(({ icon, title, description, color }: BenefitCardProps)
     </div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-white/70">{description}</p>
-  </motion.div>
+  </m.div>
 ));
 BenefitCard.displayName = 'BenefitCard';
 
@@ -117,7 +117,7 @@ interface MembershipCardProps {
 }
 
 const MembershipCard = memo(({ tier, user, t }: MembershipCardProps) => (
-  <motion.div
+  <m.div
     className={`card overflow-hidden relative transition-all duration-300 hover:shadow-lg ${tier.popular ? 'border-2 border-secondary' : ''
       }`}
     initial={{ opacity: 0, y: 20 }}
@@ -158,7 +158,7 @@ const MembershipCard = memo(({ tier, user, t }: MembershipCardProps) => (
         {user?.isLoggedIn ? t('zenTribe.upgradeNow') : t('zenTribe.joinNow')}
       </button>
     </div>
-  </motion.div>
+  </m.div>
 ));
 MembershipCard.displayName = 'MembershipCard';
 
@@ -280,7 +280,7 @@ const ZenTribePage: React.FC = () => {
         {/* Page Header */}
         <div className="bg-surface py-12 md:py-16" id="tribe-intro">
           <div className="container mx-auto px-4">
-            <motion.div
+            <m.div
               className="text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -316,23 +316,23 @@ const ZenTribePage: React.FC = () => {
                   {t('zenTribe.learnMore')}
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
 
         {/* Tribe Benefits */}
         <section className="py-16 bg-background" id="tribe-benefits">
           <div className="container mx-auto px-4">
-            <motion.h2
+            <m.h2
               className="text-2xl md:text-3xl font-bold mb-12 text-center font-display"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
               {t('zenTribe.whyJoin')}
-            </motion.h2>
+            </m.h2>
 
-            <motion.div
+            <m.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
               variants={CONTAINER_VARIANTS}
               initial="hidden"
@@ -365,7 +365,7 @@ const ZenTribePage: React.FC = () => {
                 description={t('zenTribe.benefits.community.desc')}
                 color="success"
               />
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
@@ -393,7 +393,7 @@ const ZenTribePage: React.FC = () => {
         <section className="py-16 bg-background" id="achievement-system">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
-              <motion.div
+              <m.div
                 className="lg:w-1/2"
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -436,9 +436,9 @@ const ZenTribePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
 
-              <motion.div
+              <m.div
                 className="lg:w-1/2 bg-surface rounded-xl p-8"
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -474,7 +474,7 @@ const ZenTribePage: React.FC = () => {
                   </div>
                   <p className="text-right text-sm text-white/70 mt-1">350/400 XP</p>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           </div>
         </section>

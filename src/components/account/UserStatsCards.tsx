@@ -9,7 +9,7 @@
 import React, { memo } from 'react';
 import { TrendingUp, Star, Award, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 
 interface UserStats {
   level: number;
@@ -34,7 +34,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Level Card */}
-      <motion.div
+      <m.div
         variants={cardVariants}
         whileHover="hover"
         className="relative overflow-hidden bg-surface/30 backdrop-blur-xl rounded-[1.5rem] p-7 border border-primary/10 hover:border-primary/40 transition-all group shadow-xl"
@@ -55,10 +55,10 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
             <p className="text-[11px] font-black uppercase tracking-widest text-primary/80">{stats.rank}</p>
           </div>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* XP Card */}
-      <motion.div
+      <m.div
         variants={cardVariants}
         whileHover="hover"
         className="relative overflow-hidden bg-surface/30 backdrop-blur-xl rounded-[1.5rem] p-7 border border-secondary/10 hover:border-secondary/40 transition-all group shadow-xl"
@@ -81,10 +81,10 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
             }
           </p>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Achievements Card */}
-      <motion.div
+      <m.div
         variants={cardVariants}
         whileHover="hover"
         className="relative overflow-hidden bg-surface/30 backdrop-blur-xl rounded-[1.5rem] p-7 border border-accent/10 hover:border-accent/40 transition-all group shadow-xl"
@@ -107,7 +107,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
             }
           </p>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 });

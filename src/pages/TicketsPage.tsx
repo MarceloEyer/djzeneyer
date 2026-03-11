@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -73,7 +73,7 @@ const TicketsPage: React.FC = () => {
 
       <div className="min-h-screen pt-24 pb-12 bg-background text-white">
         <div className="container mx-auto px-4">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
@@ -84,7 +84,7 @@ const TicketsPage: React.FC = () => {
             <p className="text-xl text-white/60 max-w-2xl mx-auto">
               {t('events_subtitle')}
             </p>
-          </motion.div>
+          </m.div>
 
           {loading ? (
             <div className="flex justify-center py-20">
@@ -93,7 +93,7 @@ const TicketsPage: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {tickets.map((ticket, index) => (
-                <motion.div
+                <m.div
                   key={ticket.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -135,7 +135,7 @@ const TicketsPage: React.FC = () => {
                       </Link>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           )}

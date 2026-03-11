@@ -1,7 +1,7 @@
 ﻿import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { sanitizeHtml } from '../utils/sanitize';
@@ -37,7 +37,7 @@ type Festival = (typeof ARTIST.festivals)[number];
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
   ({ icon, number, label, color }) => (
-    <motion.div
+    <m.div
       whileHover={{ scale: 1.05, y: -5 }}
       className={`${color} rounded-2xl border border-white/20 p-6 text-center shadow-xl backdrop-blur-sm`}
       transition={{ type: 'spring', stiffness: 300 }}
@@ -45,7 +45,7 @@ const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; co
       <div className="mb-4 inline-block rounded-full bg-white/10 p-4 text-white">{icon}</div>
       <h3 className="mb-2 text-4xl font-black text-white">{number}</h3>
       <p className="font-semibold text-white/90">{label}</p>
-    </motion.div>
+    </m.div>
   )
 );
 StatCard.displayName = 'StatCard';
@@ -58,7 +58,7 @@ const MediaKitCard = memo<{
   isExternal?: boolean;
   t: (key: string) => string;
 }>(({ icon, title, description, path, isExternal, t }) => (
-  <motion.a
+  <m.a
     href={path}
     download={!isExternal}
     target="_blank"
@@ -76,7 +76,7 @@ const MediaKitCard = memo<{
       {isExternal ? <ExternalLink size={20} /> : <Download size={20} />}
       <span>{isExternal ? t('presskit.media.access') : t('presskit.media.download')}</span>
     </div>
-  </motion.a>
+  </m.a>
 ));
 MediaKitCard.displayName = 'MediaKitCard';
 
@@ -205,7 +205,7 @@ const PressKitPage: React.FC = () => {
       <div className="min-h-screen bg-[#0a0a0a] text-white">
         <section className="pt-32 pb-14">
           <div className="container mx-auto px-4">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
@@ -221,12 +221,12 @@ const PressKitPage: React.FC = () => {
               <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/50 md:text-base">
                 {t('presskit.subtitle')}
               </p>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         <div className="container mx-auto px-4">
-          <motion.div
+          <m.div
             className="grid grid-cols-2 gap-6 md:grid-cols-4"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -235,12 +235,12 @@ const PressKitPage: React.FC = () => {
             {stats.map((stat, index) => (
               <StatCard key={index} {...stat} />
             ))}
-          </motion.div>
+          </m.div>
         </div>
 
         <section className="py-32">
           <div className="container mx-auto px-4">
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -249,7 +249,7 @@ const PressKitPage: React.FC = () => {
             >
               <div className="grid items-center gap-20 lg:grid-cols-2">
                 <div className="relative">
-                  <motion.div
+                  <m.div
                     className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl"
                     whileHover={{ scale: 1.02 }}
                   >
@@ -263,7 +263,7 @@ const PressKitPage: React.FC = () => {
                       <span className="text-xs font-bold uppercase tracking-widest text-primary">World Champion 2022</span>
                       <h3 className="text-2xl font-bold">DJ & Producer</h3>
                     </div>
-                  </motion.div>
+                  </m.div>
                 </div>
 
                 <div>
@@ -291,13 +291,13 @@ const PressKitPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         <section className="bg-[#0d0d0d] py-32">
           <div className="container mx-auto px-4">
-            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
+            <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 px-4 text-center">
                 <h2 className="mb-6 text-5xl font-black uppercase tracking-tighter">
                   Line-ups <span className="text-primary">Internacionais</span>
@@ -309,7 +309,7 @@ const PressKitPage: React.FC = () => {
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {ARTIST.festivals.slice(0, 9).map((festival: Festival, index: number) => (
-                  <motion.div
+                  <m.div
                     key={index}
                     whileHover={{ scale: 1.02 }}
                     className="group flex items-center gap-4 rounded-2xl border border-white/5 bg-surface/40 p-5 transition-all hover:border-primary/30"
@@ -321,20 +321,20 @@ const PressKitPage: React.FC = () => {
                         {festival.country} • {new Date(festival.date).getFullYear()}
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 ))}
               </div>
 
               <div className="mt-12 px-4 text-center">
                 <p className="text-lg italic text-white/30">+ tour mundial contínua cobrindo Américas, Europa e Oceania.</p>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         <section id="media-kit" className="py-32">
           <div className="container mx-auto px-4">
-            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
+            <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 text-center">
                 <h2 className="mb-6 text-5xl font-black">{t('presskit.media.title')}</h2>
                 <p className="mx-auto max-w-2xl text-xl text-white/50">{t('presskit.media.subtitle')}</p>
@@ -345,13 +345,13 @@ const PressKitPage: React.FC = () => {
                   <MediaKitCard key={index} {...item} t={t} />
                 ))}
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         <section className="py-32">
           <div className="container mx-auto px-4">
-            <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
+            <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 text-center">
                 <h2 className="mb-6 text-5xl font-black uppercase tracking-tighter">
                   Galeria de <span className="text-primary">Imprensa</span>
@@ -368,7 +368,7 @@ const PressKitPage: React.FC = () => {
                   { src: '/images/artist/dj-zen-eyer-beach-brazilian-zouk.png', alt: 'DJ Zen Eyer Beach Zouk' },
                   { src: '/images/artist/dj-zen-eyer-nature-portrait.jpg', alt: 'DJ Zen Eyer Nature Portrait' }
                 ].map((photo, index) => (
-                  <motion.div
+                  <m.div
                     key={index}
                     className="group aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl border border-white/5 transition-all hover:border-primary/50"
                     whileHover={{ scale: 1.05 }}
@@ -379,7 +379,7 @@ const PressKitPage: React.FC = () => {
                       className="h-full w-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0"
                       loading="lazy"
                     />
-                  </motion.div>
+                  </m.div>
                 ))}
               </div>
 
@@ -394,13 +394,13 @@ const PressKitPage: React.FC = () => {
                   Acessar Todas as Fotos
                 </a>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         <section className="py-32">
           <div className="container mx-auto px-4">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -472,7 +472,7 @@ const PressKitPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
       </div>

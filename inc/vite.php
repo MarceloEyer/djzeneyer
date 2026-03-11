@@ -158,6 +158,12 @@ class DJZ_Vite_Loader
 
         // 3. Preloads
         add_action('wp_head', function () use ($entry, $manifest) {
+            // CSS Preload
+            if (!empty($entry['css'])) {
+                foreach ($entry['css'] as $css_file) {
+                    echo '<link rel="preload" as="style" href="' . esc_url($this->dist_url . '/' . $css_file) . '" />' . "\n";
+                }
+            }
             if (!empty($entry['file'])) {
                 echo '<link rel="modulepreload" href="' . esc_url($this->dist_url . '/' . $entry['file']) . '" />' . "\n";
             }

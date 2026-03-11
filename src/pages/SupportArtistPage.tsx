@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';;
 import { useTranslation, Trans } from 'react-i18next';
 import { 
   DollarSign, 
@@ -50,18 +50,18 @@ const CurrencyAccordion = memo(({
           {title}
         </h3>
       </div>
-      <motion.div
+      <m.div
         animate={{ rotate: isOpen ? 180 : 0 }}
         transition={{ duration: 0.3 }}
         className="flex-shrink-0"
       >
         <ChevronDown className="text-primary/70" size={24} />
-      </motion.div>
+      </m.div>
     </button>
 
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
@@ -71,7 +71,7 @@ const CurrencyAccordion = memo(({
           <div className="p-6 pt-0 space-y-4">
             {children}
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   </div>
@@ -117,7 +117,7 @@ const SupportArtistPage: React.FC = () => {
       />
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
+        <m.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
             <Heart size={16} /> {t('payme.subtitle')}
           </div>
@@ -129,7 +129,7 @@ const SupportArtistPage: React.FC = () => {
           <p className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
             {t('support.header.description')}
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Currency Accordions */}
         <div className="mb-20">
@@ -265,7 +265,7 @@ const SupportArtistPage: React.FC = () => {
 
         {/* Reasons & Business */}
         <div className="grid lg:grid-cols-2 gap-8 items-stretch pt-20">
-          <motion.div 
+          <m.div
             initial={{ opacity: 0, x: -20 }} 
             whileInView={{ opacity: 1, x: 0 }} 
             viewport={{ once: true }} 
@@ -287,9 +287,9 @@ const SupportArtistPage: React.FC = () => {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div 
+          <m.div
             initial={{ opacity: 0, x: 20 }} 
             whileInView={{ opacity: 1, x: 0 }} 
             viewport={{ once: true }} 
@@ -307,14 +307,14 @@ const SupportArtistPage: React.FC = () => {
               <CheckCircle2 size={20} className="mr-2" />
               {t('support.business.contact')}
             </a>
-          </motion.div>
+          </m.div>
         </div>
 
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
+        <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
           <p className="text-2xl text-white/40 italic font-display lowercase tracking-tighter">
             {t('support.thankYou')}
           </p>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

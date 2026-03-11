@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
@@ -17,7 +17,7 @@ const ReturnPolicyPage: React.FC = () => {
 
       <div className="min-h-screen pt-24 pb-20 bg-background text-white">
         <div className="container mx-auto px-4 max-w-4xl">
-          <motion.article
+          <m.article
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="prose prose-invert prose-lg max-w-none"
@@ -65,7 +65,7 @@ const ReturnPolicyPage: React.FC = () => {
             <div className="mt-12 pt-8 border-t border-white/10 text-sm text-white/50">
               <p>{t('legal.return_policy.last_updated')}: <span className="text-primary font-semibold">{t('legal.return_policy.last_updated_date')}</span></p>
             </div>
-          </motion.article>
+          </m.article>
         </div>
       </div>
     </>

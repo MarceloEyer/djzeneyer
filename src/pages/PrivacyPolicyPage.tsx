@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { Shield, Lock, Eye, Database, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -46,7 +46,7 @@ const PrivacyPolicyPage: React.FC = () => {
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -61,10 +61,10 @@ const PrivacyPolicyPage: React.FC = () => {
             <p className="text-white/70">
               {t('privacy_page.last_updated')}: <span className="text-primary font-semibold">{t('privacy_page.last_updated_date')}</span>
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Introduction */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -76,11 +76,11 @@ const PrivacyPolicyPage: React.FC = () => {
             <p className="text-white/70 leading-relaxed">
               {t('privacy_page.intro_p2')}
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Sections */}
           {sections.map((section, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -101,11 +101,11 @@ const PrivacyPolicyPage: React.FC = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </m.div>
           ))}
 
           {/* Cookies */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
@@ -118,10 +118,10 @@ const PrivacyPolicyPage: React.FC = () => {
             <p className="text-white/70 leading-relaxed">
               {t('privacy_page.cookies_p2')}
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Third-Party Services */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
@@ -136,10 +136,10 @@ const PrivacyPolicyPage: React.FC = () => {
               <p className="text-white/80"><strong>{t('privacy_page.third_party_payments').split(':')[0]}:</strong>{t('privacy_page.third_party_payments').split(':')[1]}</p>
               <p className="text-white/80"><strong>{t('privacy_page.third_party_email').split(':')[0]}:</strong>{t('privacy_page.third_party_email').split(':')[1]}</p>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* LGPD Compliance */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9 }}
@@ -157,10 +157,10 @@ const PrivacyPolicyPage: React.FC = () => {
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </m.div>
 
           {/* Changes to Policy */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
@@ -170,10 +170,10 @@ const PrivacyPolicyPage: React.FC = () => {
             <p className="text-white/70 leading-relaxed">
               {t('privacy_page.changes_p1')}
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Contact */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.1 }}
@@ -195,7 +195,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 contact@djzeneyer.com
               </a>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </>

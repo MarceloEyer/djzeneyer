@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';;
 import { FileText, AlertCircle, Scale, Ban, CheckCircle } from 'lucide-react';
 
 const TermsPage: React.FC = () => {
@@ -93,7 +93,7 @@ const TermsPage: React.FC = () => {
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -108,10 +108,10 @@ const TermsPage: React.FC = () => {
             <p className="text-white/70">
               {t('legal.terms_page.last_updated')}: <span className="text-primary font-semibold">{t('legal.terms_page.last_updated_date')}</span>
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Introduction */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -123,11 +123,11 @@ const TermsPage: React.FC = () => {
             <p className="text-white/70 leading-relaxed">
               {t('legal.terms_page.introduction_agreement')}
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Main Sections */}
           {sections.map((section, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -141,12 +141,12 @@ const TermsPage: React.FC = () => {
                 <h2 className="text-2xl font-display font-bold mt-1">{`${index + 1}. ${section.title}`}</h2>
               </div>
               <p className="text-white/70 leading-relaxed ml-16">{section.content}</p>
-            </motion.div>
+            </m.div>
           ))}
 
           {/* Additional Terms */}
           {additionalTerms.map((term, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -162,11 +162,11 @@ const TermsPage: React.FC = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </m.div>
           ))}
 
           {/* Governing Law */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.1 }}
@@ -179,10 +179,10 @@ const TermsPage: React.FC = () => {
             <p className="text-white/70 leading-relaxed">
               {t('legal.terms_page.law_consent')}
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Modifications */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.2 }}
@@ -192,10 +192,10 @@ const TermsPage: React.FC = () => {
             <p className="text-white/70 leading-relaxed">
               {t('legal.terms_page.modifications_desc')}
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Contact */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.3 }}
@@ -217,17 +217,17 @@ const TermsPage: React.FC = () => {
                 contact@djzeneyer.com
               </a>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Acceptance */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.4 }}
             className="text-center text-white/50 text-sm mt-8"
           >
             <p>{t('legal.terms_page.acceptance_footer')}</p>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </>

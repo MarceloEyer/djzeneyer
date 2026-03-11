@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';;
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
@@ -71,7 +71,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
       </div>
 
       <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-20 pb-32 md:pb-48">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
@@ -105,7 +105,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
           )}
 
           <div className="flex items-center gap-3 md:gap-4 pt-4">
-            <motion.button
+            <m.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onAddToCart(product.id)}
@@ -114,7 +114,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
             >
               {isAddingToCart ? <Loader2 className="animate-spin" /> : <Play className="fill-black" size={24} />}
               {t('shop.buy_now')}
-            </motion.button>
+            </m.button>
 
             <Link
               to={`${productBasePath}/${product.slug}`}
@@ -124,7 +124,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
               {t('shop.product_details')}
             </Link>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );
@@ -143,7 +143,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
   const { t } = useTranslation();
 
   return (
-    <motion.div
+    <m.div
       className="flex-shrink-0 w-[240px] md:w-[300px] lg:w-[350px] relative z-10 transition-all duration-300"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -221,7 +221,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 });
 
@@ -288,7 +288,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
       <div className="relative overflow-visible">
         <AnimatePresence>
           {canScrollLeft && (
-            <motion.button
+            <m.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -296,11 +296,11 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
               className="absolute left-0 top-0 bottom-0 z-40 bg-black/40 hover:bg-black/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
               <ChevronLeft size={48} className="text-white group-hover/btn:scale-125 transition-transform" />
-            </motion.button>
+            </m.button>
           )}
 
           {canScrollRight && (
-            <motion.button
+            <m.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -308,7 +308,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
               className="absolute right-0 top-0 bottom-0 z-40 bg-black/40 hover:bg-black/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
               <ChevronRight size={48} className="text-white group-hover/btn:scale-125 transition-transform" />
-            </motion.button>
+            </m.button>
           )}
         </AnimatePresence>
 
