@@ -5,7 +5,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
-import { Helmet } from 'react-helmet-async';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation } from 'react-i18next';
 import {
   User, Settings, ShoppingBag, Award, Music, LogOut,
@@ -49,10 +49,10 @@ const MyAccountContent: React.FC = () => {
   }, [searchParams, activeTab]);
 
   // Handle manual tab switching and URL update
-  const handleTabChange = (tabId: string) => {
+  const handleTabChange = React.useCallback((tabId: string) => {
     setActiveTab(tabId);
     setSearchParams({ tab: tabId });
-  };
+  }, [setSearchParams]);
 
   // Profile form state
   const [profileForm, setProfileForm] = useState({
@@ -128,15 +128,48 @@ const MyAccountContent: React.FC = () => {
   }, [profileData, user?.name]);
 
 
-  const handleLogout = async () => {
+  const handleLogout = React.useCallback(() => {
     try {
-      await logout();
+      logout();
       navigate(getLocalizedRoute('', currentLang));
     } catch (error) {
       console.error('[MyAccountPage] Erro no logout:', error);
       navigate(getLocalizedRoute('', currentLang));
     }
-  };
+  }, [logout, navigate, currentLang]);
+
+  const handleProfileChange = React.useCallback((field: string, value: string | string[]) => {
+    setProfileForm(prev => ({ ...prev, [field]: value }));
+    setProfileSaved(false);
+  }, []);
+
+  const handleSaveProfile = React.useCallback(async () => {
+    setSavingProfile(true);
+    try {
+      await updateProfile.mutateAsync({
+        real_name: profileForm.realName,
+        preferred_name: profileForm.preferredName,
+        facebook_url: profileForm.facebookUrl,
+        instagram_url: profileForm.instagramUrl,
+        dance_role: profileForm.danceRole,
+        gender: profileForm.gender,
+      });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch (error) {
+      console.error('[MyAccountPage] Error saving profile:', error);
+    } finally {
+      setSavingProfile(false);
+    }
+  }, [profileForm, updateProfile]);
+
+  const tabs = useMemo(() => [
+    { id: 'overview', label: t('account.tabs.overview'), icon: User, color: 'primary' },
+    { id: 'orders', label: t('account.tabs.orders'), icon: ShoppingBag, color: 'secondary' },
+    { id: 'achievements', label: t('account.tabs.achievements'), icon: Award, color: 'accent' },
+    { id: 'music', label: t('account.tabs.music'), icon: Music, color: 'primary' },
+    { id: 'settings', label: t('account.tabs.settings'), icon: Settings, color: 'secondary' },
+  ], [t]);
 
   if (loading || (user?.isLoggedIn && loadingGP)) {
     return (
@@ -170,14 +203,6 @@ const MyAccountContent: React.FC = () => {
   }
 
   if (!user?.isLoggedIn || !gamipress) return null;
-
-  const tabs = [
-    { id: 'overview', label: t('account.tabs.overview'), icon: User, color: 'primary' },
-    { id: 'orders', label: t('account.tabs.orders'), icon: ShoppingBag, color: 'secondary' },
-    { id: 'achievements', label: t('account.tabs.achievements'), icon: Award, color: 'accent' },
-    { id: 'music', label: t('account.tabs.music'), icon: Music, color: 'primary' },
-    { id: 'settings', label: t('account.tabs.settings'), icon: Settings, color: 'secondary' },
-  ];
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -301,31 +326,6 @@ const MyAccountContent: React.FC = () => {
         return <MusicCollection />;
 
       case 'settings': {
-        const handleProfileChange = (field: string, value: string | string[]) => {
-          setProfileForm(prev => ({ ...prev, [field]: value }));
-          setProfileSaved(false);
-        };
-
-        const handleSaveProfile = async () => {
-          setSavingProfile(true);
-          try {
-            await updateProfile.mutateAsync({
-              real_name: profileForm.realName,
-              preferred_name: profileForm.preferredName,
-              facebook_url: profileForm.facebookUrl,
-              instagram_url: profileForm.instagramUrl,
-              dance_role: profileForm.danceRole,
-              gender: profileForm.gender,
-            });
-            setProfileSaved(true);
-            setTimeout(() => setProfileSaved(false), 3000);
-          } catch (error) {
-            console.error('[MyAccountPage] Error saving profile:', error);
-          } finally {
-            setSavingProfile(false);
-          }
-        };
-
         return (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
             <h2 className="text-4xl font-black font-display tracking-tighter mb-10">{t('account.tabs.settings')}</h2>
@@ -464,10 +464,10 @@ const MyAccountContent: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('account.meta_title', { stageName: t('common.artist_name') })}</title>
-        <meta name="description" content={t('account.meta_desc')} />
-      </Helmet>
+      <HeadlessSEO
+        title={t('account.meta_title', { stageName: t('common.artist_name') })}
+        description={t('account.meta_desc')}
+      />
 
       <div className="min-h-screen pt-24 pb-16 bg-background selection:bg-primary selection:text-white">
         <div className="container mx-auto px-4 max-w-7xl">

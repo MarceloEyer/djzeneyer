@@ -32,6 +32,13 @@ export interface ProfileUpdatePayload {
   email?: string;
   first_name?: string;
   last_name?: string;
+  // Custom fields from ZenEyer Auth
+  real_name?: string;
+  preferred_name?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  dance_role?: string[];
+  gender?: '' | 'male' | 'female' | 'non-binary';
 }
 
 export interface UserProfile {
