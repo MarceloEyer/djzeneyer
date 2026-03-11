@@ -91,7 +91,7 @@ class Zen_SEO_Sitemap
     private function generate_sitemap()
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
 
         // REMOVED: generate_react_routes() - Now handled by React Build
 
@@ -135,6 +135,18 @@ class Zen_SEO_Sitemap
 
         $posts = \get_posts($args);
 
+        // Batch prime attachment caches to avoid N+1 queries when fetching thumbnails
+        $thumbnail_ids = [];
+        foreach ($posts as $p) {
+            $thumb_id = \get_post_thumbnail_id($p->ID);
+            if ($thumb_id) {
+                $thumbnail_ids[] = $thumb_id;
+            }
+        }
+        if (!empty($thumbnail_ids)) {
+            \_prime_post_caches($thumbnail_ids, false, true);
+        }
+
         foreach ($posts as $post) {
             // Check if post should be indexed
             $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
@@ -175,6 +187,14 @@ class Zen_SEO_Sitemap
 
             // x-default
             $xml .= '    <xhtml:link rel="alternate" hreflang="x-default" href="' . \esc_url($primary_url) . '"/>' . "\n";
+
+            // Image Sitemap
+            $thumbnail_url = \get_the_post_thumbnail_url($post->ID, 'full');
+            if ($thumbnail_url) {
+                $xml .= '    <image:image>' . "\n";
+                $xml .= '      <image:loc>' . \esc_url($thumbnail_url) . '</image:loc>' . "\n";
+                $xml .= '    </image:image>' . "\n";
+            }
 
             $xml .= '  </url>' . "\n";
         }
