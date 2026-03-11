@@ -327,20 +327,53 @@ const getVerificationUrls = () => [
 
 // Schema.org MusicGroup base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_BASE = {
-  '@type': 'MusicGroup',
+  '@type': ['Person', 'MusicGroup'],
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: ARTIST.identity.stageName,
+  givenName: 'Marcelo',
+  familyName: 'Eyer Fernandes',
+  additionalName: 'Zen Eyer',
   alternateName: [ARTIST.identity.shortName, ARTIST.identity.fullName],
   description: `${ARTIST.titles.primary}. Known for the "${ARTIST.philosophy.style}" musical style.`,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Electronic'],
-
-  url: ARTIST.site.baseUrl,
-  foundingLocation: {
+  jobTitle: ['DJ', 'Music Producer', 'Remixer', 'Artist'],
+  birthDate: ARTIST.identity.birthDate,
+  birthPlace: {
     '@type': 'Place',
-    name: `${ARTIST.contact.location.city}, ${ARTIST.contact.location.country}`,
+    name: 'Rio de Janeiro, Brazil',
   },
+  nationality: {
+    '@type': 'Country',
+    name: 'Brazil',
+  },
+  url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],
+  hasOccupation: [
+    {
+      '@type': 'Occupation',
+      name: 'DJ'
+    },
+    {
+      '@type': 'Occupation',
+      name: 'Music Producer'
+    }
+  ],
+  potentialAction: {
+    '@type': 'ListenAction',
+    target: [
+      {
+        '@type': 'EntryPoint',
+        urlTemplate: ARTIST.social.spotify.url,
+        actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/IOSPlatform', 'http://schema.org/AndroidPlatform']
+      },
+      {
+        '@type': 'EntryPoint',
+        urlTemplate: ARTIST.social.soundcloud.url,
+        actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/IOSPlatform', 'http://schema.org/AndroidPlatform']
+      }
+    ]
+  },
   award: [
     {
       '@type': 'Award',
