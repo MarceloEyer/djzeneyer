@@ -194,28 +194,44 @@ export const ARTIST = {
   // 📰 Clipping / Na Mídia
   mediaClipping: [
     {
-      title: 'Entrevista Exclusiva: O Flow por trás da Cremosidade',
-      description: 'Uma conversa profunda sobre a filosofia musical e o processo criativo no Brazilian Zouk.',
-      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Placeholder, substituir se houver links reais conhecidos ou usar genérico
-      source: 'Zoukology',
-      date: '2023-10-15',
-      type: 'interview'
+      title: 'Brazilian Zouk DJ Zen Eyer Announces Award Winning International Tour',
+      description: 'Reportagem sobre o anúncio da turnê internacional de 2026, cobrindo Europa, América do Norte e Brasil.',
+      url: 'https://mypr.co.za/international/brazilian-zouk-dj-zen-eyer-announces-award-winning-international-tour/',
+      source: 'MyPR South Africa',
+      date: '2025-11-20',
+      type: 'report'
+    },
+    {
+      title: 'The Global Rise of Brazilian Zouk Music and Cultural Evolution',
+      description: 'Artigo profundo sobre a evolução cultural e o crescimento global do Zouk Brasileiro, citando a influência da Tribo Zen.',
+      url: 'https://timebusinessnews.com/the-global-rise-of-brazilian-zouk-music-and-cultural-evolution/',
+      source: 'Time Business News',
+      date: '2025-12-05',
+      type: 'media'
+    },
+    {
+      title: 'Brazilian DJ Zen Eyer and Kaysha Unite Brazil and Africa in Epic Zouk Remix of Diamonds',
+      description: 'Colaboração épica entre Brasil e África em um remix oficial que uniu as pistas de Zouk e Kizomba.',
+      url: 'https://myza.co.za/entertainment/brazilian-dj-zen-eyer-and-kaysha-unite-brazil-and-africa-in-epic-zouk-remix-of-diamonds/',
+      source: 'MyZA Entertainment',
+      date: '2024-08-15',
+      type: 'news'
     },
     {
       title: 'DJ Zen Eyer conquista dois títulos no Ilha do Zouk',
-      description: 'Reportagem sobre a vitória nas categorias Melhor Remix e Melhor Performance DJ.',
+      description: 'Reportagem sobre a vitória nas categorias Melhor Remix e Melhor Performance DJ no campeonato mundial.',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
       source: 'Portal Ilha do Zouk',
       date: '2022-12-05',
       type: 'report'
     },
     {
-      title: 'A Evolução do Som no Brazilian Zouk',
-      description: 'Podcast onde Zen Eyer discute a transição da lambada para o zouk moderno.',
-      url: 'https://soundcloud.com/djzeneyer/sets/interviews',
-      source: 'Zouk Flow Podcast',
-      date: '2023-05-20',
-      type: 'podcast'
+      title: 'Encontros de Zouk e a Filosofia da Cremosidade',
+      description: 'Artigo sobre a filosofia de conexão e o som exclusivo que define as pistas de DJ Zen Eyer.',
+      url: 'https://pt.everybodywiki.com/DJ_Zen_Eyer',
+      source: 'EverybodyWiki',
+      date: '2024-01-10',
+      type: 'wiki'
     }
   ],
 

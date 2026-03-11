@@ -196,7 +196,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             const hashPart = rawUrl.includes('#') ? '#' + rawUrl.split('#')[1] : '';
 
             const fullUrl = isExternal ? rawUrl : `${localizedPath}${queryPart}${hashPart}`;
-            const safeUrl = isExternal ? fullUrl : sanitizePath(fullUrl);
+            let safeUrl = isExternal ? fullUrl : sanitizePath(fullUrl);
 
             // SSR Safe Logic: Se o título vindo do WP for redundante (ex: "Zouk Events"), usamos a tradução centralizada
             let safeTitle = item.title || '';

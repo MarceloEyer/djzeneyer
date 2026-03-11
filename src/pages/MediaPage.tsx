@@ -55,9 +55,9 @@ const MediaPage: React.FC = () => {
               <Newspaper size={16} /> {t('media_page.verified_profiles')}
             </div>
             <h1 className="text-5xl md:text-7xl font-black font-display mb-8 text-white tracking-tighter uppercase leading-[0.9]">
-              {t('media_page.title').split('&')[0]} <span className="text-primary">&</span> {t('media_page.title').split('&')[1] || 'Clipping'}
+              {t('media_page.title')}
             </h1>
-            <p className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
               {t('media_page.subtitle')}
             </p>
           </motion.div>
@@ -125,8 +125,8 @@ const MediaPage: React.FC = () => {
                         <p className="text-white/40 text-xs line-clamp-1">{asset.description}</p>
                       </div>
                       {asset.available ? (
-                        <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors">
-                          <Download size={18} />
+                        <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold uppercase">
+                          {t('media_page.download')} <Download size={18} />
                         </a>
                       ) : (
                         <span className="text-[10px] text-white/20 uppercase font-black">{t('media_page.coming_soon')}</span>
