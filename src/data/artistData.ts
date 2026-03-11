@@ -327,7 +327,7 @@ const getVerificationUrls = () => [
 
 // Schema.org MusicGroup base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_BASE = {
-  '@type': ['Person', 'MusicGroup'],
+  '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: ARTIST.identity.stageName,
   givenName: 'Marcelo',
@@ -349,27 +349,17 @@ export const ARTIST_SCHEMA_BASE = {
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: [...getSocialUrls(), ...getVerificationUrls()],
-  hasOccupation: [
-    {
-      '@type': 'Occupation',
-      name: 'DJ'
-    },
-    {
-      '@type': 'Occupation',
-      name: 'Music Producer'
-    }
-  ],
   potentialAction: {
     '@type': 'ListenAction',
     target: [
       {
         '@type': 'EntryPoint',
-        urlTemplate: ARTIST.social.spotify.url,
+        url: ARTIST.social.spotify.url,
         actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/IOSPlatform', 'http://schema.org/AndroidPlatform']
       },
       {
         '@type': 'EntryPoint',
-        urlTemplate: ARTIST.social.soundcloud.url,
+        url: ARTIST.social.soundcloud.url,
         actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/IOSPlatform', 'http://schema.org/AndroidPlatform']
       }
     ]
