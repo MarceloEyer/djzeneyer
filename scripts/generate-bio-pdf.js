@@ -427,7 +427,7 @@ function buildHtml(document) {
         <main class="page page--cover">
           <section class="cover-grid">
             <div>
-              <div class="eyebrow">Complete Bio</div>
+              <div class="eyebrow">Official Press Kit</div>
               <h1>${escapeHtml(document.title)}</h1>
               <p class="subtitle">${escapeHtml(document.subtitle)}</p>
               <p class="lead">${escapeHtml(profileSection?.paragraphs?.[0] ?? '')}</p>
@@ -477,10 +477,10 @@ function buildHtml(document) {
         <section class="page page--details">
           <header class="details-header">
             <div>
-              <div class="eyebrow" style="background: #efe6ff; border-color: rgba(37, 24, 77, 0.1); color: #6a3fe6;">Booking Asset</div>
+              <div class="eyebrow" style="background: #efe6ff; border-color: rgba(37, 24, 77, 0.1); color: #6a3fe6;">Promoter Asset</div>
               <h2>Global Presence</h2>
             </div>
-            <p>Use this bio for booking decks, festival websites, media kits, and promoter materials that need a clean summary of positioning, credibility, and contact details.</p>
+            <p>Use this press kit for booking decks, festival websites, media features, and promoter materials that need a clean summary of positioning, credibility, and contact details.</p>
           </header>
 
           <div class="details-grid">
@@ -507,7 +507,7 @@ function buildHtml(document) {
 }
 
 async function generatePDF() {
-  console.log('Generating DJ Zen Eyer bio PDF...');
+  console.log('Generating DJ Zen Eyer press kit PDF...');
 
   if (!existsSync(MD_PATH)) {
     console.error(`Markdown source not found: ${MD_PATH}`);
@@ -544,7 +544,7 @@ async function generatePDF() {
     console.log(`PDF generated at ${PDF_PATH}`);
     console.log(`Preview generated at ${PREVIEW_PATH}`);
   } catch (error) {
-    console.error('Failed to generate bio PDF:', error);
+    console.error('Failed to generate press kit PDF:', error);
     process.exitCode = 1;
   } finally {
     if (browser) {
@@ -554,3 +554,4 @@ async function generatePDF() {
 }
 
 generatePDF();
+
