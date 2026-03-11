@@ -5,7 +5,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
-import { Helmet } from 'react-helmet-async';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation } from 'react-i18next';
 import {
   User, Settings, ShoppingBag, Award, Music, LogOut,
@@ -128,9 +128,9 @@ const MyAccountContent: React.FC = () => {
   }, [profileData, user?.name]);
 
 
-  const handleLogout = React.useCallback(async () => {
+  const handleLogout = React.useCallback(() => {
     try {
-      await logout();
+      logout();
       navigate(getLocalizedRoute('', currentLang));
     } catch (error) {
       console.error('[MyAccountPage] Erro no logout:', error);
@@ -464,10 +464,10 @@ const MyAccountContent: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('account.meta_title', { stageName: t('common.artist_name') })}</title>
-        <meta name="description" content={t('account.meta_desc')} />
-      </Helmet>
+      <HeadlessSEO
+        title={t('account.meta_title', { stageName: t('common.artist_name') })}
+        description={t('account.meta_desc')}
+      />
 
       <div className="min-h-screen pt-24 pb-16 bg-background selection:bg-primary selection:text-white">
         <div className="container mx-auto px-4 max-w-7xl">
