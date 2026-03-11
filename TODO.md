@@ -15,7 +15,7 @@
 - [x] Adicionar prefetch de rotas internas
 - [ ] PWA — Service Worker + manifest.json
 - [ ] Push Notifications para novos lançamentos
-- [x] Integração com Spotify API (top tracks)
+- [ ] Integração com Spotify API (top tracks)
 - [x] Open Graph dinâmico por evento
 
 ## 🟢 Infraestrutura
@@ -28,7 +28,6 @@
 ## 📖 Documentação
 - [x] Traduzir docs para português
 - [x] Criar configurações de bots AI
-- [x] Limpar diretórios obsoletos (.bolt, .jules, .devcontainer)
 - [x] Consolidar MARKETING.md com dicas
 
 ---
