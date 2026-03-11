@@ -1,4 +1,4 @@
-﻿import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -60,7 +60,6 @@ const MediaKitCard = memo<{
 }>(({ icon, title, description, path, isExternal, t }) => (
   <motion.a
     href={path}
-    download={!isExternal}
     target="_blank"
     rel="noopener noreferrer"
     className="group flex h-full flex-col rounded-2xl border border-white/10 bg-surface/50 p-8 backdrop-blur-sm transition-all hover:border-primary hover:bg-surface/80"

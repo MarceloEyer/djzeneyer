@@ -58,6 +58,7 @@ const AboutPage = lazy(() => import('../pages/AboutPage'));
 const EventsPage = lazy(() => import('../pages/EventsPage'));
 const MusicPage = lazy(() => import('../pages/MusicPage'));
 const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
+const MediaPage = lazy(() => import('../pages/MediaPage'));
 const PressKitPage = lazy(() => import('../pages/PressKitPage'));
 const ShopPage = lazy(() => import('../pages/ShopPage'));
 const ProductPage = lazy(() => import('../pages/ProductPage'));
@@ -231,11 +232,18 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: slug('philosophy', 'en') as string, pt: slug('philosophy', 'pt') as string },
   },
 
-  // Press Kit (EPK + Media)
+  // Press Kit (EPK)
   {
     key: 'presskit',
     component: PressKitPage,
     paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
+  },
+  
+  // Media / Clipping
+  {
+    key: 'media',
+    component: MediaPage,
+    paths: { en: slug('media', 'en') as string, pt: slug('media', 'pt') as string },
   },
 
   // Support the Artist

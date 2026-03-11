@@ -327,6 +327,7 @@ export const ARTIST = {
       presskit: '/work-with-me',
       shop: '/shop',
       faq: '/faq',
+      media: '/na-midia',
     },
   },
 } as const;

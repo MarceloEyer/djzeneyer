@@ -1,5 +1,4 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, Download, Image as ImageIcon } from 'lucide-react';
@@ -8,7 +7,7 @@ import { ARTIST } from '../data/artistData';
 const MediaPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const clippingData = (ARTIST as any).mediaClipping || [];
+  const clippingData = ARTIST.mediaClipping || [];
 
   const mediaAssets = [
     {
@@ -41,7 +40,7 @@ const MediaPage: React.FC = () => {
         image="/images/zen-eyer-og-image.svg"
       />
 
-      <div className="min-h-screen pt-32 pb-24 bg-background relative overflow-hidden">
+      <div className="min-h-screen pt-40 pb-24 bg-background relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
@@ -71,7 +70,7 @@ const MediaPage: React.FC = () => {
               </h2>
               
               <div className="grid gap-6">
-                {clippingData.map((item: any, index: number) => (
+                {clippingData.map((item, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}

@@ -80,6 +80,11 @@
             "pt": "kit-de-imprensa"
         },
         {
+            "key": "media",
+            "en": "media-clipping",
+            "pt": "na-midia"
+        },
+        {
             "key": "shop",
             "en": "shop",
             "pt": "loja"

@@ -1,4 +1,4 @@
-﻿// src/components/Layout/Navbar.tsx
+// src/components/Layout/Navbar.tsx
 // Optimized Navbar: SSR Security + UX + Performance
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -16,6 +16,7 @@ import {
     Briefcase,
     Info,
     ChevronRight,
+    Newspaper
 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from '../common/UserMenu';
@@ -39,6 +40,8 @@ const getLinkVisuals = (url: string) => {
         return { icon: <Music size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     if (path.includes('work') || path.includes('trabalhe'))
         return { icon: <Briefcase size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
+    if (path.includes('media') || path.includes('midia'))
+        return { icon: <Newspaper size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     if (path.includes('about') || path.includes('sobre'))
         return { icon: <Info size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
     return { icon: <Home size={20} />, color: 'text-white/70', bg: 'bg-white/5' };
@@ -203,6 +206,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                 safeTitle = t('nav.events');
             } else if (lowerTitle.includes('zouk music')) {
                 safeTitle = t('nav.music');
+            } else if (lowerTitle.includes('mídia') || lowerTitle.includes('media')) {
+                safeTitle = t('nav.media');
+                safeUrl = getLocalizedRoute('media', currentLang);
             }
 
             return {
