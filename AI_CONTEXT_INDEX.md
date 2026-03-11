@@ -1,4 +1,4 @@
-﻿# AI_CONTEXT_INDEX.md - DJ Zen Eyer
+# AI_CONTEXT_INDEX.md - DJ Zen Eyer
 
 > Fonte canonica para agentes de IA neste repositorio.
 > Objetivo: zero conflito entre instrucoes, skills e contexto.
@@ -19,6 +19,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Frontend: React 18 + TypeScript + Vite 7 + Tailwind 3 + React Query v5 + React Router 7 + i18next
 - Backend: WordPress 6.0+ (recomendado 6.9+), PHP **8.1+** (zengame exige 8.1), WooCommerce, GamiPress
 - Node: 20+
+- Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: 1989-08-30.
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
 
 ## Regras globais (SSOT)
@@ -31,6 +32,8 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 7. SQL sempre preparado e inputs sanitizados no PHP
 8. Nao atualizar ESLint para v10 (manter v9)
 9. Nao commitar `.env`, segredos ou credenciais
+10. `UserContext.logout` e **sincrona**; nao usar `async/await` ao chama-la.
+11. `ProfileUpdatePayload` (`useQueries.ts`) deve incluir campos customizados (`real_name`, `gender`, etc.) para sync com o plugin `zeneyer-auth`.
 
 ## Endpoints canonicos (resumo)
 - Tema: `djzeneyer/v1`
@@ -45,6 +48,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Namespace SEO canonico: `zen-seo/v1` (nao `zen-seo-lite/v1`)
 - `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
 - Tailwind canonico do projeto: v3; nao aplicar convencoes exclusivas de v4 sem migracao explicita
+- SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
 
 ## Fluxo para qualquer tarefa
 1. Ler este indice

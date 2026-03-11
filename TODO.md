@@ -33,4 +33,4 @@
 
 ---
 
-**Atualizado:** Fevereiro 2026
+**Atualizado:** Março 2026 (Refinamento de SEO e Optimização MyAccount)

@@ -1,4 +1,4 @@
-﻿---
+---
 name: djzeneyer-context
 description: >
   Use this skill for ANY task in the DJ Zen Eyer project repository. Activates
@@ -229,7 +229,8 @@ export const useEventsList = (status?: string) => {
 1. Rodar localmente: `npm run dev` e usar um script de Puppeteer para capturar erros de console ocultos.
 2. Comum: Erros de "Cannot access X before initialization" no `UserContext`.
 3. Comum: Ícones do `lucide-react` não importados.
-4. Solução técnica: Garantir que funções usadas em `useEffect` (como `logout`) sejam definidas ANTES do hook no arquivo.
+4. Solução técnica: Garantir que funções usadas em `useEffect` (como `logout`) sejam definidas ANTES do hook no arquivo. 
+5. **Nota sobre Logout:** No `UserContext`, a função `logout` é **síncrona**. Não usar `async/await` ao chamá-la em componentes (ex: `MyAccountPage`).
 
 ### Caracteres estranhos nas traduções (Encoding)
 
@@ -317,4 +318,5 @@ Correcoes obrigatorias:
 - Namespace de eventos canonico: `zen-bit/v2`.
 - PHP baseline do projeto: 8.1+ (compativel com `zengame`).
 - ⚠️ **localStorage/sessionStorage**: permitido apenas para sessao/idioma e com revisao de seguranca.
+- **Tipagem de Perfil:** `ProfileUpdatePayload` em `useQueries.ts` deve incluir campos customizados (`real_name`, `dance_role`, `gender`, etc.) para evitar erros de cast no `MyAccountPage`.
 - Projeto usa Tailwind v3 no momento; nao aplicar regras exclusivas de v4 sem migracao explicita.
