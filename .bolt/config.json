@@ -1,0 +1,19 @@
+{
+  "github": {
+    "enabled": true,
+    "repository": "MarceloEyer/djzeneyer",
+    "branch": "main",
+    "autoSync": true,
+    "syncOnSave": true
+  },
+  "project": {
+    "name": "DJ Zen Eyer Website",
+    "type": "react-vite",
+    "framework": "react-typescript"
+  },
+  "deployment": {
+    "provider": "github-actions",
+    "autoDeployOnPush": true,
+    "target": "production"
+  }
+}
