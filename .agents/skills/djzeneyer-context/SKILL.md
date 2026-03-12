@@ -89,6 +89,8 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 - **useQueries.ts — SSOT**: Arquivo único em `src/hooks/useQueries.ts` contém TODOS os hooks de dados. Nunca use `fetch()` solto em componentes.
 - **Backend Filters, Frontend Renders**: Backend filtra dados via query params (`?status=published&limit=10`); React renderiza apenas o resultado. Nunca filtre grandes datasets no React.
 - **HeadlessSEO**: Importar de `src/components/HeadlessSEO` para meta tags dinâmicas em todas as páginas.
+- **Hybrid Prerender (Bandsintown)**: Durante o build, o `prerender.js` busca dados reais do Bandsintown para gerar o HTML estático. No runtime, o app usa o plugin WordPress (`zen-bit/v2`).
+- **Papel do `index.html`**: É um **Vite Template**. Nunca servido diretamente pelo WordPress. Base para Build/Prerender/Dev.
 
 ### 3.2 Backend — Namespacing Obrigatório
 
@@ -219,6 +221,7 @@ export const useEventsList = (status?: string) => {
 - ❌ **Remoção de PWA/Manifest**: PROIBIDO remover lógica de PWA (`site.webmanifest`) ou service workers.
 - ❌ **Remoção de Paginas Detalhe**: PROIBIDO remover renderização de slug/evento individual em `NewsPage` e `EventsPage`.
 - ❌ **Linguagem de "Alucinação"**: Nunca rotule código funcional como erro de IA sem checar os arquivos físicos.
+- ❌ **JS Inline no index.html**: Proibido usar `onload`, `onclick` ou blocos `<script>` (com exceções de analytics com nonce) para permitir CSP estrito.
 
 ---
 

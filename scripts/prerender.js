@@ -1,16 +1,17 @@
-#!/usr/bin/env node
-/**
- * SSR PRERENDER v20.0 - BASE PATH FIXED
- */
-
 import { spawn } from 'child_process';
 import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, URL } from 'url';
 import puppeteer from 'puppeteer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || '15619775';
+const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'djzeneyer-site';
+const SITE_BASE_URL = process.env.SITE_BASE_URL || 'https://djzeneyer.com';
+const EVENTS_ROUTE_EN = '/zouk-events';
+const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
+const bandsintownArtistEndpoint = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${encodeURIComponent(BANDSINTOWN_APP_ID)}`;
 
 // 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
 let routesList = [];
@@ -43,6 +44,119 @@ const CONFIG = {
 };
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function safeText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function slugify(value) {
+  return safeText(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function buildCanonicalPath(event, lang = 'en') {
+  const eventDate = safeText(event.starts_at).slice(0, 10);
+  const titlePart = slugify(event.title || `${event.location?.venue || 'event'} ${event.location?.city || ''}`);
+  const base = lang === 'pt' ? EVENTS_ROUTE_PT : EVENTS_ROUTE_EN;
+  return `${base}/${eventDate}-${titlePart}-${event.event_id}`;
+}
+
+function normalizeBandsintownEvent(raw, lang = 'en') {
+  const venue = raw?.venue || {};
+  const startsAt = raw?.datetime || raw?.starts_at || '';
+  const title =
+    safeText(raw?.title) ||
+    [safeText(raw?.artist?.name), safeText(venue?.name), safeText(venue?.city)]
+      .filter(Boolean)
+      .join(' at ')
+      .trim() ||
+    'DJ Zen Eyer';
+
+  const normalized = {
+    event_id: String(raw?.id ?? ''),
+    title,
+    starts_at: startsAt,
+    timezone: raw?.timezone || undefined,
+    location: {
+      venue: safeText(venue?.name),
+      city: safeText(venue?.city),
+      region: safeText(venue?.region),
+      country: safeText(venue?.country),
+      latitude: venue?.latitude ? String(venue.latitude) : undefined,
+      longitude: venue?.longitude ? String(venue.longitude) : undefined,
+    },
+    source_url: safeText(raw?.url),
+    image: safeText(raw?.artist?.image_url || raw?.artist?.thumb_url || ''),
+    offers: Array.isArray(raw?.offers)
+      ? raw.offers
+          .filter(Boolean)
+          .map(o => ({
+            url: safeText(o?.url),
+            type: safeText(o?.type),
+            status: safeText(o?.status),
+          }))
+          .filter(o => o.url)
+      : [],
+  };
+
+  const canonical_path = buildCanonicalPath(normalized, lang);
+
+  return {
+    ...normalized,
+    canonical_path,
+    canonical_url: `${SITE_BASE_URL}${canonical_path}`,
+    tickets: normalized.offers.map(o => o.url),
+    description: safeText(raw?.description || ''),
+    artists: Array.isArray(raw?.lineup)
+      ? raw.lineup
+          .filter(Boolean)
+          .map(name => ({ name: safeText(name) }))
+          .filter(a => a.name)
+      : [],
+  };
+}
+
+async function fetchBandsintownEvents() {
+  const cacheFile = join(CONFIG.distDir, '.prerender-bandsintown-cache.json');
+  try {
+    const res = await fetch(bandsintownArtistEndpoint, {
+      headers: { 
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Bandsintown responded ${res.status}`);
+    }
+
+    const raw = await res.json();
+    const items = Array.isArray(raw) ? raw : [];
+    const eventsEn = items.map(item => normalizeBandsintownEvent(item, 'en')).filter(e => e.event_id);
+    const eventsPt = items.map(item => normalizeBandsintownEvent(item, 'pt')).filter(e => e.event_id);
+    const detailById = Object.fromEntries(eventsEn.map((event, index) => [event.event_id, { en: event, pt: eventsPt[index] }]));
+    const payload = {
+      fetchedAt: new Date().toISOString(),
+      list: { en: eventsEn, pt: eventsPt },
+      detailById,
+    };
+
+    writeFileSync(cacheFile, JSON.stringify(payload, null, 2), 'utf8');
+    console.log(`🎫 Bandsintown: ${eventsEn.length} eventos carregados.`);
+    return payload;
+  } catch (error) {
+    if (existsSync(cacheFile)) {
+      console.warn(`⚠️ Bandsintown indisponível. Usando cache local. Motivo: ${error.message}`);
+      return JSON.parse(readFileSync(cacheFile, 'utf8'));
+    }
+    console.warn(`⚠️ Bandsintown indisponível e sem cache. Motivo: ${error.message}`);
+    return { fetchedAt: new Date().toISOString(), list: { en: [], pt: [] }, detailById: {} };
+  }
+}
 
 // Servidor Vite
 let viteProcess = null;
@@ -79,6 +193,8 @@ async function prerender() {
   let browser = null;
   try {
     await startDevServer();
+    const bandsintownData = await fetchBandsintownEvents();
+
     browser = await puppeteer.launch({
       headless: 'shell',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -87,16 +203,46 @@ async function prerender() {
     const page = await browser.newPage();
 
     // 🛡️ API INTERCEPTION: Global for all pages
+    await page.evaluateOnNewDocument((payload) => {
+      window.__PRERENDER_DATA__ = payload;
+    }, {
+      events: bandsintownData.list,
+      fetchedAt: bandsintownData.fetchedAt,
+    });
+
     await page.setRequestInterception(true);
     page.on('request', request => {
       const reqUrl = request.url();
+      const urlObj = new URL(reqUrl);
+      const lang = (urlObj.searchParams.get('lang') || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+
       if (reqUrl.includes('/wp-json/')) {
         let mockData = [];
         if (reqUrl.includes('/posts')) mockData = [{ id: 1, title: { rendered: 'Build Preview' }, slug: 'preview', date: new Date().toISOString() }];
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
         if (reqUrl.includes('/v1/menu')) mockData = [];
-        if (reqUrl.includes('/zen-bit/v2/events')) mockData = { success: true, events: [] };
+
+        if (reqUrl.includes('/zen-bit/v2/events/')) {
+          const eventId = reqUrl.split('/zen-bit/v2/events/')[1]?.split('?')[0];
+          const detail = bandsintownData.detailById?.[eventId]?.[lang] || null;
+          mockData = { success: true, event: detail };
+        } else if (reqUrl.includes('/zen-bit/v2/events')) {
+          const list = bandsintownData.list?.[lang] || bandsintownData.list?.en || [];
+          const params = urlObj.searchParams;
+          const limit = Number(params.get('limit') || list.length || 0);
+          const mode = params.get('mode') || 'upcoming';
+          const now = Date.now();
+          const filtered = list.filter(event => {
+            const t = Date.parse(event.starts_at);
+            if (!Number.isFinite(t)) return true;
+            if (mode === 'past') return t < now;
+            if (mode === 'upcoming') return t >= now;
+            return true;
+          }).slice(0, limit || list.length);
+          mockData = { success: true, count: filtered.length, mode, events: filtered };
+        }
+
         if (reqUrl.includes('/zen-seo/v1/settings')) mockData = { success: true, data: { real_name: "DJ Zen Eyer", default_og_image: "" } };
 
         request.respond({

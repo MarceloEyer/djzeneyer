@@ -144,6 +144,25 @@ export interface WPPost {
 // EXPORTED FETCH FUNCTIONS (PREFETCH READY)
 // ============================================================================
 
+declare global {
+  interface Window {
+    __PRERENDER_DATA__?: {
+      events?: {
+        en?: ZenBitEventListItem[];
+        pt?: ZenBitEventListItem[];
+      };
+      fetchedAt?: string;
+    };
+  }
+}
+
+const getPrerenderEvents = (lang?: string): ZenBitEventListItem[] | null => {
+  const bucket = window.__PRERENDER_DATA__?.events;
+  if (!bucket) return null;
+  if (lang?.toLowerCase().startsWith('pt')) return bucket.pt || bucket.en || null;
+  return bucket.en || bucket.pt || null;
+};
+
 export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
   const res = await fetch(apiUrl);
@@ -153,12 +172,14 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
 };
 
 export const fetchEventsFn = async ({
-  mode = 'upcoming',
-  days,
-  date,
   limit = 10,
   lang,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
+  const prerenderEvents = getPrerenderEvents(lang);
+  if (prerenderEvents && prerenderEvents.length > 0) {
+    return prerenderEvents.slice(0, limit);
+  }
+
   try {
     const params: Record<string, string> = {
       mode: mode,

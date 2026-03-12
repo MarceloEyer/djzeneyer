@@ -14,6 +14,11 @@ import { ensureTrailingSlash } from '../utils/seo';
 // 1. INTERFACES
 // ============================================================================
 
+export interface HrefLang {
+  lang: string;
+  url: string;
+}
+
 export interface PreloadItem {
   href: string;
   as: 'script' | 'style' | 'font' | 'fetch';
@@ -253,7 +258,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     // 4.3 Event Schema (If on events page or specific event)
     if (events && events.length > 0) {
       const musicEvents = events.map((event) => {
-        const eventTitle = event.title?.rendered || event.title || event.name || 'Zouk Event';
+        const eventTitle = (typeof event.title === 'object' ? event.title.rendered : event.title) || event.name || 'Zouk Event';
         const canonicalUrl = event.canonical_url || event.url || undefined;
         const startDate = event.starts_at || event.event_date || event.start_date;
         const endDate = event.ends_at || event.end_date;
@@ -387,12 +392,11 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <html lang={htmlLangAttribute} />
 
       <meta charSet="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="theme-color" content="#000000" />
+      <meta name="theme-color" content="#0A0E27" />
 
       {/* Preloads */}
       {preload.map((item, index) => (
-        <link key={`preload-${index}`} rel="preload" {...item} href={safeUrl(item.href)} />
+        <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin as any} href={safeUrl(item.href)} />
       ))}
 
       {/* Basic SEO */}

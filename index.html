@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
@@ -20,17 +20,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <meta name="theme-color" content="#0A0E27" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
   <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"
-    rel="stylesheet" media="print" onload="this.media='all'" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <noscript>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"
       rel="stylesheet" />
   </noscript>
 </head>
@@ -38,19 +36,7 @@
 <body>
   <div id="root"></div>
 
-  <script>
-    // Mock de dados para o ambiente local funcionar igual ao WordPress
-    if (window.location.hostname === 'localhost') {
-      window.wpData = {
-        siteUrl: 'http://localhost:5173',
-        themeUrl: 'http://localhost:5173',
-        nonce: 'dev-nonce',
-        isUserLoggedIn: false
-      };
-    }
-  </script>
-
-  <script type="module" src="/src/main.tsx"></script>
+  <script type="module" src="/src/main.tsx" fetchpriority="high"></script>
 
   <noscript>
     <div

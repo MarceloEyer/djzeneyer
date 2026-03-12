@@ -58,6 +58,11 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
 - Tailwind canonico do projeto: v3; nao aplicar convencoes exclusivas de v4 sem migracao explicita
 - SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
+- **Hybrid Prerender Architecture (2026-03)**:
+  - **Build/SEO**: Busca dados REAL direto do Bandsintown via `scripts/prerender.js`.
+  - **Runtime**: Continua usando o plugin `ZenBit` para consistência e persistência de dados.
+  - **Hydration**: O app hidrata os dados injetados em `window.__PRERENDER_DATA__`.
+- **Papel do `index.html`**: É um **Vite Template**. Não é o arquivo servido diretamente pelo WordPress, mas sim a base para o Build e Prerender (SEO).
 
 ## Fluxo para qualquer tarefa
 1. Ler este indice
@@ -84,3 +89,4 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 ## Regra operacional adicional (2026-03)
 10. Build de frontend deve passar em `npm run perf:budget` para evitar regressao de bundle.
+11. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html` para permitir políticas de segurança sem `'unsafe-inline'`.
