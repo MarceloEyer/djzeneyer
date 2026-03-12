@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, Download, Image as ImageIcon } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 
 const MediaPage: React.FC = () => {
   const { t } = useTranslation();

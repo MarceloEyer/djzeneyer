@@ -73,7 +73,7 @@ const NewsPage: React.FC = () => {
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "NewsArticle",
-      "headline": stripHtml(singlePost.title.rendered),
+      "headline": stripHtml(singlePost?.title?.rendered ?? ''),
       "image": [postImage],
       "datePublished": singlePost.date,
       "dateModified": singlePost.modified || singlePost.date,
@@ -87,8 +87,8 @@ const NewsPage: React.FC = () => {
     return (
       <>
         <HeadlessSEO
-          title={`${stripHtml(singlePost.title.rendered)} | ${t('news.title')}`}
-          description={stripHtml(singlePost.excerpt.rendered)}
+          title={`${stripHtml(singlePost?.title?.rendered ?? '')} | ${t('news.title')}`}
+          description={stripHtml(singlePost?.excerpt?.rendered ?? '')}
           url={postUrl}
           image={postImage}
           type="article"
@@ -107,7 +107,7 @@ const NewsPage: React.FC = () => {
                   <span>•</span>
                   <span>{t('news.by')} {singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')}</span>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost.title.rendered) }} />
+                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost?.title?.rendered ?? '') }} />
 
                 {postImage !== '#' && (
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
@@ -122,7 +122,7 @@ const NewsPage: React.FC = () => {
 
               <div
                 className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:font-black prose-a:text-primary hover:prose-a:text-white transition-colors"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost.content?.rendered || "") }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost?.content?.rendered || '') }}
               />
             </article>
           </div>
