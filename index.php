@@ -72,8 +72,7 @@ if (file_exists($possible_file) && is_file($possible_file)) {
 // 5. Entrega o arquivo (Se validado e seguro)
 if ($serve_file) {
     // Whitelist de extensões permitidas (Camada extra de segurança)
-    // REMOVIDO 'html': Para que o WordPress trate o index.html e injete os scripts/nonces necessários.
-    $allowed_ext = ['xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
+    $allowed_ext = ['html', 'xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
     $extension = strtolower(pathinfo($serve_file, PATHINFO_EXTENSION));
 
     if (!in_array($extension, $allowed_ext, true)) {

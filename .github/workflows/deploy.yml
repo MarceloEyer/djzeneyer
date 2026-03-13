@@ -440,19 +440,3 @@ jobs:
       - name: 🎉 Success
         if: success()
         run: echo "🚀 Site Live at ${{ env.SITE_URL }}"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# JOB 3: HEALTH CHECK (Mantido Original)
-# ═══════════════════════════════════════════════════════════════════════════════
-  health-check:
-    name: 🏥 Health Check
-    needs: deploy
-    runs-on: ubuntu-24.04
-    if: needs.deploy.result == 'success'
-    
-    steps:
-      - name: 🔍 Check sitemap.xml
-        run: |
-          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36"
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" ${{ env.SITE_URL }}/sitemap.xml)
-          if [ "$HTTP_CODE" = "200" ]; then echo "✅ Site UP"; else echo "⚠️ HTTP $HTTP_CODE"; exit 0; fi
