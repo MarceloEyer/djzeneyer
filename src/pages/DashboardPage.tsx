@@ -88,7 +88,7 @@ const DashboardContent = () => {
         <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-surface/40 p-6 md:p-8 backdrop-blur-xl">
           {/* Decorative Background Image */}
           <div className="absolute -right-20 -top-20 h-64 w-64 opacity-20 blur-2xl lg:opacity-30 lg:h-96 lg:w-96">
-             <img src="/zen_tribe_dashboard_welcome_1773245829455.png" className="h-full w-full object-cover rounded-full" alt="Decorative" />
+             <img src="/images/zen_tribe_dashboard_welcome.png" className="h-full w-full object-cover rounded-full" alt="Decorative" />
           </div>
 
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">

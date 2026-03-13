@@ -56,10 +56,10 @@ const MediaPage: React.FC = () => {
               <Newspaper size={16} /> {t('media_page.verified_profiles')}
             </div>
             <h1 className="text-5xl md:text-7xl font-black font-display mb-8 text-white tracking-tighter uppercase leading-[0.9]">
-              {t('media_page.title')}
+              Press & Media
             </h1>
             <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
-              {t('media_page.subtitle')}
+              Explore media coverage, press mentions, and the official press kit of DJ Zen Eyer.
             </p>
           </motion.div>
 

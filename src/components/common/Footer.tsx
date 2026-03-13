@@ -86,11 +86,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_events')}</Link></li>
-              <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_music')}</Link></li>
-              <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_zen_tribe_info')}</Link></li>
-              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_shop')}</Link></li>
-              <li><Link to={getLocalizedRoute('support', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_support_artist')}</Link></li>
+              <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.events')}</Link></li>
+              <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.music')}</Link></li>
+              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
+              <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
+              <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
             </ul>
           </div>
 
@@ -98,13 +98,12 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('footer_about')}</Link></li>
-              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_news')}</Link></li>
-              <li><Link to={getLocalizedRoute('philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_philosophy')}</Link></li>
-              <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_work_with_me')}</Link></li>
-              <li><Link to={getLocalizedRoute('presskit', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_media')}</Link></li>
+              <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
+              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('news.label')}</Link></li>
+              <li><Link to={getLocalizedRoute('philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('philosophy.page_title')}</Link></li>
+              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
               <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('common.footer_conduct')}</Link></li>
+              <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('conduct_page.title')}</Link></li>
             </ul>
           </div>
 

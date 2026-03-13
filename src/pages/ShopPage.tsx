@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
+import { getLocalizedRoute } from '../config/routes';
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
@@ -401,46 +402,83 @@ const ShopPage: React.FC = () => {
       />
 
       {/* --- Billboard (Netflix Hero) --- */}
-      {featuredProduct && (
+      {featuredProduct ? (
         <ShopHero
           product={featuredProduct}
           onAddToCart={handleAddToCart}
-          isAddingToCart={addingToCart === featuredProduct.id} // OPTIMIZATION: Pass boolean
+          isAddingToCart={addingToCart === featuredProduct.id}
           productBasePath={productBasePath}
         />
+      ) : (
+        <div className="relative h-[60vh] w-full flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-dark from-primary/10 to-[#141414]" />
+          <div className="container mx-auto px-6 relative z-10 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-4xl mx-auto"
+            >
+              <h1 className="text-5xl md:text-8xl font-black font-display mb-6 tracking-tighter uppercase leading-[0.8] opacity-20">
+                Zen <span className="text-primary italic">Store</span>
+              </h1>
+              <p className="text-xl text-white/40 font-bold uppercase tracking-widest">
+                {t('shop.coming_soon_msg', 'Exclusividade em cada batida.')}
+              </p>
+            </motion.div>
+          </div>
+        </div>
       )}
 
       {/* --- Netflix-style Lists (Rows) --- */}
       <div className="relative z-20 pb-20 -mt-8 md:-mt-12 lg:-mt-16 space-y-12 md:space-y-16">
-        <ProductRow
-          title={t('shop.new_releases')}
-          products={newReleases}
-          onAddToCart={handleAddToCart}
-          isAdding={newReleases.some(p => p.id === addingToCart)}
-          activeProductId={addingToCart}
-          formatPrice={formatPrice}
-          productBasePath={productBasePath}
-        />
+        {newReleases.length > 0 || bestSellers.length > 0 || curatedSelection.length > 0 ? (
+          <>
+            <ProductRow
+              title={t('shop.new_releases')}
+              products={newReleases}
+              onAddToCart={handleAddToCart}
+              isAdding={newReleases.some(p => p.id === addingToCart)}
+              activeProductId={addingToCart}
+              formatPrice={formatPrice}
+              productBasePath={productBasePath}
+            />
 
-        <ProductRow
-          title={t('badge_sale')}
-          products={bestSellers}
-          onAddToCart={handleAddToCart}
-          isAdding={bestSellers.some(p => p.id === addingToCart)}
-          activeProductId={addingToCart}
-          formatPrice={formatPrice}
-          productBasePath={productBasePath}
-        />
+            <ProductRow
+              title={t('badge_sale')}
+              products={bestSellers}
+              onAddToCart={handleAddToCart}
+              isAdding={bestSellers.some(p => p.id === addingToCart)}
+              activeProductId={addingToCart}
+              formatPrice={formatPrice}
+              productBasePath={productBasePath}
+            />
 
-        <ProductRow
-          title={t('shop.top_picks')}
-          products={curatedSelection}
-          onAddToCart={handleAddToCart}
-          isAdding={curatedSelection.some(p => p.id === addingToCart)}
-          activeProductId={addingToCart}
-          formatPrice={formatPrice}
-          productBasePath={productBasePath}
-        />
+            <ProductRow
+              title={t('shop.top_picks')}
+              products={curatedSelection}
+              onAddToCart={handleAddToCart}
+              isAdding={curatedSelection.some(p => p.id === addingToCart)}
+              activeProductId={addingToCart}
+              formatPrice={formatPrice}
+              productBasePath={productBasePath}
+            />
+          </>
+        ) : (
+          <div className="container mx-auto px-6 py-20 text-center">
+            <div className="p-16 rounded-[3rem] bg-white/[0.02] border border-dashed border-white/10 backdrop-blur-sm max-w-4xl mx-auto">
+              <Loader2 className="w-12 h-12 text-primary/30 mx-auto mb-6 animate-spin" />
+              <h3 className="text-3xl font-display font-bold mb-4 opacity-70">
+                {t('shop.empty_title', 'O Baú está Sendo Preparado')}
+              </h3>
+              <p className="text-white/30 text-lg max-w-lg mx-auto leading-relaxed mb-8">
+                Estamos organizando os novos lançamentos e produtos exclusivos da Zen Tribe. Fique de olho no seu e-mail para o drop!
+              </p>
+              <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary px-10 py-4 uppercase font-black tracking-widest">
+                {t('shop.join_tribe_waitlist', 'Entrar na Lista VIP')}
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* --- Netflix-style Footer Section (Benefits) --- */}

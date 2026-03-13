@@ -130,7 +130,8 @@ class Zen_Plugins_Overview
     {
         $php_version = \phpversion();
         $wp_version = \get_bloginfo('version');
-        $memory = \size_format(\wp_convert_hr_to_bytes(\WP_MEMORY_LIMIT));
+        $memory_limit = \WP_MEMORY_LIMIT;
+        $memory_usage = \function_exists('memory_get_usage') ? \size_format(\memory_get_usage(true)) : 'N/A';
         $db_version = $GLOBALS['wpdb']->db_version();
         $plugins = $this->get_plugins_data();
         $active_count = 0;
@@ -138,679 +139,589 @@ class Zen_Plugins_Overview
             if ($this->check_active($p['path']))
                 $active_count++;
         }
+        $integrity = \round(($active_count / \count($plugins)) * 100);
         ?>
-        <div class="zc-wrap">
+        <div class="zc-hud">
+            <!-- BACKGROUND FX -->
+            <div class="zc-scanlines"></div>
+            <div class="zc-digital-grid"></div>
 
-            <!-- HEADER -->
+            <!-- TOP NAVIGATION / HUD HEADER -->
             <header class="zc-header">
-                <div class="zc-logo">
-                    <div class="zc-logo-icon">
-                        <span class="dashicons dashicons-superhero"></span>
+                <div class="zc-branding">
+                    <div class="zc-orb-container">
+                        <div class="zc-orb" style="--integrity: <?php echo $integrity; ?>%">
+                            <span class="dashicons dashicons-superhero"></span>
+                        </div>
+                        <svg class="zc-integrity-svg">
+                            <circle class="zc-integrity-bg" cx="40" cy="40" r="36"></circle>
+                            <circle class="zc-integrity-fill" cx="40" cy="40" r="36" style="stroke-dashoffset: <?php echo 226 - (226 * $integrity / 100); ?>"></circle>
+                        </svg>
                     </div>
                     <div>
-                        <h1 class="zc-title">Zen<span>Core</span></h1>
-                        <p class="zc-subtitle">Headless Architecture Mission Control</p>
+                        <h1 class="zc-main-title">ZEN<span>CORE</span></h1>
+                        <p class="zc-mission-status">MISSION STATUS: <span class="<?php echo $integrity === 100 ? 'status-nominal' : 'status-warning'; ?>"><?php echo $integrity === 100 ? 'OPERATIONAL' : 'DEGRADED'; ?></span></p>
                     </div>
                 </div>
-                <div class="zc-header-right">
-                    <div class="zc-system-badge">
-                        <span class="zc-pulse"></span>
-                        <?php echo $active_count; ?>/<?php echo count($plugins); ?> SISTEMAS ONLINE
+
+                <!-- CHARACTER STATS (System Info) -->
+                <div class="zc-stats-hud">
+                    <div class="zc-stat-item" title="Memory Stability">
+                        <span class="zc-stat-label">STR</span>
+                        <span class="zc-stat-value"><?php echo \esc_html($memory_limit); ?></span>
+                        <div class="zc-stat-bar"><div style="width: 85%"></div></div>
                     </div>
-                    <div class="zc-sys-info">
-                        <div class="zc-sys-item"><span>PHP</span> <?php echo \esc_html($php_version); ?></div>
-                        <div class="zc-sys-item"><span>WP</span> <?php echo \esc_html($wp_version); ?></div>
-                        <div class="zc-sys-item"><span>DB</span> <?php echo \esc_html($db_version); ?></div>
-                        <div class="zc-sys-item"><span>MEM</span> <?php echo \esc_html($memory); ?></div>
+                    <div class="zc-stat-item" title="Logic Integrity (Versions)">
+                        <span class="zc-stat-label">INT</span>
+                        <span class="zc-stat-value">v<?php echo \esc_html($php_version); ?></span>
+                        <div class="zc-stat-bar"><div style="width: 92%"></div></div>
+                    </div>
+                    <div class="zc-stat-item" title="Execution Precision">
+                        <span class="zc-stat-label">DEX</span>
+                        <span class="zc-stat-value">WP <?php echo \esc_html($wp_version); ?></span>
+                        <div class="zc-stat-bar"><div style="width: 78%"></div></div>
+                    </div>
+                    <div class="zc-stat-item" title="Plugin Synergy">
+                        <span class="zc-stat-label">LUK</span>
+                        <span class="zc-stat-value"><?php echo $active_count; ?>/<?php echo \count($plugins); ?></span>
+                        <div class="zc-stat-bar"><div style="width: <?php echo $integrity; ?>%"></div></div>
                     </div>
                 </div>
             </header>
 
-            <!-- GRID DE PLUGINS -->
-            <div class="zc-grid">
+            <!-- MAIN GRID / SKILL TREE -->
+            <div class="zc-skill-tree">
                 <?php foreach ($plugins as $plugin):
                     $is_active = $this->check_active($plugin['path']);
-                    $status_class = $is_active ? 'online' : 'offline';
-                    $status_label = $is_active ? 'ONLINE' : 'OFFLINE';
-                    $color = $plugin['color'];
+                    $rarity = \strpos(\strtolower($plugin['name']), 'pro') !== false ? 'legendary' : 'rare';
+                    $accent = $plugin['color'];
                     ?>
-                    <article class="zc-card <?php echo $status_class; ?>" style="--accent: <?php echo \esc_attr($color); ?>">
-
-                        <div class="zc-card-header">
-                            <div class="zc-icon"
-                                style="background: <?php echo \esc_attr($color); ?>18; border-color: <?php echo \esc_attr($color); ?>30;">
-                                <span class="dashicons <?php echo \esc_attr($plugin['icon']); ?>"
-                                    style="color: <?php echo \esc_attr($color); ?>;"></span>
-                            </div>
-                            <div class="zc-status <?php echo $status_class; ?>">
-                                <span class="zc-dot"></span>
-                                <?php echo $status_label; ?>
-                            </div>
-                        </div>
-
-                        <h2 class="zc-card-title"><?php echo \esc_html($plugin['name']); ?></h2>
-                        <p class="zc-card-desc"><?php echo \esc_html($plugin['desc']); ?></p>
-
-                        <!-- ENDPOINTS -->
-                        <div class="zc-endpoints">
-                            <div class="zc-endpoints-label">
-                                <span class="dashicons dashicons-rest-api"></span> REST Endpoints
-                            </div>
-                            <?php foreach ($plugin['endpoints'] as $endpoint => $label):
-                                $method = \strtok($endpoint, ' ');
-                                $url = \trim(\substr($endpoint, \strlen($method)));
-                                $method_class = \strtolower($method);
-                                ?>
-                                <div class="zc-endpoint-row">
-                                    <span
-                                        class="zc-method <?php echo \esc_attr($method_class); ?>"><?php echo \esc_html($method); ?></span>
-                                    <code class="zc-url" title="<?php echo \esc_attr($label); ?>"><?php echo \esc_html($url); ?></code>
+                    <article class="zc-skill-card <?php echo $is_active ? 'active' : 'inactive'; ?> rarity-<?php echo $rarity; ?>" style="--accent: <?php echo \esc_attr($accent); ?>">
+                        <div class="zc-card-glow"></div>
+                        <div class="zc-card-inner">
+                            <div class="zc-card-header">
+                                <div class="zc-skill-icon">
+                                    <span class="dashicons <?php echo \esc_attr($plugin['icon']); ?>"></span>
+                                    <div class="zc-icon-pulse"></div>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
+                                <div class="zc-rarity-badge"><?php echo \strtoupper($rarity); ?></div>
+                            </div>
 
-                        <div class="zc-card-footer">
-                            <span class="zc-version">v<?php echo \esc_html($plugin['version']); ?></span>
-                            <div class="zc-actions">
-                                <?php if ($is_active): ?>
-                                    <a href="<?php echo \esc_url($plugin['docs_url']); ?>" class="zc-btn primary"
-                                        style="--accent: <?php echo \esc_attr($color); ?>">
-                                        <span class="dashicons dashicons-admin-settings"></span> Configurar
-                                    </a>
-                                <?php else: ?>
-                                    <a href="<?php echo \esc_url(\admin_url('plugins.php')); ?>" class="zc-btn danger">
-                                        <span class="dashicons dashicons-warning"></span> Ativar
-                                    </a>
-                                <?php endif; ?>
-                                <a href="<?php echo \esc_url(\rest_url()); ?>" target="_blank" class="zc-btn ghost"
-                                    title="REST API Root">
-                                    <span class="dashicons dashicons-external"></span>
-                                </a>
+                            <h2 class="zc-skill-name"><?php echo \esc_html($plugin['name']); ?></h2>
+                            <p class="zc-skill-desc"><?php echo \esc_html($plugin['desc']); ?></p>
+
+                            <!-- TERMINAL ENDPOINTS -->
+                            <div class="zc-terminal">
+                                <div class="zc-terminal-header">
+                                    <span class="zc-terminal-dot red"></span>
+                                    <span class="zc-terminal-dot yellow"></span>
+                                    <span class="zc-terminal-dot green"></span>
+                                    <span class="zc-terminal-title">active_endpoints.sh</span>
+                                </div>
+                                <div class="zc-terminal-body">
+                                    <?php foreach ($plugin['endpoints'] as $endpoint => $label): 
+                                        $method = \strtok($endpoint, ' ');
+                                        $url = \trim(\substr($endpoint, \strlen($method)));
+                                        ?>
+                                        <div class="zc-terminal-line">
+                                            <span class="zc-m-badge m-<?php echo \strtolower($method); ?>"><?php echo $method; ?></span>
+                                            <span class="zc-line-path"><?php echo \esc_html($url); ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
+                            <div class="zc-card-footer">
+                                <div class="zc-version-tag">VER <?php echo \esc_html($plugin['version']); ?></div>
+                                <div class="zc-actions">
+                                    <?php if ($is_active): ?>
+                                        <a href="<?php echo \esc_url($plugin['docs_url']); ?>" class="zc-action-btn primary">
+                                            <span>EXECUTE</span>
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?php echo \esc_url(\admin_url('plugins.php')); ?>" class="zc-action-btn danger">
+                                            <span>ACTIVATE</span>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </article>
                 <?php endforeach; ?>
             </div>
 
-            <!-- REST API QUICK TEST -->
-            <section class="zc-section">
-                <h2 class="zc-section-title"><span class="dashicons dashicons-rest-api"></span> Quick Links</h2>
-                <div class="zc-quick-grid">
-                    <a href="<?php echo \esc_url(\rest_url('zen-bit/v2/events?mode=upcoming&limit=3')); ?>" target="_blank"
-                        class="zc-quick-card">
-                        <span class="dashicons dashicons-tickets-alt"></span>
-                        <span>Próximos Eventos (v2)</span>
-                        <span class="dashicons dashicons-external"></span>
-                    </a>
-                    <a href="<?php echo \esc_url(\rest_url('zen-bit/v2/events/schema')); ?>" target="_blank"
-                        class="zc-quick-card">
-                        <span class="dashicons dashicons-search"></span>
-                        <span>MusicEvent Schema (v2)</span>
-                        <span class="dashicons dashicons-external"></span>
-                    </a>
-                    <a href="<?php echo \esc_url(\rest_url('zen-seo/v1/settings')); ?>" target="_blank" class="zc-quick-card">
-                        <span class="dashicons dashicons-chart-line"></span>
-                        <span>SEO Settings</span>
-                        <span class="dashicons dashicons-external"></span>
-                    </a>
-                    <a href="<?php echo \esc_url(\rest_url('zengame/v1/leaderboard')); ?>" target="_blank"
-                        class="zc-quick-card">
-                        <span class="dashicons dashicons-games"></span>
-                        <span>Leaderboard</span>
-                        <span class="dashicons dashicons-external"></span>
-                    </a>
-                    <a href="<?php echo \esc_url(\admin_url('plugins.php')); ?>" class="zc-quick-card">
-                        <span class="dashicons dashicons-admin-plugins"></span>
-                        <span>Todos os Plugins</span>
-                        <span class="dashicons dashicons-arrow-right-alt2"></span>
-                    </a>
-                    <a href="https://github.com/MarceloEyer/djzeneyer" target="_blank" class="zc-quick-card">
-                        <span class="dashicons dashicons-admin-generic"></span>
-                        <span>GitHub Repo</span>
-                        <span class="dashicons dashicons-external"></span>
-                    </a>
+            <!-- FOOTER HUD -->
+            <footer class="zc-footer-hud">
+                <div class="zc-quick-launch">
+                    <h3 class="zc-ql-label">QUICK LAUNCH</h3>
+                    <div class="zc-ql-grid">
+                        <a href="<?php echo \rest_url('zen-bit/v2/events?mode=upcoming&limit=3'); ?>" target="_blank" class="zc-ql-item">LIVE EVENTS</a>
+                        <a href="<?php echo \rest_url('zen-seo/v1/settings'); ?>" target="_blank" class="zc-ql-item">SEO ENGINE</a>
+                        <a href="<?php echo \rest_url('zengame/v1/leaderboard'); ?>" target="_blank" class="zc-ql-item">LEADERBOARD</a>
+                        <a href="https://github.com/MarceloEyer/djzeneyer" target="_blank" class="zc-ql-item">SOURCE_CODE</a>
+                    </div>
                 </div>
-            </section>
-
-            <footer class="zc-footer">
-                <p>
-                    <strong>Zen Control</strong> v3.0.0 &nbsp;·&nbsp;
-                    Desenvolvido por \u003ca href=\"https://djzeneyer.com\" target=\"_blank\"\u003eDJ Zen Eyer\u003c/a\u003e
-                    \u0026nbsp;\u00b7\u0026nbsp; \u003c?php echo \\date('Y'); ?\u003e
-                    \u003c/p\u003e
+                <div class="zc-copyright">
+                    <p>ZEN_CORE_SYSTEM [READY] &copy; <?php echo \date('Y'); ?> // DESIGNED BY <a href="https://djzeneyer.com" target="_blank">DJ_ZEN_EYER</a></p>
+                </div>
             </footer>
         </div>
 
         <style>
-            /* ============================================================
-                                                   ZEN CONTROL v3.0 — Mission Control Dashboard
-                                                ============================================================ */
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&display=swap');
+
             :root {
                 --zc-bg: #06080f;
-                --zc-surface: #0d1020;
-                --zc-border: rgba(255, 255, 255, 0.06);
-                --zc-text: rgba(255, 255, 255, 0.85);
-                --zc-muted: rgba(255, 255, 255, 0.35);
+                --zc-surface: rgba(13, 16, 32, 0.7);
+                --zc-border: rgba(255, 255, 255, 0.08);
+                --zc-text: #e0e0e0;
                 --zc-accent: #9d4edd;
-                --zc-radius: 20px;
-                --zc-font: 'Inter', 'SF Pro Display', system-ui, sans-serif;
-                --zc-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+                --zc-neon-purple: #9d4edd;
+                --zc-neon-cyan: #00d4ff;
+                --zc-neon-green: #00ff88;
+                --zc-neon-red: #ff5555;
+                --zc-font: 'Inter', sans-serif;
+                --zc-mono: 'JetBrains Mono', monospace;
             }
 
-            .zc-wrap {
+            .zc-hud {
                 background: var(--zc-bg);
                 color: var(--zc-text);
-                padding: 48px 48px 48px 40px;
-                margin: -20px 0 0 -20px;
                 min-height: 100vh;
+                padding: 40px;
+                margin-left: -20px;
+                margin-top: -20px;
                 font-family: var(--zc-font);
+                position: relative;
+                overflow: hidden;
                 box-sizing: border-box;
             }
 
-            .zc-wrap * {
-                box-sizing: border-box;
+            .zc-hud * { box-sizing: border-box; }
+
+            /* FX ELEMENTS */
+            .zc-scanlines {
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), 
+                            linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+                background-size: 100% 4px, 3px 100%;
+                pointer-events: none;
+                z-index: 10;
             }
 
-            .zc-wrap a {
-                text-decoration: none;
+            .zc-digital-grid {
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background-image: 
+                    linear-gradient(var(--zc-border) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--zc-border) 1px, transparent 1px);
+                background-size: 50px 50px;
+                background-position: center;
+                mask-image: radial-gradient(circle at center, black, transparent 80%);
+                pointer-events: none;
+                opacity: 0.4;
             }
 
-            /* ---- HEADER ---- */
+            /* HEADER */
             .zc-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 56px;
-                padding-bottom: 32px;
-                border-bottom: 1px solid var(--zc-border);
-                flex-wrap: wrap;
-                gap: 20px;
+                margin-bottom: 60px;
+                position: relative;
+                z-index: 20;
+                padding-bottom: 30px;
+                border-bottom: 2px solid var(--zc-border);
             }
 
-            .zc-logo {
+            .zc-branding {
                 display: flex;
                 align-items: center;
-                gap: 20px;
+                gap: 25px;
             }
 
-            .zc-logo-icon {
-                width: 64px;
-                height: 64px;
-                background: rgba(157, 78, 221, 0.15);
-                border: 1px solid rgba(157, 78, 221, 0.3);
-                border-radius: 18px;
+            .zc-orb-container {
+                position: relative;
+                width: 80px;
+                height: 80px;
+            }
+
+            .zc-orb {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: radial-gradient(circle at 30% 30%, rgba(157, 78, 221, 0.4), transparent);
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                position: relative;
+                box-shadow: 0 0 30px rgba(157, 78, 221, 0.2);
             }
 
-            .zc-logo-icon .dashicons {
-                color: #9d4edd;
-                font-size: 34px;
-                width: 34px;
-                height: 34px;
-            }
-
-            .zc-title {
-                font-size: 2.8rem;
-                font-weight: 900;
-                letter-spacing: -2px;
+            .zc-orb .dashicons {
+                font-size: 32px;
+                width: 32px;
+                height: 32px;
                 color: #fff;
-                margin: 0;
-                line-height: 1;
+                filter: drop-shadow(0 0 10px var(--zc-neon-purple));
+                animation: breath 3s infinite ease-in-out;
             }
 
-            .zc-title span {
-                background: linear-gradient(135deg, #9d4edd, #c77dff);
+            .zc-integrity-svg {
+                position: absolute;
+                top: 0; left: 0; width: 80px; height: 80px;
+                transform: rotate(-90deg);
+            }
+
+            .zc-integrity-bg { fill: none; stroke: var(--zc-border); stroke-width: 4; }
+            .zc-integrity-fill {
+                fill: none;
+                stroke: var(--zc-neon-green);
+                stroke-width: 4;
+                stroke-linecap: round;
+                stroke-dasharray: 226;
+                transition: stroke-dashoffset 1s ease-out;
+            }
+
+            .zc-main-title {
+                font-size: 3.5rem;
+                font-weight: 900;
+                margin: 0;
+                letter-spacing: -4px;
+                line-height: 0.9;
+                color: #fff;
+                text-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+            }
+
+            .zc-main-title span {
+                background: linear-gradient(to right, var(--zc-neon-purple), #fff);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
             }
 
-            .zc-subtitle {
-                color: var(--zc-muted);
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                font-weight: 600;
-                margin: 8px 0 0 0;
-            }
-
-            .zc-header-right {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-                gap: 12px;
-            }
-
-            .zc-system-badge {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                background: rgba(0, 255, 136, 0.08);
-                border: 1px solid rgba(0, 255, 136, 0.2);
-                padding: 8px 16px;
-                border-radius: 30px;
-                font-size: 0.7rem;
-                font-weight: 800;
-                letter-spacing: 1.5px;
-                color: #00ff88;
-                text-transform: uppercase;
-            }
-
-            .zc-pulse {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                background: #00ff88;
-                display: inline-block;
-                animation: zcPulse 2s infinite;
-            }
-
-            @keyframes zcPulse {
-                0% {
-                    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.5);
-                }
-
-                70% {
-                    box-shadow: 0 0 0 8px rgba(0, 255, 136, 0);
-                }
-
-                100% {
-                    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
-                }
-            }
-
-            .zc-sys-info {
-                display: flex;
-                gap: 8px;
-                flex-wrap: wrap;
-            }
-
-            .zc-sys-item {
-                background: rgba(255, 255, 255, 0.03);
-                border: 1px solid var(--zc-border);
-                padding: 6px 14px;
-                border-radius: 10px;
-                font-size: 0.75rem;
+            .zc-mission-status {
+                margin: 5px 0 0;
                 font-family: var(--zc-mono);
+                font-size: 0.7rem;
+                letter-spacing: 2px;
                 color: var(--zc-muted);
             }
 
-            .zc-sys-item span {
-                color: var(--zc-accent);
-                font-weight: 800;
-                margin-right: 6px;
+            .status-nominal { color: var(--zc-neon-green); text-shadow: 0 0 10px var(--zc-neon-green); }
+            .status-warning { color: gold; text-shadow: 0 0 10px gold; }
+
+            /* STATS HUD */
+            .zc-stats-hud {
+                display: flex;
+                gap: 30px;
             }
 
-            /* ---- GRID ---- */
-            .zc-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-                gap: 24px;
-                margin-bottom: 48px;
-            }
-
-            /* ---- CARD ---- */
-            .zc-card {
+            .zc-stat-item {
+                width: 140px;
+                padding: 15px;
                 background: var(--zc-surface);
                 border: 1px solid var(--zc-border);
-                border-radius: var(--zc-radius);
-                padding: 32px;
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+            }
+
+            .zc-stat-label {
+                display: block;
+                font-family: var(--zc-mono);
+                font-weight: 800;
+                font-size: 0.65rem;
+                color: var(--zc-neon-purple);
+                margin-bottom: 5px;
+            }
+
+            .zc-stat-value {
+                display: block;
+                font-size: 1.1rem;
+                font-weight: 900;
+                color: #fff;
+                margin-bottom: 10px;
+            }
+
+            .zc-stat-bar {
+                height: 4px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 2px;
+                overflow: hidden;
+            }
+
+            .zc-stat-bar div {
+                height: 100%;
+                background: linear-gradient(90deg, var(--zc-neon-purple), var(--zc-neon-cyan));
+                box-shadow: 0 0 10px var(--zc-neon-purple);
+            }
+
+            /* SKILL TREE / CARDS */
+            .zc-skill-tree {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+                gap: 25px;
+                position: relative;
+                z-index: 20;
+            }
+
+            .zc-skill-card {
+                position: relative;
+                border-radius: 24px;
+                padding: 2px;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                background: var(--zc-border);
+            }
+
+            .zc-skill-card.active {
+                background: linear-gradient(135deg, var(--accent), transparent 50%);
+            }
+
+            .zc-skill-card:hover {
+                transform: translateY(-10px) scale(1.02);
+                z-index: 30;
+            }
+
+            .zc-card-glow {
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: radial-gradient(circle at center, var(--accent), transparent 70%);
+                opacity: 0;
+                transition: opacity 0.4s;
+                pointer-events: none;
+                filter: blur(40px);
+            }
+
+            .zc-skill-card:hover .zc-card-glow { opacity: 0.15; }
+
+            .zc-card-inner {
+                background: var(--zc-bg);
+                border-radius: 23px;
+                padding: 30px;
+                height: 100%;
                 display: flex;
                 flex-direction: column;
                 position: relative;
                 overflow: hidden;
-                transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             }
 
-            .zc-card::before {
+            .zc-card-inner::after {
                 content: '';
                 position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 1px;
-                background: linear-gradient(90deg, transparent, var(--accent, #9d4edd), transparent);
-                opacity: 0;
-                transition: opacity 0.3s;
+                top: 0; left: -100%; width: 100%; height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+                transition: left 0.6s;
             }
 
-            .zc-card:hover {
-                transform: translateY(-6px);
-                border-color: rgba(255, 255, 255, 0.12);
-            }
+            .zc-skill-card:hover .zc-card-inner::after { left: 100%; }
 
-            .zc-card:hover::before {
-                opacity: 1;
-            }
-
-            .zc-card:hover {
-                box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
-            }
-
-            .zc-card.offline {
-                opacity: 0.55;
-            }
-
-            /* ---- CARD HEADER ---- */
             .zc-card-header {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
-                margin-bottom: 24px;
+                align-items: flex-start;
+                margin-bottom: 25px;
             }
 
-            .zc-icon {
-                width: 56px;
-                height: 56px;
+            .zc-skill-icon {
+                width: 60px;
+                height: 60px;
+                background: rgba(0,0,0,0.4);
+                border: 2px solid var(--accent);
                 border-radius: 16px;
-                border: 1px solid;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: transform 0.3s;
+                position: relative;
+                box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
             }
 
-            .zc-card:hover .zc-icon {
-                transform: scale(1.08) rotate(-3deg);
+            .zc-skill-icon .dashicons {
+                font-size: 30px;
+                width: 30px;
+                height: 30px;
+                color: var(--accent);
             }
 
-            .zc-icon .dashicons {
-                font-size: 28px;
-                width: 28px;
-                height: 28px;
+            .zc-icon-pulse {
+                position: absolute;
+                top: -2px; left: -2px; right: -2px; bottom: -2px;
+                border: 2px solid var(--accent);
+                border-radius: 16px;
+                opacity: 0;
+                animation: icon-pulse 2s infinite;
             }
 
-            /* ---- STATUS ---- */
-            .zc-status {
-                font-size: 0.65rem;
+            @keyframes icon-pulse {
+                0% { transform: scale(1); opacity: 0.8; }
+                100% { transform: scale(1.3); opacity: 0; }
+            }
+
+            .zc-rarity-badge {
+                font-family: var(--zc-mono);
+                font-size: 0.6rem;
                 font-weight: 800;
-                letter-spacing: 1.5px;
-                text-transform: uppercase;
-                padding: 5px 12px;
+                padding: 4px 12px;
                 border-radius: 20px;
-                display: flex;
-                align-items: center;
-                gap: 7px;
-                background: rgba(0, 0, 0, 0.3);
+                background: rgba(var(--accent-rgb), 0.1);
+                color: var(--accent);
+                border: 1px solid var(--accent);
             }
 
-            .zc-status.online {
-                color: #00ff88;
-                border: 1px solid rgba(0, 255, 136, 0.2);
-            }
+            .rarity-legendary { --accent-rgb: 157, 78, 221; }
+            .rarity-rare { --accent-rgb: 0, 212, 255; }
 
-            .zc-status.offline {
-                color: #ff5555;
-                border: 1px solid rgba(255, 85, 85, 0.2);
-            }
-
-            .zc-dot {
-                width: 7px;
-                height: 7px;
-                border-radius: 50%;
-                background: currentColor;
-                flex-shrink: 0;
-            }
-
-            .zc-status.online .zc-dot {
-                animation: zcPulse 2s infinite;
-            }
-
-            /* ---- CARD TITLE & DESC ---- */
-            .zc-card-title {
-                font-size: 1.4rem;
-                font-weight: 800;
+            .zc-skill-name {
+                font-size: 1.6rem;
+                font-weight: 900;
                 color: #fff;
                 margin: 0 0 10px;
+                letter-spacing: -0.5px;
             }
 
-            .zc-card-desc {
-                font-size: 0.875rem;
+            .zc-skill-desc {
+                font-size: 0.9rem;
+                line-height: 1.6;
                 color: var(--zc-muted);
-                line-height: 1.7;
-                margin: 0 0 24px;
-                flex-grow: 0;
+                margin-bottom: 25px;
+                min-height: 80px;
             }
 
-            /* ---- ENDPOINTS ---- */
-            .zc-endpoints {
-                background: rgba(0, 0, 0, 0.3);
+            /* TERMINAL */
+            .zc-terminal {
+                background: #000;
+                border-radius: 10px;
                 border: 1px solid var(--zc-border);
-                border-radius: 12px;
-                padding: 16px;
-                margin-bottom: 24px;
-                flex-grow: 1;
+                margin-bottom: 25px;
+                overflow: hidden;
             }
 
-            .zc-endpoints-label {
-                font-size: 0.65rem;
-                font-weight: 800;
-                letter-spacing: 1.5px;
-                text-transform: uppercase;
-                color: var(--zc-muted);
+            .zc-terminal-header {
+                background: #1a1a1a;
+                padding: 8px 12px;
                 display: flex;
                 align-items: center;
                 gap: 6px;
-                margin-bottom: 12px;
             }
 
-            .zc-endpoints-label .dashicons {
-                font-size: 14px;
-                width: 14px;
-                height: 14px;
-            }
+            .zc-terminal-dot { width: 6px; height: 6px; border-radius: 50%; }
+            .red { background: #ff5555; }
+            .yellow { background: #f1fa8c; }
+            .green { background: #50fa7b; }
 
-            .zc-endpoint-row {
-                display: flex;
-                align-items: flex-start;
-                gap: 8px;
-                margin-bottom: 8px;
-                font-size: 0.72rem;
-            }
-
-            .zc-endpoint-row:last-child {
-                margin-bottom: 0;
-            }
-
-            .zc-method {
+            .zc-terminal-title {
+                margin-left: 6px;
                 font-family: var(--zc-mono);
-                font-weight: 800;
                 font-size: 0.6rem;
-                padding: 2px 7px;
-                border-radius: 5px;
-                flex-shrink: 0;
-                margin-top: 1px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .zc-method.get {
-                background: rgba(0, 212, 255, 0.12);
-                color: #00d4ff;
-            }
-
-            .zc-method.post {
-                background: rgba(255, 107, 53, 0.12);
-                color: #ff6b35;
-            }
-
-            .zc-url {
-                font-family: var(--zc-mono);
                 color: var(--zc-muted);
-                font-size: 0.68rem;
-                word-break: break-all;
-                line-height: 1.5;
-                background: none;
-                border: none;
-                padding: 0;
             }
 
-            /* ---- CARD FOOTER ---- */
+            .zc-terminal-body {
+                padding: 15px;
+                font-family: var(--zc-mono);
+                font-size: 0.7rem;
+            }
+
+            .zc-terminal-line {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 6px;
+                opacity: 0.8;
+            }
+
+            .zc-m-badge {
+                font-weight: 800;
+                flex-shrink: 0;
+            }
+            .m-get { color: var(--zc-neon-cyan); }
+            .m-post { color: var(--zc-neon-purple); }
+            .zc-line-path { color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+            /* CARD FOOTER */
             .zc-card-footer {
+                margin-top: auto;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 border-top: 1px solid var(--zc-border);
                 padding-top: 20px;
-                margin-top: 8px;
             }
 
-            .zc-version {
+            .zc-version-tag {
                 font-family: var(--zc-mono);
                 font-size: 0.7rem;
-                color: var(--zc-muted);
-                background: rgba(255, 255, 255, 0.04);
-                padding: 4px 10px;
-                border-radius: 8px;
+                color: #555;
             }
 
-            .zc-actions {
-                display: flex;
-                gap: 8px;
-            }
-
-            /* ---- BUTTONS ---- */
-            .zc-btn {
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                padding: 9px 16px;
+            .zc-action-btn {
+                background: var(--accent);
+                color: #fff;
+                text-decoration: none;
+                padding: 10px 20px;
                 border-radius: 10px;
-                font-size: 0.78rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                transition: all 0.25s ease;
-                border: 1px solid transparent;
-            }
-
-            .zc-btn .dashicons {
-                font-size: 14px;
-                width: 14px;
-                height: 14px;
-            }
-
-            .zc-btn.primary {
-                background: rgba(157, 78, 221, 0.1);
-                color: #c77dff;
-                border-color: rgba(157, 78, 221, 0.25);
-            }
-
-            .zc-btn.primary:hover {
-                background: var(--accent, #9d4edd);
-                color: #fff;
-                border-color: var(--accent, #9d4edd);
-                box-shadow: 0 8px 20px rgba(157, 78, 221, 0.3);
-            }
-
-            .zc-btn.danger {
-                background: rgba(255, 85, 85, 0.08);
-                color: #ff5555;
-                border-color: rgba(255, 85, 85, 0.2);
-            }
-
-            .zc-btn.danger:hover {
-                background: #ff5555;
-                color: #fff;
-                border-color: #ff5555;
-            }
-
-            .zc-btn.ghost {
-                background: rgba(255, 255, 255, 0.03);
-                color: var(--zc-muted);
-                border-color: var(--zc-border);
-                padding: 9px 12px;
-            }
-
-            .zc-btn.ghost:hover {
-                background: rgba(255, 255, 255, 0.08);
-                color: #fff;
-            }
-
-            /* ---- QUICK LINKS SECTION ---- */
-            .zc-section {
-                margin-bottom: 48px;
-            }
-
-            .zc-section-title {
-                font-size: 0.75rem;
                 font-weight: 800;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                color: var(--zc-muted);
+                font-size: 0.75rem;
+                letter-spacing: 1px;
+                transition: all 0.3s;
+                box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
+            }
+
+            .zc-action-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 30px var(--accent);
+            }
+
+            .zc-action-btn.danger { background: var(--zc-neon-red); }
+
+            /* FOOTER HUD */
+            .zc-footer-hud {
+                margin-top: 80px;
+                border-top: 2px solid var(--zc-border);
+                padding-top: 40px;
                 display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-bottom: 16px;
+                justify-content: space-between;
+                align-items: flex-end;
+                z-index: 20;
+                position: relative;
             }
 
-            .zc-section-title .dashicons {
-                font-size: 16px;
-                width: 16px;
-                height: 16px;
+            .zc-ql-label {
+                font-family: var(--zc-mono);
+                font-size: 0.7rem;
+                letter-spacing: 3px;
+                color: var(--zc-muted);
+                margin-bottom: 20px;
             }
 
-            .zc-quick-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                gap: 12px;
-            }
-
-            .zc-quick-card {
+            .zc-ql-grid {
                 display: flex;
-                align-items: center;
-                gap: 12px;
-                background: var(--zc-surface);
-                border: 1px solid var(--zc-border);
-                border-radius: 14px;
-                padding: 16px 20px;
+                gap: 20px;
+            }
+
+            .zc-ql-item {
                 color: var(--zc-muted);
-                font-size: 0.85rem;
-                font-weight: 600;
-                transition: all 0.25s ease;
+                text-decoration: none;
+                font-weight: 800;
+                font-size: 0.75rem;
+                padding-bottom: 5px;
+                border-bottom: 1px solid transparent;
+                transition: all 0.3s;
             }
 
-            .zc-quick-card:hover {
-                border-color: rgba(157, 78, 221, 0.4);
-                color: #fff;
-                background: rgba(157, 78, 221, 0.08);
-                transform: translateY(-2px);
+            .zc-ql-item:hover {
+                color: var(--zc-neon-purple);
+                border-color: var(--zc-neon-purple);
             }
 
-            .zc-quick-card .dashicons {
-                font-size: 18px;
-                width: 18px;
-                height: 18px;
+            .zc-copyright {
+                font-family: var(--zc-mono);
+                font-size: 0.65rem;
+                color: #444;
             }
+            .zc-copyright a { color: var(--zc-neon-purple); text-decoration: none; }
 
-            .zc-quick-card .dashicons:last-child {
-                margin-left: auto;
-                opacity: 0.4;
-                font-size: 14px;
-            }
-
-            /* ---- FOOTER ---- */
-            .zc-footer {
-                margin-top: 64px;
-                text-align: center;
-                border-top: 1px solid var(--zc-border);
-                padding-top: 32px;
-                color: var(--zc-muted);
-                font-size: 0.8rem;
-                letter-spacing: 0.5px;
-            }
-
-            .zc-footer strong {
-                color: rgba(255, 255, 255, 0.5);
-            }
-
-            .zc-footer a {
-                color: #c77dff;
-            }
-
-            .zc-footer a:hover {
-                color: #fff;
+            @keyframes breath {
+                0%, 100% { transform: scale(1); opacity: 0.8; }
+                50% { transform: scale(1.1); opacity: 1; }
             }
         </style>
         <?php
@@ -819,7 +730,10 @@ class Zen_Plugins_Overview
 
 function zen_plugins_overview_init()
 {
-    return \ZenEyer\Overview\Zen_Plugins_Overview::get_instance();
+    if (\is_admin()) {
+        return \ZenEyer\Overview\Zen_Plugins_Overview::get_instance();
+    }
+    return null;
 }
 
 zen_plugins_overview_init();

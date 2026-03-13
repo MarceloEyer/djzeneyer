@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -66,7 +66,7 @@ const PERSONAS: Record<PersonaType, PersonaResult> = {
     description: "Give you a dark room and a heavy beat, and you're in heaven. You love Neozouk, complex rhythms, and energetic movements. You're probably sweating by the second song.",
     color: 'from-red-600 to-purple-900',
     icon: <Music size={40} />,
-    shareText: "I'm The Headbanger! ðŸ¤˜ Dark rooms and heavy beats. Which Zouk persona are you?",
+    shareText: "I'm The Headbanger! 🤘 Dark rooms and heavy beats. Which Zouk persona are you?",
   },
   rolezeiro: {
     id: 'rolezeiro',

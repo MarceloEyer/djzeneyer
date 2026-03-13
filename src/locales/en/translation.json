@@ -20,7 +20,8 @@
   "dashboard": {
     "loading": "Syncing with the Zen Universe...",
     "error_loading": "Could not load your dashboard data.",
-    "welcomeBack": "Welcome Back, {{name}}",
+    "welcomeBack": "Welcome Back 👋",
+    "welcomeBackWithName": "Welcome Back, {{name}} 👋",
     "journeyBegins": "Your journey in the Zen Tribe continues.",
     "diveDeep": "Dive deep into the melt.",
     "rank_new_member": "New Member",
@@ -134,7 +135,7 @@
     "footer_subscribe": "Subscribe",
     "footer_subscribe_success": "Subscription successful!",
     "footer_subscribe_error": "Error during subscription.",
-    "footer_copyright": "Â© {{year}} DJ Zen Eyer. All rights reserved.",
+    "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
     "friend": "Zen Friend",
     "all": "All"
   },
@@ -170,7 +171,7 @@
   "success": "Success",
   "auth": {
     "login": {
-      "title": "Welcome Back",
+      "title": "Welcome Back 👋",
       "subtitle": "Sign in to access your Zen Tribe account",
       "email": "Email",
       "emailPlaceholder": "your@email.com",

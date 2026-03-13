@@ -22,7 +22,8 @@
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
     "error_loading": "Não foi possível carregar os dados do painel.",
-    "welcomeBack": "Bem-vindo de volta, {{name}}",
+    "welcomeBack": "Bem-vindo de volta 👋",
+    "welcomeBackWithName": "Bem-vindo de volta, {{name}} 👋",
     "journeyBegins": "Sua jornada na Zen Tribe continua.",
     "diveDeep": "Mergulhe fundo no derretimento.",
     "rank_new_member": "Novo Membro",
@@ -194,7 +195,7 @@
   "success": "Sucesso",
   "auth": {
     "login": {
-      "title": "Bem-vindo de Volta",
+      "title": "Bem-vindo de Volta 👋",
       "subtitle": "Entre na sua conta Zen Tribe",
       "email": "Email",
       "emailPlaceholder": "seu@email.com",
@@ -419,8 +420,8 @@
       "playPreview": "Play Preview",
       "pausePreview": "Pause Preview"
     },
-    "listen_now_on": "Ouça agora no",
-    "hub_subtitle": "Preparei cada playlist com muito carinho e cuidado. Escolha sua plataforma favorita e vamos curtir esse som juntos!",
+    "listen_now": "Ouça Agora",
+    "hub_subtitle": "Explore minhas playlists curadas. Escolha sua plataforma e mergulhe no flow.",
     "steal_desc": "Aqui você encontra algumas tracks e edições exclusivas para baixar e tocar onde quiser. Se você é DJ, aproveite o download direto!",
     "support_button": "Gostaria de me apoiar?",
     "support_desc": "Se minha música te toca e você quiser ajudar a manter esse projeto vivo, qualquer apoio é bem-vindo e me ajuda muito a continuar criando!",
@@ -1009,7 +1010,7 @@
       "smiles_value": "∞",
       "passion": "Paixão",
       "passion_value": "100%",
-      "events": "Eventos" ,
+      "events": "Portais Atravessados",
       "events_value": "500+"
     },
     "story": {
@@ -1054,8 +1055,16 @@
     "title": "Minha Filosofia Musical",
     "style_title": "Cremosidade",
     "mission_title": "Missão",
-    "coming_soon_title": "Em Breve",
-    "coming_soon_desc": "Mais conteúdo sobre a filosofia musical de {{name}} será adicionado em breve. Acompanhe nas redes sociais para não perder novidades!"
+    "the_source": "A Fonte",
+    "the_source_desc": "Minha música nasce do silêncio e da observação. É a busca constante pela frequência que une corações na pista.",
+    "connection": "Conexão Real",
+    "connection_desc": "Não é sobre técnica, é sobre empatia. Um set de Zouk é uma conversa sem palavras onde a música é a ponte.",
+    "flow": "O Estado de Flow",
+    "flow_desc": "Derreter o tempo. Fazer com que dez minutos pareçam um segundo, e um segundo guarde uma eternidade.",
+    "cremosidade_title": "O que é Cremosidade?",
+    "cremosidade_desc": "É a fluidez absoluta. É o movimento que não tem início nem fim, apenas uma continuidade infinita guiada pelo som.",
+    "coming_soon_title": "Evolução Contínua",
+    "coming_soon_desc": "A Tribo Zen está sempre em expansão. Novos horizontes e experiências sonoras estão sendo preparados."
   },
   "home": {
     "seo": {
@@ -1080,7 +1089,7 @@
     "bookers": {
       "title": "Contratantes",
       "desc": "Leve o 'Zen Experience' para o seu evento.",
-      "cta": "ORÍ‡AMENTO"
+      "cta": "ORÇAMENTO"
     },
     "verified": "Perfis Verificados",
     "tribe": {

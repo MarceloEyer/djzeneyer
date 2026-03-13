@@ -194,44 +194,76 @@ export const ARTIST = {
   // 📰 Clipping / Na Mídia
   mediaClipping: [
     {
-      title: 'Brazilian Zouk DJ Zen Eyer Announces Award Winning International Tour',
-      description: 'Reportagem sobre o anúncio da turnê internacional de 2026, cobrindo Europa, América do Norte e Brasil.',
-      url: 'https://mypr.co.za/international/brazilian-zouk-dj-zen-eyer-announces-award-winning-international-tour/',
-      source: 'MyPR South Africa',
-      date: '2025-11-20',
-      type: 'report'
-    },
-    {
-      title: 'The Global Rise of Brazilian Zouk Music and Cultural Evolution',
-      description: 'Artigo profundo sobre a evolução cultural e o crescimento global do Zouk Brasileiro, citando a influência da Tribo Zen.',
-      url: 'https://timebusinessnews.com/the-global-rise-of-brazilian-zouk-music-and-cultural-evolution/',
-      source: 'Time Business News',
-      date: '2025-12-05',
-      type: 'media'
-    },
-    {
       title: 'Brazilian DJ Zen Eyer and Kaysha Unite Brazil and Africa in Epic Zouk Remix of Diamonds',
-      description: 'Colaboração épica entre Brasil e África em um remix oficial que uniu as pistas de Zouk e Kizomba.',
+      description: 'Article detailing the collaboration between DJ Zen Eyer and Kaysha, bridging Brazil and Africa through music.',
       url: 'https://myza.co.za/entertainment/brazilian-dj-zen-eyer-and-kaysha-unite-brazil-and-africa-in-epic-zouk-remix-of-diamonds/',
       source: 'MyZA Entertainment',
       date: '2024-08-15',
-      type: 'news'
+      type: 'News'
     },
     {
-      title: 'DJ Zen Eyer conquista dois títulos no Ilha do Zouk',
-      description: 'Reportagem sobre a vitória nas categorias Melhor Remix e Melhor Performance DJ no campeonato mundial.',
+      title: 'Brazilian Zouk DJ Zen Eyer Bridges Brazil and Africa with Kizomba Remix Featuring Kaysha',
+      description: 'Detailed press release about the Kizomba remix project and its impact on the global Zouk scene.',
+      url: 'https://www.issuewire.com/brazilian-zouk-dj-zen-eyer-bridges-brazil-and-africa-with-kizomba-remix-featuring-kaysha-1847934953275206',
+      source: 'IssueWire',
+      date: '2024-08-10',
+      type: 'Press Release'
+    },
+    {
+      title: 'The Global Rise of Brazilian Zouk Music and Cultural Evolution',
+      description: 'In-depth article on the cultural evolution and global growth of Brazilian Zouk, citing Zen Eyers influence.',
+      url: 'https://timebusinessnews.com/the-global-rise-of-brazilian-zouk-music-and-cultural-evolution/',
+      source: 'Time Business News',
+      date: '2025-12-05',
+      type: 'Media'
+    },
+    {
+      title: 'Brazilian Zouk DJ Zen Eyer Announces Award Winning International Tour',
+      description: 'Report on the announcement of the 2026 international tour covering Europe, North America, and Brazil.',
+      url: 'https://mypr.co.za/international/brazilian-zouk-dj-zen-eyer-announces-award-winning-international-tour/',
+      source: 'MyPR South Africa',
+      date: '2025-11-20',
+      type: 'Report'
+    },
+    {
+      title: 'DJ Zen Eyer - World Champion DJ Profile',
+      description: 'Professional profile highlighting the two world titles won at the Ilha do Zouk DJ Championship.',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
-      source: 'Portal Ilha do Zouk',
+      source: 'Ilha do Zouk',
       date: '2022-12-05',
-      type: 'report'
+      type: 'Official'
     },
     {
       title: 'Encontros de Zouk e a Filosofia da Cremosidade',
-      description: 'Artigo sobre a filosofia de conexão e o som exclusivo que define as pistas de DJ Zen Eyer.',
+      description: 'Biographical entry discussing the philosophy of connection and the unique sound of Zen Eyer.',
       url: 'https://pt.everybodywiki.com/DJ_Zen_Eyer',
       source: 'EverybodyWiki',
       date: '2024-01-10',
-      type: 'wiki'
+      type: 'Wiki'
+    },
+    {
+      title: 'Danxer Artist Profile',
+      description: 'Detailed artist page on the dedicated dance community platform Danxer.',
+      url: 'https://danxer.com/artist/1022/zen-eyer',
+      source: 'Danxer',
+      date: '2024',
+      type: 'Profile'
+    },
+    {
+      title: 'Viberate Music Industry Analytics',
+      description: 'Music industry metrics and professional analytics for DJ Zen Eyer.',
+      url: 'https://www.viberate.com/artist/zen-eyer/',
+      source: 'Viberate',
+      date: '2024',
+      type: 'Analytics'
+    },
+    {
+      title: 'go&dance Professional Directory',
+      description: 'Artist profile in the global social dance directory go&dance.',
+      url: 'https://www.goandance.com/en/artist/4684/zen-eyer',
+      source: 'go&dance',
+      date: '2024',
+      type: 'Profile'
     }
   ],
 
