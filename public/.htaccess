@@ -136,8 +136,8 @@ CacheKeyModify -qs:_ga
 # 4. CORS (FIXED FOR ADMIN DASHBOARD & API)
 # ==============================================================================
 <IfModule mod_headers.c>
-    # 1. Detecta a Origem (Seu site ou Localhost)
-    SetEnvIf Origin "^https?://(www\.)?(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
+    # 1. Detecta a Origem (Site principal, staging, preview ou Localhost)
+    SetEnvIf Origin "^https?://([a-z0-9-]+\.)*(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
     
     # 2. Fallback para acesso direto (Painel Admin/Same-Origin) onde o header Origin é vazio
     SetEnvIf Origin "^$" ALLOWED_ORIGIN=https://djzeneyer.com

@@ -140,6 +140,12 @@ export interface WPPost {
   };
 }
 
+export interface ZenGlobalSettings {
+  real_name?: string;
+  default_og_image?: string;
+  [key: string]: unknown;
+}
+
 // ============================================================================
 // EXPORTED FETCH FUNCTIONS (PREFETCH READY)
 // ============================================================================
@@ -309,6 +315,24 @@ export const useMenuQuery = (lang: string) => {
     queryFn: () => fetchMenuFn(lang),
     staleTime: STALE_TIME.MENU,
     retry: 1,
+  });
+};
+
+// ============================================================================
+// SEO SETTINGS QUERY (PÚBLICO)
+// ============================================================================
+
+export const useZenSeoSettings = () => {
+  return useQuery({
+    queryKey: ['zen-seo', 'settings'],
+    queryFn: async (): Promise<ZenGlobalSettings> => {
+      const apiUrl = buildApiUrl('zen-seo/v1/settings');
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch Zen SEO settings');
+      const response = await res.json();
+      return response.success ? response.data : {};
+    },
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours (metadata changes rarely)
   });
 };
 

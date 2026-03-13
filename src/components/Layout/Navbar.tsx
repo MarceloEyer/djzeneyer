@@ -1,8 +1,8 @@
 // src/components/Layout/Navbar.tsx
-// Optimized Navbar: SSR Security + UX + Performance
+// Optimized Navbar: Modularized for better maintainability
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Menu,
@@ -15,139 +15,34 @@ import {
     Music,
     Briefcase,
     Info,
-    ChevronRight,
     Newspaper
 } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 import UserMenu from '../common/UserMenu';
 import { useMenu } from '../../hooks/useMenu';
 import { usePrefetchOnHover } from '../../hooks/usePrefetchOnHover';
-import { getLocalizedRoute, normalizeLanguage, getAlternateLinks } from '../../config/routes';
-import { safeRedirect, sanitizePath } from '../../utils/sanitize';
+import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { sanitizePath } from '../../utils/sanitize';
+import { MenuItem, LanguageSelector } from './Navbar/NavbarComponents';
+import type { MenuItemData } from './Navbar/NavbarComponents';
 
 // ============================================================================
-// HELPERS
+// HELPERS & CONSTANTS
 // ============================================================================
+
 const getLinkVisuals = (url: string) => {
     const path = url.toLowerCase();
-    if (path.includes('event'))
-        return { icon: <Calendar size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
-    if (path.includes('shop') || path.includes('loja'))
-        return { icon: <ShoppingBag size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
-    if (path.includes('tribe') || path.includes('tribo'))
-        return { icon: <Users size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
-    if (path.includes('music') || path.includes('música') || path.includes('musica'))
-        return { icon: <Music size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
-    if (path.includes('work') || path.includes('trabalhe'))
-        return { icon: <Briefcase size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
-    if (path.includes('media') || path.includes('midia'))
-        return { icon: <Newspaper size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
-    if (path.includes('about') || path.includes('sobre'))
-        return { icon: <Info size={20} />, color: 'text-primary', bg: 'bg-primary/10' };
+    const baseVisual = { color: 'text-primary', bg: 'bg-primary/10' };
+    
+    if (path.includes('event')) return { ...baseVisual, icon: <Calendar size={20} /> };
+    if (path.includes('shop') || path.includes('loja')) return { ...baseVisual, icon: <ShoppingBag size={20} /> };
+    if (path.includes('tribe') || path.includes('tribo')) return { ...baseVisual, icon: <Users size={20} /> };
+    if (path.includes('music') || path.includes('música') || path.includes('musica')) return { ...baseVisual, icon: <Music size={20} /> };
+    if (path.includes('work') || path.includes('trabalhe')) return { ...baseVisual, icon: <Briefcase size={20} /> };
+    if (path.includes('media') || path.includes('midia')) return { ...baseVisual, icon: <Newspaper size={20} /> };
+    if (path.includes('about') || path.includes('sobre')) return { ...baseVisual, icon: <Info size={20} /> };
+    
     return { icon: <Home size={20} />, color: 'text-white/70', bg: 'bg-white/5' };
-};
-
-const LanguageSelector: React.FC = React.memo(() => {
-    const { i18n } = useTranslation();
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const currentLang = useMemo(
-        () => (i18n.language?.startsWith('pt') ? 'pt' : 'en'),
-        [i18n.language]
-    );
-
-    const changeLanguage = useCallback(
-        (newLang: 'pt' | 'en') => {
-            if (newLang === currentLang) return;
-            const alternates = getAlternateLinks(location.pathname, currentLang);
-            const targetPath = alternates[newLang] || (newLang === 'pt' ? '/pt/' : '/');
-            // Usamos safeRedirect para garantir que o path resultante seja interno e seguro
-            const finalPath = safeRedirect(sanitizePath(targetPath) + (location.search || '') + (location.hash || ''), '/');
-            navigate(finalPath);
-        },
-        [currentLang, location, navigate]
-    );
-
-    return (
-        <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
-            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>PT</button>
-            <span className="text-white/20">|</span>
-            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>EN</button>
-        </div>
-    );
-});
-
-interface MenuItemData {
-    safeUrl: string;
-    safeTitle: string;
-    visuals?: { icon: JSX.Element; color: string; bg: string };
-    target?: string;
-    [key: string]: unknown;
-}
-
-interface MenuItemProps {
-    item: MenuItemData;
-    isMobile: boolean;
-    onNavigate: () => void;
-}
-
-const MenuItem: React.FC<MenuItemProps> = ({ item, isMobile, onNavigate }) => {
-    const { t } = useTranslation();
-    const { safeUrl, safeTitle, visuals, target } = item;
-    const isExternal = safeUrl.startsWith('http');
-    const isBlank = target === '_blank';
-
-    const commonClass = isMobile
-        ? `group flex items-center justify-between p-4 rounded-xl transition-all duration-300 border border-transparent`
-        : `relative group nav-link py-2 text-white/80 hover:text-white transition-colors`;
-
-    const activeMobileClass = 'bg-primary/10 border-white/5';
-
-    if (isExternal) {
-        return (
-            <a
-                href={safeUrl}
-                target={target || '_self'}
-                rel={isBlank ? 'noopener noreferrer' : undefined}
-                aria-label={isBlank ? `${safeTitle} (${t('common.opens_in_new_tab')})` : safeTitle}
-                className={commonClass}
-                onClick={onNavigate}
-            >
-                <div className="flex items-center gap-3">
-                    {isMobile && <div className="p-2 rounded-lg bg-white/5 text-white/50 group-hover:text-white">{visuals.icon}</div>}
-                    <span className={isMobile ? 'text-base font-medium' : ''}>{safeTitle}</span>
-                </div>
-                {isMobile && <ChevronRight size={16} className="text-white/20" />}
-            </a>
-        );
-    }
-
-    return (
-        <NavLink
-            to={safeUrl}
-            end
-            onClick={onNavigate}
-            className={({ isActive }) => `${commonClass} ${isMobile && isActive ? activeMobileClass : ''} ${!isMobile && isActive ? 'text-primary font-medium' : ''}`}
-        >
-            {({ isActive }) => (
-                <>
-                    <div className="flex items-center gap-3">
-                        {isMobile && (
-                            <div className={`p-2 rounded-lg ${isActive ? visuals.color + ' bg-black/20' : 'text-white/50 bg-white/5 group-hover:text-white'}`}>
-                                {visuals.icon}
-                            </div>
-                        )}
-                        <span className={isMobile ? 'text-base font-medium' : ''}>{safeTitle}</span>
-                    </div>
-                    {!isMobile && (
-                        <span className={`absolute -bottom-0.5 left-0 h-[2px] bg-primary transition-all duration-300 ease-out ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} />
-                    )}
-                    {isMobile && <ChevronRight size={16} className={`transition-transform ${isActive ? 'text-primary translate-x-1' : 'text-white/20'}`} />}
-                </>
-            )}
-        </NavLink>
-    );
 };
 
 interface NavbarProps {
@@ -185,12 +80,13 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         onLoginClick();
     }, [onLoginClick]);
 
-    const processedMenuItems = useMemo(() => {
+    const processedMenuItems = useMemo((): MenuItemData[] => {
         if (!menuItems?.length) return [];
         return menuItems.map(item => {
             const rawUrl = item.url || '/';
             const isExternal = /^https?:\/\//i.test(rawUrl);
             const localizedPath = isExternal ? rawUrl : getLocalizedRoute(rawUrl.split(/[#?]/)[0], currentLang);
+            
             // Re-add query and hash
             const queryPart = rawUrl.includes('?') ? '?' + rawUrl.split('?')[1].split('#')[0] : '';
             const hashPart = rawUrl.includes('#') ? '#' + rawUrl.split('#')[1] : '';
@@ -198,7 +94,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             const fullUrl = isExternal ? rawUrl : `${localizedPath}${queryPart}${hashPart}`;
             let safeUrl = isExternal ? fullUrl : sanitizePath(fullUrl);
 
-            // SSR Safe Logic: Se o título vindo do WP for redundante (ex: "Zouk Events"), usamos a tradução centralizada
+            // Logic to handle redundant or localized titles from WP
             let safeTitle = item.title || '';
             const lowerTitle = safeTitle.toLowerCase();
 
@@ -219,7 +115,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
             };
         });
     }, [menuItems, currentLang, t]);
-
 
     return (
         <>
@@ -250,7 +145,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         )}
                     </div>
 
-                    <button className="md:hidden text-white z-50" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    <button className="md:hidden text-white z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
                         {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
                     </button>
                 </div>

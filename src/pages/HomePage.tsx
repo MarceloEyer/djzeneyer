@@ -1,7 +1,7 @@
 // src/pages/HomePage.tsx
 // VERSÃO FINAL: DIAMOND MASTER (Integrated with Zen SEO Plugin v8.0.0)
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { Trans, useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import {
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
+import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
 
@@ -37,12 +38,6 @@ interface FestivalBadgeProps {
   flag: string;
 }
 
-// Interface para as configurações vindas do Plugin WP
-interface ZenGlobalSettings {
-  real_name?: string;
-  default_og_image?: string;
-  [key: string]: unknown;
-}
 
 // ============================================================================
 // 2. DADOS E CONSTANTES
@@ -105,25 +100,9 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 
 const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const [seoSettings, setSeoSettings] = useState<ZenGlobalSettings | null>(null);
+  const { data: seoSettings } = useZenSeoSettings();
 
   const currentLang = normalizeLanguage(i18n.language);
-  const currentUrl = ARTIST.site.baseUrl;
-
-  // --- FETCH PLUGIN SETTINGS (Integration) ---
-  useEffect(() => {
-    // Tenta pegar a URL da API do ambiente ou usa fallback
-    const wpRestUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || 'https://djzeneyer.com/wp-json';
-
-    fetch(`${wpRestUrl}/zen-seo/v1/settings`)
-      .then(res => res.json())
-      .then(response => {
-        if (response.success) {
-          setSeoSettings(response.data);
-        }
-      })
-      .catch(err => console.error('Zen SEO Plugin not reachable:', err));
-  }, []);
 
   // --- SCHEMA STATIC DATA (Rich Snippets) ---
   const schemaData = useMemo(() => ({
