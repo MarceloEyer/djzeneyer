@@ -6,12 +6,12 @@ import puppeteer from 'puppeteer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || '15619775';
-const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'djzeneyer-site';
+const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'DJ%20Zen%20Eyer';
+const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'djzeneyer';
 const SITE_BASE_URL = process.env.SITE_BASE_URL || 'https://djzeneyer.com';
 const EVENTS_ROUTE_EN = '/zouk-events';
 const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
-const bandsintownArtistEndpoint = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${encodeURIComponent(BANDSINTOWN_APP_ID)}`;
+const bandsintownArtistEndpoint = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${BANDSINTOWN_APP_ID}&date=upcoming`;
 
 // 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
 let routesList = [];
@@ -131,7 +131,8 @@ async function fetchBandsintownEvents() {
     });
 
     if (!res.ok) {
-      throw new Error(`Bandsintown responded ${res.status}`);
+      const errorBody = await res.text().catch(() => 'No body');
+      throw new Error(`Bandsintown responded ${res.status}: ${errorBody.slice(0, 100)}`);
     }
 
     const raw = await res.json();

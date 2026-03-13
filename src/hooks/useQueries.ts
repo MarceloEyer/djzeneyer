@@ -195,6 +195,9 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
 };
 
 export const fetchEventsFn = async ({
+  mode,
+  days,
+  date,
   limit = 10,
   lang,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
@@ -205,9 +208,9 @@ export const fetchEventsFn = async ({
 
   try {
     const params: Record<string, string> = {
-      mode: mode,
       limit: String(limit),
     };
+    if (mode) params.mode = mode;
     if (days !== undefined) params.days = String(days);
     if (date) params.date = date;
     if (lang) params.lang = lang;
@@ -434,9 +437,10 @@ export const useEventById = (
     // queryKey usa routeParam original para diferenciar entradas de cache distintas
     queryKey: [...QUERY_KEYS.events.detail(routeParam || ''), lang],
     queryFn: async (): Promise<ZenBitEventDetail | null> => {
-      if (!eventId) return null;
+      const id = eventId; 
+      if (!id) return null;
       try {
-        const idStr = String(eventId);
+        const idStr = String(id);
         const apiUrl = buildApiUrl(`zen-bit/v2/events/${idStr}`, { lang });
         const res = await fetch(apiUrl);
         if (!res.ok) {
