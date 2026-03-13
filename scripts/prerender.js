@@ -256,9 +256,19 @@ async function prerender() {
       const urlObj = new URL(reqUrl);
       const lang = (urlObj.searchParams.get('lang') || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
 
-      if (reqUrl.includes('/wp-json/')) {
+        if (reqUrl.includes('/wp-json/')) {
         let mockData = [];
-        if (reqUrl.includes('/posts')) mockData = [{ id: 1, title: { rendered: 'Build Preview' }, slug: 'preview', date: new Date().toISOString() }];
+        if (reqUrl.includes('/posts')) {
+          mockData = [{ 
+            id: 1, 
+            title: { rendered: 'Build Preview' }, 
+            slug: 'preview', 
+            date: new Date().toISOString(),
+            excerpt: { rendered: 'Prerender Preview Excerpt' },
+            content: { rendered: '<p>Prerender Preview Content</p>' },
+            author_name: 'System'
+          }];
+        }
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
         if (reqUrl.includes('/v1/menu')) mockData = [];

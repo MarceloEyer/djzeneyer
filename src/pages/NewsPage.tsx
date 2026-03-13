@@ -87,8 +87,8 @@ const NewsPage: React.FC = () => {
     return (
       <>
         <HeadlessSEO
-          title={`${stripHtml(singlePost?.title?.rendered ?? '')} | ${t('news.title')}`}
-          description={stripHtml(singlePost?.excerpt?.rendered ?? '')}
+          title={`${stripHtml(singlePost?.title?.rendered || '')} | ${t('news.title')}`}
+          description={stripHtml(singlePost?.excerpt?.rendered || '')}
           url={postUrl}
           image={postImage}
           type="article"
@@ -114,7 +114,7 @@ const NewsPage: React.FC = () => {
                     <img
                       src={postImage}
                       className="w-full h-full object-cover"
-                      alt={stripHtml(singlePost.title.rendered)}
+                      alt={stripHtml(singlePost?.title?.rendered || '')}
                     />
                   </div>
                 )}
@@ -187,7 +187,7 @@ const NewsPage: React.FC = () => {
                     <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                       <img
                         src={safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
-                        alt={featuredPost.title.rendered}
+                        alt={stripHtml(featuredPost?.title?.rendered || '')}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         loading="eager"
                       />
@@ -203,15 +203,15 @@ const NewsPage: React.FC = () => {
                           </span>
                         </div>
                         <h2
-                          className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors text-white"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(featuredPost.title.rendered) }}
+                        className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors text-white"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(featuredPost?.title?.rendered || '') }}
+                      />
+                      <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
+                        <p
+                          className="text-lg text-white/80 line-clamp-3"
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(featuredPost?.excerpt?.rendered || '')) }}
                         />
-                        <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
-                          <p
-                            className="text-lg text-white/80 line-clamp-3"
-                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(featuredPost.excerpt.rendered)) }}
-                          />
-                        </div>
+                      </div>
                         <div className="inline-flex items-center gap-2 text-white font-bold text-lg hover:gap-4 transition-all">
                           {t('news.read_full')} <div className="bg-white text-black rounded-full p-1"><ArrowRight size={16} /></div>
                         </div>
@@ -239,7 +239,7 @@ const NewsPage: React.FC = () => {
                     <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })} className="block h-56 overflow-hidden relative">
                       <img
                         src={safeUrl(post.featured_image_src || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
-                        alt={stripHtml(post.title.rendered)}
+                        alt={stripHtml(post?.title?.rendered || '')}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         loading="lazy"
                       />
@@ -254,12 +254,12 @@ const NewsPage: React.FC = () => {
                       <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })}>
                         <h3
                           className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2 text-white"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.title.rendered) }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post?.title?.rendered || '') }}
                         />
                       </Link>
                       <p
                         className="text-white/60 text-sm line-clamp-3 mb-6 flex-1"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(post.excerpt.rendered)) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(post?.excerpt?.rendered || '')) }}
                       />
                       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
                         <span className="text-xs text-white/40 font-medium">

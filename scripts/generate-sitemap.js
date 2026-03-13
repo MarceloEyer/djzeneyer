@@ -46,35 +46,66 @@ function buildUrlEntry(url, date, priority = '0.8', ptUrl = null, imageUrl = nul
   return entry;
 }
 
+const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
+const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
+
 async function fetchEvents() {
+  let raw = null;
+  let source = 'NONE';
+
+  // 1. Tentar API Interna do WordPress (Recomendado)
   try {
-    // Busca direto no Bandsintown para contornar o WAF (Cloudflare 403) no Github Actions
-    const BIT_API_URL = 'https://rest.bandsintown.com/artists/djzeneyer/events?app_id=djzeneyer&date=upcoming';
-    console.log(`📡 Fetching events from ${BIT_API_URL}...`);
-    const response = await fetch(BIT_API_URL, {
-      headers: {
-        'Accept': 'application/json'
+    const INTERNAL_API_EVENTS = `${BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=365`;
+    console.log(`📡 Fetching events from internal API: ${INTERNAL_API_EVENTS}...`);
+    const res = await fetch(INTERNAL_API_EVENTS, { headers: { 'Accept': 'application/json' } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.events)) {
+        raw = data.events;
+        source = 'INTERNAL_API';
       }
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'No body');
-      throw new Error(`HTTP error! status: ${response.status} - Body: ${errorText.substring(0, 200)}`);
     }
-
-    const data = await response.json();
-    if (!Array.isArray(data)) return [];
-
-    // Mapeia o formato do Bandsintown para o formato que o gerador espera
-    return data.map(ev => ({
-      event_id: ev.id,
-      image: ev.artist?.image_url || ev.artist?.thumb_url || DEFAULT_IMAGE,
-      canonical_path: undefined // Vai assumir eventId como fallback
-    }));
-  } catch (error) {
-    console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error.message);
-    return [];
+  } catch (e) {
+    console.warn('⚠️ Falha ao conectar na API interna. Tentando Bandsintown...');
   }
+
+  // 2. Fallback: Bandsintown Direto
+  if (!raw) {
+    try {
+      const BIT_API_URL = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${BANDSINTOWN_APP_ID}&date=upcoming`;
+      console.log(`📡 Fetching events from ${BIT_API_URL}...`);
+      const response = await fetch(BIT_API_URL, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 WordPress/SitemapGenerator'
+        }
+      });
+
+      if (response.ok) {
+        raw = await response.json();
+        source = 'BANDSINTOWN_DIRECT';
+      } else {
+        const errorText = await response.text().catch(() => 'No body');
+        console.warn(`⚠️ Bandsintown respondeu ${response.status}: ${errorText.slice(0, 100)}`);
+      }
+    } catch (error) {
+      console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error.message);
+    }
+  }
+
+  if (!raw || !Array.isArray(raw)) return [];
+
+  console.log(`✅ Events loaded via ${source}: ${raw.length} items`);
+
+  // Mapeia para o formato que o gerador espera
+  return raw.map(ev => {
+    const venue = ev.venue || {};
+    return {
+      event_id: String(ev.id || ev.event_id || ''),
+      image: ev.artist?.image_url || ev.artist?.thumb_url || ev.image || DEFAULT_IMAGE,
+      canonical_path: ev.canonical_path
+    };
+  });
 }
 
 async function generateSitemaps() {
