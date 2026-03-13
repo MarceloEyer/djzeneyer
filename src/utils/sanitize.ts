@@ -20,6 +20,19 @@ export const sanitizeHtml = (html: string | undefined | null): string => {
 };
 
 /**
+ * Sanitiza uma string HTML para uso seguro em títulos e headings (inline tags only).
+ * Retorna tags estritamente necessárias, evitando quebras de layout.
+ */
+export const sanitizeTitleHtml = (html: string | undefined | null): string => {
+    if (!html) return '';
+
+    return DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'span', 'br'],
+        ALLOWED_ATTR: ['class']
+    }) as string;
+};
+
+/**
  * Lista de domínios confiáveis para prevenir Open Redirect e SSRF.
  */
 const TRUSTED_DOMAINS = [
