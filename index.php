@@ -1,102 +1,117 @@
 <?php
 /**
- * SPA Loader / Hybrid Headless Engine
+ * Front to the WordPress application.
  * @package zentheme
  */
 
-if (!defined('ABSPATH')) exit;
-
-// 1. Path Configuration
-$theme_dir = get_template_directory();
-$dist_dir = $theme_dir . '/dist';
-$real_dist_path = realpath($dist_dir);
+// 1. Define a base segura e garante a barra final para evitar colisão de prefixo
+$dist_path = get_template_directory() . '/dist';
+$real_dist_path = realpath($dist_path);
 
 if (!$real_dist_path) {
-    return; // Fallback to WP
+    // Se a pasta dist não existir, falha silenciosa
+    return;
 }
 
-// Normalize trailing slash
+// Garante que o caminho base termine com barra (ex: /var/www/dist/)
+// Isso impede acesso a pastas irmãs como /var/www/dist_backup
 $real_dist_path = rtrim($real_dist_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
-// 2. URI Sanitization
-$request_uri = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+// 2. Sanitização da URI (Remove query string, NUL bytes e decodifica)
+$request_uri_raw = $_SERVER['REQUEST_URI'];
+$request_uri = strtok($request_uri_raw, '?');
 $request_uri = str_replace("\0", '', rawurldecode($request_uri));
 
-// 3. Skip system and theme assets (let Apache/WP handle them)
+// 3. Atalho: Se for um arquivo físico que NÃO está na dist (ex: wp-admin, wp-includes, uploads)
+// Deixa o WordPress ou o servidor tratar diretamente.
 if (preg_match('/^\/(wp-admin|wp-includes|wp-json|wp-content|wp-login)/', $request_uri)) {
     return;
 }
 
-// 4. Resolve clean path for SPA logic
+// Se for um arquivo .php, nunca deve ser interceptado pelo SPA loader aqui.
+if (str_ends_with($request_uri, '.php')) {
+    return;
+}
+
+// 4. Mapeamento Inteligente (Corrige URLs completas do tema solicitadas por scripts)
+// Se o URI contém o caminho do tema, removemos o prefixo para buscar na dist local.
 $theme_slug = 'zentheme';
 $dist_marker = '/wp-content/themes/' . $theme_slug . '/dist/';
-$clean_path = $request_uri;
+$clean_mapped_path = $request_uri;
 
 if (strpos($request_uri, $dist_marker) !== false) {
     $parts = explode($dist_marker, $request_uri);
-    $clean_path = '/' . end($parts);
+    $clean_mapped_path = '/' . end($parts);
 }
 
-// Home mapping
-if ($clean_path === '/' || $clean_path === '') {
-    $clean_path = '/index.html';
+// 5. Definição dos candidatos (Arquivo direto ou Rota Prerender)
+// Caso especial: Raiz serve o index.html da dist
+if ($clean_mapped_path === '/' || $clean_mapped_path === '') {
+    $clean_mapped_path = '/index.html';
 }
 
-$target_file = $real_dist_path . ltrim($clean_path, '/');
+$possible_file = $real_dist_path . ltrim($clean_mapped_path, '/');
+// Rota prerender: /contato -> /contato/index.html
+$possible_route = $real_dist_path . rtrim(ltrim($request_uri, '/'), '/') . '/index.html';
 
-// 5. SSG Route Check (/path -> /path/index.html)
-if (!file_exists($target_file) || !is_file($target_file)) {
-    $url_trimmed = rtrim(ltrim($request_uri, '/'), '/');
-    $alt_target = $real_dist_path . ($url_trimmed ? $url_trimmed . '/' : '') . 'index.html';
-    
-    if (file_exists($alt_target) && is_file($alt_target)) {
-        $target_file = $alt_target;
-    } else {
-        return; // File not found in dist, let WP handle
+$serve_file = null;
+
+// 6. Verificação de Segurança (Path Traversal Robusto)
+if (file_exists($possible_file) && is_file($possible_file)) {
+    $real_file_path = realpath($possible_file);
+    if ($real_file_path && strpos($real_file_path, $real_dist_path) === 0) {
+        $serve_file = $real_file_path;
+    }
+} elseif (file_exists($possible_route) && is_file($possible_route)) {
+    $real_route_path = realpath($possible_route);
+    if ($real_route_path && strpos($real_route_path, $real_dist_path) === 0) {
+        $serve_file = $real_route_path;
     }
 }
 
-// 6. Security & Delivery
-$real_target = realpath($target_file);
-if (!$real_target || strpos($real_target, $real_dist_path) !== 0) {
-    return; // Path traversal attempt or invalid path
-}
+// 5. Entrega o arquivo (Se validado e seguro)
+if ($serve_file) {
+    // Whitelist de extensões permitidas (Camada extra de segurança)
+    $allowed_ext = ['html', 'xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
+    $extension = strtolower(pathinfo($serve_file, PATHINFO_EXTENSION));
 
-$ext = strtolower(pathinfo($real_target, PATHINFO_EXTENSION));
-$allowed = ['html', 'xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
+    if (!in_array($extension, $allowed_ext, true)) {
+        // Bloqueia tentativas de ler .php, .env, etc dentro da dist
+        http_response_code(403);
+        exit;
+    }
 
-if (!in_array($ext, $allowed, true)) {
-    http_response_code(403);
+    // Caso especial: HTML (SPA Shell)
+    if ($extension === 'html') {
+        get_header();
+        echo '<div id="root">';
+        echo '</div>'; // Re-adicionando para compatibilidade máxima
+        get_footer();
+        exit;
+    }
+
+    $mime_types = [
+        'xml' => 'application/xml; charset=UTF-8',
+        'txt' => 'text/plain; charset=UTF-8',
+        'css' => 'text/css',
+        'js' => 'application/javascript',
+        'json' => 'application/json',
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'svg' => 'image/svg+xml',
+        'ico' => 'image/x-icon',
+        'webmanifest' => 'application/manifest+json'
+    ];
+
+    $content_type = isset($mime_types[$extension]) ? $mime_types[$extension] : 'text/html; charset=UTF-8';
+
+    header('Content-Type: ' . $content_type);
+
+    // Entrega o arquivo CANÔNICO (resolvido pelo realpath)
+    readfile($serve_file);
     exit;
 }
 
-// SPA Shell Handling
-if ($ext === 'html') {
-    get_header();
-    echo '<div id="root">';
-    // Note: The closing </div> is in footer.php
-    get_footer();
-    exit;
-}
-
-// Static File Delivery
-$mimes = [
-    'xml' => 'application/xml',
-    'txt' => 'text/plain',
-    'css' => 'text/css',
-    'js' => 'application/javascript',
-    'json' => 'application/json',
-    'png' => 'image/png',
-    'jpg' => 'image/jpeg',
-    'jpeg' => 'image/jpeg',
-    'svg' => 'image/svg+xml',
-    'ico' => 'image/x-icon',
-    'webmanifest' => 'application/manifest+json'
-];
-
-$content_type = $mimes[$ext] ?? 'application/octet-stream';
-$charset = in_array($ext, ['xml', 'txt', 'js', 'css', 'json', 'html']) ? '; charset=UTF-8' : '';
-
-header('Content-Type: ' . $content_type . $charset);
-readfile($real_target);
-exit;
+// 6. Fallback final: Se não é um arquivo e não é rota estática, deixa o WordPress decidir.
+return;

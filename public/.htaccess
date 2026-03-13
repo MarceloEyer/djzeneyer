@@ -157,11 +157,6 @@ CacheKeyModify -qs:_ga
     RewriteCond %{REQUEST_METHOD} OPTIONS
     RewriteRule ^(.*)$ $1 [R=204,L]
 
-    # ⭐ CORREÇÃO CRÍTICA ERRO 429: Entrega direta de assets da dist via Apache
-    # Ignora o WordPress completamente para arquivos JS/CSS/Imagens na pasta dist
-    RewriteCond %{REQUEST_URI} ^/wp-content/themes/zentheme/dist/ [NC]
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^(.*)$ - [L]
 </IfModule>
 
 # ==============================================================================
