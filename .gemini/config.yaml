@@ -1,0 +1,17 @@
+# .gemini/config.yaml
+# Configures Gemini Code Assist to be concise and use Portuguese.
+
+review:
+  style: "concise"
+  language: "pt-BR"
+  summary_length: "short"
+  show_changelog: false
+  show_activity: false
+  metadata:
+    display: false
+  system_instructions: |
+    Todas as respostas e resumos devem ser feitos em Português brasileiro.
+    Mantenha o tom profissional e evite verbosidade desnecessária.
+
+chat:
+  conciseness: "high"
