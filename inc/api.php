@@ -616,6 +616,8 @@ function djz_get_shop_page($request)
             $product_objects = [];
             $product_ids = [];
             $all_img_ids = [];
+            // ⚡ Bolt: Cache product image IDs to avoid redundant calls to djz_get_product_image_ids in the formatting loop
+            $product_images_map = [];
 
             while ($query->have_posts()) {
                 $query->the_post();
@@ -628,6 +630,8 @@ function djz_get_shop_page($request)
                 $product_ids[] = $product->get_id();
 
                 $img_ids = djz_get_product_image_ids($product, true); // true = list view
+                $product_images_map[$product->get_id()] = $img_ids;
+
                 if (!empty($img_ids))
                     $all_img_ids = array_merge($all_img_ids, $img_ids);
             }
@@ -638,7 +642,8 @@ function djz_get_shop_page($request)
                 update_object_term_cache($product_ids, 'product');
 
             foreach ($product_objects as $product) {
-                $img_ids = djz_get_product_image_ids($product, true);
+                // ⚡ Bolt: Retrieve image IDs from our pre-computed map in O(1) time
+                $img_ids = $product_images_map[$product->get_id()] ?? [];
                 $images = [];
                 foreach ($img_ids as $img_id) {
                     $src = wp_get_attachment_url($img_id);
