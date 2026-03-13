@@ -21,8 +21,9 @@ require_once get_theme_file_path('/inc/cpt.php');
 $is_admin = is_admin();
 $is_rest = defined('REST_REQUEST') && REST_REQUEST;
 
+require_once get_theme_file_path('/inc/api.php');
+
 if ($is_admin || $is_rest) {
-    require_once get_theme_file_path('/inc/api.php');
     require_once get_theme_file_path('/inc/metaboxes.php');
     require_once get_theme_file_path('/inc/ai-llm.php');
 }
