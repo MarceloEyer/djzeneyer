@@ -18,8 +18,8 @@ $theme_uri = get_template_directory_uri();
     <link rel="me" href="https://www.instagram.com/djzeneyer/">
     <link rel="me" href="https://soundcloud.com/djzeneyer">
     
-    <link rel="icon" type="image/svg+xml" href="<?php echo esc_url($theme_uri); ?>/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="<?php echo esc_url($theme_uri); ?>/favicon-96x96.png">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     
     <link rel="preload" as="image" href="/images/hero-background.webp" fetchpriority="high">
     <link rel="preconnect" href="https://fonts.googleapis.com">
