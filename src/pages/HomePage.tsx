@@ -103,6 +103,8 @@ const HomePage: React.FC = () => {
   const { data: seoSettings } = useZenSeoSettings();
 
   const currentLang = normalizeLanguage(i18n.language);
+  const currentPath = i18n.language === 'pt' ? '/pt' : '/';
+  const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
 
   // --- SCHEMA STATIC DATA (Rich Snippets) ---
   const schemaData = useMemo(() => ({

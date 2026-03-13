@@ -54,9 +54,6 @@ if (!class_exists('Zen_BIT')) {
             if (is_admin()) {
                 require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
                 new Zen_BIT_Admin();
-            } else {
-                // Registro de assets públicos para enfileiramento condicional
-                add_action('wp_enqueue_scripts', [Zen_BIT_Admin::class, 'register_public_assets']);
             }
         }
 
@@ -64,6 +61,7 @@ if (!class_exists('Zen_BIT')) {
         {
             add_action('init', [$this, 'load_textdomain']);
             add_action('rest_api_init', [$this, 'register_rest_routes']);
+            add_action('wp_enqueue_scripts', [$this, 'register_public_assets']);
             register_activation_hook(__FILE__, [$this, 'activate']);
             register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
@@ -85,6 +83,16 @@ if (!class_exists('Zen_BIT')) {
         public function load_textdomain(): void
         {
             load_plugin_textdomain('zen-bit', false, dirname(plugin_basename(__FILE__)) . '/languages');
+        }
+
+        public function register_public_assets(): void
+        {
+            wp_register_style(
+                'zen-bit-public',
+                ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
+                [],
+                ZEN_BIT_VERSION
+            );
         }
 
         // =====================================================================

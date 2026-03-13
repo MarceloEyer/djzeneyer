@@ -240,14 +240,4 @@ class Zen_BIT_Admin
         </div>
         <?php
     }
-
-    public static function register_public_assets(): void
-    {
-        wp_register_style(
-            'zen-bit-public',
-            ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
-            [],
-            ZEN_BIT_VERSION
-        );
-    }
 }
