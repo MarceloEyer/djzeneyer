@@ -4,8 +4,8 @@ import React, { useMemo, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight } from 'lucide-react';
-import { getAlternateLinks, sanitizePath } from '../../../config/routes';
-import { safeRedirect } from '../../../utils/sanitize';
+import { getAlternateLinks } from '../../../config/routes';
+import { safeRedirect, sanitizePath } from '../../../utils/sanitize';
 
 // ============================================================================
 // TYPES

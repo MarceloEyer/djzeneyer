@@ -7,7 +7,7 @@
 
 > **A experiência digital oficial do DJ Zen Eyer — Bicampeão Mundial de Brazilian Zouk.**
 >
-> Uma SPA de alto desempenho, bilíngue, alimentada por um backend WordPress Headless, com gamificação, e-commerce e streaming de áudio contínuo.
+> Uma SPA de alto desempenho, bilíngue, alimentada por um backend WordPress Headless, com gamificação e e-commerce.
 
 🌐 **Site:** [djzeneyer.com](https://djzeneyer.com)
 
@@ -19,7 +19,6 @@
 - **🌍 Bilíngue:** Suporte nativo a **Inglês** e **Português** via `i18next`.
 - **🛒 E-Commerce:** Integração completa com **WooCommerce** para venda de músicas e ingressos.
 - **🎮 Gamificação:** XP, Ranks e Conquistas (via **ZenGame**) ao ouvir músicas e comprar.
-- **🎧 Player Global:** Player persistente com reprodução contínua entre rotas.
 - **🧠 SEO Otimizado:** Sitemaps dinâmicos, tags canônicas, Open Graph e SSG.
 
 ---

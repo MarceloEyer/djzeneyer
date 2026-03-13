@@ -1,4 +1,4 @@
-﻿# GEMINI.md - DJ Zen Eyer
+# GEMINI.md - DJ Zen Eyer
 
 > Contexto para Gemini/Jules/Gemini Code Assist.
 > Idioma padrao: Portugues Brasileiro.
@@ -37,20 +37,16 @@
 
 ## Preferencias do projeto
 
-<<<<<<< ours
-- Gradientes sutis/neon permitidos (sem gradientes em texto)
-- Sem player de musica interno (apenas links externos)
+- Gradientes sutis/neon permitidos (preference, not absolute prohibition)
 - Solucoes simples e robustas
 - Tom de voz: Conversa próxima, humilde e generosa ("Amigo Zen")
 - Prioridade Máxima: Velocidade de carregamento e facilidade de audição (links diretos pro Spotify)
 - Filtro de Estados: Facilitar para fãs locais encontrarem eventos
-=======
-- Não atualizar ESLint para v10
-- Não hardcodar strings visíveis ao usuário (usar `i18n`)
-- Não usar `fetch()` diretamente em componentes (usar React Query)
-- Não commitar `.env` ou credenciais
-- Não remover scripts de `prerender.js` (Eles evitam a "tela branca" no deploy)
-- **Não usar gradientes** (O usuário odeia). Preferir cores sólidas e camadas de opacidade.
+- Nao atualizar ESLint para v10 (plugins React nao suportam)
+- Nao hardcodar strings visiveis ao usuario (usar `i18n`)
+- Nao usar `fetch()` diretamente em componentes (usar hooks no React Query)
+- Nao commitar `.env` ou credenciais
+- Nao remover scripts de `prerender.js` (Eles evitam a "tela branca" no deploy)
 
 ## IA & Autoridade (AIO)
 
@@ -90,4 +86,3 @@
 
 ## Governança Canônica
 - Para execução operacional e resolução de conflitos de instrução, usar `docs/AI_GOVERNANCE.md` como referência canônica.
->>>>>>> theirs

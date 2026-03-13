@@ -87,6 +87,30 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Nao concluir tarefa estrutural sem sincronizar contexto.
 - Se nao houver mudanca relevante de comportamento, registrar explicitamente que "nenhuma atualizacao de contexto foi necessaria".
 
+## 🆔 IDENTIDADE CANÔNICA (SSOT)
+- **Fonte de Verdade**: `src/data/artistData.ts` é a única fonte canônica para a identidade pública renderizada (nome, data de nascimento, bio, links).
+- **Consistência**: Toda documentação (`CONTEXT.md`, etc.), SEO (`HeadlessSEO`, JSON-LD) e Press Kit devem derivar obrigatoriamente dessa base.
+- **Sincronização**: Qualquer alteração em `artistData.ts` exige a atualização imediata das referências em `AI_CONTEXT_INDEX.md`.
+
+## 🏗️ FRONTEIRAS ARQUITETURAIS
+Para evitar conflitos de responsabilidade (drift), siga esta divisão:
+- **Camada PHP (WordPress)**: Bootstrap do shell, CSP dinâmica via `inc/csp.php`, endpoints REST e integração com plugins (Auth, GamiPress).
+- **`header.php`**: Orquestração de assets globais (favicons, fonts) e boot da aplicação.
+- **`index.html` (Vite Template)**: Base para build/prerender e definição de meta-tags estáticas.
+- **App React**: Rotas, lógica de página, i18n dinâmico, UX e `HeadlessSEO` (decisões de SEO por rota).
+
+## ⚖️ POLÍTICA DE REGRAS E EXCEÇÕES
+As regras definidas no projeto são **Defaults Fortes**, não dogmas absolutos:
+1. **Regra Padrão**: Seguir a governança (ex: usar `useQueries.ts`, `i18n`, `HeadlessSEO`).
+2. **Exceção Documentada**: Se houver necessidade técnica comprovada de fugir da regra (ex: bootstrap leve no PHP), registre o motivo no código ou commit.
+3. **Docs vs Código**: A documentação orienta a execução, mas o código real do repositório é a fonte final de verdade técnica.
+
+## 🎨 DESIGN E BRANDING
+Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de UI**, não proibições arquiteturais.
+- **Gradientes**: Permitidos de forma sutil para profundidade; evitar em blocos de texto longo.
+- **Tom**: Manter a voz do "Amigo Zen" (humilde, generosa e profissional).
+
 ## Regra operacional adicional (2026-03)
-10. Build de frontend deve passar em `npm run perf:budget` para evitar regressao de bundle.
-11. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html` para permitir políticas de segurança sem `'unsafe-inline'`.
+91. Build de frontend deve passar em `npm run perf:budget` para evitar regressao de bundle.
+92. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html`.
+93. **SSOT Data Fetching**: `useQueries.ts` é o cubo central; `fetch()` em componentes é desencorajado e deve ser migrado sempre que possível.
