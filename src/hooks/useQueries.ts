@@ -169,13 +169,16 @@ const getPrerenderData = <T>(
   lang: string | undefined,
   field: keyof NonNullable<Window['__PRERENDER_DATA__']>
 ): T | null => {
-  const bucket = window.__PRERENDER_DATA__?.[field] as any;
-  if (!bucket) return null;
+  const data = window.__PRERENDER_DATA__;
+  if (!data || !data[field]) return null;
+  
+  const bucket = data[field];
   // For data that is not language-specific (like tracks)
   if (Array.isArray(bucket)) return bucket as T;
   
-  if (lang?.toLowerCase().startsWith('pt')) return (bucket.pt || bucket.en || null) as T;
-  return (bucket.en || bucket.pt || null) as T;
+  const keyedBucket = bucket as Record<string, T>;
+  if (lang?.toLowerCase().startsWith('pt')) return (keyedBucket.pt || keyedBucket.en || null) as T;
+  return (keyedBucket.en || keyedBucket.pt || null) as T;
 };
 
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
@@ -200,6 +203,7 @@ export const fetchEventsFn = async ({
   date,
   limit = 10,
   lang,
+  upcomingOnly,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
   const prerenderEvents = getPrerenderEvents(lang);
   if (prerenderEvents && prerenderEvents.length > 0) {
@@ -207,13 +211,17 @@ export const fetchEventsFn = async ({
   }
 
   try {
-    const params: Record<string, string> = {
-      limit: String(limit),
-    };
-    if (mode) params.mode = mode;
+    const params: Record<string, string> = {};
+    if (limit) params.limit = String(limit);
+    if (mode) params.mode = String(mode);
     if (days !== undefined) params.days = String(days);
-    if (date) params.date = date;
-    if (lang) params.lang = lang;
+    if (date) params.date = String(date);
+    if (lang) params.lang = String(lang);
+    
+    // Fallback deprecated property mapping
+    if (upcomingOnly !== undefined && !mode) {
+      params.mode = upcomingOnly ? 'upcoming' : 'all';
+    }
 
     const apiUrl = buildApiUrl('zen-bit/v2/events', params);
     const res = await fetch(apiUrl);
@@ -441,7 +449,9 @@ export const useEventById = (
       if (!id) return null;
       try {
         const idStr = String(id);
-        const apiUrl = buildApiUrl(`zen-bit/v2/events/${idStr}`, { lang });
+        const queryParams: Record<string, string> = {};
+        if (lang) queryParams.lang = String(lang);
+        const apiUrl = buildApiUrl(`zen-bit/v2/events/${idStr}`, queryParams);
         const res = await fetch(apiUrl);
         if (!res.ok) {
           console.error(`Event Detail API ${res.status}`);
