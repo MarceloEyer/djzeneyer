@@ -33,7 +33,7 @@ permissions:
   deployments: write
 
 env:
-  NODE_VERSION: 20
+  NODE_VERSION: 24
   SSH_HOST: 147.79.84.222
   SSH_PORT: 65002
   SSH_USER: u790739895
@@ -59,7 +59,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
@@ -72,7 +72,7 @@ jobs:
         run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -167,7 +167,7 @@ jobs:
 
       # --- ARTIFACTS ---
       - name: 📤 Upload dist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: build-dist-${{ steps.commit.outputs.hash }}
           path: dist/
@@ -176,7 +176,7 @@ jobs:
           compression-level: 6
 
       - name: 📤 Upload theme files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: build-theme-${{ steps.commit.outputs.hash }}
           path: |
@@ -190,14 +190,14 @@ jobs:
 
       - name: 📤 Upload plugins
         if: hashFiles('plugins/**') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: build-plugins-${{ steps.commit.outputs.hash }}
           path: plugins/
           retention-days: 7
 
       - name: 📤 Upload sitemaps
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: build-sitemaps-${{ steps.commit.outputs.hash }}
           path: |
@@ -224,7 +224,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout (sparse)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           sparse-checkout: |
             inc
