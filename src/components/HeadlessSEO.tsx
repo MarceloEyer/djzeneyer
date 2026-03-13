@@ -263,14 +263,19 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         const startDate = event.starts_at || event.event_date || event.start_date;
         const endDate = event.ends_at || event.end_date;
 
+        // Check if event is in the past
+        const isPast = startDate ? new Date(startDate).getTime() < Date.now() : false;
+
         // Location mapping
         const locName = event.location?.venue || event.event_location || 'TBA';
 
-        // Offers mapping
+        // Offers mapping - FIX: tickets is a string array in ZenBitEventDetail
         let eventOffers: Record<string, unknown> | undefined = undefined;
-        const ticketUrl = event.event_ticket || (event.tickets && event.tickets[0]?.url) || (event.offers && event.offers[0]?.url);
+        const ticketUrl = event.event_ticket || 
+                         (Array.isArray(event.tickets) && typeof event.tickets[0] === 'string' ? event.tickets[0] : undefined) ||
+                         (Array.isArray(event.offers) && event.offers[0]?.url ? event.offers[0].url : undefined);
 
-        if (ticketUrl) {
+        if (ticketUrl && !isPast) {
           eventOffers = {
             '@type': 'Offer',
             url: ticketUrl,
@@ -285,7 +290,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           ...(canonicalUrl ? { url: canonicalUrl } : {}),
           startDate: startDate,
           ...(endDate ? { endDate } : {}),
-          eventStatus: 'https://schema.org/EventScheduled',
+          // REMOVE eventStatus for past events as per technical review
+          ...(!isPast ? { eventStatus: 'https://schema.org/EventScheduled' } : {}),
           eventAttendanceMode: locName.toLowerCase().includes('online')
             ? 'https://schema.org/OnlineEventAttendanceMode'
             : 'https://schema.org/OfflineEventAttendanceMode',
@@ -304,7 +310,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           performer: {
             '@type': 'MusicGroup',
             name: ARTIST.identity.stageName,
-            sameAs: ARTIST.social.instagram.url || ARTIST.social.instagram
+            sameAs: Array.isArray(ARTIST_SCHEMA_BASE.sameAs) ? ARTIST_SCHEMA_BASE.sameAs[0] : ARTIST_SCHEMA_BASE.sameAs
           },
           ...(eventOffers ? { offers: eventOffers } : {}),
         };
@@ -396,7 +402,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Preloads */}
       {preload.map((item, index) => (
-        <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin as any} href={safeUrl(item.href)} />
+        <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin} href={safeUrl(item.href)} />
       ))}
 
       {/* Basic SEO */}

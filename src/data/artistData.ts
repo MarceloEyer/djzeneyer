@@ -463,30 +463,4 @@ export const ARTIST_SCHEMA_BASE = {
       url: 'https://www.brazilianzoukcouncil.com/',
     },
   ],
-  performerIn: [
-    {
-      '@type': 'DanceEvent',
-      name: 'Rio Zouk Congress',
-      description: 'Largest Brazilian Zouk congress in Brazil, organized by Renata Peçanha.',
-      location: {
-        '@type': 'Place',
-        name: 'Rio de Janeiro, Brazil',
-      },
-      organizer: {
-        '@type': 'Person',
-        name: 'Renata Peçanha',
-      },
-    },
-    {
-      '@type': 'DanceEvent',
-      name: 'Ilha do Zouk DJ Championship',
-      description:
-        'Brazilian Zouk World Championship event in Ilha Grande, Rio de Janeiro, Brazil.',
-      location: {
-        '@type': 'Place',
-        name: 'Ilha Grande, Rio de Janeiro, Brazil',
-      },
-      startDate: '2022',
-    },
-  ],
 };

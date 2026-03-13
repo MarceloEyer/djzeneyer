@@ -24,7 +24,7 @@ $request_uri = str_replace("\0", '', rawurldecode($request_uri));
 
 // 3. Atalho: Se for um arquivo físico que NÃO está na dist (ex: wp-admin, wp-includes, uploads)
 // Deixa o WordPress ou o servidor tratar diretamente.
-if (preg_match('/^\/(wp-admin|wp-includes|wp-json|wp-content\/plugins|wp-content\/uploads|wp-login)/', $request_uri)) {
+if (preg_match('/^\/(wp-admin|wp-includes|wp-json|wp-content|wp-login)/', $request_uri)) {
     return;
 }
 

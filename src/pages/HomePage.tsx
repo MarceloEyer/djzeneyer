@@ -172,28 +172,13 @@ const HomePage: React.FC = () => {
             "skills": "Audio Engineering, Remixing, Mastering"
           },
         ],
-        "performerIn": FESTIVALS_HIGHLIGHT.map(f => ({
-          "@type": "MusicEvent",
-          "name": f.name,
-          "startDate": f.date,
-          "location": {
-            "@type": "Place",
-            "name": f.country,
-            "address": {
-              "@type": "PostalAddress",
-              "addressCountry": f.country
-            }
-          },
-          "eventStatus": "https://schema.org/EventScheduled",
-          "performer": { "@id": `${ARTIST.site.baseUrl}/#artist` }
-        })),
       },
       {
         "@type": "WebPage",
         "@id": `${ARTIST.site.baseUrl}/#webpage`,
         "url": ARTIST.site.baseUrl,
-        "name": "DJ Zen Eyer | 2× World Champion Brazilian Zouk DJ & Producer",
-        "description": "Two-time world champion DJ specializing in Brazilian Zouk. Book for international festivals and exclusive events.",
+        "name": t('home_page_title'),
+        "description": t('home_page_meta_desc'),
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "primaryImageOfPage": {
           "@type": "ImageObject",
@@ -207,7 +192,7 @@ const HomePage: React.FC = () => {
         }
       }
     ],
-  }), [seoSettings]);
+  }), [seoSettings, t]);
 
   return (
     <>

@@ -37,7 +37,7 @@ class JWT_Manager
         $expiration = $issued_at + (DAY_IN_SECONDS * $expiration_days);
 
         $payload = [
-            'iss' => get_bloginfo('url'),
+            'iss' => (string) get_bloginfo('url'),
             'iat' => $issued_at,
             'nbf' => $issued_at,
             'exp' => $expiration,

@@ -18,7 +18,9 @@ const ROUTES_DATA_PATH = path.resolve(__dirname, 'routes-data.json');
 
 console.log('🗺️  Sitemap Generator v8.0 - EVENTS SUPPORT\n');
 
-function buildUrlEntry(url, date, priority = '0.8', ptUrl = null) {
+const DEFAULT_IMAGE = `${BASE_URL}/images/zen-eyer-og-image.png`;
+
+function buildUrlEntry(url, date, priority = '0.8', ptUrl = null, imageUrl = null) {
   let entry = `
   <url>
     <loc>${url}</loc>
@@ -30,6 +32,13 @@ function buildUrlEntry(url, date, priority = '0.8', ptUrl = null) {
     entry += `
     <xhtml:link rel="alternate" hreflang="en" href="${url}" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="${ptUrl}" />`;
+  }
+
+  if (imageUrl) {
+    entry += `
+    <image:image>
+      <image:loc>${imageUrl}</image:loc>
+    </image:image>`;
   }
 
   entry += `
@@ -59,6 +68,7 @@ async function fetchEvents() {
     // Mapeia o formato do Bandsintown para o formato que o gerador espera
     return data.map(ev => ({
       event_id: ev.id,
+      image: ev.artist?.image_url || ev.artist?.thumb_url || DEFAULT_IMAGE,
       canonical_path: undefined // Vai assumir eventId como fallback
     }));
   } catch (error) {
@@ -74,7 +84,9 @@ async function generateSitemaps() {
 
     // 1. Pages Sitemap
     let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
     let pageCount = 0;
     for (const route of routesData.routes) {
@@ -84,20 +96,23 @@ async function generateSitemaps() {
       const ptUrl = ptSlug === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${ptSlug}/`;
       const priority = enSlug === '' ? '1.0' : '0.8';
 
-      pagesXml += buildUrlEntry(enUrl, date, priority, ptUrl);
-      pagesXml += buildUrlEntry(ptUrl, date, priority, enUrl);
+      // Para páginas, usamos a imagem padrão (OG Image)
+      pagesXml += buildUrlEntry(enUrl, date, priority, ptUrl, DEFAULT_IMAGE);
+      pagesXml += buildUrlEntry(ptUrl, date, priority, enUrl, DEFAULT_IMAGE);
       pageCount += 2;
     }
     pagesXml += '\n</urlset>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), pagesXml);
-    console.log(`✅ sitemap-pages.xml created (${pageCount} URLs)`);
+    console.log(`✅ sitemap-pages.xml created (${pageCount} URLs with images)`);
 
     // 2. Events Sitemap
     const events = await fetchEvents();
     let eventCount = 0;
     if (events.length > 0) {
       let eventsXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
       for (const event of events) {
         // Determinamos o slug independente do idioma
@@ -112,9 +127,9 @@ async function generateSitemaps() {
         const enEventUrl = `${BASE_URL}/events/${relativePath}/`;
         const ptEventUrl = `${BASE_URL}/pt/eventos/${relativePath}/`;
 
-        // Adicionamos ambos ao sitemap com link alternativo
-        eventsXml += buildUrlEntry(enEventUrl, date, '0.7', ptEventUrl);
-        eventsXml += buildUrlEntry(ptEventUrl, date, '0.7', enEventUrl);
+        // Adicionamos ambos ao sitemap com link alternativo e imagem do evento
+        eventsXml += buildUrlEntry(enEventUrl, date, '0.7', ptEventUrl, event.image);
+        eventsXml += buildUrlEntry(ptEventUrl, date, '0.7', enEventUrl, event.image);
 
         eventCount += 2;
       }

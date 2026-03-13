@@ -151,19 +151,42 @@ declare global {
         en?: ZenBitEventListItem[];
         pt?: ZenBitEventListItem[];
       };
+      menu?: {
+        en?: MenuItem[];
+        pt?: MenuItem[];
+      };
+      news?: {
+        en?: WPPost[];
+        pt?: WPPost[];
+      };
+      tracks?: MusicTrack[];
       fetchedAt?: string;
     };
   }
 }
 
-const getPrerenderEvents = (lang?: string): ZenBitEventListItem[] | null => {
-  const bucket = window.__PRERENDER_DATA__?.events;
+const getPrerenderData = <T>(
+  lang: string | undefined,
+  field: keyof NonNullable<Window['__PRERENDER_DATA__']>
+): T | null => {
+  const bucket = window.__PRERENDER_DATA__?.[field] as any;
   if (!bucket) return null;
-  if (lang?.toLowerCase().startsWith('pt')) return bucket.pt || bucket.en || null;
-  return bucket.en || bucket.pt || null;
+  // For data that is not language-specific (like tracks)
+  if (Array.isArray(bucket)) return bucket as T;
+  
+  if (lang?.toLowerCase().startsWith('pt')) return (bucket.pt || bucket.en || null) as T;
+  return (bucket.en || bucket.pt || null) as T;
 };
 
+const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
+const getPrerenderMenu = (lang?: string) => getPrerenderData<MenuItem[]>(lang, 'menu');
+const getPrerenderNews = (lang?: string) => getPrerenderData<WPPost[]>(lang, 'news');
+const getPrerenderTracks = () => getPrerenderData<MusicTrack[]>(undefined, 'tracks');
+
 export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
+  const prerenderMenu = getPrerenderMenu(lang);
+  if (prerenderMenu && prerenderMenu.length > 0) return prerenderMenu;
+
   const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch menu');
@@ -208,6 +231,9 @@ export const fetchEventsFn = async ({
 };
 
 export const fetchTracksFn = async (): Promise<MusicTrack[]> => {
+  const prerenderTracks = getPrerenderTracks();
+  if (prerenderTracks && prerenderTracks.length > 0) return prerenderTracks;
+
   const apiUrl = buildApiUrl('wp/v2/remixes', {
     per_page: '100',
     // OPTIMIZATION: Limit fields to reduce payload size
@@ -220,6 +246,9 @@ export const fetchTracksFn = async (): Promise<MusicTrack[]> => {
 };
 
 export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
+  const prerenderNews = getPrerenderNews(lang);
+  if (prerenderNews && prerenderNews.length > 0) return prerenderNews;
+
   const apiUrl = buildApiUrl('wp/v2/posts', {
     per_page: '10',
     ...(lang ? { lang } : {}),

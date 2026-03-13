@@ -687,6 +687,8 @@ final class ZenGame
             'post_status' => 'publish',
             // Skip SQL_CALC_FOUND_ROWS — we don't need pagination metadata.
             'no_found_rows' => true,
+            'update_post_meta_cache' => true,
+            'update_post_term_cache' => false,
         ]);
 
         // Build an ID → date_earned map from the user's earned achievements.
@@ -809,6 +811,8 @@ final class ZenGame
             'order' => 'ASC',
             'post_status' => 'publish',
             'no_found_rows' => true,
+            'update_post_meta_cache' => true,
+            'update_post_term_cache' => false,
         ]);
 
         $next_rank = null;
