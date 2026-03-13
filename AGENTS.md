@@ -1,67 +1,53 @@
 # AGENTS.md - DJ Zen Eyer
 
-> Instrucoes para agentes de IA neste repositorio.
-> Idioma padrao: Portugues Brasileiro.
+> Instruções operacionais para agentes de IA neste repositório.
+> Idioma padrão: Português Brasileiro.
 
-## Precedencia
-- Este arquivo deve ser lido junto de `AI_CONTEXT_INDEX.md`.
-- Em caso de conflito, **`AI_CONTEXT_INDEX.md` prevalece**.
-- Se ainda houver conflito, prevalece o codigo real do repositorio.
+## Precedência
+- Em caso de conflito, seguir esta ordem:
+  1. Código real do repositório
+  2. `AI_CONTEXT_INDEX.md`
+  3. Este arquivo (`AGENTS.md`)
+  4. Documentação específica em `docs/*`
+  5. Skills e guias auxiliares
 
 ## Resumo do Projeto
 - Site/plataforma oficial do DJ Zen Eyer
 - Arquitetura: WordPress Headless + React SPA
-- Producao: https://djzeneyer.com
+- Produção: https://djzeneyer.com
 
-## Stack Canonica
+## Stack canônica
 - Frontend: React 18, TypeScript strict, Vite 7, Tailwind 3, React Query v5, React Router 7, i18next
 - Backend: WordPress 6.0+, PHP 8.1+, WooCommerce, GamiPress
 - Plugins customizados ativos no repo: `zeneyer-auth`, `zen-seo-lite`, `zen-bit`, `zengame`
 - Infra: Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions
 - Node: 20+
 
-## Regras de Engenharia
-1. Todo texto visivel deve usar i18n (`t('chave')`) em PT/EN
-2. Data fetching deve ficar centralizado em `src/hooks/useQueries.ts`
-3. Nao usar `fetch()` direto em componentes de pagina
-4. Paginas devem ser lazy-loaded (`React.lazy` + `Suspense`)
-5. Toda pagina deve configurar SEO com `<HeadlessSEO />`
-6. Filtragem pesada deve ocorrer no backend
-7. PHP com namespace, sanitizacao e queries preparadas
-8. Nao atualizar ESLint para v10
-9. Nunca commitar segredos
+## Regras operacionais
+1. Todo texto visível deve usar i18n (`t('chave')`) em PT/EN
+2. SEO por página deve usar `HeadlessSEO`
+3. Páginas devem seguir lazy loading quando compatível com a arquitetura existente
+4. Data fetching no frontend deve preferir hooks centralizados e React Query
+5. Evitar `fetch()` direto em componentes de página, salvo exceção intencional e documentada
+6. Filtragem pesada deve preferir backend
+7. PHP deve usar sanitização, escaping e queries preparadas
+8. Nunca commitar segredos
+9. Não atualizar ESLint para v10
+10. Não reintroduzir **music player embutido** no site sem decisão explícita
 
-## Endpoints/Nomespaces de Referencia
-- `djzeneyer/v1`
-- `zeneyer-auth/v1`
-- `zen-bit/v2`
-- `zengame/v1`
-- `zen-seo/v1`
+## Regras de design e UX
+1. Direcao: Premium Contemporaneo + Imersao MMORPG.
+2. Referencia: Paginas **Zen Tribe** e **Dashboard** sao os padroes de qualidade.
+3. Foco: HUDs, indicadores de progresso, micro-animacoes e **Azul Eletrico**.
+4. **PROIBIDO**: Gradiente chamativo em titulos principais e layouts estilo "template genérico".
+5. Em caso de dúvida, imitar a sofisticacao da Zen Tribe.
 
-## Verificacao local
+## Governança de contexto
+- Mudanças relevantes de arquitetura, API, fluxo, identidade pública, SEO estrutural, segurança ou deploy devem atualizar o contexto no mesmo trabalho
+- Se a mudança não exigir atualização de contexto, registrar explicitamente que nenhuma atualização foi necessária
+
+## Verificação local
 ```bash
 npm run lint
 npm run build
 ```
-
-## Governança de Contexto (Obrigatoria)
-1. Sempre que houver mudanca importante (arquitetura, API, fluxo, seguranca, deploy), atualizar no mesmo trabalho os arquivos de contexto/documentacao correspondentes (`CONTEXT.md`, `AI_CONTEXT_INDEX.md`, etc).
-2. Se a mudanca afetar instrucoes de skills, atualizar tambem a skill relevante em `.agents/skills/*`.
-3. Nao encerrar mudanca estrutural sem sincronizar contexto.
-
----
-
-## Governança Canônica de IA
-- Fonte operacional canônica de execução: `docs/AI_GOVERNANCE.md`.
-- Em conflitos entre guias de assistentes, aplicar a hierarquia definida em `AI_GOVERNANCE.md`.
-- Mudanças de processo de PR devem atualizar também `.github/pull_request_template.md`.
-
----
-
-## Regras Importantes (Hard Rules)
-1. **Não modificar ESLint para v10** — plugins React não suportam (ver `docs/ESLINT_ANALYSIS.md`).
-2. **Navbar está em `src/components/Layout/Navbar.tsx`** (nunca mover para `common/`).
-3. **Tradução é obrigatória** em todos os idiomas (en + pt) para qualquer texto visível.
-4. **Nunca commitar** `.env`, `secrets`, ou credenciais.
-5. **O pipeline faz**: `build` → `prerender (SSG)` → `rsync para VPS` → `purge cache`.
-6. **Requisitos Mínimos**: PHP 8.1+, Node 20+, WordPress 6.0+.

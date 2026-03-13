@@ -37,14 +37,16 @@
 
 ## Preferencias do projeto
 
-- Gradientes sutis/neon permitidos (preference, not absolute prohibition)
-- Solucoes simples e robustas
-- Tom de voz: Conversa próxima, humilde e generosa ("Amigo Zen")
-- Prioridade Máxima: Velocidade de carregamento e facilidade de audição (links diretos pro Spotify)
-- Filtro de Estados: Facilitar para fãs locais encontrarem eventos
-- Nao atualizar ESLint para v10 (plugins React nao suportam)
-- Nao hardcodar strings visiveis ao usuario (usar `i18n`)
-- Nao usar `fetch()` diretamente em componentes (usar hooks no React Query)
+- Estetica: **Premium MMORPG Moderno** (Ref: `ZenTribe` e `Dashboard`).
+- Direcao: HUDs, indicadores de progresso e Azul Eletrico.
+- **Anti-template Rule**: Evitar layouts estilo landing page ou SaaS comum.
+- Gradientes: **Uso restrito**. PROIBIDO em headlines.
+- **Sem player de musica interno**. Links para Spotify/SoundCloud.
+- Tom de voz: Conversa próxima, humilde e generosa ("Amigo Zen").
+- Prioridade Máxima: Velocidade de carregamento e facilidade de audição (links externos).
+- Nao atualizar ESLint para v10 (plugins React nao suportam).
+- Nao hardcodar strings visiveis ao usuario (usar `i18n`).
+- Nao usar `fetch()` diretamente em componentes (usar hooks no React Query).
 - Nao commitar `.env` ou credenciais
 - Nao remover scripts de `prerender.js` (Eles evitam a "tela branca" no deploy)
 
