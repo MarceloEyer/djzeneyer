@@ -89,7 +89,7 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 - **useQueries.ts — SSOT**: Arquivo único em `src/hooks/useQueries.ts` contém TODOS os hooks de dados. Nunca use `fetch()` solto em componentes.
 - **Backend Filters, Frontend Renders**: Backend filtra dados via query params (`?status=published&limit=10`); React renderiza apenas o resultado. Nunca filtre grandes datasets no React.
 - **HeadlessSEO**: Importar de `src/components/HeadlessSEO` para meta tags dinâmicas em todas as páginas.
-- **Hybrid Prerender (Bandsintown)**: Durante o build, o `prerender.js` busca dados reais do Bandsintown para gerar o HTML estático. No runtime, o app usa o plugin WordPress (`zen-bit/v2`).
+- **Hybrid Prerender (Bandsintown)**: Durante o build, o `prerender.js` busca dados da **API interna do WordPress** (com fallback direto ao Bandsintown) para gerar o HTML estático. No runtime, o app usa o plugin WordPress (`zen-bit/v2`).
 - **Papel do `index.html`**: É um **Vite Template**. Nunca servido diretamente pelo WordPress. Base para Build/Prerender/Dev.
 
 ### 3.2 Backend — Namespacing Obrigatório

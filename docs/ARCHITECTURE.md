@@ -409,6 +409,8 @@ npm run build
   â”‚
   â””â”€â”€â–º scripts/prerender.js
          â”‚
+         â”œâ”€â”€â–º Fetches data from internal WP API (primary)
+         â”œâ”€â”€â–º Fallback to Bandsintown API (fallback)
          â”œâ”€â”€â–º Puppeteer launches local server
          â”œâ”€â”€â–º Navigates to each route:
          â”‚      /about â†’ dist/about/index.html

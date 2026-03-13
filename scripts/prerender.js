@@ -6,12 +6,15 @@ import puppeteer from 'puppeteer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'DJ%20Zen%20Eyer';
-const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'djzeneyer';
+const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
+const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
 const SITE_BASE_URL = process.env.SITE_BASE_URL || 'https://djzeneyer.com';
+const INTERNAL_API_EVENTS = `${SITE_BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=365`;
 const EVENTS_ROUTE_EN = '/zouk-events';
 const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
 const bandsintownArtistEndpoint = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${BANDSINTOWN_APP_ID}&date=upcoming`;
+console.log(`📡 Bandsintown Endpoint (Fallback): ${bandsintownArtistEndpoint}`);
+console.log(`📡 Internal API Endpoint: ${INTERNAL_API_EVENTS}`);
 
 // 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
 let routesList = [];
@@ -120,42 +123,78 @@ function normalizeBandsintownEvent(raw, lang = 'en') {
   };
 }
 
-async function fetchBandsintownEvents() {
+async function fetchEvents() {
   const cacheFile = join(CONFIG.distDir, '.prerender-bandsintown-cache.json');
-  try {
-    const res = await fetch(bandsintownArtistEndpoint, {
-      headers: { 
-        'Accept': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      },
-    });
+  let raw = null;
+  let source = 'NONE';
 
-    if (!res.ok) {
-      const errorBody = await res.text().catch(() => 'No body');
-      throw new Error(`Bandsintown responded ${res.status}: ${errorBody.slice(0, 100)}`);
+  // 1. Tentar API Interna do WordPress (Recomendado pelo Usuário)
+  try {
+    const res = await fetch(INTERNAL_API_EVENTS, { headers: { 'Accept': 'application/json' } });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.events)) {
+        raw = data.events;
+        source = 'INTERNAL_API';
+      }
+    }
+  } catch (e) {
+    console.warn('⚠️ Falha ao conectar na API interna. Tentando Bandsintown...');
+  }
+
+  // 2. Fallback: Bandsintown Direto
+  if (!raw) {
+    try {
+      const res = await fetch(bandsintownArtistEndpoint, {
+        headers: { 
+          'Accept': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 WordPress/Prerender'
+        },
+      });
+      if (res.ok) {
+        raw = await res.json();
+        source = 'BANDSINTOWN_DIRECT';
+      } else {
+        const errorBody = await res.text().catch(() => 'No body');
+        console.warn(`⚠️ Bandsintown respondeu ${res.status}: ${errorBody.slice(0, 50)}`);
+      }
+    } catch (e) {
+      console.warn('⚠️ Falha ao conectar no Bandsintown diretamente.');
+    }
+  }
+
+  // 3. Processar e Gerar Payload
+  try {
+    if (!raw && existsSync(cacheFile)) {
+      console.warn(`⚠️ Usando cache local do prerender.`);
+      return JSON.parse(readFileSync(cacheFile, 'utf8'));
     }
 
-    const raw = await res.json();
     const items = Array.isArray(raw) ? raw : [];
+    
+    // Se vier da API interna, já está normalizado. Mas passamos pelo normalizeBandsintownEvent 
+    // novamente para garantir que a estrutura 'detailById' (en/pt) seja criada corretamente
+    // se o prerender precisar de campos específicos de tradução.
     const eventsEn = items.map(item => normalizeBandsintownEvent(item, 'en')).filter(e => e.event_id);
     const eventsPt = items.map(item => normalizeBandsintownEvent(item, 'pt')).filter(e => e.event_id);
     const detailById = Object.fromEntries(eventsEn.map((event, index) => [event.event_id, { en: event, pt: eventsPt[index] }]));
+
     const payload = {
       fetchedAt: new Date().toISOString(),
+      source,
       list: { en: eventsEn, pt: eventsPt },
       detailById,
     };
 
-    writeFileSync(cacheFile, JSON.stringify(payload, null, 2), 'utf8');
-    console.log(`🎫 Bandsintown: ${eventsEn.length} eventos carregados.`);
+    if (items.length > 0) {
+      writeFileSync(cacheFile, JSON.stringify(payload, null, 2), 'utf8');
+      console.log(`🎫 Eventos: ${eventsEn.length} carregados via ${source}.`);
+    }
+
     return payload;
   } catch (error) {
-    if (existsSync(cacheFile)) {
-      console.warn(`⚠️ Bandsintown indisponível. Usando cache local. Motivo: ${error.message}`);
-      return JSON.parse(readFileSync(cacheFile, 'utf8'));
-    }
-    console.warn(`⚠️ Bandsintown indisponível e sem cache. Motivo: ${error.message}`);
-    return { fetchedAt: new Date().toISOString(), list: { en: [], pt: [] }, detailById: {} };
+    console.warn(`⚠️ Erro ao processar eventos: ${error.message}`);
+    return { fetchedAt: new Date().toISOString(), source: 'ERROR', list: { en: [], pt: [] }, detailById: {} };
   }
 }
 
@@ -194,7 +233,7 @@ async function prerender() {
   let browser = null;
   try {
     await startDevServer();
-    const bandsintownData = await fetchBandsintownEvents();
+    const bandsintownData = await fetchEvents();
 
     browser = await puppeteer.launch({
       headless: 'shell',

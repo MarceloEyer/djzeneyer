@@ -59,8 +59,8 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Tailwind canonico do projeto: v3; nao aplicar convencoes exclusivas de v4 sem migracao explicita
 - SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
 - **Hybrid Prerender Architecture (2026-03)**:
-  - **Build/SEO**: Busca dados REAL direto do Bandsintown via `scripts/prerender.js`.
-  - **Runtime**: Continua usando o plugin `ZenBit` para consistência e persistência de dados.
+  - **Build/SEO**: O `scripts/prerender.js` busca dados da **API interna do WordPress** (`/zen-bit/v2/events`) como primária, com fallback direto para Bandsintown se o WP estiver offline.
+  - **Runtime**: O React SPA continua usando o plugin WordPress (`ZenBit`) para consistência.
   - **Hydration**: O app hidrata os dados injetados em `window.__PRERENDER_DATA__`.
 - **Papel do `index.html`**: É um **Vite Template**. Não é o arquivo servido diretamente pelo WordPress, mas sim a base para o Build e Prerender (SEO).
 

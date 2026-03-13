@@ -72,7 +72,8 @@ if (file_exists($possible_file) && is_file($possible_file)) {
 // 5. Entrega o arquivo (Se validado e seguro)
 if ($serve_file) {
     // Whitelist de extensões permitidas (Camada extra de segurança)
-    $allowed_ext = ['html', 'xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
+    // REMOVIDO 'html': Para que o WordPress trate o index.html e injete os scripts/nonces necessários.
+    $allowed_ext = ['xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
     $extension = strtolower(pathinfo($serve_file, PATHINFO_EXTENSION));
 
     if (!in_array($extension, $allowed_ext, true)) {
@@ -81,8 +82,19 @@ if ($serve_file) {
         exit;
     }
 
+    // Caso especial: HTML (SPA Shell)
+    if ($extension === 'html') {
+        get_header();
+        echo '<div id="root">';
+        // Aqui você poderia ler o arquivo e extrair apenas o conteúdo do #root se quisesse, 
+        // mas o React fará hidratação de qualquer forma. 
+        // O importante é o get_header/footer injetarem os scripts/dados.
+        echo '</div>';
+        get_footer();
+        exit;
+    }
+
     $mime_types = [
-        'html' => 'text/html; charset=UTF-8',
         'xml' => 'application/xml; charset=UTF-8',
         'txt' => 'text/plain; charset=UTF-8',
         'css' => 'text/css',
