@@ -92,7 +92,13 @@ class Settings_Page
         echo '<input type="' . esc_attr($type) . '" name="' . $this->option_name . '[' . $args['id'] . ']" value="' . esc_attr($value) . '" class="regular-text">';
 
         if (!empty($args['desc'])) {
-            echo '<p class="description">' . $args['desc'] . '</p>';
+            $allowed_html = [
+                'a'      => [ 'href' => [], 'target' => [], 'rel' => [] ],
+                'strong' => [],
+                'em'     => [],
+                'code'   => [],
+            ];
+            echo '<p class="description">' . wp_kses($args['desc'], $allowed_html) . '</p>';
         }
     }
 
@@ -104,7 +110,13 @@ class Settings_Page
         echo '<input type="checkbox" name="' . $this->option_name . '[' . $args['id'] . ']" value="1" ' . checked(1, $value, false) . '>';
 
         if (!empty($args['desc'])) {
-            echo '<p class="description">' . $args['desc'] . '</p>';
+            $allowed_html = [
+                'a'      => [ 'href' => [], 'target' => [], 'rel' => [] ],
+                'strong' => [],
+                'em'     => [],
+                'code'   => [],
+            ];
+            echo '<p class="description">' . wp_kses($args['desc'], $allowed_html) . '</p>';
         }
     }
 
