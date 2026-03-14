@@ -6,6 +6,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen, HeartPulse } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { stripHtml } from '../utils/text';
 
 // ============================================================================
 // COMPONENTE FAQITEM
@@ -100,7 +101,7 @@ const FAQPage: React.FC = () => {
     return faqData.flatMap(category =>
       category.questions.map(q => ({
         q: q.question,
-        a: q.answer.replace(/<[^>]*>/g, '') // Clean text for robots/LLMs
+        a: stripHtml(q.answer) // Clean text for robots/LLMs
       }))
     );
   }, [faqData]);
