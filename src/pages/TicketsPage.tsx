@@ -6,6 +6,7 @@ import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute } from '../config/routes';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { stripHtml } from '../utils/text';
 import { ProductImage, ProductCategory } from '../types/product';
 
 interface Product {
@@ -118,7 +119,7 @@ const TicketsPage: React.FC = () => {
 
                   <div className="p-6">
                     <p className="text-white/60 line-clamp-2 mb-6 text-sm">
-                      {sanitizeHtml(ticket.short_description).replace(/<[^>]*>/g, '') || t('event_desc_fallback')}
+                      {stripHtml(ticket.short_description || '') || t('event_desc_fallback')}
                     </p>
 
                     <div className="flex items-center justify-between mt-auto">
