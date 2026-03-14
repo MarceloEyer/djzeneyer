@@ -16,11 +16,22 @@ export const stripHtml = (html: string): string => {
     }
 
     // SSR Fallback or if DOMParser is unavailable: use Regex
-    return html
-        .replace(/<!--[\s\S]*?-->/g, '')                                   // Remove comments (WP)
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
-        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')   // Remove styles
-        .replace(/<[^>]*>?/gm, '')                                         // Remove tags
+    let result = html;
+    let previous;
+    do {
+        previous = result;
+        result = result
+            .replace(/<!--[\s\S]*?-->/g, '')                                   // Remove comments (WP)
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')   // Remove styles
+            .replace(/<[^>]*>/gm, '');                                         // Remove well-formed tags
+    } while (result !== previous);
+
+    // Final sweep to remove any stray or maliciously nested angle brackets
+    // as recommended by CodeQL (js/incomplete-multi-character-sanitization)
+    result = result.replace(/[<>]/g, '');
+
+    return result
         .replace(/&nbsp;/g, ' ')                                           // Decode basic entities
         .replace(/&amp;/g, '&')
         .replace(/&quot;/g, '"')
