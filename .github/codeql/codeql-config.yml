@@ -6,3 +6,4 @@ paths-ignore:
   - '**/vendor/**'
   - '**/*.min.js'
   - 'gamipress/**'
+  - 'scripts/**'
