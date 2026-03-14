@@ -315,6 +315,10 @@ class JWT_Manager
             'zeneyer_refresh_token'
         ));
 
+        if (false === $count) {
+            return false;
+        }
+
         return (int) $count;
     }
 }

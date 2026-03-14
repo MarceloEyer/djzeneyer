@@ -22,7 +22,11 @@ class Settings_Page
 
         $count = \ZenEyer\Auth\Core\JWT_Manager::revoke_all_system_sessions();
 
-        wp_redirect(admin_url('admin.php?page=zeneyer-auth&invalidated=' . $count));
+        if (false === $count) {
+            wp_safe_redirect(admin_url('admin.php?page=zeneyer-auth&error=db_error'));
+        } else {
+            wp_safe_redirect(admin_url('admin.php?page=zeneyer-auth&invalidated=' . absint($count)));
+        }
         exit;
     }
 
@@ -130,6 +134,12 @@ class Settings_Page
                                     wiped from the system.</p>
                             </div>
                     <?php endif; ?>
+
+                    <?php if (isset($_GET['error']) && $_GET['error'] === 'db_error'): ?>
+                            <div class="notice notice-error is-dismissible">
+                                <p>Failed to wipe sessions. There was a database error.</p>
+                            </div>
+                    <?php endif; ?>
             <p>Secure JWT authentication for your headless WordPress + React application.</p>
 
             <form method="post" action="options.php">
@@ -172,7 +182,12 @@ class Settings_Page
                             echo '<tr><td colspan="5">No logs found yet.</td></tr>';
                         } else {
                             foreach ($logs as $log) {
-                                $user_link = $log['user_id'] ? '<a href="' . get_edit_user_link($log['user_id']) . '">#' . $log['user_id'] . '</a>' : '-';
+                                $user_link = !empty($log['user_id'])
+                                    ? '<a href="' . esc_url(get_edit_user_link(absint($log['user_id']))) . '">#' . absint($log['user_id']) . '</a>'
+                                    : '-';
+                                if (isset($log['user_id']) && $log['user_id'] === 0) {
+                                    $user_link = '<em>System</em>';
+                                }
                                 echo '<tr>';
                                 echo '<td>' . date('Y-m-d H:i:s', $log['time']) . '</td>';
                                 echo '<td><code>' . esc_html($log['event']) . '</code></td>';

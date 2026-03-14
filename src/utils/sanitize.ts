@@ -101,11 +101,19 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
 
         // Validação de Domínio
         const domain = parsed.hostname.toLowerCase();
-        TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted));
+        const isTrustedDomain = TRUSTED_DOMAINS.some(
+            trusted => domain === trusted || domain.endsWith(`.${trusted}`)
+        );
 
-        // Para links externos, permitimos se for HTTPS (legítimo), mas bloqueamos domínios suspeitos
-        // se necessário no futuro. Por enquanto, permitimos domínios externos via HTTPS/HTTP
-        // mas o safelist é prioritário para componentes sensíveis.
+        // Para protocolos não-web (mailto/tel), aceitamos após validação de protocolo
+        if (parsed.protocol === 'mailto:' || parsed.protocol === 'tel:') {
+            return trimmedUrl;
+        }
+
+        // Para links web, forçamos HTTPS em domínios externos e aceitamos HTTP apenas para domínios confiáveis.
+        if (parsed.protocol === 'http:' && !isTrustedDomain) {
+            return fallback;
+        }
 
         return trimmedUrl;
     } catch {
@@ -136,6 +144,10 @@ export const safeRedirect = (url: string | undefined | null, fallback: string = 
     // 2. Se for uma URL absoluta, verificamos se o host é confiável
     try {
         const parsed = new URL(url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return fallback;
+        }
+
         const domain = parsed.hostname.toLowerCase();
 
         if (TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
