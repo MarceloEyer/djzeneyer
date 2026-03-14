@@ -9,6 +9,7 @@ import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { getAlternateLinks, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { ensureTrailingSlash } from '../utils/seo';
+import { stripHtml } from '../utils/text';
 
 // ============================================================================
 // 1. INTERFACES
@@ -306,7 +307,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             }
           },
           image: event.image || finalImage,
-          description: (event.description || event.desc || '').replace(/<[^>]*>?/gm, '').substring(0, 300),
+          description: stripHtml(event.description || event.desc || '').substring(0, 300),
           performer: {
             '@type': 'MusicGroup',
             name: ARTIST.identity.stageName,
