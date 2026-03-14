@@ -1,5 +1,8 @@
 name: Validate Bot Regex
 
+permissions:
+  contents: read
+
 on:
   pull_request:
     paths:
