@@ -58,14 +58,28 @@ export const exportJournal = (): void => {
   const json = JSON.stringify(data, null, 2);
   // Basic sanitization with refined patterns and single-pass decoding
   let result = json;
-  let previous;
-  do {
-    previous = result;
-    result = result.replace(/<!--[\s\S]*?-->/g, '');
-    result = result.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
-    result = result.replace(/<style\b[\s\S]*?<\/style\s*>/gi, '');
-    result = result.replace(/<[^>]*>/g, '');
-  } while (result !== previous);
+    // Recursive removal of blocks with content
+    while (result.includes('<!--')) {
+      let next = result.replace(/<!--[\s\S]*?-->/g, '');
+      if (next === result) break;
+      result = next;
+    }
+    while (result.toLowerCase().includes('<script')) {
+      let next = result.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
+      if (next === result) break;
+      result = next;
+    }
+    while (result.toLowerCase().includes('<style')) {
+      let next = result.replace(/<style\b[\s\S]*?<\/style\s*>/gi, '');
+      if (next === result) break;
+      result = next;
+    }
+    // Recursive removal of any remaining tags
+    while (result.includes('<')) {
+      let next = result.replace(/<[^>]*>/g, '');
+      if (next === result) break;
+      result = next;
+    }
 
   // Final absolute sweep for any stray/nested brackets
   result = result.replace(/[<>]/g, '');

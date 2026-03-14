@@ -100,8 +100,8 @@ const FAQPage: React.FC = () => {
   const faqList = useMemo(() => {
     return faqData.flatMap(category =>
       category.questions.map(q => ({
-        q: q.question as string,
-        a: stripHtml(q.answer as string) // Clean text for robots/LLMs
+        q: (q.question as any) as string,
+        a: stripHtml((q.answer as any) as string) // Clean text for robots/LLMs
       }))
     );
   }, [faqData]);
