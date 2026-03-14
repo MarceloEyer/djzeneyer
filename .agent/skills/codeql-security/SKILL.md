@@ -5,16 +5,32 @@ description: Padrões de segurança CodeQL e como corrigi-los no projeto djzeney
 
 # 🛡️ Segurança CodeQL — djzeneyer
 
-## ⚙️ Como verificar alertas CodeQL localmente
+## ⚙️ Auditoria de Segurança GitHub — Comandos Completos
 
-**SEMPRE use este comando (PowerShell):**
+**Execute estes 4 comandos para uma auditoria rápida e completa:**
+
+### 1. CodeQL (Code Scanning)
 ```powershell
 gh api "/repos/MarceloEyer/djzeneyer/code-scanning/alerts?state=open&per_page=100" | ConvertFrom-Json | ForEach-Object { "$($_.number) [$($_.rule.id)] $($_.most_recent_instance.location.path):$($_.most_recent_instance.location.start_line) -- $($_.rule.description)" }
 ```
 
-> Repo: `MarceloEyer/djzeneyer`  
-> CLI: `gh api` (GitHub CLI instalado)  
-> **NÃO** abre o browser para ver os alertas — use sempre o comando acima.
+### 2. Dependabot (Vulnerabilidades em dependências)
+```powershell
+gh api "/repos/MarceloEyer/djzeneyer/dependabot/alerts?state=open&per_page=100" | ConvertFrom-Json | ForEach-Object { "$($_.number) [$($_.security_advisory.severity)] $($_.dependency.package.name) — $($_.security_advisory.summary)" }
+```
+
+### 3. Secret Scanning (Segredos expostos)
+```powershell
+gh api "/repos/MarceloEyer/djzeneyer/secret-scanning/alerts?state=open&per_page=100" | ConvertFrom-Json | ForEach-Object { "$($_.number) [$($_.secret_type_display_name)] $($_.state)" }
+```
+
+### 4. Actions Permissions (Configuração do runner)
+```powershell
+gh api "/repos/MarceloEyer/djzeneyer/actions/permissions" | ConvertFrom-Json | Format-List
+```
+
+> **Resultado esperado (estado seguro):** CodeQL=0, Dependabot=0, Secret Scanning=0.  
+> `allowed_actions=all` e `sha_pinning_required=false` são aceitáveis para este projeto.
 
 ---
 
