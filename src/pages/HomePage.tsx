@@ -407,7 +407,7 @@ const HomePage: React.FC = () => {
             </Trans>
           </motion.h2>
           <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
-            {t('home.tribe.desc')}
+            {t('home.tribe.subtitle')}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
             <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">

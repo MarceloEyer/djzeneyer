@@ -100,7 +100,14 @@ const CodeOfConductPage: React.FC = () => {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      <div className="min-h-screen pt-24 pb-16">
+      <div className="min-h-screen pt-24 pb-16 relative overflow-hidden">
+        {/* Background Decorations - Premium Glows */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
+          <div className="absolute top-[15%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
+          <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-blue-500/5 blur-[100px] rounded-full" />
+          <div className="absolute bottom-[25%] right-[-5%] w-[35%] h-[35%] bg-secondary/10 blur-[110px] rounded-full" />
+          <div className="absolute bottom-[10%] left-[5%] w-[25%] h-[25%] bg-primary/5 blur-[90px] rounded-full" />
+        </div>
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <motion.div
@@ -112,8 +119,8 @@ const CodeOfConductPage: React.FC = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
               <Heart size={40} className="text-primary" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              {t('conduct_page.title')}
+            <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white leading-tight">
+              Código de <span className="text-primary">Conduta</span>
             </h1>
             <p className="text-white/70">
               {t('conduct_page.last_updated')}: <span className="text-primary font-semibold">{lastUpdated}</span>

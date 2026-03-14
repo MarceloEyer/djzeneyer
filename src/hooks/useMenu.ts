@@ -40,8 +40,10 @@ export function useMenu(): MenuItem[] {
       '[useMenu]',
       'lang:', langToFetch,
       'loading:', isLoading,
-      'cached:', Boolean(data)
+      'cached:', Boolean(data),
+      'items:', data?.length || 0
     );
+    if (data) console.dir(data);
   }
 
   const formattedItems = useMemo<MenuItem[]>(() => {

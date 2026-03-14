@@ -106,7 +106,14 @@ const FAQPage: React.FC = () => {
   }, [faqData]);
 
   return (
-    <div className="min-h-screen bg-background text-white pt-24 pb-20">
+    <div className="min-h-screen bg-background text-white pt-24 pb-20 relative overflow-hidden">
+      {/* Background Decorations - Premium Glows */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute top-[20%] left-[60%] w-[35%] h-[35%] bg-blue-500/5 blur-[100px] rounded-full" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 blur-[100px] rounded-full" />
+        <div className="absolute top-[40%] left-[-5%] w-[30%] h-[30%] bg-primary/5 blur-[80px] rounded-full" />
+      </div>
       <HeadlessSEO
         title={t('faq.title')}
         description={t('faq.subtitle')}
@@ -128,9 +135,9 @@ const FAQPage: React.FC = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 text-sm font-bold tracking-widest uppercase">
             <BookOpen size={16} /> {t('faq.badge')}
           </div>
-          <h1 className="text-4xl md:text-6xl font-black font-display mb-6">
+          <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white leading-tight">
             <Trans i18nKey="faq.title">
-              Perguntas <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">Frequentes</span>
+              Perguntas <span className="text-primary">Frequentes</span>
             </Trans>
           </h1>
           <p className="text-xl text-white/50 max-w-2xl mx-auto">

@@ -121,11 +121,18 @@ const AboutPage: React.FC = () => {
       />
 
       {/* Layout visual */}
-      <div className="min-h-screen bg-background text-white">
+      <div className="min-h-screen bg-background text-white relative overflow-hidden">
+        {/* Enhanced Background Decorations - Premium Glows */}
+        <div className="absolute top-0 left-0 w-full h-[150vh] overflow-hidden pointer-events-none -z-0">
+          <div className="absolute top-[5%] left-[-10%] w-[60%] h-[40%] bg-primary/10 blur-[130px] rounded-full" />
+          <div className="absolute top-[20%] left-[60%] w-[35%] h-[35%] bg-blue-500/5 blur-[100px] rounded-full" />
+          <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 blur-[120px] rounded-full animate-pulse" />
+          <div className="absolute top-[50%] left-[-5%] w-[30%] h-[30%] bg-primary/5 blur-[80px] rounded-full" />
+          <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[100px] rounded-full" />
+        </div>
+
         {/* Hero Section */}
-        <div className="pt-40 pb-24 min-h-screen bg-background relative overflow-hidden md:pt-48">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="pt-24 pb-0 relative md:pt-32">
           <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -144,9 +151,9 @@ const AboutPage: React.FC = () => {
                   {t('about.hero.badge')}
                 </div>
               </motion.div>
-              <h1 className="text-5xl md:text-7xl font-black font-display mb-6">
+              <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white leading-tight">
                 <Trans i18nKey="about.hero.title">
-                  A <span className="text-gradient bg-gradient-to-r from-primary to-accent bg-clip-text">Jornada</span>
+                  A <span className="text-primary">Jornada</span>
                 </Trans>
               </h1>
               <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
@@ -157,7 +164,7 @@ const AboutPage: React.FC = () => {
         </div>
 
         {/* Stats Section */}
-        <section className="py-16 px-4">
+        <section className="pb-8 pt-0 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {ACHIEVEMENTS_DATA.map((item, index) => (
@@ -170,7 +177,7 @@ const AboutPage: React.FC = () => {
                   className="bg-surface/50 p-6 rounded-2xl border border-white/10 hover:border-primary/50 transition-all"
                 >
                   {item.icon}
-                  <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">
+                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
                     {item.value}
                   </div>
                   <div className="text-white/60 text-sm">{item.label}</div>
@@ -209,7 +216,7 @@ const AboutPage: React.FC = () => {
               className="text-4xl md:text-5xl font-display font-bold text-center mb-16"
             >
               <Trans i18nKey="about.timeline.title">
-                Momentos que <span className="text-gradient">Mudaram Tudo</span>
+                Momentos que <span className="text-primary">Mudaram Tudo</span>
               </Trans>
             </motion.h2>
 
@@ -261,7 +268,7 @@ const AboutPage: React.FC = () => {
               <Heart className="w-16 h-16 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
                 <Trans i18nKey="about.philosophy.title">
-                  Minha <span className="text-gradient">Filosofia</span>
+                  Minha <span className="text-primary">Filosofia</span>
                 </Trans>
               </h2>
               <p className="text-lg text-white/80 leading-relaxed italic">
@@ -285,7 +292,7 @@ const AboutPage: React.FC = () => {
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
                 <Trans i18nKey="about.cta.title">
-                  Vamos <span className="text-gradient">Conversar?</span>
+                  Vamos <span className="text-primary">Conversar?</span>
                 </Trans>
               </h2>
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">

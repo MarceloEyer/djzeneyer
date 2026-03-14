@@ -331,60 +331,85 @@
   "explore_music_button": "Explorar Músicas",
   "play_featured_mix": "Ouvir no SoundCloud",
   "upcoming_events": "Próximos Eventos",
-  "home_page_title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
-  "home_page_meta_desc": "DJ Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais.",
-  "home_headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
-  "home_subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
-  "home_welcome": "Bem-vindo ao DJ Zen Eyer",
-  "home_tagline": "DJ e Produtor de Zouk Brasileiro",
-  "home_cta": "Explorar Músicas",
-  "home_features_title": "Por Que Entrar na Zen Tribe?",
-  "home_features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
-  "home_feat_exclusive_title": "Música Exclusiva",
-  "home_feat_exclusive_desc": "Acesso antecipado a lançamentos e remixes exclusivos",
-  "home_feat_achievements_title": "Conquistas & Recompensas",
-  "home_feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
-  "home_feat_community_title": "Comunidade Ativa",
-  "home_feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
-  "home_cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
-  "home_cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
-  "hero_title": "DJ Zen Eyer",
-  "hero_subtitle": "Zouk Brasileiro",
-  "hero_cta": "Ouvir Agora",
-  "hero_cta_secondary": "Ver Eventos",
-  "home_hero_badge": "Bicampeão Mundial - Zouk World Championships",
-  "home_hero_title": "DJ Zen Eyer",
-  "home_hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
-  "home_hero_slogan": "A pressa é inimiga da cremosidade",
-  "home_hero_cta_text": "Sets completos e remixes. Para mais opções de streaming e downloads, vá em <0>Músicas</0>.",
-  "home_stat_champion": "Bicampeão Mundial",
-  "home_stat_countries": "Países",
-  "home_stat_events": "Eventos",
-  "home_stat_years": "Experiência",
-  "home_bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Ilha do Zouk (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 10 países.",
-  "home_bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
-  "home_bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
-  "home_festivals_title": "Festivais & Eventos",
-  "home_festivals_subtitle": "Muito feliz de ter levado o Zouk para esses lugares",
-  "home_festivals_more": "e outras cidades incríveis",
-  "home_press_title": "Imprensa & Mídia",
-  "home_press_desc": "Fotos para divulgação, infos e rider técnico.",
-  "home_press_cta": "ACESSAR PRESS KIT",
-  "home_booking_title": "Bookings",
-  "home_booking_desc": "Quer levar o som da Tribo Zen para a sua cidade? Mande uma mensagem.",
-  "home_booking_cta": "ENTRAR EM CONTATO",
-  "home_authority_title": "Perfis Verificados",
-  "home_tribe_title": "Junte-se à",
-  "home_tribe_highlight": "Zen Tribe",
-  "home_tribe_subtitle": "Sem pressa aqui. Apenas derretimento prolongado.",
-  "home_tribe_cta": "Entrar na Tribo",
-  "home_cta_soundcloud": "Ouvir no SoundCloud",
-  "home_cta_booking": "Booking / Press Kit",
-  "home_cta_music": "Explorar Músicas",
-  "home_bio_title": "Quem é DJ Zen Eyer?",
-  "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ e produtor</strong> focado no <strong>Brazilian Zouk</strong>. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Brazilian Zouk World Championships (Ilha do Zouk), sendo reconhecido pela precisão técnica e sensibilidade musical.",
-  "home_bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
-  "home_bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Frequenta palcos de peso como o Rio Zouk Congress.",
+  "home": {
+    "page_title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
+    "page_meta_desc": "DJ Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais.",
+    "headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
+    "subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
+    "welcome": "Bem-vindo ao DJ Zen Eyer",
+    "tagline": "DJ e Produtor de Zouk Brasileiro",
+    "cta": "Explorar Músicas",
+    "features_title": "Por Que Entrar na Zen Tribe?",
+    "features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
+    "feat_exclusive_title": "Música Exclusiva",
+    "feat_exclusive_desc": "Acesso antecipado a lançamentos e remixes exclusivos",
+    "feat_achievements_title": "Conquistas & Recompensas",
+    "feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
+    "feat_community_title": "Comunidade Ativa",
+    "feat_community_desc": "Conecte-se com amantes de música e DJ Zen Eyer",
+    "cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
+    "cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
+    "hero_badge": "Bicampeão Mundial - Zouk World Championships",
+    "hero_title": "DJ Zen Eyer",
+    "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
+    "hero_slogan": "A pressa é inimiga da cremosidade",
+    "hero_cta_text": "Sets completos e remixes. Para mais opções de streaming e downloads, vá em <0>Músicas</0>.",
+    "stat_champion": "Bicampeão Mundial",
+    "stat_countries": "Países",
+    "stat_events": "Eventos",
+    "stat_years": "Experiência",
+    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Ilha do Zouk (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 10 países.",
+    "bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
+    "bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
+    "festivals_title": "Festivais & Eventos",
+    "festivals_subtitle": "Muito feliz de ter levado o Zouk para esses lugares",
+    "festivals_more": "e outras cidades incríveis",
+    "press_title": "Imprensa & Mídia",
+    "press_desc": "Fotos para divulgação, infos e rider técnico.",
+    "press_cta": "ACESSAR PRESS KIT",
+    "booking_title": "Bookings",
+    "booking_desc": "Quer levar o som da Tribo Zen para a sua cidade? Mande uma mensagem.",
+    "booking_cta": "ENTRAR EM CONTATO",
+    "authority_title": "Perfis Verificados",
+    "tribe": {
+      "title": "Junte-se à <1>Zen Tribe</1>",
+      "subtitle": "Sem pressa aqui. Apenas derretimento prolongado.",
+      "desc": "Não é só sobre música. É sobre vibração. Entre para a lista VIP.",
+      "cta": "Entrar na Tribo"
+    },
+    "cta_soundcloud": "Ouvir no SoundCloud",
+    "cta_booking": "Booking / Press Kit",
+    "cta_music": "Explorar Músicas",
+    "bio_title": "Quem é DJ Zen Eyer?",
+    "bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) é um <strong>DJ e produtor</strong> focado no <strong>Brazilian Zouk</strong>. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Brazilian Zouk World Championships (Ilha do Zouk), sendo reconhecido pela precisão técnica e sensibilidade musical.",
+    "bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
+    "bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Frequenta palcos de peso como o Rio Zouk Congress.",
+    "verified": "Perfis Verificados",
+    "bookers": {
+      "title": "Bookings",
+      "desc": "Quer levar o som da Tribo Zen para a sua cidade? Mande uma mensagem.",
+      "cta": "ENTRAR EM CONTATO"
+    },
+    "seo": {
+      "title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
+      "description": "DJ Zen Eyer, bicampeão mundial focado no Zouk Brasileiro.",
+      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer",
+      "lead_answer": "DJ Zen Eyer é um bicampeão mundial, DJ e produtor musical especializado em Zouk Brasileiro, reconhecido por seu estilo de 'cremosidade' e experiências de pista imersivas."
+    },
+    "festivals": {
+      "presence": "Presença Internacional",
+      "many_more": "muitos outros"
+    },
+    "shows": {
+      "title": "Próximos Shows",
+      "cta": "Agenda completa"
+    },
+    "press": {
+      "title": "Imprensa & Mídia",
+      "desc": "Acesse fotos, bio e assets.",
+      "cta": "BAIXAR PRESS KIT"
+    }
+  },
   "music_page_title": "Hub de Música",
   "music_page_meta_desc": "Ouça as últimas mixagens e produções do DJ Zen Eyer",
   "music": {
@@ -644,8 +669,8 @@
       }
     },
     "aria": {
-      "learnMore": "zenTribe.aria.learnMore",
-      "viewMemberships": "zenTribe.aria.viewMemberships"
+      "learnMore": "Saiba Mais",
+      "viewMemberships": "Ver Planos"
     }
   },
   "philosophy": {
@@ -837,7 +862,7 @@
     "cookies_p1": "Usamos cookies e tecnologias de rastreamento semelhantes para rastrear a atividade em nosso site e manter certas informações. Cookies são arquivos com uma pequena quantidade de dados que podem incluir um identificador exclusivo anônimo.",
     "cookies_p2": "Você pode instruir seu navegador a recusar todos os cookies ou indicar quando um cookie está sendo enviado. No entanto, se você não aceitar cookies, poderá não conseguir usar algumas partes de nosso site.",
     "third_party_title": "7. Serviços de Terceiros",
-    "third_party_p1": "Podemos empregar empresas e indivíduos terceiros para facilitar nossos serviços, fornecer serviços em nosso nome ou nos ajudar a analisar como nosso serviço é usado. Esses terceiros podem ter acesso Í s suas informações pessoais para realizar tarefas em nosso nome e são obrigados a não divulgá-las ou usá-las para qualquer outra finalidade.",
+    "third_party_p1": "Podemos empregar empresas e indivíduos terceiros para facilitar nossos serviços, fornecer serviços em nosso nome ou nos ajudar a analisar como nosso serviço é usado. Esses terceiros podem ter acesso às suas informações pessoais para realizar tarefas em nosso nome e são obrigados a não divulgá-las ou usá-las para qualquer outra finalidade.",
     "third_party_analytics": "Analytics: Google Analytics",
     "third_party_payments": "Processamento de Pagamento: Stripe, PayPal",
     "third_party_email": "Serviços de E-mail: MailPoet",
@@ -850,7 +875,7 @@
       "Reter dados apenas pelo tempo necessário"
     ],
     "changes_title": "9. Alterações nesta Política de Privacidade",
-    "changes_p1": "Podemos atualizar nossa Política de Privacidade de tempos em tempos. Iremos notificá-lo de quaisquer alterações postando a nova Política de Privacidade nesta página e atualizando a data de \"Íšltima atualização\". Recomendamos que você revise esta Política de Privacidade periodicamente para quaisquer alterações.",
+    "changes_p1": "Podemos atualizar nossa Política de Privacidade de tempos em tempos. Iremos notificá-lo de quaisquer alterações postando a nova Política de Privacidade nesta página e atualizando a data de \"Última atualização\". Recomendamos que você revise esta Política de Privacidade periodicamente para quaisquer alterações.",
     "contact_title": "10. Contate-nos",
     "contact_p1": "Se você tiver alguma dúvida sobre esta Política de Privacidade ou desejar exercer seus direitos, entre em contato conosco em:",
     "contact_name": "Marcelo Eyer Fernandes",
@@ -862,7 +887,7 @@
       "title": "Termos de Uso | DJ Zen Eyer",
       "description": "Termos de Uso do site oficial de DJ Zen Eyer. Leia os termos e condições que regem o uso de nossos serviços."
     },
-    "last_updated": "Íšltima atualização",
+    "last_updated": "Última atualização",
     "last_updated_date": "Janeiro 2024",
     "intro_p1": "Bem-vindo ao site oficial do DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). Estes Termos de Uso regem seu acesso e uso de nosso site, serviços e conteúdo.",
     "intro_p2": "Ao acessar ou usar nosso site, você concorda em cumprir e estar vinculado a estes termos. Se você não concordar com estes termos, por favor não use nosso site.",
@@ -877,11 +902,11 @@
       },
       "disclaimer": {
         "title": "3. Isenção de Responsabilidade",
-        "content": "Os materiais no site do DJ Zen Eyer são fornecidos 'como estão'. DJ Zen Eyer não oferece garantias, expressas ou implícitas, e por meio deste isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização, adequação a um propósito específico ou não violação de propriedade intelectual ou outra violação de direitos. Além disso, DJ Zen Eyer não garante nem faz qualquer representação relativa Í  precisão, resultados prováveis ou confiabilidade do uso dos materiais em seu site ou de outra forma relacionado a tais materiais ou em quaisquer sites vinculados a este site."
+        "content": "Os materiais no site do DJ Zen Eyer são fornecidos 'como estão'. DJ Zen Eyer não oferece garantias, expressas ou implícitas, e por meio deste isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização, adequação a um propósito específico ou não violação de propriedade intelectual ou outra violação de direitos. Além disso, DJ Zen Eyer não garante nem faz qualquer representação relativa à precisão, resultados prováveis ou confiabilidade do uso dos materiais em seu site ou de outra forma relacionado a tais materiais ou em quaisquer sites vinculados a este site."
       },
       "limitations": {
         "title": "4. Limitações",
-        "content": "Em nenhum caso o DJ Zen Eyer ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro, ou devido Í  interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais no site do DJ Zen Eyer, mesmo que DJ Zen Eyer ou um representante autorizado do DJ Zen Eyer tenha sido notificado oralmente ou por escrito da possibilidade de tais danos. Como algumas jurisdições não permitem limitações em garantias implícitas, ou limitações de responsabilidade por danos consequentes ou incidentais, essas limitações podem não se aplicar a você."
+        "content": "Em nenhum caso o DJ Zen Eyer ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro, ou devido à interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais no site do DJ Zen Eyer, mesmo que DJ Zen Eyer ou um representante autorizado do DJ Zen Eyer tenha sido notificado oralmente ou por escrito da possibilidade de tais danos. Como algumas jurisdições não permitem limitações em garantias implícitas, ou limitações de responsabilidade por danos consequentes ou incidentais, essas limitações podem não se aplicar a você."
       }
     },
     "additional": {
@@ -907,7 +932,7 @@
       "purchases": {
         "title": "Compras e Pagamentos",
         "items": [
-          "Todas as compras estão sujeitas Í  disponibilidade e confirmação de pagamento.",
+          "Todas as compras estão sujeitas à disponibilidade e confirmação de pagamento.",
           "Os preços estão sujeitos a alterações sem aviso prévio.",
           "Reservamo-nos o direito de recusar ou cancelar qualquer pedido.",
           "O processamento de pagamento é realizado por processadores terceirizados seguros.",
@@ -1051,61 +1076,15 @@
       "whatsapp_msg": "Olá Zen! Vi sua história no site e gostaria de compartilhar a minha também."
     }
   },
-  "philosophy_page": {
-    "title": "Minha Filosofia Musical",
-    "style_title": "Cremosidade",
-    "mission_title": "Missão",
-    "the_source": "A Fonte",
-    "the_source_desc": "Minha música nasce do silêncio e da observação. É a busca constante pela frequência que une corações na pista.",
-    "connection": "Conexão Real",
-    "connection_desc": "Não é sobre técnica, é sobre empatia. Um set de Zouk é uma conversa sem palavras onde a música é a ponte.",
-    "flow": "O Estado de Flow",
-    "flow_desc": "Derreter o tempo. Fazer com que dez minutos pareçam um segundo, e um segundo guarde uma eternidade.",
-    "cremosidade_title": "O que é Cremosidade?",
-    "cremosidade_desc": "É a fluidez absoluta. É o movimento que não tem início nem fim, apenas uma continuidade infinita guiada pelo som.",
-    "coming_soon_title": "Evolução Contínua",
-    "coming_soon_desc": "A Tribo Zen está sempre em expansão. Novos horizontes e experiências sonoras estão sendo preparados."
-  },
-  "home": {
-    "seo": {
-      "title": "DJ Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
-      "description": "DJ Zen Eyer, bicampeão mundial focado no Zouk Brasileiro.",
-      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer",
-      "lead_answer": "DJ Zen Eyer é um bicampeão mundial, DJ e produtor musical especializado em Zouk Brasileiro, reconhecido por seu estilo de 'cremosidade' e experiências de pista imersivas."
-    },
-    "festivals": {
-      "presence": "Presença Internacional",
-      "many_more": "muitos outros"
-    },
-    "shows": {
-      "title": "Próximos Shows",
-      "cta": "Agenda completa"
-    },
-    "press": {
-      "title": "Imprensa & Mídia",
-      "desc": "Acesse fotos, bio e assets.",
-      "cta": "BAIXAR PRESS KIT"
-    },
-    "bookers": {
-      "title": "Contratantes",
-      "desc": "Leve o 'Zen Experience' para o seu evento.",
-      "cta": "ORÇAMENTO"
-    },
-    "verified": "Perfis Verificados",
-    "tribe": {
-      "title": "Junte-se Í  <1>Zen Tribe</1>",
-      "desc": "Não é só sobre música. É sobre vibração. Entre para a lista VIP."
-    }
-  },
   "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
-  "footer_copyright": "Â© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. A pressa é inimiga da cremosidade.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brasil",
   "footer_contact_label": "Contato",
   "events_categories": "Categorias",
   "events_found": "eventos encontrados",
   "events_page_title": "Agenda de Shows DJ Zen Eyer | Bicampeão Mundial Zouk",
-  "events_page_meta_desc": "Acompanhe a agenda mundial do DJ Zen Eyer. Sinta a 'cremosidade' nos melhores festivais de Zouk do mundo. Garanta seu ingresso e entre para a Zen Tribe! âœ“",
+  "events_page_meta_desc": "Acompanhe a agenda mundial do DJ Zen Eyer. Sinta a 'cremosidade' nos melhores festivais de Zouk do mundo. Garanta seu ingresso e entre para a Zen Tribe! ✓",
   "events_filter_placeholder": "Filtrar por cidade ou evento...",
   "events_back": "Voltar para Eventos",
   "events_not_found": "Evento não encontrado",
@@ -1161,7 +1140,7 @@
         },
         "q2": {
           "q": "Quais são os eventos e festivais mais importantes?",
-          "a": "O Zouk Brasileiro tem a sorte de ter uma comunidade global super apaixonada. Hoje, temos excelentes eventos ocorrendo na América Latina, Europa, América do Norte, Ísia e Oceania. A escolha do 'melhor festival' depende muito do tipo de turismo que você quer fazer, das aulas que deseja assistir e, claro, das amizades que quer reencontrar! Há sempre um lugar incrível com Zouk tocando perto de você."
+          "a": "O Zouk Brasileiro tem a sorte de ter uma comunidade global super apaixonada. Hoje, temos excelentes eventos ocorrendo na América Latina, Europa, América do Norte, Ásia e Oceania. A escolha do 'melhor festival' depende muito do tipo de turismo que você quer fazer, das aulas que deseja assistir e, claro, das amizades que quer reencontrar! Há sempre um lugar incrível com Zouk tocando perto de você."
         },
         "q3": {
           "q": "Por que o Zouk Brasileiro é considerado tão viciante?",
@@ -1173,7 +1152,7 @@
         "desc": "Definições técnicas com base no Brazilian Zouk Council (BZC).",
         "q1": {
           "q": "Qual a estrutura rítmica do Zouk Brasileiro?",
-          "a": "Segundo as definições do <strong>Brazilian Zouk Council (BZC)</strong>, a base rítmica deriva da Lambada. A contagem clássica é frequentemente associada Í  célula de tempo <em>-pa... pa-pa</em> (Tum-Kun-Kun). A regra fundamental é respeitar o andamento, o que possibilita dançar sobre ritmos como Kizomba, R&B e Pop."
+          "a": "Segundo as definições do <strong>Brazilian Zouk Council (BZC)</strong>, a base rítmica deriva da Lambada. A contagem clássica é frequentemente associada à célula de tempo <em>-pa... pa-pa</em> (Tum-Kun-Kun). A regra fundamental é respeitar o andamento, o que possibilita dançar sobre ritmos como Kizomba, R&B e Pop."
         },
         "q2": {
           "q": "O que são movimentos clássicos como a Planada e o Bônus?",
@@ -1181,7 +1160,7 @@
         },
         "q3": {
           "q": "Qual a importância da Lambada na história do Zouk?",
-          "a": "O Zouk Brasileiro não existiria sem a Lambada. Os fundamentos e movimentações de cabeça foram sistematizados por pioneiros como <strong>Renata Peçanha</strong> e <strong>Adílio Porto</strong>. Como define o BZC, a dança se adaptou Í s músicas caribenhas lentas, evoluindo para a fluidez que conhecemos hoje."
+          "a": "O Zouk Brasileiro não existiria sem a Lambada. Os fundamentos e movimentações de cabeça foram sistematizados por pioneiros como <strong>Renata Peçanha</strong> e <strong>Adílio Porto</strong>. Como define o BZC, a dança se adaptou às músicas caribenhas lentas, evoluindo para a fluidez que conhecemos hoje."
         }
       },
       "culture": {
@@ -1336,9 +1315,9 @@
       "page_title": "Política de Devolução e Reembolso",
       "page_meta_desc": "Nossa política de devoluções e reembolsos para produtos e ingressos.",
       "h1": "Política de Devolução e Reembolso",
-      "intro": "Na DJ Zen Eyer, queremos que você esteja completamente satisfeito com sua compra. No entanto, entendemos que Í s vezes as coisas não funcionam. Leia nossa política abaixo sobre devoluções e reembolsos.",
+      "intro": "Na DJ Zen Eyer, queremos que você esteja completamente satisfeito com sua compra. No entanto, entendemos que às vezes as coisas não funcionam. Leia nossa política abaixo sobre devoluções e reembolsos.",
       "digital_title": "1. Produtos Digitais",
-      "digital_text": "Devido Í  natureza dos produtos digitais (downloads de música, sample packs, presets), todas as vendas são finais. Uma vez que o arquivo foi baixado, não podemos oferecer reembolso. Se você tiver problemas técnicos com um arquivo, entre em contato com o suporte.",
+      "digital_text": "Devido à natureza dos produtos digitais (downloads de música, sample packs, presets), todas as vendas são finais. Uma vez que o arquivo foi baixado, não podemos oferecer reembolso. Se você tiver problemas técnicos com um arquivo, entre em contato com o suporte.",
       "tickets_title": "2. Ingressos de Eventos",
       "tickets_text": "Os ingressos para eventos geralmente não são reembolsáveis, a menos que o evento seja cancelado ou significativamente reagendado.",
       "cancellations_label": "Cancelamentos:",
@@ -1346,7 +1325,7 @@
       "transfers_label": "Transferências:",
       "transfers_text": "Você pode transferir seu ingresso para outra pessoa até 24 horas antes do início do evento. Entre em contato conosco para processar a alteração do nome.",
       "rescheduling_label": "Reagendamento:",
-      "rescheduling_text": "Se um evento for reagendado, seu ingresso será válido para a nova data. Se você não puder comparecer Í  nova data, poderá solicitar um reembolso em até 14 dias após o anúncio.",
+      "rescheduling_text": "Se um evento for reagendado, seu ingresso será válido para a nova data. Se você não puder comparecer à nova data, poderá solicitar um reembolso em até 14 dias após o anúncio.",
       "merch_title": "3. Mercadorias Físicas",
       "merch_text": "Para itens físicos (camisetas, moletons, acessórios), aceitamos devoluções em até 30 dias após a entrega.",
       "merch_c1": "Os itens devem estar sem uso, lavados e em suas condições originais.",
@@ -1355,7 +1334,7 @@
       "request_title": "4. Como solicitar um reembolso",
       "request_text": "Para iniciar uma solicitação de devolução ou reembolso, envie um e-mail para",
       "request_text_2": "com o número do seu pedido e detalhes do problema.",
-      "last_updated": "Íšltima atualização",
+      "last_updated": "Última atualização",
       "last_updated_date": "Janeiro 2026"
     },
     "terms_page": {
@@ -1468,7 +1447,7 @@
       "availability": "Disponibilidade",
       "availability_value": "Mundial",
       "genre": "Gênero Principal",
-      "links": "Links Íšteis & Redes Sociais",
+      "links": "Links Úteis & Redes Sociais",
       "whatsapp_message": "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking. Como podemos prosseguir?"
     }
   },

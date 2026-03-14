@@ -142,8 +142,15 @@ const NewsPage: React.FC = () => {
         description={t('news_page_meta_desc')}
         url={`${window.location.origin}${getLocalizedRoute('news', normalizedLanguage)}`}
       />
-      <div className="min-h-screen bg-background text-white pt-24 pb-20">
-        <div className="container mx-auto px-4">
+      <div className="min-h-screen bg-background text-white pt-24 pb-20 relative overflow-hidden">
+        {/* Background Decorations - Premium Glows */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
+          <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[100px] rounded-full" />
+          <div className="absolute top-[40%] right-[-5%] w-[35%] h-[35%] bg-blue-500/5 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[10%] left-[20%] w-[30%] h-[30%] bg-secondary/5 blur-[100px] rounded-full" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
 
           <header className="mb-16 border-b border-white/10 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
@@ -155,9 +162,9 @@ const NewsPage: React.FC = () => {
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                 {t('news.live_feed')}
               </motion.div>
-              <h1 className="text-5xl md:text-7xl font-black font-display tracking-tight text-white">
+              <h1 className="text-5xl md:text-7xl font-black font-display tracking-tight text-white leading-none">
                 <Trans i18nKey="news.title">
-                  Latest <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">Stories</span>
+                  Latest <span className="text-primary">Stories</span>
                 </Trans>
               </h1>
             </div>
@@ -221,9 +228,9 @@ const NewsPage: React.FC = () => {
                 </motion.article>
               )}
 
-              <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-display font-black text-center mb-16 text-white uppercase tracking-tight">
                 <Trans i18nKey="news.latest_stories_title">
-                  Trending <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">News</span>
+                  Trending <span className="text-primary">News</span>
                 </Trans>
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

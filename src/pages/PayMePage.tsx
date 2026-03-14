@@ -23,15 +23,22 @@ const PayMePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen pt-24 pb-12 px-4">
+        <div className="min-h-screen pt-24 pb-12 px-4 relative overflow-hidden">
+            {/* Background Decorations - Premium Glows */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
+                <div className="absolute top-[-5%] right-[-10%] w-[45%] h-[45%] bg-primary/10 blur-[120px] rounded-full" />
+                <div className="absolute top-[20%] left-[60%] w-[35%] h-[35%] bg-blue-500/5 blur-[100px] rounded-full" />
+                <div className="absolute bottom-[15%] left-[-5%] w-[35%] h-[35%] bg-secondary/10 blur-[100px] rounded-full animate-pulse" />
+                <div className="absolute top-[40%] left-[-5%] w-[30%] h-[30%] bg-primary/5 blur-[80px] rounded-full" />
+            </div>
             <div className="max-w-4xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-12"
                 >
-                    <h1 className="text-4xl md:text-5xl font-display mb-4 text-gradient">
-                        {t('payme.title')}
+                    <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white leading-tight">
+                        Pay <span className="text-primary">Me</span>
                     </h1>
                     <p className="text-white/70 text-lg max-w-2xl mx-auto">
                         {t('payme.subtitle')}

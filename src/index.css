@@ -45,10 +45,10 @@
   /* #FECACA */
 
   /* NEUTRAL */
-  --color-background: 6, 6, 10;
-  /* #06060A */
-  --color-surface: 16, 20, 27;
-  /* #10141B */
+  --color-background: 8, 10, 16;
+  /* #080A10 - Softer black */
+  --color-surface: 18, 22, 30;
+  /* #12161E - Softer surface */
   --color-text: 255, 255, 255;
   /* #FFFFFF */
   --color-text-dark: 20, 20, 30;
@@ -270,7 +270,7 @@
   }
 
   .text-gradient {
-    color: rgb(var(--color-primary));
+    @apply text-primary;
   }
 
   .container-custom {

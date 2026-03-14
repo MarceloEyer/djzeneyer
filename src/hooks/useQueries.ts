@@ -604,6 +604,17 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       if (nonce) headers['X-WP-Nonce'] = nonce;
 
       const res = await fetch(apiUrl, { headers, credentials: 'include' });
+      
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        const text = await res.text();
+        console.error('[useGamipressQuery] API returned HTML instead of JSON. Check if plugin is active or rewrites are flushed.');
+        if (text.includes('id="error-page"') || text.includes('wp-die-message')) {
+            throw new Error('WordPress Error: API endpoint not available or returned an error page.');
+        }
+        throw new Error('API returned invalid format (HTML). This usually means a 404 or 500 on the server.');
+      }
+
       if (!res.ok) throw new Error(`Failed to fetch gamipress: ${res.status}`);
       return res.json();
     },

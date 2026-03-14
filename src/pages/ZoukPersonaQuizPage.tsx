@@ -286,7 +286,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                   </motion.div>
 
                   <h3 className="text-white/60 uppercase tracking-widest text-sm font-bold mb-2">{t('quiz.ui.you_are')}</h3>
-                  <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+                  <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-white">
                     {t(`quiz.personas.${result.id}.title`)}
                   </h1>
                   <p className="text-xl text-primary font-medium mb-6">{t(`quiz.personas.${result.id}.subtitle`)}</p>

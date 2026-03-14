@@ -125,6 +125,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                     </Link>
 
                     <nav className="hidden md:flex items-center space-x-8">
+                        {processedMenuItems.length === 0 && import.meta.env.DEV && (
+                            <div className="text-white/20 text-xs">Menu Empty (Debug)</div>
+                        )}
                         {processedMenuItems.map(item => (
                             <MenuItem
                                 key={item.ID}
@@ -137,6 +140,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                     </nav>
 
                     <div className="hidden md:flex items-center gap-4">
+                        {import.meta.env.DEV && console.log('[Navbar] Rendered items:', processedMenuItems.length)}
                         <LanguageSelector />
                         {user?.isLoggedIn ? <UserMenu /> : (
                             <button onClick={handleLoginButtonClick} className="btn btn-primary btn-sm flex items-center gap-2 shadow-lg shadow-primary/20">

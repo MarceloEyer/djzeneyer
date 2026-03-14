@@ -306,60 +306,83 @@
   "explore_music_button": "Explore Music",
   "play_featured_mix": "Play Featured Mix",
   "upcoming_events": "Upcoming Events",
-  "home_page_title": "DJ Zen Eyer | 2x World Champion Brazilian Zouk DJ & Producer",
-  "home_page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
-  "home_headline": "Experience the <1>Zen</1> in Brazilian Zouk",
-  "home_subheadline": "Transforming dance floors into immersive audio experiences",
-  "home_welcome": "Welcome to DJ Zen Eyer",
-  "home_tagline": "Brazilian Zouk DJ & Producer",
-  "home_cta": "Explore My Music",
-  "home_features_title": "Why Join the Zen Tribe?",
-  "home_features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
-  "home_feat_exclusive_title": "Exclusive Music",
-  "home_feat_exclusive_desc": "Early access to releases and exclusive remixes",
-  "home_feat_achievements_title": "Achievements & Rewards",
-  "home_feat_achievements_desc": "Earn XP, unlock badges, and level up",
-  "home_feat_community_title": "Active Community",
-  "home_feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
-  "home_cta_title": "Ready to Join the Zen Tribe?",
-  "home_cta_subtitle": "Join thousands of members and transform your experience",
-  "hero_title": "DJ Zen Eyer",
-  "hero_subtitle": "Brazilian Zouk",
-  "hero_cta": "Listen Now",
-  "hero_cta_secondary": "View Events",
-  "home_hero_badge": "2x World Champion - Zouk World Championships",
-  "home_hero_title": "DJ Zen Eyer",
-  "home_hero_subtitle": "2x World Champion Brazilian Zouk DJ & Producer",
-  "home_hero_slogan": "Haste is the enemy of creaminess",
-  "home_hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
-  "home_stat_champion": "World Champion",
-  "home_stat_countries": "Countries",
-  "home_stat_events": "Events",
-  "home_stat_years": "Years Active",
-  "home_bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 10 countries.",
-  "home_bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
-  "home_bio_p3": "Whether at reZENha, at Renata Peçanha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
-  "home_festivals_title": "Performed at International Festivals",
-  "home_festivals_subtitle": "Recognized at major Zouk events worldwide",
-  "home_festivals_more": "many more",
-  "home_press_title": "For Press & Media",
-  "home_press_desc": "Complete press kit, high-resolution photos, releases, and interviews available.",
-  "home_press_cta": "DOWNLOAD PRESS KIT 2025",
-  "home_booking_title": "Bookers & Promoters",
-  "home_booking_desc": "Available for congresses, festivals, workshops, and exclusive events in Brazil and abroad.",
-  "home_booking_cta": "REQUEST QUOTE",
-  "home_authority_title": "Verified Profiles",
-  "home_tribe_title": "Join the",
-  "home_tribe_highlight": "Zen Tribe",
-  "home_tribe_subtitle": "No rush here. Just prolonged melting.",
-  "home_tribe_cta": "Join the Tribe",
-  "home_cta_soundcloud": "Listen on SoundCloud",
-  "home_cta_booking": "Booking / Press Kit",
-  "home_cta_music": "Explore Music",
-  "home_bio_title": "Who is DJ Zen Eyer?",
-  "home_bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>DJ and producer</strong> focused on <strong>Brazilian Zouk</strong>. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.",
-  "home_bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> is already a classic at festivals.",
-  "home_bio_mensa": "Member of <strong>Mensa International</strong>, he creates perfect emotional journeys for the \"flow\" in dance. He is a regular at major stages like Rio Zouk Congress.",
+  "home": {
+    "page_title": "DJ Zen Eyer | 2x World Champion Brazilian Zouk DJ & Producer",
+    "page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
+    "headline": "Experience the <1>Zen</1> in Brazilian Zouk",
+    "subheadline": "Transforming dance floors into immersive audio experiences",
+    "welcome": "Welcome to DJ Zen Eyer",
+    "tagline": "Brazilian Zouk DJ & Producer",
+    "cta": "Explore My Music",
+    "features_title": "Why Join the Zen Tribe?",
+    "features_subtitle": "Unlock exclusive benefits and be part of an engaged community",
+    "feat_exclusive_title": "Exclusive Music",
+    "feat_exclusive_desc": "Early access to releases and exclusive remixes",
+    "feat_achievements_title": "Achievements & Rewards",
+    "feat_achievements_desc": "Earn XP, unlock badges, and level up",
+    "feat_community_title": "Active Community",
+    "feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
+    "cta_title": "Ready to Join the Zen Tribe?",
+    "cta_subtitle": "Join thousands of members and transform your experience",
+    "hero_badge": "2x World Champion - Zouk World Championships",
+    "hero_title": "DJ Zen Eyer",
+    "hero_subtitle": "2x World Champion Brazilian Zouk DJ & Producer",
+    "hero_slogan": "Haste is the enemy of creaminess",
+    "hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
+    "stat_champion": "World Champion",
+    "stat_countries": "Countries",
+    "stat_events": "Events",
+    "stat_years": "Years Active",
+    "bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 10 countries.",
+    "bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
+    "bio_p3": "Whether at reZENha, at Renata Peçanha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
+    "festivals_title": "Performed at International Festivals",
+    "festivals_subtitle": "Recognized at major Zouk events worldwide",
+    "festivals_more": "many more",
+    "press_title": "For Press & Media",
+    "press_desc": "Complete press kit, high-resolution photos, releases, and interviews available.",
+    "press_cta": "DOWNLOAD PRESS KIT 2025",
+    "booking_title": "Bookers & Promoters",
+    "booking_desc": "Available for congresses, festivals, workshops, and exclusive events in Brazil and abroad.",
+    "booking_cta": "REQUEST QUOTE",
+    "authority_title": "Verified Profiles",
+    "tribe": {
+      "title": "Join the <1>Zen Tribe</1>",
+      "subtitle": "No rush here. Just prolonged melting.",
+      "desc": "Access exclusive content, behind-the-scenes, and be part of the official DJ Zen Eyer community.",
+      "cta": "Join the Tribe"
+    },
+    "cta_soundcloud": "Listen on SoundCloud",
+    "cta_booking": "Booking / Press Kit",
+    "cta_music": "Explore Music",
+    "bio_title": "Who is DJ Zen Eyer?",
+    "bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>DJ and producer</strong> focused on <strong>Brazilian Zouk</strong>. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.",
+    "bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> is already a classic at festivals.",
+    "bio_mensa": "Member of <strong>Mensa International</strong>, he creates perfect emotional journeys for the \"flow\" in dance. He is a regular at major stages like Rio Zouk Congress.",
+    "verified": "Verified Profiles",
+    "bookers": {
+      "title": "Bookers & Promoters",
+      "desc": "Available for congresses, festivals, workshops, and exclusive events in Brazil and abroad.",
+      "cta": "REQUEST QUOTE"
+    },
+    "seo": {
+      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music Producer, Zen Tribe",
+      "lead_answer": "DJ Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance."
+    },
+    "shows": {
+      "title": "Upcoming Events",
+      "cta": "View All Events"
+    },
+    "festivals": {
+      "presence": "International Festival Presence",
+      "many_more": "many more"
+    },
+    "press": {
+      "title": "Press & Media",
+      "desc": "Complete press kit, high-resolution photos, releases, and interviews available.",
+      "cta": "DOWNLOAD PRESS KIT 2025"
+    }
+  },
   "news_page_title": "Zen News | Insights & Updates",
   "news_page_meta_desc": "Official news, releases, and articles about the Brazilian Zouk universe by DJ Zen Eyer.",
   "news": {
@@ -425,7 +448,8 @@
     "steal_desc": "Here you can find some exclusive tracks and edits to download and play wherever you want. If you're a DJ, take advantage of the direct download!",
     "support_button": "Would you like to support me?",
     "support_desc": "If my music touches you and you want to help keep this project alive, any support is welcome and helps me a lot to keep creating!",
-    "support_cta": "Support the Zen"
+    "support_cta": "Support the Zen",
+    "listen_now": "Listen Now"
   },
   "press": {
     "page_title": "Press Kit",
@@ -644,8 +668,8 @@
       }
     },
     "aria": {
-      "learnMore": "zenTribe.aria.learnMore",
-      "viewMemberships": "zenTribe.aria.viewMemberships"
+      "learnMore": "Learn More",
+      "viewMemberships": "View Memberships"
     }
   },
   "philosophy": {
@@ -1306,9 +1330,9 @@
       "merch_c3": "Refunds are processed to the original payment method within 5-10 business days after we receive the return.",
       "last_updated": "Last updated",
       "last_updated_date": "January 2024",
-      "request_text": "Para iniciar uma solicitação de devolução ou reembolso, envie um e-mail para",
-      "request_text_2": "com o número do seu pedido e detalhes do problema.",
-      "request_title": "4. Como solicitar um reembolso"
+      "request_text": "To initiate a return or refund request, send an email to",
+      "request_text_2": "with your order number and details of the problem.",
+      "request_title": "4. How to request a refund"
     },
     "terms_page": {
       "acceptance": "legal.terms_page.acceptance",
@@ -1364,35 +1388,6 @@
       "third_party_links": "legal.terms_page.third_party_links",
       "title": "legal.terms_page.title",
       "user_conduct": "legal.terms_page.user_conduct"
-    }
-  },
-  "home": {
-    "seo": {
-      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music Producer, Zen Tribe",
-      "lead_answer": "DJ Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance."
-    },
-    "shows": {
-      "title": "Upcoming Events",
-      "cta": "View All Events"
-    },
-    "festivals": {
-      "presence": "International Festival Presence",
-      "many_more": "many more"
-    },
-    "press": {
-      "title": "Press & Media",
-      "desc": "Complete press kit, high-resolution photos, releases, and interviews available.",
-      "cta": "DOWNLOAD PRESS KIT 2025"
-    },
-    "bookers": {
-      "title": "Bookers & Promoters",
-      "desc": "Available for congresses, festivals, workshops, and exclusive events worldwide.",
-      "cta": "REQUEST QUOTE"
-    },
-    "verified": "Verified Profiles",
-    "tribe": {
-      "title": "Join the Zen Tribe",
-      "desc": "Access exclusive content, behind-the-scenes, and be part of the official DJ Zen Eyer community."
     }
   },
   "presskit": {
