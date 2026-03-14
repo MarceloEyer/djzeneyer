@@ -47,10 +47,15 @@ function djz_serve_ssr()
     $clean_path = trim($path, '/');
 
     // SEGURANÇA: Bloquear Path Traversal
-    // 1. Remover qualquer tentativa de ".." ou caminhos absolutos
-    $clean_path = str_replace(['..', './'], '', $clean_path);
-    // 2. Permitir apenas caracteres seguros (alfanumérico, barra, traço, underscore)
-    $clean_path = preg_replace('/[^a-zA-Z0-9\/\-_]/', '', $clean_path);
+    // 1. Limpeza recursiva de tentativas de subida de diretório e caracteres perigosos
+    $clean_path = $path;
+    $previous = '';
+    while ($clean_path !== $previous) {
+        $previous = $clean_path;
+        $clean_path = str_replace(['..', './', '../'], '', $clean_path);
+        $clean_path = preg_replace('/[^a-zA-Z0-9\/\-_]/', '', $clean_path);
+    }
+    $clean_path = trim($clean_path, '/');
 
     $theme_path = get_stylesheet_directory();
     if (empty($clean_path)) {
