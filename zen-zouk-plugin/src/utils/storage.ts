@@ -56,16 +56,32 @@ export const addBadge = (badgeId: string): void => {
 export const exportJournal = (): void => {
   const data = loadData();
   const json = JSON.stringify(data, null, 2);
-  // Basic sanitization to prevent potential injection in JSON viewers if re-imported or viewed
-  let safeJson = json;
+  // Basic sanitization with refined patterns and single-pass decoding
+  let result = json;
   let previous;
   do {
-    previous = safeJson;
-    safeJson = safeJson.replace(/<(?:.|\n)*?>/gm, '');
-  } while (safeJson !== previous);
+    previous = result;
+    result = result
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<script\b[^<]*(?:(?!<\/script\s*>)<[^<]*)*<\/script\s*>/gi, '')
+      .replace(/<style\b[^<]*(?:(?!<\/style\s*>)<[^<]*)*<\/style\s*>/gi, '')
+      .replace(/<[^>]*>/gm, '');
+  } while (result !== previous);
 
   // Final absolute sweep for any stray/nested brackets
-  safeJson = safeJson.replace(/[<>]/g, '');
+  result = result.replace(/[<>]/g, '');
+
+  // Single-pass entity decoder to prevent double-unescaping
+  const entityMap: Record<string, string> = {
+    '&nbsp;': ' ',
+    '&amp;': '&',
+    '&quot;': '"',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&apos;': "'"
+  };
+
+  const safeJson = result.replace(/&(?:nbsp|amp|quot|lt|gt|apos);/g, (m) => entityMap[m] || m);
   const blob = new Blob([safeJson], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
 

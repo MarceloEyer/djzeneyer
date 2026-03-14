@@ -22,8 +22,8 @@ export const stripHtml = (html: string): string => {
         previous = result;
         result = result
             .replace(/<!--[\s\S]*?-->/g, '')                                   // Remove comments (WP)
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
-            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')   // Remove styles
+            .replace(/<script\b[^<]*(?:(?!<\/script\s*>)<[^<]*)*<\/script\s*>/gi, '') // Remove scripts (handles spaces in tag)
+            .replace(/<style\b[^<]*(?:(?!<\/style\s*>)<[^<]*)*<\/style\s*>/gi, '')   // Remove styles (handles spaces in tag)
             .replace(/<[^>]*>/gm, '');                                         // Remove well-formed tags
     } while (result !== previous);
 
@@ -31,11 +31,15 @@ export const stripHtml = (html: string): string => {
     // as recommended by CodeQL (js/incomplete-multi-character-sanitization)
     result = result.replace(/[<>]/g, '');
 
-    return result
-        .replace(/&nbsp;/g, ' ')                                           // Decode basic entities
-        .replace(/&amp;/g, '&')
-        .replace(/&quot;/g, '"')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .trim();
+    // Single-pass entity decoder to prevent double-unescaping (CodeQL: js/double-escaping)
+    const entityMap: Record<string, string> = {
+        '&nbsp;': ' ',
+        '&amp;': '&',
+        '&quot;': '"',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&apos;': "'"
+    };
+
+    return result.replace(/&(?:nbsp|amp|quot|lt|gt|apos);/g, (match) => entityMap[match] || match).trim();
 };
