@@ -36,15 +36,7 @@ class DJZ_Vite_Loader
             $cache_key = 'djz_vite_manifest_v2_' . hash('sha256', $path);
             $cached = get_transient($cache_key);
 
-            // OPTIMIZATION: In production, trust the transient cache without filesystem checks
-            if (
-            !(defined('WP_DEBUG') && WP_DEBUG) &&
-            is_array($cached) &&
-            isset($cached['data'])
-            ) {
-                $this->manifest = $cached['data'];
-                return;
-            }
+            // Transient exists, let's check its mtime against the file
 
             if (file_exists($path)) {
                 // Check cache validity with mtime comparison
