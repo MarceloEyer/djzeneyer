@@ -22,7 +22,7 @@ class Settings_Page
 
         $count = \ZenEyer\Auth\Core\JWT_Manager::revoke_all_system_sessions();
 
-        wp_redirect(admin_url('admin.php?page=zeneyer-auth&invalidated=' . $count));
+        wp_safe_redirect(admin_url('admin.php?page=zeneyer-auth&invalidated=' . absint($count)));
         exit;
     }
 
@@ -172,9 +172,11 @@ class Settings_Page
                             echo '<tr><td colspan="5">No logs found yet.</td></tr>';
                         } else {
                             foreach ($logs as $log) {
-                                $user_link = $log['user_id'] ? '<a href="' . get_edit_user_link($log['user_id']) . '">#' . $log['user_id'] . '</a>' : '-';
+                                $user_link = !empty($log['user_id'])
+                                    ? '<a href="' . esc_url(get_edit_user_link(absint($log['user_id']))) . '">#' . absint($log['user_id']) . '</a>'
+                                    : '-';
                                 echo '<tr>';
-                                echo '<td>' . date('Y-m-d H:i:s', $log['time']) . '</td>';
+                                echo '<td>' . esc_html(wp_date('Y-m-d H:i:s', absint($log['time']))) . '</td>';
                                 echo '<td><code>' . esc_html($log['event']) . '</code></td>';
                                 echo '<td>' . $user_link . '</td>';
                                 echo '<td>' . esc_html($log['ip']) . '</td>';

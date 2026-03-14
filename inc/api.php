@@ -534,7 +534,7 @@ add_action('admin_init', function () {
     global $wpdb;
     $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_%'");
 
-    wp_redirect(remove_query_arg('djz_clear_cache'));
+    wp_safe_redirect(remove_query_arg('djz_clear_cache'));
     exit;
 });
 /**
