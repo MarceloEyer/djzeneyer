@@ -131,8 +131,8 @@ final class ZenGame_Admin
 
         ?>
         <div class="wrap">
-            <h1>ZenGame // <span style="color:<?php echo $color; ?>;">
-                    <?php echo $status; ?>
+            <h1>ZenGame // <span style="color:<?php echo \esc_attr($color); ?>;">
+                    <?php echo \esc_html($status); ?>
                 </span></h1>
             <div class="welcome-panel"
                 style="background:#111;color:#fff;padding:40px;border-radius:12px;border:1px solid #333;box-shadow:0 10px 30px rgba(0,0,0,.5);">
