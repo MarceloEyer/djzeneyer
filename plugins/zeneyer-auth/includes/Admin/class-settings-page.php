@@ -23,9 +23,9 @@ class Settings_Page
         $count = \ZenEyer\Auth\Core\JWT_Manager::revoke_all_system_sessions();
 
         if (false === $count) {
-            wp_safe_redirect(admin_url('admin.php?page=zeneyer-auth&error=db_error'));
+            \wp_safe_redirect(\admin_url('admin.php?page=zeneyer-auth&error=db_error'));
         } else {
-            wp_safe_redirect(admin_url('admin.php?page=zeneyer-auth&invalidated=' . absint($count)));
+            \wp_safe_redirect(\admin_url('admin.php?page=zeneyer-auth&invalidated=' . \absint($count)));
         }
         exit;
     }
@@ -183,17 +183,17 @@ class Settings_Page
                         } else {
                             foreach ($logs as $log) {
                                 $user_link = !empty($log['user_id'])
-                                    ? '<a href="' . esc_url(get_edit_user_link(absint($log['user_id']))) . '">#' . absint($log['user_id']) . '</a>'
+                                    ? '<a href="' . \esc_url(\get_edit_user_link(\absint($log['user_id']))) . '">#' . \absint($log['user_id']) . '</a>'
                                     : '-';
                                 if (isset($log['user_id']) && $log['user_id'] === 0) {
                                     $user_link = '<em>System</em>';
                                 }
                                 echo '<tr>';
-                                echo '<td>' . date('Y-m-d H:i:s', $log['time']) . '</td>';
-                                echo '<td><code>' . esc_html($log['event']) . '</code></td>';
+                                echo '<td>' . \date('Y-m-d H:i:s', $log['time']) . '</td>';
+                                echo '<td><code>' . \esc_html($log['event']) . '</code></td>';
                                 echo '<td>' . $user_link . '</td>';
-                                echo '<td>' . esc_html($log['ip']) . '</td>';
-                                echo '<td><small>' . esc_html(json_encode($log['details'])) . '</small></td>';
+                                echo '<td>' . \esc_html($log['ip']) . '</td>';
+                                echo '<td><small>' . \esc_html(\json_encode($log['details'])) . '</small></td>';
                                 echo '</tr>';
                             }
                         }

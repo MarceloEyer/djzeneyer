@@ -44,17 +44,17 @@ interface FestivalBadgeProps {
 // ============================================================================
 
 const FEATURES_DATA = [
-  { id: 'music', icon: <Music size={32} />, titleKey: 'home_feat_exclusive_title', descKey: 'home_feat_exclusive_desc' },
-  { id: 'achievements', icon: <Award size={32} />, titleKey: 'home_feat_achievements_title', descKey: 'home_feat_achievements_desc' },
-  { id: 'community', icon: <Users size={32} />, titleKey: 'home_feat_community_title', descKey: 'home_feat_community_desc' },
+  { id: 'music', icon: <Music size={32} />, titleKey: 'home.feat_exclusive_title', descKey: 'home.feat_exclusive_desc' },
+  { id: 'achievements', icon: <Award size={32} />, titleKey: 'home.feat_achievements_title', descKey: 'home.feat_achievements_desc' },
+  { id: 'community', icon: <Users size={32} />, titleKey: 'home.feat_community_title', descKey: 'home.feat_community_desc' },
 ] as const;
 
 const FESTIVALS_HIGHLIGHT = ARTIST.festivals.slice(0, 6);
 
 const STATS = [
-  { value: '2×', labelKey: 'home_stat_champion', icon: Trophy },
-  { value: `${ARTIST.stats.countriesPlayed}+`, labelKey: 'home_stat_countries', icon: Globe },
-  { value: `${ARTIST.stats.yearsActive}+`, labelKey: 'home_stat_years', icon: Sparkles },
+  { value: '2×', labelKey: 'home.stat_champion', icon: Trophy },
+  { value: `${ARTIST.stats.countriesPlayed}+`, labelKey: 'home.stat_countries', icon: Globe },
+  { value: `${ARTIST.stats.yearsActive}+`, labelKey: 'home.stat_years', icon: Sparkles },
 ] as const;
 
 const CONTAINER_VARIANTS: Variants = {
@@ -158,8 +158,8 @@ const HomePage: React.FC = () => {
         "@type": "WebPage",
         "@id": `${ARTIST.site.baseUrl}/#webpage`,
         "url": ARTIST.site.baseUrl,
-        "name": t('home_page_title'),
-        "description": t('home_page_meta_desc'),
+        "name": t('home.page_title'),
+        "description": t('home.page_meta_desc'),
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "primaryImageOfPage": {
           "@type": "ImageObject",
@@ -179,10 +179,10 @@ const HomePage: React.FC = () => {
     <>
       <HeadlessSEO
         title={seoSettings?.real_name
-          ? `${seoSettings.real_name} | ${t('home_stat_champion')}`
-          : t('home_page_title')}
+          ? `${seoSettings.real_name} | ${t('home.stat_champion')}`
+          : t('home.page_title')}
 
-        description={t('home_page_meta_desc')}
+        description={t('home.page_meta_desc')}
 
         url={currentUrl}
 
@@ -221,7 +221,7 @@ const HomePage: React.FC = () => {
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
                 <Trophy size={16} />
-                <span className="font-semibold">{t('home_hero_badge')}</span>
+                <span className="font-semibold">{t('home.hero_badge')}</span>
               </div>
             </motion.div>
 
@@ -232,11 +232,11 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
-              {t('home_hero_subtitle')}
+              {t('home.hero_subtitle')}
             </motion.p>
 
             <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
-              "{t('home_hero_slogan')}"
+              "{t('home.hero_slogan')}"
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
@@ -252,7 +252,7 @@ const HomePage: React.FC = () => {
                 aria-label="Listen to DJ Zen Eyer on SoundCloud"
               >
                 <PlayCircle size={22} />
-                <span>{t('home_cta_soundcloud')}</span>
+                <span>{t('home.cta_soundcloud')}</span>
               </a>
               <Link
                 to={getLocalizedRoute('work-with-me', currentLang)}
@@ -260,13 +260,13 @@ const HomePage: React.FC = () => {
                 aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
                 <Mail size={22} />
-                <span>{t('home_cta_booking')}</span>
+                <span>{t('home.cta_booking')}</span>
               </Link>
             </motion.div>
 
             <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
               <Trans
-                i18nKey="home_hero_cta_text"
+                i18nKey="home.hero_cta_text"
                 components={[
                   <Link
                     key="music-link"
@@ -291,12 +291,12 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
             <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
-              <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home_bio_title')}</h2>
+              <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home.bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-white/90">
-                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_intro')) }} />
+                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_intro')) }} />
               </div>
-              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_style')) }} />
-              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home_bio_mensa')) }} />
+              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_style')) }} />
+              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_mensa')) }} />
             </motion.article>
           </motion.div>
         </div>
