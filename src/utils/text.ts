@@ -20,11 +20,10 @@ export const stripHtml = (html: string): string => {
     let previous;
     do {
         previous = result;
-        result = result
-            .replace(/<!--[\s\S]*?-->/g, '')                                   // Remove comments (WP)
-            .replace(/<script\b[^<]*(?:(?!<\/script\s*>)<[^<]*)*<\/script\s*>/gi, '') // Remove scripts (handles spaces in tag)
-            .replace(/<style\b[^<]*(?:(?!<\/style\s*>)<[^<]*)*<\/style\s*>/gi, '')   // Remove styles (handles spaces in tag)
-            .replace(/<[^>]*>/gm, '');                                         // Remove well-formed tags
+        result = result.replace(/<!--[\s\S]*?-->/g, '');
+        result = result.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
+        result = result.replace(/<style\b[\s\S]*?<\/style\s*>/gi, '');
+        result = result.replace(/<[^>]*>/g, '');
     } while (result !== previous);
 
     // Final sweep to remove any stray or maliciously nested angle brackets

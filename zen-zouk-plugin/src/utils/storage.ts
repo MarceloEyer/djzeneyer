@@ -61,11 +61,10 @@ export const exportJournal = (): void => {
   let previous;
   do {
     previous = result;
-    result = result
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/<script\b[^<]*(?:(?!<\/script\s*>)<[^<]*)*<\/script\s*>/gi, '')
-      .replace(/<style\b[^<]*(?:(?!<\/style\s*>)<[^<]*)*<\/style\s*>/gi, '')
-      .replace(/<[^>]*>/gm, '');
+    result = result.replace(/<!--[\s\S]*?-->/g, '');
+    result = result.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
+    result = result.replace(/<style\b[\s\S]*?<\/style\s*>/gi, '');
+    result = result.replace(/<[^>]*>/g, '');
   } while (result !== previous);
 
   // Final absolute sweep for any stray/nested brackets
