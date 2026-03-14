@@ -56,31 +56,22 @@ export const addBadge = (badgeId: string): void => {
 export const exportJournal = (): void => {
   const data = loadData();
   const json = JSON.stringify(data, null, 2);
-  // Basic sanitization with refined patterns and single-pass decoding
+  // Basic sanitization: comments → generic tag loop → angle bracket sweep.
+  // Specific-tag regexes like /<script\b...>/ trigger CodeQL js/bad-tag-filter
+  // because they can be bypassed. The generic loop is equally safe and avoids the alert.
   let result = json;
-    // Recursive removal of blocks with content
-    while (result.includes('<!--')) {
-      let next = result.replace(/<!--[\s\S]*?-->/g, '');
-      if (next === result) break;
-      result = next;
-    }
-    while (result.toLowerCase().includes('<script')) {
-      let next = result.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
-      if (next === result) break;
-      result = next;
-    }
-    while (result.toLowerCase().includes('<style')) {
-      let next = result.replace(/<style\b[\s\S]*?<\/style\s*>/gi, '');
-      if (next === result) break;
-      result = next;
-    }
-    // Recursive removal of any remaining tags
-    while (result.includes('<')) {
-      let next = result.replace(/<[^>]*>/g, '');
-      if (next === result) break;
-      result = next;
-    }
-
+  // Remove HTML comments recursively
+  while (result.includes('<!--')) {
+    const next = result.replace(/<!--[\s\S]*?-->/g, '');
+    if (next === result) break;
+    result = next;
+  }
+  // Remove all tags generically (covers script, style, any other tag)
+  while (result.includes('<')) {
+    const next = result.replace(/<[^>]*>/g, '');
+    if (next === result) break;
+    result = next;
+  }
   // Final absolute sweep for any stray/nested brackets
   result = result.replace(/[<>]/g, '');
 
