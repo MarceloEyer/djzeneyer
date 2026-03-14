@@ -57,7 +57,15 @@ export const exportJournal = (): void => {
   const data = loadData();
   const json = JSON.stringify(data, null, 2);
   // Basic sanitization to prevent potential injection in JSON viewers if re-imported or viewed
-  const safeJson = json.replace(/<(?:.|\n)*?>/gm, '');
+  let safeJson = json;
+  let previous;
+  do {
+    previous = safeJson;
+    safeJson = safeJson.replace(/<(?:.|\n)*?>/gm, '');
+  } while (safeJson !== previous);
+
+  // Final absolute sweep for any stray/nested brackets
+  safeJson = safeJson.replace(/[<>]/g, '');
   const blob = new Blob([safeJson], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
 
