@@ -132,7 +132,7 @@ const AboutPage: React.FC = () => {
         </div>
 
         {/* Hero Section */}
-        <div className="pt-24 pb-0 relative md:pt-32">
+        <div className="pt-24 pb-12 relative md:pt-32 md:pb-20">
           <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}

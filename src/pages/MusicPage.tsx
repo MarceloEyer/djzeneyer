@@ -205,9 +205,12 @@ const MusicPage: React.FC = () => {
                   <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-black rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
                     <SpotifyIcon />
                   </div>
-                  <div>
-                    <span className="text-2xl md:text-3xl font-black font-display uppercase tracking-widest text-[#1DB954]">
-                      {spotifyPlatform.name} — {t('music.listen_now')}
+                  <div className="flex flex-col">
+                    <span className="text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
+                      {spotifyPlatform.name}
+                    </span>
+                    <span className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-white mt-1 opacity-90 transition-opacity group-hover:opacity-100">
+                      {t('music.listen_now')}
                     </span>
                   </div>
                 </div>

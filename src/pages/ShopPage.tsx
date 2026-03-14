@@ -418,7 +418,7 @@ const ShopPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className="max-w-4xl mx-auto"
             >
-              <h1 className="text-5xl md:text-8xl font-black font-display mb-6 tracking-tighter uppercase leading-[0.8] opacity-20">
+              <h1 className="text-5xl md:text-8xl font-black font-display mb-6 tracking-tighter uppercase leading-[0.8] opacity-40 hover:opacity-100 transition-opacity duration-700 select-none">
                 Zen <span className="text-primary italic">Store</span>
               </h1>
               <p className="text-xl text-white/40 font-bold uppercase tracking-widest">
