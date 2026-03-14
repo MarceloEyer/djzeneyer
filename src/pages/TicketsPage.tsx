@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute } from '../config/routes';
-import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { ProductImage, ProductCategory } from '../types/product';
 
