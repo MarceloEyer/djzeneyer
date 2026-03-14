@@ -7,13 +7,20 @@ import puppeteer from 'puppeteer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
-const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
+const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || '';
 const SITE_BASE_URL = process.env.SITE_BASE_URL || 'https://djzeneyer.com';
 const INTERNAL_API_EVENTS = `${SITE_BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=365`;
 const EVENTS_ROUTE_EN = '/zouk-events';
 const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
-const bandsintownArtistEndpoint = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${BANDSINTOWN_APP_ID}&date=upcoming`;
-console.log(`📡 Bandsintown Endpoint (Fallback): ${bandsintownArtistEndpoint}`);
+const bandsintownArtistEndpoint = BANDSINTOWN_APP_ID
+  ? `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${BANDSINTOWN_APP_ID}&date=upcoming`
+  : null;
+
+if (bandsintownArtistEndpoint) {
+  console.log(`📡 Bandsintown Endpoint (Fallback): ${bandsintownArtistEndpoint}`);
+} else {
+  console.log('ℹ️ Bandsintown fallback desativado (defina BANDSINTOWN_APP_ID para ativar).');
+}
 console.log(`📡 Internal API Endpoint: ${INTERNAL_API_EVENTS}`);
 
 // 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
@@ -143,7 +150,7 @@ async function fetchEvents() {
   }
 
   // 2. Fallback: Bandsintown Direto
-  if (!raw) {
+  if (!raw && bandsintownArtistEndpoint) {
     try {
       const res = await fetch(bandsintownArtistEndpoint, {
         headers: { 

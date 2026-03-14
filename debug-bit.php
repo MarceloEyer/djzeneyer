@@ -6,7 +6,8 @@
 
 require_once('wp-load.php');
 
-if (!current_user_can('manage_options') && !isset($_GET['force'])) {
+if (!is_user_logged_in() || !current_user_can('manage_options')) {
+    status_header(403);
     die('Unauthorized');
 }
 
@@ -16,11 +17,16 @@ echo "=== Bandsintown Debug ===\n";
 
 $artist_id = get_option('zen_bit_artist_id', '15619775');
 $artist_name = get_option('zen_bit_artist_name', '');
-$app_id = get_option('zen_bit_api_key', 'f8f1216ea03be95a3ea91c7ebe7117e7');
+$app_id = get_option('zen_bit_api_key', '');
 
 echo "Artist ID: $artist_id\n";
 echo "Artist Name: $artist_name\n";
-echo "App ID: $app_id\n";
+echo "App ID configured: " . ($app_id !== '' ? 'yes' : 'no') . "\n";
+
+if ($app_id === '') {
+    echo "Missing API key in zen_bit_api_key option.\n";
+    exit;
+}
 
 $ident = $artist_name !== '' ? urlencode($artist_name) : 'id_' . $artist_id;
 $url = sprintf(

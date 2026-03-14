@@ -47,7 +47,7 @@ function buildUrlEntry(url, date, priority = '0.8', ptUrl = null, imageUrl = nul
 }
 
 const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
-const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
+const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || '';
 
 async function fetchEvents() {
   let raw = null;
@@ -70,7 +70,7 @@ async function fetchEvents() {
   }
 
   // 2. Fallback: Bandsintown Direto
-  if (!raw) {
+  if (!raw && BANDSINTOWN_APP_ID) {
     try {
       const BIT_API_URL = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${BANDSINTOWN_APP_ID}&date=upcoming`;
       console.log(`📡 Fetching events from ${BIT_API_URL}...`);
@@ -91,6 +91,10 @@ async function fetchEvents() {
     } catch (error) {
       console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error.message);
     }
+  }
+
+  if (!raw && !BANDSINTOWN_APP_ID) {
+    console.warn('ℹ️ Bandsintown fallback desativado (defina BANDSINTOWN_APP_ID para ativar).');
   }
 
   if (!raw || !Array.isArray(raw)) return [];
