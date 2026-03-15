@@ -182,10 +182,10 @@ final class Zen_SEO_Lite_Pro
  * 
  * @return Zen_SEO_Lite_Pro
  */
-function zen_seo_lite_pro()
+function djzeneyer_zen_seo_lite_pro()
 {
     return Zen_SEO_Lite_Pro::get_instance();
 }
 
 // Start the plugin engine
-zen_seo_lite_pro();
+djzeneyer_zen_seo_lite_pro();

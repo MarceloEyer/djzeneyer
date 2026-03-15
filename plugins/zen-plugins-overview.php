@@ -728,7 +728,7 @@ class Zen_Plugins_Overview
     }
 }
 
-function zen_plugins_overview_init()
+function djzeneyer_zen_plugins_overview_init()
 {
     if (\is_admin()) {
         return \ZenEyer\Overview\Zen_Plugins_Overview::get_instance();
@@ -736,4 +736,4 @@ function zen_plugins_overview_init()
     return null;
 }
 
-zen_plugins_overview_init();
+djzeneyer_zen_plugins_overview_init();
