@@ -15,7 +15,17 @@ namespace ZenBit;
 if (!defined('ABSPATH'))
     exit;
 
-define('ZEN_BIT_VERSION', '3.1.0');
+$zen_bit_config = require plugin_dir_path(__FILE__) . 'config.php';
+
+if (!is_array($zen_bit_config)) {
+    $zen_bit_config = [];
+}
+
+$zen_bit_version = isset($zen_bit_config['version']) ? (string) $zen_bit_config['version'] : '3.1.0';
+$zen_bit_slug = isset($zen_bit_config['slug']) ? (string) $zen_bit_config['slug'] : 'zen-bit';
+
+define('ZEN_BIT_VERSION', $zen_bit_version);
+define('ZEN_BIT_SLUG', $zen_bit_slug);
 define('ZEN_BIT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZEN_BIT_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -82,7 +92,7 @@ if (!class_exists('Zen_BIT')) {
 
         public function load_textdomain(): void
         {
-            load_plugin_textdomain('zen-bit', false, dirname(plugin_basename(__FILE__)) . '/languages');
+            load_plugin_textdomain(ZEN_BIT_SLUG, false, dirname(plugin_basename(__FILE__)) . '/languages');
         }
 
         public function register_public_assets(): void
