@@ -999,6 +999,14 @@ final class ZenGame
      * ensure the database is clean after deactivation. Previously (v1.3.6) this
      * method missed djz_stats_* and their timeout rows.
      */
+    /**
+     * Activation handler.
+     */
+    public static function on_activation(): void
+    {
+        // Placeholder for activation logic.
+    }
+
     public static function on_deactivation(): void
     {
         global $wpdb;
@@ -1057,5 +1065,7 @@ ZenGame::get_instance();
  * Using the static method on_deactivation() avoids relying on the singleton
  * instance being available at deactivation time.
  */
+\register_activation_hook(__FILE__, [ZenGame::class, 'on_activation']);
+
 \register_deactivation_hook(__FILE__, [ZenGame::class, 'on_deactivation']);
 

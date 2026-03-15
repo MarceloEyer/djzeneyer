@@ -17,6 +17,16 @@ class Zen_Plugins_Overview
 
     private static $instance = null;
 
+    public static function activate(): void
+    {
+        // Placeholder for activation logic.
+    }
+
+    public static function deactivate(): void
+    {
+        // Placeholder for deactivation logic.
+    }
+
     public static function get_instance()
     {
         if (null === self::$instance) {
@@ -737,3 +747,6 @@ function zen_plugins_overview_init()
 }
 
 zen_plugins_overview_init();
+
+\register_activation_hook(__FILE__, [Zen_Plugins_Overview::class, 'activate']);
+\register_deactivation_hook(__FILE__, [Zen_Plugins_Overview::class, 'deactivate']);
