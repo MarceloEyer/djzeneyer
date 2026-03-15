@@ -728,12 +728,6 @@ class Zen_Plugins_Overview
     }
 }
 
-function zen_plugins_overview_init()
-{
-    if (\is_admin()) {
-        return \ZenEyer\Overview\Zen_Plugins_Overview::get_instance();
-    }
-    return null;
+if (\is_admin()) {
+    \ZenEyer\Overview\Zen_Plugins_Overview::get_instance();
 }
-
-zen_plugins_overview_init();
