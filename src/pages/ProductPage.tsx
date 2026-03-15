@@ -1,4 +1,4 @@
-// src/pages/ProductPage.tsx
+﻿// src/pages/ProductPage.tsx
 // Product detail page for WooCommerce products
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -249,4 +249,4 @@ const ProductPage: React.FC = () => {
   );
 };
 
-export default ProductPage;
+export default React.memo(ProductPage);

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -72,4 +72,4 @@ const ReturnPolicyPage: React.FC = () => {
   );
 };
 
-export default ReturnPolicyPage;
+export default React.memo(ReturnPolicyPage);

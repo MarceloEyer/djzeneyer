@@ -1,4 +1,4 @@
-// src/pages/MyAccountPage.tsx
+﻿// src/pages/MyAccountPage.tsx
 // v20.0 - PREMIUM UI OVERHAUL + UNIFIED MANA BAR + MUSIC COLLECTION
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -553,5 +553,5 @@ const MyAccountPage: React.FC = () => {
   );
 };
 
-export default MyAccountPage;
+export default React.memo(MyAccountPage);
 

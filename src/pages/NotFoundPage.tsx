@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Music, Calendar, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -93,4 +93,4 @@ const NotFoundPage: React.FC = () => {
   );
 };
 
-export default NotFoundPage;
+export default React.memo(NotFoundPage);

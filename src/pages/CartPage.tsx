@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { motion } from 'framer-motion';
@@ -187,4 +187,4 @@ const CartPage: React.FC = () => {
   );
 };
 
-export default CartPage;
+export default React.memo(CartPage);

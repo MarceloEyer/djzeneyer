@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Heart, Users, Shield, AlertTriangle, Ban, Mail } from 'lucide-react';
@@ -382,4 +382,4 @@ const CodeOfConductPage: React.FC = () => {
   );
 };
 
-export default CodeOfConductPage;
+export default React.memo(CodeOfConductPage);

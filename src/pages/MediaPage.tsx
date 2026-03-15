@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, Download, Image as ImageIcon } from 'lucide-react';
@@ -195,4 +195,4 @@ const MediaPage: React.FC = () => {
   );
 };
 
-export default MediaPage;
+export default React.memo(MediaPage);

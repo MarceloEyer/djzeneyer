@@ -1,4 +1,4 @@
-// src/pages/AboutPage.tsx - VERSAO FINAL HEADLESS E OTIMIZADA
+﻿// src/pages/AboutPage.tsx - VERSAO FINAL HEADLESS E OTIMIZADA
 
 import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -317,4 +317,4 @@ const AboutPage: React.FC = () => {
   );
 };
 
-export default AboutPage;
+export default React.memo(AboutPage);

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Heart, Music2, Sparkles } from 'lucide-react';
@@ -114,4 +114,4 @@ const PhilosophyPage: React.FC = () => {
   );
 };
 
-export default PhilosophyPage;
+export default React.memo(PhilosophyPage);

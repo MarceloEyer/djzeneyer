@@ -1,4 +1,4 @@
-// src/pages/MusicPage.tsx
+﻿// src/pages/MusicPage.tsx
 import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
@@ -298,4 +298,4 @@ const MusicPage: React.FC = () => {
   );
 };
 
-export default MusicPage;
+export default React.memo(MusicPage);

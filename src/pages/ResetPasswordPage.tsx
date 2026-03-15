@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Loader2, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
@@ -234,4 +234,4 @@ const ResetPasswordPage: React.FC = () => {
     );
 };
 
-export default ResetPasswordPage;
+export default React.memo(ResetPasswordPage);

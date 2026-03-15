@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -146,4 +146,4 @@ const TicketsPage: React.FC = () => {
   );
 };
 
-export default TicketsPage;
+export default React.memo(TicketsPage);

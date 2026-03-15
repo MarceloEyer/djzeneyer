@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, CreditCard, Landmark, Globe, Zap, Heart, Briefcase } from 'lucide-react';
@@ -135,4 +135,4 @@ const PayMePage: React.FC = () => {
     );
 };
 
-export default PayMePage;
+export default React.memo(PayMePage);

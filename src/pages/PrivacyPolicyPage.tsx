@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, Database, Mail } from 'lucide-react';
@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 const PrivacyPolicyPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const sections = [
+  // ⚡ Bolt: Wrapped static content objects dependent on context with useMemo
+  // to prevent unnecessary re-allocations on every render cycle.
+  const sections = useMemo(() => [
     {
       icon: Database,
       title: t('privacy_page.sections.collection.title'),
@@ -33,7 +35,7 @@ const PrivacyPolicyPage: React.FC = () => {
       title: t('privacy_page.sections.rights.title'),
       content: t('privacy_page.sections.rights.items', { returnObjects: true }) as string[]
     }
-  ];
+  ], [t]);
 
   return (
     <>
@@ -202,4 +204,4 @@ const PrivacyPolicyPage: React.FC = () => {
   );
 };
 
-export default PrivacyPolicyPage;
+export default React.memo(PrivacyPolicyPage);

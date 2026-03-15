@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -322,5 +322,5 @@ const ZoukPersonaQuizPage: React.FC = () => {
   );
 };
 
-export default ZoukPersonaQuizPage;
+export default React.memo(ZoukPersonaQuizPage);
 
