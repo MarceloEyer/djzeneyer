@@ -14,6 +14,7 @@ Base REST: `https://djzeneyer.com/wp-json`
 - `GET /shop/page`
 - `GET /products`
 - `GET /products/collections`
+- `GET /stats`
 - `POST /subscribe`
 - `POST /user/update-profile`
 
@@ -63,4 +64,3 @@ Rotas completas tambem suportadas:
 2. Evitar over-fetch; usar campos necessarios sempre que houver suporte
 3. `zen-ra` foi removido do projeto e nao deve aparecer em rotas, exemplos ou integracoes
 4. Em caso de duvida, validar no codigo com `register_rest_route`
-

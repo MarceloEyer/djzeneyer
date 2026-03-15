@@ -37,6 +37,12 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 
+    register_rest_route($ns, '/stats', [
+        'methods' => 'GET',
+        'callback' => 'djz_get_stats',
+        'permission_callback' => '__return_true',
+    ]);
+
     register_rest_route($ns, '/subscribe', [
         'methods' => 'POST',
         'callback' => 'djz_subscribe_newsletter',
@@ -219,6 +225,45 @@ function djz_get_product_collections($request)
     set_transient($cache_key, $response, DJZ_CACHE_PRODUCTS);
 
     return rest_ensure_response($response);
+}
+
+/**
+ * Site Stats Endpoint (Cached 15min)
+ *
+ * Endpoint REST moderno para consumo no frontend SPA em substituicao
+ * de fluxos legados baseados em admin-ajax.
+ */
+function djz_get_stats($request)
+{
+    $cache_key = 'djz_site_stats_v1';
+    $cached = get_transient($cache_key);
+
+    if ($cached) {
+        return rest_ensure_response($cached);
+    }
+
+    $published_posts = wp_count_posts('post')->publish ?? 0;
+    $published_pages = wp_count_posts('page')->publish ?? 0;
+    $published_products = post_type_exists('product')
+        ? (wp_count_posts('product')->publish ?? 0)
+        : 0;
+
+    $stats = [
+        'content' => [
+            'posts' => (int) $published_posts,
+            'pages' => (int) $published_pages,
+            'products' => (int) $published_products,
+        ],
+        'system' => [
+            'wp_version' => get_bloginfo('version'),
+            'php_version' => phpversion(),
+            'timestamp' => current_time('mysql', true),
+        ],
+    ];
+
+    set_transient($cache_key, $stats, MINUTE_IN_SECONDS * 15);
+
+    return rest_ensure_response($stats);
 }
 
 function djz_query_products(array $options = [])
