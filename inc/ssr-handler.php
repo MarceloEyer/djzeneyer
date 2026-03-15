@@ -1,4 +1,6 @@
 <?php
+namespace DjZenEyer\Theme;
+
 /**
  * DJ Zen Eyer - SSR Prerender Handler
  * 
@@ -67,11 +69,11 @@ function djz_serve_ssr()
     }
 
     // Se arquivo SSR existe, servir
-    if (file_exists($ssr_file)) {
+    if (\file_exists($ssr_file)) {
         // Headers SEO-friendly
-        header('Content-Type: text/html; charset=UTF-8');
-        header('X-Prerendered: true');
-        header('X-Prerender-File: ' . $display_filename);
+        \header('Content-Type: text/html; charset=UTF-8');
+        \header('X-Prerendered: true');
+        \header('X-Prerender-File: ' . $display_filename);
 
         // Ler e servir arquivo
         readfile($ssr_file);
@@ -80,13 +82,13 @@ function djz_serve_ssr()
 }
 
 // Hook no WordPress antes de qualquer output
-add_action('template_redirect', 'djz_serve_ssr', 1);
+\add_action('template_redirect', __NAMESPACE__ . '\\djz_serve_ssr', 1);
 
 /**
  * DEBUGGING: Adicione ao final da URL: ?debug_ssr=1
  */
 if (isset($_GET['debug_ssr'])) {
-    add_action('wp_footer', function () {
+    \add_action('wp_footer', function () {
         echo "\n<!-- SSR Debug Info:\n";
         echo "Is Bot: " . (djz_is_bot() ? 'YES' : 'NO') . "\n";
         echo "User Agent: " . htmlspecialchars($_SERVER['HTTP_USER_AGENT'] ?? 'None') . "\n";
@@ -102,7 +104,7 @@ if (isset($_GET['debug_ssr'])) {
             $ssr_file = $theme_path . '/dist/' . $clean_path . '/index.html';
         }
         echo "SSR File: " . htmlspecialchars($ssr_file) . "\n";
-        echo "SSR Exists: " . (file_exists($ssr_file) ? 'YES' : 'NO') . "\n";
+        echo "SSR Exists: " . (\file_exists($ssr_file) ? 'YES' : 'NO') . "\n";
         echo "-->\n";
     });
 }

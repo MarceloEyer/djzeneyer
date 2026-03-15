@@ -1,4 +1,6 @@
 <?php
+namespace DjZenEyer\Theme;
+
 /**
  * AI LLM Strategy Module
  * Exposes structured data for AI crawlers (Perplexity, GPTBot, etc.)
@@ -13,7 +15,7 @@ class DJZ_AI_Authority
 
     public function __construct()
     {
-        add_action('rest_api_init', [$this, 'register_routes']);
+        \add_action('rest_api_init', [$this, 'register_routes']);
     }
 
     public function register_routes()

@@ -1,4 +1,6 @@
 <?php
+namespace DjZenEyer\Theme;
+
 /**
  * Custom Post Types & Taxonomies
  * Flyers, Music Library
@@ -9,8 +11,8 @@ if (!defined('ABSPATH')) exit;
 /**
  * Flyers (Event Gallery)
  */
-add_action('init', function() {
-    register_post_type('flyers', [
+\add_action('init', function() {
+    \register_post_type('flyers', [
         'labels' => [
             'name' => 'Flyers',
             'singular_name' => 'Flyer',
@@ -26,8 +28,8 @@ add_action('init', function() {
 /**
  * Music (Remixes & Sets)
  */
-add_action('init', function() {
-    register_post_type('remixes', [
+\add_action('init', function() {
+    \register_post_type('remixes', [
         'labels' => [
             'name' => 'Músicas',
             'singular_name' => 'Música',
@@ -44,8 +46,8 @@ add_action('init', function() {
 /**
  * Music Tags (Genres: RnB, Kizomba, etc)
  */
-add_action('init', function() {
-    register_taxonomy('music_tags', 'remixes', [
+\add_action('init', function() {
+    \register_taxonomy('music_tags', 'remixes', [
         'label' => 'Tags Musicais',
         'hierarchical' => false,
         'show_in_rest' => true,
@@ -57,8 +59,8 @@ add_action('init', function() {
 /**
  * Music Type (Set, Track, Remix)
  */
-add_action('init', function() {
-    register_taxonomy('music_type', 'remixes', [
+\add_action('init', function() {
+    \register_taxonomy('music_type', 'remixes', [
         'label' => 'Tipo/Formato',
         'hierarchical' => true,
         'show_in_rest' => true,
@@ -69,7 +71,7 @@ add_action('init', function() {
 /**
  * Expose Custom Fields to REST API
  */
-add_action('rest_api_init', function() {
+\add_action('rest_api_init', function() {
     register_rest_field('remixes', 'audio_url', [
         'get_callback' => fn($object) => get_post_meta($object['id'], 'audio_url', true),
     ]);

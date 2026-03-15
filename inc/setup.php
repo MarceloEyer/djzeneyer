@@ -1,4 +1,6 @@
 <?php
+namespace DjZenEyer\Theme;
+
 /**
  * Core Setup & Security
  * Theme support, CORS, performance tuning, and Security Headers
@@ -7,6 +9,7 @@
 
 if (!defined('ABSPATH'))
     exit;
+
 
 /**
  * --------------------------------------------------
@@ -28,7 +31,7 @@ function djz_get_gamipress_points_type_slug(): string
         return $default;
     }
 
-    $points_types = gamipress_get_points_types();
+    $points_types = \gamipress_get_points_types();
     if (empty($points_types)) {
         return $default;
     }
@@ -38,7 +41,7 @@ function djz_get_gamipress_points_type_slug(): string
     }
 
     $first = array_key_first($points_types);
-    return apply_filters('djz_gamipress_points_type_slug', $first ?: $default, $points_types);
+    return \apply_filters('djz_gamipress_points_type_slug', $first ?: $default, $points_types);
 }
 
 // NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_points_type_slug' para especificar.
@@ -59,22 +62,22 @@ function djz_get_gamipress_rank_tiers(): array
 
     if (!function_exists('gamipress_get_rank_types')) {
         return [
-            'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
+            'tiers' => \apply_filters('djz_gamipress_rank_tiers', $fallback),
             'source' => 'fallback',
         ];
     }
 
-    $rank_types = gamipress_get_rank_types();
+    $rank_types = \gamipress_get_rank_types();
     // NOTA: array_key_first pode retornar ordem não previsível. Use o filtro 'djz_gamipress_rank_slug' para especificar.
-    $rank_slug = apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);
+    $rank_slug = \apply_filters('djz_gamipress_rank_slug', !empty($rank_types) ? array_key_first($rank_types) : null, $rank_types);
     if (!$rank_slug) {
         return [
-            'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
+            'tiers' => \apply_filters('djz_gamipress_rank_tiers', $fallback),
             'source' => 'fallback',
         ];
     }
 
-    $ranks = get_posts([
+    $ranks = \get_posts([
         'post_type' => $rank_slug,
         'post_status' => 'publish',
         'numberposts' => -1,
@@ -84,16 +87,16 @@ function djz_get_gamipress_rank_tiers(): array
 
     if (empty($ranks)) {
         return [
-            'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
+            'tiers' => \apply_filters('djz_gamipress_rank_tiers', $fallback),
             'source' => 'fallback',
         ];
     }
 
     $tiers = [];
     foreach ($ranks as $rank) {
-        $min_points = (int) get_post_meta($rank->ID, '_gamipress_points_required', true);
+        $min_points = (int) \get_post_meta($rank->ID, '_gamipress_points_required', true);
         if ($min_points <= 0) {
-            $min_points = (int) get_post_meta($rank->ID, '_gamipress_points', true);
+            $min_points = (int) \get_post_meta($rank->ID, '_gamipress_points', true);
         }
 
         $tiers[] = [
@@ -117,7 +120,7 @@ function djz_get_gamipress_rank_tiers(): array
     }
 
     return [
-        'tiers' => apply_filters('djz_gamipress_rank_tiers', $tiers),
+        'tiers' => \apply_filters('djz_gamipress_rank_tiers', $tiers),
         'source' => 'gamipress',
     ];
 }
@@ -142,14 +145,14 @@ function djz_allowed_origins(): array
  * Theme Setup & Translations (CORRETO PARA WP 6.7)
  * --------------------------------------------------
  */
-add_action('after_setup_theme', function () {
+\add_action('after_setup_theme', function () {
 
-    load_theme_textdomain('djzeneyer', get_template_directory() . '/languages');
+    \load_theme_textdomain('djzeneyer', \get_template_directory() . '/languages');
 
-    add_theme_support('title-tag');
-    add_theme_support('post-thumbnails');
-    add_theme_support('woocommerce');
-    add_theme_support('html5', [
+    \add_theme_support('title-tag');
+    \add_theme_support('post-thumbnails');
+    \add_theme_support('woocommerce');
+    \add_theme_support('html5', [
         'search-form',
         'comment-form',
         'comment-list',
@@ -157,8 +160,8 @@ add_action('after_setup_theme', function () {
         'caption',
     ]);
 
-    register_nav_menus([
-        'primary_menu' => __('Menu Principal', 'djzeneyer'),
+    \register_nav_menus([
+        'primary_menu' => \__('Menu Principal', 'djzeneyer'),
     ]);
 }, 0);
 
@@ -167,13 +170,13 @@ add_action('after_setup_theme', function () {
  * REST API CORS
  * --------------------------------------------------
  */
-add_action('rest_api_init', function () {
-    add_filter('rest_pre_serve_request', function ($served) {
+\add_action('rest_api_init', function () {
+    \add_filter('rest_pre_serve_request', function ($served) {
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $allowed = djz_allowed_origins();
 
         if (in_array($origin, $allowed, true)) {
-            header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
+            header('Access-Control-Allow-Origin: ' . \esc_url_raw($origin));
             header('Access-Control-Allow-Credentials: true');
             header('Vary: Origin', false);
         }
@@ -182,7 +185,7 @@ add_action('rest_api_init', function () {
         header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce');
 
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
-            status_header(200);
+            \status_header(200);
             exit;
         }
 
@@ -195,8 +198,8 @@ add_action('rest_api_init', function () {
  * Cookies
  * --------------------------------------------------
  */
-add_filter('woocommerce_cookie_duration', function ($duration) {
-    session_set_cookie_params($duration, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
+\add_filter('woocommerce_cookie_duration', function ($duration) {
+    session_set_cookie_params($duration, COOKIEPATH, COOKIE_DOMAIN, \is_ssl(), true);
     return $duration;
 });
 
@@ -205,8 +208,8 @@ add_filter('woocommerce_cookie_duration', function ($duration) {
  * Performance
  * --------------------------------------------------
  */
-add_filter('script_loader_tag', function ($tag, $handle) {
-    if (is_admin()) {
+\add_filter('script_loader_tag', function ($tag, $handle) {
+    if (\is_admin()) {
         return $tag;
     }
 
@@ -221,25 +224,25 @@ add_filter('script_loader_tag', function ($tag, $handle) {
     return $tag;
 }, 10, 2);
 
-add_filter('style_loader_src', 'djz_remove_query_strings', 10);
-add_filter('script_loader_src', 'djz_remove_query_strings', 10);
+\add_filter('style_loader_src', __NAMESPACE__ . '\\djz_remove_query_strings', 10);
+\add_filter('script_loader_src', __NAMESPACE__ . '\\djz_remove_query_strings', 10);
 
 function djz_remove_query_strings($src)
 {
-    return remove_query_arg('ver', $src);
+    return \remove_query_arg('ver', $src);
 }
 
-add_action('wp_head', function () {
+\add_action('wp_head', function () {
     echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . PHP_EOL;
     echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . PHP_EOL;
 }, 0);
 
-add_filter('wp_lazy_loading_enabled', '__return_true');
+\add_filter('wp_lazy_loading_enabled', '__return_true');
 
-add_filter('wp_get_attachment_image_attributes', function ($attr) {
+\add_filter('wp_get_attachment_image_attributes', function ($attr) {
     static $first = true;
 
-    if ($first && is_front_page()) {
+    if ($first && \is_front_page()) {
         $attr['fetchpriority'] = 'high';
         $first = false;
     }
@@ -252,12 +255,12 @@ add_filter('wp_get_attachment_image_attributes', function ($attr) {
  * Database
  * --------------------------------------------------
  */
-add_action('after_switch_theme', function () {
+\add_action('after_switch_theme', function () {
     global $wpdb;
     $wpdb->query("CREATE INDEX IF NOT EXISTS idx_autoload ON {$wpdb->options} (autoload)");
 });
 
-add_action('wp_scheduled_delete', function () {
+\add_action('wp_scheduled_delete', function () {
     global $wpdb;
     $wpdb->query(
         "DELETE FROM {$wpdb->options}
@@ -271,9 +274,9 @@ add_action('wp_scheduled_delete', function () {
  * SEO
  * --------------------------------------------------
  */
-add_filter('wpseo_canonical', 'djz_fix_canonical_slash');
-add_filter('rank_math/frontend/canonical', 'djz_fix_canonical_slash');
-add_filter('get_canonical_url', 'djz_fix_canonical_slash');
+\add_filter('wpseo_canonical', __NAMESPACE__ . '\\djz_fix_canonical_slash');
+\add_filter('rank_math/frontend/canonical', __NAMESPACE__ . '\\djz_fix_canonical_slash');
+\add_filter('get_canonical_url', __NAMESPACE__ . '\\djz_fix_canonical_slash');
 
 function djz_fix_canonical_slash($url)
 {

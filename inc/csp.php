@@ -1,4 +1,6 @@
 <?php
+namespace DjZenEyer\Theme;
+
 /**
  * CSP Nonce + Strict Content-Security-Policy
  *
@@ -35,9 +37,9 @@ function djz_csp_nonce(): string {
 /**
  * 2. Envia o cabeçalho Content-Security-Policy (Apenas Frontend)
  */
-add_action('send_headers', function() {
+\add_action('send_headers', function() {
     // Não aplica no painel admin, requisições REST, AJAX ou Feeds para evitar quebras
-    if (is_admin() || headers_sent()) return;
+    if (\is_admin() || headers_sent()) return;
     if (defined('REST_REQUEST') && REST_REQUEST) return;
     if (wp_doing_ajax()) return;
     if (is_feed()) return;
@@ -66,14 +68,14 @@ add_action('send_headers', function() {
         "base-uri 'self'",
     ]) . ';';
 
-    header('Content-Security-Policy: ' . $policy);
+    \header('Content-Security-Policy: ' . $policy);
 }, 20);
 
 /**
  * 3. Injeta o atributo 'nonce' nos Scripts enfileirados pelo WordPress
  */
 add_filter('script_loader_tag', function($tag, $handle, $src) {
-    if (is_admin()) return $tag;
+    if (\is_admin()) return $tag;
     if (defined('REST_REQUEST') && REST_REQUEST) return $tag;
 
     $nonce = djz_csp_nonce();
@@ -89,7 +91,7 @@ add_filter('script_loader_tag', function($tag, $handle, $src) {
  * 4. Injeta o atributo 'nonce' nos Estilos (CSS) enfileirados
  */
 add_filter('style_loader_tag', function($html, $handle, $href, $media) {
-    if (is_admin()) return $html;
+    if (\is_admin()) return $html;
     if (defined('REST_REQUEST') && REST_REQUEST) return $html;
 
     $nonce = djz_csp_nonce();

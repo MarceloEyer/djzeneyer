@@ -1,4 +1,6 @@
 <?php
+namespace DjZenEyer\Theme;
+
 /**
  * REST API Endpoints - Gold Standard v3.0
  * GamiPress, WooCommerce, Menu, Newsletter
@@ -10,46 +12,46 @@ if (!defined('ABSPATH'))
 /**
  * Register all endpoints
  */
-add_action('rest_api_init', function () {
+\add_action('rest_api_init', function () {
     $ns = 'djzeneyer/v1';
 
-    register_rest_route($ns, '/menu', [
+    \register_rest_route($ns, '/menu', [
         'methods' => 'GET',
-        'callback' => 'djz_get_menu',
+        'callback' => __NAMESPACE__ . '\\djz_get_menu',
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route($ns, '/shop/page', [
+    \register_rest_route($ns, '/shop/page', [
         'methods' => 'GET',
-        'callback' => 'djz_get_shop_page',
+        'callback' => __NAMESPACE__ . '\\djz_get_shop_page',
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route($ns, '/products', [
+    \register_rest_route($ns, '/products', [
         'methods' => 'GET',
-        'callback' => 'djz_get_products',
+        'callback' => __NAMESPACE__ . '\\djz_get_products',
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route($ns, '/products/collections', [
+    \register_rest_route($ns, '/products/collections', [
         'methods' => 'GET',
-        'callback' => 'djz_get_product_collections',
+        'callback' => __NAMESPACE__ . '\\djz_get_product_collections',
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route($ns, '/subscribe', [
+    \register_rest_route($ns, '/subscribe', [
         'methods' => 'POST',
-        'callback' => 'djz_subscribe_newsletter',
+        'callback' => __NAMESPACE__ . '\\djz_subscribe_newsletter',
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route($ns, '/user/update-profile', [
+    \register_rest_route($ns, '/user/update-profile', [
         'methods' => 'POST',
-        'callback' => 'djz_update_profile',
+        'callback' => __NAMESPACE__ . '\\djz_update_profile',
         'permission_callback' => '__return_true', // Token validation handled in callback
     ]);
 
-    // register_rest_route($ns, '/gamipress/user-data', [ ... ]); 
+    // \register_rest_route($ns, '/gamipress/user-data', [ ... ]);
     // Handled by ZenGame plugin
 
     // Register Custom User Meta for REST
@@ -76,11 +78,11 @@ function djz_get_menu($request)
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     $cache_key = 'djz_menu_' . $lang;
 
-    $cached = get_transient($cache_key);
+    $cached = \get_transient($cache_key);
     if ($cached)
         return rest_ensure_response($cached);
-    if (function_exists('pll_set_language')) {
-        pll_set_language($lang);
+    if (\function_exists('pll_set_language')) {
+        \pll_set_language($lang);
     }
 
     $locations = get_nav_menu_locations();
@@ -91,7 +93,7 @@ function djz_get_menu($request)
         $menu_id = $menus[0]->term_id ?? 0;
     }
 
-    $items = wp_get_nav_menu_items($menu_id);
+    $items = \wp_get_nav_menu_items($menu_id);
     $formatted = [];
     $home = home_url();
 
@@ -115,7 +117,7 @@ function djz_get_menu($request)
         }
     }
 
-    set_transient($cache_key, $formatted, DJZ_CACHE_MENU);
+    \set_transient($cache_key, $formatted, DJZ_CACHE_MENU);
     return rest_ensure_response($formatted);
 }
 
@@ -154,7 +156,7 @@ function djz_get_products($request)
 
     $cache_key = 'djz_products_v3_' . $cache_suffix;
 
-    $cached = get_transient($cache_key);
+    $cached = \get_transient($cache_key);
     if ($cached && empty($slug))
         return rest_ensure_response($cached);
 
@@ -170,7 +172,7 @@ function djz_get_products($request)
     ]);
 
     if (empty($slug)) {
-        set_transient($cache_key, $products, DJZ_CACHE_PRODUCTS);
+        \set_transient($cache_key, $products, DJZ_CACHE_PRODUCTS);
     }
     return rest_ensure_response($products);
 }
@@ -181,7 +183,7 @@ function djz_get_product_collections($request)
     $limit = max(1, min(20, (int) ($request->get_param('limit') ?: 10)));
     $cache_key = 'djz_products_collections_v1_' . md5($lang . '|' . $limit);
 
-    $cached = get_transient($cache_key);
+    $cached = \get_transient($cache_key);
     if ($cached) {
         return rest_ensure_response($cached);
     }
@@ -216,7 +218,7 @@ function djz_get_product_collections($request)
         ]),
     ];
 
-    set_transient($cache_key, $response, DJZ_CACHE_PRODUCTS);
+    \set_transient($cache_key, $response, DJZ_CACHE_PRODUCTS);
 
     return rest_ensure_response($response);
 }
@@ -280,7 +282,7 @@ function djz_query_products(array $options = [])
         $args['tax_query'] = $tax_query;
     }
 
-    if (function_exists('pll_get_post_language')) {
+    if (\function_exists('pll_get_post_language')) {
         $args['lang'] = $lang;
     }
 
@@ -295,7 +297,7 @@ function djz_query_products(array $options = [])
         ];
     }
 
-    $query = new WP_Query($args);
+    $query = new \WP_Query($args);
     $products = [];
 
     if ($query->have_posts()) {
@@ -341,7 +343,7 @@ function djz_query_products(array $options = [])
                     $img_data = [
                         'id' => $img_id,
                         'src' => $src,
-                        'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
+                        'alt' => \get_post_meta($img_id, '_wp_attachment_image_alt', true),
                     ];
 
                     $sizes = empty($slug)
@@ -364,7 +366,7 @@ function djz_query_products(array $options = [])
             }
 
             $categories = wp_get_post_terms($product->get_id(), 'product_cat');
-            if (is_wp_error($categories)) {
+            if (\is_wp_error($categories)) {
                 $categories = [];
             }
 
@@ -404,17 +406,17 @@ function djz_subscribe_newsletter($request)
     $email = sanitize_email($request->get_param('email'));
 
     if (!is_email($email)) {
-        return new WP_Error('invalid_email', 'Invalid email', ['status' => 400]);
+        return new \WP_Error('invalid_email', 'Invalid email', ['status' => 400]);
     }
 
     if (!class_exists('\MailPoet\API\API')) {
-        return new WP_Error('mailpoet_inactive', 'MailPoet not active', ['status' => 500]);
+        return new \WP_Error('mailpoet_inactive', 'MailPoet not active', ['status' => 500]);
     }
 
     try {
         $api = \MailPoet\API\API::MP('v1');
         $lists = $api->getLists();
-        $list_id = (int) apply_filters('djz_mailpoet_list_id', 0);
+        $list_id = (int) \apply_filters('djz_mailpoet_list_id', 0);
         if ($list_id <= 0) {
             $list_id = $lists[0]['id'] ?? 1;
         }
@@ -436,7 +438,7 @@ function djz_subscribe_newsletter($request)
             ]);
         }
 
-        return new WP_Error('subscription_failed', 'Ocorreu um erro na inscrição. Tente novamente mais tarde.', ['status' => 500]);
+        return new \WP_Error('subscription_failed', 'Ocorreu um erro na inscrição. Tente novamente mais tarde.', ['status' => 500]);
     }
 }
 
@@ -445,14 +447,14 @@ function djz_subscribe_newsletter($request)
  */
 function djz_update_profile($request)
 {
-    $user_id = get_current_user_id();
+    $user_id = \get_current_user_id();
     if (!$user_id) {
-        return new WP_Error('rest_not_logged_in', __('You must be logged in to update your profile.', 'djzeneyer'), ['status' => 401]);
+        return new \WP_Error('rest_not_logged_in', __('You must be logged in to update your profile.', 'djzeneyer'), ['status' => 401]);
     }
 
     $params = $request->get_json_params();
     if (empty($params)) {
-        return new WP_Error('invalid_data', __('No data provided.', 'djzeneyer'), ['status' => 400]);
+        return new \WP_Error('invalid_data', __('No data provided.', 'djzeneyer'), ['status' => 400]);
     }
 
     $data = ['ID' => $user_id];
@@ -467,12 +469,12 @@ function djz_update_profile($request)
     }
 
     if (!$updated) {
-        return new WP_Error('nothing_to_update', __('Nothing to update.', 'djzeneyer'), ['status' => 400]);
+        return new \WP_Error('nothing_to_update', __('Nothing to update.', 'djzeneyer'), ['status' => 400]);
     }
 
     $result = wp_update_user($data);
 
-    if (is_wp_error($result)) {
+    if (\is_wp_error($result)) {
         return $result;
     }
 
@@ -489,7 +491,7 @@ function djz_update_profile($request)
 /**
  * Clear cache on menu update
  */
-add_action('wp_update_nav_menu', function () {
+\add_action('wp_update_nav_menu', function () {
     global $wpdb;
     $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_menu_%'");
 });
@@ -497,7 +499,7 @@ add_action('wp_update_nav_menu', function () {
 /**
  * Clear cache on product update
  */
-add_action('save_post_product', function () {
+\add_action('save_post_product', function () {
     global $wpdb;
     $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_products_%'");
 });
@@ -505,7 +507,7 @@ add_action('save_post_product', function () {
 /**
  * Clear achievements cache on update
  */
-add_action('save_post_achievement', function () {
+\add_action('save_post_achievement', function () {
     global $wpdb;
     // Clears gamipress data for all users as it contains achievement titles/descriptions
     $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_gamipress_%'");
@@ -514,7 +516,7 @@ add_action('save_post_achievement', function () {
 /**
  * Admin: Clear Cache Button
  */
-add_action('admin_bar_menu', function ($wp_admin_bar) {
+\add_action('admin_bar_menu', function ($wp_admin_bar) {
     if (!current_user_can('manage_options'))
         return;
 
@@ -525,7 +527,7 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
     ]);
 }, 999);
 
-add_action('admin_init', function () {
+\add_action('admin_init', function () {
     if (!isset($_GET['djz_clear_cache']) || !current_user_can('manage_options'))
         return;
 
@@ -575,14 +577,14 @@ function djz_prime_thumbnails_cache($ids)
         return;
     $ids = array_unique(array_map('intval', $ids));
 
-    if (function_exists('update_meta_cache')) {
-        update_meta_cache('post', $ids);
+    if (\function_exists('update_meta_cache')) {
+        \update_meta_cache('post', $ids);
     }
 
     // _prime_post_caches is an internal function since WP 6.1
     // We use version_compare or function_exists for safety.
-    if (function_exists('_prime_post_caches')) {
-        _prime_post_caches($ids, false, true);
+    if (\function_exists('_prime_post_caches')) {
+        \_prime_post_caches($ids, false, true);
     }
 }
 
@@ -594,7 +596,7 @@ function djz_get_shop_page($request)
     $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
     $cache_key = 'djz_shop_page_v1_' . $lang;
 
-    $cached = get_transient($cache_key);
+    $cached = \get_transient($cache_key);
     if ($cached)
         return rest_ensure_response($cached);
 
@@ -605,11 +607,11 @@ function djz_get_shop_page($request)
             'no_found_rows' => true,
         ], $query_args);
 
-        if (function_exists('pll_get_post_language')) {
+        if (\function_exists('pll_get_post_language')) {
             $args['lang'] = $lang;
         }
 
-        $query = new WP_Query($args);
+        $query = new \WP_Query($args);
         $products = [];
 
         if ($query->have_posts()) {
@@ -651,7 +653,7 @@ function djz_get_shop_page($request)
                         $img_data = [
                             'id' => $img_id,
                             'src' => $src,
-                            'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
+                            'alt' => \get_post_meta($img_id, '_wp_attachment_image_alt', true),
                         ];
                         $sizes = ['medium', 'medium_large'];
                         $img_sizes = [];
@@ -680,7 +682,7 @@ function djz_get_shop_page($request)
                     'short_description' => $product->get_short_description(),
                     'description' => '',
                     'permalink' => get_permalink($product->get_id()),
-                    'categories' => !is_wp_error($categories) ? array_map(function ($term) {
+                    'categories' => !\is_wp_error($categories) ? array_map(function ($term) {
                         return ['id' => $term->term_id, 'name' => $term->name, 'slug' => $term->slug];
                     }, $categories) : [],
                 ];
@@ -738,6 +740,6 @@ function djz_get_shop_page($request)
         'curated' => $curated,
     ];
 
-    set_transient($cache_key, $data, DJZ_CACHE_PRODUCTS);
+    \set_transient($cache_key, $data, DJZ_CACHE_PRODUCTS);
     return rest_ensure_response($data);
 }
