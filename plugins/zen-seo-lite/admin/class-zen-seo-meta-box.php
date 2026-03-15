@@ -252,9 +252,11 @@ class Zen_SEO_Meta_Box
     public function save_meta_data($post_id, $post)
     {
         // Security checks
-        if (!isset($_POST['zen_seo_nonce']) || !\wp_verify_nonce($_POST['zen_seo_nonce'], 'zen_seo_meta_box')) {
+        if (!isset($_POST['zen_seo_nonce'])) {
             return;
         }
+
+        \check_admin_referer('zen_seo_meta_box', 'zen_seo_nonce');
 
         if (\defined('DOING_AUTOSAVE') && \DOING_AUTOSAVE) {
             return;
