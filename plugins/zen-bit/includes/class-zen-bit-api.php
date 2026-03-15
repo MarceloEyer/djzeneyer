@@ -32,6 +32,92 @@ if (!defined('ABSPATH')) {
 class Zen_BIT_API_V2
 {
 
+    /**
+     * Define the hooks for the REST API.
+     *
+     * @param \ZenBit\Zen_BIT_Loader $loader The hook loader.
+     */
+    public function define_hooks($loader): void
+    {
+        $loader->add_action('rest_api_init', $this, 'register_rest_routes');
+    }
+
+    /**
+     * Registers all REST API routes.
+     */
+    public function register_rest_routes(): void
+    {
+        // ---- Público ----
+
+        // Lista de eventos (payload enxuto)
+        \register_rest_route('zen-bit/v2', '/events', [
+            'methods' => 'GET',
+            'callback' => [self::class, 'list_events'],
+            'permission_callback' => '__return_true',
+            'args' => [
+                'mode' => ['type' => 'string', 'default' => 'upcoming'],
+                'days' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 730],
+                'date' => ['type' => 'string'],
+                'limit' => ['type' => 'integer', 'default' => 50, 'minimum' => 1, 'maximum' => 200],
+                'lang' => ['type' => 'string', 'default' => 'en'],
+            ],
+        ]);
+
+        // Schema JSON-LD — lista  (/events/schema ANTES de /events/{id})
+        \register_rest_route('zen-bit/v2', '/events/schema', [
+            'methods' => 'GET',
+            'callback' => [self::class, 'list_events_schema'],
+            'permission_callback' => '__return_true',
+            'args' => [
+                'mode' => ['type' => 'string', 'default' => 'upcoming'],
+                'days' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 730],
+                'date' => ['type' => 'string'],
+                'limit' => ['type' => 'integer', 'default' => 50, 'minimum' => 1, 'maximum' => 200],
+            ],
+        ]);
+
+        // Detalhe de evento (event_id numérico)
+        \register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [self::class, 'get_event'],
+            'permission_callback' => '__return_true',
+            'args' => [
+                'event_id' => ['type' => 'integer', 'required' => true, 'minimum' => 1],
+            ],
+        ]);
+
+        // Schema JSON-LD — evento individual
+        \register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)/schema', [
+            'methods' => 'GET',
+            'callback' => [self::class, 'get_event_schema'],
+            'permission_callback' => '__return_true',
+            'args' => [
+                'event_id' => ['type' => 'integer', 'required' => true],
+            ],
+        ]);
+
+        // ---- Admin (manage_options) ----
+
+        \register_rest_route('zen-bit/v2', '/admin/fetch-now', [
+            'methods' => 'POST',
+            'callback' => [self::class, 'admin_fetch_now'],
+            'permission_callback' => [self::class, 'check_admin_auth'],
+        ]);
+
+        \register_rest_route('zen-bit/v2', '/admin/clear-cache', [
+            'methods' => 'POST',
+            'callback' => [self::class, 'admin_clear_cache'],
+            'permission_callback' => [self::class, 'check_admin_auth'],
+        ]);
+
+        \register_rest_route('zen-bit/v2', '/admin/health', [
+            'methods' => 'GET',
+            'callback' => [self::class, 'admin_health'],
+            'permission_callback' => [self::class, 'check_admin_auth'],
+        ]);
+    }
+
+
     // =========================================================================
     // OPTIONS
     // =========================================================================

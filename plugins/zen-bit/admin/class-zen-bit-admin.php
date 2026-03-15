@@ -9,12 +9,13 @@ if (!defined('ABSPATH')) exit;
 
 class Zen_BIT_Admin
 {
-    public function __construct()
+
+    public function define_hooks($loader): void
     {
-        add_action('admin_menu',  [$this, 'add_admin_menu']);
-        add_action('admin_init',  [$this, 'register_settings']);
-        add_action('admin_post_zen_bit_clear_cache', [$this, 'handle_clear_cache']);
-        add_action('admin_post_zen_bit_fetch_now',   [$this, 'handle_fetch_now']);
+        $loader->add_action("admin_menu",  $this, "add_admin_menu");
+        $loader->add_action("admin_init",  $this, "register_settings");
+        $loader->add_action("admin_post_zen_bit_clear_cache", $this, "handle_clear_cache");
+        $loader->add_action("admin_post_zen_bit_fetch_now",   $this, "handle_fetch_now");
     }
 
     public function add_admin_menu(): void

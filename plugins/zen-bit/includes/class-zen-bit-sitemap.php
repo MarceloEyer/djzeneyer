@@ -60,10 +60,17 @@ class Zen_BIT_Sitemap
     // CONSTRUCTOR
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function __construct()
+    public function define_hooks($loader): void
     {
-        \add_action('init', [$this, 'add_rewrite_rules']);
-        \add_action('template_redirect', [$this, 'maybe_serve_sitemap']);
+        $loader->add_action("init", $this, "add_rewrite_rules");
+        $loader->add_action("template_redirect", $this, "maybe_serve_sitemap");
+        $loader->add_filter("query_vars", $this, "add_query_vars");
+    }
+
+    public function add_query_vars(array $vars): array
+    {
+        $vars[] = "zen_bit_sitemap";
+        return $vars;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -80,13 +87,7 @@ class Zen_BIT_Sitemap
             '^sitemap-events\.xml$',
             'index.php?zen_bit_sitemap=events',
             'top'
-        );
-
-        \add_filter('query_vars', static function (array $vars): array {
-            $vars[] = 'zen_bit_sitemap';
-            return $vars;
-        });
-    }
+        );}
 
     // ─────────────────────────────────────────────────────────────────────────
     // REQUEST HANDLER
