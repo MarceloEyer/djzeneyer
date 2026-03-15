@@ -202,53 +202,6 @@ add_filter('woocommerce_cookie_duration', function ($duration) {
 
 /**
  * --------------------------------------------------
- * Performance
- * --------------------------------------------------
- */
-add_filter('script_loader_tag', function ($tag, $handle) {
-    if (is_admin()) {
-        return $tag;
-    }
-
-    $defer_scripts = ['vite', 'index', 'webfontloader', 'react'];
-
-    foreach ($defer_scripts as $script) {
-        if (strpos($handle, $script) !== false) {
-            return str_replace(' src', ' defer src', $tag);
-        }
-    }
-
-    return $tag;
-}, 10, 2);
-
-add_filter('style_loader_src', 'djz_remove_query_strings', 10);
-add_filter('script_loader_src', 'djz_remove_query_strings', 10);
-
-function djz_remove_query_strings($src)
-{
-    return remove_query_arg('ver', $src);
-}
-
-add_action('wp_head', function () {
-    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . PHP_EOL;
-    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . PHP_EOL;
-}, 0);
-
-add_filter('wp_lazy_loading_enabled', '__return_true');
-
-add_filter('wp_get_attachment_image_attributes', function ($attr) {
-    static $first = true;
-
-    if ($first && is_front_page()) {
-        $attr['fetchpriority'] = 'high';
-        $first = false;
-    }
-
-    return $attr;
-}, 10);
-
-/**
- * --------------------------------------------------
  * Database
  * --------------------------------------------------
  */

@@ -512,32 +512,6 @@ add_action('save_post_achievement', function () {
 });
 
 /**
- * Admin: Clear Cache Button
- */
-add_action('admin_bar_menu', function ($wp_admin_bar) {
-    if (!current_user_can('manage_options'))
-        return;
-
-    $wp_admin_bar->add_node([
-        'id' => 'djz_clear_cache',
-        'title' => '🧹 Clear Cache',
-        'href' => wp_nonce_url(add_query_arg('djz_clear_cache', '1', admin_url()), 'djz_clear_cache'),
-    ]);
-}, 999);
-
-add_action('admin_init', function () {
-    if (!isset($_GET['djz_clear_cache']) || !current_user_can('manage_options'))
-        return;
-
-    check_admin_referer('djz_clear_cache');
-
-    global $wpdb;
-    $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_%'");
-
-    wp_safe_redirect(remove_query_arg('djz_clear_cache'));
-    exit;
-});
-/**
  * Get product image IDs with optimization for list views
  * 
  * @param WC_Product $product

@@ -23,6 +23,13 @@ $is_rest = defined('REST_REQUEST') && REST_REQUEST;
 
 require_once get_theme_file_path('/inc/api.php');
 
+if ($is_admin) {
+    require_once get_theme_file_path('/inc/admin/menus.php');
+} else {
+    // Only load frontend hooks if not in admin
+    require_once get_theme_file_path('/inc/public/frontend-hooks.php');
+}
+
 if ($is_admin || $is_rest) {
     require_once get_theme_file_path('/inc/metaboxes.php');
     require_once get_theme_file_path('/inc/ai-llm.php');
