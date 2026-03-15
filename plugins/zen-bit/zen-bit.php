@@ -206,8 +206,8 @@ if (!class_exists('Zen_BIT')) {
     }
 }
 
-function zen_bit_init(): Zen_BIT
+function djzeneyer_zen_bit_init(): Zen_BIT
 {
     return Zen_BIT::get_instance();
 }
-zen_bit_init();
+djzeneyer_zen_bit_init();

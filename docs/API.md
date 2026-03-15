@@ -1,4 +1,4 @@
-﻿# API.md - Referencia Canonica de Endpoints
+# API.md - Referencia Canonica de Endpoints
 
 Base REST: `https://djzeneyer.com/wp-json`
 
@@ -14,6 +14,7 @@ Base REST: `https://djzeneyer.com/wp-json`
 - `GET /shop/page`
 - `GET /products`
 - `GET /products/collections`
+- `GET /stats`
 - `POST /subscribe`
 - `POST /user/update-profile`
 

@@ -17,6 +17,16 @@ class Zen_Plugins_Overview
 
     private static $instance = null;
 
+    public static function activate(): void
+    {
+        // Placeholder for activation logic.
+    }
+
+    public static function deactivate(): void
+    {
+        // Placeholder for deactivation logic.
+    }
+
     public static function get_instance()
     {
         if (null === self::$instance) {
@@ -728,7 +738,7 @@ class Zen_Plugins_Overview
     }
 }
 
-function zen_plugins_overview_init()
+function djzeneyer_zen_plugins_overview_init()
 {
     if (\is_admin()) {
         return \ZenEyer\Overview\Zen_Plugins_Overview::get_instance();
@@ -736,4 +746,7 @@ function zen_plugins_overview_init()
     return null;
 }
 
-zen_plugins_overview_init();
+djzeneyer_zen_plugins_overview_init();
+
+\register_activation_hook(__FILE__, [Zen_Plugins_Overview::class, 'activate']);
+\register_deactivation_hook(__FILE__, [Zen_Plugins_Overview::class, 'deactivate']);
