@@ -128,4 +128,4 @@ const PayMePage: React.FC = () => {
     );
 };
 
-export default PayMePage;
+export default React.memo(PayMePage);

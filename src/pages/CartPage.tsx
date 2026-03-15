@@ -187,4 +187,4 @@ const CartPage: React.FC = () => {
   );
 };
 
-export default CartPage;
+export default React.memo(CartPage);

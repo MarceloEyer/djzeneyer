@@ -145,4 +145,4 @@ const TicketsPage: React.FC = () => {
   );
 };
 
-export default TicketsPage;
+export default React.memo(TicketsPage);

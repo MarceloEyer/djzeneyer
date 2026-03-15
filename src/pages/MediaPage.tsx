@@ -194,4 +194,4 @@ const MediaPage: React.FC = () => {
   );
 };
 
-export default MediaPage;
+export default React.memo(MediaPage);

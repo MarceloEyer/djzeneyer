@@ -375,4 +375,4 @@ const CodeOfConductPage: React.FC = () => {
   );
 };
 
-export default CodeOfConductPage;
+export default React.memo(CodeOfConductPage);

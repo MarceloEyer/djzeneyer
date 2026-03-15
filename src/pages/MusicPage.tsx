@@ -296,4 +296,4 @@ const MusicPage: React.FC = () => {
   );
 };
 
-export default MusicPage;
+export default React.memo(MusicPage);

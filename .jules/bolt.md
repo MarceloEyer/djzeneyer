@@ -45,3 +45,7 @@
 ## 2026-03-08 - UseMemo on Array Data
 **Learning:** Found that large data object definitions utilizing `t` were being recreated every render cycle in `ZenTribePage.tsx`. Attempting to micro-optimize tiny array traversals (like `find` + `filter` -> `for` loops) proved detrimental due to dependency complexities triggering unnecessary renders, and violating micro-optimization guidelines.
 **Action:** When implementing static array mapping and data definitions that rely on React contexts such as translations (`useTranslation()`), apply `useMemo` and attach `t` as a dependency to avoid re-rendering heavy allocations without sacrificing maintainability for imperceptible loop improvements.
+
+## 2026-03-09 - Page Level Component Re-renders Optimization
+**Learning:** Found that most page components in `src/pages` (e.g. `DashboardPage`, `MyAccountPage`, `NewsPage`, etc.) were exported directly without being wrapped in `React.memo`. This could lead to unnecessary re-renders when parent layout components (like the Router or App component) trigger a render cycle. While some pages use their own context providers which might mitigate some cascading, wrapping the top-level page export in `React.memo` is a robust defensive measure to prevent unnecessary React reconciliation loops.
+**Action:** When creating new page components, always wrap the default export in `React.memo` (e.g., `export default React.memo(MyPage)`).

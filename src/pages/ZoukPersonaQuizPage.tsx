@@ -322,5 +322,5 @@ const ZoukPersonaQuizPage: React.FC = () => {
   );
 };
 
-export default ZoukPersonaQuizPage;
+export default React.memo(ZoukPersonaQuizPage);
 

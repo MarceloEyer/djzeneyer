@@ -202,4 +202,4 @@ const PrivacyPolicyPage: React.FC = () => {
   );
 };
 
-export default PrivacyPolicyPage;
+export default React.memo(PrivacyPolicyPage);

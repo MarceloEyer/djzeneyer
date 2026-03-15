@@ -65,4 +65,4 @@ const PhilosophyPage: React.FC = () => {
   );
 };
 
-export default PhilosophyPage;
+export default React.memo(PhilosophyPage);

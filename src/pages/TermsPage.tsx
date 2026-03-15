@@ -234,4 +234,4 @@ const TermsPage: React.FC = () => {
   );
 };
 
-export default TermsPage;
+export default React.memo(TermsPage);

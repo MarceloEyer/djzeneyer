@@ -249,4 +249,4 @@ const ProductPage: React.FC = () => {
   );
 };
 
-export default ProductPage;
+export default React.memo(ProductPage);

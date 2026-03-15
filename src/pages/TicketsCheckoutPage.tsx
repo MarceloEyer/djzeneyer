@@ -23,4 +23,4 @@ const TicketsCheckoutPage: React.FC = () => {
   );
 };
 
-export default TicketsCheckoutPage;
+export default React.memo(TicketsCheckoutPage);

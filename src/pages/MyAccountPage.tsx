@@ -553,5 +553,5 @@ const MyAccountPage: React.FC = () => {
   );
 };
 
-export default MyAccountPage;
+export default React.memo(MyAccountPage);
 
