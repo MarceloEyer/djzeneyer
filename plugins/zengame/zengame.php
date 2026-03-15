@@ -436,7 +436,7 @@ final class ZenGame
 
         $limit = (int) $request->get_param('limit');
         $limit = max(1, min(100, $limit > 0 ? $limit : 10));
-        $type_param = (string) $request->get_param('point_type');
+        $type_param = sanitize_text_field((string) $request->get_param('point_type'));
 
         $cache_key = 'djz_gamipress_leaderboard_' . self::CACHE_VERSION . '_' . $limit . '_' . ($type_param ?: 'all');
         $cached = \get_transient($cache_key);

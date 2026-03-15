@@ -204,7 +204,7 @@ class Rest_Routes
             return $rate_check;
         }
 
-        $email = $request->get_param('email');
+        $email = sanitize_email($request->get_param('email'));
         $password = $request->get_param('password');
 
         $user = Password_Auth::login($email, $password);
@@ -240,9 +240,9 @@ class Rest_Routes
             return $rate_check;
         }
 
-        $email = $request->get_param('email');
+        $email = sanitize_email($request->get_param('email'));
         $password = $request->get_param('password');
-        $name = $request->get_param('name');
+        $name = sanitize_text_field($request->get_param('name'));
 
         $user = Password_Auth::register($email, $password, $name);
 
@@ -272,7 +272,7 @@ class Rest_Routes
             return $rate_check;
         }
 
-        $id_token = $request->get_param('id_token');
+        $id_token = sanitize_text_field($request->get_param('id_token'));
 
         if (empty($id_token)) {
             return new WP_Error('missing_token', 'ID token is required', ['status' => 400]);
@@ -327,8 +327,8 @@ class Rest_Routes
     // Refresh token endpoint
     public static function refresh($request)
     {
-        $refresh_token = $request->get_param('refresh_token');
-        $user_id = $request->get_param('user_id');
+        $refresh_token = sanitize_text_field($request->get_param('refresh_token'));
+        $user_id = absint($request->get_param('user_id'));
 
         if (empty($refresh_token) || empty($user_id)) {
             return new WP_Error('missing_params', 'Refresh token and user ID required', ['status' => 400]);
@@ -375,7 +375,7 @@ class Rest_Routes
     public static function logout($request)
     {
         $user_id = self::get_user_id_from_token($request);
-        $refresh_token = $request->get_param('refresh_token');
+        $refresh_token = sanitize_text_field($request->get_param('refresh_token'));
 
         if ($user_id) {
             if ($refresh_token) {
@@ -396,7 +396,7 @@ class Rest_Routes
     // Password reset request
     public static function request_reset($request)
     {
-        $email = $request->get_param('email');
+        $email = sanitize_email($request->get_param('email'));
 
         $result = Password_Auth::request_password_reset($email);
 
@@ -413,8 +413,8 @@ class Rest_Routes
     // Set new password
     public static function set_password($request)
     {
-        $key = $request->get_param('key');
-        $login = $request->get_param('login');
+        $key = sanitize_text_field($request->get_param('key'));
+        $login = sanitize_user($request->get_param('login'));
         $password = $request->get_param('password');
 
         $result = Password_Auth::reset_password($key, $login, $password);

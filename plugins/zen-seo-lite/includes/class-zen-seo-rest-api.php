@@ -135,8 +135,8 @@ class Zen_SEO_REST_API
      */
     public function get_meta_by_url($request)
     {
-        $url = $request->get_param('url');
-        $lang = $request->get_param('lang');
+        $url = esc_url_raw($request->get_param('url'));
+        $lang = sanitize_text_field($request->get_param('lang'));
 
         // Validate Domain (Security Shield)
         $allowed_domains = ['djzeneyer.com', \wp_parse_url(\home_url(), PHP_URL_HOST)];

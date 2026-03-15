@@ -99,7 +99,7 @@ class Zen_BIT_API_V2
                 return new \WP_Error('invalid_date_range', 'date_start deve ser ≤ date_end.', ['status' => 400]);
             }
         } else {
-            $days_raw = $req->get_param('days');
+            $days_raw = sanitize_text_field($req->get_param('days'));
             $days = $days_raw !== null ? (int) $days_raw : self::default_days();
             if ($days < 1 || $days > 730) {
                 return new \WP_Error('invalid_days', 'days deve estar entre 1 e 730.', ['status' => 400]);
@@ -116,7 +116,7 @@ class Zen_BIT_API_V2
         }
 
         // ── limit ─────────────────────────────────────────────────────────────
-        $limit_raw = $req->get_param('limit');
+        $limit_raw = sanitize_text_field($req->get_param('limit'));
         $limit = $limit_raw !== null ? (int) $limit_raw : 50;
         if ($limit < 1 || $limit > 200) {
             return new \WP_Error('invalid_limit', 'limit deve estar entre 1 e 200.', ['status' => 400]);
