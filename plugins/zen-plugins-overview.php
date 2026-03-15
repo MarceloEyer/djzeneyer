@@ -150,7 +150,7 @@ class Zen_Plugins_Overview
             <header class="zc-header">
                 <div class="zc-branding">
                     <div class="zc-orb-container">
-                        <div class="zc-orb" style="--integrity: <?php echo $integrity; ?>%">
+                        <div class="zc-orb" style="--integrity: <?php echo esc_attr($integrity); ?>%">
                             <span class="dashicons dashicons-superhero"></span>
                         </div>
                         <svg class="zc-integrity-svg">
@@ -160,7 +160,7 @@ class Zen_Plugins_Overview
                     </div>
                     <div>
                         <h1 class="zc-main-title">ZEN<span>CORE</span></h1>
-                        <p class="zc-mission-status">MISSION STATUS: <span class="<?php echo $integrity === 100 ? 'status-nominal' : 'status-warning'; ?>"><?php echo $integrity === 100 ? 'OPERATIONAL' : 'DEGRADED'; ?></span></p>
+                        <p class="zc-mission-status">MISSION STATUS: <span class="<?php echo esc_attr($integrity === 100 ? 'status-nominal' : 'status-warning'); ?>"><?php echo esc_html($integrity === 100 ? 'OPERATIONAL' : 'DEGRADED'); ?></span></p>
                     </div>
                 </div>
 
@@ -183,8 +183,8 @@ class Zen_Plugins_Overview
                     </div>
                     <div class="zc-stat-item" title="Plugin Synergy">
                         <span class="zc-stat-label">LUK</span>
-                        <span class="zc-stat-value"><?php echo $active_count; ?>/<?php echo \count($plugins); ?></span>
-                        <div class="zc-stat-bar"><div style="width: <?php echo $integrity; ?>%"></div></div>
+                        <span class="zc-stat-value"><?php echo esc_html($active_count); ?>/<?php echo esc_html(\count($plugins)); ?></span>
+                        <div class="zc-stat-bar"><div style="width: <?php echo esc_attr($integrity); ?>%"></div></div>
                     </div>
                 </div>
             </header>
@@ -196,7 +196,7 @@ class Zen_Plugins_Overview
                     $rarity = \strpos(\strtolower($plugin['name']), 'pro') !== false ? 'legendary' : 'rare';
                     $accent = $plugin['color'];
                     ?>
-                    <article class="zc-skill-card <?php echo $is_active ? 'active' : 'inactive'; ?> rarity-<?php echo $rarity; ?>" style="--accent: <?php echo \esc_attr($accent); ?>">
+                    <article class="zc-skill-card <?php echo esc_attr($is_active ? 'active' : 'inactive'); ?> rarity-<?php echo esc_attr($rarity); ?>" style="--accent: <?php echo \esc_attr($accent); ?>">
                         <div class="zc-card-glow"></div>
                         <div class="zc-card-inner">
                             <div class="zc-card-header">
@@ -224,7 +224,7 @@ class Zen_Plugins_Overview
                                         $url = \trim(\substr($endpoint, \strlen($method)));
                                         ?>
                                         <div class="zc-terminal-line">
-                                            <span class="zc-m-badge m-<?php echo \strtolower($method); ?>"><?php echo $method; ?></span>
+                                            <span class="zc-m-badge m-<?php echo esc_attr(\strtolower($method)); ?>"><?php echo esc_html($method); ?></span>
                                             <span class="zc-line-path"><?php echo \esc_html($url); ?></span>
                                         </div>
                                     <?php endforeach; ?>

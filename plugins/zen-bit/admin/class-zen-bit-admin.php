@@ -126,7 +126,7 @@ class Zen_BIT_Admin
                             <td style="padding:5px 0;text-align:right;font-family:monospace;"><?php echo esc_html($val); ?></td></tr>
                         <?php endforeach; ?>
                         <?php if ($last_error): ?>
-                        <tr><td colspan="2" style="padding:8px;background:rgba(255,50,50,.1);border-radius:8px;color:#ff6b6b;">⚠️ <?php echo $last_error; ?></td></tr>
+                        <tr><td colspan="2" style="padding:8px;background:rgba(255,50,50,.1);border-radius:8px;color:#ff6b6b;">⚠️ <?php echo esc_html($last_error); ?></td></tr>
                         <?php endif; ?>
                     </table>
 
@@ -159,7 +159,7 @@ class Zen_BIT_Admin
                             ['POST','admin/fetch-now',                       'Forçar refresh'],
                         ]; foreach ($eps as [$method, $ep, $label]): ?>
                         <div title="<?php echo esc_attr($label); ?>">
-                            <span style="background:rgba(0,212,255,.15);color:#00d4ff;padding:1px 6px;border-radius:3px;font-size:.85em;"><?php echo $method; ?></span>
+                            <span style="background:rgba(0,212,255,.15);color:#00d4ff;padding:1px 6px;border-radius:3px;font-size:.85em;"><?php echo esc_html($method); ?></span>
                             <span style="color:#c77dff;"><?php echo esc_html($rest_base . $ep); ?></span>
                         </div>
                         <?php endforeach; ?>
@@ -180,7 +180,7 @@ class Zen_BIT_Admin
                             <tr>
                                 <th style="color:#e0e0e0;width:150px;"><?php echo esc_html($label); ?></th>
                                 <td>
-                                    <input type="<?php echo $type; ?>" name="<?php echo $opt; ?>"
+                                    <input type="<?php echo esc_attr($type); ?>" name="<?php echo esc_attr($opt); ?>"
                                            value="<?php echo esc_attr(get_option($opt, $placeholder)); ?>"
                                            placeholder="<?php echo esc_attr($placeholder); ?>" class="regular-text">
                                     <?php if ($desc): ?><p class="description" style="color:rgba(255,255,255,.4);"><?php echo esc_html($desc); ?></p><?php endif; ?>
@@ -199,10 +199,10 @@ class Zen_BIT_Admin
                                 ['Detail',   'zen_bit_ttl_detail',   86400, '24h'],
                                 ['Past',     'zen_bit_ttl_past',     604800,'7d'],
                             ]; foreach ($ttls as [$label, $opt, $default, $hint]): ?>
-                            <tr><th style="color:#e0e0e0;"><?php echo $label; ?></th>
-                                <td><input type="number" name="<?php echo $opt; ?>" min="300"
+                            <tr><th style="color:#e0e0e0;"><?php echo esc_html($label); ?></th>
+                                <td><input type="number" name="<?php echo esc_attr($opt); ?>" min="300"
                                            value="<?php echo (int)get_option($opt, $default); ?>" class="small-text"> s
-                                    <span style="opacity:.4;margin-left:8px;">(padrão: <?php echo $hint; ?>)</span></td></tr>
+                                    <span style="opacity:.4;margin-left:8px;">(padrão: <?php echo esc_html($hint); ?>)</span></td></tr>
                             <?php endforeach; ?>
 
                             <tr><th colspan="2" style="color:#9d4edd;font-size:.8em;text-transform:uppercase;letter-spacing:1px;padding-top:16px;">Toggles</th></tr>

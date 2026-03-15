@@ -59,8 +59,8 @@ $header_img = gamipress_get_option( 'email_logo', '' );
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php bloginfo( 'charset' ); ?>" />
 		<title><?php echo get_bloginfo( 'name' ); ?></title>
 	</head>
-	<body <?php echo is_rtl() ? 'rightmargin' : 'leftmargin'; ?>="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="<?php echo $body; ?>">
-		<div style="<?php echo $wrapper; ?>" dir="<?php echo is_rtl() ? 'rtl' : 'ltr'?>">
+	<body <?php echo esc_attr(is_rtl() ? 'rightmargin' : 'leftmargin'); ?>="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="<?php echo esc_attr($body); ?>">
+		<div style="<?php echo esc_attr($wrapper); ?>" dir="<?php echo esc_attr(is_rtl() ? 'rtl' : 'ltr'); ?>">
 			<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
 				<tr>
 					<td align="center" valign="top">
@@ -69,15 +69,15 @@ $header_img = gamipress_get_option( 'email_logo', '' );
 								<?php echo '<p style="margin-top:0;"><img src="' . esc_url( $header_img ) . '" alt="' . get_bloginfo( 'name' ) . '" /></p>'; ?>
 							</div>
 						<?php endif; ?>
-						<table border="0" cellpadding="0" cellspacing="0" width="520" id="template_container" style="<?php echo $template_container; ?>">
+						<table border="0" cellpadding="0" cellspacing="0" width="520" id="template_container" style="<?php echo esc_attr($template_container); ?>">
 							<tr>
 								<td align="center" valign="top">
 									<!-- Body -->
 									<table border="0" cellpadding="0" cellspacing="0" width="520" id="template_body">
 										<tr>
-											<td valign="top" style="<?php echo $body_content; ?>">
+											<td valign="top" style="<?php echo esc_attr($body_content); ?>">
 												<!-- Content -->
 												<table border="0" cellpadding="20" cellspacing="0" width="100%">
 													<tr>
 														<td valign="top">
-															<div style="<?php echo $body_content_inner; ?>">
+															<div style="<?php echo esc_attr($body_content_inner); ?>">

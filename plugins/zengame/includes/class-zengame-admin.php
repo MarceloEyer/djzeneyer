@@ -137,7 +137,7 @@ final class ZenGame_Admin
             <div class="welcome-panel"
                 style="background:#111;color:#fff;padding:40px;border-radius:12px;border:1px solid #333;box-shadow:0 10px 30px rgba(0,0,0,.5);">
 
-                <h2 style="color:<?php echo $color; ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">
+                <h2 style="color:<?php echo esc_attr($color); ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">
                     CENTRAL INTELLIGENCE
                 </h2>
                 <p style="color:#666;font-family:monospace;">ZenGame Pro v1.3.9 // Snapshot 2026-03-06</p>
@@ -158,7 +158,7 @@ final class ZenGame_Admin
                                 style="display:block;font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">
                                 <?php echo \esc_html($label); ?>
                             </strong>
-                            <span style="font-size:22px;font-weight:700;color:<?php echo $c; ?>;">
+                            <span style="font-size:22px;font-weight:700;color:<?php echo esc_attr($c); ?>;">
                                 <?php echo \esc_html($value); ?>
                             </span>
                         </div>
