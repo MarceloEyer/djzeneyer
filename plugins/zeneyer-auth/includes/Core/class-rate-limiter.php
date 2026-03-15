@@ -8,6 +8,10 @@
 
 namespace ZenEyer\Auth\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Rate_Limiter
 {
 

@@ -11,6 +11,10 @@
 
 namespace ZenEyer\Auth\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use ZenEyer\Auth\Core\JWT_Manager;
 
 class WP_Auth_Integration

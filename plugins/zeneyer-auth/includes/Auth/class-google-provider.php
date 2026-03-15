@@ -8,6 +8,10 @@
 
 namespace ZenEyer\Auth\Auth;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WP_Error;
 
 class Google_Provider {

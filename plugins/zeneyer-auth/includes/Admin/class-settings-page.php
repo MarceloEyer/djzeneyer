@@ -1,6 +1,10 @@
 <?php
 namespace ZenEyer\Auth\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Settings_Page
 {
 

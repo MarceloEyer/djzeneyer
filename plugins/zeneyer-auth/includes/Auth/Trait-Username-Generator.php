@@ -8,6 +8,10 @@
 
 namespace ZenEyer\Auth\Auth;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 trait Username_Generator {
 
     /**
