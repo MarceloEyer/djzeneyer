@@ -1,6 +1,6 @@
 {
-    "name": "zeneyer/auth-pro",
-    "description": "Enterprise-grade JWT Authentication for Headless WordPress + React",
+    "name": "zeneyer/zengame",
+    "description": "Enterprise API layer integrating GamiPress with Headless WordPress (React/Vite).",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -10,12 +10,11 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
-        "firebase/php-jwt": "^7.0"
+        "php": ">=8.0"
     },
     "autoload": {
         "psr-4": {
-            "ZenEyer\\Auth\\": "includes/"
+            "ZenEyer\\Game\\": ["includes/", "admin/"]
         }
     }
 }

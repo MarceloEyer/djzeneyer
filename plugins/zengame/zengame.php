@@ -162,7 +162,9 @@ final class ZenGame
 
         // Load Admin components only in Admin context.
         if (\is_admin()) {
-            require_once __DIR__ . '/includes/class-zengame-admin.php';
+            if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+                require_once __DIR__ . '/vendor/autoload.php';
+            }
             ZenGame_Admin::get_instance($this);
         }
 

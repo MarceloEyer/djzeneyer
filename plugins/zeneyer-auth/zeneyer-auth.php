@@ -17,7 +17,7 @@ namespace ZenEyer\Auth;
  */
 
 if (!defined('ABSPATH')) {
-    exit;
+    die;
 }
 
 // Plugin constants
@@ -26,7 +26,7 @@ define('ZENEYER_AUTH_PATH', \plugin_dir_path(__FILE__));
 define('ZENEYER_AUTH_URL', \plugin_dir_url(__FILE__));
 define('ZENEYER_AUTH_BASENAME', \plugin_basename(__FILE__));
 
-// Load Composer dependencies (Firebase JWT)
+// Load Composer dependencies and PSR-4 autoloader
 if (file_exists(ZENEYER_AUTH_PATH . 'vendor/autoload.php')) {
     require_once ZENEYER_AUTH_PATH . 'vendor/autoload.php';
 }
@@ -49,40 +49,9 @@ final class ZenEyer_Auth_Pro
 
     private function __construct()
     {
-        $this->load_dependencies();
         $this->init_hooks();
         $this->init_security_shield(); // 🛡️ Inicializa a proteção Anti-Bot
         $this->override_security_headers(); // 🚀 (Agora Silenciado)
-    }
-
-    /**
-     * Load required files
-     */
-    private function load_dependencies()
-    {
-        $this->load_file('includes/Core/class-jwt-manager.php');
-        $this->load_file('includes/Core/class-cors-handler.php');
-        $this->load_file('includes/Core/class-rate-limiter.php');
-        $this->load_file('includes/Core/class-wp-auth-integration.php');
-        $this->load_file('includes/Auth/Trait-Username-Generator.php');
-        $this->load_file('includes/Auth/class-google-provider.php');
-        $this->load_file('includes/Auth/class-password-auth.php');
-        $this->load_file('includes/API/class-rest-routes.php');
-
-        if (is_admin()) {
-            $this->load_file('includes/Admin/class-settings-page.php');
-        }
-
-        $this->load_file('includes/class-activator.php');
-        $this->load_file('includes/class-logger.php');
-    }
-
-    private function load_file($path)
-    {
-        $full_path = ZENEYER_AUTH_PATH . $path;
-        if (file_exists($full_path)) {
-            require_once $full_path;
-        }
     }
 
     private function init_hooks()

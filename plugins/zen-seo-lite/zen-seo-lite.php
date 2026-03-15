@@ -71,26 +71,14 @@ final class Zen_SEO_Lite_Pro
     }
 
     /**
-     * Load required files
+     * Load required files via PSR-4 Autoloader
      *
      * @return void
      */
     private function load_dependencies()
     {
-        // Utilities first
-        require_once ZEN_SEO_PLUGIN_DIR . 'includes/class-zen-seo-helpers.php';
-        require_once ZEN_SEO_PLUGIN_DIR . 'includes/class-zen-seo-cache.php';
-
-        // Core logic
-        require_once ZEN_SEO_PLUGIN_DIR . 'includes/class-zen-seo-meta-tags.php';
-        require_once ZEN_SEO_PLUGIN_DIR . 'includes/class-zen-seo-schema.php';
-        require_once ZEN_SEO_PLUGIN_DIR . 'includes/class-zen-seo-sitemap.php';
-        require_once ZEN_SEO_PLUGIN_DIR . 'includes/class-zen-seo-rest-api.php';
-
-        // Admin components
-        if (\is_admin()) {
-            require_once ZEN_SEO_PLUGIN_DIR . 'admin/class-zen-seo-admin.php';
-            require_once ZEN_SEO_PLUGIN_DIR . 'admin/class-zen-seo-meta-box.php';
+        if (\file_exists(ZEN_SEO_PLUGIN_DIR . 'vendor/autoload.php')) {
+            require_once ZEN_SEO_PLUGIN_DIR . 'vendor/autoload.php';
         }
     }
 

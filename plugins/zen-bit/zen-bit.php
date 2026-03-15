@@ -13,13 +13,18 @@
 namespace ZenBit;
 
 if (!defined('ABSPATH'))
-    exit;
+    die;
 
 define('ZEN_BIT_VERSION', '3.1.0');
 define('ZEN_BIT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZEN_BIT_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-if (!class_exists('Zen_BIT')) {
+// Load Composer dependencies and PSR-4 autoloader
+if (file_exists(ZEN_BIT_PLUGIN_DIR . 'vendor/autoload.php')) {
+    require_once ZEN_BIT_PLUGIN_DIR . 'vendor/autoload.php';
+}
+
+if (!class_exists('ZenBit\Zen_BIT')) {
 
     class Zen_BIT
     {
@@ -34,27 +39,7 @@ if (!class_exists('Zen_BIT')) {
 
         private function __construct()
         {
-            $this->load_dependencies();
             $this->init_hooks();
-        }
-
-        private function load_dependencies(): void
-        {
-            $files = [
-                'includes/class-zen-bit-normalizer.php' => 'Zen_BIT_Normalizer',
-                'includes/class-zen-bit-cache.php' => 'Zen_BIT_Cache',
-                'includes/class-zen-bit-api.php' => 'Zen_BIT_API_V2',
-                'includes/class-zen-bit-sitemap.php' => 'Zen_BIT_Sitemap',
-            ];
-            foreach ($files as $path => $class) {
-                if (!class_exists(__NAMESPACE__ . '\\' . $class)) {
-                    require_once ZEN_BIT_PLUGIN_DIR . $path;
-                }
-            }
-            if (is_admin()) {
-                require_once ZEN_BIT_PLUGIN_DIR . 'admin/class-zen-bit-admin.php';
-                new Zen_BIT_Admin();
-            }
         }
 
         private function init_hooks(): void
@@ -66,12 +51,16 @@ if (!class_exists('Zen_BIT')) {
             register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
             // Inicializa Sitemap
-            if (class_exists(__NAMESPACE__ . '\\Zen_BIT_Sitemap')) {
-                new Zen_BIT_Sitemap();
+            if (class_exists(__NAMESPACE__ . '\\Zen_Bit_Sitemap')) {
+                new Zen_Bit_Sitemap();
             }
 
             // Shortcode [zen_bit_events] — Enfileiramento condicional
             add_shortcode('zen_bit_events', [$this, 'render_shortcode']);
+
+            if (is_admin()) {
+                new Zen_Bit_Admin();
+            }
         }
 
         public function render_shortcode($atts): string
@@ -101,7 +90,7 @@ if (!class_exists('Zen_BIT')) {
 
         public function register_rest_routes(): void
         {
-            $api_class = __NAMESPACE__ . '\\Zen_BIT_API_V2';
+            $api_class = __NAMESPACE__ . '\\Zen_Bit_API'; // updated class name based on file rename
 
             // ---- Público ----
 
@@ -194,14 +183,14 @@ if (!class_exists('Zen_BIT')) {
                 if (get_option($key) === false)
                     add_option($key, $val);
             }
-            if (class_exists('Zen_BIT_Cache'))
-                Zen_BIT_Cache::clear_all();
+            if (class_exists(__NAMESPACE__ . '\\Zen_Bit_Cache'))
+                Zen_Bit_Cache::clear_all();
         }
 
         public function deactivate(): void
         {
-            if (class_exists('Zen_BIT_Cache'))
-                Zen_BIT_Cache::clear_all();
+            if (class_exists(__NAMESPACE__ . '\\Zen_Bit_Cache'))
+                Zen_Bit_Cache::clear_all();
         }
     }
 }
