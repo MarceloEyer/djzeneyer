@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -7,7 +7,9 @@ import { FileText, AlertCircle, Scale, Ban, CheckCircle } from 'lucide-react';
 const TermsPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const sections = [
+  // ⚡ Bolt: Wrapped static content objects dependent on context with useMemo
+  // to prevent unnecessary re-allocations on every render cycle.
+  const sections = useMemo(() => [
     {
       icon: CheckCircle,
       title: t('legal.terms_page.acceptance'),
@@ -28,9 +30,11 @@ const TermsPage: React.FC = () => {
       title: t('legal.terms_page.limitations'),
       content: t('legal.terms_page.limitations_desc')
     }
-  ];
+  ], [t]);
 
-  const additionalTerms = [
+  // ⚡ Bolt: Wrapped static content objects dependent on context with useMemo
+  // to prevent unnecessary re-allocations on every render cycle.
+  const additionalTerms = useMemo(() => [
     {
       title: t('legal.terms_page.intellectual_property'),
       points: [
@@ -80,7 +84,7 @@ const TermsPage: React.FC = () => {
         t('legal.terms_page.links_review')
       ]
     }
-  ];
+  ], [t]);
 
   return (
     <>
