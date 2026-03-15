@@ -1,6 +1,10 @@
 <?php
 namespace ZenEyer\Auth;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Logger {
     
     public static function log($message, $level = 'info', $context = []) {

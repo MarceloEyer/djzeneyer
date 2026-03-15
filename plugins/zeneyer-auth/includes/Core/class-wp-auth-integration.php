@@ -11,6 +11,10 @@
 
 namespace ZenEyer\Auth\Core;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use ZenEyer\Auth\Core\JWT_Manager;
 
 class WP_Auth_Integration
@@ -52,6 +56,27 @@ class WP_Auth_Integration
             return $user_id;
         }
 
+        // 🛡️ Security: Limit JWT scope to specific namespaces to prevent core escalation
+        $allowed_namespaces = apply_filters('zeneyer_auth_jwt_allowed_namespaces', [
+            'zeneyer-auth/v1',
+            'wc/v3',       // WooCommerce Headless
+            'mailpoet/v1', // MailPoet Headless
+        ]);
+
+        $current_route = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $is_allowed = false;
+
+        foreach ($allowed_namespaces as $ns) {
+            if (strpos($current_route, '/wp-json/' . $ns) !== false) {
+                $is_allowed = true;
+                break;
+            }
+        }
+
+        if (!$is_allowed) {
+            return $user_id;
+        }
+
         // Extract token from Authorization header
         $token = self::get_token_from_request();
 
@@ -63,8 +88,6 @@ class WP_Auth_Integration
         $decoded = JWT_Manager::validate_token($token);
 
         if (is_wp_error($decoded)) {
-            // Token is invalid, but don't block the request
-            // Let WordPress handle authentication naturally
             return $user_id;
         }
 

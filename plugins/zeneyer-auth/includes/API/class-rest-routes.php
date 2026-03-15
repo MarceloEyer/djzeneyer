@@ -8,6 +8,10 @@
 
 namespace ZenEyer\Auth\API;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use ZenEyer\Auth\Core\JWT_Manager;
 use ZenEyer\Auth\Core\Rate_Limiter;
 use ZenEyer\Auth\Auth\Google_Provider;

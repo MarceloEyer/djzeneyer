@@ -79,8 +79,11 @@ final class ZenEyer_Auth_Pro
 
     private function load_file($path)
     {
-        $full_path = ZENEYER_AUTH_PATH . $path;
-        if (file_exists($full_path)) {
+        // 🛡️ LFI Protection: Ensure path is valid and stays within plugin dir
+        $full_path = realpath(ZENEYER_AUTH_PATH . $path);
+        $plugin_root = realpath(ZENEYER_AUTH_PATH);
+
+        if ($full_path && str_starts_with($full_path, $plugin_root)) {
             require_once $full_path;
         }
     }
@@ -89,19 +92,18 @@ final class ZenEyer_Auth_Pro
     {
         register_activation_hook(__FILE__, ['ZenEyer\Auth\Activator', 'activate']);
         register_deactivation_hook(__FILE__, ['ZenEyer\Auth\Activator', 'deactivate']);
-        add_action('plugins_loaded', [$this, 'init_components']);
-        add_action('init', [$this, 'load_textdomain']);
+        
+        // 🛠️ Standard priorities
+        add_action('plugins_loaded', [$this, 'init_components'], 10);
+        add_action('init', [$this, 'load_textdomain'], 10);
     }
 
     /**
      * 🚀 OVERRIDE SECURITY HEADERS
      * 🚨 SILENCIADO: O controle de segurança agora é feito exclusivamente pelo .htaccess v11.1
-     * Isso impede conflitos, duplicidade de headers e garante que o 'eval' funcione.
      */
     private function override_security_headers()
     {
-        // Função esvaziada propositalmente.
-        // Deixamos o servidor (LiteSpeed/Apache) mandar na segurança.
         return;
     }
 
@@ -110,56 +112,68 @@ final class ZenEyer_Auth_Pro
         // 1. Desativa XML-RPC
         add_filter('xmlrpc_enabled', '__return_false');
 
-        // 2. Mata registro padrão
+        // 2. Mata registro padrão (404 para evitar enumeração de usuários)
         add_action('login_form_register', function () {
             $message = 'O registro padrão está desativado. Use o site oficial.';
+            
             if (defined('REST_REQUEST') && REST_REQUEST) {
-                wp_send_json_error(['message' => $message], 403);
+                wp_send_json_error(['message' => $message], 404);
             }
-            wp_die($message, 'Acesso Negado', ['response' => 403]);
+            
+            // Simula um 404 para ser menos óbvio
+            global $wp_query;
+            $wp_query->set_404();
+            status_header(404);
+            nocache_headers();
+            wp_die($message, 'Não Encontrado', ['response' => 404]);
         });
 
-        // 3. Remove rota nativa com SEGURANÇA DE TIPOS
+        // 3. Remove rotas nativas de usuários com segurança aumentada (Proteção Global)
         add_filter('rest_endpoints', function ($endpoints) {
-            if (isset($endpoints['/wp/v2/users'])) {
-                foreach ($endpoints['/wp/v2/users'] as $key => $route) {
-                    if (!isset($route['methods']))
-                        continue;
+            foreach ($endpoints as $route => $handlers) {
+                // Bloqueia qualquer POST em rotas de usuários core
+                if (str_starts_with($route, '/wp/v2/users')) {
+                    foreach ($handlers as $key => $handler) {
+                        $methods = $handler['methods'] ?? '';
+                        
+                        $is_post = false;
+                        if (is_string($methods) && str_contains($methods, 'POST')) {
+                            $is_post = true;
+                        } elseif (is_array($methods)) {
+                            $is_post = in_array('POST', $methods) || isset($methods['POST']);
+                        }
 
-                    $should_remove = false;
-
-                    if (is_string($route['methods'])) {
-                        if (strpos($route['methods'], 'POST') !== false)
-                            $should_remove = true;
-                    } elseif (is_array($route['methods'])) {
-                        if (isset($route['methods']['POST']) || in_array('POST', $route['methods']))
-                            $should_remove = true;
+                        if ($is_post) {
+                            unset($endpoints[$route][$key]);
+                        }
                     }
-
-                    if ($should_remove)
-                        unset($endpoints['/wp/v2/users'][$key]);
                 }
             }
             return $endpoints;
         });
 
-        // 4. A Guilhotina
+        // 4. A Guilhotina (Proteção de última instância)
         add_action('user_register', function ($user_id) {
-            if (is_admin() && current_user_can('create_users'))
+            if (is_admin() && current_user_can('create_users')) {
                 return;
-
-            // Allow WooCommerce customers
-            if (class_exists('WooCommerce')) {
-                $user = get_userdata($user_id);
-                if ($user && in_array('customer', (array) $user->roles))
-                    return;
             }
 
-            if (!defined('ZEN_AUTH_VALIDATED')) {
-                error_log("🚨 [ZenEyer Security] INTRUSO DETECTADO: Usuário ID $user_id. Removendo...");
+            // Exceção WooCommerce legitimada
+            if (class_exists('WooCommerce')) {
+                $user = get_userdata($user_id);
+                if ($user && in_array('customer', (array) $user->roles)) {
+                    return;
+                }
+            }
+
+            // Se não passou pela nossa validação customizada, deleta imediatamente
+            if (!defined('ZEN_AUTH_VALIDATED') || !ZEN_AUTH_VALIDATED) {
+                error_log("🚨 [ZenEyer Security] INTRUSO DETECTADO: Tentativa de registro externa no ID $user_id. Bloqueando...");
+                
+                // Força deleção sem passar por hooks de outros plugins
                 wp_delete_user($user_id);
 
-                $message = 'Registro não autorizado.';
+                $message = 'Ação não autorizada.';
                 if (defined('REST_REQUEST') && REST_REQUEST) {
                     wp_send_json_error(['message' => $message], 403);
                 }

@@ -8,6 +8,10 @@
 
 namespace ZenEyer\Auth\Auth;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use WP_Error;
 
 class Google_Provider {
@@ -92,6 +96,16 @@ class Google_Provider {
             return new WP_Error(
                 'google_client_mismatch',
                 __('Token does not belong to this application', 'zeneyer-auth'),
+                ['status' => 403]
+            );
+        }
+
+        // Verify issuer
+        $allowed_issuers = ['accounts.google.com', 'https://accounts.google.com'];
+        if (!isset($body['iss']) || !in_array($body['iss'], $allowed_issuers, true)) {
+            return new WP_Error(
+                'google_invalid_issuer',
+                __('Invalid token issuer', 'zeneyer-auth'),
                 ['status' => 403]
             );
         }

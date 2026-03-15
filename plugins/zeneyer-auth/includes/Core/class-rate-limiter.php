@@ -8,8 +8,11 @@
 
 namespace ZenEyer\Auth\Core;
 
-class Rate_Limiter
-{
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class Rate_Limiter {
 
     const MAX_ATTEMPTS = 5;
     const LOCKOUT_DURATION = 600; // 10 minutes

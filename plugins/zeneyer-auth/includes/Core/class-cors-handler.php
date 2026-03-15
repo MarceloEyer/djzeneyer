@@ -8,8 +8,11 @@
 
 namespace ZenEyer\Auth\Core;
 
-class CORS_Handler
-{
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class CORS_Handler {
 
     /**
      * Initialize CORS handling
@@ -84,17 +87,22 @@ class CORS_Handler
             return [$_SERVER['HTTP_ORIGIN']];
         }
 
-        $default_origins = [
-            'http://localhost:5173',  // Vite dev
-            'http://localhost:3000',  // React dev
+        $origins = [
+            'http://localhost:5173',
+            'http://localhost:3000',
             'http://127.0.0.1:5173',
             'http://127.0.0.1:3000',
             get_site_url(),
-            'https://djzeneyer.com',
-            'https://www.djzeneyer.com',
         ];
 
-        return apply_filters('zeneyer_auth_cors_origins', $default_origins);
+        // Add user-defined origins from settings
+        if (!empty($options['allowed_origins_list'])) {
+            $user_origins = explode("\n", $options['allowed_origins_list']);
+            $user_origins = array_map('trim', $user_origins);
+            $origins = array_merge($origins, array_filter($user_origins));
+        }
+
+        return apply_filters('zeneyer_auth_cors_origins', array_unique($origins));
     }
 
     /**

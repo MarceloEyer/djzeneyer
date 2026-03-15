@@ -8,6 +8,10 @@
 
 namespace ZenEyer\Auth\Core;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use WP_Error;
@@ -16,7 +20,7 @@ class JWT_Manager
 {
 
     const ALGORITHM = 'HS256';
-    const DEFAULT_EXPIRATION = 7; // days
+    const DEFAULT_EXPIRATION = 60; // 60 minutes (1 hour) for access tokens
 
     /**
      * Create JWT token for user
@@ -33,8 +37,8 @@ class JWT_Manager
         }
 
         $issued_at = time();
-        $expiration_days = self::get_expiration_days();
-        $expiration = $issued_at + (DAY_IN_SECONDS * $expiration_days);
+        $expiration_minutes = self::get_expiration_minutes();
+        $expiration = $issued_at + (60 * $expiration_minutes);
 
         $payload = [
             'iss' => (string) get_bloginfo('url'),
@@ -87,7 +91,20 @@ class JWT_Manager
 
             $decoded = JWT::decode($token, new Key($secret_key, self::ALGORITHM));
 
-            // Verify user still exists
+            // 1. Verify Issuer (iss)
+            $expected_iss = (string) get_bloginfo('url');
+            if (!isset($decoded->iss) || $decoded->iss !== $expected_iss) {
+                return new WP_Error(
+                    'jwt_invalid_issuer',
+                    __('Invalid token issuer', 'zeneyer-auth'),
+                    ['status' => 401]
+                );
+            }
+
+            // 2. Verify Client/Audience (aud) - Optional but recommended if we start using it
+            // For now, we only check if it exists if we set it in create_token
+
+            // 3. Verify user still exists
             if (!isset($decoded->data->user_id)) {
                 return new WP_Error(
                     'jwt_invalid_payload',
@@ -102,6 +119,16 @@ class JWT_Manager
                 return new WP_Error(
                     'jwt_user_not_found',
                     __('User no longer exists', 'zeneyer-auth'),
+                    ['status' => 401]
+                );
+            }
+
+            // 4. Token Revocation Check (Check if password was changed after token issued)
+            $last_password_change = get_user_meta($user->ID, 'last_password_change', true);
+            if ($last_password_change && $decoded->iat < $last_password_change) {
+                return new WP_Error(
+                    'jwt_revoked',
+                    __('Token has been revoked due to password change', 'zeneyer-auth'),
                     ['status' => 401]
                 );
             }
@@ -280,12 +307,12 @@ class JWT_Manager
      *
      * @return int
      */
-    private static function get_expiration_days()
+    private static function get_expiration_minutes()
     {
         $options = get_option('zeneyer_auth_settings', []);
-        $days = isset($options['token_expiration']) ? (int) $options['token_expiration'] : self::DEFAULT_EXPIRATION;
+        $minutes = isset($options['token_expiration']) ? (int) $options['token_expiration'] : self::DEFAULT_EXPIRATION;
 
-        return apply_filters('zeneyer_auth_token_expiration_days', $days);
+        return apply_filters('zeneyer_auth_token_expiration_minutes', $minutes);
     }
 
     /**

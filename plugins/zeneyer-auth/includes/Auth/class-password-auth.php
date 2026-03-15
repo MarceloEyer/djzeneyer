@@ -8,6 +8,10 @@
 
 namespace ZenEyer\Auth\Auth;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use WP_Error;
 
 class Password_Auth {
@@ -31,11 +35,18 @@ class Password_Auth {
                 ['status' => 400]
             );
         }
+
+        // 🛡️ Rate Limiting Check
+        $rate_limit = \ZenEyer\Auth\Core\Rate_Limiter::check('login');
+        if (is_wp_error($rate_limit)) {
+            return $rate_limit;
+        }
         
         // Find user by email
         $user = get_user_by('email', $email);
         
         if (!$user) {
+            \ZenEyer\Auth\Core\Rate_Limiter::increment('login');
             return new WP_Error(
                 'invalid_credentials',
                 __('Invalid email or password', 'zeneyer-auth'),
@@ -45,6 +56,9 @@ class Password_Auth {
         
         // Verify password
         if (!wp_check_password($password, $user->user_pass, $user->ID)) {
+            \ZenEyer\Auth\Core\Rate_Limiter::increment('login');
+            \ZenEyer\Auth\Core\Rate_Limiter::log_audit_event('failed_login', $user->ID, '', ['email' => $email]);
+            
             do_action('zeneyer_auth_failed_login', $user->ID, $email);
             
             return new WP_Error(
@@ -54,6 +68,10 @@ class Password_Auth {
             );
         }
         
+        // Success: Reset rate limit
+        \ZenEyer\Auth\Core\Rate_Limiter::reset('login');
+        \ZenEyer\Auth\Core\Rate_Limiter::log_audit_event('successful_login', $user->ID);
+
         // Trigger standard WP login hook for GamiPress and other plugins
         do_action('wp_login', $user->user_login, $user);
 
@@ -277,6 +295,9 @@ class Password_Auth {
         
         // Reset password
         reset_password($user, $new_password);
+
+        // 🛡️ Invalidate all existing JWT tokens by updating password change timestamp
+        update_user_meta($user->ID, 'last_password_change', time());
         
         do_action('zeneyer_auth_password_reset', $user->ID);
         

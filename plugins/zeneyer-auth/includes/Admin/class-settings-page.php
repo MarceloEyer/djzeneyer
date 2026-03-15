@@ -1,6 +1,10 @@
 <?php
 namespace ZenEyer\Auth\Admin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Settings_Page
 {
 
@@ -66,6 +70,11 @@ class Settings_Page
             'desc' => '<strong>WARNING:</strong> Check this only for local testing or troubleshooting. Disables origin protection.'
         ]);
 
+        add_settings_field('allowed_origins_list', 'Specific Allowed Origins', [$this, 'render_textarea'], 'zeneyer-auth', 'zeneyer_auth_general', [
+            'id' => 'allowed_origins_list',
+            'desc' => 'Enter one URL per line (e.g., <code>https://app.example.com</code>). Wildcards like <code>*.example.com</code> are supported.'
+        ]);
+
         add_settings_section('zeneyer_auth_security', 'Rate Limiting', null, 'zeneyer-auth');
 
         add_settings_field('rate_limit_attempts', 'Max Attempts', [$this, 'render_input'], 'zeneyer-auth', 'zeneyer_auth_security', [
@@ -120,6 +129,24 @@ class Settings_Page
         }
     }
 
+    public function render_textarea($args)
+    {
+        $options = get_option($this->option_name, []);
+        $value = isset($options[$args['id']]) ? $options[$args['id']] : '';
+
+        echo '<textarea name="' . $this->option_name . '[' . $args['id'] . ']" rows="5" class="large-text">' . esc_textarea($value) . '</textarea>';
+
+        if (!empty($args['desc'])) {
+            $allowed_html = [
+                'a'      => [ 'href' => [], 'target' => [], 'rel' => [] ],
+                'strong' => [],
+                'em'     => [],
+                'code'   => [],
+            ];
+            echo '<p class="description">' . wp_kses($args['desc'], $allowed_html) . '</p>';
+        }
+    }
+
     public function sanitize_settings($input)
     {
         $sanitized = [];
@@ -127,6 +154,14 @@ class Settings_Page
         $sanitized['google_client_id'] = isset($input['google_client_id']) ? sanitize_text_field($input['google_client_id']) : '';
         $sanitized['token_expiration'] = isset($input['token_expiration']) ? absint($input['token_expiration']) : 7;
         $sanitized['allow_all_origins'] = isset($input['allow_all_origins']) ? 1 : 0;
+        
+        if (isset($input['allowed_origins_list'])) {
+            $origins = explode("\n", $input['allowed_origins_list']);
+            $origins = array_map('trim', $origins);
+            $origins = array_map('esc_url_raw', array_filter($origins));
+            $sanitized['allowed_origins_list'] = implode("\n", $origins);
+        }
+
         $sanitized['rate_limit_attempts'] = isset($input['rate_limit_attempts']) ? absint($input['rate_limit_attempts']) : 5;
         $sanitized['rate_limit_duration'] = isset($input['rate_limit_duration']) ? absint($input['rate_limit_duration']) : 300;
 
