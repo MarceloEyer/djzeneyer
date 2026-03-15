@@ -136,7 +136,7 @@ jobs:
 
       # --- ARTIFACTS ---
       - name: 📤 Upload dist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-dist-${{ steps.commit.outputs.hash }}
           path: dist/
@@ -145,7 +145,7 @@ jobs:
           compression-level: 6
 
       - name: 📤 Upload theme files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-theme-${{ steps.commit.outputs.hash }}
           path: |
@@ -159,14 +159,14 @@ jobs:
 
       - name: 📤 Upload plugins
         if: hashFiles('plugins/**') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-plugins-${{ steps.commit.outputs.hash }}
           path: plugins/
           retention-days: 7
 
       - name: 📤 Upload sitemaps
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-sitemaps-${{ steps.commit.outputs.hash }}
           path: |
@@ -176,7 +176,7 @@ jobs:
 
       - name: 📤 Upload GamiPress files
         if: hashFiles('gamipress/**') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-gamipress-${{ steps.commit.outputs.hash }}
           path: gamipress/
@@ -292,7 +292,7 @@ jobs:
       # --- DEPLOY STEPS (IGUAL AO ORIGINAL v4.1) ---
       
       - name: 🚀 Deploy dist/
-        uses: burnett01/rsync-deployments@5.2.1
+        uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avzr --delete --checksum
           path: dist/
@@ -305,7 +305,7 @@ jobs:
       # ESTE PASSO É O SEGREDO QUE ESTAVA FALTANDO! 👇
       - name: 📚 Deploy inc/
         if: hashFiles('inc/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
+        uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avzr --delete --checksum
           path: inc/
@@ -318,7 +318,7 @@ jobs:
       # ADICIONADO PARA GARANTIR TEMAS MODERNOS
       - name: 📚 Deploy parts/
         if: hashFiles('parts/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
+        uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avzr --delete --checksum
           path: parts/
@@ -330,7 +330,7 @@ jobs:
           
       - name: 📚 Deploy templates/
         if: hashFiles('templates/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
+        uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avzr --delete --checksum
           path: templates/
@@ -342,7 +342,7 @@ jobs:
 
       - name: 🎮 Deploy GamiPress/
         if: hashFiles('gamipress-deploy/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
+        uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avzr --delete --checksum
           path: gamipress-deploy/
@@ -365,7 +365,7 @@ jobs:
 
       - name: 🔌 Deploy plugins
         if: hashFiles('plugins/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
+        uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
           path: plugins/
@@ -401,7 +401,7 @@ jobs:
 
       - name: 📄 Deploy public assets
         if: hashFiles('public/**') != ''
-        uses: burnett01/rsync-deployments@5.2.1
+        uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avz --ignore-missing-args
           path: temp_public/
