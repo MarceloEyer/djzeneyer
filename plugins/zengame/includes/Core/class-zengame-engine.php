@@ -145,6 +145,30 @@ final class Engine
         \delete_transient('djz_stats_tracks_' . $user_id);
     }
 
+    /**
+     * Tracks a user interaction (click, download, share) and triggers GamiPress events.
+     */
+    public function track_interaction(int $user_id, string $action, int $object_id = 0): bool
+    {
+        if (!\defined('GAMIPRESS_VER')) return false;
+
+        // Trigger action for GamiPress to catch
+        // Format: zengame_{action} (e.g., zengame_download)
+        $hook = "zengame_" . \sanitize_key($action);
+        \do_action($hook, $user_id, $object_id);
+
+        // Award direct points for high-value actions if needed
+        if ($action === 'download') {
+             // Example: award 5 XP for download click
+             \gamipress_award_points_to_user($user_id, 5, 'points', [
+                 'reason' => 'Download click: ' . $object_id
+             ]);
+        }
+
+        $this->clear_user_cache($user_id);
+        return true;
+    }
+
     public function clear_cache_by_order_id(int $order_id): void
     {
         if (!\function_exists('wc_get_order')) return;

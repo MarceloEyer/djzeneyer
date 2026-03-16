@@ -47,6 +47,12 @@ final class REST_Handler
             'callback' => [__CLASS__, 'get_leaderboard'],
             'permission_callback' => '__return_true',
         ]);
+
+        \register_rest_route($ns, '/track', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => [__CLASS__, 'track_interaction'],
+            'permission_callback' => [__CLASS__, 'check_auth'],
+        ]);
     }
 
     public static function check_auth($request): bool
@@ -141,9 +147,33 @@ final class REST_Handler
             }
         }
 
-        \set_transient($cache_key, $leaderboard, 3600); // 1 hour
-        return \rest_ensure_response($leaderboard);
+    \set_transient($cache_key, $leaderboard, 3600); // 1 hour
+    return \rest_ensure_response($leaderboard);
+}
+
+/**
+ * Interaction Tracker
+ */
+public static function track_interaction($request)
+{
+    $user_id = self::get_authenticated_user_id($request);
+    $params = $request->get_json_params();
+
+    $action = \sanitize_text_field($params['action'] ?? '');
+    $object_id = (int) ($params['object_id'] ?? 0);
+
+    if (empty($action)) {
+        return new WP_Error('missing_action', 'Action is required', ['status' => 400]);
     }
+
+    $success = self::$engine->track_interaction($user_id, $action, $object_id);
+
+    return \rest_ensure_response([
+        'success' => $success,
+        'action' => $action,
+        'points_awarded' => ($action === 'download' && $success) ? 5 : 0
+    ]);
+}
 
     // ─────────────────────────────────────────────────────────────────────────
     // PRIVATE HELPERS (Strict mapping to ZenGameUserData)

@@ -7,12 +7,24 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Music, Play, Download, ExternalLink } from 'lucide-react';
-import { useTracksQuery } from '../../hooks/useQueries';
+import { useTracksQuery, useTrackInteraction } from '../../hooks/useQueries';
 import { safeUrl } from '../../utils/sanitize';
+import { useUser } from '../../contexts/UserContext';
 
 export const MusicCollection: React.FC = () => {
     const { t } = useTranslation();
+    const { user } = useUser();
     const { data: tracks, isLoading } = useTracksQuery();
+    const trackInteraction = useTrackInteraction(user?.token);
+
+    const handleDownload = (track: any) => {
+        if (track.links?.download) {
+            // Track the interaction (awards points even if GDrive)
+            trackInteraction.mutate({ action: 'download', objectId: track.id });
+            // Direct download/redirect
+            window.open(track.links.download, '_blank');
+        }
+    };
 
     if (isLoading) {
         return (
@@ -76,7 +88,11 @@ export const MusicCollection: React.FC = () => {
 
                             <div className="flex items-center gap-3 mt-4">
                                 {track.links?.download && (
-                                    <button className="p-2.5 rounded-lg bg-white/5 hover:bg-primary/20 text-white/40 hover:text-primary transition-all border border-white/5" title="Download">
+                                    <button 
+                                        onClick={() => handleDownload(track)}
+                                        className="p-2.5 rounded-lg bg-white/5 hover:bg-primary/20 text-white/40 hover:text-primary transition-all border border-white/5" 
+                                        title="Download"
+                                    >
                                         <Download size={16} />
                                     </button>
                                 )}

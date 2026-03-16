@@ -827,3 +827,33 @@ export const useSubscriptionMutation = () => {
   });
 };
 
+// ============================================================================
+// INTERACTION TRACKING
+// ============================================================================
+
+export const useTrackInteraction = (token?: string) => {
+  return useMutation({
+    mutationFn: async ({ action, objectId }: { action: string; objectId?: number }) => {
+      if (!token) return { success: false, guest: true };
+      
+      const apiUrl = buildApiUrl('zengame/v1/track');
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action, object_id: objectId }),
+      });
+
+      if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Tracking failed');
+      }
+      
+      return res.json();
+    },
+  });
+};
+
+

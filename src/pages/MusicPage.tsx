@@ -1,11 +1,12 @@
-﻿// src/pages/MusicPage.tsx
+// src/pages/MusicPage.tsx
 import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
-import { useTrackBySlug } from '../hooks/useQueries';
+import { useTrackBySlug, useTrackInteraction } from '../hooks/useQueries';
 import { useParams, Link, generatePath } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
@@ -21,8 +22,17 @@ const SpotifyIcon = () => (
 const MusicPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
+  const { user } = useUser();
   const currentLang = normalizeLanguage(i18n.language);
   const prefersReducedMotion = useReducedMotion();
+  const trackInteraction = useTrackInteraction(user?.token);
+
+  const handleTrackInteraction = (action: string, objectId?: number, url?: string) => {
+    trackInteraction.mutate({ action, objectId });
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
 
@@ -259,14 +269,12 @@ const MusicPage: React.FC = () => {
                 <Download className="text-red-500" /> {t('music.steal_button')}
               </h3>
               <p className="text-white/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
-              <a
-                href="https://download.djzeneyer.com"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => handleTrackInteraction('download_hub', 0, 'https://download.djzeneyer.com')}
                 className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
               >
                 {t('music.steal_cta')} <ExternalLink size={16} />
-              </a>
+              </button>
             </motion.div>
 
             {/* Support / Coffee Card */}
