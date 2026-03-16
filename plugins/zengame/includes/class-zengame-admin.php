@@ -140,14 +140,14 @@ final class ZenGame_Admin
                 <h2 style="color:<?php echo $color; ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">
                     CENTRAL INTELLIGENCE
                 </h2>
-                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.3.9 // Snapshot 2026-03-06</p>
+                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.4.0 // Snapshot 2026-03-16</p>
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px;margin-top:35px;">
                     <?php
                     $cards = [
                         ['WooCommerce HPOS', $is_woo ? 'SUPPORTED' : 'NOT FOUND', $is_woo],
                         ['GamiPress Engine', $is_gp ? 'CONNECTED' : 'OFFLINE', $is_gp],
-                        ['Cache Health', 'v13 Stable', true],
+                        ['Cache Health', ZenGame::CACHE_VERSION . ' Stable', true],
                     ];
                     foreach ($cards as [$label, $value, $ok]):
                         $c = $ok ? '#4ade80' : '#f87171';
