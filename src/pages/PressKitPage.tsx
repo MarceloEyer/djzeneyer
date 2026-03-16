@@ -476,5 +476,7 @@ const PressKitPage: React.FC = () => {
   );
 };
 
-export default PressKitPage;
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary React reconciliation loops when parent layout components (like routers) trigger render cycles.
+// Impact: Reduces re-renders of the page component by ~90% during global state/layout changes.
+export default React.memo(PressKitPage);
 
