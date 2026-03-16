@@ -6,6 +6,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 // Delete options
 delete_option('zeneyer_auth_settings');
 delete_option('zeneyer_auth_jwt_secret');
+delete_option('zeneyer_auth_audit_log');
 
 // Delete user meta
 global $wpdb;
