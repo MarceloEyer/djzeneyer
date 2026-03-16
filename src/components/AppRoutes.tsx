@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import React, { lazy } from 'react';
 import { useRoutes, RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));

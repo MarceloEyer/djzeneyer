@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useUser } from '../contexts/UserContext';

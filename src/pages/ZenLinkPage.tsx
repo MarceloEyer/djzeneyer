@@ -1,7 +1,7 @@
 // src/pages/ZenLinkPage.tsx
 // v2.0 — Premium link-in-bio redesign (glassmorphism + smart music card)
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -37,7 +37,7 @@ const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
   visible: {
     opacity: 1, y: 0, scale: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
   },
 };
 
@@ -148,7 +148,7 @@ export const ZenLinkPage = () => {
       <HeadlessSEO
         title="Zen Link | DJ Zen Eyer"
         description="Página oficial de links do DJ Zen Eyer para Instagram bio."
-        canonicalUrl={`${ARTIST.site.baseUrl}/zenlink`}
+        url={`${ARTIST.site.baseUrl}/zenlink`}
       />
 
       <main className="min-h-screen bg-[#05060A] text-zinc-100 font-sans selection:bg-fuchsia-500/30">

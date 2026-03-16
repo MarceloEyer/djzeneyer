@@ -1,7 +1,7 @@
-﻿// src/components/EventsList.tsx
+// src/components/EventsList.tsx
 // ARQUITETURA V2: VISUAL LIMPO + PAYLOAD ENXUTO + SEO CANONICAL
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import { Link, generatePath } from 'react-router-dom';

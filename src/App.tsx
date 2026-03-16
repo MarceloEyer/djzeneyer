@@ -1,4 +1,4 @@
-﻿import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { UserProvider } from './contexts/UserContext';
