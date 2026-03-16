@@ -142,15 +142,18 @@ export const buildApiUrl = (endpoint: string, params?: Record<string, string>): 
 export const getAuthHeaders = (token?: string): HeadersInit => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   };
 
-  const nonce = getNonce();
-  if (nonce && nonce !== 'dev-nonce') {
-    headers['X-WP-Nonce'] = nonce;
-  }
-
+  // Se temos token Bearer, o nonce do WP costuma causar conflitos 403 
+  // caso o usuário tenha acabado de logar (nonce de guest x usuário logado).
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    const nonce = getNonce();
+    if (nonce && nonce !== 'dev-nonce') {
+      headers['X-WP-Nonce'] = nonce;
+    }
   }
 
   return headers;

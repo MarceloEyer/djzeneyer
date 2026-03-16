@@ -592,16 +592,7 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
     queryKey: [...QUERY_KEYS.user.gamipress(userId || 0), !!token],
     queryFn: async (): Promise<ZenGameUserData | null> => {
       const apiUrl = buildApiUrl('zengame/v1/me');
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const nonce = window.wpData?.nonce;
-      if (nonce) headers['X-WP-Nonce'] = nonce;
+      const headers: HeadersInit = getAuthHeaders(token);
 
       const res = await fetch(apiUrl, { headers, credentials: 'include' });
       
