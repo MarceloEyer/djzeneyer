@@ -420,4 +420,5 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary React reconciliation loops when parent layout components (like routers) trigger render cycles.
+export default React.memo(HomePage);

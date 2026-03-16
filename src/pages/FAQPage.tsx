@@ -211,4 +211,5 @@ const FAQPage: React.FC = () => {
   );
 };
 
-export default FAQPage;
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary React reconciliation loops when parent layout components (like routers) trigger render cycles.
+export default React.memo(FAQPage);
