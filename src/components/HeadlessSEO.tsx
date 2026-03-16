@@ -5,7 +5,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { useBranding } from '../contexts/BrandingContext';
 import { getAlternateLinks, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { ensureTrailingSlash } from '../utils/seo';
@@ -115,7 +116,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   faqs,
   events,
 }) => {
-  const baseUrl = ARTIST.site.baseUrl;
+  const { artist } = useBranding();
+  const baseUrl = artist.site.baseUrl;
   const { i18n } = useTranslation();
   const location = useLocation();
   const currentLang = normalizeLanguage(i18n.language || 'en');
@@ -150,7 +152,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   }, [hrefLang, location.pathname, currentLang, baseUrl]);
 
   // 2. Fallbacks
-  const rawDescription = data?.desc || description || ARTIST.site.defaultDescription;
+  const rawDescription = data?.desc || description || artist.site.defaultDescription;
   const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
 
   // AIO Enhancement: Lead Answer logic
@@ -178,9 +180,9 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     currentLocale = currentLang === 'pt' ? 'pt_BR' : 'en_US';
   }
   const htmlLangAttribute = currentLocale === 'pt_BR' ? 'pt-BR' : 'en';
-  const nameParts = ARTIST.identity.fullName.split(' ').filter(Boolean);
-  const authorFirstName = nameParts[0] || ARTIST.identity.stageName;
-  const authorLastName = nameParts.slice(1).join(' ') || ARTIST.identity.stageName;
+  const nameParts = artist.identity.fullName.split(' ').filter(Boolean);
+  const authorFirstName = nameParts[0] || artist.identity.stageName;
+  const authorLastName = nameParts.slice(1).join(' ') || artist.identity.stageName;
   const isProfileType = type === 'profile';
 
   // Schema Generation (Mantido igual)
@@ -194,7 +196,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           '@id': `${baseUrl}/#website`,
           url: baseUrl,
           name: 'DJ Zen Eyer - Official Website',
-          description: ARTIST.site.defaultDescription,
+          description: artist.site.defaultDescription,
           publisher: { '@id': `${baseUrl}/#artist` },
           inLanguage: ['en', 'pt-BR'],
         },
@@ -310,7 +312,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           description: stripHtml(event.description || event.desc || '').substring(0, 300),
           performer: {
             '@type': 'MusicGroup',
-            name: ARTIST.identity.stageName,
+            name: artist.identity.stageName,
             sameAs: Array.isArray(ARTIST_SCHEMA_BASE.sameAs) ? ARTIST_SCHEMA_BASE.sameAs[0] : ARTIST_SCHEMA_BASE.sameAs
           },
           ...(eventOffers ? { offers: eventOffers } : {}),
@@ -320,14 +322,14 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       if (musicEvents.length > 1) {
         graph.push({
           '@type': 'EventSeries',
-          name: `${ARTIST.identity.stageName} World Tour`,
+          name: `${artist.identity.stageName} World Tour`,
           url: finalUrl,
-          description: `Official tour dates and upcoming performances for ${ARTIST.identity.stageName}.`,
+          description: `Official tour dates and upcoming performances for ${artist.identity.stageName}.`,
           performer: {
             '@type': 'MusicGroup',
-            name: ARTIST.identity.stageName,
-            url: ARTIST.site.baseUrl,
-            sameAs: ARTIST.social.instagram.url || ARTIST.social.instagram
+            name: artist.identity.stageName,
+            url: artist.site.baseUrl,
+            sameAs: artist.social.instagram?.url || (artist.social.instagram as any)
           },
           subEvent: musicEvents
         });
@@ -376,7 +378,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             '@id': `${baseUrl}/#website`,
             url: baseUrl,
             name: 'DJ Zen Eyer - Official Website',
-            description: ARTIST.site.defaultDescription,
+            description: artist.site.defaultDescription,
             publisher: { '@id': `${baseUrl}/#artist` },
             inLanguage: ['en', 'pt-BR'],
           },
@@ -411,9 +413,9 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta name="description" content={truncatedDesc} />
       <link rel="canonical" href={finalUrl} />
       {keywords && <meta name="keywords" content={keywords} />}
-      <meta name="author" content={ARTIST.identity.stageName} />
-      <meta name="creator" content={ARTIST.identity.fullName} />
-      <meta name="publisher" content={ARTIST.identity.stageName} />
+      <meta name="author" content={artist.identity.stageName} />
+      <meta name="creator" content={artist.identity.fullName} />
+      <meta name="publisher" content={artist.identity.stageName} />
       <meta name="subject" content="Brazilian Zouk DJ & Music Producer" />
 
       {/* Robots */}

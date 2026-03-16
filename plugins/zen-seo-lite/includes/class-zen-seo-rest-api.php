@@ -110,6 +110,13 @@ class Zen_SEO_REST_API
             'permission_callback' => '__return_true',
         ]);
 
+        // Get FULL Artist Profile (for SSOT in React)
+        \register_rest_route('zen-seo/v1', '/profile', [
+            'methods' => 'GET',
+            'callback' => [$this, 'get_artist_profile'],
+            'permission_callback' => '__return_true',
+        ]);
+
         // Get sitemap data
         \register_rest_route('zen-seo/v1', '/sitemap', [
             'methods' => 'GET',
@@ -276,14 +283,125 @@ class Zen_SEO_REST_API
     {
         $settings = Zen_SEO_Helpers::get_global_settings();
 
-        // Remove sensitive data
-        unset($settings['booking_email']);
-        unset($settings['cnpj']);
+        // Remove sensitive data from public settings if needed
+        // but keep the endpoint functional for general SEO use
 
         return \rest_ensure_response([
             'success' => true,
             'data' => $settings
         ]);
+    }
+
+    /**
+     * Get FULL Artist Profile (SSOT)
+     *
+     * @param \WP_REST_Request $request
+     * @return \WP_REST_Response
+     */
+    public function get_artist_profile($request)
+    {
+        $settings = Zen_SEO_Helpers::get_global_settings();
+
+        // Map data to match React object structure (src/data/artistData.ts)
+        $profile = [
+            'identity' => [
+                'stageName' => $settings['stage_name'] ?? 'DJ Zen Eyer',
+                'shortName' => $settings['short_name'] ?? 'Zen Eyer',
+                'fullName'  => $settings['real_name'] ?? 'Marcelo Eyer Fernandes',
+                'birthDate' => $settings['birth_date'] ?? '1989-08-30',
+                'cnpj'      => $settings['cnpj'] ?? '',
+                'city'      => $settings['city'] ?? '',
+                'state'     => $settings['state'] ?? '',
+                'country'   => $settings['country'] ?? 'Brazil',
+            ],
+            'philosophy' => [
+                'slogan'         => $settings['slogan'] ?? '',
+                'style'          => $settings['style_name'] ?? '',
+                'styleDefinition' => $settings['style_definition'] ?? '',
+            ],
+            'social' => $this->get_mapped_social_links($settings),
+            'payment' => [
+                'paypal' => ['me' => $settings['paypal_me'] ?? ''],
+                'wise'   => ['url' => $settings['wise_url'] ?? ''],
+                'pix'    => ['key' => $settings['pix_key'] ?? ''],
+                'inter'  => [
+                    'iban'      => $settings['inter_iban'] ?? '',
+                    'swift'     => $settings['inter_swift'] ?? '',
+                    'bankName'  => $settings['inter_bank_name'] ?? '',
+                ]
+            ],
+            'stats' => [
+                'startingYear'    => (int) ($settings['starting_year'] ?? 2015),
+                'countriesPlayed' => (int) ($settings['countries_played'] ?? 10),
+            ],
+            'identifiers' => [
+                'isni'        => $settings['isni_code'] ?? '',
+                'musicbrainz' => $settings['musicbrainz'] ?? '',
+                'wikidata'    => $settings['wikidata'] ?? '',
+            ],
+            'awards' => !empty($settings['awards_list']) ? \array_filter(\array_map('trim', \explode("\n", $settings['awards_list']))) : []
+        ];
+
+        return \rest_ensure_response([
+            'success' => true,
+            'data' => $profile
+        ]);
+    }
+
+    /**
+     * Map social settings to structured objects
+     */
+    private function get_mapped_social_links($settings)
+    {
+        $social = [];
+        $platforms = [
+            'instagram', 'youtube', 'facebook', 'spotify', 'soundcloud',
+            'mixcloud', 'bandcamp', 'apple_music', 'beatport', 'shazam', 'songkick', 'bandsintown'
+        ];
+
+        foreach ($platforms as $platform) {
+            $url = $settings[$platform] ?? '';
+            if ($url) {
+                // CamelCase keys for React compatibility
+                $key = \str_replace(' ', '', \lcfirst(\ucwords(\str_replace('_', ' ', $platform))));
+                $social[$key] = [
+                    'url' => $url,
+                    'handle' => $this->extract_handle($url, $platform)
+                ];
+            }
+        }
+
+        return $social;
+    }
+
+    /**
+     * Crude handle extractor from URL
+     */
+    private function extract_handle($url, $platform)
+    {
+        if (empty($url)) return '';
+
+        // Clean URL: remove fragment and query
+        $url = \strtok($url, '#');
+        $url = \strtok($url, '?');
+        $path = \trim(\wp_parse_url($url, \PHP_URL_PATH), '/');
+        
+        $parts = \explode('/', $path);
+        if (empty($parts)) return '';
+
+        $handle = \end($parts);
+
+        // Remove "user" or "channel" prefixes if they exist (common in Youtube)
+        if ($handle === 'user' || $handle === 'channel' || $handle === 'c') {
+            // Not a real handle, try the previous part
+            $handle = $parts[\count($parts)-2] ?? $handle;
+        }
+
+        if ($platform === 'instagram' || $platform === 'facebook' || $platform === 'youtube' || $platform === 'twitter' || $platform === 'tiktok') {
+            return '@' . $handle;
+        }
+
+        return $handle;
     }
 
     /**

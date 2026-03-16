@@ -1,4 +1,4 @@
-﻿// src/pages/AboutPage.tsx - VERSAO FINAL HEADLESS E OTIMIZADA
+// src/pages/AboutPage.tsx - VERSAO FINAL HEADLESS E OTIMIZADA
 
 import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -16,8 +16,14 @@ import {
 
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation, Trans } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE, ARTIST, getWhatsAppUrl } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { useBranding } from '../contexts/BrandingContext';
 import { sanitizeHtml } from '../utils/sanitize';
+
+const getDynamicWhatsAppUrl = (number: string, message?: string) => {
+  const defaultMsg = 'Olá Zen Eyer! Gostaria de conversar sobre booking.';
+  return `https://wa.me/${number}?text=${encodeURIComponent(message || defaultMsg)}`;
+};
 
 // ============================================================================
 // SCHEMA.ORG PARA A PAGINA ABOUT
@@ -29,9 +35,10 @@ import { sanitizeHtml } from '../utils/sanitize';
 
 const AboutPage: React.FC = () => {
   const { t } = useTranslation();
+  const { artist } = useBranding();
   const prefersReducedMotion = useReducedMotion();
   const currentPath = '/about';
-  const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
+  const currentUrl = `${artist.site.baseUrl}${currentPath}`;
 
   // SCHEMA.ORG PARA A PAGINA ABOUT
   const ABOUT_SCHEMA = useMemo(() => ({
@@ -42,15 +49,15 @@ const AboutPage: React.FC = () => {
       },
       {
         '@type': 'WebPage',
-        '@id': `${ARTIST.site.baseUrl}/about#webpage`,
-        url: `${ARTIST.site.baseUrl}/about`,
+        '@id': `${artist.site.baseUrl}/about#webpage`,
+        url: `${artist.site.baseUrl}/about`,
         name: t('about.seo.name'),
         description: t('about.seo.description'),
-        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
-        about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+        isPartOf: { '@id': `${artist.site.baseUrl}/#website` },
+        about: { '@id': `${artist.site.baseUrl}/#artist` },
       },
     ],
-  }), [t]);
+  }), [t, artist]);
 
   const MILESTONES = useMemo(() => [
     {
@@ -113,7 +120,7 @@ const AboutPage: React.FC = () => {
         title={t('about.seo.title')}
         description={t('about.seo.description')}
         url={currentUrl}
-        image={`${ARTIST.site.baseUrl}/images/artist/dj-zen-eyer-nature-portrait.jpg`}
+        image={`${artist.site.baseUrl}/images/artist/dj-zen-eyer-nature-portrait.jpg`}
         type="profile"
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}
@@ -274,7 +281,7 @@ const AboutPage: React.FC = () => {
               <p className="text-lg text-white/80 leading-relaxed italic">
                 {t('about.philosophy.quote')}
               </p>
-              <div className="mt-8 text-white/60 font-semibold">- {ARTIST.identity.stageName}</div>
+              <div className="mt-8 text-white/60 font-semibold">- {artist.identity.stageName}</div>
             </motion.div>
           </div>
         </section>
@@ -299,7 +306,7 @@ const AboutPage: React.FC = () => {
                 {t('about.cta.desc')}
               </p>
               <motion.a
-                href={getWhatsAppUrl(t('about.cta.whatsapp_msg'))}
+                href={getDynamicWhatsAppUrl(artist.identity.whatsapp || '5521987413091', t('about.cta.whatsapp_msg'))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg inline-flex items-center gap-3"

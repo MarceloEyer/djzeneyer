@@ -10,7 +10,13 @@ import {
   Instagram, Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle, Music2
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST, getWhatsAppUrl } from '../data/artistData';
+import { useBranding } from '../contexts/BrandingContext';
+
+// Helper for WhatsApp (recreated here with dynamic data)
+const getDynamicWhatsAppUrl = (number: string, message?: string) => {
+  const defaultMsg = 'Olá Zen Eyer! Gostaria de conversar sobre booking.';
+  return `https://wa.me/${number}?text=${encodeURIComponent(message || defaultMsg)}`;
+};
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -41,36 +47,13 @@ const itemVariants = {
   },
 };
 
-// --- Music platforms for smart card ---
-const MUSIC_PLATFORMS = [
-  { name: 'Spotify', icon: <SpotifyIcon />, url: ARTIST.social.spotify.url, color: '#1DB954' },
-  { name: 'Apple Music', icon: <AppleMusicIcon />, url: ARTIST.social.appleMusic.url, color: '#FA243C' },
-  { name: 'YouTube Music', icon: <YoutubeMusicIcon />, url: ARTIST.social.youtubeMusic.url, color: '#FF0000' },
-];
-
-const microFacts = [
-  {
-    icon: <Trophy className="h-4 w-4" />,
-    label: '2× campeão mundial',
-  },
-  {
-    icon: <Award className="h-4 w-4" />,
-    label: `${ARTIST.titles.event} (${ARTIST.titles.year})`,
-  },
-  {
-    icon: <MapPin className="h-4 w-4" />,
-    label: `${ARTIST.contact.location.city} • ${ARTIST.contact.location.state}`,
-  },
-  {
-    icon: <Disc3 className="h-4 w-4" />,
-    label: `${ARTIST.stats.yearsActive}+ anos de pista`,
-  },
-];
 
 // --- Smart Music Card Component ---
-const SmartMusicCard = () => {
+const SmartMusicCard = ({ platforms }: { platforms: any[] }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+
+  if (platforms.length === 0) return null;
 
   return (
     <motion.div variants={itemVariants} className="w-full">
@@ -106,7 +89,7 @@ const SmartMusicCard = () => {
             className="overflow-hidden"
           >
             <div className="pt-2 space-y-2">
-              {MUSIC_PLATFORMS.map((platform) => (
+              {platforms.map((platform) => (
                 <motion.a
                   key={platform.name}
                   href={platform.url}
@@ -133,22 +116,51 @@ const SmartMusicCard = () => {
 
 export const ZenLinkPage = () => {
   const { t } = useTranslation();
+  const { artist } = useBranding();
+
+  const MUSIC_PLATFORMS = [
+    { name: 'Spotify', icon: <SpotifyIcon />, url: artist.social.spotify?.url, color: '#1DB954' },
+    { name: 'Apple Music', icon: <AppleMusicIcon />, url: artist.social.appleMusic?.url, color: '#FA243C' },
+    { name: 'YouTube Music', icon: <YoutubeMusicIcon />, url: artist.social.youtubeMusic?.url, color: '#FF0000' },
+  ].filter(p => !!p.url);
+
+  const microFacts = [
+    {
+      icon: <Trophy className="h-4 w-4" />,
+      label: '2× campeão mundial',
+    },
+    {
+      icon: <Award className="h-4 w-4" />,
+      label: `Ilha do Zouk (2022)`,
+    },
+    {
+      icon: <MapPin className="h-4 w-4" />,
+      label: `${artist.identity.city} • ${artist.identity.state}`,
+    },
+    {
+      icon: <Disc3 className="h-4 w-4" />,
+      label: `${new Date().getFullYear() - artist.stats.startingYear}+ anos de pista`,
+    },
+  ];
 
   const MAIN_LINKS = [
-    { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: ARTIST.social.spotify.url, icon: <Music2 className="h-5 w-5" />, highlight: true },
-    { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${ARTIST.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
-    { title: 'Instagram', subtitle: '@djzeneyer • bastidores', url: ARTIST.social.instagram.url, icon: <Instagram className="h-5 w-5" /> },
-    { title: 'YouTube', subtitle: 'Sets ao vivo', url: ARTIST.social.youtube.url, icon: <Youtube className="h-5 w-5" /> },
-    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getWhatsAppUrl('Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
-    { title: 'E-mail', subtitle: ARTIST.contact.email, url: `mailto:${ARTIST.contact.email}`, icon: <Mail className="h-5 w-5" /> },
-  ];
+    { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: artist.social.spotify?.url, icon: <Music2 className="h-5 w-5" />, highlight: true },
+    { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
+    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • bastidores`, url: artist.social.instagram?.url, icon: <Instagram className="h-5 w-5" /> },
+    { title: 'YouTube', subtitle: 'Sets ao vivo', url: artist.social.youtube?.url, icon: <Youtube className="h-5 w-5" /> },
+    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || '5521987413091', 'Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
+    { title: 'E-mail', subtitle: artist.identity.cnpj ? 'booking@djzeneyer.com' : 'Contact me', url: `mailto:booking@djzeneyer.com`, icon: <Mail className="h-5 w-5" /> },
+    // Payment links from Dashboard
+    ...(artist.payment.paypal.me ? [{ title: 'PayPal', subtitle: 'Support my music', url: artist.payment.paypal.me, icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
+    ...(artist.payment.wise.url ? [{ title: 'Wise', subtitle: 'International support', url: artist.payment.wise.url, icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
+  ].filter(l => !!l.url);
 
   return (
     <>
       <HeadlessSEO
         title="Zen Link | DJ Zen Eyer"
         description="Página oficial de links do DJ Zen Eyer para Instagram bio."
-        url={`${ARTIST.site.baseUrl}/zenlink`}
+        url={`${artist.site.baseUrl}/zenlink`}
       />
 
       <main className="min-h-screen bg-[#05060A] text-zinc-100 font-sans selection:bg-fuchsia-500/30">
@@ -167,26 +179,26 @@ export const ZenLinkPage = () => {
                 <div className="relative h-20 w-20 flex-shrink-0">
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-indigo-500 animate-pulse blur-sm opacity-50" />
                   <img
-                    src={`${ARTIST.site.baseUrl}/images/zen-eyer-profile.jpg`}
-                    alt={ARTIST.identity.stageName}
+                    src={`${artist.site.baseUrl}/images/zen-eyer-profile.jpg`}
+                    alt={artist.identity.stageName}
                     className="relative h-20 w-20 rounded-2xl border border-white/20 object-cover"
                     loading="lazy"
                     decoding="async"
-                    onError={(e) => { e.currentTarget.src = `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`; }}
+                    onError={(e) => { e.currentTarget.src = `${artist.site.baseUrl}/images/zen-eyer-og-image.png`; }}
                   />
                 </div>
 
                 <div className="min-w-0">
                   <h1 className="truncate text-2xl font-black tracking-tight text-white uppercase italic">
-                    {ARTIST.identity.stageName}
+                    {artist.identity.stageName}
                   </h1>
-                  <p className="text-sm text-zinc-200/90">{ARTIST.identity.fullName}</p>
-                  <p className="mt-1 text-xs text-fuchsia-200 font-medium">✨ {ARTIST.titles.primary}</p>
+                  <p className="text-sm text-zinc-200/90">{artist.identity.fullName}</p>
+                  <p className="mt-1 text-xs text-fuchsia-200 font-medium">✨ World Champion DJ</p>
                 </div>
               </div>
 
               <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
-                “{ARTIST.philosophy.slogan}”
+                “{artist.philosophy.slogan}”
               </p>
             </div>
           </motion.header>
@@ -205,7 +217,7 @@ export const ZenLinkPage = () => {
           </motion.section>
 
           <section className="space-y-3">
-            <SmartMusicCard />
+            <SmartMusicCard platforms={MUSIC_PLATFORMS} />
             {MAIN_LINKS.map((link, index) => (
               <motion.a
                 key={link.title}
@@ -240,22 +252,24 @@ export const ZenLinkPage = () => {
             animate={{ opacity: 1 }}
             className="mt-8 space-y-3"
           >
-            <a
-              href={ARTIST.identifiers.wikidataUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-xs font-medium text-emerald-200/80 hover:bg-emerald-500/10 transition-colors"
-            >
-              <Globe className="h-4 w-4" />
-              Wikidata Certified Profile ({ARTIST.identifiers.wikidata})
-            </a>
+            {artist.identifiers.wikidata && (
+              <a
+                href={`https://www.wikidata.org/wiki/${artist.identifiers.wikidata}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-xs font-medium text-emerald-200/80 hover:bg-emerald-500/10 transition-colors"
+              >
+                <Globe className="h-4 w-4" />
+                Wikidata Certified Profile ({artist.identifiers.wikidata})
+              </a>
+            )}
 
             <a
-              href={ARTIST.site.baseUrl}
+              href={artist.site.baseUrl}
               className="flex items-center justify-center gap-2 rounded-xl border border-white/5 bg-gray-900/50 px-4 py-3 text-xs text-zinc-400 hover:text-white transition-all"
             >
               <Sparkles className="h-4 w-4 text-amber-400" />
-              Website Oficial: djzeneyer.com
+              Website Oficial: {artist.site.baseUrl.replace('https://', '')}
             </a>
           </motion.footer>
         </div>

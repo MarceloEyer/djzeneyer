@@ -2,8 +2,8 @@ import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { useBranding } from '../contexts/BrandingContext';
 import { sanitizeHtml } from '../utils/sanitize';
 import {
   Download,
@@ -30,10 +30,6 @@ const PRESS_LINKS = {
   epk: '/media/dj-zen-eyer-bio.pdf',
   logos: '/media/dj-zen-eyer-logos.zip'
 };
-
-const WHATSAPP_NUMBER = '5521987413091';
-
-type Festival = (typeof ARTIST.festivals)[number];
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
   ({ icon, number, label, color }) => (
@@ -81,6 +77,7 @@ MediaKitCard.displayName = 'MediaKitCard';
 
 const PressKitPage: React.FC = () => {
   const { t } = useTranslation();
+  const { artist } = useBranding();
   const location = useLocation();
 
   const currentPath = location.pathname;
@@ -88,37 +85,37 @@ const PressKitPage: React.FC = () => {
 
   const relevantLinks = useMemo(
     () => [
-      { name: t('social.instagram'), url: ARTIST.social.instagram.url, icon: <Instagram size={20} /> },
-      { name: t('social.youtube'), url: ARTIST.social.youtube.url, icon: <Radio size={20} /> },
-      { name: t('social.spotify'), url: ARTIST.social.spotify.url, icon: <PlayCircle size={20} /> },
-      { name: t('social.apple_music'), url: ARTIST.social.appleMusic.url, icon: <PlayCircle size={20} /> },
+      { name: t('social.instagram'), url: artist.social.instagram?.url, icon: <Instagram size={20} /> },
+      { name: t('social.youtube'), url: artist.social.youtube?.url, icon: <Radio size={20} /> },
+      { name: t('social.spotify'), url: artist.social.spotify?.url, icon: <PlayCircle size={20} /> },
+      { name: t('social.apple_music'), url: artist.social.appleMusic?.url, icon: <PlayCircle size={20} /> },
       {
         name: t('social.musicbrainz'),
-        url: 'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+        url: `https://musicbrainz.org/artist/${artist.identifiers.musicbrainz}`,
         icon: <Database size={20} />
       },
-      { name: t('social.wikidata'), url: 'https://www.wikidata.org/wiki/Q136551855', icon: <Globe size={20} /> },
-      { name: t('social.discogs'), url: 'https://www.discogs.com/artist/16872046', icon: <Database size={20} /> },
-      { name: t('social.resident_advisor'), url: 'https://pt-br.ra.co/dj/djzeneyer', icon: <ExternalLink size={20} /> }
-    ],
-    [t]
+      { name: t('social.wikidata'), url: `https://www.wikidata.org/wiki/${artist.identifiers.wikidata}`, icon: <Globe size={20} /> },
+      { name: t('social.discogs'), url: artist.social.discogs?.url, icon: <Database size={20} /> },
+      { name: t('social.resident_advisor'), url: artist.social.residentAdvisor?.url, icon: <ExternalLink size={20} /> }
+    ].filter(l => !!l.url),
+    [t, artist]
   );
 
   const whatsappUrl = useMemo(
-    () => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t('presskit.contact.whatsapp_message'))}`,
-    [t]
+    () => `https://wa.me/${artist.identity.whatsapp || '5521987413091'}?text=${encodeURIComponent(t('presskit.contact.whatsapp_message'))}`,
+    [t, artist]
   );
 
   const stats = useMemo(
     () => [
       {
-        number: ARTIST.stats.countriesPlayed.toString(),
+        number: artist.stats.countriesPlayed.toString(),
         label: t('presskit.stats.countries'),
         icon: <Globe size={32} />,
         color: 'bg-gradient-to-br from-blue-500/80 to-blue-700/80'
       },
       {
-        number: `${ARTIST.stats.yearsActive}+`,
+        number: `${new Date().getFullYear() - artist.stats.startingYear}+`,
         label: t('presskit.stats.years'),
         icon: <Calendar size={32} />,
         color: 'bg-gradient-to-br from-purple-500/80 to-purple-700/80'
@@ -136,7 +133,7 @@ const PressKitPage: React.FC = () => {
         color: 'bg-gradient-to-br from-green-500/80 to-green-700/80'
       }
     ],
-    [t]
+    [t, artist]
   );
 
   const quickStatsItems = useMemo(
@@ -198,7 +195,7 @@ const PressKitPage: React.FC = () => {
         title={t('presskit.page_title')}
         description={t('presskit.page_meta_desc')}
         url={currentUrl}
-        image={`${ARTIST.site.baseUrl}/images/artist/dj-zen-eyer-official-hero.jpg`}
+        image={`${artist.site.baseUrl}/images/artist/dj-zen-eyer-official-hero.jpg`}
       />
 
       <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -307,7 +304,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {ARTIST.festivals.slice(0, 9).map((festival: Festival, index: number) => (
+                {(artist.festivals || []).slice(0, 9).map((festival: any, index: number) => (
                   <motion.div
                     key={index}
                     whileHover={{ scale: 1.02 }}
@@ -413,10 +410,10 @@ const PressKitPage: React.FC = () => {
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg flex items-center justify-center gap-3">
                     <Phone size={20} /> WhatsApp
                   </a>
-                  <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline btn-lg flex items-center justify-center gap-3">
+                  <a href={`mailto:booking@djzeneyer.com`} className="btn btn-outline btn-lg flex items-center justify-center gap-3">
                     <Mail size={20} /> Email
                   </a>
-                  <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center justify-center gap-3">
+                  <a href={artist.social.instagram?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center justify-center gap-3">
                     <Instagram size={20} /> Instagram
                   </a>
                 </div>

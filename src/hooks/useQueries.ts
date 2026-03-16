@@ -140,6 +140,53 @@ export interface WPPost {
   };
 }
 
+export interface ArtistProfile {
+  identity: {
+    stageName: string;
+    shortName: string;
+    fullName: string;
+    birthDate: string;
+    cnpj: string;
+    city: string;
+    state: string;
+    country: string;
+    whatsapp?: string;
+  };
+  philosophy: {
+    slogan: string;
+    style: string;
+    styleDefinition: string;
+  };
+  social: Record<string, { url: string; handle: string }>;
+  payment: {
+    paypal: { me: string };
+    wise: { url: string };
+    pix: { key: string };
+    inter: {
+      iban: string;
+      swift: string;
+      bankName: string;
+    };
+  };
+  stats: {
+    startingYear: number;
+    countriesPlayed: number;
+    lastUpdated?: string;
+  };
+  identifiers: {
+    isni: string;
+    musicbrainz: string;
+    wikidata: string;
+  };
+  site: {
+    baseUrl: string;
+    defaultDescription: string;
+    pages: Record<string, string>;
+  };
+  awards: string[];
+  festivals?: any[]; // For now, keep as any or define if needed
+}
+
 export interface ZenGlobalSettings {
   real_name?: string;
   default_og_image?: string;
@@ -201,6 +248,14 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   if (!res.ok) throw new Error('Failed to fetch menu');
   const data = await res.json();
   return Array.isArray(data) ? data : [];
+};
+
+export const fetchArtistProfileFn = async (): Promise<ArtistProfile> => {
+  const apiUrl = buildApiUrl('zen-seo/v1/profile');
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch artist profile');
+  const json = await res.json();
+  return json.data;
 };
 
 export const fetchEventsFn = async ({

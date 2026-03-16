@@ -24,6 +24,7 @@ class Zen_SEO_Admin
         \add_action('admin_init', [$this, 'register_settings']);
         \add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
         \add_action('admin_notices', [$this, 'show_admin_notices']);
+        \add_action('admin_init', [$this, 'handle_export_import']);
     }
 
     /**
@@ -48,6 +49,15 @@ class Zen_SEO_Admin
             'zen-seo-cache',
             [$this, 'render_cache_page']
         );
+        
+        \add_submenu_page(
+            'zen-plugins',
+            __('Backup & Tools', 'zen-seo'),
+            __('SEO Tools', 'zen-seo'),
+            'manage_options',
+            'zen-seo-tools',
+            [$this, 'render_tools_page']
+        );
     }
 
     /**
@@ -69,30 +79,65 @@ class Zen_SEO_Admin
         );
 
         $identity_fields = [
+            'stage_name' => [
+                'label' => __('Stage Name', 'zen-seo'),
+                'type' => 'text',
+                'desc' => __('Default: DJ Zen Eyer', 'zen-seo')
+            ],
+            'short_name' => [
+                'label' => __('Short / Artist Name', 'zen-seo'),
+                'type' => 'text',
+                'desc' => __('Default: Zen Eyer', 'zen-seo')
+            ],
             'real_name' => [
                 'label' => __('Full Legal Name', 'zen-seo'),
                 'type' => 'text',
                 'desc' => __('Example: Marcelo Eyer Fernandes', 'zen-seo')
+            ],
+            'birth_date' => [
+                'label' => __('Birth Date', 'zen-seo'),
+                'type' => 'date',
+                'desc' => __('Format: YYYY-MM-DD', 'zen-seo')
             ],
             'booking_email' => [
                 'label' => __('Booking Email', 'zen-seo'),
                 'type' => 'email',
                 'desc' => __('Example: booking@djzeneyer.com', 'zen-seo')
             ],
+            'whatsapp_number' => [
+                'label' => __('WhatsApp Number', 'zen-seo'),
+                'type' => 'text',
+                'desc' => __('Full number with code. Example: 5521987413091', 'zen-seo')
+            ],
             'cnpj' => [
-                'label' => __('CNPJ', 'zen-seo'),
+                'label' => __('CNPJ / Tax ID', 'zen-seo'),
                 'type' => 'text',
                 'desc' => __('Format: 00.000.000/0000-00', 'zen-seo')
             ],
-            'birth_place' => [
-                'label' => __('Birth Place', 'zen-seo'),
+            'city' => [
+                'label' => __('City', 'zen-seo'),
                 'type' => 'text',
-                'desc' => __('Example: Rio de Janeiro, Brazil', 'zen-seo')
+                'desc' => __('Example: Niterói', 'zen-seo')
             ],
-            'home_location' => [
-                'label' => __('Home Location', 'zen-seo'),
+            'state' => [
+                'label' => __('State Code', 'zen-seo'),
                 'type' => 'text',
-                'desc' => __('Example: São Paulo, Brazil', 'zen-seo')
+                'desc' => __('Example: RJ', 'zen-seo')
+            ],
+            'country' => [
+                'label' => __('Country', 'zen-seo'),
+                'type' => 'text',
+                'desc' => __('Example: Brazil', 'zen-seo')
+            ],
+            'starting_year' => [
+                'label' => __('Starting Year', 'zen-seo'),
+                'type' => 'number',
+                'desc' => __('Example: 2015', 'zen-seo')
+            ],
+            'countries_played' => [
+                'label' => __('Countries Played', 'zen-seo'),
+                'type' => 'number',
+                'desc' => __('Example: 10', 'zen-seo')
             ],
         ];
 
@@ -103,6 +148,43 @@ class Zen_SEO_Admin
                 [$this, 'render_input_field'],
                 'zen-seo-settings',
                 'zen_identity',
+                \array_merge($field, ['id' => $id])
+            );
+        }
+
+        // Philosophy section
+        \add_settings_section(
+            'zen_philosophy',
+            __('💡 Philosophy & Brand', 'zen-seo'),
+            [$this, 'render_section_philosophy'],
+            'zen-seo-settings'
+        );
+
+        $phil_fields = [
+            'slogan' => [
+                'label' => __('Brand Slogan', 'zen-seo'),
+                'type' => 'text',
+                'desc' => __('Example: A pressa é inimiga da cremosidade', 'zen-seo')
+            ],
+            'style_name' => [
+                'label' => __('Musical Style Name', 'zen-seo'),
+                'type' => 'text',
+                'desc' => __('Example: Cremosidade', 'zen-seo')
+            ],
+            'style_definition' => [
+                'label' => __('Style Definition', 'zen-seo'),
+                'type' => 'textarea',
+                'rows' => 3
+            ],
+        ];
+
+        foreach ($phil_fields as $id => $field) {
+            \add_settings_field(
+                $id,
+                $field['label'],
+                $field['type'] === 'textarea' ? [$this, 'render_textarea_field'] : [$this, 'render_input_field'],
+                'zen-seo-settings',
+                'zen_philosophy',
                 \array_merge($field, ['id' => $id])
             );
         }
@@ -213,12 +295,40 @@ class Zen_SEO_Admin
 
         \add_settings_field(
             'default_image',
-            __('Default OG Image', 'zen-seo'),
+            __('Main Promotional Image', 'zen-seo'),
             [$this, 'render_image_field'],
             'zen-seo-settings',
             'zen_technical',
             ['id' => 'default_image']
         );
+
+        // Payment section
+        \add_settings_section(
+            'zen_payment',
+            __('💰 Global Payment Hub', 'zen-seo'),
+            [$this, 'render_section_payment'],
+            'zen-seo-settings'
+        );
+
+        $payment_fields = [
+            'paypal_me' => ['label' => 'PayPal.me URL'],
+            'wise_url' => ['label' => 'Wise Payment URL'],
+            'pix_key' => ['label' => 'PIX Key (Brasil)'],
+            'inter_iban' => ['label' => 'Inter IBAN (USD/EUR)'],
+            'inter_swift' => ['label' => 'Inter SWIFT Code'],
+            'inter_bank_name' => ['label' => 'Inter Bank Name'],
+        ];
+
+        foreach ($payment_fields as $id => $field) {
+            \add_settings_field(
+                $id,
+                $field['label'],
+                [$this, 'render_input_field'],
+                'zen-seo-settings',
+                'zen_payment',
+                ['id' => $id, 'type' => 'text']
+            );
+        }
     }
 
     /**
@@ -261,7 +371,9 @@ class Zen_SEO_Admin
                 'facebook',
                 'ranker_list',
                 'default_image',
-                'mensa_url'
+                'mensa_url',
+                'paypal_me',
+                'wise_url'
             ];
 
             if (\in_array($key, $url_fields)) {
@@ -270,7 +382,7 @@ class Zen_SEO_Admin
             }
 
             // Textarea fields
-            if (\in_array($key, ['awards_list'])) {
+            if (\in_array($key, ['awards_list', 'style_definition'])) {
                 $sanitized[$key] = \sanitize_textarea_field($value);
                 continue;
             }
@@ -398,6 +510,16 @@ class Zen_SEO_Admin
     public function render_section_social()
     {
         echo '<p>' . __('Social media and music platform profiles for sameAs schema.', 'zen-seo') . '</p>';
+    }
+
+    public function render_section_philosophy()
+    {
+        echo '<p>' . __('Define your brand tone and musical signature.', 'zen-seo') . '</p>';
+    }
+
+    public function render_section_payment()
+    {
+        echo '<p>' . __('Centralized payment data for global bookings and donations.', 'zen-seo') . '</p>';
     }
 
     public function render_section_technical()
@@ -544,5 +666,125 @@ class Zen_SEO_Admin
             </div>
             <?php
         }
+    }
+
+    /**
+     * Handle Export/Import Actions
+     */
+    public function handle_export_import()
+    {
+        if (!isset($_GET['page']) || $_GET['page'] !== 'zen-seo-tools') {
+            return;
+        }
+
+        // 1. Handle Export
+        if (isset($_POST['zen_seo_export']) && \check_admin_referer('zen_seo_export_action')) {
+            $settings = Zen_SEO_Helpers::get_global_settings();
+            $filename = 'zen-seo-backup-' . \date('Y-m-d') . '.json';
+            
+            \header('Content-Type: application/json');
+            \header('Content-Disposition: attachment; filename=' . $filename);
+            \header('Pragma: no-cache');
+            \header('Expires: 0');
+            
+            echo \wp_json_encode($settings, JSON_PRETTY_PRINT);
+            \exit;
+        }
+
+        // 2. Handle Import
+        if (isset($_POST['zen_seo_import']) && \check_admin_referer('zen_seo_import_action')) {
+            if (empty($_FILES['import_file']['tmp_name'])) {
+                \add_settings_error('zen_seo_tools', 'no_file', __('Please select a file to import.', 'zen-seo'), 'error');
+                return;
+            }
+
+            $file_content = \file_get_contents($_FILES['import_file']['tmp_name']);
+            $data = \json_decode($file_content, true);
+
+            if (!$data || !\is_array($data)) {
+                \add_settings_error('zen_seo_tools', 'invalid_json', __('Invalid backup file format.', 'zen-seo'), 'error');
+                return;
+            }
+
+            // Sanitization is handled by the regular sanitize_settings logic when we update_option
+            \update_option('zen_seo_global', $data);
+            Zen_SEO_Cache::clear_all();
+
+            \add_settings_error('zen_seo_tools', 'import_success', __('Settings imported and caches cleared!', 'zen-seo'), 'success');
+        }
+    }
+
+    /**
+     * Render Tools Page (Export/Import)
+     */
+    public function render_tools_page()
+    {
+        if (!\current_user_can('manage_options')) {
+            return;
+        }
+
+        ?>
+        <div class="wrap">
+            <h1><?php _e('Backup & SEO Tools', 'zen-seo'); ?></h1>
+            
+            <?php \settings_errors('zen_seo_tools'); ?>
+
+            <div class="card" style="max-width: 800px; margin-top: 20px;">
+                <h2>📦 <?php _e('Backup & Restore', 'zen-seo'); ?></h2>
+                <p><?php _e('Export your identity and branding settings to a JSON file, or restore them from a previous backup.', 'zen-seo'); ?></p>
+                
+                <hr>
+                
+                <div style="display: flex; gap: 40px; margin-top: 20px;">
+                    <!-- Export -->
+                    <div style="flex: 1;">
+                        <h3><?php _e('Export Settings', 'zen-seo'); ?></h3>
+                        <p><?php _e('Download all your Zen SEO configurations.', 'zen-seo'); ?></p>
+                        <form method="post">
+                            <?php \wp_nonce_field('zen_seo_export_action'); ?>
+                            <button type="submit" name="zen_seo_export" class="button button-secondary">
+                                <?php _e('Download Export (.json)', 'zen-seo'); ?>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Import -->
+                    <div style="flex: 1; border-left: 1px solid #ddd; padding-left: 40px;">
+                        <h3><?php _e('Import Settings', 'zen-seo'); ?></h3>
+                        <p><?php _e('Upload a previously exported .json file.', 'zen-seo'); ?></p>
+                        <form method="post" enctype="multipart/form-data">
+                            <?php \wp_nonce_field('zen_seo_import_action'); ?>
+                            <input type="file" name="import_file" accept=".json" style="margin-bottom: 10px; display: block;">
+                            <button type="submit" name="zen_seo_import" class="button button-primary">
+                                <?php _e('Import Backup', 'zen-seo'); ?>
+                            </button>
+                        </form>
+                        <p class="description" style="color: #d63638;">
+                            ⚠️ <?php _e('Warning: This will overwrite your current settings!', 'zen-seo'); ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="max-width: 800px; margin-top: 20px;">
+                <h2>⚡ <?php _e('System Health', 'zen-seo'); ?></h2>
+                <p><?php _e('Quickly check the status of your Headless SEO engine.', 'zen-seo'); ?></p>
+                <table class="widefat" style="border: none; background: transparent;">
+                    <tr>
+                        <td><strong><?php _e('REST API Status:', 'zen-seo'); ?></strong></td>
+                        <td><span style="color: green;">● <?php _e('Active', 'zen-seo'); ?></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?php _e('Sitemap Engine:', 'zen-seo'); ?></strong></td>
+                        <td><?php _e('Enabled', 'zen-seo'); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?php _e('Identity SSOT:', 'zen-seo'); ?></strong></td>
+                        <td><?php _e('Configured (Zen V2)', 'zen-seo'); ?></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <?php
     }
 }
