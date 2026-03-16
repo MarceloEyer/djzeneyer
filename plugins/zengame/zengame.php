@@ -112,7 +112,7 @@ final class ZenGame
      *
      * @var string
      */
-    const CACHE_VERSION = 'v13';
+    const CACHE_VERSION = 'v14';
 
     /**
      * Default TTL for dashboard and leaderboard transients: 24 hours.
@@ -121,6 +121,12 @@ final class ZenGame
      * @var int
      */
     const DEFAULT_CACHE_TTL = 86400;
+
+    /**
+     * TTL for the global leaderboard: 1 hour.
+     * Keeps the competition feeling "live" without hitting the DB on every visit.
+     */
+    const LEADERBOARD_CACHE_TTL = 3600;
 
     /**
      * TTL for per-user WooCommerce stat caches (tracks, events): 6 hours.
@@ -291,6 +297,7 @@ final class ZenGame
         }
         if ($auth_header && \preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
             $token = \trim($matches[1]);
+            // Defensive check: ensure the class exists to avoid fatals if Zen Auth is disabled.
             if (\class_exists('\ZenEyer\Auth\Core\JWT_Manager')) {
                 $decoded = \ZenEyer\Auth\Core\JWT_Manager::validate_token($token);
                 if (!\is_wp_error($decoded) && isset($decoded->data->user_id)) {
@@ -396,7 +403,8 @@ final class ZenGame
             'engine_status' => [
                 'woo' => $this->is_woo_active(),
                 'gamipress' => \defined('GAMIPRESS_VER'),
-                'cache' => 'healthy',
+                'cache' => \get_option('zengame_last_purge') ? 'warm' : 'running',
+                'ts' => \time()
             ],
             'lastUpdate' => \current_time('mysql'),
             'version' => '1.3.9',
@@ -483,7 +491,8 @@ final class ZenGame
                 foreach ($results as $row) {
                     $leaderboard[$slug][] = [
                         'user_id' => (int) $row->user_id,
-                        'display_name' => $row->display_name,
+                        // Sanitização proativa de nomes para o frontend.
+                        'display_name' => \esc_html($row->display_name),
                         'points' => (int) $row->points,
                         'avatar' => \get_avatar_url((int) $row->user_id, ['size' => 64]),
                     ];
@@ -491,7 +500,7 @@ final class ZenGame
             }
         }
 
-        \set_transient($cache_key, $leaderboard, $this->get_cache_ttl());
+        \set_transient($cache_key, $leaderboard, self::LEADERBOARD_CACHE_TTL);
         return \rest_ensure_response($leaderboard);
     }
 
@@ -744,7 +753,7 @@ final class ZenGame
      */
     private function get_user_total_tracks(int $user_id): int
     {
-        if (!$this->is_woo_active() || !\function_exists('wc_get_orders')) {
+        if (!$this->is_woo_active()) {
             return 0;
         }
 
@@ -754,25 +763,31 @@ final class ZenGame
             return (int) $cached;
         }
 
-        // Fetch full order objects directly to avoid N+1 wc_get_order queries in the loop.
-        $orders = \wc_get_orders([
-            'customer' => $user_id,
-            'status' => ['completed'],
-            'limit' => -1,
-        ]);
+        global $wpdb;
 
-        $total = 0;
-        foreach ($orders as $order) {
-            if (!$order) {
-                continue;
-            }
-            foreach ($order->get_items() as $item) {
-                $product = $item->get_product();
-                if ($product && $product->is_downloadable()) {
-                    $total += $item->get_quantity();
-                }
-            }
-        }
+        /**
+         * Otimização de Performance: SQL Direto
+         * Em vez de carregar centenas de objetos de pedidos via wc_get_orders (consumo alto de memória),
+         * fazemos um join direto nas tabelas do WooCommerce.
+         * Filtramos por: status='wc-completed' e metadata '_downloadable'='yes'.
+         */
+        $query = "
+            SELECT SUM(item_meta_qty.meta_value)
+            FROM {$wpdb->prefix}woocommerce_order_items AS items
+            INNER JOIN {$wpdb->prefix}posts AS orders ON items.order_id = orders.ID
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_qty ON items.order_item_id = item_meta_qty.order_item_id
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_product ON items.order_item_id = item_meta_product.order_item_id
+            INNER JOIN {$wpdb->postmeta} AS product_meta ON item_meta_product.meta_value = product_meta.post_id
+            WHERE orders.post_type = 'shop_order'
+              AND orders.post_status = 'wc-completed'
+              AND orders.post_author = %d
+              AND item_meta_qty.meta_key = '_qty'
+              AND item_meta_product.meta_key = '_product_id'
+              AND product_meta.meta_key = '_downloadable'
+              AND product_meta.meta_value = 'yes'
+        ";
+
+        $total = (int) $wpdb->get_var($wpdb->prepare($query, $user_id));
 
         \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
         return $total;
@@ -792,7 +807,7 @@ final class ZenGame
      */
     private function get_user_events_attended(int $user_id): int
     {
-        if (!$this->is_woo_active() || !\function_exists('wc_get_orders')) {
+        if (!$this->is_woo_active()) {
             return 0;
         }
 
@@ -802,8 +817,11 @@ final class ZenGame
             return (int) $cached;
         }
 
+        global $wpdb;
+
         // Product category slugs that classify a product as an event ticket.
-        $target_slugs = [
+        // Filterable via 'zengame_event_category_slugs' for future-proofing.
+        $target_slugs = \apply_filters('zengame_event_category_slugs', [
             'events',
             'tickets',
             'congressos',
@@ -811,42 +829,34 @@ final class ZenGame
             'social',
             'festivais',
             'pass',
-        ];
-
-        $orders = \wc_get_orders([
-            'customer' => $user_id,
-            'status' => ['completed', 'processing'],
-            'limit' => -1,
         ]);
+        $placeholders = \array_fill(0, \count($target_slugs), '%s');
+        $slugs_list = \implode(',', $placeholders);
 
-        $total = 0;
-        $term_cache = []; // Cache terms per product ID to avoid N+1 queries.
-        foreach ($orders as $order) {
-            if (!$order) {
-                continue;
-            }
-            foreach ($order->get_items() as $item) {
-                $product_id = $item->get_product_id();
+        /**
+         * Otimização de Performance: SQL Direto para Eventos
+         * Cruza pedidos processando/concluídos com as categorias alvo.
+         */
+        $query = "
+            SELECT SUM(item_meta_qty.meta_value)
+            FROM {$wpdb->prefix}woocommerce_order_items AS items
+            INNER JOIN {$wpdb->prefix}posts AS orders ON items.order_id = orders.ID
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_qty ON items.order_item_id = item_meta_qty.order_item_id
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_product ON items.order_item_id = item_meta_product.order_item_id
+            INNER JOIN {$wpdb->term_relationships} AS rel ON item_meta_product.meta_value = rel.object_id
+            INNER JOIN {$wpdb->term_taxonomy} AS tax ON rel.term_taxonomy_id = tax.term_taxonomy_id
+            INNER JOIN {$wpdb->terms} AS terms ON tax.term_id = terms.term_id
+            WHERE orders.post_type = 'shop_order'
+              AND orders.post_status IN ('wc-completed', 'wc-processing')
+              AND orders.post_author = %d
+              AND item_meta_qty.meta_key = '_qty'
+              AND item_meta_product.meta_key = '_product_id'
+              AND tax.taxonomy = 'product_cat'
+              AND terms.slug IN ($slugs_list)
+        ";
 
-                if (!isset($term_cache[$product_id])) {
-                    $term_cache[$product_id] = \wp_get_object_terms(
-                        $product_id,
-                        'product_cat',
-                        ['fields' => 'slugs']
-                    );
-                }
-                $term_slugs = $term_cache[$product_id];
-
-                if ($term_slugs && !\is_wp_error($term_slugs)) {
-                    foreach ($term_slugs as $t_slug) {
-                        if (\in_array($t_slug, $target_slugs, true)) {
-                            $total += $item->get_quantity();
-                            break; // Only count once even if product has multiple matching categories.
-                        }
-                    }
-                }
-            }
-        }
+        $prep_args = \array_merge([$user_id], $target_slugs);
+        $total = (int) $wpdb->get_var($wpdb->prepare($query, ...$prep_args));
 
         \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
         return $total;
