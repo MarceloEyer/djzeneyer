@@ -213,35 +213,35 @@ jobs:
       # --- DOWNLOAD ARTIFACTS ---
       - name: 📥 Download dist
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-dist-${{ needs.build.outputs.commit_hash }}
           path: ./dist
 
       - name: 📥 Download theme files
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-theme-${{ needs.build.outputs.commit_hash }}
           path: ./
 
       - name: 📥 Download plugins
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-plugins-${{ needs.build.outputs.commit_hash }}
           path: ./plugins
 
       - name: 📥 Download sitemaps
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
 
       - name: 📥 Download GamiPress files
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-gamipress-${{ needs.build.outputs.commit_hash }}
           path: ./gamipress-deploy
