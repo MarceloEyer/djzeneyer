@@ -126,17 +126,17 @@ const DashboardContent = () => {
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.ascension')}</div>
-                <div className="text-xl font-black mt-1 truncate">{gamipress.rank.current.title}</div>
+                <div className="text-xl font-black mt-1 truncate">{gamipress.rank?.current?.title || '--'}</div>
               </div>
             </div>
           </div>
 
-          {gamipress.rank.next && (
+          {gamipress.rank?.next && (
             <div className="mt-8 rounded-2xl border border-primary/20 bg-primary/5 p-6 backdrop-blur-md">
               <ManaProgressBar
-                progress={gamipress.rank.progress}
+                progress={gamipress.rank.progress || 0}
                 label={t('dashboard.nextRank')}
-                subLabel={`${gamipress.rank.next.title} (${gamipress.rank.requirements[0]?.current || 0} / ${gamipress.rank.requirements[0]?.required || 0} XP)`}
+                subLabel={`${gamipress.rank.next.title} (${gamipress.rank.requirements?.[0]?.current || 0} / ${gamipress.rank.requirements?.[0]?.required || 0} XP)`}
               />
             </div>
           )}

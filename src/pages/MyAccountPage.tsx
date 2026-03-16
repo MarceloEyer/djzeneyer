@@ -1,4 +1,4 @@
-﻿// src/pages/MyAccountPage.tsx
+// src/pages/MyAccountPage.tsx
 // v20.0 - PREMIUM UI OVERHAUL + UNIFIED MANA BAR + MUSIC COLLECTION
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -80,12 +80,12 @@ const MyAccountContent: React.FC = () => {
     }
 
     const mainPoints = gamipress.points.points?.amount || 0;
-    const currentRank = gamipress.rank.current.title || t('dashboard.rank_zen_novice');
+    const currentRank = gamipress.rank?.current?.title || t('dashboard.rank_zen_novice');
 
     // Defer level logic to the "Brain" or keep simple visual level (100pt/lvl) if not provided by API
     // Per Dashboard_CONTEXT.md, Brain should return high-level data.
     const level = Math.floor(mainPoints / 100) + 1;
-    const xpToNext = gamipress.rank.next ? (100 - (mainPoints % 100)) : 0;
+    const xpToNext = gamipress.rank?.next ? (100 - (mainPoints % 100)) : 0;
     const totalAchievements = gamipress.achievements_earned.length;
     const recentAchievements = gamipress.recent_achievements.length;
 
@@ -224,7 +224,7 @@ const MyAccountContent: React.FC = () => {
 
             {/* Quick Stats */}
             <div className="space-y-6">
-              {gamipress.rank.next && (
+              {gamipress.rank?.next && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -235,12 +235,12 @@ const MyAccountContent: React.FC = () => {
                     <Trophy size={100} fill="currentColor" />
                   </div>
                   <ManaProgressBar
-                    progress={gamipress.rank.progress}
+                    progress={gamipress.rank.progress || 0}
                     label={t('dashboard.nextRank')}
                     subLabel={gamipress.rank.next.title}
                   />
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {gamipress.rank.requirements.slice(0, 3).map((req, idx) => (
+                    {(gamipress.rank.requirements || []).slice(0, 3).map((req, idx) => (
                       <div key={idx} className="bg-white/5 px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{req.title}:</span>

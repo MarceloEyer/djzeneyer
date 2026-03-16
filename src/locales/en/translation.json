@@ -1019,65 +1019,9 @@
   "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "Â© {{year}} DJ Zen Eyer. Haste is the enemy of cremosity.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. Haste is the enemy of cremosity.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
-  "about": {
-    "seo": {
-      "title": "About DJ Zen Eyer | Brazilian Zouk DJ & Producer",
-      "description": "Learn the personal story of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his signature cremosidade style.",
-      "name": "About DJ Zen Eyer",
-      "keywords": "DJ Zen Eyer, world champion DJ, music philosophy, cremosidade, Brazilian Zouk history, Mensa member, music producer bio",
-      "lead_answer": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a Mensa member and award-winning DJ who brings emotional depth and technical precision to Brazilian Zouk music globally."
-    },
-    "hero": {
-      "badge": "MY STORY",
-      "title": "The <1>Journey</1>",
-      "subtitle": "From passion for music to connecting with thousands of souls through Brazilian Zouk"
-    },
-    "stats": {
-      "stories": "Connection",
-      "stories_value": "Real",
-      "smiles": "Created smiles",
-      "smiles_value": "∞"
-    },
-    "story": {
-      "p1": "It all started in <strong>Niterói, RJ</strong>. At age 15, I discovered Zouk and realized that music could be more than just background noise. While others were listening to rock and pop, I lived with my head (and ears) in my father's cassette tapes, paying attention to Caribbean and Brazilian rhythms.",
-      "p2": "The transition to the DJ booth came naturally years later. The professional encounter with <strong>Brazilian Zouk</strong> happened in 2012. When I heard that rhythmic, smooth, yet highly marked sound, I felt that was where I belonged. I started playing local parties and soon had the honor of joining <strong>Renata Peçanha's</strong> team of DJs, playing annually at the <strong>Rio Zouk Congress</strong>, the largest congress of the genre in Brazil.",
-      "p3": "The following years were of intense study and hard work. Balancing a day job with late nights on the internet learning to mix, trying to understand music theory and, most importantly, observing the dance floor. I sought to understand how music changed people's vibe. My intention was always to create a moment where people could close their eyes and just enjoy the dance, without rush.",
-      "p4": "World recognition arrived in 2022 at Ilha do Zouk, where I won the awards for <strong>Best Remix</strong> and <strong>Best DJ Performance</strong>. It was an incredible honor! But, to be 100% honest, the trophies stay on the shelf. What I truly take with me are the connections: the couple who met during my set or the person who lost their shyness of dancing listening to a track I played.",
-      "p5": "Nowadays, the community talks a lot about the idea of <strong>'cremosidade'</strong> — a term describing dance with pure continuous flow. This aligns perfectly with the way I value playing! Each set for me is like having a conversation with whoever is on the floor. I try to send the right message so that people leave feeling like they had a pleasant and light moment.",
-      "p6": "Ultimately, Brazilian Zouk is the soundtrack. What really matters are the friendships, the connections, and the time we spend enjoying the sound together."
-    },
-    "timeline": {
-      "title": "Some <1>Cool Milestones</1>",
-      "m1": {
-        "title": "How It All Started",
-        "desc": "At age 15, listening to my father's cassette tapes in Niterói (RJ), I started getting a taste for Caribbean rhythms and messing around with my first music software on the computer."
-      },
-      "m2": {
-        "title": "First Zouk",
-        "desc": "In 2012, I went to a party in Copacabana and heard Zouk for the first time. It was a really awesome connection and I decided I wanted to be part of that."
-      },
-      "m3": {
-        "title": "Diving In",
-        "desc": "After a lot of splitting my time between a regular job and the nightlife, I decided to try living just from music. There was a lot of studying, many empty dance floors, and a lot of persistence."
-      },
-      "m4": {
-        "title": "World Championship",
-        "desc": "Being able to play for people abroad and receiving the world title was proof that putting my heart into it (and preferring the slow beat) was worth it."
-      }
-    },
-    "philosophy": {
-      "title": "My <1>Philosophy</1>",
-      "quote": "\"Music is my way of creating a safe space where people can be who they truly are. It doesn't just touch the ears - it touches the soul. Every beat, every transition, every silence is thought so that someone on the dance floor feels: 'This is about me. This is for me.'\""
-    },
-    "cta": {
-      "title": "Let's <1>Talk?</1>",
-      "desc": "If you identified with this story or want to know more about the philosophy behind my music, I love meeting people who also believe in the power of connection through art.",
-      "button": "Share Your Story",
-      "whatsapp_msg": "Hello Zen! I saw your story on the website and would like to share mine as well."
-    }
-  },
+
   "philosophy_page": {
     "title": "My Music Philosophy",
     "style_title": "Cremosidade",
@@ -1615,16 +1559,78 @@
       "copied": "Link copied!",
       "meta_title": "Zouk Persona Quiz | {{stageName}}",
       "meta_desc": "Who are you on the dance floor? Take the Zouk Persona Quiz to find out if you're a Lambadeiro, Technician, or the Creamy One!",
-      "you_are": "Você é..."
+      "you_are": "You are..."
     }
   },
-  "contact": "contact",
-  "event_desc_fallback": "event_desc_fallback",
-  "events_noEvents": "events_noEvents",
-  "events_subtitle": "events_subtitle",
-  "events_title": "events_title",
-  "events_view_details": "events_view_details",
-  "loc_to_be_defined": "loc_to_be_defined",
-  "press_kit": "press_kit",
-  "price_free": "price_free"
+  "about": {
+    "seo": {
+      "title": "About DJ Zen Eyer | Brazilian Zouk DJ & Producer",
+      "description": "Discover the personal story of DJ Zen Eyer, a Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his 'cremosidade' musical style.",
+      "name": "About DJ Zen Eyer",
+      "keywords": "DJ Zen Eyer, world champion DJ, music philosophy, cremosidade, Brazilian Zouk history, Mensa member, music producer biography",
+      "lead_answer": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a Mensa member and award-winning DJ who brings emotional depth and technical precision to Brazilian Zouk music globally."
+    },
+    "hero": {
+      "badge": "MY STORY",
+      "title": "The <1>Journey</1>",
+      "subtitle": "From a passion for music to connecting with thousands of souls through Brazilian Zouk"
+    },
+    "stats": {
+      "stories": "Connection",
+      "stories_value": "Pure",
+      "smiles": "Created smiles",
+      "smiles_value": "∞",
+      "passion": "Passion",
+      "passion_value": "100%",
+      "events": "Portals Crossed",
+      "events_value": "500+"
+    },
+    "story": {
+      "p1": "It all started in <strong>Niterói, RJ</strong>. At 15, I discovered Zouk and realized that music could be more than just background sound. While others listened to rock and pop, I lived with my head (and ears) in my father's cassette tapes, paying attention to Caribbean and Brazilian rhythms.",
+      "p2": "The transition to the decks came naturally years later. The meeting with professional <strong>Brazilian Zouk</strong> happened in 2012. When I heard that smooth and, at the same time, super marked sound, I felt that was where I fit in. I started playing at local parties and soon had the honor of joining <strong>Renata Peçanha's</strong> team of DJs, playing annually at the <strong>Rio Zouk Congress</strong>, the largest genre congress in Brazil.",
+      "p3": "The following years were of much study and hard work. Balancing day work with nights on the internet learning to mix, I tried to understand music theory and, most importantly, observe the dance floor. I sought to understand how music changed people's vibes. My intention was always to create a moment where people could close their eyes and just enjoy the dance, without rush.",
+      "p4": "World recognition arrived in 2022, at Ilha do Zouk, where I won the awards for <strong>Best Remix</strong> and <strong>Best DJ Performance</strong>. It was an absurd honor! But, if I'm 100% honest, the trophies stay on the shelf. What I really take with me are the connections: the couple that met during one of my sets or the person who lost their shyness to dance listening to a song I played.",
+      "p5": "Nowadays, the community talks a lot about the idea of <strong>'cremosidade'</strong> (creaminess) — a term that describes a dance of pure continuous fluidity. This aligns perfectly with how I value playing! Each set for me is like having a conversation with whoever is on the floor. I try to send the right message so that people leave feeling they had a pleasant and light moment.",
+      "p6": "At the heart of it, Brazilian Zouk is the soundtrack. What really matters are the friendships, the connections, and the time we spend enjoying the sound together."
+    },
+    "timeline": {
+      "title": "Some <1>Cool Milestones</1>",
+      "m1": {
+        "title": "The Beginning of Everything",
+        "desc": "At 15, listening to my father's cassette tapes in Niterói (RJ), I started to get a taste for Caribbean rhythms and tinkering with the first sound programs on the computer."
+      },
+      "m2": {
+        "title": "First Zouk",
+        "desc": "In 2012, I went to a party in Copacabana and heard Zouk for the first time. It was a very cool connection and I decided I wanted to be part of that."
+      },
+      "m3": {
+        "title": "Diving In Headfirst",
+        "desc": "After dividing my time between a regular job and the night, I decided to try living only from music. There were many studies, many empty sets, and a lot of persistence."
+      },
+      "m4": {
+        "title": "Double Championship",
+        "desc": "Being able to play for people abroad and receiving the world title was proof that putting my heart into it (and preferring the slow beat) was worth it."
+      }
+    },
+    "philosophy": {
+      "title": "My <1>Philosophy</1>",
+      "quote": "\"Music is my way of creating a safe space where people can be who they really are. It doesn't just touch the ears - it touches the soul. Every beat, every transition, every silence is designed so that someone on the floor feels: 'This is about me. This is for me.'\""
+    },
+    "cta": {
+      "title": "Shall We <1>Talk?</1>",
+      "desc": "If you identified with this story or want to know more about the philosophy behind my music, I love meeting people who also believe in the power of connection through art.",
+      "button": "Share Your Story",
+      "whatsapp_msg": "Hello Zen! I saw your story on the website and would like to share mine too."
+    }
+  },
+  "quiz_you_are": "You are...",
+  "contact": "Contact",
+  "event_desc_fallback": "A mysterious event in the Zen Universe.",
+  "events_noEvents": "No events found.",
+  "events_subtitle": "Check out where the melt is happening.",
+  "events_title": "Upcoming Events",
+  "events_view_details": "View Details",
+  "loc_to_be_defined": "TBA",
+  "press_kit": "Press Kit",
+  "price_free": "Free"
 }

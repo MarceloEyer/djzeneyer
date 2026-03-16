@@ -160,7 +160,8 @@ const AboutPage: React.FC = () => {
               </motion.div>
               <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white leading-tight">
                 <Trans i18nKey="about.hero.title">
-                  A <span className="text-primary">Jornada</span>
+                  {/* Fallback text if translation fails */}
+                  The <span className="text-primary">Journey</span>
                 </Trans>
               </h1>
               <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
@@ -171,23 +172,30 @@ const AboutPage: React.FC = () => {
         </div>
 
         {/* Stats Section */}
-        <section className="pb-8 pt-0 px-4">
+        <section className="pb-8 pt-0 px-4 relative z-10">
           <div className="container mx-auto max-w-6xl">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               {ACHIEVEMENTS_DATA.map((item, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-surface/50 p-6 rounded-2xl border border-white/10 hover:border-primary/50 transition-all"
+                  className="group relative overflow-hidden"
                 >
-                  {item.icon}
-                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                    {item.value}
+                  <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors duration-500 rounded-2xl" />
+                  <div className="relative bg-surface/40 backdrop-blur-md p-6 md:p-8 rounded-2xl border border-white/5 group-hover:border-primary/30 transition-all duration-300 flex flex-col items-center text-center h-full shadow-lg">
+                    <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                      {item.icon}
+                    </div>
+                    <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">
+                      {item.value}
+                    </div>
+                    <div className="text-primary font-bold text-xs md:text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
+                      {item.label}
+                    </div>
                   </div>
-                  <div className="text-white/60 text-sm">{item.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -195,13 +203,13 @@ const AboutPage: React.FC = () => {
         </section>
 
         {/* Story Section */}
-        <section className="py-20 px-4">
+        <section className="py-20 px-4 relative z-10">
           <div className="container mx-auto max-w-4xl">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="space-y-6 text-lg text-white/80 leading-relaxed"
+              className="space-y-8 text-lg md:text-xl text-white/70 leading-relaxed font-light"
             >
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p1')) }} />
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p2')) }} />
@@ -223,7 +231,7 @@ const AboutPage: React.FC = () => {
               className="text-4xl md:text-5xl font-display font-bold text-center mb-16"
             >
               <Trans i18nKey="about.timeline.title">
-                Momentos que <span className="text-primary">Mudaram Tudo</span>
+                Moments that <span className="text-primary">Changed Everything</span>
               </Trans>
             </motion.h2>
 
@@ -275,7 +283,7 @@ const AboutPage: React.FC = () => {
               <Heart className="w-16 h-16 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
                 <Trans i18nKey="about.philosophy.title">
-                  Minha <span className="text-primary">Filosofia</span>
+                  My <span className="text-primary">Philosophy</span>
                 </Trans>
               </h2>
               <p className="text-lg text-white/80 leading-relaxed italic">
@@ -299,7 +307,7 @@ const AboutPage: React.FC = () => {
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
                 <Trans i18nKey="about.cta.title">
-                  Vamos <span className="text-primary">Conversar?</span>
+                  Let's <span className="text-primary">Talk?</span>
                 </Trans>
               </h2>
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">

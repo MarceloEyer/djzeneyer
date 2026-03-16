@@ -73,6 +73,6 @@ export const useGamiPress = (): GamiPressHookResponse => {
     refresh,
     // Legacy mapping (uses dynamic slug from backend)
     mainPoints: resolved.points[resolved.main_points_slug]?.amount ?? 0,
-    currentRank: resolved.rank.current.title,
+    currentRank: resolved.rank?.current?.title ?? FALLBACK.rank.current.title,
   }), [resolved, isLoading, error, refresh]);
 };
