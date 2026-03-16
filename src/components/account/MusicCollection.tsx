@@ -75,7 +75,7 @@ export const MusicCollection: React.FC = () => {
                             </div>
 
                             <div className="flex items-center gap-3 mt-4">
-                                {track.links.download && (
+                                {track.links?.download && (
                                     <button className="p-2.5 rounded-lg bg-white/5 hover:bg-primary/20 text-white/40 hover:text-primary transition-all border border-white/5" title="Download">
                                         <Download size={16} />
                                     </button>

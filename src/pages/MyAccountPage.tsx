@@ -86,8 +86,8 @@ const MyAccountContent: React.FC = () => {
     // Per Dashboard_CONTEXT.md, Brain should return high-level data.
     const level = Math.floor(mainPoints / 100) + 1;
     const xpToNext = gamipress.rank?.next ? (100 - (mainPoints % 100)) : 0;
-    const totalAchievements = gamipress.achievements_earned.length;
-    const recentAchievements = gamipress.recent_achievements.length;
+    const totalAchievements = Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0;
+    const recentAchievements = Array.isArray(gamipress.recent_achievements) ? gamipress.recent_achievements.length : 0;
 
     return {
       level,
@@ -273,15 +273,15 @@ const MyAccountContent: React.FC = () => {
             <div className="flex justify-between items-end mb-4">
               <div>
                 <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2">{t('dashboard.yourAchievements')}</h2>
-                <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em]">{t('account.profile.milestones', { count: gamipress.achievements_earned.length })}</p>
+                <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em]">{t('account.profile.milestones', { count: Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0 })}</p>
               </div>
               <div className="bg-primary/20 text-primary px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest border border-primary/20">
-                {gamipress.achievements_earned.length} / {gamipress.achievements_earned.length + gamipress.achievements_locked.length}
+                {Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0} / {(Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0) + (Array.isArray(gamipress.achievements_locked) ? gamipress.achievements_locked.length : 0)}
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...gamipress.achievements_earned, ...gamipress.achievements_locked].map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
+              {[...(Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned : []), ...(Array.isArray(gamipress.achievements_locked) ? gamipress.achievements_locked : [])].map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
                 <motion.div
                   key={ach.id}
                   whileHover={{ y: -5, scale: 1.02 }}
@@ -307,13 +307,13 @@ const MyAccountContent: React.FC = () => {
             </div>
 
             {/* Unified Mana Bar */}
-            {gamipress.rank.next && (
+            {gamipress.rank?.next && (
               <div className="bg-surface/30 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white/5 mt-12 shadow-2xl overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                   <Trophy size={150} fill="currentColor" />
                 </div>
                 <ManaProgressBar
-                  progress={gamipress.rank.progress}
+                  progress={gamipress.rank.progress || 0}
                   label={t('dashboard.nextRank')}
                   subLabel={gamipress.rank.next.title}
                 />

@@ -71,11 +71,15 @@ const DashboardContent = () => {
 
   if (!user || !gamipress) return null;
 
-  const mainPoints = gamipress.points[gamipress.main_points_slug]?.amount ?? 0;
-  const pointTypes = Object.entries(gamipress.points);
-  const earnedAchievements = gamipress.achievements_earned;
-  const lockedAchievements = gamipress.achievements_locked;
-  const highlightedAchievements = gamipress.achievement_highlights ?? [...earnedAchievements, ...lockedAchievements];
+  const mainPoints = (gamipress.points && gamipress.main_points_slug) 
+    ? (gamipress.points[gamipress.main_points_slug]?.amount ?? 0) 
+    : 0;
+  const pointTypes = gamipress.points ? Object.entries(gamipress.points) : [];
+  const earnedAch = Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned : [];
+  const lockedAch = Array.isArray(gamipress.achievements_locked) ? gamipress.achievements_locked : [];
+  const highlightedAchievements = Array.isArray(gamipress.achievement_highlights) 
+    ? gamipress.achievement_highlights 
+    : [...earnedAch, ...lockedAch];
 
   return (
     <div className="pt-24 pb-16 min-h-screen bg-background">
@@ -118,11 +122,11 @@ const DashboardContent = () => {
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.artifacts')}</div>
-                <div className="text-xl font-black mt-1">{gamipress.stats.totalTracks}</div>
+                <div className="text-xl font-black mt-1">{gamipress.stats?.totalTracks ?? 0}</div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.events')}</div>
-                <div className="text-xl font-black mt-1">{gamipress.stats.eventsAttended}</div>
+                <div className="text-xl font-black mt-1">{gamipress.stats?.eventsAttended ?? 0}</div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.ascension')}</div>
