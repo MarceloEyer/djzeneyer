@@ -354,7 +354,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: 📝 Deploy theme PHP files
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
@@ -414,7 +414,7 @@ jobs:
 
       # --- SITEMAPS ---
       - name: 🗺️ Deploy sitemaps to ROOT
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
