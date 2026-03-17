@@ -180,9 +180,13 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     currentLocale = currentLang === 'pt' ? 'pt_BR' : 'en_US';
   }
   const htmlLangAttribute = currentLocale === 'pt_BR' ? 'pt-BR' : 'en';
-  const nameParts = artist.identity.fullName.split(' ').filter(Boolean);
-  const authorFirstName = nameParts[0] || artist.identity.stageName;
-  const authorLastName = nameParts.slice(1).join(' ') || artist.identity.stageName;
+  const { authorFirstName, authorLastName } = React.useMemo(() => {
+    const nameParts = artist.identity.fullName.split(' ').filter(Boolean);
+    return {
+      authorFirstName: nameParts[0] || artist.identity.stageName,
+      authorLastName: nameParts.slice(1).join(' ') || artist.identity.stageName
+    };
+  }, [artist.identity.fullName, artist.identity.stageName]);
   const isProfileType = type === 'profile';
 
   // Schema Generation (Mantido igual)
