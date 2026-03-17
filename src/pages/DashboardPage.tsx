@@ -276,5 +276,5 @@ const DashboardPage = () => {
   );
 };
 
-export default React.memo(DashboardPage);
+export default DashboardPage;
 

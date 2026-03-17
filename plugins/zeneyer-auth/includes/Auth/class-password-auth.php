@@ -8,11 +8,11 @@
 
 namespace ZenEyer\Auth\Auth;
 
+use WP_Error;
+
 if (!defined('ABSPATH')) {
     exit;
 }
-
-use WP_Error;
 
 class Password_Auth {
     use Username_Generator;

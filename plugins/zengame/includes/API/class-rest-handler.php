@@ -8,14 +8,14 @@
 
 namespace ZenEyer\Game\API;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 use ZenEyer\Game\Core\Engine;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_Error;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 /**
  * REST_Handler Class

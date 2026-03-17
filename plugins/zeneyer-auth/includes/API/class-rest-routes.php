@@ -8,10 +8,6 @@
 
 namespace ZenEyer\Auth\API;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 use ZenEyer\Auth\Core\JWT_Manager;
 use ZenEyer\Auth\Core\Rate_Limiter;
 use ZenEyer\Auth\Auth\Google_Provider;
@@ -19,6 +15,10 @@ use ZenEyer\Auth\Auth\Password_Auth;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_Error;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 class Rest_Routes
 {

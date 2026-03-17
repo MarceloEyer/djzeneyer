@@ -8,13 +8,13 @@
 
 namespace ZenEyer\Auth\Core;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use WP_Error;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 class JWT_Manager
 {
