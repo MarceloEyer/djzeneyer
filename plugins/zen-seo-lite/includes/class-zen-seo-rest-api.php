@@ -339,7 +339,7 @@ class Zen_SEO_REST_API
                 'musicbrainz' => $settings['musicbrainz'] ?? '',
                 'wikidata'    => $settings['wikidata'] ?? '',
             ],
-            'awards' => !empty($settings['awards_list']) ? \array_filter(\array_map('trim', \explode("\n", $settings['awards_list']))) : []
+            'awards' => !empty($settings['awards_list']) ? \array_filter(\array_map('trim', \explode("\n", (string) ($settings['awards_list'] ?? '')))) : []
         ];
 
         return \rest_ensure_response([
@@ -360,7 +360,7 @@ class Zen_SEO_REST_API
         ];
 
         foreach ($platforms as $platform) {
-            $url = $settings[$platform] ?? '';
+            $url = (string) ($settings[$platform] ?? '');
             if ($url) {
                 // CamelCase keys for React compatibility
                 $key = \str_replace(' ', '', \lcfirst(\ucwords(\str_replace('_', ' ', $platform))));
@@ -384,7 +384,7 @@ class Zen_SEO_REST_API
         // Clean URL: remove fragment and query
         $url = \strtok($url, '#');
         $url = \strtok($url, '?');
-        $path = \trim(\wp_parse_url($url, \PHP_URL_PATH), '/');
+        $path = \trim((string) \wp_parse_url($url, \PHP_URL_PATH), '/');
         
         $parts = \explode('/', $path);
         if (empty($parts)) return '';
