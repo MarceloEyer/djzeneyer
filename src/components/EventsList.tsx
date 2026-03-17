@@ -1,7 +1,7 @@
 // src/components/EventsList.tsx
 // ARQUITETURA V2: VISUAL LIMPO + PAYLOAD ENXUTO + SEO CANONICAL
 
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import { Link, generatePath } from 'react-router-dom';
@@ -48,6 +48,20 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     console.error('Error fetching events:', error);
   }
 
+  const skeletonElements = useMemo(() => {
+    return Array.from({ length: limit }).map((_, i) => {
+      const skeletonHeight = variant === 'compact' ? 'h-[106px]' : 'h-[360px]';
+      return (
+        <div
+          key={`skeleton-${i}`}
+          className={`animate-pulse bg-surface/30 border border-white/5 rounded-xl overflow-hidden ${skeletonHeight}`}
+        >
+          <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
+        </div>
+      );
+    });
+  }, [limit, variant]);
+
   // --- Render States (Skeleton Loader for CLS) ---
   if (loading) {
     return (
@@ -56,18 +70,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
           <div className="h-9 w-48 bg-white/5 animate-pulse rounded-lg mx-auto mb-8" />
         )}
         <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
-          {Array.from({ length: limit }).map((_, i) => {
-            const skeletonHeight = variant === 'compact' ? 'h-[106px]' : 'h-[360px]';
-
-            return (
-              <div
-                key={`skeleton-${i}`}
-                className={`animate-pulse bg-surface/30 border border-white/5 rounded-xl overflow-hidden ${skeletonHeight}`}
-              >
-                <div className="w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
-              </div>
-            );
-          })}
+          {skeletonElements}
         </div>
       </div>
     );
