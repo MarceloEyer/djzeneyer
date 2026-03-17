@@ -394,22 +394,22 @@ export const findKeyByPath = (path: string): string | undefined => {
   if (exact) return exact;
 
   // 2. Busca manual em todas as configs (slugs e aliases)
+  const langs: Language[] = ['en', 'pt'];
+
   for (const route of ROUTES_CONFIG) {
-    const allPaths = [
-      ...getLocalizedPaths(route, 'en'),
-      ...getLocalizedPaths(route, 'pt')
-    ];
-    
-    for (const p of allPaths) {
-      if (!p) continue;
-      const cleanP = p.replace(/\/$/, '');
-      if (cleanPath === cleanP || cleanPath.startsWith(cleanP + '/')) {
-        // Mapeamento automático para rotas de detalhe
-        if (route.key === 'events') return 'events-detail';
-        if (route.key === 'music') return 'music-detail';
-        if (route.key === 'news') return 'news-detail';
-        if (route.key === 'shop') return 'product-detail';
-        return route.key;
+    for (const lang of langs) {
+      const paths = getLocalizedPaths(route, lang);
+      for (const p of paths) {
+        if (!p) continue;
+        const cleanP = p.endsWith('/') ? p.slice(0, -1) : p;
+        if (cleanPath === cleanP || cleanPath.startsWith(cleanP + '/')) {
+          // Mapeamento automático para rotas de detalhe
+          if (route.key === 'events') return 'events-detail';
+          if (route.key === 'music') return 'music-detail';
+          if (route.key === 'news') return 'news-detail';
+          if (route.key === 'shop') return 'product-detail';
+          return route.key;
+        }
       }
     }
   }
