@@ -24,6 +24,7 @@ if (!class_exists('Zen_BIT')) {
     class Zen_BIT
     {
         private static $instance = null;
+        private string $rest_namespace = 'zen-bit/v2';
 
         public static function get_instance(): self
         {
@@ -76,7 +77,6 @@ if (!class_exists('Zen_BIT')) {
 
         public function render_shortcode($atts): string
         {
-            wp_enqueue_style('zen-bit-public');
             return '<div id="zen-bit-events-root" class="zen-bit-events-container"></div>';
         }
 
@@ -93,6 +93,12 @@ if (!class_exists('Zen_BIT')) {
                 [],
                 ZEN_BIT_VERSION
             );
+
+            // Enfileira se o post atual contiver o shortcode
+            global $post;
+            if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'zen_bit_events')) {
+                wp_enqueue_style('zen-bit-public');
+            }
         }
 
         // =====================================================================
@@ -102,11 +108,12 @@ if (!class_exists('Zen_BIT')) {
         public function register_rest_routes(): void
         {
             $api_class = __NAMESPACE__ . '\\Zen_BIT_API_V2';
+            $ns = $this->rest_namespace;
 
             // ---- Público ----
 
             // Lista de eventos (payload enxuto)
-            register_rest_route('zen-bit/v2', '/events', [
+            register_rest_route($ns, '/events', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'list_events'],
                 'permission_callback' => '__return_true',
@@ -120,7 +127,7 @@ if (!class_exists('Zen_BIT')) {
             ]);
 
             // Schema JSON-LD — lista  (/events/schema ANTES de /events/{id})
-            register_rest_route('zen-bit/v2', '/events/schema', [
+            register_rest_route($ns, '/events/schema', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'list_events_schema'],
                 'permission_callback' => '__return_true',
@@ -133,7 +140,7 @@ if (!class_exists('Zen_BIT')) {
             ]);
 
             // Detalhe de evento (event_id numérico)
-            register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)', [
+            register_rest_route($ns, '/events/(?P<event_id>\d+)', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'get_event'],
                 'permission_callback' => '__return_true',
@@ -143,7 +150,7 @@ if (!class_exists('Zen_BIT')) {
             ]);
 
             // Schema JSON-LD — evento individual
-            register_rest_route('zen-bit/v2', '/events/(?P<event_id>\d+)/schema', [
+            register_rest_route($ns, '/events/(?P<event_id>\d+)/schema', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'get_event_schema'],
                 'permission_callback' => '__return_true',
@@ -154,19 +161,19 @@ if (!class_exists('Zen_BIT')) {
 
             // ---- Admin (manage_options) ----
 
-            register_rest_route('zen-bit/v2', '/admin/fetch-now', [
+            register_rest_route($ns, '/admin/fetch-now', [
                 'methods' => 'POST',
                 'callback' => [$api_class, 'admin_fetch_now'],
                 'permission_callback' => [$api_class, 'check_admin_auth'],
             ]);
 
-            register_rest_route('zen-bit/v2', '/admin/clear-cache', [
+            register_rest_route($ns, '/admin/clear-cache', [
                 'methods' => 'POST',
                 'callback' => [$api_class, 'admin_clear_cache'],
                 'permission_callback' => [$api_class, 'check_admin_auth'],
             ]);
 
-            register_rest_route('zen-bit/v2', '/admin/health', [
+            register_rest_route($ns, '/admin/health', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'admin_health'],
                 'permission_callback' => [$api_class, 'check_admin_auth'],
