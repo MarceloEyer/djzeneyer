@@ -15,6 +15,12 @@ class DJZ_Vite_Loader
     private $dist_path;
     private $dist_url;
 
+    private function get_file_fingerprint($path)
+    {
+        $hash = @hash_file('sha256', $path);
+        return $hash ?: null;
+    }
+
     public function __construct()
     {
         // Prioridade 20 para rodar depois dos enqueues padrões
@@ -33,22 +39,20 @@ class DJZ_Vite_Loader
         ];
 
         foreach ($paths as $path) {
-            $cache_key = 'djz_vite_manifest_v2_' . hash('sha256', $path);
+            $cache_key = 'djz_vite_manifest_v3_' . hash('sha256', $path);
             $cached = get_transient($cache_key);
 
             // Transient exists, let's check its mtime against the file
 
             if (file_exists($path)) {
-                // Check cache validity with mtime comparison
-                $mtime = filemtime($path);
-                if ($mtime === false)
-                    $mtime = 0;
+                // Check cache validity with content fingerprint
+                $fingerprint = $this->get_file_fingerprint($path);
 
                 if (
                 is_array($cached) &&
-                isset($cached['mtime'], $cached['data']) &&
-                $cached['mtime'] === $mtime &&
-                $mtime !== 0
+                isset($cached['fingerprint'], $cached['data']) &&
+                !empty($fingerprint) &&
+                hash_equals($cached['fingerprint'], $fingerprint)
                 ) {
                     $this->manifest = $cached['data'];
                     return;
@@ -58,21 +62,16 @@ class DJZ_Vite_Loader
                 $content = file_get_contents($path);
 
                 if ($content !== false) {
-                    // Re-read mtime after content read to reduce race condition window
-                    $mtime_post_read = filemtime($path);
-                    if ($mtime_post_read === false)
-                        $mtime_post_read = 0;
-
                     $data = json_decode($content, true);
 
                     if (json_last_error() === JSON_ERROR_NONE) {
                         $this->manifest = $data;
 
-                        $cache_duration = ($mtime_post_read === 0) ? 5 * MINUTE_IN_SECONDS : 7 * DAY_IN_SECONDS;
+                        $cache_duration = empty($fingerprint) ? 5 * MINUTE_IN_SECONDS : 7 * DAY_IN_SECONDS;
 
                         set_transient($cache_key, [
                             'path' => $path,
-                            'mtime' => $mtime_post_read,
+                            'fingerprint' => $fingerprint,
                             'data' => $data
                         ], $cache_duration);
                     }
