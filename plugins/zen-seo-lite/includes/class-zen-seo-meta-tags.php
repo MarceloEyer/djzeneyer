@@ -111,7 +111,7 @@ class Zen_SEO_Meta_Tags
         echo '
 <meta property="og:url" content="' . \esc_url($data['canonical']) . '">' . "\n";
         echo '
-<meta property="og:site_name" content="' . \esc_attr(\get_bloginfo('name')) . '">' . "\n";
+<meta property="og:site_name" content="' . \esc_attr((string) \get_bloginfo('name')) . '">' . "\n";
 
         if (!empty($data['image'])) {
             echo '
@@ -275,8 +275,8 @@ class Zen_SEO_Meta_Tags
 
         $data = [
             'post_id' => null,
-            'title' => \get_bloginfo('name'),
-            'description' => \get_bloginfo('description'),
+            'title' => (string) \get_bloginfo('name'),
+            'description' => (string) \get_bloginfo('description'),
             'canonical' => Zen_SEO_Helpers::get_frontend_url(\home_url($request_uri)),
             'image' => $settings['default_image'] ?? '',
             'og_type' => 'website',
