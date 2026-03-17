@@ -84,11 +84,14 @@ const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 import routesSlugs from './routes-slugs.json';
 
+// Helper: map para O(1) slug lookup
+const slugMap = new Map(routesSlugs.routes.map(r => [r.key, r]));
+
 // Helper: slug por key e idioma
 const slug = (key: string, lang: Language): string | string[] => {
-  const route = routesSlugs.routes.find(r => r.key === key);
+  const route = slugMap.get(key);
   if (!route) return '';
-  const base = route[lang] as string;
+  const base = route[lang as keyof typeof route] as string;
   const aliases = (route.aliases as Record<string, string[]> | undefined)?.[lang] ?? [];
   return aliases.length > 0 ? [base, ...aliases] : base;
 };
