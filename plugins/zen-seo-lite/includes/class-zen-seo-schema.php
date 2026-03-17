@@ -146,7 +146,7 @@ class Zen_SEO_Schema
 
         // Image
         if (!empty($settings['default_image'])) {
-            $person['image'] = \esc_url((string) $settings['default_image']);
+            $person['image'] = \esc_url((string) ($settings['default_image'] ?? ''));
         }
 
         // Nationality
@@ -200,13 +200,13 @@ class Zen_SEO_Schema
             $person['memberOf'] = [
                 '@type' => 'Organization',
                 'name' => 'Mensa International',
-                'url' => \esc_url((string) $settings['mensa_url'])
+                'url' => \esc_url((string) ($settings['mensa_url'] ?? ''))
             ];
         }
 
         // Awards
         if (!empty($settings['awards_list'])) {
-            $awards = \array_filter(\array_map('trim', \explode("\n", (string) $settings['awards_list'])));
+            $awards = \array_filter(\array_map('trim', \explode("\n", (string) ($settings['awards_list'] ?? ''))));
             if (!empty($awards)) {
                 $person['award'] = \array_values($awards);
             }
@@ -362,7 +362,7 @@ class Zen_SEO_Schema
 
         // Image
         if ($image) {
-            $event['image'] = \esc_url((string) $image);
+            $event['image'] = \esc_url((string) ($image ?? ''));
         }
 
         // Location
@@ -381,7 +381,7 @@ class Zen_SEO_Schema
         $ticket_url = !empty($meta['event_ticket']) ? $meta['event_ticket'] : Zen_SEO_Helpers::get_frontend_url(\get_permalink($post));
         $event['offers'] = [
             '@type' => 'Offer',
-            'url' => \esc_url((string) $ticket_url),
+            'url' => \esc_url((string) ($ticket_url ?? '')),
             'availability' => 'https://schema.org/InStock'
         ];
 
@@ -416,13 +416,13 @@ class Zen_SEO_Schema
         ];
 
         if ($image) {
-            $music['image'] = \esc_url((string) $image);
+            $music['image'] = \esc_url((string) ($image ?? ''));
         }
 
         // Get audio URL from custom fields
         $audio_url = (string) \get_post_meta($post->ID, 'audio_url', true);
         if ($audio_url) {
-            $music['audio'] = \esc_url($audio_url);
+            $music['audio'] = \esc_url((string) $audio_url);
         }
 
         // Genre from tags
@@ -459,7 +459,7 @@ class Zen_SEO_Schema
             'name' => $product->get_name(),
             'description' => \wp_strip_all_tags((string) $product->get_description()),
             'sku' => $product->get_sku(),
-            'image' => \wp_get_attachment_url($product->get_image_id()),
+            'image' => \esc_url((string) \wp_get_attachment_url($product->get_image_id())),
             'offers' => [
                 '@type' => 'Offer',
                 'url' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post)),
