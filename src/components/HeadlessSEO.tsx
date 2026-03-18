@@ -40,7 +40,7 @@ export interface EventSchemaData {
   location?: { venue?: string; city?: string; country?: string };
   event_location?: string;
   event_ticket?: string;
-  tickets?: { url?: string }[];
+  tickets?: string[];
   offers?: { url?: string }[];
   image?: string;
   description?: string;

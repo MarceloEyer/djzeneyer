@@ -50,5 +50,15 @@ require_once ZENGAME_PATH . 'includes/class-zengame.php';
     Activator::deactivate();
 });
 
-// 3. Launch the engine
+/**
+ * 3. WooCommerce High-Performance Order Storage (HPOS) Compatibility
+ */
+\add_action('before_woocommerce_init', function() {
+    if (\class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__, true);
+    }
+});
+
+// 4. Launch the engine
 ZenGame::get_instance();
