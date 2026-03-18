@@ -72,35 +72,28 @@ export const useGamiPress = (): GamiPressHookResponse => {
   const refresh = useCallback(() => { refetch(); }, [refetch]);
 
   // ⚡ Bolt: Wrapped return value with useMemo to prevent unnecessary re-renders of consuming components (like GamiPressContext Provider).
-  return useMemo(() => ({
-    data: resolved,
-    loading: isLoading,
-    error: error ? (error as Error).message : null,
-    refresh,
-    // --- SMART DISCOVERY ---
-    // Try in order: 'mana' key, generic 'points' key, the slug defined as main by backend, or first available
-    mainPoints: (
-        resolved.points?.mana?.amount ?? 
-        resolved.points?.points?.amount ?? 
-        resolved.points?.[resolved.main_points_slug]?.amount ?? 
-        Object.values(resolved.points || {})[0]?.amount ?? 
-        0
-    ),
-    points: (
-        resolved.points?.mana?.amount ?? 
-        resolved.points?.points?.amount ?? 
-        resolved.points?.[resolved.main_points_slug || '']?.amount ?? 
-        Object.values(resolved.points || {})[0]?.amount ?? 
-        0
-    ),
-    currentRank: resolved.rank?.current?.title ?? FALLBACK.rank.current.title,
-    rank: resolved.rank?.current?.title ?? FALLBACK.rank.current.title,
-    level: resolved.rank?.current?.id || 1,
-    progressToNextLevel: resolved.rank?.progress || 0,
-    nextLevelPoints: resolved.rank?.requirements?.[0]?.required || 0,
-    achievements: [
+  return useMemo(() => {
+    // NEW: Rely on the backend's main_points_slug for truth.
+    const main_slug = resolved.main_points_slug || 'points';
+    const mainPoints = resolved.points[main_slug]?.amount ?? 0;
+
+    return {
+      data: resolved,
+      loading: isLoading,
+      error: error ? (error as Error).message : null,
+      refresh,
+      // --- SMART DISCOVERY ---
+      mainPoints,
+      points: mainPoints,
+      currentRank: resolved.rank?.current?.title ?? FALLBACK.rank.current.title,
+      rank: resolved.rank?.current?.title ?? FALLBACK.rank.current.title,
+      level: resolved.rank?.current?.id || 1, // Using ID as level if level prop is missing
+      progressToNextLevel: resolved.rank?.progress || 0,
+      nextLevelPoints: resolved.rank?.requirements?.[0]?.required || 0,
+      achievements: [
         ...(resolved.achievements_earned || []),
         ...(resolved.achievements_locked || [])
-    ],
-  }), [resolved, isLoading, error, refresh]);
+      ],
+    };
+  }, [resolved, isLoading, error, refresh]);
 };

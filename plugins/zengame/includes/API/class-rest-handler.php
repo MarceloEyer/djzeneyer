@@ -92,7 +92,7 @@ final class REST_Handler
             'achievements_locked' => self::get_user_achievements($user_id, 'locked'),
             'recent_achievements' => self::get_user_achievements($user_id, 'earned', 3),
             'logs' => self::get_user_logs($user_id),
-            'main_points_slug' => 'points', // Default GamiPress slug
+            'main_points_slug' => self::get_main_points_slug(),
             'engine_status' => [
                 'woo' => \class_exists('WooCommerce'),
                 'gamipress' => true,
@@ -178,6 +178,25 @@ public static function track_interaction($request)
     // ─────────────────────────────────────────────────────────────────────────
     // PRIVATE HELPERS (Strict mapping to ZenGameUserData)
     // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Dynamically determines the primary point type slug.
+     * Priority: 'mana' > 'points' > first available GamiPress type.
+     */
+    private static function get_main_points_slug(): string
+    {
+        if (!\function_exists('gamipress_get_points_types')) return 'points';
+
+        $types = \gamipress_get_points_types();
+        if (empty($types)) return 'points';
+
+        $slugs = \wp_list_pluck($types, 'slug');
+
+        if (\in_array('mana', $slugs)) return 'mana';
+        if (\in_array('points', $slugs)) return 'points';
+
+        return $slugs[0]; // Fallback to first available
+    }
 
     private static function get_authenticated_user_id($request)
     {

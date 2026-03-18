@@ -162,14 +162,9 @@ const DashboardContent = () => {
 
   if (!user || !gamipress) return null;
 
-  // --- DATA NORMALIZATION (Resilient Discovery) ---
-  const mainPoints = (
-    gamipress.points?.mana?.amount ?? 
-    gamipress.points?.points?.amount ?? 
-    gamipress.points?.[gamipress.main_points_slug || '']?.amount ?? 
-    Object.values(gamipress.points || {})[0]?.amount ?? 
-    0
-  );
+  // --- POINT CALCULATION (BOLT: Refined discovery logic) ---
+  const main_slug = gamipress.main_points_slug || 'points';
+  const mainPoints = gamipress.points?.[main_slug]?.amount ?? 0;
   const streakCount = gamipress.stats?.streak ?? 0;
   const artifactCount = gamipress.stats?.totalTracks ?? 0;
   const currentRank = gamipress.rank?.current?.title || '--';
