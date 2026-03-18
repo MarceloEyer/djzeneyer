@@ -327,6 +327,14 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  .clip-hex {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  .bg-surface-dark {
+    background-color: #0a0c10;
+  }
 }
 
 /* ========================================
