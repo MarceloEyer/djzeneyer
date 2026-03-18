@@ -163,6 +163,7 @@ const DashboardContent = () => {
   if (!user || !gamipress) return null;
 
   // --- DATA NORMALIZATION ---
+  const mainPoints = gamipress.points?.mana?.amount ?? gamipress.points?.points?.amount ?? gamipress.points?.[gamipress.main_points_slug || '']?.amount ?? 0;
   const streakCount = gamipress.stats?.streak ?? 0;
   const artifactCount = gamipress.stats?.totalTracks ?? 0;
   const currentRank = gamipress.rank?.current?.title || '--';
@@ -245,7 +246,7 @@ const DashboardContent = () => {
           <div className="col-span-12 lg:col-span-3 space-y-6">
             
             {/* CURRENT STATUS */}
-            <GlassCard title="Current Status" glowColor="primary">
+            <GlassCard glowColor="primary">
               <SectionHeader title="Status" icon={Target} />
               <div className="space-y-6">
                 {[
@@ -267,7 +268,7 @@ const DashboardContent = () => {
             </GlassCard>
 
             {/* QUICK ACTIONS / QUESTS */}
-            <GlassCard title="Daily Quests" glowColor="secondary">
+            <GlassCard glowColor="secondary">
               <SectionHeader title="Active Quests" icon={Sparkles} badge="3/5" />
               <div className="space-y-5">
                 {[
