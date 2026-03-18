@@ -1,4 +1,4 @@
-import React, { useState, memo, useMemo } from 'react';
+import React, { useState, memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -12,11 +12,12 @@ import { stripHtml } from '../utils/text';
 // COMPONENTE FAQITEM
 // ============================================================================
 const FAQItem = memo<{
+  id: string;
   question: string;
   answer: string;
   isOpen: boolean;
-  onToggle: () => void;
-}>(({ question, answer, isOpen, onToggle }: { question: string; answer: string; isOpen: boolean; onToggle: () => void }) => (
+  onToggle: (id: string) => void;
+}>(({ id, question, answer, isOpen, onToggle }: { id: string; question: string; answer: string; isOpen: boolean; onToggle: (id: string) => void }) => (
   <motion.div
     className="bg-surface/30 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-primary/30 transition-all duration-300"
     initial={{ opacity: 0, y: 10 }}
@@ -24,7 +25,7 @@ const FAQItem = memo<{
     viewport={{ once: true }}
   >
     <button
-      onClick={onToggle}
+      onClick={() => onToggle(id)}
       className="w-full flex items-center justify-between p-6 text-left hover:bg-surface/50 transition-colors group"
       aria-expanded={isOpen}
     >
@@ -68,9 +69,9 @@ const FAQPage: React.FC = () => {
   const location = useLocation();
   const [openIndex, setOpenIndex] = useState<string | null>(null);
 
-  const handleToggle = (id: string) => {
-    setOpenIndex(openIndex === id ? null : id);
-  };
+  const handleToggle = useCallback((id: string) => {
+    setOpenIndex(prev => prev === id ? null : id);
+  }, []);
 
 
 
@@ -176,10 +177,11 @@ const FAQPage: React.FC = () => {
                   return (
                     <FAQItem
                       key={uniqueId}
+                      id={uniqueId}
                       question={q.question}
                       answer={q.answer}
                       isOpen={openIndex === uniqueId}
-                      onToggle={() => handleToggle(uniqueId)}
+                      onToggle={handleToggle}
                     />
                   );
                 })}
