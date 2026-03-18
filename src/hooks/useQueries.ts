@@ -184,7 +184,7 @@ export interface ArtistProfile {
     pages: Record<string, string>;
   };
   awards: string[];
-  festivals?: any[]; // For now, keep as any or define if needed
+  festivals?: unknown[];
 }
 
 export interface ZenGlobalSettings {
@@ -649,7 +649,7 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       const apiUrl = buildApiUrl('zengame/v1/me');
       const headers: HeadersInit = getAuthHeaders(token);
 
-      const res = await fetch(apiUrl, { headers, credentials: 'include' });
+      const res = await fetch(apiUrl, { headers });
       
       const contentType = res.headers.get('content-type');
       if (contentType && contentType.includes('text/html')) {

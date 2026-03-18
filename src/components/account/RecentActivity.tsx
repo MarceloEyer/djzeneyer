@@ -35,51 +35,75 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
   };
 
   return (
-    <div className={`${!hideHeader ? 'bg-surface/50 rounded-lg p-6 border border-white/10' : ''}`}>
+    <div className={`${!hideHeader ? 'bg-surface/30 backdrop-blur-xl rounded-[1.5rem] p-8 border border-white/10 shadow-2xl' : ''}`}>
       {!hideHeader && (
-        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Clock className="text-primary" size={20} />
+        <h3 className="text-2xl font-black mb-8 flex items-center gap-3 font-display tracking-tight text-white uppercase">
+          <Clock className="text-primary animate-pulse" size={24} />
           {t('dashboard.recentActivity')}
         </h3>
       )}
-      <div className="space-y-3">
+      <div className="relative space-y-6 before:absolute before:left-6 before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-primary/40 before:via-secondary/20 before:to-transparent">
         {hasLogs ? (
           logs.map((log) => (
             <div
               key={log.id}
-              className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all group"
+              className="relative pl-14 group transition-all duration-300"
             >
-              <div className={`p-2 rounded-lg ${log.points >= 0 ? 'bg-success/10 text-success' : 'bg-red-500/10 text-red-400'}`}>
-                {log.points >= 0 ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate group-hover:text-primary transition-colors">{log.description}</p>
-                <p className="text-xs text-white/40 flex items-center gap-1">
-                  <Clock size={10} /> {formatDate(log.date)}
-                </p>
-              </div>
-              <div className={`font-mono font-bold ${log.points >= 0 ? 'text-success' : 'text-red-400'}`}>
-                {log.points >= 0 ? '+' : ''}{log.points}
+              {/* Timeline Indicator */}
+              <div className={`absolute left-4 top-1 h-4 w-4 rounded-full border-2 bg-background z-10 transition-colors group-hover:scale-110 shadow-neon-sm ${
+                log.points >= 0 ? 'border-primary' : 'border-red-500'
+              }`} />
+              
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all hover:translate-x-1 shadow-sm">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                  log.points >= 0 ? 'bg-primary/10 text-primary' : 'bg-red-500/10 text-red-400'
+                }`}>
+                  {log.points >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm text-white/90 leading-tight mb-1">{log.description}</p>
+                  <p className="text-[10px] text-white/40 font-black uppercase tracking-widest flex items-center gap-1">
+                    <Clock size={10} /> {formatDate(log.date)}
+                  </p>
+                </div>
+                
+                <div className={`text-sm font-black font-display px-2 py-1 rounded-lg bg-black/40 ${
+                  log.points >= 0 ? 'text-primary' : 'text-red-400'
+                }`}>
+                  {log.points >= 0 ? '+' : ''}{log.points}
+                </div>
               </div>
             </div>
           ))
         ) : (
-          <>
-            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-              <Music className="text-primary" size={20} />
-              <div>
-                <p className="font-medium">{t('dashboard.welcomeTribe')}</p>
-                <p className="text-sm text-white/60">{t('dashboard.journeyBegins')}</p>
+          <div className="space-y-6">
+            <div className="relative pl-14 group transition-all">
+              <div className="absolute left-4 top-1 h-4 w-4 rounded-full border-2 border-primary bg-background z-10" />
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary">
+                  <Music size={20} />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-white/90">{t('dashboard.welcomeTribe')}</p>
+                  <p className="text-[10px] text-white/40 font-black uppercase tracking-widest leading-none mt-1">{t('dashboard.journeyBegins')}</p>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-              <Calendar className="text-accent" size={20} />
-              <div>
-                <p className="font-medium">{t('dashboard.accountCreated')}</p>
-                <p className="text-sm text-white/60">{t('dashboard.startExploring')}</p>
+            
+            <div className="relative pl-14 group transition-all">
+              <div className="absolute left-4 top-1 h-4 w-4 rounded-full border-2 border-accent bg-background z-10" />
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent">
+                  <Calendar size={20} />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-white/90">{t('dashboard.accountCreated')}</p>
+                  <p className="text-[10px] text-white/40 font-black uppercase tracking-widest leading-none mt-1">{t('dashboard.startExploring')}</p>
+                </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

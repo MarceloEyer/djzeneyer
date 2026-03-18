@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useUser } from '../contexts/UserContext';
@@ -99,7 +99,7 @@ const DashboardContent = () => {
             <div className="flex items-center gap-5">
               <div className="relative">
                 <img
-                  src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
+                  src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || '')}&background=6366F1&color=fff&size=128`}
                   alt={user.name}
                   className="relative z-10 h-20 w-20 rounded-2xl border border-white/10 object-cover shadow-2xl"
                 />
@@ -115,23 +115,62 @@ const DashboardContent = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:w-auto">
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.mana')}</div>
-                <div className="text-xl font-black mt-1">{mainPoints}</div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.artifacts')}</div>
-                <div className="text-xl font-black mt-1">{gamipress.stats?.totalTracks ?? 0}</div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.events')}</div>
-                <div className="text-xl font-black mt-1">{gamipress.stats?.eventsAttended ?? 0}</div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 group hover:border-primary/50 transition-colors">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">{t('dashboard.stats.ascension')}</div>
-                <div className="text-xl font-black mt-1 truncate">{gamipress.rank?.current?.title || '--'}</div>
-              </div>
+            {/* PREMIUM STATS GRID */}
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:w-3/4">
+              {/* MANA CARD */}
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="relative overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 px-4 py-5 group transition-all hover:bg-primary/10 hover:border-primary/40 shadow-lg shadow-primary/5"
+              >
+                <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Zap size={64} className="text-primary fill-primary" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">{t('dashboard.stats.mana')}</div>
+                <div className="text-3xl font-black mt-1 font-display bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">{mainPoints}</div>
+                <div className="mt-2 h-1 w-full bg-primary/20 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: '100%' }}
+                    className="h-full bg-primary"
+                  />
+                </div>
+              </motion.div>
+
+              {/* ARTIFACTS CARD */}
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="relative overflow-hidden rounded-2xl border border-secondary/20 bg-secondary/5 px-4 py-5 group transition-all hover:bg-secondary/10 hover:border-secondary/40 shadow-lg shadow-secondary/5"
+              >
+                <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Music size={64} className="text-secondary fill-secondary" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary/60">{t('dashboard.stats.artifacts')}</div>
+                <div className="text-3xl font-black mt-1 font-display bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">{gamipress.stats?.totalTracks ?? 0}</div>
+              </motion.div>
+
+              {/* EVENTS CARD */}
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="relative overflow-hidden rounded-2xl border border-accent/20 bg-accent/5 px-4 py-5 group transition-all hover:bg-accent/10 hover:border-accent/40 shadow-lg shadow-accent/5"
+              >
+                <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Calendar size={64} className="text-accent fill-accent" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-accent/60">{t('dashboard.stats.events')}</div>
+                <div className="text-3xl font-black mt-1 font-display bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">{gamipress.stats?.eventsAttended ?? 0}</div>
+              </motion.div>
+
+              {/* RANK CARD */}
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="relative overflow-hidden rounded-2xl border border-success/20 bg-success/5 px-4 py-5 group transition-all hover:bg-success/10 hover:border-success/40 shadow-lg shadow-success/5"
+              >
+                <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Award size={64} className="text-success fill-success" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-success/60">{t('dashboard.stats.ascension')}</div>
+                <div className="text-xl font-black mt-2 font-display text-white truncate drop-shadow-sm">{gamipress.rank?.current?.title || '--'}</div>
+              </motion.div>
             </div>
           </div>
 
@@ -213,33 +252,61 @@ const DashboardContent = () => {
           </div>
 
           {highlightedAchievements.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 p-8 text-center text-white/40">
-              {t('dashboard.allCleared')}
+            <div className="rounded-2xl border border-dashed border-white/15 p-12 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/5 mb-4">
+                 <Music className="text-white/20" />
+              </div>
+              <p className="text-white/40 font-medium italic">{t('dashboard.allCleared')}</p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {highlightedAchievements.map((achievement) => (
-                <div
+                <motion.div
                   key={achievement.id}
-                  className={`rounded-2xl border p-4 ${achievement.earned ? 'border-primary/30 bg-primary/5' : 'border-white/10 bg-black/30 opacity-80'}`}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className={`relative overflow-hidden rounded-[1.5rem] border p-5 transition-all duration-300 ${
+                    achievement.earned 
+                      ? 'border-primary/30 bg-primary/10 shadow-[0_0_20px_rgba(var(--color-primary),0.05)]' 
+                      : 'border-white/5 bg-black/40 grayscale opacity-60'
+                  }`}
                 >
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  {/* Status Indicator */}
+                  <div className={`absolute top-0 right-0 h-24 w-24 translate-x-12 -translate-y-12 rotate-45 ${
+                    achievement.earned ? 'bg-primary/20' : 'bg-white/5'
+                  }`} />
+                  
+                  <div className="relative mb-4 flex items-center gap-4">
+                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${
+                      achievement.earned ? 'border-primary/30 bg-primary/20 shadow-neon' : 'border-white/10 bg-white/5'
+                    }`}>
                       {achievement.image ? (
-                        <img src={safeUrl(achievement.image)} alt={achievement.title} className="h-6 w-6 object-contain" />
+                        <img src={safeUrl(achievement.image)} alt={achievement.title} className="h-8 w-8 object-contain" />
                       ) : (
-                        <Award size={16} className="text-primary" />
+                        <Award size={24} className={achievement.earned ? 'text-primary' : 'text-white/20'} />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="truncate font-black tracking-tight">{achievement.title}</p>
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-                        {achievement.earned ? t('dashboard.unlocked') : t('account.locked')}
-                      </p>
+                      <p className="font-black text-lg tracking-tight text-white">{achievement.title}</p>
+                      <div className="flex items-center gap-2">
+                        <div className={`h-1.5 w-1.5 rounded-full ${achievement.earned ? 'bg-primary animate-pulse' : 'bg-white/20'}`} />
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${achievement.earned ? 'text-primary' : 'text-white/30'}`}>
+                          {achievement.earned ? t('dashboard.unlocked') : t('account.locked')}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-sm text-white/70 line-clamp-2">{stripHtml(achievement.description)}</p>
-                </div>
+                  
+                  <p className="text-sm leading-relaxed text-white/60">
+                    {stripHtml(achievement.description)}
+                  </p>
+                  
+                  {achievement.earned && (
+                    <div className="mt-4 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-primary/40">
+                      <span>Verified Artifact</span>
+                      <Zap size={10} className="fill-primary text-primary" />
+                    </div>
+                  )}
+                </motion.div>
               ))}
             </div>
           )}
