@@ -271,6 +271,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         const endDate = event.ends_at || event.end_date;
 
         // Check if event is in the past
+        // eslint-disable-next-line react-hooks/purity
         const isPast = startDate ? new Date(startDate).getTime() < Date.now() : false;
 
         // Location mapping

@@ -17,6 +17,7 @@ export const HomePage: React.FC = () => {
   useEffect(() => {
     const hasSeenWelcome = localStorage.getItem('zen_zouk_welcome_seen');
     if (!hasSeenWelcome) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowWelcome(true);
     }
   }, []);

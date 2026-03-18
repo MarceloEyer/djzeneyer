@@ -66,6 +66,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     }, [isMenuOpen]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMenuOpen(false);
     }, [location.pathname]);
 
