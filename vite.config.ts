@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 import path from 'path';
 
@@ -9,6 +10,7 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       react(),
+      tailwindcss(),
       // Gzip compression (suportado pelo servidor Hostinger)
       isProduction && viteCompression({
         algorithm: 'gzip',
@@ -66,10 +68,13 @@ export default defineConfig(({ command, mode }) => {
           assetFileNames: 'assets/[name]-[hash].[ext]',
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
-          manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-            i18n: ['i18next', 'react-i18next'],
-            motion: ['framer-motion'],
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'vendor-react';
+              if (id.includes('framer-motion')) return 'vendor-motion';
+              if (id.includes('i18next')) return 'vendor-i18n';
+              return 'vendor';
+            }
           },
         },
       },
