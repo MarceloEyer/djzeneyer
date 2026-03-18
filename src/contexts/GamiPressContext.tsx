@@ -5,6 +5,7 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useGamiPress, GamiPressData } from '../hooks/useGamiPress';
+import { ZenGameAchievement } from '../types/gamification';
 
 interface GamiPressContextType {
     data: GamiPressData;
@@ -12,7 +13,13 @@ interface GamiPressContextType {
     error: string | null;
     refresh: () => void;
     mainPoints: number;
+    points: number;
     currentRank: string;
+    rank: string;
+    level: number;
+    progressToNextLevel: number;
+    nextLevelPoints: number;
+    achievements: ZenGameAchievement[];
 }
 
 const GamiPressContext = createContext<GamiPressContextType | undefined>(undefined);

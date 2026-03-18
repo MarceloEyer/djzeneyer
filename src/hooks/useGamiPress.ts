@@ -4,7 +4,7 @@
 import { useMemo, useCallback } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { useGamipressQuery } from './useQueries';
-import type { ZenGameUserData } from '../types/gamification';
+import type { ZenGameUserData, ZenGameAchievement } from '../types/gamification';
 
 export type GamiPressData = ZenGameUserData;
 
@@ -13,9 +13,15 @@ interface GamiPressHookResponse {
   loading: boolean;
   error: string | null;
   refresh: () => void;
-  // Legacy helpers for easier migration
+  // Convenience helpers
   mainPoints: number;
+  points: number; // alias for mainPoints
   currentRank: string;
+  rank: string; // alias for currentRank
+  level: number;
+  progressToNextLevel: number;
+  nextLevelPoints: number;
+  achievements: ZenGameAchievement[];
 }
 
 /* =========================
@@ -71,8 +77,30 @@ export const useGamiPress = (): GamiPressHookResponse => {
     loading: isLoading,
     error: error ? (error as Error).message : null,
     refresh,
-    // Legacy mapping (uses dynamic slug from backend)
-    mainPoints: resolved.points[resolved.main_points_slug]?.amount ?? 0,
+    // --- SMART DISCOVERY ---
+    // Try in order: 'mana' key, generic 'points' key, the slug defined as main by backend, or first available
+    mainPoints: (
+        resolved.points?.mana?.amount ?? 
+        resolved.points?.points?.amount ?? 
+        resolved.points?.[resolved.main_points_slug]?.amount ?? 
+        Object.values(resolved.points || {})[0]?.amount ?? 
+        0
+    ),
+    points: (
+        resolved.points?.mana?.amount ?? 
+        resolved.points?.points?.amount ?? 
+        resolved.points?.[resolved.main_points_slug || '']?.amount ?? 
+        Object.values(resolved.points || {})[0]?.amount ?? 
+        0
+    ),
     currentRank: resolved.rank?.current?.title ?? FALLBACK.rank.current.title,
+    rank: resolved.rank?.current?.title ?? FALLBACK.rank.current.title,
+    level: resolved.rank?.current?.id || 1,
+    progressToNextLevel: resolved.rank?.progress || 0,
+    nextLevelPoints: resolved.rank?.requirements?.[0]?.required || 0,
+    achievements: [
+        ...(resolved.achievements_earned || []),
+        ...(resolved.achievements_locked || [])
+    ],
   }), [resolved, isLoading, error, refresh]);
 };

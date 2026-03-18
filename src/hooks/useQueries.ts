@@ -662,7 +662,17 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       }
 
       if (!res.ok) throw new Error(`Failed to fetch gamipress: ${res.status}`);
-      return res.json();
+      const data = await res.json();
+      
+      // Debug point keys — help identifying why they might be zero
+      if (data && data.points) {
+        console.groupCollapsed('[GamiPress] User Data Sync');
+        console.info('Main Slug:', data.main_points_slug);
+        console.info('Point Keys Found:', Object.keys(data.points));
+        console.groupEnd();
+      }
+
+      return data;
     },
     staleTime: STALE_TIME.GAMIPRESS,
     refetchInterval: 60_000,
