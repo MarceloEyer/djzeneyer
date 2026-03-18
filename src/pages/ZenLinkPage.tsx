@@ -114,7 +114,7 @@ const SmartMusicCard = ({ platforms }: { platforms: any[] }) => {
   );
 };
 
-export const ZenLinkPage = () => {
+const ZenLinkPageComponent = () => {
   const { t } = useTranslation();
   const { artist } = useBranding();
 
@@ -277,3 +277,6 @@ export const ZenLinkPage = () => {
     </>
   );
 };
+
+// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary React reconciliation loops when parent layout components (like routers) trigger render cycles.
+export const ZenLinkPage = React.memo(ZenLinkPageComponent);
