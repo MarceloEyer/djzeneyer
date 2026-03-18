@@ -204,7 +204,7 @@ const HomePage: React.FC = () => {
               <img
                 src="/images/hero-background.webp"
                 alt="DJ Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
-                className="w-full h-full object-cover object-center opacity-40"
+                className="w-full h-full object-cover object-center opacity-65"
                 width="1920"
                 height="1080"
                 loading="eager"
@@ -213,7 +213,7 @@ const HomePage: React.FC = () => {
               />
             </picture>
           </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/20" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">

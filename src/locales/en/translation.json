@@ -1027,7 +1027,11 @@
     "style_title": "Cremosidade",
     "mission_title": "Mission",
     "coming_soon_title": "Coming Soon",
-    "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!"
+    "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!",
+    "connection": "Real Connection",
+    "connection_desc": "Music as a bridge between two souls, creating a moment of absolute presence.",
+    "flow": "Flow State",
+    "flow_desc": "Continuous movement where time stops and only the beat and breath matter."
   },
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
