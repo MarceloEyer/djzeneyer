@@ -10,7 +10,6 @@ namespace ZenEyer\Game\API;
 
 use ZenEyer\Game\Core\Engine;
 use WP_REST_Server;
-use WP_REST_Response;
 use WP_Error;
 
 if (!defined('ABSPATH')) {
@@ -78,6 +77,9 @@ final class REST_Handler
         }
 
         // Build response payload matching ZenGameUserData type
+        $earned_achievements = self::get_user_achievements($user_id, 'earned');
+        $recent_achievements = self::limit_achievements_by_date($earned_achievements, 3);
+
         $data = [
             'user_id' => $user_id,
             'stats' => [
@@ -88,9 +90,10 @@ final class REST_Handler
             ],
             'points' => self::get_user_points($user_id),
             'rank' => self::get_user_rank_data($user_id),
-            'achievements_earned' => self::get_user_achievements($user_id, 'earned'),
+            'achievements_earned' => $earned_achievements,
             'achievements_locked' => self::get_user_achievements($user_id, 'locked'),
-            'recent_achievements' => self::get_user_achievements($user_id, 'earned', 3),
+            'recent_achievements' => $recent_achievements,
+            'achievement_highlights' => $recent_achievements,
             'logs' => self::get_user_logs($user_id),
             'main_points_slug' => self::get_main_points_slug(),
             'engine_status' => [
@@ -100,7 +103,7 @@ final class REST_Handler
                 'ts' => \time()
             ],
             'lastUpdate' => \current_time('mysql'),
-            'version' => '1.4.0'
+            'version' => '1.4.1'
         ];
 
         \set_transient($cache_key, $data, \ZenEyer\Game\ZenGame::DEFAULT_CACHE_TTL);
@@ -187,15 +190,15 @@ public static function track_interaction($request)
     {
         if (!\function_exists('gamipress_get_points_types')) return 'points';
 
-        $types = \gamipress_get_points_types();
+        $types = self::normalize_type_collection(\gamipress_get_points_types());
         if (empty($types)) return 'points';
 
-        $slugs = \wp_list_pluck($types, 'slug');
+        $slugs = \array_values(\array_filter(\wp_list_pluck($types, 'slug')));
 
-        if (\in_array('mana', $slugs)) return 'mana';
-        if (\in_array('points', $slugs)) return 'points';
+        if (\in_array('mana', $slugs, true)) return 'mana';
+        if (\in_array('points', $slugs, true)) return 'points';
 
-        return $slugs[0]; // Fallback to first available
+        return $slugs[0] ?? 'points';
     }
 
     private static function get_authenticated_user_id($request)
@@ -215,22 +218,28 @@ public static function track_interaction($request)
 
     private static function get_user_points(int $user_id): array
     {
-        if (!\function_exists('gamipress_get_points_types')) return [];
-        $types = \gamipress_get_points_types();
+        if (!\function_exists('gamipress_get_points_types') || !\function_exists('gamipress_get_user_points')) return [];
+
+        $types = self::normalize_type_collection(\gamipress_get_points_types());
         $points = [];
         foreach ($types as $type) {
-            $points[$type['slug']] = [
-                'name' => $type['plural_name'],
-                'amount' => \gamipress_get_user_points($user_id, $type['slug']),
-                'image' => \get_the_post_thumbnail_url($type['id'], 'thumbnail') ?: ''
+            $slug = isset($type['slug']) ? (string) $type['slug'] : '';
+            if ($slug == '') {
+                continue;
+            }
+
+            $type_id = isset($type['id']) ? (int) $type['id'] : 0;
+            $points[$slug] = [
+                'name' => isset($type['plural_name']) ? (string) $type['plural_name'] : (isset($type['name']) ? (string) $type['name'] : \strtoupper($slug)),
+                'amount' => (int) \gamipress_get_user_points($user_id, $slug),
+                'image' => $type_id > 0 ? (\get_the_post_thumbnail_url($type_id, 'thumbnail') ?: '') : ''
             ];
         }
-        
-        // Ensure at least the main points slug exists to prevent frontend undefined errors
+
         if (!isset($points['points'])) {
             $points['points'] = ['name' => 'XP', 'amount' => 0, 'image' => ''];
         }
-        
+
         return $points;
     }
 
@@ -243,93 +252,170 @@ public static function track_interaction($request)
             'requirements' => [],
         ];
 
-        if (!\function_exists('gamipress_get_rank_types')) return $fallback;
+        if (!\function_exists('gamipress_get_rank_types') || !\function_exists('gamipress_get_user_rank')) return $fallback;
 
-        $rank_types = \gamipress_get_rank_types();
+        $rank_types = self::normalize_type_collection(\gamipress_get_rank_types());
         if (empty($rank_types)) return $fallback;
 
-        $type = $rank_types[0]; 
-        $current = \gamipress_get_user_rank($user_id, $type['slug']);
-        $next = \gamipress_get_next_user_rank($user_id, $type['slug']);
-        
+        $type = $rank_types[0] ?? null;
+        $rank_slug = isset($type['slug']) ? (string) $type['slug'] : '';
+        if ($rank_slug == '') return $fallback;
+
+        $current = \gamipress_get_user_rank($user_id, $rank_slug);
+        $next = self::get_next_rank_post($current, $rank_slug);
+
         $requirements = [];
         $progress = 0;
 
-        if ($next) {
+        if ($next && \function_exists('gamipress_get_rank_requirements') && \function_exists('gamipress_get_user_requirement_status')) {
             $reqs = \gamipress_get_rank_requirements($next->ID);
-            if ($reqs) {
+            if (\is_array($reqs) || $reqs instanceof \Traversable) {
                 foreach ($reqs as $req) {
+                    if (!isset($req->ID)) {
+                        continue;
+                    }
+
                     $status = \gamipress_get_user_requirement_status($user_id, $req->ID, $next->ID);
                     $requirements[] = [
-                        'title' => $req->post_title,
-                        'current' => (int)$status['current'],
-                        'required' => (int)$status['required'],
-                        'percent' => (float)$status['percent'],
+                        'title' => isset($req->post_title) ? (string) $req->post_title : '',
+                        'current' => isset($status['current']) ? (int) $status['current'] : 0,
+                        'required' => isset($status['required']) ? (int) $status['required'] : 0,
+                        'percent' => isset($status['percent']) ? (float) $status['percent'] : 0,
                     ];
                 }
             }
-            $progress = \gamipress_get_user_rank_type_progress_percent($user_id, $type['slug']);
+        }
+
+        if (\function_exists('gamipress_get_user_rank_type_progress_percent')) {
+            $progress = (float) \gamipress_get_user_rank_type_progress_percent($user_id, $rank_slug);
+        } elseif (!empty($requirements)) {
+            $progress = (float) \max(0, \min(100, \array_sum(\array_column($requirements, 'percent')) / \count($requirements)));
         }
 
         return [
             'current' => [
-                'id' => $current ? (int)$current->ID : 0,
-                'title' => $current ? $current->post_title : 'Zen Guest',
-                'image' => $current ? (\get_the_post_thumbnail_url($current->ID, 'medium') ?: '') : '',
+                'id' => $current && isset($current->ID) ? (int) $current->ID : 0,
+                'title' => $current && isset($current->post_title) ? (string) $current->post_title : 'Zen Guest',
+                'image' => $current && isset($current->ID) ? (\get_the_post_thumbnail_url($current->ID, 'medium') ?: '') : '',
             ],
             'next' => $next ? [
-                'id' => (int)$next->ID,
-                'title' => $next->post_title,
+                'id' => (int) $next->ID,
+                'title' => (string) $next->post_title,
                 'image' => \get_the_post_thumbnail_url($next->ID, 'medium') ?: '',
             ] : null,
-            'progress' => (float)$progress,
+            'progress' => $progress,
             'requirements' => $requirements,
         ];
     }
 
     private static function get_user_achievements(int $user_id, string $status = 'earned', int $limit = 0): array
     {
-        $ach_types = \gamipress_get_achievement_types();
+        if (!\function_exists('gamipress_get_achievement_types')) return [];
+
+        $ach_types = self::normalize_type_collection(\gamipress_get_achievement_types());
         $all = [];
 
         foreach ($ach_types as $type) {
+            $achievement_type = isset($type['slug']) ? (string) $type['slug'] : '';
+            if ($achievement_type == '') {
+                continue;
+            }
+
             if ($status === 'earned') {
-                $items = \gamipress_get_user_achievements(['user_id' => $user_id, 'achievement_type' => $type['slug']]);
+                if (!\function_exists('gamipress_get_user_achievements')) {
+                    continue;
+                }
+
+                $items = \gamipress_get_user_achievements(['user_id' => $user_id, 'achievement_type' => $achievement_type]);
             } else {
-                // Simplified: get all in type and filter manually to avoid heavy GamiPress queries
+                if (!\function_exists('gamipress_has_user_earned_achievement')) {
+                    continue;
+                }
+
                 $items = \get_posts([
-                    'post_type' => $type['slug'],
+                    'post_type' => $achievement_type,
                     'posts_per_page' => -1,
+                    'post_status' => 'publish',
                     'fields' => 'ids'
                 ]);
                 $final_items = [];
-                foreach ($items as $item_id) {
-                    if (!\gamipress_has_user_earned_achievement($item_id, $user_id)) {
-                        $final_items[] = \get_post($item_id);
+                foreach ((array) $items as $item_id) {
+                    if (!\gamipress_has_user_earned_achievement((int) $item_id, $user_id)) {
+                        $post = \get_post((int) $item_id);
+                        if ($post) {
+                            $final_items[] = $post;
+                        }
                     }
                 }
                 $items = $final_items;
             }
 
-            foreach ($items as $item) {
+            foreach ((array) $items as $item) {
+                if (!\is_object($item) || !isset($item->ID)) {
+                    continue;
+                }
+
                 $all[] = [
-                    'id' => $item->ID,
-                    'title' => $item->post_title,
-                    'description' => $item->post_excerpt ?: $item->post_content,
+                    'id' => (int) $item->ID,
+                    'title' => isset($item->post_title) ? (string) $item->post_title : '',
+                    'description' => !empty($item->post_excerpt) ? (string) $item->post_excerpt : (string) ($item->post_content ?? ''),
                     'image' => \get_the_post_thumbnail_url($item->ID, 'thumbnail') ?: '',
                     'earned' => $status === 'earned',
-                    'points_awarded' => (int)\get_post_meta($item->ID, '_gamipress_points_awarded', true),
-                    'date_earned' => \get_post_meta($item->ID, '_gamipress_earned_at', true) ?: '',
+                    'points_awarded' => (int) \get_post_meta($item->ID, '_gamipress_points_awarded', true),
+                    'date_earned' => (string) (\get_post_meta($item->ID, '_gamipress_earned_at', true) ?: ''),
                 ];
             }
         }
 
         if ($limit > 0) {
-            \usort($all, fn($a, $b) => \strcmp($b['date_earned'], $a['date_earned']));
-            return \array_slice($all, 0, $limit);
+            return self::limit_achievements_by_date($all, $limit);
         }
 
         return $all;
+    }
+
+
+    private static function normalize_type_collection($types): array
+    {
+        if (!\is_array($types)) {
+            return [];
+        }
+
+        return \array_values(\array_filter($types, static fn($type) => \is_array($type) && !empty($type['slug'])));
+    }
+
+    private static function get_next_rank_post($current_rank, string $rank_slug): ?\WP_Post
+    {
+        if ($rank_slug == '') {
+            return null;
+        }
+
+        $current_menu_order = ($current_rank && isset($current_rank->menu_order)) ? (int) $current_rank->menu_order : -1;
+        $rank_posts = \get_posts([
+            'post_type' => $rank_slug,
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'orderby' => ['menu_order' => 'ASC', 'date' => 'ASC'],
+            'order' => 'ASC',
+        ]);
+
+        foreach ((array) $rank_posts as $rank_post) {
+            if (!($rank_post instanceof \WP_Post)) {
+                continue;
+            }
+
+            if ((int) $rank_post->menu_order > $current_menu_order) {
+                return $rank_post;
+            }
+        }
+
+        return null;
+    }
+
+    private static function limit_achievements_by_date(array $achievements, int $limit): array
+    {
+        \usort($achievements, static fn(array $a, array $b): int => \strcmp((string) ($b['date_earned'] ?? ''), (string) ($a['date_earned'] ?? '')));
+        return \array_slice($achievements, 0, $limit);
     }
 
     private static function get_user_logs(int $user_id, int $limit = 10): array
