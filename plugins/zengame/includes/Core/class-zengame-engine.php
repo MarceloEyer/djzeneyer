@@ -38,6 +38,9 @@ final class Engine
     {
         $this->init_cache_hooks();
         \add_action('wp_login', [$this, 'update_login_streak'], 10, 2);
+
+        // Register ZenGame triggers in GamiPress
+        \add_filter('gamipress_activity_triggers', [$this, 'register_triggers']);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -157,16 +160,22 @@ final class Engine
         $hook = "zengame_" . \sanitize_key($action);
         \do_action($hook, $user_id, $object_id);
 
-        // Award direct points for high-value actions if needed
-        if ($action === 'download') {
-             // Example: award 5 XP for download click
-             \gamipress_award_points_to_user($user_id, 5, 'points', [
-                 'reason' => 'Download click: ' . $object_id
-             ]);
-        }
-
         $this->clear_user_cache($user_id);
         return true;
+    }
+
+    /**
+     * Registers ZenGame activity triggers so they appear in GamiPress rule selection UI.
+     */
+    public function register_triggers(array $triggers): array
+    {
+        $triggers['ZenGame'] = [
+            'zengame_download' => \__('Download a track', 'zengame'),
+            'zengame_share'    => \__('Share content', 'zengame'),
+            'zengame_listen'   => \__('Listen to a preview', 'zengame'),
+            'zengame_click'    => \__('Click a premium button', 'zengame'),
+        ];
+        return $triggers;
     }
 
     public function clear_cache_by_order_id(int $order_id): void

@@ -233,7 +233,8 @@ final class REST_Handler
             return 'points';
         }
 
-        return (string) $slugs[0];
+        $slug = (string) \apply_filters('zengame_main_points_slug', $slugs[0], $slugs);
+        return $slug;
     }
 
     private static function get_authenticated_user_id($request)
