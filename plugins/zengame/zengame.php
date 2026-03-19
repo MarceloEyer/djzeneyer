@@ -18,7 +18,7 @@
 namespace ZenEyer\Game;
 
 if (!defined('ABSPATH')) {
-    exit;
+    die;
 }
 
 /**
@@ -36,6 +36,7 @@ define('ZENGAME_URL', \plugin_dir_url(__FILE__));
 
 // 2. Load the main class
 require_once ZENGAME_PATH . 'includes/class-zengame.php';
+require_once ZENGAME_PATH . 'includes/Core/class-zengame-cpt.php';
 
 /**
  * Activation / Deactivation hooks
@@ -62,3 +63,4 @@ require_once ZENGAME_PATH . 'includes/class-zengame.php';
 
 // 4. Launch the engine
 ZenGame::get_instance();
+new Core\CPT();

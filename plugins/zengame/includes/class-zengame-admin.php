@@ -1,202 +1,185 @@
 <?php
+/**
+ * Admin logic
+ */
 namespace ZenEyer\Game;
 
 if (!defined('ABSPATH')) {
-    exit;
+    die;
 }
 
-/**
- * ZenGame_Admin — Handles all admin-specific logic for ZenGame.
- * 
- * Separated from the main ZenGame class to prevent admin-heavy logic 
- * from loading on the frontend of the site.
- */
-final class ZenGame_Admin
-{
-    /** @var ZenGame_Admin|null */
-    private static ?ZenGame_Admin $instance = null;
+class Admin {
 
-    /** @var ZenGame Main plugin instance reference. */
-    private ZenGame $plugin;
+    public function __construct() {
+        \add_action('admin_menu', [$this, 'add_plugin_page']);
+        \add_action('admin_enqueue_scripts', [$this, 'enqueue_styles']);
 
-    /**
-     * Returns the single instance.
-     */
-    public static function get_instance(ZenGame $plugin): self
-    {
-        if (null === self::$instance) {
-            self::$instance = new self($plugin);
-        }
-        return self::$instance;
+        // CPT Meta Boxes
+        \add_action('add_meta_boxes', [$this, 'add_meta_boxes']);
+        \add_action('save_post', [$this, 'save_meta_boxes']);
+
+        // User Profile Fields
+        \add_action('show_user_profile', [$this, 'user_profile_fields']);
+        \add_action('edit_user_profile', [$this, 'user_profile_fields']);
+        \add_action('personal_options_update', [$this, 'save_user_profile_fields']);
+        \add_action('edit_user_profile_update', [$this, 'save_user_profile_fields']);
     }
 
-    /**
-     * Private constructor.
-     */
-    private function __construct(ZenGame $plugin)
-    {
-        $this->plugin = $plugin;
-        $this->init_hooks();
-    }
-
-    /**
-     * Initialize admin hooks.
-     */
-    private function init_hooks(): void
-    {
-        \add_action('admin_init', [$this, 'register_settings']);
-        \add_action('admin_menu', [$this, 'add_admin_menu']);
-    }
-
-    /**
-     * Registers settings via the WordPress Settings API.
-     */
-    public function register_settings(): void
-    {
-        \register_setting('zengame_settings', 'zengame_cache_ttl', [
-            'type' => 'integer',
-            'sanitize_callback' => 'absint',
-            'default' => ZenGame::DEFAULT_CACHE_TTL,
-        ]);
-
-        \add_settings_section(
-            'zengame_main_section',
-            \__('System Configuration', 'zengame'),
-            null,
-            'zengame-settings'
-        );
-
-        \add_settings_field(
-            'cache_ttl',
-            \__('Cache TTL (seconds)', 'zengame'),
-            [$this, 'render_cache_ttl_field'],
-            'zengame-settings',
-            'zengame_main_section'
+    public function enqueue_styles() {
+        \wp_enqueue_style(
+            'zengame-admin',
+            ZENGAME_URL . 'assets/css/admin.css',
+            [],
+            ZENGAME_VERSION,
+            'all'
         );
     }
 
-    /** Renders the cache TTL number input. */
-    public function render_cache_ttl_field(): void
-    {
-        $val = (int) \get_option('zengame_cache_ttl', ZenGame::DEFAULT_CACHE_TTL);
-        printf(
-            '<input type="number" name="zengame_cache_ttl" value="%s" class="small-text" min="60"> <span>%s</span>',
-            \esc_attr((string) $val),
-            \esc_html__('seconds (default 86400 = 24 h)', 'zengame')
-        );
-    }
-
-    /** Registers the top-level admin menu and settings sub-page. */
-    public function add_admin_menu(): void
-    {
+    public function add_plugin_page() {
         \add_menu_page(
-            \__('ZenGame', 'zengame'),
+            'ZenGame Settings',
             'ZenGame',
             'manage_options',
             'zengame',
-            [$this, 'render_admin_dashboard'],
-            'dashicons-games'
+            [$this, 'create_admin_page'],
+            'dashicons-games',
+            55
+        );
+
+        // Add submenu pages for settings and logs
+        \add_submenu_page(
+            'zengame',
+            'Configurações',
+            'Configurações',
+            'manage_options',
+            'zengame',
+            [$this, 'create_admin_page']
         );
 
         \add_submenu_page(
             'zengame',
-            \__('Settings', 'zengame'),
-            \__('Settings', 'zengame'),
+            'Logs de Pontos',
+            'Logs',
             'manage_options',
-            'zengame-settings',
-            [$this, 'render_settings_page']
+            'zengame-logs',
+            [$this, 'create_logs_page']
         );
     }
 
-    /** Renders the admin dashboard. */
-    public function render_admin_dashboard(): void
-    {
+    public function create_admin_page() {
+        echo '<div class="wrap"><h1>ZenGame</h1><p>Motor de Gamificação e Fidelidade.</p></div>';
+    }
+
+    public function create_logs_page() {
+        echo '<div class="wrap"><h1>Logs de Gamificação</h1><p>Histórico completo de pontos dos usuários.</p></div>';
+        // TODO: Render WP_List_Table with logs from wp_zengame_logs
+    }
+
+    // =========================================================================
+    // META BOXES FOR CPTs
+    // =========================================================================
+    public function add_meta_boxes() {
+        // Rank Meta Box (Points Required)
+        \add_meta_box('zengame_rank_meta', 'Requisitos do Nível', [$this, 'render_rank_meta'], 'zengame_rank', 'normal', 'high');
+
+        // Mission Meta Box (Points Reward)
+        \add_meta_box('zengame_mission_meta', 'Configuração da Missão', [$this, 'render_mission_meta'], 'zengame_mission', 'normal', 'high');
+    }
+
+    public function render_rank_meta($post) {
+        \wp_nonce_field('zengame_save_meta', 'zengame_meta_nonce');
+        $points = \get_post_meta($post->ID, '_zengame_points_required', true) ?: 0;
+        ?>
+        <p>
+            <label for="zengame_points_required"><strong>Pontos Necessários para Alcançar:</strong></label><br>
+            <input type="number" id="zengame_points_required" name="zengame_points_required" value="<?php echo \esc_attr($points); ?>" style="width: 100%; max-width: 200px;">
+        </p>
+        <?php
+    }
+
+    public function render_mission_meta($post) {
+        \wp_nonce_field('zengame_save_meta', 'zengame_meta_nonce');
+        $points = \get_post_meta($post->ID, '_zengame_points_reward', true) ?: 10;
+        ?>
+        <p>
+            <label for="zengame_points_reward"><strong>Recompensa em Pontos:</strong></label><br>
+            <input type="number" id="zengame_points_reward" name="zengame_points_reward" value="<?php echo \esc_attr($points); ?>" style="width: 100%; max-width: 200px;">
+            <p class="description">Quantos pontos o usuário ganha ao completar esta missão.</p>
+        </p>
+        <?php
+    }
+
+    public function save_meta_boxes($post_id) {
+        if (!isset($_POST['zengame_meta_nonce']) || !\wp_verify_nonce(\sanitize_text_field($_POST['zengame_meta_nonce']), 'zengame_save_meta')) {
+            return;
+        }
+
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+
+        if (isset($_POST['post_type']) && 'zengame_rank' === $_POST['post_type']) {
+            if (!\current_user_can('edit_post', $post_id)) {
+                return;
+            }
+            if (isset($_POST['zengame_points_required'])) {
+                \update_post_meta($post_id, '_zengame_points_required', \absint($_POST['zengame_points_required']));
+            }
+        }
+
+        if (isset($_POST['post_type']) && 'zengame_mission' === $_POST['post_type']) {
+            if (!\current_user_can('edit_post', $post_id)) {
+                return;
+            }
+            if (isset($_POST['zengame_points_reward'])) {
+                \update_post_meta($post_id, '_zengame_points_reward', \absint($_POST['zengame_points_reward']));
+            }
+        }
+    }
+
+    // =========================================================================
+    // USER PROFILE (ADMIN)
+    // =========================================================================
+    public function user_profile_fields($user) {
         if (!\current_user_can('manage_options')) {
             return;
         }
 
-        // Handle cache purge.
-        if (isset($_GET['action']) && 'clear_cache' === $_GET['action']) {
-            \check_admin_referer('zengame_clear_cache');
-            $this->plugin->clear_all_gamipress_cache();
-            echo '<div class="notice notice-success is-dismissible"><p>'
-                . \esc_html__('ZenGame: all engine transients purged.', 'zengame')
-                . '</p></div>';
-        }
-
-        $is_woo = $this->plugin->is_woo_active();
-        $is_gp = \defined('GAMIPRESS_VER');
-        $status = ($is_woo && $is_gp) ? 'ONLINE' : 'DEGRADED';
-        $color = ('ONLINE' === $status) ? '#0D96FF' : '#f87171';
-
+        $points = (int) \get_user_meta($user->ID, 'zengame_points_balance', true);
         ?>
-        <div class="wrap">
-            <h1>ZenGame // <span style="color:<?php echo \esc_attr($color); ?>;">
-                    <?php echo \esc_html($status); ?>
-                </span></h1>
-            <div class="welcome-panel"
-                style="background:#111;color:#fff;padding:40px;border-radius:12px;border:1px solid #333;box-shadow:0 10px 30px rgba(0,0,0,.5);">
-
-                <h2 style="color:<?php echo $color; ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">
-                    CENTRAL INTELLIGENCE
-                </h2>
-                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.4.0 // Snapshot 2026-03-16</p>
-
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px;margin-top:35px;">
-                    <?php
-                    $cards = [
-                        ['WooCommerce HPOS', $is_woo ? 'SUPPORTED' : 'NOT FOUND', $is_woo],
-                        ['GamiPress Engine', $is_gp ? 'CONNECTED' : 'OFFLINE', $is_gp],
-                        ['Cache Health', ZenGame::CACHE_VERSION . ' Stable', true],
-                    ];
-                    foreach ($cards as [$label, $value, $ok]):
-                        $c = $ok ? '#4ade80' : '#f87171';
-                        ?>
-                        <div
-                            style="background:rgba(255,255,255,.03);padding:24px;border-radius:12px;border:1px solid rgba(255,255,255,.05);">
-                            <strong
-                                style="display:block;font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">
-                                <?php echo \esc_html($label); ?>
-                            </strong>
-                            <span style="font-size:22px;font-weight:700;color:<?php echo $c; ?>;">
-                                <?php echo \esc_html($value); ?>
-                            </span>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <hr style="border:0;border-top:1px solid #222;margin:40px 0;">
-
-                <div style="display:flex;gap:15px;align-items:center;">
-                    <a href="<?php echo \wp_nonce_url(\admin_url('admin.php?page=zengame&action=clear_cache'), 'zengame_clear_cache'); ?>"
-                        class="button button-primary button-hero"
-                        style="background:#ff4757;border:none;box-shadow:0 4px 14px rgba(255,71,87,.3);font-weight:700;">
-                        PURGE ALL ENGINE TRANSIENTS
-                    </a>
-                    <a href="<?php echo \esc_url(\admin_url('admin.php?page=zengame-settings')); ?>"
-                        class="button button-secondary" style="background:#222;color:#eee;border-color:#444;">
-                        SETTINGS
-                    </a>
-                </div>
-            </div>
-        </div>
+        <h3>ZenGame - Gestão de Pontos</h3>
+        <table class="form-table">
+            <tr>
+                <th><label for="zengame_add_points">Adicionar/Remover Pontos</label></th>
+                <td>
+                    <p><strong>Saldo Atual:</strong> <?php echo \esc_html($points); ?> pontos</p>
+                    <input type="number" name="zengame_manual_points" id="zengame_manual_points" value="0" class="regular-text" style="width: 100px;">
+                    <p class="description">Use valores negativos para remover pontos (ex: -50).</p>
+                    <br>
+                    <input type="text" name="zengame_manual_points_desc" id="zengame_manual_points_desc" value="" placeholder="Motivo/Descrição (Opcional)" class="regular-text">
+                    <?php \wp_nonce_field('zengame_manual_points_nonce', 'zengame_manual_points_nonce_field'); ?>
+                </td>
+            </tr>
+        </table>
         <?php
     }
 
-    /** Renders the settings form. */
-    public function render_settings_page(): void
-    {
-        ?>
-        <div class="wrap">
-            <h1>ZenGame // Settings</h1>
-            <form action="options.php" method="post">
-                <?php
-                \settings_fields('zengame_settings');
-                \do_settings_sections('zengame-settings');
-                \submit_button();
-                ?>
-            </form>
-        </div>
-        <?php
+    public function save_user_profile_fields($user_id) {
+        if (!\current_user_can('manage_options')) {
+            return false;
+        }
+
+        if (!isset($_POST['zengame_manual_points_nonce_field']) || !\wp_verify_nonce(\sanitize_text_field($_POST['zengame_manual_points_nonce_field']), 'zengame_manual_points_nonce')) {
+            return false;
+        }
+
+        $points_to_add = isset($_POST['zengame_manual_points']) ? (int) $_POST['zengame_manual_points'] : 0;
+        $description = isset($_POST['zengame_manual_points_desc']) ? \sanitize_text_field($_POST['zengame_manual_points_desc']) : 'Ajuste manual do administrador';
+
+        if ($points_to_add !== 0) {
+            // Include Engine for point manipulation
+            require_once ZENGAME_PATH . 'includes/Core/class-zengame-engine.php';
+            Core\Engine::award_points($user_id, $points_to_add, 'admin_adjustment', 0, 'admin', $description);
+        }
     }
 }

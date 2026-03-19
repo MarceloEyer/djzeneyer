@@ -9,7 +9,7 @@
 namespace ZenEyer\Game;
 
 if (!defined('ABSPATH')) {
-    exit;
+    die;
 }
 
 /**
@@ -24,7 +24,10 @@ class Activator
      */
     public static function activate()
     {
-        // Placeholder for future activation logic (e.g. creating tables if needed)
+        // Require Schema
+        require_once ZENGAME_PATH . 'includes/Core/class-zengame-schema.php';
+        Core\Schema::create_tables();
+
         \flush_rewrite_rules();
     }
 

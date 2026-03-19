@@ -9,7 +9,7 @@
 namespace ZenEyer\Game;
 
 if (!defined('ABSPATH')) {
-    exit;
+    die;
 }
 
 /**
@@ -54,8 +54,12 @@ final class ZenGame
     private function load_dependencies()
     {
         require_once ZENGAME_PATH . 'includes/Core/class-zengame-engine.php';
-        require_once ZENGAME_PATH . 'includes/API/class-rest-handler.php';
+
+        // Disable API for now while refactoring
+        // require_once ZENGAME_PATH . 'includes/API/class-rest-handler.php';
+
         require_once ZENGAME_PATH . 'includes/class-zengame-activator.php';
+        require_once ZENGAME_PATH . 'includes/Core/class-zengame-triggers.php';
 
         if (\is_admin()) {
             require_once ZENGAME_PATH . 'includes/class-zengame-admin.php';
@@ -76,16 +80,18 @@ final class ZenGame
     public function init_components()
     {
         // 1. Initialize the Game Engine (Caching, Stats, SQL)
-        $engine = \ZenEyer\Game\Core\Engine::get_instance();
-        $engine->init();
+        $engine = new \ZenEyer\Game\Core\Engine();
 
-        // 2. Initialize the REST API
-        \ZenEyer\Game\API\REST_Handler::init($engine);
+        // 2. Initialize the REST API (TODO: Rewrite)
+        \ZenEyer\Game\API\REST_Handler::init();
 
         // 3. Initialize Admin UI (only in dashboard)
         if (\is_admin()) {
-            \ZenEyer\Game\ZenGame_Admin::get_instance($this);
+            new \ZenEyer\Game\Admin();
         }
+
+        // 4. Initialize Triggers
+        new \ZenEyer\Game\Core\Triggers();
     }
 
     /**
@@ -101,6 +107,6 @@ final class ZenGame
      */
     public function clear_all_gamipress_cache(): void
     {
-        \ZenEyer\Game\Core\Engine::get_instance()->clear_all_cache();
+        // \ZenEyer\Game\Core\Engine::clear_all_cache();
     }
 }
