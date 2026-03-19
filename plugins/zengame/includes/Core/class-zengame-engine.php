@@ -41,6 +41,8 @@ final class Engine
 
         // Register ZenGame triggers in GamiPress
         \add_filter('gamipress_activity_triggers', [$this, 'register_triggers']);
+        \add_filter('gamipress_log_event_trigger_meta_data', [$this, 'map_log_meta'], 10, 5);
+        \add_filter('gamipress_get_activity_trigger_label', [$this, 'get_trigger_label'], 10, 2);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -178,9 +180,39 @@ final class Engine
         return $triggers;
     }
 
+    /**
+     * Maps ZenGame interaction metadata (like post_id) to GamiPress logs.
+     */
+    public function map_log_meta(array $log_meta, int $user_id, string $trigger, int $site_id, array $args): array
+    {
+        if (\strpos($trigger, 'zengame_') === 0) {
+            // Store the object ID as 'post_id' in the log if it exists in the args
+            // ZenGame passes $object_id as the second argument to \do_action
+            if (isset($args[1]) && \is_numeric($args[1])) {
+                $log_meta['post_id'] = (int) $args[1];
+            }
+        }
+        return $log_meta;
+    }
+
+    /**
+     * Provides clean labels for ZenGame triggers in GamiPress logs.
+     */
+    public function get_trigger_label(string $label, string $trigger): string
+    {
+        $labels = [
+            'zengame_download' => \__('Download a track', 'zengame'),
+            'zengame_share'    => \__('Share content', 'zengame'),
+            'zengame_listen'   => \__('Listen to a preview', 'zengame'),
+            'zengame_click'    => \__('Click a premium button', 'zengame'),
+        ];
+
+        return $labels[$trigger] ?? $label;
+    }
+
     public function clear_cache_by_order_id(int $order_id): void
     {
-        if (!\function_exists('wc_get_order')) return;
+        if (!\function_exists('\wc_get_order')) return;
         $order = \wc_get_order($order_id);
         if ($order && ($uid = $order->get_user_id())) {
             $this->clear_user_cache((int)$uid);
