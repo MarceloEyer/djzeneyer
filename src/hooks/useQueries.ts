@@ -650,19 +650,18 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       const headers: HeadersInit = getAuthHeaders(token);
 
       const res = await fetch(apiUrl, { headers });
-      
-      const contentType = res.headers.get('content-type');
-      if (contentType && contentType.includes('text/html')) {
-        const text = await res.text();
-        console.error('[useGamipressQuery] API returned HTML instead of JSON. Check if plugin is active or rewrites are flushed.');
-        if (text.includes('id="error-page"') || text.includes('wp-die-message')) {
-            throw new Error('WordPress Error: API endpoint not available or returned an error page.');
-        }
-        throw new Error('API returned invalid format (HTML). This usually means a 404 or 500 on the server.');
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        // Not JSON
       }
 
-      if (!res.ok) throw new Error(`Failed to fetch gamipress: ${res.status}`);
-      const data = await res.json();
+      if (!res.ok) {
+        const errorMsg = data?.message || `Failed to fetch gamipress: ${res.status}`;
+        throw new Error(errorMsg);
+      }
       
       // Debug point keys — help identifying why they might be zero
       if (data && data.points) {

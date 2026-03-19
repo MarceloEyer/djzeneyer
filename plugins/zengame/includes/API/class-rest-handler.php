@@ -66,45 +66,55 @@ final class REST_Handler
      */
     public static function get_dashboard($request)
     {
-        $user_id = self::get_authenticated_user_id($request);
-        if (!$user_id) return new WP_Error('unauthorized', 'Invalid token', ['status' => 401]);
+        try {
+            $user_id = self::get_authenticated_user_id($request);
+            if (!$user_id) return new WP_Error('unauthorized', 'Invalid token', ['status' => 401]);
 
-        $cache_key = 'djz_gamipress_dashboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $user_id;
-        $cached = \get_transient($cache_key);
-        if (false !== $cached) return \rest_ensure_response($cached);
+            $cache_key = 'djz_gamipress_dashboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $user_id;
+            $cached = \get_transient($cache_key);
+            if (false !== $cached) return \rest_ensure_response($cached);
 
-        if (!\defined('GAMIPRESS_VER')) {
-             return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
+            if (!\defined('GAMIPRESS_VER')) {
+                 return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
+            }
+
+            // Build response payload matching ZenGameUserData type
+            $data = [
+                'user_id' => $user_id,
+                'stats' => [
+                    'totalTracks' => self::$engine->get_user_total_tracks($user_id),
+                    'eventsAttended' => self::$engine->get_user_events_attended($user_id),
+                    'streak' => (int) \get_user_meta($user_id, 'zen_login_streak', true),
+                    'streakFire' => ((int) \get_user_meta($user_id, 'zen_login_streak', true)) >= 3,
+                ],
+                'points' => self::get_user_points($user_id),
+                'rank' => self::get_user_rank_data($user_id),
+                'achievements_earned' => self::get_user_achievements($user_id, 'earned'),
+                'achievements_locked' => self::get_user_achievements($user_id, 'locked'),
+                'recent_achievements' => self::get_user_achievements($user_id, 'earned', 3),
+                'logs' => self::get_user_logs($user_id),
+                'main_points_slug' => self::get_main_points_slug(),
+                'engine_status' => [
+                    'woo' => \class_exists('WooCommerce'),
+                    'gamipress' => true,
+                    'cache' => \get_option('zengame_last_purge') ? 'warm' : 'running',
+                    'ts' => \time()
+                ],
+                'lastUpdate' => \current_time('mysql'),
+                'version' => '1.4.0'
+            ];
+
+            \set_transient($cache_key, $data, \ZenEyer\Game\ZenGame::DEFAULT_CACHE_TTL);
+            return \rest_ensure_response($data);
+        } catch (\Throwable $e) {
+            $msg = 'ZenGame Engine Crash: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString();
+            \error_log($msg);
+            @\file_put_contents(ABSPATH . 'zengame_crash.log', $msg);
+            return new WP_Error('engine_crash', 'ZenGame Engine Crash: ' . $e->getMessage(), [
+                'status' => 500,
+                'trace' => $e->getTraceAsString()
+            ]);
         }
-
-        // Build response payload matching ZenGameUserData type
-        $data = [
-            'user_id' => $user_id,
-            'stats' => [
-                'totalTracks' => self::$engine->get_user_total_tracks($user_id),
-                'eventsAttended' => self::$engine->get_user_events_attended($user_id),
-                'streak' => (int) \get_user_meta($user_id, 'zen_login_streak', true),
-                'streakFire' => ((int) \get_user_meta($user_id, 'zen_login_streak', true)) >= 3,
-            ],
-            'points' => self::get_user_points($user_id),
-            'rank' => self::get_user_rank_data($user_id),
-            'achievements_earned' => self::get_user_achievements($user_id, 'earned'),
-            'achievements_locked' => self::get_user_achievements($user_id, 'locked'),
-            'recent_achievements' => self::get_user_achievements($user_id, 'earned', 3),
-            'logs' => self::get_user_logs($user_id),
-            'main_points_slug' => self::get_main_points_slug(),
-            'engine_status' => [
-                'woo' => \class_exists('WooCommerce'),
-                'gamipress' => true,
-                'cache' => \get_option('zengame_last_purge') ? 'warm' : 'running',
-                'ts' => \time()
-            ],
-            'lastUpdate' => \current_time('mysql'),
-            'version' => '1.4.0'
-        ];
-
-        \set_transient($cache_key, $data, \ZenEyer\Game\ZenGame::DEFAULT_CACHE_TTL);
-        return \rest_ensure_response($data);
     }
 
     /**
@@ -222,7 +232,7 @@ public static function track_interaction($request)
             $points[$type['slug']] = [
                 'name' => $type['plural_name'],
                 'amount' => \gamipress_get_user_points($user_id, $type['slug']),
-                'image' => \get_the_post_thumbnail_url($type['id'], 'thumbnail') ?: ''
+                'image' => \get_the_post_thumbnail_url($type['ID'] ?? ($type['id'] ?? 0), 'thumbnail') ?: ''
             ];
         }
         
@@ -312,6 +322,7 @@ public static function track_interaction($request)
             }
 
             foreach ($items as $item) {
+                if (!$item || !\is_object($item) || !isset($item->ID)) continue;
                 $all[] = [
                     'id' => $item->ID,
                     'title' => $item->post_title,
@@ -343,6 +354,7 @@ public static function track_interaction($request)
 
         $formatted = [];
         foreach ($logs as $log) {
+            if (!$log || !\is_object($log) || !isset($log->ID)) continue;
             $formatted[] = [
                 'id' => $log->ID,
                 'type' => \get_post_meta($log->ID, '_gamipress_log_type', true),

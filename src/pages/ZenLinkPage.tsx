@@ -62,11 +62,11 @@ const SmartMusicCard = ({ platforms }: { platforms: any[] }) => {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         aria-expanded={isOpen}
-        className="w-full relative overflow-hidden rounded-2xl p-[2px] bg-gradient-to-r from-fuchsia-500 via-indigo-500 to-cyan-500 shadow-lg shadow-fuchsia-500/20"
+        className="w-full relative overflow-hidden rounded-2xl p-[2px] bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 shadow-lg shadow-primary/10"
       >
-        <div className="flex items-center justify-between bg-gray-900/95 backdrop-blur-xl rounded-2xl p-5">
+        <div className="flex items-center justify-between bg-black/60 backdrop-blur-xl rounded-2xl p-5">
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-fuchsia-400 to-indigo-600 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
               <Headphones className="w-5 h-5 text-white" />
             </div>
             <div className="text-left">
@@ -163,21 +163,21 @@ const ZenLinkPageComponent = () => {
         url={`${artist.site.baseUrl}/zenlink`}
       />
 
-      <main className="min-h-screen bg-[#05060A] text-zinc-100 font-sans selection:bg-fuchsia-500/30">
+      <main className="min-h-screen bg-transparent text-zinc-100 font-sans selection:bg-primary/30">
         <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-10 pt-8">
           <motion.header
             initial={{ opacity: 0, y: -24 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <div className="relative rounded-3xl border border-fuchsia-500/30 bg-gradient-to-br from-fuchsia-500/15 via-indigo-500/15 to-cyan-500/10 p-5 shadow-[0_8px_24px_rgba(168,85,247,0.25)] backdrop-blur-xl">
-              <div className="absolute -right-2 -top-2 rounded-full border border-fuchsia-400/30 bg-zinc-950/90 px-2.5 py-1 text-[11px] font-medium text-fuchsia-200">
+            <div className="relative rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 shadow-xl backdrop-blur-xl">
+              <div className="absolute -right-2 -top-2 rounded-full border border-primary/40 bg-zinc-950/90 px-2.5 py-1 text-[11px] font-medium text-primary-light">
                 Link na Bio ⚡
               </div>
 
               <div className="flex items-center gap-4">
                 <div className="relative h-20 w-20 flex-shrink-0">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-fuchsia-500 to-indigo-500 animate-pulse blur-sm opacity-50" />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-primary to-primary-light animate-pulse blur-sm opacity-50" />
                   <img
                     src={`${artist.site.baseUrl}/images/zen-eyer-profile.jpg`}
                     alt={artist.identity.stageName}
@@ -193,7 +193,7 @@ const ZenLinkPageComponent = () => {
                     {artist.identity.stageName}
                   </h1>
                   <p className="text-sm text-zinc-200/90">{artist.identity.fullName}</p>
-                  <p className="mt-1 text-xs text-fuchsia-200 font-medium">✨ World Champion DJ</p>
+                  <p className="mt-1 text-xs text-primary-light font-medium">✨ World Champion DJ</p>
                 </div>
               </div>
 
@@ -209,8 +209,8 @@ const ZenLinkPageComponent = () => {
             className="mb-6 grid grid-cols-2 gap-2"
           >
             {microFacts.map((fact) => (
-              <div key={fact.label} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-300">
-                <span className="text-fuchsia-400">{fact.icon}</span>
+              <div key={fact.label} className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-zinc-300 backdrop-blur-md">
+                <span className="text-primary">{fact.icon}</span>
                 <span className="truncate">{fact.label}</span>
               </div>
             ))}
@@ -229,19 +229,19 @@ const ZenLinkPageComponent = () => {
                 transition={{ delay: 0.1 * index }}
                 whileTap={{ scale: 0.98 }}
                 className={`group block rounded-2xl border p-4 transition-all duration-300 ${link.highlight
-                  ? 'border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-500/10 to-indigo-500/10 hover:border-fuchsia-500/50'
-                  : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20'
+                  ? 'border-primary/40 bg-gradient-to-r from-primary/15 to-transparent hover:border-primary/60 shadow-lg shadow-primary/5'
+                  : 'border-white/5 bg-black/20 hover:bg-black/40 hover:border-white/20'
                   }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-900 border border-white/5 text-fuchsia-300">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/60 border border-white/5 text-primary">
                     {link.icon}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-base font-bold text-white tracking-tight">{link.title}</p>
                     <p className="truncate text-xs text-zinc-500 group-hover:text-zinc-400 transition-colors">{link.subtitle}</p>
                   </div>
-                  <ArrowUpRight className="h-4 w-4 shrink-0 text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-fuchsia-300" />
+                  <ArrowUpRight className="h-4 w-4 shrink-0 text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
                 </div>
               </motion.a>
             ))}
