@@ -679,6 +679,19 @@
     "coming_soon_title": "Vision",
     "coming_soon_desc": "Complete artistic manifesto of {{name}} is being updated for the 2026 world tour."
   },
+  "philosophy_page": {
+    "style_title": "The Style",
+    "connection": "Real Connection",
+    "connection_desc": "Music as a bridge between two souls, creating a moment of absolute presence.",
+    "flow": "State of Flow",
+    "flow_desc": "Continuous movement where time stops and only the beat and breath matter.",
+    "cremosidade_title": "Cremosidade",
+    "cremosidade_desc": "More than a sound, it's a texture. It's the feeling of melting into the movement, where every transition is smooth and every beat is a soft invitation to feel more.",
+    "the_source": "The Source",
+    "the_source_desc": "Everything starts from a deep respect for the roots. We take the essence of the past and remix it for the souls of today.",
+    "coming_soon_title": "Looking Ahead",
+    "coming_soon_desc": "The complete artistic manifesto is being prepared for the 2026 World Tour. Stay tuned for the full descent into the Zen Universe."
+  },
   "dashboard_page_title": "Dashboard",
   "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
   "media_page": {
@@ -1021,18 +1034,6 @@
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
   "footer_copyright": "© {{year}} DJ Zen Eyer. Haste is the enemy of cremosity.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
-
-  "philosophy_page": {
-    "title": "My Music Philosophy",
-    "style_title": "Cremosidade",
-    "mission_title": "Mission",
-    "coming_soon_title": "Coming Soon",
-    "coming_soon_desc": "More content about {{name}}'s musical philosophy will be added soon. Follow on social media to stay updated!",
-    "connection": "Real Connection",
-    "connection_desc": "Music as a bridge between two souls, creating a moment of absolute presence.",
-    "flow": "Flow State",
-    "flow_desc": "Continuous movement where time stops and only the beat and breath matter."
-  },
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
   "events_categories": "Categories",

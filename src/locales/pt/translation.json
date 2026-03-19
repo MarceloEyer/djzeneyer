@@ -678,11 +678,20 @@
     "style_title": "O Estilo",
     "mission_title": "Missão",
     "coming_soon_title": "Visão",
-    "coming_soon_desc": "O manifesto artístico completo de {{name}} está sendo atualizado para a tour mundial de 2026.",
+    "coming_soon_desc": "O manifesto artístico completo de {{name}} está sendo atualizado para a tour mundial de 2026."
+  },
+  "philosophy_page": {
+    "style_title": "O Estilo",
     "connection": "Conexão Real",
     "connection_desc": "A música como ponte entre duas almas, criando um momento de presença absoluta.",
     "flow": "Estado de Flow",
-    "flow_desc": "Movimento contínuo onde o tempo para e apenas a batida e a respiração importam."
+    "flow_desc": "Movimento contínuo onde o tempo para e apenas a batida e a respiração importam.",
+    "cremosidade_title": "A Cremosidade",
+    "cremosidade_desc": "Mais do que um som, é uma textura. É a sensação de derreter no movimento, onde cada transição é suave e cada batida é um convite suave para sentir mais.",
+    "the_source": "A Fonte",
+    "the_source_desc": "Tudo começa com um profundo respeito pelas raízes. Pegamos a essência do passado e a remixamos para as almas de hoje.",
+    "coming_soon_title": "Olhando para Frente",
+    "coming_soon_desc": "O manifesto artístico completo está sendo preparado para a Tour Mundial de 2026. Fique atento para o mergulho total no Universo Zen."
   },
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",

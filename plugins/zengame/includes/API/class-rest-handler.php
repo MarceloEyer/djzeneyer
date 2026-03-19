@@ -225,12 +225,12 @@ final class REST_Handler
             return 'points';
         }
 
-        if (\in_array('mana', $slugs, true)) {
-            return 'mana';
-        }
-
         if (\in_array('points', $slugs, true)) {
             return 'points';
+        }
+
+        if (\in_array('mana', $slugs, true)) {
+            return 'mana';
         }
 
         $slug = (string) \apply_filters('zengame_main_points_slug', $slugs[0], $slugs);
