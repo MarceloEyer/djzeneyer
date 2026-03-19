@@ -1,0 +1,100 @@
+( function () {
+
+    const { addFilter } = wp.hooks;
+    const { createElement, Fragment } = wp.element;
+    const { PanelRow, Spinner } = wp.components;
+    const { dispatch, select } = wp.data;
+
+    if ( typeof gamipress_default_badges === 'undefined' ||
+        ! gamipress_default_badges.images ||
+        ! gamipress_default_badges.allowed_post_types ) {
+        return;
+    }
+
+    function gamipress_set_featured_image( imageKey ) {
+
+        const postId = select( 'core/editor' ).getCurrentPostId();
+
+        const data = new window.FormData();
+        data.append( 'action', 'gamipress_badge_builder_set_featured_image' );
+        data.append( 'nonce', gamipress_default_badges.nonce );
+        data.append( 'post_id', postId );
+        data.append( 'image', imageKey );
+
+        fetch( ajaxurl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: data
+        } )
+        .then( res => res.json() )
+        .then( response => {
+
+            if ( ! response.success ) {
+                console.error( response );
+                return;
+            }
+
+            dispatch( 'core/editor' ).editPost( {
+                featured_media: response.data
+            } );
+
+        } );
+    }
+
+    addFilter(
+        'editor.PostFeaturedImage',
+        'gamipress/default-badges',
+        ( OriginalComponent ) => ( props ) => {
+
+            const currentPostType = select( 'core/editor' ).getCurrentPostType();
+
+            // Check the allowed post types
+            if ( ! gamipress_default_badges.allowed_post_types.includes( currentPostType ) ) {
+                return createElement( OriginalComponent, props );
+            }
+
+            return createElement(
+                Fragment,
+                {},
+                createElement( OriginalComponent, props ),
+                createElement(
+                    'div',
+                    { className: 'gamipress-badge-builder-default-badges-description-top' },
+                    gamipress_default_badges.text_top
+                ),
+                createElement(
+                    PanelRow,
+                    {},
+                    createElement(
+                        'div',
+                        { className: 'gamipress-badge-builder-default-badges-list' },
+                        Object.keys( gamipress_default_badges.images ).map( function ( key ) {
+
+                            const image = gamipress_default_badges.images[ key ];
+
+                            return createElement( 'img', {
+                                key: key,
+                                src: image.url,
+                                className: 'gamipress-badge-builder-default-badge-thumb',
+                                
+                                onClick: function () {
+                                    gamipress_set_featured_image( key );
+                                }
+                            } );
+                        } )
+                    )
+                ),
+                createElement(
+                    'div',
+                    { className: 'gamipress-badge-builder-default-badges-description-bottom' },
+                    createElement(
+                        'a',
+                        { href: gamipress_default_badges.text_bottom_link, target: '_blank' },
+                        gamipress_default_badges.text_bottom
+                    ),
+                ),
+            );
+        }
+    );
+
+} )();

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   data-name="Layer 21"
+   height="24"
+   id="Layer_21"
+   viewBox="0 0 24 24"
+   width="24"
+   version="1.1"
+   sodipodi:docname="x(24x24).svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata23">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs21" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     id="namedview19"
+     showgrid="false"
+     inkscape:zoom="9.8333333"
+     inkscape:cx="12.050847"
+     inkscape:cy="11.949153"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_21"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <title
+     id="title2" />
+  <circle
+     cx="16"
+     cy="8"
+     r="4"
+     id="circle4"
+     style="display:none;fill:#ffffff;fill-opacity:1" />
+  <path
+     id="path1009"
+     class="st1"
+     d="m 3.4155382,4.1116524 6.6611368,8.7017506 -6.7031181,7.074945 h 1.5087228 l 5.8687023,-6.194362 4.741576,6.194362 h 5.133885 L 13.590369,10.697227 19.829666,4.1116524 H 18.320943 L 12.916352,9.8163591 8.5494228,4.1116524 Z m 2.2186419,1.085668 H 7.9926632 L 18.407511,18.802679 H 16.04903 Z"
+     style="display:inline;fill:#ffffff;fill-opacity:1;stroke-width:0.028618" />
+</svg>

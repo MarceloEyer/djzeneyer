@@ -1,0 +1,1574 @@
+var gamipress_badge_builder;
+var gamipress_badge_builder_canvas;
+var gamipress_badge_builder_canvas_backup;
+var gamipress_badge_builder_multiple_canvas = [];
+var gamipress_badge_builder_multiple_details = [];
+var gamipress_badge_builder_active_obj;
+var gamipress_badge_builder_active_obj_index;
+var gamipress_badge_builder_history = [];
+var gamipress_badge_builder_history_redo = [];
+var gamipress_badge_builder_history_timer = null;
+var gamipress_badge_builder_history_applying = false;
+var gamipress_badge_builder_history_suspended = 0;
+
+( function( $ ) {
+
+    gamipress_badge_builder = $('.gamipress-badge-builder');
+
+    gamipress_badge_builder_canvas = new fabric.Canvas('gamipress-badge-builder-canvas', {
+        preserveObjectStacking: true,
+    });
+
+    gamipress_badge_builder_canvas_backup = new fabric.Canvas('gamipress-badge-builder-canvas-backup', {
+        preserveObjectStacking: true,
+    });
+
+    // Generate the initial badge
+    gamipress_badge_builder_generate_badge();
+
+    // Update selection
+    gamipress_badge_builder_canvas.on('selection:created', gamipress_badge_builder_update_selection);
+    gamipress_badge_builder_canvas.on('selection:updated', gamipress_badge_builder_update_selection);
+    gamipress_badge_builder_canvas.on('selection:cleared', gamipress_badge_builder_update_selection);
+    gamipress_badge_builder_canvas.on('mouse:down', function() {
+        var active_el = ( typeof document !== 'undefined' && document.activeElement ) ? document.activeElement : null;
+        var tag = ( active_el && active_el.tagName ) ? String( active_el.tagName ).toLowerCase() : '';
+
+        if ( ! active_el ) return;
+
+        if ( active_el.isContentEditable || [ 'input', 'textarea', 'select' ].includes( tag ) ) {
+            if ( typeof active_el.blur === 'function' ) {
+                active_el.blur();
+            }
+        }
+    });
+
+    setTimeout( gamipress_badge_builder_update_selection, 100 );
+
+    // History
+    gamipress_badge_builder_canvas.on('after:render', gamipress_badge_builder_history_schedule);
+
+    gamipress_badge_builder_history_save();
+
+    // Click icon field
+    $('.gamipress-badge-builder-selection-options').on('click', '.cmb2-id-icon .gamipress-badge-builder-icon', function(e) {
+        var selector = $('.gamipress-badge-builder-icon-selector');
+        var sidebar = $('.gamipress-badge-builder-sidebar');
+
+        if ( selector.is(':visible') ) {
+            selector.hide().scrollTop( 0 );
+            sidebar.removeClass('gamipress-badge-builder-icon-selector-open');
+        } else {
+            selector.show().scrollTop( 0 );
+            sidebar.addClass('gamipress-badge-builder-icon-selector-open');
+        }
+    });
+
+    // Click icon from icon selector
+    $('.gamipress-badge-builder-icon-selector').on('click', '.gamipress-badge-builder-icon', function(e) {
+        var icon_id = $(this).data('id');
+
+        gamipress_badge_builder_update_icon_field( icon_id );
+
+        $('.gamipress-badge-builder-selection-options .cmb2-id-icon input').val( icon_id ).trigger('change');
+
+        $('.gamipress-badge-builder-icon-selector').hide().scrollTop( 0 );
+        $('.gamipress-badge-builder-sidebar').removeClass('gamipress-badge-builder-icon-selector-open');
+        $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon-selector-filter input').val('').change();
+
+    });
+
+    // Click close on icon selector
+    $('.gamipress-badge-builder-icon-selector').on('click', '.gamipress-badge-builder-icon-selector-filter .dashicons', function(e) {
+        $('.gamipress-badge-builder-icon-selector').hide().scrollTop( 0 );
+        $('.gamipress-badge-builder-sidebar').removeClass('gamipress-badge-builder-icon-selector-open');
+
+        $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon-selector-filter input').val('').change();
+    });
+
+    // Icon selector filter
+    $('.gamipress-badge-builder-icon-selector').on('change input', '.gamipress-badge-builder-icon-selector-filter input', function(e) {
+        var search = $(this).val().toLowerCase();
+
+        if( search === '' ) {
+            $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon').show();
+            $('.gamipress-badge-builder-icon-selector strong').show();
+            return;
+        }
+
+        $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon').hide();
+        $('.gamipress-badge-builder-icon-selector strong').hide();
+
+        var found = $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon[data-id*="' + search + '"],'
+         + '.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon[data-id^="' + search + '"],'
+         + '.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon[data-id*="' + search + '"],'
+         + '.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon[data-id="' + search + '"]');
+
+        found.show();
+
+        found.parent().prev('strong').show();
+    });
+
+    // Range inputs synchronization
+    $('.gamipress-badge-builder-selection-options').on('change input', '.gamipress-badge-builder-range-input', function(e) {
+        var $this = $(this);
+        $this.parent().find('input[type="range"]').val( $this.val() ).trigger('change');
+    });
+
+    $('.gamipress-badge-builder-selection-options').on('change input', 'input[type="range"]', function(e) {
+        var $this = $(this);
+        $this.parent().find('.gamipress-badge-builder-range-input').val( $this.val() );
+    });
+
+    // Selection form change
+    $('.gamipress-badge-builder-selection-options').on('change input', 'input, select', function(e) {
+        gamipress_badge_builder_selection_form_change( $(this) );
+    });
+
+    // Color Pickers
+    gamipress_badge_builder_handle_colorpicker_changes();
+
+    // Toolbar actions
+    $('.gamipress-badge-builder-toolbar').on('click', '.gamipress-badge-builder-toolbar-control', function(e) {
+        gamipress_badge_builder_process_action( $(this).data('action'), $(this) );
+    });
+
+    // Sidebar actions
+    $('.gamipress-badge-builder-sidebar').on('click', '.gamipress-badge-builder-sidebar-control', function(e) {
+        gamipress_badge_builder_process_action( $(this).data('action'), $(this) );
+    });
+
+    // Generate multiple actions
+    $('.gamipress-badge-builder-generate-multiple-view').on('click', '.gamipress-badge-builder-preview-action', function(e) {
+        gamipress_badge_builder_process_action( $(this).data('action'), $(this) );
+    });
+
+
+    // Object tools
+    $('.gamipress-badge-builder-tools').on('click', '.gamipress-badge-builder-tool', function(e) {
+        gamipress_badge_builder_process_tool( $(this).data('tool') );
+    });
+
+    // Object shortcuts
+    $('body').on('click', '.gamipress-badge-builder-shortcuts-toggle', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+
+        $('.gamipress-badge-builder-shortcuts-wrapper').slideToggle('fast');
+
+        if( $this.text() === gamipress_admin_badge_builder.show_text ) {
+            $this.text(gamipress_admin_badge_builder.hide_text);
+        } else {
+            $this.text(gamipress_admin_badge_builder.show_text);
+        }
+    });
+
+    // Upload
+    // GPB
+    $('body').on('click', '.gamipress-badge-builder-upload-gpb', function(e) {
+        $('input#gamipress-badge-builder-upload-gpb-input')[0].click();
+    });
+
+    $('body').on('change', '.gamipress-badge-builder-upload-gpb input', function(e) {
+        gamipress_badge_builder_import_gpb( this );
+    });
+
+    // Save as
+    $('body').on('click', '.gamipress-badge-builder-action-save-dropdown li', function(e) {
+        var format = $(this).attr('class').replace('gamipress-badge-builder-save-', '');
+        gamipress_badge_builder_process_save( format );
+    });
+
+    // Generate Multiple > Save as
+    $('body').on('click', '.gamipress-badge-builder-preview-action-download-dropdown li', function(e) {
+        var format = $(this).attr('class').replace('gamipress-badge-builder-preview-save-', '');
+
+        var i = parseInt( $(this).closest('.gamipress-badge-builder-preview').data('index') );
+        var details = gamipress_badge_builder_multiple_details[i];
+
+        details.canvas = gamipress_badge_builder_canvas_backup;
+
+        gamipress_badge_builder_canvas_backup.clear();
+        gamipress_badge_builder_generate_badge( details );
+
+        setTimeout( function() {
+            gamipress_badge_builder_process_save( format, gamipress_badge_builder_canvas_backup );
+        }, 100 );
+    });
+
+
+} )( jQuery );
+
+/**
+ * Get colors pairs
+ *
+ * @since 7.0.0
+ *
+ * @return {Array}
+ */
+function gamipress_badge_builder_colors_pairs() {
+    return {
+        material: [
+            ['#e3574d', '#822c28', '#f59191', '#822c28'],
+            ['#e3574d', '#822c28', '#ffeeee', '#822c28'],
+            ['#822c28', '#e3574d', '#f59191', '#e3574d'],
+            ['#71b243', '#276d36', '#bad970', '#276d36'],
+            ['#71b243', '#276d36', '#eeffee', '#276d36'],
+            ['#276d36', '#71b243', '#bad970', '#71b243'],
+            ['#6cc8bd', '#2f7b76', '#b3e0dd', '#2f7b76'],
+            ['#6cc8bd', '#2f7b76', '#eeffff', '#2f7b76'],
+            ['#2f7b76', '#6cc8bd', '#b3e0dd', '#6cc8bd'],
+            ['#f27da2', '#bc374b', '#ebc5bf', '#bc374b'],
+            ['#f27da2', '#bc374b', '#FFFFFF', '#bc374b'],
+            ['#bc374b', '#f27da2', '#ebc5bf', '#f27da2'],
+            ['#e6c539', '#d18529', '#fcf6d9', '#d18529'],
+            ['#e6c539', '#d18529', '#FFFFFF', '#d18529'],
+            ['#d18529', '#e6c539', '#fcf6d9', '#e6c539'],
+            ['#3ea5d0', '#265771', '#9adbf4', '#265771'],
+            ['#3ea5d0', '#265771', '#FFFFFF', '#265771'],
+            ['#265771', '#3ea5d0', '#9adbf4', '#3ea5d0'],
+            ['#937cb9', '#513d78', '#ddd5e9', '#513d78'],
+            ['#937cb9', '#513d78', '#FFFFFF', '#513d78'],
+            ['#513d78', '#937cb9', '#ddd5e9', '#937cb9'],
+            ['#f69625', '#a74824', '#ead0bf', '#a74824'],
+            ['#f69625', '#a74824', '#FFFFFF', '#a74824'],
+            ['#a74824', '#f69625', '#ead0bf', '#f69625'],
+        ],
+        pastel: [
+            ['#fbdfe4', '#f7a3b2', '#f9f9f9', '#f7a3b2'],
+            ['#f7a3b2', '#fbdfe4', '#f9f9f9', '#fbdfe4'],
+            ['#cbb0d7', '#bd89c6', '#f0def7', '#bd89c6'],
+            ['#bd89c6', '#cbb0d7', '#f0def7', '#cbb0d7'],
+            ['#fda384', '#f28583', '#fcddd4', '#f28583'],
+            ['#f28583', '#fda384', '#fcddd4', '#fda384'],
+            ['#98c2ea', '#7aacdb', '#dbe6ff', '#7aacdb'],
+            ['#7aacdb', '#98c2ea', '#dbe6ff', '#98c2ea'],
+            ['#a1dacb', '#88bdab', '#e3f9f8', '#88bdab'],
+            ['#88bdab', '#a1dacb', '#e3f9f8', '#a1dacb'],
+            ['#baedb6', '#9ddb8a', '#d9f4db', '#9ddb8a'],
+            ['#9ddb8a', '#baedb6', '#d9f4db', '#baedb6'],
+            ['#e6ee92', '#d8e54e', '#f2fcd6', '#d8e54e'],
+            ['#d8e54e', '#e6ee92', '#f2fcd6', '#e6ee92'],
+            ['#bdcab3', '#9fb492', '#cfe2c9', '#9fb492'],
+            ['#9fb492', '#bdcab3', '#cfe2c9', '#bdcab3'],
+            ['#f9f4ad', '#f2e774', '#f9f9de', '#f2e774'],
+            ['#f2e774', '#f9f4ad', '#f9f9de', '#f9f4ad'],
+        ],
+        vintage: [
+            ['#233D4D', '#215E61', '#E5D9B0', '#FE7F2D'],
+            ['#233D4D', '#215E61', '#FE7F2D', '#E5D9B0'],
+            ['#E5D9B0', '#DE802B', '#5C6F2B', '#EEEEEE'],
+            ['#3b4f00', '#5C6F2B', '#DE802B', '#E5D9B0'],
+            ['#656D3F', '#84934A', '#492828', '#E5D9B0'],
+            ['#79C9C5', '#3F9AAE', '#FFE2AF', '#F96E5B'],
+            ['#FFE2AF', '#F96E5B', '#79C9C5', '#3F9AAE'],
+            ['#FDB5CE', '#3B9797', '#3B9797', '#FFFFFF'],
+            ['#213C51', '#6594B1', '#DDAED3', '#EEEEEE'],
+            ['#213C51', '#6594B1', '#EEEEEE', '#DDAED3'],
+            ['#DDAED3', '#6594B1', '#EEEEEE', '#6594B1'],
+            ['#84994F', '#FFE797', '#FFE797', '#FCB53B'],
+            ['#37353E', '#44444E', '#715A5A', '#D3DAD9'],
+            ['#44444E', '#37353E', '#D3DAD9', '#715A5A'],
+        ],
+    };
+}
+
+/**
+ * Get shapes
+ *
+ * @since 7.0.0
+ *
+ * @return {Array}
+ */
+function gamipress_badge_builder_get_shapes() {
+    return gamipress_admin_badge_builder.shapes;
+}
+
+/**
+ * Get icons
+ *
+ * @since 7.0.0
+ *
+ * @return {Array}
+ */
+function gamipress_badge_builder_get_icons() {
+    return gamipress_admin_badge_builder.icons;
+}
+
+/**
+ * Generate badge
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} options
+ */
+function gamipress_badge_builder_generate_badge( options ) {
+
+    if( options === undefined ) {
+        options = {};
+    }
+
+    if( options.canvas === undefined ) {
+        options.canvas = gamipress_badge_builder_canvas;
+    }
+
+    if( options.is_preview === undefined ) {
+        options.is_preview = false;
+    }
+
+    var colors = gamipress_badge_builder_colors_pairs();
+
+    if( options.palette === undefined || options.palette === '' ) {
+        var palette = Object.keys(colors);
+        options.palette = palette[Math.floor(Math.random() * palette.length)];
+    }
+
+    if( options.colors === undefined ) {
+        colors = colors[options.palette];
+        colors = colors[Math.floor(Math.random() * colors.length)];
+
+        if( colors[3] === undefined )
+            colors[3] = colors[1];
+
+        options.colors = colors;
+    }
+
+    if( options.shape === undefined || options.shape === '' ) {
+        var shape = gamipress_badge_builder_get_shapes();
+        options.shape = shape[Math.floor(Math.random() * shape.length)];
+    }
+
+    if( options.icon === undefined || options.icon === '' ) {
+        var icon = gamipress_badge_builder_get_icons();
+        options.icon = icon[Math.floor(Math.random() * icon.length)];
+    }
+
+    // Load Shape
+    fabric.loadSVGFromString( gamipress_badge_builder_get_icon_svg( options.shape ) ).then(({ objects }) => {
+        var obj = fabric.util.groupSVGElements(objects);
+
+        // load the shape
+        obj.clone().then(clone => {
+            clone.set({
+                id: options.shape.split('/').pop().replace('.svg', ''),
+                fill: options.colors[0],
+                strokeWidth: options.canvas.width/20,
+                strokeUniform: true,
+                strokeLineJoin: 'round',
+                stroke: options.colors[1],
+                selectable: ! options.is_preview,
+            });
+
+            gamipress_badge_builder_default_object_properties( clone );
+
+            if( clone.height > clone.width ) {
+                clone.scaleToHeight( options.canvas.height - 30 );
+            } else {
+                clone.scaleToWidth( options.canvas.width - 30 );
+            }
+
+            options.canvas.add( clone );
+
+            options.canvas.centerObject( clone );
+
+            if( ! options.is_preview )
+                options.canvas.setActiveObject( clone );
+        });
+    });
+
+    // Load Icon
+    fabric.loadSVGFromString( gamipress_badge_builder_get_icon_svg( options.icon ) ).then(({ objects }) => {
+        var obj = fabric.util.groupSVGElements(objects);
+
+        // load the icon
+        obj.clone().then(clone => {
+            clone.set({
+                id: options.icon.split('/').pop().replace('.svg', ''),
+                fill: options.colors[2],
+                strokeWidth: options.canvas.width/60,
+                strokeUniform: true,
+                strokeLineJoin: 'round',
+                stroke: options.colors[3],
+                selectable: ! options.is_preview,
+            });
+
+            gamipress_badge_builder_default_object_properties( clone );
+
+            if( clone.height > clone.width ) {
+                clone.scaleToHeight( ( options.canvas.height / 2 ) - 10 );
+            } else {
+                clone.scaleToWidth( ( options.canvas.width / 2 ) - 10 );
+            }
+
+            options.canvas.add( clone );
+
+            options.canvas.centerObject( clone );
+
+            // Icon adjustments based on shape
+            if( options.shape === 'triangle-shape' ) {
+                gamipress_badge_builder_scale( clone, 0.8 );
+                gamipress_badge_builder_move_object( clone, 0, options.canvas.height/6 );
+
+                if( options.is_preview ) {
+                    gamipress_badge_builder_move_object( clone, 0, -6 );
+                }
+            } else if( options.shape === 'pentagon-shape' ) {
+                gamipress_badge_builder_move_object( clone, 0, options.canvas.height/12 );
+
+                if( options.is_preview ) {
+                    gamipress_badge_builder_move_object( clone, 0, -4 );
+                }
+            } else if( options.shape === 'shield-shape' ) {
+                gamipress_badge_builder_move_object( clone, 0, -(options.canvas.height/15) );
+
+                if( options.is_preview ) {
+                    gamipress_badge_builder_move_object( clone, 0, +5 );
+                }
+            }
+
+        });
+    });
+
+    options.canvas.renderAll();
+
+    return options;
+
+}
+
+/**
+ * Check colorpicker changes
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_handle_colorpicker_changes() {
+
+    var $ = $ || jQuery;
+    var colorpickers = $('.gamipress-badge-builder-selection-options .wp-color-picker');
+
+    // Timeout is to wait to wpColorPicker initialization
+    if( colorpickers.length === 0 ) {
+        setTimeout( gamipress_badge_builder_handle_colorpicker_changes, 500 );
+        return;
+    }
+
+    colorpickers.wpColorPicker('option', 'change', function(e, ui) {
+        // Requires a small delay when a color is selected from presets
+        setTimeout(function() {
+            gamipress_badge_builder_selection_form_change( $(e.target) );
+        }, 1 );
+
+    } );
+
+}
+
+/**
+ * Get icon SVG
+ *
+ * @since 7.0.0
+ *
+ * @param {String} icon_id
+ *
+ * @return {String}
+ */
+function gamipress_badge_builder_get_icon_svg( icon_id ) {
+
+    return jQuery('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon-' + icon_id + ' .gamipress-badge-builder-icon-svg').html();
+
+}
+
+/**
+ * Update icon field
+ *
+ * @since 7.0.0
+ *
+ * @param {String} icon_id
+ */
+function gamipress_badge_builder_update_icon_field( icon_id ) {
+
+    var $ = $ || jQuery;
+    var form = $('.gamipress-badge-builder-selection-options');
+
+    var icon = $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon-' + icon_id);
+
+    if( icon.length ) {
+        // update selected icon
+        $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon-selected').toggleClass('gamipress-badge-builder-icon-selected')
+        icon.toggleClass('gamipress-badge-builder-icon-selected')
+
+        var svg = gamipress_badge_builder_get_icon_svg( icon_id );
+        var name = icon.find('span.cmb-tooltip-desc').html();
+
+        // Update the form field
+        form.find('#icon').val( icon_id );
+        form.find('.cmb2-id-icon .gamipress-badge-builder-icon .gamipress-badge-builder-icon-svg').html( svg );
+        form.find('.cmb2-id-icon .gamipress-badge-builder-icon .cmb-tooltip-desc').html( name );
+    }
+
+}
+
+/**
+ * Update selection
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_update_selection() {
+
+    gamipress_badge_builder_active_obj = gamipress_badge_builder_canvas.getActiveObject();
+    gamipress_badge_builder_active_obj_index = gamipress_badge_builder_canvas.getObjects().indexOf( gamipress_badge_builder_active_obj );
+
+    gamipress_badge_builder_update_selection_form();
+
+}
+
+/**
+ * Update selection form
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_update_selection_form() {
+
+    var $ = $ || jQuery;
+    var form = $('.gamipress-badge-builder-selection-options');
+    var sidebar = $('.gamipress-badge-builder-sidebar');
+
+    if ( ! gamipress_badge_builder_active_obj ) {
+        // Hide the form
+        sidebar.css( 'right', '-24%' );
+        return;
+    }
+
+    var obj = gamipress_badge_builder_active_obj;
+
+    // Show the form
+    sidebar.css('right', '0%');
+
+    // Icon
+    form.find('.cmb2-id-icon').show();
+    gamipress_badge_builder_update_icon_field( obj.id );
+
+    // Fill
+    if( typeof obj.fill == 'object' ) {
+        form.find('#fill').val( gamipress_badge_builder_parse_color( obj.fill.colorStops[0].color ) );
+    } else {
+        form.find('#fill').val( gamipress_badge_builder_parse_color( obj.fill ) );
+    }
+
+    // Stroke
+    if( typeof obj.stroke == 'object' ) {
+        form.find('#stroke').val( gamipress_badge_builder_parse_color( obj.stroke.colorStops[0].color ) );
+    } else {
+        form.find('#stroke').val( gamipress_badge_builder_parse_color( obj.stroke ) );
+    }
+
+    form.find('#stroke_width').val( obj.strokeWidth );
+    form.find('#stroke_type').val( obj.strokeLineJoin );
+
+    /**
+     * Allow external functions to add their own logic
+     *
+     * @since 7.0.0
+     *
+     * @selector    .gamipress-badge-builder
+     * @event       gamipress_badge_builder_process_action
+     */
+    gamipress_badge_builder.trigger( 'gamipress_badge_builder_update_selection_form', [ form ] );
+
+    // Trigger changes
+    form.find('#fill').trigger('change');
+    form.find('#stroke_width').trigger('change');
+    form.find('#stroke').trigger('change');
+
+}
+
+/**
+ * Selection form field change
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} field
+ */
+function gamipress_badge_builder_selection_form_change( field ) {
+
+    var $ = $ || jQuery;
+
+    if ( ! gamipress_badge_builder_active_obj ) return;
+
+    var obj = gamipress_badge_builder_active_obj;
+
+    var form = $('.gamipress-badge-builder-selection-options');
+    var field_id = field.attr('id');
+    var value = field.val();
+
+    switch( field_id ) {
+        case 'icon':
+            var index = gamipress_badge_builder_active_obj_index;
+            var swap_obj = gamipress_badge_builder_active_obj;
+
+            gamipress_badge_builder_history_suspended++;
+
+            fabric.loadSVGFromString( gamipress_badge_builder_get_icon_svg( value ) ).then(({ objects }) => {
+                var new_obj = fabric.util.groupSVGElements(objects);
+
+                // load the shape
+                return new_obj.clone().then(clone => {
+                    clone.set({
+                        id: value,
+                        left: swap_obj.left,
+                        top: swap_obj.top,
+                        fill: swap_obj.fill,
+                        strokeWidth: swap_obj.strokeWidth,
+                        strokeUniform: true,
+                        strokeLineJoin: swap_obj.strokeLineJoin,
+                        stroke: swap_obj.stroke,
+                    });
+
+                    gamipress_badge_builder_duplicate_object_properties( clone, swap_obj );
+
+                    if( new_obj.height > new_obj.width ) {
+                        clone.scaleToHeight( swap_obj.getScaledHeight() - swap_obj.strokeWidth );
+                    } else {
+                        clone.scaleToWidth( swap_obj.getScaledWidth() - swap_obj.strokeWidth );
+                    }
+
+                    gamipress_badge_builder_canvas.insertAt( index, clone );
+
+                    gamipress_badge_builder_canvas.setActiveObject( clone );
+                    gamipress_badge_builder_canvas.requestRenderAll();
+                });
+            }).catch(function() {
+            }).then(function() {
+                if ( gamipress_badge_builder_history_suspended > 0 ) {
+                    gamipress_badge_builder_history_suspended--;
+                }
+
+                if ( typeof gamipress_badge_builder_history_schedule === 'function' ) {
+                    setTimeout( function() {
+                        gamipress_badge_builder_history_schedule();
+                    }, 0 );
+                }
+            });
+
+            gamipress_badge_builder_delete( swap_obj );
+            break;
+        case 'fill':
+            obj.set( 'fill', gamipress_badge_builder_parse_color( value ) );
+            break;
+        case 'stroke_width':
+            value = parseInt( value );
+            if( isNaN( value ) ) value = 0;
+            obj.set('strokeWidth', value );
+            break;
+        case 'stroke':
+            obj.set( 'stroke', gamipress_badge_builder_parse_color( value ) );
+            break;
+        case 'stroke_type':
+            obj.set('strokeLineJoin', value );
+            break;
+    }
+
+    /**
+     * Allow external functions to add their own logic
+     *
+     * @since 7.0.0
+     *
+     * @selector    .gamipress-badge-builder
+     * @event       gamipress_badge_builder_selection_form_change
+     */
+    gamipress_badge_builder.trigger( 'gamipress_badge_builder_selection_form_change', [ form, field, field_id, value ] );
+
+    gamipress_badge_builder_canvas.renderAll();
+
+}
+
+/**
+ * Process action
+ *
+ * @since 7.0.0
+ *
+ * @param {String} action
+ * @param {Object} element
+ */
+function gamipress_badge_builder_process_action( action, element ) {
+
+    var $ = $ || jQuery;
+
+    switch ( action ) {
+        case 'add-icon':
+            gamipress_badge_builder_show_options_form( 'selection' );
+
+            fabric.loadSVGFromString( gamipress_badge_builder_get_icon_svg( 'circle-shape' ) ).then(({ objects }) => {
+                var new_obj = fabric.util.groupSVGElements( objects );
+
+                // load the shape
+                new_obj.clone().then(clone => {
+                    clone.set({
+                        id: 'circle-shape',
+                        left: gamipress_badge_builder_canvas.width / 2,
+                        top: gamipress_badge_builder_canvas.height / 2,
+                        fill: '#000000',
+                        strokeWidth: 0,
+                        strokeUniform: true,
+                        strokeLineJoin: 'round',
+                        stroke: '#ff0000',
+                    });
+
+                    gamipress_badge_builder_default_object_properties( clone );
+
+                    if( clone.height > clone.width ) {
+                        clone.scaleToHeight( ( gamipress_badge_builder_canvas.height / 2 ) );
+                    } else {
+                        clone.scaleToWidth( ( gamipress_badge_builder_canvas.width / 2 ) );
+                    }
+
+                    gamipress_badge_builder_canvas.add( clone );
+
+                    gamipress_badge_builder_canvas.setActiveObject( clone );
+
+                });
+            });
+
+            gamipress_badge_builder_canvas.renderAll();
+
+            $('.gamipress-badge-builder-selection-options .cmb2-id-icon .gamipress-badge-builder-icon').trigger('click');
+            break;
+        case 'open-generate-badge':
+            gamipress_badge_builder_show_options_form( 'generate-badge' );
+            break;
+        case 'close-generate-badge':
+            gamipress_badge_builder_close_options_form( 'generate-badge' );
+            break;
+        case 'generate-badge':
+            var palette = $('.gamipress-badge-builder-generate-badge-options input[name="badge_palette"]:checked').val();
+
+            gamipress_badge_builder_canvas.clear();
+            gamipress_badge_builder_generate_badge( { palette: palette } );
+            break;
+        case 'open-generate-multiple':
+            var palette = $('.gamipress-badge-builder-generate-multiple-options input[name="multiple_palette"]:checked').val();
+
+            $('.gamipress-badge-builder-generate-multiple-view .gamipress-badge-builder-preview').each(function() {
+                var i = parseInt( $(this).data('index') );
+
+                if( gamipress_badge_builder_multiple_canvas[i] === undefined ) {
+                    gamipress_badge_builder_multiple_canvas[i] = new fabric.Canvas($(this).attr('class') + '-canvas-' + i, {
+                        preserveObjectStacking: true,
+                    });
+
+                    gamipress_badge_builder_multiple_canvas[i].clear();
+
+                    var details = gamipress_badge_builder_generate_badge( {
+                        canvas: gamipress_badge_builder_multiple_canvas[i],
+                        palette: palette,
+                        is_preview: true,
+                    } );
+                    gamipress_badge_builder_multiple_details[i] = details;
+
+                    $(this).find('.gamipress-badge-builder-preview-palette-name').text(
+                        gamipress_admin_badge_builder.color_palettes[details.palette].name
+                    );
+                }
+            });
+
+            gamipress_badge_builder_show_options_form( 'generate-multiple' );
+            $('.gamipress-badge-builder-generate-multiple-view').css( 'left', '-2%' );
+            break;
+        case 'close-generate-multiple':
+            gamipress_badge_builder_close_options_form( 'generate-multiple' );
+            $('.gamipress-badge-builder-generate-multiple-view').css( 'left', '-84%' );
+            break;
+        case 'generate-multiple':
+            var palette = $('.gamipress-badge-builder-generate-multiple-options input[name="multiple_palette"]:checked').val();
+
+            $('.gamipress-badge-builder-generate-multiple-view .gamipress-badge-builder-preview').each(function() {
+                var i = parseInt( $(this).data('index') );
+
+                gamipress_badge_builder_multiple_canvas[i].clear();
+
+                var details = gamipress_badge_builder_generate_badge( {
+                    canvas: gamipress_badge_builder_multiple_canvas[i],
+                    palette: palette,
+                    is_preview: true,
+                } );
+                gamipress_badge_builder_multiple_details[i] = details;
+
+                $(this).find('.gamipress-badge-builder-preview-palette-name').text(
+                    gamipress_admin_badge_builder.color_palettes[details.palette].name
+                );
+            });
+            break;
+        case 'generate-multiple-edit':
+            var i = parseInt( element.closest('.gamipress-badge-builder-preview').data('index') );
+            var details = gamipress_badge_builder_multiple_details[i];
+
+            details.canvas = gamipress_badge_builder_canvas;
+            details.is_preview = false;
+
+            gamipress_badge_builder_canvas.clear();
+
+            gamipress_badge_builder_generate_badge( details );
+
+            gamipress_badge_builder_close_options_form( 'generate-multiple' );
+            $('.gamipress-badge-builder-generate-multiple-view').css( 'left', '-84%' );
+            break;
+        default:
+            /**
+             * Allow external functions to add their own process action
+             *
+             * @since 7.0.0
+             *
+             * @selector    .gamipress-badge-builder
+             * @event       gamipress_badge_builder_process_action
+             */
+            gamipress_badge_builder.trigger( 'gamipress_badge_builder_process_action', [ action, element ] );
+            break;
+    }
+
+}
+
+function gamipress_badge_builder_show_options_form( options ) {
+
+    var $ = $ || jQuery;
+
+    // Show options form
+    $('.gamipress-badge-builder-sidebar > div').hide();
+    $('.gamipress-badge-builder-' + options + '-options').show();
+
+    // Switch sidebars
+    $('.gamipress-badge-builder-sidebar').css( 'right', '0%' );
+    $('.gamipress-badge-builder-generate-multiple-view').css( 'left', '-84%' );
+
+    // Hide icon selector
+    $('.gamipress-badge-builder-icon-selector').hide().scrollTop( 0 );
+    $('.gamipress-badge-builder-sidebar').removeClass('gamipress-badge-builder-icon-selector-open');
+    $('.gamipress-badge-builder-icon-selector .gamipress-badge-builder-icon-selector-filter input').val('').change();
+
+}
+
+function gamipress_badge_builder_close_options_form( options ) {
+
+    var $ = $ || jQuery;
+
+    $('.gamipress-badge-builder-sidebar > div').hide();
+    $('.gamipress-badge-builder-selection-options').show();
+
+    if ( ! gamipress_badge_builder_active_obj ) {
+        $('.gamipress-badge-builder-sidebar').css( 'right', '-24%' );
+
+    }
+
+}
+
+/**
+ * Process tool
+ *
+ * @since 7.0.0
+ *
+ * @param {String} tool
+ */
+function gamipress_badge_builder_process_tool( tool ) {
+
+    var $ = $ || jQuery;
+
+    if ( ! gamipress_badge_builder_active_obj ) return;
+
+    var obj = gamipress_badge_builder_active_obj;
+
+    var scale_step = 0.1;
+
+    switch ( tool ) {
+        case 'scale-up':
+            gamipress_badge_builder_scale( obj, 1.0 + scale_step );
+            break;
+        case 'scale-down':
+            gamipress_badge_builder_scale( obj, 1.0 - scale_step );
+            break;
+        case 'fit':
+            var fit_padding = parseFloat( obj.strokeWidth || 0 );
+            var fit_max_w = Math.max( 0, gamipress_badge_builder_canvas.width - fit_padding );
+            var fit_max_h = Math.max( 0, gamipress_badge_builder_canvas.height - fit_padding );
+            var fit_obj_w = obj.getScaledWidth();
+            var fit_obj_h = obj.getScaledHeight();
+            var fit_factor = 1;
+
+            if ( fit_obj_w > 0 && fit_obj_h > 0 ) {
+                fit_factor = Math.min( fit_max_w / fit_obj_w, fit_max_h / fit_obj_h );
+            }
+
+            if ( isFinite( fit_factor ) && fit_factor > 0 ) {
+                obj.scaleX *= fit_factor;
+                obj.scaleY *= fit_factor;
+            }
+
+            gamipress_badge_builder_canvas.centerObject( obj );
+            obj.setCoords();
+            break;
+        case 'rotate-left':
+            gamipress_badge_builder_rotate( obj, -5 )
+            break;
+        case 'rotate-right':
+            gamipress_badge_builder_rotate( obj, 5 );
+            break;
+        case 'flip-horizontal':
+            obj.toggle('flipX');
+            break;
+        case 'flip-vertical':
+            obj.toggle('flipY');
+            break;
+        case 'align-horizontal-left':
+            obj.left = obj.getScaledWidth()/2;
+            obj.setCoords();
+            break;
+        case 'align-horizontal-center':
+            obj.left = gamipress_badge_builder_canvas.width/2;
+            obj.setCoords();
+            break;
+        case 'align-horizontal-right':
+            obj.left = gamipress_badge_builder_canvas.width - obj.getScaledWidth()/2;
+            obj.setCoords();
+            break;
+        case 'align-vertical-top':
+            obj.top = obj.getScaledHeight()/2;
+            obj.setCoords();
+            break;
+        case 'align-vertical-center':
+            obj.top = gamipress_badge_builder_canvas.height/2;
+            obj.setCoords();
+            break;
+        case 'align-vertical-bottom':
+            obj.top = gamipress_badge_builder_canvas.height - obj.getScaledHeight()/2;
+            obj.setCoords();
+            break;
+        case 'group':
+            // Only group when multiple objects are selected
+            if (obj.type !== "activeselection") return;
+            if (!obj._objects || obj._objects.length < 2) return;
+
+            // Filter out artboard objects from selection
+            var objects = obj._objects.filter(clone => clone.data !== "artboard" );
+            if (objects.length < 2) return;
+
+            // Create fabric group with centered origin
+            const group = new fabric.Group(objects, {
+                originX: "center",
+                originY: "center"
+            });
+
+            // Discard active selection and remove individual objects
+            gamipress_badge_builder_canvas.discardActiveObject();
+            objects.forEach(obj => gamipress_badge_builder_canvas.remove( obj ) );
+
+            // Add group to canvas and set as active
+            gamipress_badge_builder_canvas.add( group );
+            gamipress_badge_builder_canvas.setActiveObject( group );
+            break;
+        case 'ungroup':
+            console.log('ungroup');
+            // Only ungroup if active object is a fabric group
+            if (obj.type !== "group") return;
+
+            // Extract child objects from group
+            const items = obj._objects ? obj.getObjects() : [];
+            if (!items.length) return;
+
+            // Discard selection and remove group wrapper
+            gamipress_badge_builder_canvas.discardActiveObject();
+            gamipress_badge_builder_canvas.remove(obj);
+
+            // Add individual objects back to canvas
+            items.forEach(clone => {
+                // Calculate global position accounting for group transform
+                var point = fabric.util.transformPoint(
+                    { x: clone.left, y: clone.top },
+                    obj.calcTransformMatrix()
+                );
+
+                clone.set({
+                    left: point.x,
+                    top: point.y,
+                    scaleX: clone.scaleX * obj.scaleX,
+                    scaleY: clone.scaleY * obj.scaleY,
+                    angle: clone.angle + obj.angle
+                });
+
+                clone.setCoords();
+                gamipress_badge_builder_canvas.add(clone);
+            });
+
+            // Create active selection from ungrouped items
+            const selection = new fabric.ActiveSelection(items, {
+                canvas: gamipress_badge_builder_canvas
+            });
+            gamipress_badge_builder_canvas.setActiveObject(selection);
+            break;
+        case 'send-front':
+            gamipress_badge_builder_canvas.bringObjectForward( obj );
+            break;
+        case 'send-back':
+            gamipress_badge_builder_canvas.sendObjectBackwards( obj );
+            break;
+        case 'duplicate':
+            obj.clone().then((clone) => {
+
+                clone.set({
+                    id: obj.id,
+                });
+                
+                gamipress_badge_builder_duplicate_object_properties( clone, obj );
+
+                clone.left += 20;
+                clone.top += 20;
+
+                gamipress_badge_builder_canvas.add( clone );
+
+                gamipress_badge_builder_canvas.setActiveObject( clone );
+            });
+            break;
+        case 'undo':
+            gamipress_badge_builder_undo();
+            break;
+        case 'redo':
+            gamipress_badge_builder_redo();
+            break;
+        case 'delete':
+            gamipress_badge_builder_delete( obj );
+            break;
+        default:
+            /**
+             * Allow external functions to add their own process tool
+             *
+             * @since 7.0.0
+             *
+             * @selector    .gamipress-badge-builder
+             * @event       gamipress_badge_builder_process_tool
+             */
+            gamipress_badge_builder.trigger( 'gamipress_badge_builder_process_tool', [ tool ] );
+            break;
+    }
+
+    gamipress_badge_builder_canvas.renderAll();
+
+}
+
+/**
+ * Set the object center coordinates
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} obj
+ * @param {Number} x
+ * @param {Number} y
+ */
+function gamipress_badge_builder_set_object_center(obj, x, y) {
+    obj.set({
+        originX: 'center',
+        originY: 'center',
+        left: x,
+        top: y
+    });
+
+    obj.setCoords();
+}
+
+/**
+ * Scale object
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} obj
+ * @param {Number} factor
+ */
+function gamipress_badge_builder_scale( obj, factor ) {
+    var c = obj.getCenterPoint();
+
+    obj.scaleX *= factor;
+    obj.scaleY *= factor;
+
+    gamipress_badge_builder_set_object_center( obj, c.x, c.y );
+}
+
+/**
+ * Rotate object
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} obj
+ * @param {Number} delta
+ */
+function gamipress_badge_builder_rotate( obj, delta ) {
+    obj.rotate( ( obj.angle || 0 ) + delta );
+    obj.setCoords();
+}
+
+/**
+ * Delete object
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} obj
+ */
+function gamipress_badge_builder_delete( obj ) {
+    gamipress_badge_builder_canvas.remove( obj );
+    gamipress_badge_builder_canvas.requestRenderAll();
+
+    gamipress_badge_builder_active_obj = undefined;
+    gamipress_badge_builder_active_obj_index = -1;
+}
+
+/**
+ * Parse color
+ *
+ * @since 7.0.0
+ *
+ * @param {String} color
+ */
+function gamipress_badge_builder_parse_color( color ) {
+    return '#' + new fabric.Color( color ).toHex();
+}
+
+/**
+ * Check if valid file
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} field
+ * @param {String} format
+ */
+function gamipress_badge_builder_is_valid_file( field, format ) {
+
+    if( field.files.length === 0 ) {
+        return false;
+    }
+
+    var file = field.files[0];
+    var ext = file.name.split('.').pop();
+
+    if( ext !== format ) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Import GamiPress Badge (GPB)
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} field
+ */
+function gamipress_badge_builder_import_gpb( field ) {
+
+    if( ! gamipress_badge_builder_is_valid_file( field, 'gpb' ) ) {
+        console.log( 'not valid file' );
+        return;
+    }
+
+    var file = field.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        if( e.target.result.length > 0 ) {
+            gamipress_badge_builder_canvas.loadFromJSON( e.target.result );
+
+            setTimeout( function() {
+                gamipress_badge_builder_canvas.renderAll();
+            }, 1 );
+        }
+    };
+    reader.readAsText(file);
+
+
+}
+
+/**
+ * Process save
+ *
+ * @since 7.0.0
+ *
+ * @param {String} format
+ * @param {Object} canvas
+ */
+function gamipress_badge_builder_process_save( format, canvas ) {
+
+    if( canvas === undefined ) {
+        canvas = gamipress_badge_builder_canvas;
+    }
+
+    switch( format ) {
+        case 'gpb':
+            var gpb = JSON.stringify( canvas.toJSON() );
+            gamipress_badge_builder_download( "data:text/plain," + encodeURIComponent( gpb ), 'gpb' );
+            break;
+        case 'png':
+            gamipress_badge_builder_download( canvas.toDataURL( 'png' ), 'png' );
+            break;
+        default:
+            /**
+             * Allow external functions to add their own process save
+             *
+             * @since 7.0.0
+             *
+             * @selector    .gamipress-badge-builder
+             * @event       gamipress_badge_builder_process_save
+             */
+            gamipress_badge_builder.trigger( 'gamipress_badge_builder_process_save', [ format, canvas ] );
+            break;
+    }
+
+}
+
+/**
+ * Download file
+ *
+ * @since 7.0.0
+ *
+ * @param {String} url
+ * @param {String} ext
+ */
+function gamipress_badge_builder_download( url, ext ) {
+
+    var $ = $ || jQuery;
+
+    var filename = $('#filename').val();
+
+    if( filename === '' ) {
+        filename = 'gamipress-badge';
+    }
+
+    filename = filename.replace(/[\/|\\:*?"<>]/g, " ");
+    filename += '.' + ext;
+
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+}
+
+/**
+ * Move object
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} obj
+ * @param {Number} dx
+ * @param {Number} dy
+ */
+function gamipress_badge_builder_move_object( obj, dx, dy ) {
+    obj.left += dx;
+    obj.top += dy;
+    obj.setCoords();
+    gamipress_badge_builder_canvas.renderAll();
+}
+
+/**
+ * Default object properties
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} clone
+ */
+function gamipress_badge_builder_default_object_properties( clone ) {
+
+    /**
+     * Allow external functions to default object properties
+     *
+     * @since 7.0.0
+     *
+     * @selector    .gamipress-badge-builder
+     * @event       gamipress_badge_builder_default_object_properties
+     */
+    gamipress_badge_builder.trigger( 'gamipress_badge_builder_default_object_properties', [ clone ] );
+    
+}
+
+/**
+ * Duplicate object properties
+ *
+ * @since 7.0.0
+ *
+ * @param {Object} clone
+ * @param {Object} obj
+ */
+function gamipress_badge_builder_duplicate_object_properties( clone, obj ) {
+
+    /**
+     * Allow external functions to extend cloned object properties
+     *
+     * @since 7.0.0
+     *
+     * @selector    .gamipress-badge-builder
+     * @event       gamipress_badge_builder_duplicate_object_properties
+     */
+    gamipress_badge_builder.trigger( 'gamipress_badge_builder_duplicate_object_properties', [ clone, obj ] );
+    
+}
+
+/**
+ * Schedule history save
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_history_schedule() {
+    if( gamipress_badge_builder_history_applying || gamipress_badge_builder_history_suspended > 0 ) return;
+
+    clearTimeout( gamipress_badge_builder_history_timer );
+    gamipress_badge_builder_history_timer = setTimeout( gamipress_badge_builder_history_save, 300 );
+
+}
+
+/**
+ * History save
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_history_save() {
+    if ( gamipress_badge_builder_history_applying || gamipress_badge_builder_history_suspended > 0 ) return;
+
+    gamipress_badge_builder_history.push( gamipress_badge_builder_canvas.toJSON(["data"]) );
+    gamipress_badge_builder_history_redo = [];
+}
+
+/**
+ * History reset
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_history_reset() {
+    gamipress_badge_builder_history = [];
+    gamipress_badge_builder_history_redo = [];
+    gamipress_badge_builder_history_save();
+}
+
+/**
+ * Undo
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_undo() {
+    if( ! gamipress_badge_builder_history.length > 0 ) return;
+
+    gamipress_badge_builder_history_applying = true;
+
+    var preferred_active_id = ( gamipress_badge_builder_active_obj && gamipress_badge_builder_active_obj.id ) ? gamipress_badge_builder_active_obj.id : null;
+    var current = gamipress_badge_builder_history.pop();
+    gamipress_badge_builder_history_redo.push( current );
+
+    const prev = gamipress_badge_builder_history[gamipress_badge_builder_history.length - 1];
+    gamipress_badge_builder_history_apply( prev, preferred_active_id );
+
+}
+
+/**
+ * Redo
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_redo() {
+    if( ! gamipress_badge_builder_history_redo.length > 0 ) return;
+
+    gamipress_badge_builder_history_applying = true;
+
+    var preferred_active_id = ( gamipress_badge_builder_active_obj && gamipress_badge_builder_active_obj.id ) ? gamipress_badge_builder_active_obj.id : null;
+    const next = gamipress_badge_builder_history_redo.pop();
+    gamipress_badge_builder_history.push( next );
+
+    gamipress_badge_builder_history_apply( next, preferred_active_id );
+
+}
+
+/**
+ * Apply history
+ *
+ * @since 7.0.0
+ */
+function gamipress_badge_builder_history_apply( json, preferred_active_id ) {
+    if( json === undefined ) return;
+
+    gamipress_badge_builder_history_applying = true;
+    var finalized = false;
+    var finalize_apply = function() {
+        if ( finalized ) {
+            return;
+        }
+
+        finalized = true;
+
+        var list = ( typeof gamipress_badge_builder_canvas.getObjects === 'function' ) ? gamipress_badge_builder_canvas.getObjects() : [];
+        var target = null;
+
+        if ( preferred_active_id ) {
+            for ( var i = 0; i < list.length; i++ ) {
+                if ( list[i] && String( list[i].id || '' ) === String( preferred_active_id ) ) {
+                    target = list[i];
+                    break;
+                }
+            }
+        }
+
+        if ( ! target ) {
+            var non_artboard = list.filter( function( entry ) {
+                return entry && ! ( entry.data === 'artboard' || ( entry.data && entry.data.role === 'artboard' ) );
+            } );
+
+            if ( non_artboard.length === 1 ) {
+                target = non_artboard[0];
+            }
+        }
+
+        if ( target && typeof gamipress_badge_builder_canvas.setActiveObject === 'function' ) {
+            gamipress_badge_builder_canvas.setActiveObject( target );
+            if ( typeof target.setCoords === 'function' ) {
+                target.setCoords();
+            }
+        } else if ( typeof gamipress_badge_builder_canvas.discardActiveObject === 'function' ) {
+            gamipress_badge_builder_canvas.discardActiveObject();
+        }
+
+        gamipress_badge_builder_canvas.renderAll();
+        gamipress_badge_builder_update_selection();
+        gamipress_badge_builder_history_applying = false;
+    };
+
+    var loaded = gamipress_badge_builder_canvas.loadFromJSON( json, finalize_apply );
+
+    if ( loaded && typeof loaded.then === 'function' ) {
+        loaded.then( finalize_apply ).catch( finalize_apply );
+    }
+
+    setTimeout( function() {
+        finalize_apply();
+    }, 320 );
+
+}
+
+
+/**
+ * Keyboard shortcuts
+ *
+ * @since 7.0.0
+ */
+document.addEventListener('keydown', e => {
+    var obj = gamipress_badge_builder_active_obj;
+    var has_cmd_mod = !! ( e.ctrlKey || e.metaKey );
+    if ( ! obj ) return;
+
+    // Prevent to process it while editing an input
+    if( [ 'INPUT', 'SELECT', 'TEXTAREA' ].includes( e.target.tagName ) ) return;
+
+    switch ( e.key ) {
+        // Delete = Delete
+        case 'Delete': e.preventDefault(); gamipress_badge_builder_process_tool( 'delete' );
+            break;
+        // + = Scale Up
+        case '+': e.preventDefault(); gamipress_badge_builder_process_tool( 'scale-up' );
+            break;
+        // - = Scale Down
+        case '-': e.preventDefault(); gamipress_badge_builder_process_tool( 'scale-down' );
+            break;
+    }
+
+    if( ! e.shiftKey && ! e.altKey && ! has_cmd_mod ) {
+
+        var move_step = 2;
+
+        switch ( e.key ) {
+            // Arrows = Move
+            case 'ArrowUp': e.preventDefault(); gamipress_badge_builder_move_object( obj, 0, -move_step );
+                break;
+            case 'ArrowDown': e.preventDefault(); gamipress_badge_builder_move_object( obj, 0, move_step );
+                break;
+            case 'ArrowLeft': e.preventDefault(); gamipress_badge_builder_move_object( obj, -move_step, 0 );
+                break;
+            case 'ArrowRight': e.preventDefault(); gamipress_badge_builder_move_object( obj, move_step, 0 );
+                break;
+        }
+
+    } else if( e.shiftKey ) {
+        switch ( e.key ) {
+            // Shift + Arrow Key = Align
+            case 'ArrowUp': e.preventDefault(); gamipress_badge_builder_process_tool( 'align-vertical-top' );
+                break;
+            case 'ArrowDown': e.preventDefault(); gamipress_badge_builder_process_tool( 'align-vertical-bottom' );
+                break;
+            case 'ArrowLeft': e.preventDefault(); gamipress_badge_builder_process_tool( 'align-horizontal-left' );
+                break;
+            case 'ArrowRight': e.preventDefault(); gamipress_badge_builder_process_tool( 'align-horizontal-right' );
+                break;
+            // Shift + C = Center
+            case 'C':
+            case 'c':
+                e.preventDefault();
+                gamipress_badge_builder_process_tool( 'align-horizontal-center' );
+                gamipress_badge_builder_process_tool( 'align-vertical-center' );
+                break;
+            // Shift + D = Duplicate
+            case 'D':
+            case 'd':
+                e.preventDefault(); gamipress_badge_builder_process_tool( 'duplicate' );
+                break;
+            // Shift + F = Fit to canvas
+            case 'F':
+            case 'f':
+                e.preventDefault(); gamipress_badge_builder_process_tool( 'fit' );
+                break;
+        }
+    } else if( e.altKey ) {
+        switch ( e.key ) {
+            // Alt + Left or Right = Flip Horizontal
+            case 'ArrowLeft': e.preventDefault(); gamipress_badge_builder_process_tool( 'flip-horizontal' );
+                break;
+            case 'ArrowRight': e.preventDefault(); gamipress_badge_builder_process_tool( 'flip-horizontal' );
+                break;
+            // Alt + Up or Down = Flip Vertical
+            case 'ArrowUp': e.preventDefault(); gamipress_badge_builder_process_tool( 'flip-vertical' );
+                break;
+            case 'ArrowDown': e.preventDefault(); gamipress_badge_builder_process_tool( 'flip-vertical' );
+                break;
+        }
+    } else if( has_cmd_mod ) {
+        switch ( e.key ) {
+            // Ctrl + Left or Right = Rotate
+            case 'ArrowLeft': e.preventDefault(); gamipress_badge_builder_process_tool( 'rotate-left' );
+                break;
+            case 'ArrowRight': e.preventDefault(); gamipress_badge_builder_process_tool( 'rotate-right' );
+                break;
+            // Ctrl + Up or Down = Send to Front/Back
+            case 'ArrowUp': e.preventDefault(); gamipress_badge_builder_process_tool( 'send-front' );
+                break;
+            case 'ArrowDown': e.preventDefault(); gamipress_badge_builder_process_tool( 'send-back' );
+                break;
+        }
+    }
+});
+
+/**
+ * Keyboard shortcuts that not require an active object
+ *
+ * @since 7.0.0
+ */
+document.addEventListener('keydown', e => {
+
+    var has_cmd_mod = !! ( e.ctrlKey || e.metaKey );
+
+    if( e.shiftKey &&  has_cmd_mod ) {
+        switch ( e.key ) {
+            // Shift + Ctrl + Z: Redo
+            case 'Z':
+            case 'z':
+                e.preventDefault(); gamipress_badge_builder_process_tool( 'redo' );
+                break;
+        }
+    } else if( has_cmd_mod ) {
+        switch ( e.key ) {
+            // Ctrl + Z: Undo
+            case 'Z':
+            case 'z':
+                e.preventDefault(); gamipress_badge_builder_process_tool( 'undo' );
+                break;
+        }
+    }
+
+});

@@ -116,10 +116,14 @@ final class REST_Handler
             $msg = 'ZenGame Engine Crash: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString();
             \error_log($msg);
             @\file_put_contents(ABSPATH . 'zengame_crash.log', $msg);
-            return new WP_Error('engine_crash', 'ZenGame Engine Crash: ' . $e->getMessage(), [
-                'status' => 500,
-                'trace' => $e->getTraceAsString()
-            ]);
+            $error_data = ['status' => 500];
+            if (\defined('WP_DEBUG') && \WP_DEBUG) {
+                $error_data['trace'] = $e->getTraceAsString();
+                $error_data['file'] = $e->getFile();
+                $error_data['line'] = $e->getLine();
+            }
+
+            return new WP_Error('engine_crash', 'ZenGame Engine Crash: ' . $e->getMessage(), $error_data);
         }
     }
 
@@ -176,7 +180,7 @@ final class REST_Handler
             }
         }
 
-        \set_transient($cache_key, $leaderboard, 3600);
+        \set_transient($cache_key, $leaderboard, \ZenEyer\Game\ZenGame::DEFAULT_CACHE_TTL);
 
         return \rest_ensure_response($leaderboard);
     }
@@ -409,22 +413,38 @@ final class REST_Handler
                     'achievement_type' => $type_slug,
                 ]);
             } else {
-                $items = \get_posts([
+                $all_ids = \get_posts([
                     'post_type' => $type_slug,
                     'posts_per_page' => -1,
                     'fields' => 'ids',
+                    'post_status' => 'publish'
                 ]);
 
-                $final_items = [];
-                foreach ($items as $item_id) {
-                    if (!\function_exists('gamipress_has_user_earned_achievement') || !\gamipress_has_user_earned_achievement((int) $item_id, $user_id)) {
-                        $post = \get_post((int) $item_id);
-                        if ($post instanceof \WP_Post) {
-                            $final_items[] = $post;
-                        }
+                // Get IDs of achievements already earned to filter them out
+                $earned_ids = [];
+                if (\function_exists('gamipress_get_user_achievements')) {
+                    $earned_objects = \gamipress_get_user_achievements([
+                        'user_id' => $user_id,
+                        'achievement_type' => $type_slug,
+                    ]);
+                    foreach ($earned_objects as $earned) {
+                        if (isset($earned->ID)) $earned_ids[] = (int) $earned->ID;
                     }
                 }
-                $items = $final_items;
+
+                $locked_ids = \array_diff($all_ids, $earned_ids);
+                
+                if (empty($locked_ids)) {
+                    $items = [];
+                } else {
+                    $items = \get_posts([
+                        'post_type' => $type_slug,
+                        'post__in' => $locked_ids,
+                        'posts_per_page' => -1,
+                        'orderby' => 'menu_order',
+                        'order' => 'ASC'
+                    ]);
+                }
             }
 
             if (!\is_array($items) && !($items instanceof \Traversable)) {
