@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Flame, Trophy, Zap, Award } from 'lucide-react';
@@ -12,15 +12,9 @@ import { BADGES } from '../data/badges';
 
 export const HomePage: React.FC = () => {
   const { data } = useAppData();
-  const [showWelcome, setShowWelcome] = useState(false);
-
-  useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('zen_zouk_welcome_seen');
-    if (!hasSeenWelcome) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShowWelcome(true);
-    }
-  }, []);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !localStorage.getItem('zen_zouk_welcome_seen');
+  });
 
   const handleCloseWelcome = () => {
     setShowWelcome(false);
