@@ -1,0 +1,1525 @@
+﻿diff --git a/plugins/zengame/includes/API/class-rest-handler.php b/plugins/zengame/includes/API/class-rest-handler.php
+index 8888ad71..f300a8a5 100644
+--- a/plugins/zengame/includes/API/class-rest-handler.php
++++ b/plugins/zengame/includes/API/class-rest-handler.php
+@@ -1,205 +1,52 @@
+ <?php
+ /**
+- * REST API Handler
+- *
+- * @package ZenGame
+- * @since 1.4.0
++ * ZenGame REST API Handler
++ * Bridging React frontend to the custom ZenGame Engine.
+  */
+-
+ namespace ZenEyer\Game\API;
+ 
+-use ZenEyer\Game\Core\Engine;
+-use WP_REST_Server;
+-use WP_REST_Response;
+-use WP_Error;
+-
+ if (!defined('ABSPATH')) {
+-    exit;
++    die;
+ }
+ 
+-/**
+- * REST_Handler Class
+- * 
+- * Maps external React requests to the internal Game Engine.
+- */
+-final class REST_Handler
+-{
+-    private static Engine $engine;
++class REST_Handler {
+ 
+-    public static function init(Engine $engine)
+-    {
+-        self::$engine = $engine;
++    public static function init() {
+         \add_action('rest_api_init', [__CLASS__, 'register_routes']);
+     }
+ 
+-    public static function register_routes()
+-    {
+-        $ns = 'zengame/v1';
++    public static function register_routes() {
++        $namespace = 'zengame/v1';
+ 
+-        \register_rest_route($ns, '/me', [
+-            'methods' => WP_REST_Server::READABLE,
+-            'callback' => [__CLASS__, 'get_dashboard'],
++        // Get User Gamification Data
++        \register_rest_route($namespace, '/me', [
++            'methods'             => \WP_REST_Server::READABLE,
++            'callback'            => [__CLASS__, 'get_user_data'],
+             'permission_callback' => [__CLASS__, 'check_auth'],
+         ]);
+ 
+-        \register_rest_route($ns, '/leaderboard', [
+-            'methods' => WP_REST_Server::READABLE,
+-            'callback' => [__CLASS__, 'get_leaderboard'],
+-            'permission_callback' => '__return_true',
++        // Global Leaderboard
++        \register_rest_route($namespace, '/leaderboard', [
++            'methods'             => \WP_REST_Server::READABLE,
++            'callback'            => [__CLASS__, 'get_leaderboard'],
++            'permission_callback' => '__return_true', // Public
+         ]);
+ 
+-        \register_rest_route($ns, '/track', [
+-            'methods' => WP_REST_Server::CREATABLE,
+-            'callback' => [__CLASS__, 'track_interaction'],
++        // Track Custom Interaction (e.g., from Frontend)
++        \register_rest_route($namespace, '/track', [
++            'methods'             => \WP_REST_Server::CREATABLE,
++            'callback'            => [__CLASS__, 'track_interaction'],
+             'permission_callback' => [__CLASS__, 'check_auth'],
+         ]);
+     }
+ 
+-    public static function check_auth($request): bool
+-    {
+-        return (bool) self::get_authenticated_user_id($request);
+-    }
+-
+-    /**
+-     * Unified Dashboard Endpoint
+-     * Matches ZenGameUserData type in React frontend
+-     */
+-    public static function get_dashboard($request)
+-    {
++    public static function check_auth(\WP_REST_Request $request) {
+         $user_id = self::get_authenticated_user_id($request);
+-        if (!$user_id) return new WP_Error('unauthorized', 'Invalid token', ['status' => 401]);
+-
+-        $cache_key = 'djz_gamipress_dashboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $user_id;
+-        $cached = \get_transient($cache_key);
+-        if (false !== $cached) return \rest_ensure_response($cached);
+-
+-        if (!\defined('GAMIPRESS_VER')) {
+-             return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
+-        }
+-
+-        // Build response payload matching ZenGameUserData type
+-        $data = [
+-            'user_id' => $user_id,
+-            'stats' => [
+-                'totalTracks' => self::$engine->get_user_total_tracks($user_id),
+-                'eventsAttended' => self::$engine->get_user_events_attended($user_id),
+-                'streak' => (int) \get_user_meta($user_id, 'zen_login_streak', true),
+-                'streakFire' => ((int) \get_user_meta($user_id, 'zen_login_streak', true)) >= 3,
+-            ],
+-            'points' => self::get_user_points($user_id),
+-            'rank' => self::get_user_rank_data($user_id),
+-            'achievements_earned' => self::get_user_achievements($user_id, 'earned'),
+-            'achievements_locked' => self::get_user_achievements($user_id, 'locked'),
+-            'recent_achievements' => self::get_user_achievements($user_id, 'earned', 3),
+-            'logs' => self::get_user_logs($user_id),
+-            'main_points_slug' => self::get_main_points_slug(),
+-            'engine_status' => [
+-                'woo' => \class_exists('WooCommerce'),
+-                'gamipress' => true,
+-                'cache' => \get_option('zengame_last_purge') ? 'warm' : 'running',
+-                'ts' => \time()
+-            ],
+-            'lastUpdate' => \current_time('mysql'),
+-            'version' => '1.4.0'
+-        ];
+-
+-        \set_transient($cache_key, $data, \ZenEyer\Game\ZenGame::DEFAULT_CACHE_TTL);
+-        return \rest_ensure_response($data);
+-    }
+-
+-    /**
+-     * Global Leaderboard Endpoint
+-     */
+-    public static function get_leaderboard($request)
+-    {
+-        if (!\defined('GAMIPRESS_VER')) return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
+-
+-        $cache_key = 'djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION;
+-        $cached = \get_transient($cache_key);
+-        if (false !== $cached) return \rest_ensure_response($cached);
+-
+-        global $wpdb;
+-        $types = \gamipress_get_points_types();
+-        $leaderboard = [];
+-
+-        foreach ($types as $type) {
+-            $slug = $type['slug'];
+-            $meta_key = "_gamipress_{$slug}_points";
+-
+-            $results = $wpdb->get_results($wpdb->prepare("
+-                SELECT user_id, meta_value as points, u.display_name
+-                FROM {$wpdb->usermeta} m
+-                INNER JOIN {$wpdb->users} u ON m.user_id = u.ID
+-                WHERE meta_key = %s AND meta_value > 0
+-                ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT 10
+-            ", $meta_key));
+-
+-            if (!$results) continue;
+-
+-            $leaderboard[$slug] = [];
+-            foreach ($results as $row) {
+-                $leaderboard[$slug][] = [
+-                    'user_id' => (int) $row->user_id,
+-                    'display_name' => \esc_html($row->display_name),
+-                    'points' => (int) $row->points,
+-                    'avatar' => \get_avatar_url((int) $row->user_id, ['size' => 64]),
+-                ];
+-            }
+-        }
+-
+-    \set_transient($cache_key, $leaderboard, 3600); // 1 hour
+-    return \rest_ensure_response($leaderboard);
+-}
+-
+-/**
+- * Interaction Tracker
+- */
+-public static function track_interaction($request)
+-{
+-    $user_id = self::get_authenticated_user_id($request);
+-    $params = $request->get_json_params();
+-
+-    $action = \sanitize_text_field($params['action'] ?? '');
+-    $object_id = (int) ($params['object_id'] ?? 0);
+-
+-    if (empty($action)) {
+-        return new WP_Error('missing_action', 'Action is required', ['status' => 400]);
+-    }
+-
+-    $success = self::$engine->track_interaction($user_id, $action, $object_id);
+-
+-    return \rest_ensure_response([
+-        'success' => $success,
+-        'action' => $action,
+-        'points_awarded' => ($action === 'download' && $success) ? 5 : 0
+-    ]);
+-}
+-
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-    // PRIVATE HELPERS (Strict mapping to ZenGameUserData)
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-
+-    /**
+-     * Dynamically determines the primary point type slug.
+-     * Priority: 'mana' > 'points' > first available GamiPress type.
+-     */
+-    private static function get_main_points_slug(): string
+-    {
+-        if (!\function_exists('gamipress_get_points_types')) return 'points';
+-
+-        $types = \gamipress_get_points_types();
+-        if (empty($types)) return 'points';
+-
+-        $slugs = \wp_list_pluck($types, 'slug');
+-
+-        if (\in_array('mana', $slugs)) return 'mana';
+-        if (\in_array('points', $slugs)) return 'points';
+-
+-        return $slugs[0]; // Fallback to first available
++        return $user_id > 0;
+     }
+ 
+-    private static function get_authenticated_user_id($request)
+-    {
++    private static function get_authenticated_user_id(\WP_REST_Request $request) {
++        // Bearer Token Support for Headless JWT
+         $auth_header = $request->get_header('authorization');
+         if ($auth_header && \preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
+             $token = \trim($matches[1]);
+@@ -210,147 +57,180 @@ private static function get_authenticated_user_id($request)
+                 }
+             }
+         }
+-        return \get_current_user_id() ?: null;
++
++        // Fallback to Cookie Auth
++        return \get_current_user_id();
+     }
+ 
+-    private static function get_user_points(int $user_id): array
+-    {
+-        if (!\function_exists('gamipress_get_points_types')) return [];
+-        $types = \gamipress_get_points_types();
+-        $points = [];
+-        foreach ($types as $type) {
+-            $points[$type['slug']] = [
+-                'name' => $type['plural_name'],
+-                'amount' => \gamipress_get_user_points($user_id, $type['slug']),
+-                'image' => \get_the_post_thumbnail_url($type['id'], 'thumbnail') ?: ''
+-            ];
+-        }
++    /**
++     * Endpoint: /zengame/v1/me
++     * Returns the exact JSON structure expected by src/contexts/GamiPressContext.tsx
++     */
++    public static function get_user_data(\WP_REST_Request $request) {
++        $user_id = self::get_authenticated_user_id($request);
+         
+-        // Ensure at least the main points slug exists to prevent frontend undefined errors
+-        if (!isset($points['points'])) {
+-            $points['points'] = ['name' => 'XP', 'amount' => 0, 'image' => ''];
+-        }
++        // 1. Get Balance
++        $points_balance = (int) \get_user_meta($user_id, 'zengame_points_balance', true);
+         
+-        return $points;
+-    }
+-
+-    private static function get_user_rank_data(int $user_id): array
+-    {
+-        $fallback = [
+-            'current' => ['id' => 0, 'title' => 'Zen Guest', 'image' => ''],
+-            'next' => null,
+-            'progress' => 0,
+-            'requirements' => [],
++        // 2. Format Points structure (Frontend expects an object with slugs)
++        $points_data = [
++            'points' => [ // Default main slug
++                'name' => 'Pontos',
++                'amount' => $points_balance,
++                'image' => ''
++            ]
+         ];
+ 
+-        if (!\function_exists('gamipress_get_rank_types')) return $fallback;
+-
+-        $rank_types = \gamipress_get_rank_types();
+-        if (empty($rank_types)) return $fallback;
++        // 3. Determine Rank based on balance
++        // We query all zengame_ranks ordered by required points ascending
++        $ranks = \get_posts([
++            'post_type' => 'zengame_rank',
++            'posts_per_page' => -1,
++            'meta_key' => '_zengame_points_required',
++            'orderby' => 'meta_value_num',
++            'order' => 'ASC',
++        ]);
+ 
+-        $type = $rank_types[0]; 
+-        $current = \gamipress_get_user_rank($user_id, $type['slug']);
+-        $next = \gamipress_get_next_user_rank($user_id, $type['slug']);
+-        
+-        $requirements = [];
++        $current_rank = null;
++        $next_rank = null;
+         $progress = 0;
+ 
+-        if ($next) {
+-            $reqs = \gamipress_get_rank_requirements($next->ID);
+-            if ($reqs) {
+-                foreach ($reqs as $req) {
+-                    $status = \gamipress_get_user_requirement_status($user_id, $req->ID, $next->ID);
+-                    $requirements[] = [
+-                        'title' => $req->post_title,
+-                        'current' => (int)$status['current'],
+-                        'required' => (int)$status['required'],
+-                        'percent' => (float)$status['percent'],
+-                    ];
+-                }
++        foreach ($ranks as $i => $rank) {
++            $req_points = (int) \get_post_meta($rank->ID, '_zengame_points_required', true);
++
++            if ($points_balance >= $req_points) {
++                $current_rank = $rank;
++            } else {
++                $next_rank = $rank;
++                // Calculate progress to next rank
++                $prev_req = $current_rank ? (int) \get_post_meta($current_rank->ID, '_zengame_points_required', true) : 0;
++                $range = $req_points - $prev_req;
++                $earned_in_range = $points_balance - $prev_req;
++                $progress = $range > 0 ? \round(($earned_in_range / $range) * 100) : 0;
++                break; // Found the next rank
+             }
+-            $progress = \gamipress_get_user_rank_type_progress_percent($user_id, $type['slug']);
+         }
+ 
+-        return [
++        $rank_data = [
+             'current' => [
+-                'id' => $current ? (int)$current->ID : 0,
+-                'title' => $current ? $current->post_title : 'Zen Guest',
+-                'image' => $current ? (\get_the_post_thumbnail_url($current->ID, 'medium') ?: '') : '',
++                'id' => $current_rank ? $current_rank->ID : 0,
++                'title' => $current_rank ? $current_rank->post_title : 'Iniciante',
++                'image' => $current_rank ? (\get_the_post_thumbnail_url($current_rank->ID, 'medium') ?: '') : '',
+             ],
+-            'next' => $next ? [
+-                'id' => (int)$next->ID,
+-                'title' => $next->post_title,
+-                'image' => \get_the_post_thumbnail_url($next->ID, 'medium') ?: '',
++            'next' => $next_rank ? [
++                'id' => $next_rank->ID,
++                'title' => $next_rank->post_title,
++                'image' => \get_the_post_thumbnail_url($next_rank->ID, 'medium') ?: '',
+             ] : null,
+-            'progress' => (float)$progress,
+-            'requirements' => $requirements,
++            'progress' => $progress,
++            'requirements' => $next_rank ? [[
++                'title' => 'Pontos Totais',
++                'current' => $points_balance,
++                'required' => (int) \get_post_meta($next_rank->ID, '_zengame_points_required', true),
++                'percent' => $progress
++            ]] : []
+         ];
+-    }
+ 
+-    private static function get_user_achievements(int $user_id, string $status = 'earned', int $limit = 0): array
+-    {
+-        $ach_types = \gamipress_get_achievement_types();
+-        $all = [];
++        // 4. Get Logs (History)
++        global $wpdb;
++        $table = $wpdb->prefix . 'zengame_logs';
++        $logs_db = $wpdb->get_results($wpdb->prepare(
++            "SELECT id, action as type, description, created_at as date, points
++             FROM $table
++             WHERE user_id = %d
++             ORDER BY created_at DESC LIMIT 10",
++            $user_id
++        ));
++
++        $logs_data = [];
++        foreach ($logs_db as $log) {
++            $logs_data[] = [
++                'id' => (int) $log->id,
++                'type' => $log->type,
++                'description' => $log->description,
++                'date' => $log->date,
++                'points' => (int) $log->points,
++            ];
++        }
+ 
+-        foreach ($ach_types as $type) {
+-            if ($status === 'earned') {
+-                $items = \gamipress_get_user_achievements(['user_id' => $user_id, 'achievement_type' => $type['slug']]);
+-            } else {
+-                // Simplified: get all in type and filter manually to avoid heavy GamiPress queries
+-                $items = \get_posts([
+-                    'post_type' => $type['slug'],
+-                    'posts_per_page' => -1,
+-                    'fields' => 'ids'
+-                ]);
+-                $final_items = [];
+-                foreach ($items as $item_id) {
+-                    if (!\gamipress_has_user_earned_achievement($item_id, $user_id)) {
+-                        $final_items[] = \get_post($item_id);
+-                    }
+-                }
+-                $items = $final_items;
+-            }
++        // 5. Build Response payload
++        $data = [
++            'points' => $points_data,
++            'rank' => $rank_data,
++            'stats' => [
++                'totalTracks' => 0,
++                'eventsAttended' => 0,
++                'streak' => 0
++            ],
++            // Empty arrays for now, you can populate Achievements similarly to Ranks later
++            'achievements_earned' => [],
++            'achievements_locked' => [],
++            'recent_achievements' => [],
++            'logs' => $logs_data,
++            'main_points_slug' => 'points',
++            'engine_status' => [
++                'woo' => \class_exists('WooCommerce'),
++                'gamipress' => false, // We've replaced it
++                'cache' => 'bypass',
++                'ts' => \time()
++            ],
++            'lastUpdate' => \current_time('mysql'),
++            'version' => \ZENGAME_VERSION
++        ];
+ 
+-            foreach ($items as $item) {
+-                $all[] = [
+-                    'id' => $item->ID,
+-                    'title' => $item->post_title,
+-                    'description' => $item->post_excerpt ?: $item->post_content,
+-                    'image' => \get_the_post_thumbnail_url($item->ID, 'thumbnail') ?: '',
+-                    'earned' => $status === 'earned',
+-                    'points_awarded' => (int)\get_post_meta($item->ID, '_gamipress_points_awarded', true),
+-                    'date_earned' => \get_post_meta($item->ID, '_gamipress_earned_at', true) ?: '',
+-                ];
+-            }
+-        }
++        return \rest_ensure_response($data);
++    }
+ 
+-        if ($limit > 0) {
+-            \usort($all, fn($a, $b) => \strcmp($b['date_earned'], $a['date_earned']));
+-            return \array_slice($all, 0, $limit);
++    /**
++     * Endpoint: /zengame/v1/leaderboard
++     */
++    public static function get_leaderboard(\WP_REST_Request $request) {
++        global $wpdb;
++
++        $results = $wpdb->get_results("
++            SELECT user_id, meta_value as points, u.display_name
++            FROM {$wpdb->usermeta} m
++            INNER JOIN {$wpdb->users} u ON m.user_id = u.ID
++            WHERE meta_key = 'zengame_points_balance' AND CAST(meta_value AS UNSIGNED) > 0
++            ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT 10
++        ");
++
++        $leaderboard = ['points' => []];
++
++        foreach ($results as $row) {
++            $leaderboard['points'][] = [
++                'user_id' => (int) $row->user_id,
++                'display_name' => \esc_html($row->display_name),
++                'points' => (int) $row->points,
++                'avatar' => \get_avatar_url((int) $row->user_id, ['size' => 64]),
++            ];
+         }
+ 
+-        return $all;
++        return \rest_ensure_response($leaderboard);
+     }
+ 
+-    private static function get_user_logs(int $user_id, int $limit = 10): array
+-    {
+-        if (!\function_exists('gamipress_get_user_logs')) return [];
++    /**
++     * Endpoint: /zengame/v1/track
++     * Used by React to claim points for actions (like answering a quiz)
++     */
++    public static function track_interaction(\WP_REST_Request $request) {
++        $user_id = self::get_authenticated_user_id($request);
++        $params = $request->get_json_params();
++
++        $action = \sanitize_text_field($params['action'] ?? '');
++        $object_id = (int) ($params['object_id'] ?? 0);
+ 
+-        $logs = \gamipress_get_user_logs([
+-            'user_id' => $user_id,
+-            'posts_per_page' => $limit
+-        ]);
++        if ($action === 'mission_completed' && $object_id > 0) {
++            require_once ZENGAME_PATH . 'includes/Core/class-zengame-triggers.php';
++            $triggers = new \ZenEyer\Game\Core\Triggers();
++            $success = $triggers->mission_completed($user_id, $object_id);
+ 
+-        $formatted = [];
+-        foreach ($logs as $log) {
+-            $formatted[] = [
+-                'id' => $log->ID,
+-                'type' => \get_post_meta($log->ID, '_gamipress_log_type', true),
+-                'description' => $log->post_title,
+-                'date' => $log->post_date,
+-                'points' => (int)\get_post_meta($log->ID, '_gamipress_points', true),
+-            ];
++            return \rest_ensure_response([
++                'success' => $success,
++                'message' => $success ? 'Points awarded!' : 'Already completed or invalid.'
++            ]);
+         }
+-        return $formatted;
++
++        return new \WP_Error('invalid_action', 'Action not recognized', ['status' => 400]);
+     }
+ }
+diff --git a/plugins/zengame/includes/Core/class-zengame-cpt.php b/plugins/zengame/includes/Core/class-zengame-cpt.php
+new file mode 100644
+index 00000000..28a14108
+--- /dev/null
++++ b/plugins/zengame/includes/Core/class-zengame-cpt.php
+@@ -0,0 +1,87 @@
++<?php
++/**
++ * Custom Post Types for ZenGame (Ranks, Achievements, Missions)
++ */
++namespace ZenEyer\Game\Core;
++
++if (!defined('ABSPATH')) {
++    die;
++}
++
++class CPT {
++
++    public function __construct() {
++        \add_action('init', [$this, 'register_post_types']);
++    }
++
++    public function register_post_types() {
++        // 1. Ranks (N├¡veis)
++        $labels_rank = [
++            'name'               => 'N├¡veis',
++            'singular_name'      => 'N├¡vel',
++            'menu_name'          => 'N├¡veis',
++            'add_new'            => 'Adicionar Novo',
++            'add_new_item'       => 'Adicionar N├¡vel',
++            'edit_item'          => 'Editar N├¡vel',
++            'new_item'           => 'Novo N├¡vel',
++            'view_item'          => 'Ver N├¡vel',
++            'all_items'          => 'Todos os N├¡veis'
++        ];
++
++        \register_post_type('zengame_rank', [
++            'labels'              => $labels_rank,
++            'public'              => false, // Internal usage
++            'show_ui'             => true,
++            'show_in_menu'        => 'zengame',
++            'capability_type'     => 'post',
++            'hierarchical'        => true,
++            'supports'            => ['title', 'thumbnail', 'page-attributes'], // page-attributes for ordering
++            'menu_icon'           => 'dashicons-awards',
++        ]);
++
++        // 2. Achievements (Conquistas)
++        $labels_achv = [
++            'name'               => 'Conquistas',
++            'singular_name'      => 'Conquista',
++            'menu_name'          => 'Conquistas',
++            'add_new'            => 'Adicionar Nova',
++            'add_new_item'       => 'Adicionar Conquista',
++            'edit_item'          => 'Editar Conquista',
++            'new_item'           => 'Nova Conquista',
++            'view_item'          => 'Ver Conquista',
++            'all_items'          => 'Todas as Conquistas'
++        ];
++
++        \register_post_type('zengame_achievement', [
++            'labels'              => $labels_achv,
++            'public'              => false, // Internal usage
++            'show_ui'             => true,
++            'show_in_menu'        => 'zengame',
++            'capability_type'     => 'post',
++            'supports'            => ['title', 'editor', 'thumbnail'],
++        ]);
++
++        // 3. Missions (Miss├Áes/Quizzes)
++        $labels_mission = [
++            'name'               => 'Miss├Áes',
++            'singular_name'      => 'Miss├úo',
++            'menu_name'          => 'Miss├Áes',
++            'add_new'            => 'Adicionar Nova',
++            'add_new_item'       => 'Adicionar Miss├úo',
++            'edit_item'          => 'Editar Miss├úo',
++            'new_item'           => 'Nova Miss├úo',
++            'view_item'          => 'Ver Miss├úo',
++            'all_items'          => 'Todas as Miss├Áes'
++        ];
++
++        \register_post_type('zengame_mission', [
++            'labels'              => $labels_mission,
++            'public'              => false, // Exposed via REST API instead
++            'show_ui'             => true,
++            'show_in_menu'        => 'zengame',
++            'capability_type'     => 'post',
++            'supports'            => ['title', 'editor', 'thumbnail'],
++            'menu_icon'           => 'dashicons-yes',
++        ]);
++    }
++}
+diff --git a/plugins/zengame/includes/Core/class-zengame-engine.php b/plugins/zengame/includes/Core/class-zengame-engine.php
+index 310b635e..8c92d788 100644
+--- a/plugins/zengame/includes/Core/class-zengame-engine.php
++++ b/plugins/zengame/includes/Core/class-zengame-engine.php
+@@ -1,190 +1,72 @@
+ <?php
+ /**
+- * Core Game Engine
+- *
+- * @package ZenGame
+- * @since 1.4.0
++ * Core Gaming Engine
++ * Handles Point calculations, Ranks, and Achievements
+  */
+-
+ namespace ZenEyer\Game\Core;
+ 
+ if (!defined('ABSPATH')) {
+-    exit;
++    die;
+ }
+ 
+-/**
+- * Engine Class
+- * 
+- * Handles massive data processing, SQL optimization, and cache management.
+- */
+-final class Engine
+-{
+-    /** @var Engine|null */
+-    private static $instance = null;
++class Engine {
+ 
+-    /** TTL Constants */
+-    private const STATS_CACHE_TTL = 21600;      // 6 hours
+-    private const LEADERBOARD_CACHE_TTL = 3600; // 1 hour
+-
+-    public static function get_instance()
+-    {
+-        if (null === self::$instance) {
+-            self::$instance = new self();
+-        }
+-        return self::$instance;
++    public function __construct() {
++        // Init logic will go here
+     }
+ 
+-    public function init()
+-    {
+-        $this->init_cache_hooks();
+-        \add_action('wp_login', [$this, 'update_login_streak'], 10, 2);
+-    }
+-
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-    // OPTIMIZED ANALYTICS (SQL DIRECT)
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-
+-    public function get_user_total_tracks(int $user_id): int
+-    {
+-        $cache_key = 'djz_stats_tracks_' . $user_id;
+-        $cached = \get_transient($cache_key);
+-        if (false !== $cached) return (int) $cached;
+-
+-        global $wpdb;
+-        $query = "
+-            SELECT SUM(item_meta_qty.meta_value)
+-            FROM {$wpdb->prefix}woocommerce_order_items AS items
+-            INNER JOIN {$wpdb->prefix}posts AS orders ON items.order_id = orders.ID
+-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_qty ON items.order_item_id = item_meta_qty.order_item_id
+-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_product ON items.order_item_id = item_meta_product.order_item_id
+-            INNER JOIN {$wpdb->postmeta} AS product_meta ON item_meta_product.meta_value = product_meta.post_id
+-            WHERE orders.post_type = 'shop_order'
+-              AND orders.post_status = 'wc-completed'
+-              AND orders.post_author = %d
+-              AND item_meta_qty.meta_key = '_qty'
+-              AND item_meta_product.meta_key = '_product_id'
+-              AND product_meta.meta_key = '_downloadable'
+-              AND product_meta.meta_value = 'yes'
+-        ";
+-        $total = (int) $wpdb->get_var($wpdb->prepare($query, $user_id));
+-        \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
+-        return $total;
+-    }
+-
+-    public function get_user_events_attended(int $user_id): int
+-    {
+-        $cache_key = 'djz_stats_events_' . $user_id;
+-        $cached = \get_transient($cache_key);
+-        if (false !== $cached) return (int) $cached;
++    /**
++     * Award Points to User
++     * This is the SSOT for point distribution and logging.
++     */
++    public static function award_points($user_id, $amount, $action, $ref_id = 0, $ref_type = '', $description = '') {
++        if (!$user_id || $amount == 0) {
++            return false;
++        }
+ 
+         global $wpdb;
+-        $target_slugs = \apply_filters('zengame_event_category_slugs', ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass']);
+-        $placeholders = \array_fill(0, \count($target_slugs), '%s');
+-        $slugs_list = \implode(',', $placeholders);
+-
+-        $query = "
+-            SELECT SUM(item_meta_qty.meta_value)
+-            FROM {$wpdb->prefix}woocommerce_order_items AS items
+-            INNER JOIN {$wpdb->prefix}posts AS orders ON items.order_id = orders.ID
+-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_qty ON items.order_item_id = item_meta_qty.order_item_id
+-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_product ON items.order_item_id = item_meta_product.order_item_id
+-            INNER JOIN {$wpdb->term_relationships} AS rel ON item_meta_product.meta_value = rel.object_id
+-            INNER JOIN {$wpdb->term_taxonomy} AS tax ON rel.term_taxonomy_id = tax.term_taxonomy_id
+-            INNER JOIN {$wpdb->terms} AS terms ON tax.term_id = terms.term_id
+-            WHERE orders.post_type = 'shop_order'
+-              AND orders.post_status IN ('wc-completed', 'wc-processing')
+-              AND orders.post_author = %d
+-              AND item_meta_qty.meta_key = '_qty'
+-              AND item_meta_product.meta_key = '_product_id'
+-              AND tax.taxonomy = 'product_cat'
+-              AND terms.slug IN ($slugs_list)
+-        ";
+-        $prep_args = \array_merge([$user_id], $target_slugs);
+-        $total = (int) $wpdb->get_var($wpdb->prepare($query, ...$prep_args));
+-        \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
+-        return $total;
+-    }
+-
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-    // GAMIFICATION LOGIC
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-
+-    public function update_login_streak(string $user_login, \WP_User $user): void
+-    {
+-        $user_id = $user->ID;
+-        $today = \current_time('Y-m-d');
+-        $last = (string) \get_user_meta($user_id, 'zen_last_login', true);
+-        $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
+-
+-        if ($last === $today) return;
+-
+-        $yesterday = \date('Y-m-d', \strtotime('-1 day', \current_time('timestamp')));
+-        $streak = ($last === $yesterday) ? $streak + 1 : 1;
++        $table = $wpdb->prefix . 'zengame_logs';
++
++        // 1. Log the transaction
++        $wpdb->insert(
++            $table,
++            [
++                'user_id' => $user_id,
++                'action' => $action,
++                'points' => $amount,
++                'reference_id' => $ref_id,
++                'reference_type' => $ref_type,
++                'description' => $description,
++            ],
++            ['%d', '%s', '%d', '%d', '%s', '%s']
++        );
++
++        // 2. Update User Balance (Meta) for fast retrieval
++        $current_balance = (int) \get_user_meta($user_id, 'zengame_points_balance', true);
++        $new_balance = $current_balance + $amount;
++
++        // Never go below 0
++        if ($new_balance < 0) {
++            $new_balance = 0;
++        }
+ 
+-        \update_user_meta($user_id, 'zen_last_login', $today);
+-        \update_user_meta($user_id, 'zen_login_streak', $streak);
+-        $this->clear_user_cache($user_id);
+-    }
++        \update_user_meta($user_id, 'zengame_points_balance', $new_balance);
+ 
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-    // CACHE MANAGEMENT
+-    // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
++        // 3. Clear Caches
++        self::clear_user_cache($user_id);
+ 
+-    private function init_cache_hooks(): void
+-    {
+-        \add_action('woocommerce_order_status_completed', [$this, 'clear_cache_by_order_id']);
+-        \add_action('gamipress_award_points_to_user', fn($uid) => $this->clear_user_cache((int)$uid), 10, 1);
+-        \add_action('gamipress_award_achievement', fn($uid) => $this->clear_user_cache((int)$uid), 10, 1);
+-        \add_action('gamipress_set_user_rank', fn($uid) => $this->clear_user_cache((int)$uid), 10, 1);
+-    }
++        // 4. Check for Rank Ups or Coupons (Future hook)
++        \do_action('zengame_points_awarded', $user_id, $new_balance, $amount, $action);
+ 
+-    public function clear_user_cache(int $user_id): void
+-    {
+-        \delete_transient('djz_gamipress_dashboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $user_id);
+-        \delete_transient('djz_stats_events_' . $user_id);
+-        \delete_transient('djz_stats_tracks_' . $user_id);
++        return $new_balance;
+     }
+ 
+     /**
+-     * Tracks a user interaction (click, download, share) and triggers GamiPress events.
++     * Clear Gamipress/ZenGame cache transients
+      */
+-    public function track_interaction(int $user_id, string $action, int $object_id = 0): bool
+-    {
+-        if (!\defined('GAMIPRESS_VER')) return false;
+-
+-        // Trigger action for GamiPress to catch
+-        // Format: zengame_{action} (e.g., zengame_download)
+-        $hook = "zengame_" . \sanitize_key($action);
+-        \do_action($hook, $user_id, $object_id);
+-
+-        // Award direct points for high-value actions if needed
+-        if ($action === 'download') {
+-             // Example: award 5 XP for download click
+-             \gamipress_award_points_to_user($user_id, 5, 'points', [
+-                 'reason' => 'Download click: ' . $object_id
+-             ]);
+-        }
+-
+-        $this->clear_user_cache($user_id);
+-        return true;
+-    }
+-
+-    public function clear_cache_by_order_id(int $order_id): void
+-    {
+-        if (!\function_exists('wc_get_order')) return;
+-        $order = \wc_get_order($order_id);
+-        if ($order && ($uid = $order->get_user_id())) {
+-            $this->clear_user_cache((int)$uid);
+-        }
+-    }
+-
+-    public function clear_all_cache(): void
+-    {
++    public static function clear_user_cache($user_id) {
+         global $wpdb;
+-        $wpdb->query($wpdb->prepare(
+-            "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
+-            '%_transient_djz_gamipress_%', '%_transient_djz_stats_%', '%_transient_timeout_djz_%'
+-        ));
+-        \update_option('zengame_last_purge', \current_time('mysql'));
++        $like = '%_transient_djz_gamipress_%' . $user_id . '%';
++        $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $like));
+     }
+ }
+diff --git a/plugins/zengame/includes/Core/class-zengame-schema.php b/plugins/zengame/includes/Core/class-zengame-schema.php
+new file mode 100644
+index 00000000..1a73383c
+--- /dev/null
++++ b/plugins/zengame/includes/Core/class-zengame-schema.php
+@@ -0,0 +1,45 @@
++<?php
++/**
++ * ZenGame Schema Engine
++ * Creates custom tables for the point economy.
++ */
++namespace ZenEyer\Game\Core;
++
++if (!defined('ABSPATH')) {
++    die;
++}
++
++class Schema {
++
++    /**
++     * Create the custom logs table
++     */
++    public static function create_tables() {
++        global $wpdb;
++
++        $table_name = $wpdb->prefix . 'zengame_logs';
++        $charset_collate = $wpdb->get_charset_collate();
++
++        // This schema is inspired by GamiPress but hyper-optimized
++        // It acts as an immutable ledger for the point economy.
++        $sql = "CREATE TABLE $table_name (
++            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
++            user_id bigint(20) unsigned NOT NULL,
++            action varchar(50) NOT NULL,
++            points int(11) NOT NULL,
++            reference_id bigint(20) unsigned DEFAULT 0,
++            reference_type varchar(50) DEFAULT '',
++            description text DEFAULT '',
++            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
++            PRIMARY KEY  (id),
++            KEY user_id (user_id),
++            KEY action (action)
++        ) $charset_collate;";
++
++        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
++        \dbDelta($sql);
++
++        // Save database version for future migrations
++        \update_option('zengame_db_version', ZENGAME_VERSION);
++    }
++}
+diff --git a/plugins/zengame/includes/Core/class-zengame-triggers.php b/plugins/zengame/includes/Core/class-zengame-triggers.php
+new file mode 100644
+index 00000000..b9ad76db
+--- /dev/null
++++ b/plugins/zengame/includes/Core/class-zengame-triggers.php
+@@ -0,0 +1,138 @@
++<?php
++/**
++ * ZenGame Triggers Engine
++ * Listens to WP hooks and awards points securely
++ */
++namespace ZenEyer\Game\Core;
++
++if (!defined('ABSPATH')) {
++    die;
++}
++
++class Triggers {
++
++    public function __construct() {
++        // Daily Login Trigger
++        \add_action('wp_login', [$this, 'daily_login'], 10, 2);
++
++        // WooCommerce Purchase Trigger
++        \add_action('woocommerce_order_status_completed', [$this, 'woocommerce_purchase'], 10, 1);
++
++        // Custom Hook for Quizzes / Missions (to be called by REST API later)
++        \add_action('zengame_mission_completed', [$this, 'mission_completed'], 10, 2);
++    }
++
++    /**
++     * Trigger: Daily Login
++     * Awards 10 points once a day.
++     */
++    public function daily_login($user_login, $user) {
++        $user_id = $user->ID;
++        $today = gmdate('Y-m-d');
++
++        // Check if user already got points today
++        $last_login_date = \get_user_meta($user_id, '_zengame_last_login_date', true);
++
++        if ($last_login_date !== $today) {
++            \update_user_meta($user_id, '_zengame_last_login_date', $today);
++
++            // Award 10 points
++            Engine::award_points(
++                $user_id,
++                10,
++                'daily_login',
++                0,
++                'system',
++                'Pontos por login di├írio.'
++            );
++        }
++    }
++
++    /**
++     * Trigger: WooCommerce Purchase
++     * Awards 1 point for every $1 spent.
++     */
++    public function woocommerce_purchase($order_id) {
++        if (!\function_exists('wc_get_order')) {
++            return;
++        }
++
++        $order = \wc_get_order($order_id);
++        if (!$order) {
++            return;
++        }
++
++        $user_id = $order->get_user_id();
++        if (!$user_id) {
++            return; // Guest checkout
++        }
++
++        // Check if we already rewarded this order (Idempotency)
++        $already_rewarded = \get_post_meta($order_id, '_zengame_points_awarded', true);
++        if ($already_rewarded) {
++            return;
++        }
++
++        $total = (float) $order->get_total();
++        // 1 point per $1
++        $points_to_award = (int) floor($total);
++
++        if ($points_to_award > 0) {
++            Engine::award_points(
++                $user_id,
++                $points_to_award,
++                'woo_purchase',
++                $order_id,
++                'order',
++                'Pontos por compra na loja (Pedido #' . $order_id . ').'
++            );
++
++            // Mark as rewarded
++            \update_post_meta($order_id, '_zengame_points_awarded', $points_to_award);
++        }
++    }
++
++    /**
++     * Trigger: Mission/Quiz Completed
++     */
++    public function mission_completed($user_id, $mission_id) {
++        // Validation: Verify if the mission exists and is a zengame_mission
++        if (\get_post_type($mission_id) !== 'zengame_mission') {
++            return false;
++        }
++
++        // Idempotency: Has the user already completed this mission?
++        global $wpdb;
++        $table = $wpdb->prefix . 'zengame_logs';
++
++        $already_completed = $wpdb->get_var($wpdb->prepare(
++            "SELECT id FROM $table WHERE user_id = %d AND action = %s AND reference_id = %d LIMIT 1",
++            $user_id,
++            'mission_completed',
++            $mission_id
++        ));
++
++        if ($already_completed) {
++            return false; // Prevent duplicate points
++        }
++
++        // How many points is this mission worth?
++        $points = (int) \get_post_meta($mission_id, '_zengame_points_reward', true);
++        if ($points <= 0) {
++            $points = 10; // Fallback
++        }
++
++        $mission_title = \get_the_title($mission_id);
++
++        Engine::award_points(
++            $user_id,
++            $points,
++            'mission_completed',
++            $mission_id,
++            'mission',
++            'Miss├úo Conclu├¡da: ' . $mission_title
++        );
++
++        return true;
++    }
++}
+diff --git a/plugins/zengame/includes/class-zengame-activator.php b/plugins/zengame/includes/class-zengame-activator.php
+index 3e8c19af..0dff18c1 100644
+--- a/plugins/zengame/includes/class-zengame-activator.php
++++ b/plugins/zengame/includes/class-zengame-activator.php
+@@ -9,7 +9,7 @@
+ namespace ZenEyer\Game;
+ 
+ if (!defined('ABSPATH')) {
+-    exit;
++    die;
+ }
+ 
+ /**
+@@ -24,7 +24,10 @@ class Activator
+      */
+     public static function activate()
+     {
+-        // Placeholder for future activation logic (e.g. creating tables if needed)
++        // Require Schema
++        require_once ZENGAME_PATH . 'includes/Core/class-zengame-schema.php';
++        Core\Schema::create_tables();
++
+         \flush_rewrite_rules();
+     }
+ 
+diff --git a/plugins/zengame/includes/class-zengame-admin.php b/plugins/zengame/includes/class-zengame-admin.php
+index b41406c6..73820a9a 100644
+--- a/plugins/zengame/includes/class-zengame-admin.php
++++ b/plugins/zengame/includes/class-zengame-admin.php
+@@ -1,202 +1,185 @@
+ <?php
++/**
++ * Admin logic
++ */
+ namespace ZenEyer\Game;
+ 
+ if (!defined('ABSPATH')) {
+-    exit;
++    die;
+ }
+ 
+-/**
+- * ZenGame_Admin ÔÇö Handles all admin-specific logic for ZenGame.
+- * 
+- * Separated from the main ZenGame class to prevent admin-heavy logic 
+- * from loading on the frontend of the site.
+- */
+-final class ZenGame_Admin
+-{
+-    /** @var ZenGame_Admin|null */
+-    private static ?ZenGame_Admin $instance = null;
+-
+-    /** @var ZenGame Main plugin instance reference. */
+-    private ZenGame $plugin;
+-
+-    /**
+-     * Returns the single instance.
+-     */
+-    public static function get_instance(ZenGame $plugin): self
+-    {
+-        if (null === self::$instance) {
+-            self::$instance = new self($plugin);
+-        }
+-        return self::$instance;
+-    }
++class Admin {
+ 
+-    /**
+-     * Private constructor.
+-     */
+-    private function __construct(ZenGame $plugin)
+-    {
+-        $this->plugin = $plugin;
+-        $this->init_hooks();
+-    }
++    public function __construct() {
++        \add_action('admin_menu', [$this, 'add_plugin_page']);
++        \add_action('admin_enqueue_scripts', [$this, 'enqueue_styles']);
+ 
+-    /**
+-     * Initialize admin hooks.
+-     */
+-    private function init_hooks(): void
+-    {
+-        \add_action('admin_init', [$this, 'register_settings']);
+-        \add_action('admin_menu', [$this, 'add_admin_menu']);
+-    }
+-
+-    /**
+-     * Registers settings via the WordPress Settings API.
+-     */
+-    public function register_settings(): void
+-    {
+-        \register_setting('zengame_settings', 'zengame_cache_ttl', [
+-            'type' => 'integer',
+-            'sanitize_callback' => 'absint',
+-            'default' => ZenGame::DEFAULT_CACHE_TTL,
+-        ]);
+-
+-        \add_settings_section(
+-            'zengame_main_section',
+-            \__('System Configuration', 'zengame'),
+-            null,
+-            'zengame-settings'
+-        );
++        // CPT Meta Boxes
++        \add_action('add_meta_boxes', [$this, 'add_meta_boxes']);
++        \add_action('save_post', [$this, 'save_meta_boxes']);
+ 
+-        \add_settings_field(
+-            'cache_ttl',
+-            \__('Cache TTL (seconds)', 'zengame'),
+-            [$this, 'render_cache_ttl_field'],
+-            'zengame-settings',
+-            'zengame_main_section'
+-        );
++        // User Profile Fields
++        \add_action('show_user_profile', [$this, 'user_profile_fields']);
++        \add_action('edit_user_profile', [$this, 'user_profile_fields']);
++        \add_action('personal_options_update', [$this, 'save_user_profile_fields']);
++        \add_action('edit_user_profile_update', [$this, 'save_user_profile_fields']);
+     }
+ 
+-    /** Renders the cache TTL number input. */
+-    public function render_cache_ttl_field(): void
+-    {
+-        $val = (int) \get_option('zengame_cache_ttl', ZenGame::DEFAULT_CACHE_TTL);
+-        printf(
+-            '<input type="number" name="zengame_cache_ttl" value="%s" class="small-text" min="60"> <span>%s</span>',
+-            \esc_attr((string) $val),
+-            \esc_html__('seconds (default 86400 = 24 h)', 'zengame')
++    public function enqueue_styles() {
++        \wp_enqueue_style(
++            'zengame-admin',
++            ZENGAME_URL . 'assets/css/admin.css',
++            [],
++            ZENGAME_VERSION,
++            'all'
+         );
+     }
+ 
+-    /** Registers the top-level admin menu and settings sub-page. */
+-    public function add_admin_menu(): void
+-    {
++    public function add_plugin_page() {
+         \add_menu_page(
+-            \__('ZenGame', 'zengame'),
++            'ZenGame Settings',
+             'ZenGame',
+             'manage_options',
+             'zengame',
+-            [$this, 'render_admin_dashboard'],
+-            'dashicons-games'
++            [$this, 'create_admin_page'],
++            'dashicons-games',
++            55
++        );
++
++        // Add submenu pages for settings and logs
++        \add_submenu_page(
++            'zengame',
++            'Configura├º├Áes',
++            'Configura├º├Áes',
++            'manage_options',
++            'zengame',
++            [$this, 'create_admin_page']
+         );
+ 
+         \add_submenu_page(
+             'zengame',
+-            \__('Settings', 'zengame'),
+-            \__('Settings', 'zengame'),
++            'Logs de Pontos',
++            'Logs',
+             'manage_options',
+-            'zengame-settings',
+-            [$this, 'render_settings_page']
++            'zengame-logs',
++            [$this, 'create_logs_page']
+         );
+     }
+ 
+-    /** Renders the admin dashboard. */
+-    public function render_admin_dashboard(): void
+-    {
+-        if (!\current_user_can('manage_options')) {
++    public function create_admin_page() {
++        echo '<div class="wrap"><h1>ZenGame</h1><p>Motor de Gamifica├º├úo e Fidelidade.</p></div>';
++    }
++
++    public function create_logs_page() {
++        echo '<div class="wrap"><h1>Logs de Gamifica├º├úo</h1><p>Hist├│rico completo de pontos dos usu├írios.</p></div>';
++        // TODO: Render WP_List_Table with logs from wp_zengame_logs
++    }
++
++    // =========================================================================
++    // META BOXES FOR CPTs
++    // =========================================================================
++    public function add_meta_boxes() {
++        // Rank Meta Box (Points Required)
++        \add_meta_box('zengame_rank_meta', 'Requisitos do N├¡vel', [$this, 'render_rank_meta'], 'zengame_rank', 'normal', 'high');
++
++        // Mission Meta Box (Points Reward)
++        \add_meta_box('zengame_mission_meta', 'Configura├º├úo da Miss├úo', [$this, 'render_mission_meta'], 'zengame_mission', 'normal', 'high');
++    }
++
++    public function render_rank_meta($post) {
++        \wp_nonce_field('zengame_save_meta', 'zengame_meta_nonce');
++        $points = \get_post_meta($post->ID, '_zengame_points_required', true) ?: 0;
++        ?>
++        <p>
++            <label for="zengame_points_required"><strong>Pontos Necess├írios para Alcan├ºar:</strong></label><br>
++            <input type="number" id="zengame_points_required" name="zengame_points_required" value="<?php echo \esc_attr($points); ?>" style="width: 100%; max-width: 200px;">
++        </p>
++        <?php
++    }
++
++    public function render_mission_meta($post) {
++        \wp_nonce_field('zengame_save_meta', 'zengame_meta_nonce');
++        $points = \get_post_meta($post->ID, '_zengame_points_reward', true) ?: 10;
++        ?>
++        <p>
++            <label for="zengame_points_reward"><strong>Recompensa em Pontos:</strong></label><br>
++            <input type="number" id="zengame_points_reward" name="zengame_points_reward" value="<?php echo \esc_attr($points); ?>" style="width: 100%; max-width: 200px;">
++            <p class="description">Quantos pontos o usu├írio ganha ao completar esta miss├úo.</p>
++        </p>
++        <?php
++    }
++
++    public function save_meta_boxes($post_id) {
++        if (!isset($_POST['zengame_meta_nonce']) || !\wp_verify_nonce(\sanitize_text_field($_POST['zengame_meta_nonce']), 'zengame_save_meta')) {
+             return;
+         }
+ 
+-        // Handle cache purge.
+-        if (isset($_GET['action']) && 'clear_cache' === $_GET['action']) {
+-            \check_admin_referer('zengame_clear_cache');
+-            $this->plugin->clear_all_gamipress_cache();
+-            echo '<div class="notice notice-success is-dismissible"><p>'
+-                . \esc_html__('ZenGame: all engine transients purged.', 'zengame')
+-                . '</p></div>';
++        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
++            return;
+         }
+ 
+-        $is_woo = $this->plugin->is_woo_active();
+-        $is_gp = \defined('GAMIPRESS_VER');
+-        $status = ($is_woo && $is_gp) ? 'ONLINE' : 'DEGRADED';
+-        $color = ('ONLINE' === $status) ? '#0D96FF' : '#f87171';
++        if (isset($_POST['post_type']) && 'zengame_rank' === $_POST['post_type']) {
++            if (!\current_user_can('edit_post', $post_id)) {
++                return;
++            }
++            if (isset($_POST['zengame_points_required'])) {
++                \update_post_meta($post_id, '_zengame_points_required', \absint($_POST['zengame_points_required']));
++            }
++        }
+ 
+-        ?>
+-        <div class="wrap">
+-            <h1>ZenGame // <span style="color:<?php echo \esc_attr($color); ?>;">
+-                    <?php echo \esc_html($status); ?>
+-                </span></h1>
+-            <div class="welcome-panel"
+-                style="background:#111;color:#fff;padding:40px;border-radius:12px;border:1px solid #333;box-shadow:0 10px 30px rgba(0,0,0,.5);">
+-
+-                <h2 style="color:<?php echo $color; ?>;font-weight:900;letter-spacing:-1px;margin:0 0 10px 0;">
+-                    CENTRAL INTELLIGENCE
+-                </h2>
+-                <p style="color:#666;font-family:monospace;">ZenGame Pro v1.4.0 // Snapshot 2026-03-16</p>
+-
+-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px;margin-top:35px;">
+-                    <?php
+-                    $cards = [
+-                        ['WooCommerce HPOS', $is_woo ? 'SUPPORTED' : 'NOT FOUND', $is_woo],
+-                        ['GamiPress Engine', $is_gp ? 'CONNECTED' : 'OFFLINE', $is_gp],
+-                        ['Cache Health', ZenGame::CACHE_VERSION . ' Stable', true],
+-                    ];
+-                    foreach ($cards as [$label, $value, $ok]):
+-                        $c = $ok ? '#4ade80' : '#f87171';
+-                        ?>
+-                        <div
+-                            style="background:rgba(255,255,255,.03);padding:24px;border-radius:12px;border:1px solid rgba(255,255,255,.05);">
+-                            <strong
+-                                style="display:block;font-size:11px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">
+-                                <?php echo \esc_html($label); ?>
+-                            </strong>
+-                            <span style="font-size:22px;font-weight:700;color:<?php echo $c; ?>;">
+-                                <?php echo \esc_html($value); ?>
+-                            </span>
+-                        </div>
+-                    <?php endforeach; ?>
+-                </div>
+-
+-                <hr style="border:0;border-top:1px solid #222;margin:40px 0;">
+-
+-                <div style="display:flex;gap:15px;align-items:center;">
+-                    <a href="<?php echo \wp_nonce_url(\admin_url('admin.php?page=zengame&action=clear_cache'), 'zengame_clear_cache'); ?>"
+-                        class="button button-primary button-hero"
+-                        style="background:#ff4757;border:none;box-shadow:0 4px 14px rgba(255,71,87,.3);font-weight:700;">
+-                        PURGE ALL ENGINE TRANSIENTS
+-                    </a>
+-                    <a href="<?php echo \esc_url(\admin_url('admin.php?page=zengame-settings')); ?>"
+-                        class="button button-secondary" style="background:#222;color:#eee;border-color:#444;">
+-                        SETTINGS
+-                    </a>
+-                </div>
+-            </div>
+-        </div>
+-        <?php
++        if (isset($_POST['post_type']) && 'zengame_mission' === $_POST['post_type']) {
++            if (!\current_user_can('edit_post', $post_id)) {
++                return;
++            }
++            if (isset($_POST['zengame_points_reward'])) {
++                \update_post_meta($post_id, '_zengame_points_reward', \absint($_POST['zengame_points_reward']));
++            }
++        }
+     }
+ 
+-    /** Renders the settings form. */
+-    public function render_settings_page(): void
+-    {
++    // =========================================================================
++    // USER PROFILE (ADMIN)
++    // =========================================================================
++    public function user_profile_fields($user) {
++        if (!\current_user_can('manage_options')) {
++            return;
++        }
++
++        $points = (int) \get_user_meta($user->ID, 'zengame_points_balance', true);
+         ?>
+-        <div class="wrap">
+-            <h1>ZenGame // Settings</h1>
+-            <form action="options.php" method="post">
+-                <?php
+-                \settings_fields('zengame_settings');
+-                \do_settings_sections('zengame-settings');
+-                \submit_button();
+-                ?>
+-            </form>
+-        </div>
++        <h3>ZenGame - Gest├úo de Pontos</h3>
++        <table class="form-table">
++            <tr>
++                <th><label for="zengame_add_points">Adicionar/Remover Pontos</label></th>
++                <td>
++                    <p><strong>Saldo Atual:</strong> <?php echo \esc_html($points); ?> pontos</p>
++                    <input type="number" name="zengame_manual_points" id="zengame_manual_points" value="0" class="regular-text" style="width: 100px;">
++                    <p class="description">Use valores negativos para remover pontos (ex: -50).</p>
++                    <br>
++                    <input type="text" name="zengame_manual_points_desc" id="zengame_manual_points_desc" value="" placeholder="Motivo/Descri├º├úo (Opcional)" class="regular-text">
++                    <?php \wp_nonce_field('zengame_manual_points_nonce', 'zengame_manual_points_nonce_field'); ?>
++                </td>
++            </tr>
++        </table>
+         <?php
+     }
++
++    public function save_user_profile_fields($user_id) {
++        if (!\current_user_can('manage_options')) {
++            return false;
++        }
++
++        if (!isset($_POST['zengame_manual_points_nonce_field']) || !\wp_verify_nonce(\sanitize_text_field($_POST['zengame_manual_points_nonce_field']), 'zengame_manual_points_nonce')) {
++            return false;
++        }
++
++        $points_to_add = isset($_POST['zengame_manual_points']) ? (int) $_POST['zengame_manual_points'] : 0;
++        $description = isset($_POST['zengame_manual_points_desc']) ? \sanitize_text_field($_POST['zengame_manual_points_desc']) : 'Ajuste manual do administrador';
++
++        if ($points_to_add !== 0) {
++            // Include Engine for point manipulation
++            require_once ZENGAME_PATH . 'includes/Core/class-zengame-engine.php';
++            Core\Engine::award_points($user_id, $points_to_add, 'admin_adjustment', 0, 'admin', $description);
++        }
++    }
+ }
+diff --git a/plugins/zengame/includes/class-zengame.php b/plugins/zengame/includes/class-zengame.php
+index 92ded06c..e0ca43f0 100644
+--- a/plugins/zengame/includes/class-zengame.php
++++ b/plugins/zengame/includes/class-zengame.php
+@@ -9,7 +9,7 @@
+ namespace ZenEyer\Game;
+ 
+ if (!defined('ABSPATH')) {
+-    exit;
++    die;
+ }
+ 
+ /**
+@@ -54,8 +54,12 @@ private function __construct()
+     private function load_dependencies()
+     {
+         require_once ZENGAME_PATH . 'includes/Core/class-zengame-engine.php';
+-        require_once ZENGAME_PATH . 'includes/API/class-rest-handler.php';
++
++        // Disable API for now while refactoring
++        // require_once ZENGAME_PATH . 'includes/API/class-rest-handler.php';
++
+         require_once ZENGAME_PATH . 'includes/class-zengame-activator.php';
++        require_once ZENGAME_PATH . 'includes/Core/class-zengame-triggers.php';
+ 
+         if (\is_admin()) {
+             require_once ZENGAME_PATH . 'includes/class-zengame-admin.php';
+@@ -76,16 +80,18 @@ private function init_hooks()
+     public function init_components()
+     {
+         // 1. Initialize the Game Engine (Caching, Stats, SQL)
+-        $engine = \ZenEyer\Game\Core\Engine::get_instance();
+-        $engine->init();
++        $engine = new \ZenEyer\Game\Core\Engine();
+ 
+-        // 2. Initialize the REST API
+-        \ZenEyer\Game\API\REST_Handler::init($engine);
++        // 2. Initialize the REST API (TODO: Rewrite)
++        \ZenEyer\Game\API\REST_Handler::init();
+ 
+         // 3. Initialize Admin UI (only in dashboard)
+         if (\is_admin()) {
+-            \ZenEyer\Game\ZenGame_Admin::get_instance($this);
++            new \ZenEyer\Game\Admin();
+         }
++
++        // 4. Initialize Triggers
++        new \ZenEyer\Game\Core\Triggers();
+     }
+ 
+     /**
+@@ -101,6 +107,6 @@ public function is_woo_active(): bool
+      */
+     public function clear_all_gamipress_cache(): void
+     {
+-        \ZenEyer\Game\Core\Engine::get_instance()->clear_all_cache();
++        // \ZenEyer\Game\Core\Engine::clear_all_cache();
+     }
+ }
+diff --git a/plugins/zengame/zengame.php b/plugins/zengame/zengame.php
+index a8c18d21..9bc46f4a 100644
+--- a/plugins/zengame/zengame.php
++++ b/plugins/zengame/zengame.php
+@@ -18,7 +18,7 @@
+ namespace ZenEyer\Game;
+ 
+ if (!defined('ABSPATH')) {
+-    exit;
++    die;
+ }
+ 
+ /**
+@@ -36,6 +36,7 @@
+ 
+ // 2. Load the main class
+ require_once ZENGAME_PATH . 'includes/class-zengame.php';
++require_once ZENGAME_PATH . 'includes/Core/class-zengame-cpt.php';
+ 
+ /**
+  * Activation / Deactivation hooks
+@@ -62,3 +63,4 @@
+ 
+ // 4. Launch the engine
+ ZenGame::get_instance();
++new Core\CPT();

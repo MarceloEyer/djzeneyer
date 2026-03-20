@@ -1,0 +1,15 @@
+/* ZenGame Pro Admin Styles */
+
+#zengame_points_required,
+#zengame_points_reward {
+    width: 100%;
+    max-width: 200px;
+}
+
+#zengame_manual_points {
+    width: 100px;
+}
+
+.zengame-manual-points-desc {
+    margin-top: 10px;
+}

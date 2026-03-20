@@ -1,0 +1,66 @@
+<?php
+/**
+ * Plugin Name:       ZenGame Pro
+ * Plugin URI:        https://djzeneyer.com
+ * Description:       The High-Performance Bridge for Headless React. Optimized SQL queries, advanced caching, and elite game logic. Standalone version (No GamiPress required).
+ * Version:           1.4.0
+ * Requires at least: 6.0
+ * Requires PHP:      8.0
+ * Author:            DJ Zen Eyer
+ * Author URI:        https://djzeneyer.com
+ * License:           GPL v2 or later
+ * Text Domain:       zengamepro
+ * Domain Path:       /languages
+ *
+ * @package           ZenGamePro
+ */
+
+namespace ZenEyer\GamePro;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ZENGAME PRO LOADER
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * This file bootstraps the ZenGame Pro engine.
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+// 1. Definition of critical paths
+define('ZENGAMEPRO_VERSION', '1.4.0');
+define('ZENGAMEPRO_PATH', \plugin_dir_path(__FILE__));
+define('ZENGAMEPRO_URL', \plugin_dir_url(__FILE__));
+
+// 2. Load the main class
+require_once ZENGAMEPRO_PATH . 'includes/class-zengamepro.php';
+require_once ZENGAMEPRO_PATH . 'includes/Core/class-zengame-cpt.php';
+
+/**
+ * Activation / Deactivation hooks
+ */
+\register_activation_hook(__FILE__, function() {
+    require_once ZENGAMEPRO_PATH . 'includes/class-zengame-activator-pro.php';
+    Activator::activate();
+});
+
+\register_deactivation_hook(__FILE__, function() {
+    require_once ZENGAMEPRO_PATH . 'includes/class-zengame-activator-pro.php';
+    Activator::deactivate();
+});
+
+/**
+ * 3. WooCommerce High-Performance Order Storage (HPOS) Compatibility
+ */
+\add_action('before_woocommerce_init', function() {
+    if (\class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__, true);
+    }
+});
+
+// 4. Launch the engine
+ZenGamePro::get_instance();
+new Core\CPT();
