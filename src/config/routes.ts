@@ -357,7 +357,7 @@ export const normalizeRouteKey = (key: string): string => {
   if (!trimmed || trimmed === '/' || trimmed === '/pt') return '';
 
   if (trimmed.startsWith('/pt/')) {
-    trimmed = '/' + trimmed.slice(4);
+    trimmed = trimmed.slice(3);
   } else if (trimmed === '/pt') {
     trimmed = '/';
   }
@@ -511,7 +511,7 @@ export const getAlternateLinks = (
     // Fallback inteligente se não encontrar a chave
     let clean = currentPath;
     if (clean.startsWith('/pt/')) {
-      clean = '/' + clean.slice(4);
+      clean = clean.slice(3);
     } else if (clean === '/pt') {
       clean = '/';
     }

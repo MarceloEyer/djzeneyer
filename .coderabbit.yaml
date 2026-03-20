@@ -1,6 +1,4 @@
-# .coderabbit.yaml
-# Configures CodeRabbit for concise, Portuguese-brazilian reviews.
-
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: "pt-BR"
 
 tone_instructions: |
