@@ -49,3 +49,7 @@
 ## 2026-03-09 - Map pattern to avoid redundant function calls in REST API
 **Learning:** In `djz_get_shop_page` inside `inc/api.php`, `djz_get_product_image_ids` was being called during the initial query loop to collect image IDs for cache priming, and then called *again* for the exact same products in the subsequent formatting loop. This caused N redundant calculations per shop section.
 **Action:** When deriving data in one loop that will be needed in a subsequent loop (especially for the same collection of items), cache the intermediate result in an associative array keyed by item ID (e.g., `$product_images_map[$id] = $img_ids`). Then perform an O(1) lookup in the second loop instead of recalculating.
+
+## 2026-03-21 - Optimize Route Lookups with Native String Methods
+**Learning:** In highly trafficked front-end code paths, such as URL normalizations (`normalizeRouteKey`, `findKeyByPath`) inside `src/config/routes.ts`, chained regex replacements (e.g., `.replace(/^\/pt\//, '/').replace(/^\/pt$/, '/')`) and chained array methods (`.flatMap().map()`) create measurable execution and garbage collection overhead.
+**Action:** Replace regular expressions with O(1) native string methods (`.startsWith()`, `.endsWith()`, `.slice()`). Replace chained array allocations (`.flatMap()`, `.map()`) with single-pass sequential `for...of` loops. This significantly minimizes execution time without sacrificing readability.

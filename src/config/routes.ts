@@ -351,13 +351,25 @@ export const buildFullPath = (path: string, lang: Language): string => {
  */
 export const normalizeRouteKey = (key: string): string => {
   if (!key) return '';
-  const trimmed = key.trim();
+  let trimmed = key.trim();
   if (!trimmed || trimmed === '/' || trimmed === '/pt') return '';
 
-  return trimmed
-    .replace(/^\/pt(\/|$)/, '/')
-    .replace(/^\//, '')
-    .replace(/\/$/, '');
+  // ⚡ Bolt: Use native string methods instead of Regex replace for O(1) string operations.
+  if (trimmed.startsWith('/pt/')) {
+    trimmed = trimmed.slice(3); // remove '/pt' but keep the trailing slash
+  } else if (trimmed === '/pt') {
+    trimmed = '/';
+  }
+
+  if (trimmed.startsWith('/')) {
+    trimmed = trimmed.slice(1);
+  }
+
+  if (trimmed.endsWith('/')) {
+    trimmed = trimmed.slice(0, -1);
+  }
+
+  return trimmed;
 };
 
 /**
@@ -404,7 +416,8 @@ export const findKeyByPath = (path: string): string | undefined => {
       const paths = getLocalizedPaths(route, lang);
       for (const p of paths) {
         if (!p) continue;
-        const cleanP = p.replace(/\/$/, '');
+        // ⚡ Bolt: Replaced Regex p.replace(/\/$/, '') with native endsWith and slice
+        const cleanP = p.endsWith('/') ? p.slice(0, -1) : p;
         if (cleanPath === cleanP || cleanPath.startsWith(cleanP + '/')) {
           // Mapeamento automático para rotas de detalhe
           if (route.key === 'events') return 'events-detail';
@@ -454,15 +467,21 @@ export const getLocalizedRoute = (keyOrPath: string, lang: Language): string => 
  * Obtém todas as rotas configuradas para um idioma
  */
 export const getRoutesForLanguage = (lang: Language) => {
-  return ROUTES_CONFIG.flatMap(route => {
+  // ⚡ Bolt: Replaced flatMap+map with sequential for...of iteration and pushing into array
+  // to avoid redundant array allocations.
+  const result = [];
+  for (const route of ROUTES_CONFIG) {
     const paths = getLocalizedPaths(route, lang);
-    return paths.map(path => ({
-      component: route.component,
-      path,
-      isIndex: route.isIndex,
-      hasWildcard: route.hasWildcard,
-    }));
-  });
+    for (const path of paths) {
+      result.push({
+        component: route.component,
+        path,
+        isIndex: route.isIndex,
+        hasWildcard: route.hasWildcard,
+      });
+    }
+  }
+  return result;
 };
 
 /**
@@ -496,7 +515,14 @@ export const getAlternateLinks = (
   const key = findKeyByPath(currentPath);
   if (!key) {
     // Fallback inteligente se não encontrar a chave
-    const clean = currentPath.replace(/^\/pt\//, '/').replace(/^\/pt$/, '/');
+    // ⚡ Bolt: Replace regex `.replace(/^\/pt\//, '/').replace(/^\/pt$/, '/')` with O(1) string checks.
+    let clean = currentPath;
+    if (clean.startsWith('/pt/')) {
+      clean = '/' + clean.slice(4);
+    } else if (clean === '/pt') {
+      clean = '/';
+    }
+
     return {
       en: clean,
       pt: clean === '/' ? '/pt/' : `/pt${clean}`,
