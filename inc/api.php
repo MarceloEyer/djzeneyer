@@ -13,33 +13,9 @@ if (!defined('ABSPATH'))
 add_action('rest_api_init', function () {
     $ns = 'djzeneyer/v1';
 
-    register_rest_route($ns, '/menu', [
+    register_rest_route($ns, '/stats', [
         'methods' => 'GET',
-        'callback' => 'djz_get_menu',
-        'permission_callback' => '__return_true',
-    ]);
-
-    register_rest_route($ns, '/shop/page', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_shop_page',
-        'permission_callback' => '__return_true',
-    ]);
-
-    register_rest_route($ns, '/products', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_products',
-        'permission_callback' => '__return_true',
-    ]);
-
-    register_rest_route($ns, '/products/collections', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_product_collections',
-        'permission_callback' => '__return_true',
-    ]);
-
-    register_rest_route($ns, '/subscribe', [
-        'methods' => 'POST',
-        'callback' => 'djz_subscribe_newsletter',
+        'callback' => 'djz_get_stats',
         'permission_callback' => '__return_true',
     ]);
 
@@ -117,6 +93,53 @@ function djz_get_menu($request)
 
     set_transient($cache_key, $formatted, DJZ_CACHE_MENU);
     return rest_ensure_response($formatted);
+}
+
+/**
+ * Site Stats Endpoint
+ * returns: products, events, remixes, posts
+ */
+function djz_get_stats($request)
+{
+    $cache_key = 'djz_site_stats_v1';
+    $cached = get_transient($cache_key);
+    if ($cached) {
+        return rest_ensure_response(['success' => true, 'data' => $cached]);
+    }
+
+    $stats = [
+        'products' => (int) wp_count_posts('product')->publish,
+        'posts'    => (int) wp_count_posts('post')->publish,
+        'remixes'  => (int) wp_count_posts('remixes')->publish,
+        'events'   => 0,
+    ];
+
+    // Get event count from Zen BIT cache if available
+    $event_pool_key = 'zen_bit_v2_pool_' . md5(wp_json_encode([
+        'mode' => 'upcoming',
+        'ds'   => '',
+        'de'   => '',
+        'det'  => 0,
+        'nv'   => '3.1.0', // Standard Zen BIT Normalizer version
+    ]));
+
+    $events = get_transient($event_pool_key);
+    if (is_array($events)) {
+        $stats['events'] = count($events);
+    } else {
+        // Fallback to option if transient is gone
+        $events_opt = get_option('zen_bit_v2_pool_fallback_' . $event_pool_key);
+        if (is_array($events_opt)) {
+            $stats['events'] = count($events_opt);
+        }
+    }
+
+    set_transient($cache_key, $stats, HOUR_IN_SECONDS);
+
+    return rest_ensure_response([
+        'success' => true,
+        'data' => $stats
+    ]);
 }
 
 /**
@@ -446,6 +469,7 @@ function djz_subscribe_newsletter($request)
 
 /**
  * Update Profile
+ * @deprecated 3.0.0 Use zeneyer-auth/v1/profile instead
  */
 function djz_update_profile($request)
 {

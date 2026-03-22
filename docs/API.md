@@ -14,12 +14,12 @@ Base REST: `https://djzeneyer.com/wp-json`
 - `GET /shop/page`
 - `GET /products`
 - `GET /products/collections`
-- `GET /stats`
+- `GET /stats` (Site totals)
 - `POST /subscribe`
-- `POST /user/update-profile`
+- `POST /user/update-profile` (LEGACY - use `zeneyer-auth/v1/profile` instead)
 
 ## Auth (`zeneyer-auth/v1`)
-Aliases:
+Aliases (Commonly used):
 - `POST /login`
 - `POST /register`
 - `POST /google`
@@ -27,7 +27,7 @@ Aliases:
 - `POST /logout`
 - `GET /session`
 
-Rotas completas tambem suportadas:
+Full Auth Routes:
 - `POST /auth/login`
 - `POST /auth/register`
 - `POST /auth/google`
@@ -36,9 +36,12 @@ Rotas completas tambem suportadas:
 - `GET /auth/session`
 - `POST /auth/validate`
 - `GET /auth/me`
-- `GET|POST /profile`
+- `GET|POST /profile` (User Profile)
 - `GET|POST /newsletter`
 - `GET /orders`
+- `POST /auth/password/reset`
+- `POST /auth/password/set`
+- `GET /settings` (Public Auth Settings)
 
 ## Eventos (`zen-bit/v2`)
 - `GET /events`
@@ -50,14 +53,16 @@ Rotas completas tambem suportadas:
 - `GET /admin/health` (admin)
 
 ## Gamificacao (`zengame/v1`)
-- `GET /me`
-- `GET /leaderboard`
+- `GET /me` (Authenticated)
+- `GET /leaderboard` (Public)
+- `POST /track` (Authenticated - Track interaction)
 
 ## SEO (`zen-seo/v1`)
-- `GET /meta`
-- `GET /settings`
-- `GET /sitemap`
-- `POST /cache/clear`
+- `GET /meta` (Metadata by URL)
+- `GET /settings` (Global SEO settings)
+- `GET /profile` (Artist Profile - Single Source of Truth)
+- `GET /sitemap` (Dynamic sitemap data)
+- `POST /cache/clear` (Admin)
 
 ## Regras de consumo
 1. Priorizar parametros de filtro no backend

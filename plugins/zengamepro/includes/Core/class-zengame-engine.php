@@ -99,12 +99,12 @@ class Engine
                 return [
                     'id'    => $rank->ID,
                     'title' => $rank->post_title,
-                    'icon'  => \get_the_post_thumbnail_url($rank->ID, 'thumbnail')
+                    'icon'  => \get_the_post_thumbnail_url($rank->ID, 'thumbnail') ?: ''
                 ];
             }
         }
 
-        return ['title' => 'Iniciante', 'icon' => ''];
+        return ['id' => 0, 'title' => 'Zen Novice', 'icon' => ''];
     }
 
     /**
