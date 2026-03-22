@@ -7,8 +7,10 @@
  */
 
 namespace ZenEyer\GamePro\Core;
+ 
+ use ZenEyer\GamePro\Core\Constants;
 
-if (!defined('ABSPATH')) {
+ if (!defined('ABSPATH')) {
     exit;
 }
 
@@ -33,7 +35,7 @@ class Engine
     public static function award_points($user_id, $amount, $action, $reference_id = 0, $reference_type = '', $description = '') {
         global $wpdb;
 
-        if ($amount === 0) return (int) \get_user_meta($user_id, 'zengame_points_balance', true);
+        if ($amount === 0) return self::get_user_balance($user_id);
 
         // 1. Immutable Ledger (Log)
         $table_name = $wpdb->prefix . 'zengame_logs';
@@ -47,10 +49,19 @@ class Engine
             'created_at'     => \current_time('mysql')
         ]);
 
-        // 2. Update Fast Balance Cache (User Meta)
-        $current_balance = (int) \get_user_meta($user_id, 'zengame_points_balance', true);
-        $new_balance = $current_balance + $amount;
-        \update_user_meta($user_id, 'zengame_points_balance', $new_balance);
+        // 2. Update Fast Balance Cache (User Meta) - ATOMIC UPDATE
+        $updated = $wpdb->query($wpdb->prepare(
+            "UPDATE {$wpdb->usermeta} SET meta_value = CAST(meta_value AS SIGNED) + %d WHERE user_id = %d AND meta_key = %s",
+            $amount,
+            $user_id,
+            Constants::POINTS_BALANCE
+        ));
+
+        if (!$updated && !self::get_user_balance($user_id)) {
+            \add_user_meta($user_id, Constants::POINTS_BALANCE, (string)$amount, true);
+        }
+
+        $new_balance = self::get_user_balance($user_id);
 
         // 3. Purge Transients
         self::clear_user_cache($user_id);
@@ -65,7 +76,7 @@ class Engine
      * Get user point balance
      */
     public static function get_user_balance($user_id) {
-        return (int) \get_user_meta($user_id, 'zengame_points_balance', true);
+        return (int) \get_user_meta($user_id, Constants::POINTS_BALANCE, true);
     }
 
     /**
@@ -77,13 +88,13 @@ class Engine
         $ranks = \get_posts([
             'post_type'      => 'zengame_rank',
             'posts_per_page' => -1,
-            'meta_key'       => '_zengame_points_required',
+            'meta_key'       => Constants::POINTS_REQUIRED,
             'orderby'        => 'meta_value_num',
             'order'          => 'DESC'
         ]);
 
         foreach ($ranks as $rank) {
-            $required = (int) \get_post_meta($rank->ID, '_zengame_points_required', true);
+            $required = (int) \get_post_meta($rank->ID, Constants::POINTS_REQUIRED, true);
             if ($points >= $required) {
                 return [
                     'id'    => $rank->ID,

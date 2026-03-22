@@ -55,8 +55,7 @@ final class ZenGame
     {
         require_once ZENGAME_PATH . 'includes/Core/class-zengame-engine.php';
 
-        // Disable API for now while refactoring
-        // require_once ZENGAME_PATH . 'includes/API/class-rest-handler.php';
+        require_once ZENGAME_PATH . 'includes/API/class-rest-handler.php';
 
         require_once ZENGAME_PATH . 'includes/class-zengame-activator.php';
         require_once ZENGAME_PATH . 'includes/Core/class-zengame-triggers.php';

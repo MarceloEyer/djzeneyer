@@ -7,8 +7,9 @@
  */
 
 namespace ZenEyer\GamePro\API;
-
-use ZenEyer\GamePro\Core\Engine;
+ 
+ use ZenEyer\GamePro\Core\Engine;
+ use ZenEyer\GamePro\Core\Constants;
 use WP_REST_Server;
 use WP_Error;
 
@@ -82,12 +83,12 @@ final class REST_Handler
 
             $data = [
                 'user_id' => $user_id,
-                'stats' => [
-                    'totalTracks' => (int) \get_user_meta($user_id, 'zengame_total_tracks', true),
-                    'eventsAttended' => (int) \get_user_meta($user_id, 'zengame_events_attended', true),
-                    'streak' => (int) \get_user_meta($user_id, '_zengame_login_streak', true),
-                    'streakFire' => ((int) \get_user_meta($user_id, '_zengame_login_streak', true)) >= 3,
-                ],
+                 'stats' => [
+                     'totalTracks' => (int) \get_user_meta($user_id, Constants::TOTAL_TRACKS, true),
+                     'eventsAttended' => (int) \get_user_meta($user_id, Constants::EVENTS_ATTENDED, true),
+                     'streak' => (int) \get_user_meta($user_id, Constants::LOGIN_STREAK, true),
+                     'streakFire' => ((int) \get_user_meta($user_id, Constants::LOGIN_STREAK, true)) >= 3,
+                 ],
                 'points' => [
                     'points' => [
                         'name' => 'XP',
@@ -148,9 +149,9 @@ final class REST_Handler
                 FROM {$wpdb->usermeta} m
                 INNER JOIN {$wpdb->users} u ON m.user_id = u.ID
                 WHERE meta_key = %s AND meta_value > 0
-                ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT %d
-                ",
-                'zengame_points_balance',
+                 ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT %d
+                 ",
+                 Constants::POINTS_BALANCE,
                 10
             )
         );
@@ -182,17 +183,21 @@ final class REST_Handler
         $object_id = (is_scalar($params['object_id'] ?? null)) ? (int) $params['object_id'] : 0;
 
         if (empty($action)) {
-            return new WP_Error('missing_action', 'Action is required', ['status' => 400]);
-        }
-
-        // For now, we just log the interaction and maybe award some base points
-        Engine::award_points($user_id, 2, 'interaction_' . $action, $object_id, 'action', 'Interação registrada via API.');
-
-        return \rest_ensure_response([
-            'success' => true,
-            'action' => $action,
-            'points_awarded' => 2,
-        ]);
+             return new WP_Error('missing_action', 'Action is required', ['status' => 400]);
+         }
+ 
+         // Award points based on action type (internalizing the logic)
+         $points = 2; // Default
+         if (strpos($action, 'mission_') === 0) $points = 10;
+         if (strpos($action, 'quiz_') === 0) $points = 5;
+ 
+         Engine::award_points($user_id, $points, $action, $object_id, 'action', 'Interação registrada via API: ' . $action);
+ 
+         return \rest_ensure_response([
+             'success' => true,
+             'action' => $action,
+             'points_awarded' => $points,
+         ]);
     }
 
     private static function get_authenticated_user_id($request)
@@ -212,11 +217,11 @@ final class REST_Handler
     }
 
     private static function get_user_logs(int $user_id, int $limit = 10): array
-    {
-        global $wpdb;
-        $table = $wpdb->prefix . 'zengame_logs';
-        
-        $logs = $wpdb->get_results($wpdb->prepare(
+     {
+         global $wpdb;
+         $table = $wpdb->prefix . Constants::LOGS_TABLE;
+         
+         $logs = $wpdb->get_results($wpdb->prepare(
             "SELECT * FROM $table WHERE user_id = %d ORDER BY created_at DESC LIMIT %d",
             $user_id,
             $limit

@@ -352,10 +352,14 @@ export const buildFullPath = (path: string, lang: Language): string => {
 export const normalizeRouteKey = (key: string): string => {
   if (!key) return '';
   const trimmed = key.trim();
-  if (!trimmed || trimmed === '/' || trimmed === '/pt') return '';
 
-  return trimmed
-    .replace(/^\/pt(\/|$)/, '/')
+  // O(1) early return for root variations
+  if (!trimmed || trimmed === '/' || trimmed === '/pt' || trimmed === '/pt/') return '';
+
+  // Efficiently strip prefix and slashes
+  const path = trimmed.startsWith('/pt/') ? trimmed.slice(3) : trimmed;
+
+  return path
     .replace(/^\//, '')
     .replace(/\/$/, '');
 };

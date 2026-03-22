@@ -53,6 +53,7 @@ final class ZenGamePro
      */
     private function load_dependencies()
     {
+        require_once ZENGAMEPRO_PATH . 'includes/Core/class-zengame-constants.php';
         require_once ZENGAMEPRO_PATH . 'includes/Core/class-zengame-engine.php';
         require_once ZENGAMEPRO_PATH . 'includes/API/class-rest-handler.php';
         require_once ZENGAMEPRO_PATH . 'includes/class-zengame-activator-pro.php';
@@ -69,6 +70,7 @@ final class ZenGamePro
     private function init_hooks()
     {
         \add_action('plugins_loaded', [$this, 'init_components'], 20);
+        \add_action('plugins_loaded', [$this, 'check_version'], 10);
     }
 
     /**
@@ -89,6 +91,18 @@ final class ZenGamePro
 
         // 4. Initialize Triggers (Standalone)
         new \ZenEyer\GamePro\Core\Triggers();
+    }
+
+    /**
+     * Checks plugin version and runs migrations if needed.
+     */
+    public function check_version()
+    {
+        $stored_version = \get_option(Core\Constants::DB_VERSION_OPTION);
+        if ($stored_version !== ZENGAMEPRO_VERSION) {
+            require_once ZENGAMEPRO_PATH . 'includes/Core/class-zengame-schema.php';
+            Core\Schema::create_tables();
+        }
     }
 
     /**

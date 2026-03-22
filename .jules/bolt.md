@@ -29,7 +29,8 @@
 **Action:** Always fetch all user earnings at once using `gamipress_get_user_earnings($user_id, 'achievement')` before entering the loop. Build a local lookup map (ID -> data) to perform O(1) checks during iteration.
 
 ## 2025-03-04 - Memoize static data in React functional components
-**Learning:** `AboutPage.tsx` re-created the complex static arrays `ABOUT_SCHEMA`, `MILESTONES`, and `ACHIEVEMENTS_DATA` on every render cycle. Because they needed the `t` function from `useTranslation`, they could not be easily moved outside the component.
+ 
+ **Learning:** `AboutPage.tsx` re-created the complex static arrays `ABOUT_SCHEMA`, `MILESTONES`, and `ACHIEVEMENTS_DATA` on every render cycle. Because they needed the `t` function from `useTranslation`, they could not be easily moved outside the component.
 **Action:** Use `useMemo(() => [...], [t])` to keep them within the component so they can access hooks while preventing unnecessary allocations and downstream re-renders on unrelated state changes.
 
 ## 2026-03-06 - [Context API Re-renders Optimization]
@@ -43,9 +44,11 @@
 **Action:** Consistently apply React memoization patterns at context boundaries. Wrap context provider values in `useMemo`. When a custom hook acts as a context provider value (like `useGamiPress`), its return object must also be wrapped in `useMemo`, and any exposed functions must be stabilized with `useCallback`.
 
 ## 2026-03-08 - UseMemo on Array Data
-**Learning:** Found that large data object definitions utilizing `t` were being recreated every render cycle in `ZenTribePage.tsx`. Attempting to micro-optimize tiny array traversals (like `find` + `filter` -> `for` loops) proved detrimental due to dependency complexities triggering unnecessary renders, and violating micro-optimization guidelines.
+ 
+ **Learning:** Found that large data object definitions utilizing `t` were being recreated every render cycle in `ZenTribePage.tsx`. Attempting to micro-optimize tiny array traversals (like `find` + `filter` -> `for` loops) proved detrimental due to dependency complexities triggering unnecessary renders, and violating micro-optimization guidelines.
 **Action:** When implementing static array mapping and data definitions that rely on React contexts such as translations (`useTranslation()`), apply `useMemo` and attach `t` as a dependency to avoid re-rendering heavy allocations without sacrificing maintainability for imperceptible loop improvements.
 
 ## 2026-03-09 - Map pattern to avoid redundant function calls in REST API
-**Learning:** In `djz_get_shop_page` inside `inc/api.php`, `djz_get_product_image_ids` was being called during the initial query loop to collect image IDs for cache priming, and then called *again* for the exact same products in the subsequent formatting loop. This caused N redundant calculations per shop section.
+ 
+ **Learning:** In `djz_get_shop_page` inside `inc/api.php`, `djz_get_product_image_ids` was being called during the initial query loop to collect image IDs for cache priming, and then called *again* for the exact same products in the subsequent formatting loop. This caused N redundant calculations per shop section.
 **Action:** When deriving data in one loop that will be needed in a subsequent loop (especially for the same collection of items), cache the intermediate result in an associative array keyed by item ID (e.g., `$product_images_map[$id] = $img_ids`). Then perform an O(1) lookup in the second loop instead of recalculating.

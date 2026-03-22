@@ -5,6 +5,8 @@
  */
 namespace ZenEyer\GamePro\Core;
 
+use ZenEyer\GamePro\Core\Constants;
+
 if (!defined('ABSPATH')) {
     die;
 }
@@ -29,23 +31,23 @@ class Triggers {
     public function daily_login($user_login, $user) {
         $user_id = $user->ID;
         $today = gmdate('Y-m-d');
-
-        // Check if user already got points today
-        $last_login_date = \get_user_meta($user_id, '_zengame_last_login_date', true);
+ 
+         // Check if user already got points today
+         $last_login_date = \get_user_meta($user_id, Constants::LAST_LOGIN_DATE, true);
 
         if ($last_login_date !== $today) {
-            $yesterday = \gmdate('Y-m-d', \strtotime('-1 day'));
-            $current_streak = (int) \get_user_meta($user_id, '_zengame_login_streak', true);
+             $yesterday = \gmdate('Y-m-d', \strtotime('-1 day'));
+             $current_streak = (int) \get_user_meta($user_id, Constants::LOGIN_STREAK, true);
             
             // Increment streak if logged in yesterday, otherwise restart
             if ($last_login_date === $yesterday) {
                 $new_streak = $current_streak + 1;
             } else {
                 $new_streak = 1;
-            }
-            
-            \update_user_meta($user_id, '_zengame_login_streak', $new_streak);
-            \update_user_meta($user_id, '_zengame_last_login_date', $today);
+             }
+             
+             \update_user_meta($user_id, Constants::LOGIN_STREAK, $new_streak);
+             \update_user_meta($user_id, Constants::LAST_LOGIN_DATE, $today);
 
             // Award 10 points
             Engine::award_points(
@@ -74,12 +76,12 @@ class Triggers {
         }
 
         $user_id = $order->get_user_id();
-        if (!$user_id) {
-            return; // Guest checkout
-        }
-
-        // Check if we already rewarded this order (Idempotency)
-        $already_rewarded = \get_post_meta($order_id, '_zengamepro_points_awarded', true);
+         if (!$user_id) {
+             return; // Guest checkout
+         }
+ 
+         // Check if we already rewarded this order (Idempotency)
+         $already_rewarded = \get_post_meta($order_id, Constants::ORDER_POINTS_AWARDED, true);
         if ($already_rewarded) {
             return;
         }
@@ -96,10 +98,10 @@ class Triggers {
                 $order_id,
                 'order',
                 'Pontos por compra na loja (Pedido #' . $order_id . ').'
-            );
-
-            // Mark as rewarded
-            \update_post_meta($order_id, '_zengamepro_points_awarded', $points_to_award);
+             );
+ 
+             // Mark as rewarded
+             \update_post_meta($order_id, Constants::ORDER_POINTS_AWARDED, $points_to_award);
             
             // Restore User Stats: totalTracks and eventsAttended
             $this->update_user_purchase_stats($user_id, $order);
@@ -116,22 +118,22 @@ class Triggers {
         }
 
         // Idempotency: Has the user already completed this mission?
-        global $wpdb;
-        $table = $wpdb->prefix . 'zengame_logs';
-
-        $already_completed = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM $table WHERE user_id = %d AND action = %s AND reference_id = %d LIMIT 1",
-            $user_id,
-            'mission_completed',
-            $mission_id
-        ));
+         global $wpdb;
+         $table = $wpdb->prefix . Constants::LOGS_TABLE;
+ 
+         $already_completed = $wpdb->get_var($wpdb->prepare(
+             "SELECT id FROM $table WHERE user_id = %d AND action = %s AND reference_id = %d LIMIT 1",
+             $user_id,
+             'mission_completed',
+             $mission_id
+         ));
 
         if ($already_completed) {
             return false; // Prevent duplicate points
         }
 
         // How many points is this mission worth?
-        $points = (int) \get_post_meta($mission_id, '_zengame_points_reward', true);
+         $points = (int) \get_post_meta($mission_id, Constants::POINTS_REWARD, true);
         if ($points <= 0) {
             $points = 10; // Fallback
         }
@@ -175,13 +177,13 @@ class Triggers {
         }
         
         if ($total_tracks_to_add > 0) {
-            $current = (int) \get_user_meta($user_id, 'zengame_total_tracks', true);
-            \update_user_meta($user_id, 'zengame_total_tracks', $current + $total_tracks_to_add);
-        }
-        
-        if ($total_events_to_add > 0) {
-            $current = (int) \get_user_meta($user_id, 'zengame_events_attended', true);
-            \update_user_meta($user_id, 'zengame_events_attended', $current + $total_events_to_add);
-        }
+             $current = (int) \get_user_meta($user_id, Constants::TOTAL_TRACKS, true);
+             \update_user_meta($user_id, Constants::TOTAL_TRACKS, $current + $total_tracks_to_add);
+         }
+         
+         if ($total_events_to_add > 0) {
+             $current = (int) \get_user_meta($user_id, Constants::EVENTS_ATTENDED, true);
+             \update_user_meta($user_id, Constants::EVENTS_ATTENDED, $current + $total_events_to_add);
+         }
     }
 }
