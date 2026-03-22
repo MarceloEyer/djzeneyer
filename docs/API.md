@@ -1,5 +1,9 @@
 # API.md - Referencia Canonica de Endpoints
 
+> [!IMPORTANT]
+> Este arquivo é a **Fonte Única de Verdade (SSOT)** para todos os endpoints da API. 
+> Qualquer alteração no código deve ser refletida aqui primeiro ou simultaneamente.
+
 Base REST: `https://djzeneyer.com/wp-json`
 
 ## Namespaces oficiais

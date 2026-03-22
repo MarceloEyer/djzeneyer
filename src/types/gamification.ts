@@ -2,7 +2,8 @@
 
 /**
  * ZenGame v1.1.0 Type Definitions
- * Aligned with zengame.php REST API
+ * Aligned with REST_Handler.php in ZenGamePro plugin
+ * @see file:///d:/DJ/Scripts/djzeneyer/plugins/zengamepro/includes/API/class-rest-handler.php
  */
 
 export interface ZenGamePoint {

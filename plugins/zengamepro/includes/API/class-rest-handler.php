@@ -59,6 +59,32 @@ final class REST_Handler
 
     /**
      * Unified Dashboard Endpoint
+     * 
+     * @return \WP_REST_Response|\WP_Error {
+     *     @type int    $user_id
+     *     @type array  $stats {
+     *         @type int  $totalTracks
+     *         @type int  $eventsAttended
+     *         @type int  $streak
+     *         @type bool $streakFire
+     *     }
+     *     @type array  $points Record<string, ZenGamePoint>
+     *     @type array  $rank {
+     *         @type array $current { @type int $id, @type string $title, @type string $image }
+     *         @type array $next
+     *         @type int   $progress
+     *         @type array $requirements
+     *     }
+     *     @type array  $achievements_earned
+     *     @type array  $achievements_locked
+     *     @type array  $recent_achievements
+     *     @type array  $logs
+     *     @type string $main_points_slug
+     *     @type array  $engine_status
+     *     @type string $lastUpdate
+     *     @type string $version
+     * }
+     * 
      * Matches ZenGameUserData type in React frontend
      */
     public static function get_dashboard($request)
@@ -69,7 +95,7 @@ final class REST_Handler
                 return new WP_Error('unauthorized', 'Invalid token', ['status' => 401]);
             }
 
-            $cache_key = 'djz_zengame_dashboard_' . \ZenEyer\GamePro\ZenGamePro::CACHE_VERSION . '_' . $user_id;
+            $cache_key = Constants::CACHE_DASHBOARD . \ZenEyer\GamePro\ZenGamePro::CACHE_VERSION . '_' . $user_id;
             $bypass_cache = (bool) $request->get_param('nocache');
             if (!$bypass_cache) {
                 $cached = \get_transient($cache_key);
@@ -132,10 +158,19 @@ final class REST_Handler
 
     /**
      * Global Leaderboard Endpoint
+     * 
+     * @return \WP_REST_Response|\WP_Error {
+     *     @type array $points {
+     *         @type int    $user_id
+     *         @type string $display_name
+     *         @type int    $points
+     *         @type string $avatar
+     *     }[]
+     * }
      */
     public static function get_leaderboard($request)
     {
-        $cache_key = 'djz_zengame_leaderboard_' . \ZenEyer\GamePro\ZenGamePro::CACHE_VERSION;
+        $cache_key = Constants::CACHE_LEADERBOARD . \ZenEyer\GamePro\ZenGamePro::CACHE_VERSION;
         $cached = \get_transient($cache_key);
         if (false !== $cached) {
             return \rest_ensure_response($cached);
@@ -173,6 +208,12 @@ final class REST_Handler
 
     /**
      * Interaction Tracker
+     * 
+     * @return \WP_REST_Response|\WP_Error {
+     *     @type bool   $success
+     *     @type string $action
+     *     @type int    $points_awarded
+     * }
      */
     public static function track_interaction($request)
     {

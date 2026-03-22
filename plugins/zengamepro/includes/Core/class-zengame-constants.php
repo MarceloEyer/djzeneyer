@@ -28,6 +28,10 @@ final class Constants
     // Orders & Idempotency
     public const ORDER_POINTS_AWARDED = '_zengamepro_points_awarded';
 
+    // Cache Keys
+    public const CACHE_DASHBOARD = 'djz_zengame_dashboard_';
+    public const CACHE_LEADERBOARD = 'djz_zengame_leaderboard_';
+
     // Database & Options
     public const DB_VERSION_OPTION = 'zengamepro_db_version';
     public const LOGS_TABLE = 'zengame_logs';
