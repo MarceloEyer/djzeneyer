@@ -1,9 +1,5 @@
 # API.md - Referencia Canonica de Endpoints
 
-> [!IMPORTANT]
-> Este arquivo é a **Fonte Única de Verdade (SSOT)** para todos os endpoints da API. 
-> Qualquer alteração no código deve ser refletida aqui primeiro ou simultaneamente.
-
 Base REST: `https://djzeneyer.com/wp-json`
 
 ## Namespaces oficiais
@@ -18,12 +14,12 @@ Base REST: `https://djzeneyer.com/wp-json`
 - `GET /shop/page`
 - `GET /products`
 - `GET /products/collections`
-- `GET /stats` (Site totals)
+- `GET /stats`
 - `POST /subscribe`
-- `POST /user/update-profile` (LEGACY - use `zeneyer-auth/v1/profile` instead)
+- `POST /user/update-profile`
 
 ## Auth (`zeneyer-auth/v1`)
-Aliases (Commonly used):
+Aliases:
 - `POST /login`
 - `POST /register`
 - `POST /google`
@@ -31,7 +27,7 @@ Aliases (Commonly used):
 - `POST /logout`
 - `GET /session`
 
-Full Auth Routes:
+Rotas completas tambem suportadas:
 - `POST /auth/login`
 - `POST /auth/register`
 - `POST /auth/google`
@@ -40,12 +36,9 @@ Full Auth Routes:
 - `GET /auth/session`
 - `POST /auth/validate`
 - `GET /auth/me`
-- `GET|POST /profile` (User Profile)
+- `GET|POST /profile`
 - `GET|POST /newsletter`
 - `GET /orders`
-- `POST /auth/password/reset`
-- `POST /auth/password/set`
-- `GET /settings` (Public Auth Settings)
 
 ## Eventos (`zen-bit/v2`)
 - `GET /events`
@@ -57,16 +50,14 @@ Full Auth Routes:
 - `GET /admin/health` (admin)
 
 ## Gamificacao (`zengame/v1`)
-- `GET /me` (Authenticated)
-- `GET /leaderboard` (Public)
-- `POST /track` (Authenticated - Track interaction)
+- `GET /me`
+- `GET /leaderboard`
 
 ## SEO (`zen-seo/v1`)
-- `GET /meta` (Metadata by URL)
-- `GET /settings` (Global SEO settings)
-- `GET /profile` (Artist Profile - Single Source of Truth)
-- `GET /sitemap` (Dynamic sitemap data)
-- `POST /cache/clear` (Admin)
+- `GET /meta`
+- `GET /settings`
+- `GET /sitemap`
+- `POST /cache/clear`
 
 ## Regras de consumo
 1. Priorizar parametros de filtro no backend

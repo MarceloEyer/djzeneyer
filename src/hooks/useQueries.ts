@@ -99,13 +99,6 @@ export interface ShopPageViewModel {
   collections?: Array<{ id: number; name: string; products: WCProduct[] }>;
 }
 
-export interface SiteStats {
-  products: number;
-  posts: number;
-  remixes: number;
-  events: number;
-}
-
 import type {
   ZenBitEventListItem,
   ZenBitEventDetail,
@@ -367,14 +360,6 @@ export const fetchProductCollectionsFn = async (
   return Array.isArray(data) ? data : [];
 };
 
-export const fetchSiteStatsFn = async (): Promise<SiteStats> => {
-  const apiUrl = buildApiUrl('djzeneyer/v1/stats');
-  const res = await fetch(apiUrl);
-  if (!res.ok) throw new Error('Failed to fetch site stats');
-  const json = await res.json();
-  return json.data;
-};
-
 // ============================================================================
 // MENU QUERY (PÚBLICO)
 // ============================================================================
@@ -461,18 +446,6 @@ export const useTrackBySlug = (slug?: string) => {
     },
     enabled: !!slug,
     staleTime: STALE_TIME.TRACKS,
-  });
-};
-
-// ============================================================================
-// SITE STATS QUERY (PÚBLICO)
-// ============================================================================
-
-export const useSiteStatsQuery = () => {
-  return useQuery({
-    queryKey: ['site', 'stats'],
-    queryFn: fetchSiteStatsFn,
-    staleTime: 60 * 60 * 1000, // 1 hour
   });
 };
 

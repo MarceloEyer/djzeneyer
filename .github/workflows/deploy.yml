@@ -138,7 +138,7 @@ jobs:
 
       # --- ARTIFACTS ---
       - name: 📤 Upload dist artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: build-dist-${{ steps.commit.outputs.hash }}
           path: dist/
@@ -147,7 +147,7 @@ jobs:
           compression-level: 6
 
       - name: 📤 Upload theme files
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: build-theme-${{ steps.commit.outputs.hash }}
           path: |
@@ -161,14 +161,14 @@ jobs:
 
       - name: 📤 Upload plugins
         if: hashFiles('plugins/**') != ''
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: build-plugins-${{ steps.commit.outputs.hash }}
           path: plugins/
           retention-days: 7
 
       - name: 📤 Upload sitemaps
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: build-sitemaps-${{ steps.commit.outputs.hash }}
           path: |
@@ -178,7 +178,7 @@ jobs:
 
       - name: 📤 Upload GamiPress files
         if: hashFiles('gamipress/**') != ''
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: build-gamipress-${{ steps.commit.outputs.hash }}
           path: gamipress/
@@ -251,7 +251,7 @@ jobs:
       # --- DOWNLOAD ARTIFACTS ---
       - name: Download dist
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-dist-${{ needs.build.outputs.commit_hash }}
           path: ./dist
@@ -268,7 +268,7 @@ jobs:
 
       - name: Download theme files
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-theme-${{ needs.build.outputs.commit_hash }}
           path: ./
@@ -304,7 +304,7 @@ jobs:
 
       - name: Download sitemaps
         if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
