@@ -189,9 +189,11 @@ const ZenLinkPageComponent = () => {
                 </div>
               </div>
 
-              <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
-                “{artist.philosophy.slogan || t('home.hero_slogan')}”
-              </p>
+              {(artist.philosophy.slogan || t('home.hero_slogan')) && (
+                <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
+                  “{artist.philosophy.slogan || t('home.hero_slogan')}”
+                </p>
+              )}
             </div>
           </motion.header>
 
