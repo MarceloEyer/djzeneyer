@@ -217,6 +217,9 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
+            // `skip_build=true` reuses artifacts from the latest successful run on `main`.
+            // Without this lookup, the deploy job would try to publish files that do not
+            // exist in the current workflow run.
             const workflowId = 'deploy.yml';
             const { owner, repo } = context.repo;
             const currentRunId = context.runId;
@@ -285,6 +288,7 @@ jobs:
 
       - name: Download plugins
         if: ${{ !inputs.skip_build }}
+        # Plugins are optional in some runs; keep deploy moving when no plugin artifact exists.
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -293,6 +297,7 @@ jobs:
 
       - name: Download plugins (previous run)
         if: ${{ inputs.skip_build }}
+        # `skip_build` may target a successful run that did not produce plugin artifacts.
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -321,6 +326,7 @@ jobs:
 
       - name: Download GamiPress files
         if: ${{ !inputs.skip_build }}
+        # GamiPress assets are optional and should not block a frontend/theme deploy.
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -329,6 +335,7 @@ jobs:
 
       - name: Download GamiPress files (previous run)
         if: ${{ inputs.skip_build }}
+        # Keep artifact reuse resilient when the source run has no GamiPress payload.
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -340,6 +347,7 @@ jobs:
 
       - name: Validate deploy inputs
         run: |
+          # Fail fast before opening SSH/SCP/rsync sessions when the expected payload is absent.
           if [ ! -d dist ]; then echo "dist/ not found for deploy"; exit 1; fi
           if [ ! -f dist/index.html ]; then echo "dist/index.html not found for deploy"; exit 1; fi
           if [ ! -f functions.php ]; then echo "functions.php not found for deploy"; exit 1; fi
@@ -532,6 +540,7 @@ jobs:
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Root sitemap presence is one of the cheapest post-deploy integrity checks we have.
             if [ ! -f "${{ env.REMOTE_ROOT }}/sitemap.xml" ]; then
               echo "sitemap.xml missing in ROOT after deploy"
               exit 1
@@ -570,6 +579,7 @@ jobs:
     steps:
       - name: Check sitemap endpoint
         run: |
+          # Treat 403 as acceptable because the site may be online while bot protection blocks CI.
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" "${{ env.SITE_URL }}/sitemap.xml")
 
