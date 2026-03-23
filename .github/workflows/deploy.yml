@@ -28,6 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
+  actions: read
   contents: read
   deployments: write
 
@@ -210,41 +211,140 @@ jobs:
             templates
           sparse-checkout-cone-mode: false
 
+      - name: Resolve previous successful artifact run
+        if: ${{ inputs.skip_build }}
+        id: artifact_source
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const workflowId = 'deploy.yml';
+            const { owner, repo } = context.repo;
+            const currentRunId = context.runId;
+
+            const runs = await github.paginate(
+              github.rest.actions.listWorkflowRuns,
+              {
+                owner,
+                repo,
+                workflow_id: workflowId,
+                branch: 'main',
+                status: 'completed',
+                per_page: 100,
+              },
+              (response) => response.data.workflow_runs
+            );
+
+            const previousSuccess = runs.find((run) =>
+              run.id !== currentRunId &&
+              run.conclusion === 'success'
+            );
+
+            if (!previousSuccess) {
+              core.setFailed('skip_build=true, but no previous successful deploy run with artifacts was found on main.');
+              return;
+            }
+
+            core.info(`Using artifacts from run ${previousSuccess.id} (${previousSuccess.head_sha})`);
+            core.setOutput('run_id', String(previousSuccess.id));
+            core.setOutput('commit_hash', previousSuccess.head_sha.slice(0, 7));
+
       # --- DOWNLOAD ARTIFACTS ---
-      - name: 📥 Download dist
+      - name: Download dist
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v8
         with:
           name: build-dist-${{ needs.build.outputs.commit_hash }}
           path: ./dist
 
-      - name: 📥 Download theme files
+      - name: Download dist (previous run)
+        if: ${{ inputs.skip_build }}
+        uses: actions/download-artifact@v8
+        with:
+          name: build-dist-${{ steps.artifact_source.outputs.commit_hash }}
+          path: ./dist
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.artifact_source.outputs.run_id }}
+
+      - name: Download theme files
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v8
         with:
           name: build-theme-${{ needs.build.outputs.commit_hash }}
           path: ./
 
-      - name: 📥 Download plugins
+      - name: Download theme files (previous run)
+        if: ${{ inputs.skip_build }}
+        uses: actions/download-artifact@v8
+        with:
+          name: build-theme-${{ steps.artifact_source.outputs.commit_hash }}
+          path: ./
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.artifact_source.outputs.run_id }}
+
+      - name: Download plugins
         if: ${{ !inputs.skip_build }}
+        continue-on-error: true
         uses: actions/download-artifact@v8
         with:
           name: build-plugins-${{ needs.build.outputs.commit_hash }}
           path: ./plugins
 
-      - name: 📥 Download sitemaps
+      - name: Download plugins (previous run)
+        if: ${{ inputs.skip_build }}
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: build-plugins-${{ steps.artifact_source.outputs.commit_hash }}
+          path: ./plugins
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.artifact_source.outputs.run_id }}
+
+      - name: Download sitemaps
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v8
         with:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
 
-      - name: 📥 Download GamiPress files
+      - name: Download sitemaps (previous run)
+        if: ${{ inputs.skip_build }}
+        uses: actions/download-artifact@v8
+        with:
+          name: build-sitemaps-${{ steps.artifact_source.outputs.commit_hash }}
+          path: ./sitemaps-deploy
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.artifact_source.outputs.run_id }}
+
+      - name: Download GamiPress files
         if: ${{ !inputs.skip_build }}
+        continue-on-error: true
         uses: actions/download-artifact@v8
         with:
           name: build-gamipress-${{ needs.build.outputs.commit_hash }}
           path: ./gamipress-deploy
+
+      - name: Download GamiPress files (previous run)
+        if: ${{ inputs.skip_build }}
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: build-gamipress-${{ steps.artifact_source.outputs.commit_hash }}
+          path: ./gamipress-deploy
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.artifact_source.outputs.run_id }}
+
+      - name: Validate deploy inputs
+        run: |
+          if [ ! -d dist ]; then echo "dist/ not found for deploy"; exit 1; fi
+          if [ ! -f dist/index.html ]; then echo "dist/index.html not found for deploy"; exit 1; fi
+          if [ ! -f functions.php ]; then echo "functions.php not found for deploy"; exit 1; fi
+          if [ ! -f sitemaps-deploy/sitemap.xml ]; then echo "sitemap.xml not found for deploy"; exit 1; fi
+          echo "Deploy inputs ready"
 
       # --- SSH SETUP ---
       - name: 🔐 Setup SSH
@@ -424,6 +524,24 @@ jobs:
           target: ${{ env.REMOTE_ROOT }}/
           strip_components: 1
 
+      - name: Verify deployed sitemaps
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if [ ! -f "${{ env.REMOTE_ROOT }}/sitemap.xml" ]; then
+              echo "sitemap.xml missing in ROOT after deploy"
+              exit 1
+            fi
+            if [ ! -f "${{ env.REMOTE_ROOT }}/sitemap-pages.xml" ]; then
+              echo "sitemap-pages.xml missing in ROOT after deploy"
+              exit 1
+            fi
+            echo "Sitemaps deployed to ROOT"
+
       # --- CACHE PURGE ---
       - name: 🧹 Purge caches
         continue-on-error: true
@@ -441,3 +559,29 @@ jobs:
       - name: 🎉 Success
         if: success()
         run: echo "🚀 Site Live at ${{ env.SITE_URL }}"
+
+  health-check:
+    name: Health Check
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    if: ${{ needs.deploy.result == 'success' }}
+
+    steps:
+      - name: Check sitemap endpoint
+        run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" "${{ env.SITE_URL }}/sitemap.xml")
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "sitemap.xml responded with HTTP 200"
+            exit 0
+          fi
+
+          if [ "$HTTP_CODE" = "403" ]; then
+            echo "sitemap.xml returned HTTP 403; server may be blocking automation while site stays online"
+            exit 0
+          fi
+
+          echo "sitemap.xml returned HTTP $HTTP_CODE"
+          exit 1
