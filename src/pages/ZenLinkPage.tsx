@@ -7,11 +7,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Youtube, Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
-  Instagram, Sparkles, Trophy, ArrowUpRight, MessageCircle
+  Instagram, Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle, Music2
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useBranding } from '../contexts/BrandingContext';
-import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // Helper for WhatsApp (recreated here with dynamic data)
 const getDynamicWhatsAppUrl = (number: string, message?: string) => {
@@ -130,13 +129,22 @@ const ZenLinkPageComponent = () => {
       icon: <Trophy className="h-4 w-4" />,
       label: '2× campeão mundial',
     },
+    {
+      icon: <Award className="h-4 w-4" />,
+      label: `Ilha do Zouk (2022)`,
+    },
+    {
+      icon: <MapPin className="h-4 w-4" />,
+      label: `${artist.identity.city} • ${artist.identity.state}`,
+    },
+    {
+      icon: <Disc3 className="h-4 w-4" />,
+      label: `${new Date().getFullYear() - artist.stats.startingYear}+ anos de pista`,
+    },
   ];
 
-  const { i18n } = useTranslation();
-  const currentLang = normalizeLanguage(i18n.language);
-
   const MAIN_LINKS = [
-    { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: getLocalizedRoute('quiz', currentLang), icon: <Sparkles className="h-5 w-5" />, highlight: true },
+    { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: artist.social.spotify?.url, icon: <Music2 className="h-5 w-5" />, highlight: true },
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
     { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • bastidores`, url: artist.social.instagram?.url, icon: <Instagram className="h-5 w-5" /> },
     { title: 'YouTube', subtitle: 'Sets ao vivo', url: artist.social.youtube?.url, icon: <Youtube className="h-5 w-5" /> },
@@ -189,11 +197,9 @@ const ZenLinkPageComponent = () => {
                 </div>
               </div>
 
-              {(artist.philosophy.slogan || t('home.hero_slogan')) && (
-                <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
-                  “{artist.philosophy.slogan || t('home.hero_slogan')}”
-                </p>
-              )}
+              <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
+                “{artist.philosophy.slogan}”
+              </p>
             </div>
           </motion.header>
 
@@ -246,6 +252,17 @@ const ZenLinkPageComponent = () => {
             animate={{ opacity: 1 }}
             className="mt-8 space-y-3"
           >
+            {artist.identifiers.wikidata && (
+              <a
+                href={`https://www.wikidata.org/wiki/${artist.identifiers.wikidata}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-xs font-medium text-emerald-200/80 hover:bg-emerald-500/10 transition-colors"
+              >
+                <Globe className="h-4 w-4" />
+                Wikidata Certified Profile ({artist.identifiers.wikidata})
+              </a>
+            )}
 
             <a
               href={artist.site.baseUrl}
