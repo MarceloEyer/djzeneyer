@@ -31,6 +31,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: 1989-08-30.
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
 - Deploy de frontend: o `dist/` deve ser publicado via pasta de staging (`dist-next`) e trocado de forma atomica para evitar tela branca durante rollout
+- Deploy de plugins: `plugins/` nao deve ser republicado em pushes que nao alterem `plugins/**`, para nao sobrescrever hotfixes ou reintroduzir backend quebrado
 
 ## Regras globais (SSOT)
 1. Strings visiveis: sempre i18n (`t('chave')`) PT/EN
