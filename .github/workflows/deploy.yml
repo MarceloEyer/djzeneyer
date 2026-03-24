@@ -275,14 +275,15 @@ jobs:
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            NEXT_DIST_PATH="${THEME_PATH}/dist-next"
             
-            echo "📦 BACKUP & CLEANUP"
+            echo "📦 BACKUP & PREPARE STAGING DIST"
             mkdir -p "${BACKUP_DIR}"
             if [ -d "${THEME_PATH}/dist" ]; then
               tar -czf "${BACKUP_DIR}/dist_backup.tar.gz" -C "${THEME_PATH}" dist/ 2>/dev/null || true
-              rm -rf "${THEME_PATH}/dist"/*
             fi
-            mkdir -p "${THEME_PATH}/dist"
+            rm -rf "${NEXT_DIST_PATH}"
+            mkdir -p "${NEXT_DIST_PATH}"
             mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
             
             # Cleanup old backups
@@ -297,7 +298,7 @@ jobs:
         with:
           switches: -avzr --delete --checksum
           path: dist/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist-next/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
@@ -363,6 +364,36 @@ jobs:
           source: "functions.php,style.css,screenshot.png,header.php,footer.php,index.php"
           target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           strip_components: 0
+
+      - name: 🔁 Activate staged dist atomically
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 300s
+          command_timeout: 15m
+          script: |
+            set -e
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            NEXT_DIST_PATH="${THEME_PATH}/dist-next"
+            LIVE_DIST_PATH="${THEME_PATH}/dist"
+            PREV_DIST_PATH="${THEME_PATH}/dist-prev"
+
+            if [ ! -f "${NEXT_DIST_PATH}/index.html" ]; then
+              echo "dist-next/index.html missing; aborting activation"
+              exit 1
+            fi
+
+            rm -rf "${PREV_DIST_PATH}"
+            if [ -d "${LIVE_DIST_PATH}" ]; then
+              mv "${LIVE_DIST_PATH}" "${PREV_DIST_PATH}"
+            fi
+
+            mv "${NEXT_DIST_PATH}" "${LIVE_DIST_PATH}"
+            rm -rf "${PREV_DIST_PATH}"
+            echo "✅ dist activated without deleting the live bundle first"
 
       - name: 🔌 Deploy plugins
         if: hashFiles('plugins/**') != ''
