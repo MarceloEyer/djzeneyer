@@ -59,7 +59,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -72,7 +72,7 @@ jobs:
         run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -202,7 +202,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout (sparse)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           sparse-checkout: |
             inc
@@ -214,7 +214,7 @@ jobs:
       - name: Resolve previous successful artifact run
         if: ${{ inputs.skip_build }}
         id: artifact_source
-        uses: actions/github-script@v8
+        uses: actions/github-script@v7
         with:
           script: |
             // `skip_build=true` reuses artifacts from the latest successful run on `main`.
@@ -261,7 +261,7 @@ jobs:
 
       - name: Download dist (previous run)
         if: ${{ inputs.skip_build }}
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-dist-${{ steps.artifact_source.outputs.commit_hash }}
           path: ./dist
@@ -278,7 +278,7 @@ jobs:
 
       - name: Download theme files (previous run)
         if: ${{ inputs.skip_build }}
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-theme-${{ steps.artifact_source.outputs.commit_hash }}
           path: ./
@@ -290,7 +290,7 @@ jobs:
         if: ${{ !inputs.skip_build }}
         # Plugins are optional in some runs; keep deploy moving when no plugin artifact exists.
         continue-on-error: true
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-plugins-${{ needs.build.outputs.commit_hash }}
           path: ./plugins
@@ -299,7 +299,7 @@ jobs:
         if: ${{ inputs.skip_build }}
         # `skip_build` may target a successful run that did not produce plugin artifacts.
         continue-on-error: true
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-plugins-${{ steps.artifact_source.outputs.commit_hash }}
           path: ./plugins
@@ -316,7 +316,7 @@ jobs:
 
       - name: Download sitemaps (previous run)
         if: ${{ inputs.skip_build }}
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-sitemaps-${{ steps.artifact_source.outputs.commit_hash }}
           path: ./sitemaps-deploy
@@ -328,7 +328,7 @@ jobs:
         if: ${{ !inputs.skip_build }}
         # GamiPress assets are optional and should not block a frontend/theme deploy.
         continue-on-error: true
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-gamipress-${{ needs.build.outputs.commit_hash }}
           path: ./gamipress-deploy
@@ -337,7 +337,7 @@ jobs:
         if: ${{ inputs.skip_build }}
         # Keep artifact reuse resilient when the source run has no GamiPress payload.
         continue-on-error: true
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: build-gamipress-${{ steps.artifact_source.outputs.commit_hash }}
           path: ./gamipress-deploy
