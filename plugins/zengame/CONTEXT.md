@@ -17,6 +17,7 @@
 2. **Exclusividade:** Este plugin é o **único** dono da lógica de jogo. Se a IA tentar criar rotas de GamiPress em `inc/`, ela está errada.
 3. **Caching:** Usa transients com chave `djz_gamipress_{CACHE_VERSION}_{user_id}`. TTL configurável via Admin (padrão 24 h, mínimo 60 s). Invalida automaticamente em novos pedidos ou premiações.
 4. **Leaderboard:** Lê de `wp_usermeta` (chave `_gamipress_{slug}_points`) — **não** da tabela `gamipress_user_earnings`, que contém transações individuais e produziria totais errados.
+5. **Bootstrap resiliente:** Falha de include/classe não pode derrubar o site inteiro. Se um componente interno faltar no deploy, o plugin deve registrar erro e degradar a API/admin, não causar fatal no frontend público.
 
 ## GamiPress API — Realidades Verificadas
 

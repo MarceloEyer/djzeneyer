@@ -28,6 +28,9 @@ final class ZenGame
     /** @var ZenGame|null */
     private static $instance = null;
 
+    /** @var string[] */
+    private array $boot_errors = [];
+
     /**
      * Singleton instance provider.
      */
@@ -53,12 +56,28 @@ final class ZenGame
      */
     private function load_dependencies()
     {
-        require_once ZENGAME_PATH . 'includes/Core/class-zengame-engine.php';
-        require_once ZENGAME_PATH . 'includes/API/class-rest-handler.php';
-        require_once ZENGAME_PATH . 'includes/class-zengame-activator.php';
+        $required_files = [
+            ZENGAME_PATH . 'includes/Core/class-zengame-engine.php',
+            ZENGAME_PATH . 'includes/API/class-rest-handler.php',
+            ZENGAME_PATH . 'includes/class-zengame-activator.php',
+        ];
+
+        foreach ($required_files as $file) {
+            if (!\file_exists($file)) {
+                $this->record_boot_error('Missing required file: ' . $file);
+                continue;
+            }
+
+            require_once $file;
+        }
 
         if (\is_admin()) {
-            require_once ZENGAME_PATH . 'includes/class-zengame-admin.php';
+            $admin_file = ZENGAME_PATH . 'includes/class-zengame-admin.php';
+            if (\file_exists($admin_file)) {
+                require_once $admin_file;
+            } else {
+                $this->record_boot_error('Missing admin file: ' . $admin_file);
+            }
         }
     }
 
@@ -75,17 +94,36 @@ final class ZenGame
      */
     public function init_components()
     {
+        if (!empty($this->boot_errors)) {
+            return;
+        }
+
+        if (!\class_exists('\\ZenEyer\\Game\\Core\\Engine')) {
+            $this->record_boot_error('Core engine class was not loaded.');
+            return;
+        }
+
         // 1. Initialize the Game Engine (Caching, Stats, SQL)
         $engine = \ZenEyer\Game\Core\Engine::get_instance();
         $engine->init();
 
         // 2. Initialize the REST API
-        \ZenEyer\Game\API\REST_Handler::init($engine);
+        if (\class_exists('\\ZenEyer\\Game\\API\\REST_Handler')) {
+            \ZenEyer\Game\API\REST_Handler::init($engine);
+        } else {
+            $this->record_boot_error('REST handler class was not loaded.');
+        }
 
         // 3. Initialize Admin UI (only in dashboard)
-        if (\is_admin()) {
+        if (\is_admin() && \class_exists('\\ZenEyer\\Game\\ZenGame_Admin')) {
             \ZenEyer\Game\ZenGame_Admin::get_instance($this);
         }
+    }
+
+    private function record_boot_error(string $message): void
+    {
+        $this->boot_errors[] = $message;
+        \error_log('[ZenGame] ' . $message);
     }
 
     /**
