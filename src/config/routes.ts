@@ -351,13 +351,20 @@ export const buildFullPath = (path: string, lang: Language): string => {
  */
 export const normalizeRouteKey = (key: string): string => {
   if (!key) return '';
-  const trimmed = key.trim();
-  if (!trimmed || trimmed === '/' || trimmed === '/pt') return '';
+  let trimmed = key.trim();
+  if (!trimmed || trimmed === '/' || trimmed === '/pt' || trimmed === '/pt/') return '';
 
-  return trimmed
-    .replace(/^\/pt(\/|$)/, '/')
-    .replace(/^\//, '')
-    .replace(/\/$/, '');
+  // ⚡ Bolt: Use faster native string methods instead of regex to significantly minimize execution overhead
+  if (trimmed.startsWith('/pt/')) {
+    trimmed = trimmed.slice(3); // remove '/pt' mas mantém a barra
+  } else if (trimmed === '/pt') {
+    return ''; // exactly '/pt' is handled above, but just in case
+  }
+
+  if (trimmed.startsWith('/')) trimmed = trimmed.slice(1);
+  if (trimmed.endsWith('/')) trimmed = trimmed.slice(0, -1);
+
+  return trimmed;
 };
 
 /**
@@ -396,25 +403,24 @@ export const findKeyByPath = (path: string): string | undefined => {
   const exact = PATH_TO_KEY_MAP.get(cleanPath);
   if (exact) return exact;
 
-  // 2. Busca manual em todas as configs (slugs e aliases)
-  const langs: Language[] = ['en', 'pt'];
+  // 2. Fallback otimizado O(1) para sub-rotas/detalhes (ex: /music/nome-da-faixa)
+  // Check progressively shorter segments to handle multi-segment base routes
+  let currentSearchPath = cleanPath;
+  let lastSlashIndex = currentSearchPath.lastIndexOf('/');
 
-  for (const route of ROUTES_CONFIG) {
-    for (const lang of langs) {
-      const paths = getLocalizedPaths(route, lang);
-      for (const p of paths) {
-        if (!p) continue;
-        const cleanP = p.replace(/\/$/, '');
-        if (cleanPath === cleanP || cleanPath.startsWith(cleanP + '/')) {
-          // Mapeamento automático para rotas de detalhe
-          if (route.key === 'events') return 'events-detail';
-          if (route.key === 'music') return 'music-detail';
-          if (route.key === 'news') return 'news-detail';
-          if (route.key === 'shop') return 'product-detail';
-          return route.key;
-        }
-      }
+  while (lastSlashIndex !== -1) {
+    currentSearchPath = currentSearchPath.slice(0, lastSlashIndex);
+    const baseKey = PATH_TO_KEY_MAP.get(currentSearchPath);
+
+    if (baseKey) {
+      // Mapeamento automático para rotas de detalhe
+      if (baseKey === 'events') return 'events-detail';
+      if (baseKey === 'music') return 'music-detail';
+      if (baseKey === 'news') return 'news-detail';
+      if (baseKey === 'shop') return 'product-detail';
+      return baseKey;
     }
+    lastSlashIndex = currentSearchPath.lastIndexOf('/');
   }
 
   return undefined;
@@ -469,13 +475,26 @@ export const getRoutesForLanguage = (lang: Language) => {
  * Encontra a rota correspondente a um caminho
  */
 export const findRouteByPath = (path: string, lang: Language): RouteConfig | undefined => {
-  return ROUTES_CONFIG.find(route => {
-    const paths = getLocalizedPaths(route, lang);
-    return paths.some(p => {
-      const fullPath = buildFullPath(p, lang);
-      return path === fullPath || path.startsWith(fullPath + '/');
-    });
-  });
+  // ⚡ Bolt: Use O(1) Map lookup instead of O(N) array traversal via `.find()` and `.some()`
+  const key = findKeyByPath(path);
+  if (!key) return undefined; // Let missing routes return 404
+
+  // Map detail keys back to their parent route config if needed (e.g. 'events-detail' -> 'events')
+  let baseKey = key.endsWith('-detail') ? key.slice(0, -7) : key;
+  if (baseKey === 'product') baseKey = 'shop'; // Handle 'product-detail' mapped to 'shop' route key
+  const route = KEY_ROUTE_MAP.get(baseKey);
+
+  // Validate that the route actually exists for the requested language
+  if (route) {
+    const validPaths = getLocalizedPaths(route, lang);
+    const cleanPath = normalizeRouteKey(path);
+    // Base route verification
+    if (validPaths.some(p => p === cleanPath || cleanPath.startsWith(p + '/'))) {
+      return route;
+    }
+  }
+
+  return undefined;
 };
 
 /**
