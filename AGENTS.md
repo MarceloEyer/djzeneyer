@@ -34,6 +34,8 @@
 8. Nunca commitar segredos
 9. Não atualizar ESLint para v10
 10. Não reintroduzir **music player embutido** no site sem decisão explícita
+11. Arquivos de tradução em `src/locales/**/*.json` devem ser editados em UTF-8. Se houver dúvida com emoji, travessão, reticências, `©` ou `×`, usar escape Unicode JSON em vez de gravar texto com encoding duvidoso.
+12. Após editar locales, verificar se não entrou mojibake (`Ã`, `â`, `ðŸ`, `Â©`) e rodar pelo menos `npm run build`.
 
 ## Regras de design e UX
 1. Direcao: Premium Contemporaneo + Imersao MMORPG.

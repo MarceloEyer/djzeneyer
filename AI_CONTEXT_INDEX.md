@@ -44,6 +44,8 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 9. Nao commitar `.env`, segredos ou credenciais
 10. `UserContext.logout` e **sincrona**; nao usar `async/await` ao chama-la.
 11. `ProfileUpdatePayload` (`useQueries.ts`) deve incluir campos customizados (`real_name`, `gender`, etc.) para sync com o plugin `zeneyer-auth`.
+12. Arquivos em `src/locales/**/*.json` devem ser editados e salvos em UTF-8 limpo. Se houver risco de encoding quebrado, usar escapes Unicode JSON (`\uXXXX`) para caracteres especiais.
+13. Ao editar locales, preservar paridade PT/EN quando a mudanca afetar texto visivel e validar com busca de mojibake + `npm run build`.
 
 ## Endpoints canonicos (resumo)
 - Tema: `djzeneyer/v1`
@@ -71,6 +73,12 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 3. Ler o arquivo tecnico mais proximo da mudanca (`docs/ARCHITECTURE.md`, `docs/API.md`, etc.)
 4. Validar contra o codigo real antes de editar docs
 5. Se encontrou conflito, corrigir docs no mesmo PR
+
+## Regra de Locales
+- Arquivos alvo: `src/locales/en/*.json` e `src/locales/pt/*.json`
+- Nunca salvar traducoes com bytes quebrados (`Ã`, `â`, `ðŸ`, `Â©`, etc.) introduzidos por terminal/editor.
+- Nao confiar apenas na visualizacao do PowerShell para validar acentos e simbolos.
+- Ao mexer em locales, validar o arquivo lido como UTF-8 e, se necessario, preferir escapes como `\u00A9`, `\u2014`, `\u2728`, `\u00D7`.
 
 ## Checklist de atualizacao de contexto
 - Atualizou versoes? sincronizar `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `GEMINI.md`
