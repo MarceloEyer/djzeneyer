@@ -9,7 +9,8 @@ import './i18n';
 declare global {
   interface Window {
     wpData?: {
-      siteUrl: string;
+      rootUrl?: string;
+      siteUrl?: string;
       restUrl: string;
       nonce: string;
     };
@@ -22,7 +23,7 @@ if (import.meta.env.DEV) {
   // Verifica se wpData está disponível
   if (window.wpData) {
     console.log('[Main] ✅ wpData encontrado:', {
-      siteUrl: window.wpData.siteUrl,
+      siteUrl: window.wpData.rootUrl || window.wpData.siteUrl,
       restUrl: window.wpData.restUrl,
       hasNonce: !!window.wpData.nonce,
     });

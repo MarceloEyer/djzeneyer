@@ -30,6 +30,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Node: 20+
 - Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: 1989-08-30.
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
+- Deploy de frontend: o `dist/` deve ser publicado via pasta de staging (`dist-next`) e trocado de forma atomica para evitar tela branca durante rollout
 
 ## Regras globais (SSOT)
 1. Strings visiveis: sempre i18n (`t('chave')`) PT/EN

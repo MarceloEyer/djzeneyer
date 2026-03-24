@@ -19,6 +19,8 @@
 2. `deploy`
    - baixa os artifacts necessarios
    - faz backup remoto basico de `dist/`
+   - envia o novo frontend para `dist-next/`
+   - ativa o novo `dist/` por troca atomica, sem apagar o bundle ativo antes
    - publica tema, plugins, assets publicos e sitemaps
    - valida a presenca dos sitemaps na raiz do servidor
    - faz purge de cache
@@ -66,6 +68,7 @@ Por isso os downloads desses artifacts usam `continue-on-error: true`.
 ## Decisoes operacionais
 
 - O deploy continua apontando para a VPS Hostinger via SSH na porta `65002`.
+- O frontend nao deve mais ser apagado antes do upload. A troca de `dist-next/` para `dist/` precisa ser atomica para evitar tela branca durante o rollout.
 - Os sitemaps sao publicados na raiz publica do site.
 - O health check usa `sitemap.xml` porque ele cobre disponibilidade basica e integridade SEO com baixo custo.
 - `403` no health check nao e tratado como falha automatica, porque Cloudflare/WAF pode bloquear CI mesmo com o site online.

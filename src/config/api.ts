@@ -15,6 +15,7 @@
 // ============================================================================
 
 interface WordPressData {
+  rootUrl?: string;
   siteUrl: string;
   restUrl: string;
   nonce: string;
@@ -49,7 +50,7 @@ export const getApiConfig = (): ApiConfig => {
   // Produção: WordPress injeta wpData via PHP
   if (window.wpData?.restUrl) {
     return {
-      siteUrl: window.wpData.siteUrl || '',
+      siteUrl: window.wpData.rootUrl || window.wpData.siteUrl || '',
       restUrl: window.wpData.restUrl || '',
       nonce: window.wpData.nonce || '',
       turnstileSiteKey: import.meta.env.VITE_TURNSTILE_SITE_KEY || '',
