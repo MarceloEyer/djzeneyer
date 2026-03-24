@@ -262,7 +262,7 @@ jobs:
 
       # --- BACKUP & CLEANUP ---
       - name: 📦 Backup & Clean dist folder
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
@@ -366,7 +366,7 @@ jobs:
           strip_components: 0
 
       - name: 🔁 Activate staged dist atomically
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
@@ -458,7 +458,7 @@ jobs:
       # --- CACHE PURGE ---
       - name: 🧹 Purge caches
         continue-on-error: true
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
