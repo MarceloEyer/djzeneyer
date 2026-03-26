@@ -7,9 +7,7 @@ declare global {
         wpData?: {
             nonce?: string;
             userId?: number;
-            rootUrl?: string;
             siteUrl?: string;
-            restUrl?: string;
         };
     }
 }

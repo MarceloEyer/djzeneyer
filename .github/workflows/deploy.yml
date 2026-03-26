@@ -28,7 +28,6 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  actions: read
   contents: read
   deployments: write
 
@@ -59,7 +58,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -72,7 +71,7 @@ jobs:
         run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -202,7 +201,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout (sparse)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             inc
@@ -211,148 +210,41 @@ jobs:
             templates
           sparse-checkout-cone-mode: false
 
-      - name: Resolve previous successful artifact run
-        if: ${{ inputs.skip_build }}
-        id: artifact_source
-        uses: actions/github-script@v7
-        with:
-          script: |
-            // `skip_build=true` reuses artifacts from the latest successful run on `main`.
-            // Without this lookup, the deploy job would try to publish files that do not
-            // exist in the current workflow run.
-            const workflowId = 'deploy.yml';
-            const { owner, repo } = context.repo;
-            const currentRunId = context.runId;
-
-            const runs = await github.paginate(
-              github.rest.actions.listWorkflowRuns,
-              {
-                owner,
-                repo,
-                workflow_id: workflowId,
-                branch: 'main',
-                status: 'completed',
-                per_page: 100,
-              },
-              (response) => response.data.workflow_runs
-            );
-
-            const previousSuccess = runs.find((run) =>
-              run.id !== currentRunId &&
-              run.conclusion === 'success'
-            );
-
-            if (!previousSuccess) {
-              core.setFailed('skip_build=true, but no previous successful deploy run with artifacts was found on main.');
-              return;
-            }
-
-            core.info(`Using artifacts from run ${previousSuccess.id} (${previousSuccess.head_sha})`);
-            core.setOutput('run_id', String(previousSuccess.id));
-            core.setOutput('commit_hash', previousSuccess.head_sha.slice(0, 7));
-
       # --- DOWNLOAD ARTIFACTS ---
-      - name: Download dist
+      - name: 📥 Download dist
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-dist-${{ needs.build.outputs.commit_hash }}
           path: ./dist
 
-      - name: Download dist (previous run)
-        if: ${{ inputs.skip_build }}
-        uses: actions/download-artifact@v4
-        with:
-          name: build-dist-${{ steps.artifact_source.outputs.commit_hash }}
-          path: ./dist
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.artifact_source.outputs.run_id }}
-
-      - name: Download theme files
+      - name: 📥 Download theme files
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-theme-${{ needs.build.outputs.commit_hash }}
           path: ./
 
-      - name: Download theme files (previous run)
-        if: ${{ inputs.skip_build }}
-        uses: actions/download-artifact@v4
-        with:
-          name: build-theme-${{ steps.artifact_source.outputs.commit_hash }}
-          path: ./
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.artifact_source.outputs.run_id }}
-
-      - name: Download plugins
+      - name: 📥 Download plugins
         if: ${{ !inputs.skip_build }}
-        # Plugins are optional in some runs; keep deploy moving when no plugin artifact exists.
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: build-plugins-${{ needs.build.outputs.commit_hash }}
           path: ./plugins
 
-      - name: Download plugins (previous run)
-        if: ${{ inputs.skip_build }}
-        # `skip_build` may target a successful run that did not produce plugin artifacts.
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: build-plugins-${{ steps.artifact_source.outputs.commit_hash }}
-          path: ./plugins
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.artifact_source.outputs.run_id }}
-
-      - name: Download sitemaps
+      - name: 📥 Download sitemaps
         if: ${{ !inputs.skip_build }}
         uses: actions/download-artifact@v4
         with:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
 
-      - name: Download sitemaps (previous run)
-        if: ${{ inputs.skip_build }}
-        uses: actions/download-artifact@v4
-        with:
-          name: build-sitemaps-${{ steps.artifact_source.outputs.commit_hash }}
-          path: ./sitemaps-deploy
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.artifact_source.outputs.run_id }}
-
-      - name: Download GamiPress files
+      - name: 📥 Download GamiPress files
         if: ${{ !inputs.skip_build }}
-        # GamiPress assets are optional and should not block a frontend/theme deploy.
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: build-gamipress-${{ needs.build.outputs.commit_hash }}
           path: ./gamipress-deploy
-
-      - name: Download GamiPress files (previous run)
-        if: ${{ inputs.skip_build }}
-        # Keep artifact reuse resilient when the source run has no GamiPress payload.
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: build-gamipress-${{ steps.artifact_source.outputs.commit_hash }}
-          path: ./gamipress-deploy
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.artifact_source.outputs.run_id }}
-
-      - name: Validate deploy inputs
-        run: |
-          # Fail fast before opening SSH/SCP/rsync sessions when the expected payload is absent.
-          if [ ! -d dist ]; then echo "dist/ not found for deploy"; exit 1; fi
-          if [ ! -f dist/index.html ]; then echo "dist/index.html not found for deploy"; exit 1; fi
-          if [ ! -f functions.php ]; then echo "functions.php not found for deploy"; exit 1; fi
-          if [ ! -f sitemaps-deploy/sitemap.xml ]; then echo "sitemap.xml not found for deploy"; exit 1; fi
-          echo "Deploy inputs ready"
 
       # --- SSH SETUP ---
       - name: 🔐 Setup SSH
@@ -383,15 +275,14 @@ jobs:
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             BACKUP_DIR="$HOME/backups/deploy_${TIMESTAMP}"
             THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
-            NEXT_DIST_PATH="${THEME_PATH}/dist-next"
             
-            echo "📦 BACKUP & PREPARE STAGING DIST"
+            echo "📦 BACKUP & CLEANUP"
             mkdir -p "${BACKUP_DIR}"
             if [ -d "${THEME_PATH}/dist" ]; then
               tar -czf "${BACKUP_DIR}/dist_backup.tar.gz" -C "${THEME_PATH}" dist/ 2>/dev/null || true
+              rm -rf "${THEME_PATH}/dist"/*
             fi
-            rm -rf "${NEXT_DIST_PATH}"
-            mkdir -p "${NEXT_DIST_PATH}"
+            mkdir -p "${THEME_PATH}/dist"
             mkdir -p "${{ env.REMOTE_ROOT }}/wp-content/plugins"
             
             # Cleanup old backups
@@ -406,7 +297,7 @@ jobs:
         with:
           switches: -avzr --delete --checksum
           path: dist/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist-next/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
@@ -473,36 +364,6 @@ jobs:
           target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           strip_components: 0
 
-      - name: 🔁 Activate staged dist atomically
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          timeout: 300s
-          command_timeout: 15m
-          script: |
-            set -e
-            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
-            NEXT_DIST_PATH="${THEME_PATH}/dist-next"
-            LIVE_DIST_PATH="${THEME_PATH}/dist"
-            PREV_DIST_PATH="${THEME_PATH}/dist-prev"
-
-            if [ ! -f "${NEXT_DIST_PATH}/index.html" ]; then
-              echo "dist-next/index.html missing; aborting activation"
-              exit 1
-            fi
-
-            rm -rf "${PREV_DIST_PATH}"
-            if [ -d "${LIVE_DIST_PATH}" ]; then
-              mv "${LIVE_DIST_PATH}" "${PREV_DIST_PATH}"
-            fi
-
-            mv "${NEXT_DIST_PATH}" "${LIVE_DIST_PATH}"
-            rm -rf "${PREV_DIST_PATH}"
-            echo "✅ dist activated without deleting the live bundle first"
-
       - name: 🔌 Deploy plugins
         if: hashFiles('plugins/**') != ''
         uses: burnett01/rsync-deployments@8.0.4
@@ -563,25 +424,6 @@ jobs:
           target: ${{ env.REMOTE_ROOT }}/
           strip_components: 1
 
-      - name: Verify deployed sitemaps
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.SSH_HOST }}
-          port: ${{ env.SSH_PORT }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Root sitemap presence is one of the cheapest post-deploy integrity checks we have.
-            if [ ! -f "${{ env.REMOTE_ROOT }}/sitemap.xml" ]; then
-              echo "sitemap.xml missing in ROOT after deploy"
-              exit 1
-            fi
-            if [ ! -f "${{ env.REMOTE_ROOT }}/sitemap-pages.xml" ]; then
-              echo "sitemap-pages.xml missing in ROOT after deploy"
-              exit 1
-            fi
-            echo "Sitemaps deployed to ROOT"
-
       # --- CACHE PURGE ---
       - name: 🧹 Purge caches
         continue-on-error: true
@@ -599,30 +441,3 @@ jobs:
       - name: 🎉 Success
         if: success()
         run: echo "🚀 Site Live at ${{ env.SITE_URL }}"
-
-  health-check:
-    name: Health Check
-    needs: deploy
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    if: ${{ needs.deploy.result == 'success' }}
-
-    steps:
-      - name: Check sitemap endpoint
-        run: |
-          # Treat 403 as acceptable because the site may be online while bot protection blocks CI.
-          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 30 -H "User-Agent: $UA" "${{ env.SITE_URL }}/sitemap.xml")
-
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "sitemap.xml responded with HTTP 200"
-            exit 0
-          fi
-
-          if [ "$HTTP_CODE" = "403" ]; then
-            echo "sitemap.xml returned HTTP 403; server may be blocking automation while site stays online"
-            exit 0
-          fi
-
-          echo "sitemap.xml returned HTTP $HTTP_CODE"
-          exit 1
