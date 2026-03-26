@@ -458,7 +458,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.REMOTE_ROOT }}
-            if command -v wp &> /dev/null; then wp litespeed-purge all 2>/dev/null; fi
+            if command -v wp &> /dev/null; then
+              wp litespeed-purge all 2>/dev/null || true
+              # Clear ZenGame transient cache so fresh GamiPress data is fetched after deploy
+              wp transient delete --search="djz_gamipress" 2>/dev/null || true
+              wp transient delete --search="djz_stats" 2>/dev/null || true
+            fi
             if php -r "opcache_reset();" 2>/dev/null; then echo "✅ OPcache flushed"; else curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null; fi
 
       - name: 🎉 Success
