@@ -40,17 +40,12 @@ export default defineConfig(({ command, mode }) => {
       },
     },
 
-    // Drop console/debugger during transform (applies in production build)
-    esbuild: isProduction ? {
-      drop: ['console', 'debugger'],
-    } : {},
-
     build: {
       manifest: true,
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
-      minify: 'esbuild',
+      // Vite 8 uses OXC (Rolldown) by default — faster than terser/esbuild, no extra deps needed
       sourcemap: false,
 
       rollupOptions: {
