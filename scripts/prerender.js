@@ -235,6 +235,20 @@ async function prerender() {
     await startDevServer();
     const bandsintownData = await fetchEvents();
 
+    // 🌟 Inject Dynamic Event Routes into Prerender List
+    if (bandsintownData && bandsintownData.list) {
+      ['en', 'pt'].forEach(lang => {
+        if (Array.isArray(bandsintownData.list[lang])) {
+          bandsintownData.list[lang].forEach(event => {
+            if (event.canonical_path && !CONFIG.routes.includes(event.canonical_path)) {
+              CONFIG.routes.push(event.canonical_path);
+            }
+          });
+        }
+      });
+      console.log(`📋 Rotas dinâmicas de eventos injetadas. Total:`, CONFIG.routes.length);
+    }
+
     browser = await puppeteer.launch({
       headless: 'shell',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
