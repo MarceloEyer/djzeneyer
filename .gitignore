@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 .env
 dist-test/
+
+# Claude Code worktrees (gerados automaticamente, não commitar)
+.claude/worktrees/

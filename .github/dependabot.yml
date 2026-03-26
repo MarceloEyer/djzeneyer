@@ -10,6 +10,12 @@ updates:
         patterns:
           - "*"
 
+  - package-ecosystem: "composer"
+    directory: "/plugins/zeneyer-auth"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
