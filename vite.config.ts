@@ -40,28 +40,18 @@ export default defineConfig(({ command, mode }) => {
       },
     },
 
+    // Drop console/debugger during transform (applies in production build)
+    esbuild: isProduction ? {
+      drop: ['console', 'debugger'],
+    } : {},
+
     build: {
       manifest: true,
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
-
-      // 🔒 PULO DO GATO ANTI-EVAL
-      minify: 'terser',
+      minify: 'esbuild',
       sourcemap: false,
-
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          // Segurança
-          evaluate: false,
-          unsafe: false,
-        },
-        format: {
-          comments: false,
-        },
-      },
 
       rollupOptions: {
         output: {

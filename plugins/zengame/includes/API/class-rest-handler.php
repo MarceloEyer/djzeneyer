@@ -136,7 +136,8 @@ final class REST_Handler
             return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
         }
 
-        $cache_key = 'djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION;
+        $limit = \max(1, \min(50, (int) ($request->get_param('limit') ?: 10)));
+        $cache_key = 'djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $limit;
         $cached = \get_transient($cache_key);
         if (false !== $cached) {
             return \rest_ensure_response($cached);
@@ -144,7 +145,6 @@ final class REST_Handler
 
         global $wpdb;
         $types = \function_exists('gamipress_get_points_types') ? \gamipress_get_points_types() : [];
-        $limit = \max(1, \min(50, (int) ($request->get_param('limit') ?: 10)));
         $leaderboard = [];
 
         foreach ($types as $type) {
@@ -186,7 +186,7 @@ final class REST_Handler
             }
         }
 
-        \set_transient($cache_key, $leaderboard, \ZenEyer\Game\ZenGame::DEFAULT_CACHE_TTL);
+        \set_transient($cache_key, $leaderboard, \ZenEyer\Game\ZenGame::LEADERBOARD_CACHE_TTL);
 
         return \rest_ensure_response($leaderboard);
     }
@@ -211,7 +211,6 @@ final class REST_Handler
         return \rest_ensure_response([
             'success' => $success,
             'action' => $action,
-            'points_awarded' => ($action === 'download' && $success) ? 5 : 0,
         ]);
     }
 
@@ -293,7 +292,7 @@ final class REST_Handler
     private static function get_user_rank_data(int $user_id): array
     {
         $fallback = [
-            'current' => ['id' => 0, 'title' => 'Zen Guest', 'image' => ''],
+            'current' => ['id' => 0, 'menu_order' => 0, 'title' => 'Zen Guest', 'image' => ''],
             'next' => null,
             'progress' => 0,
             'requirements' => [],
@@ -303,7 +302,9 @@ final class REST_Handler
             return $fallback;
         }
 
-        $rank_types = \gamipress_get_rank_types();
+        // gamipress_get_rank_types() returns an associative array keyed by slug;
+        // array_values() normalises it to a sequential list.
+        $rank_types = \array_values(\gamipress_get_rank_types());
         if (empty($rank_types) || !isset($rank_types[0]['slug'])) {
             return $fallback;
         }
@@ -452,6 +453,12 @@ final class REST_Handler
             }
 
             foreach ($items as $item) {
+                // For earned achievements, GamiPress returns user-achievement objects that carry
+                // the earned date directly. Extract it before normalizing to WP_Post.
+                $date_earned = ($status === 'earned' && \is_object($item) && isset($item->date_earned))
+                    ? (string) $item->date_earned
+                    : '';
+
                 $post = self::normalize_post_object($item);
                 if (!$post) {
                     continue;
@@ -464,7 +471,7 @@ final class REST_Handler
                     'image' => \get_the_post_thumbnail_url($post->ID, 'thumbnail') ?: '',
                     'earned' => $status === 'earned',
                     'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
-                    'date_earned' => (string) (\get_post_meta($post->ID, '_gamipress_earned_at', true) ?: ''),
+                    'date_earned' => $date_earned,
                 ];
             }
         }
