@@ -467,6 +467,8 @@ const MyAccountContent: React.FC = () => {
       <HeadlessSEO
         title={t('account.meta_title', { stageName: t('common.artist_name') })}
         description={t('account.meta_desc')}
+        image="/images/zen-eyer-og-image.png"
+        noindex
       />
 
       <div className="min-h-screen pt-24 pb-16 bg-background selection:bg-primary selection:text-white">

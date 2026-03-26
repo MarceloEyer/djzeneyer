@@ -125,6 +125,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 14. Build de frontend deve passar em `npm run perf:budget` para evitar regressão de bundle.
 15. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html`.
 16. **SSOT Data Fetching**: `useQueries.ts` é o cubo central; `fetch()` em componentes é desencorajado e deve ser migrado sempre que possível.
+17. **Rotas Autenticadas Privadas**: `dashboard` e `my-account` devem permanecer `noindex`, fora do sitemap público e fora do prerender, sempre usando OG image genérica do site em vez de avatar do usuário.
 
 ## ZenGame / GamiPress — Contratos e Armadilhas
 

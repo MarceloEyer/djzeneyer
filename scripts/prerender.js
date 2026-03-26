@@ -23,8 +23,8 @@ try {
   if (existsSync(ROUTES_DATA_PATH)) {
     const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
     data.routes.forEach(r => {
-      // Ignora rotas dinâmicas (com :param) — o prerender só cobre rotas estáticas
-      if (!r.en.includes(':') && !r.pt.includes(':')) {
+      // Ignora rotas privadas e dinâmicas; o prerender só cobre páginas públicas estáticas
+      if (!r.excludeFromPrerender && !r.en.includes(':') && !r.pt.includes(':')) {
         routesList.push(r.en === '' ? '/' : `/${r.en}`);
         routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
       }

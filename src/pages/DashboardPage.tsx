@@ -8,7 +8,7 @@ import {
   ArrowRight, Crown, Flame, Star, Trophy, Sparkles, TrendingUp, Bell, CircleCheck
 } from 'lucide-react';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
-import { Helmet } from 'react-helmet-async';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { RecentActivity } from '../components/account';
 import { useLeaderboardQuery } from '../hooks/useQueries';
 import { safeUrl } from '../utils/sanitize';
@@ -193,9 +193,12 @@ const DashboardContent = () => {
 
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">
-      <Helmet>
-        <title>{`${t('dashboard_page_title')} | DJ Zen Eyer`}</title>
-      </Helmet>
+      <HeadlessSEO
+        title={`${t('dashboard_page_title')} | DJ Zen Eyer`}
+        description={t('dashboard_page_meta_desc')}
+        image="/images/zen-eyer-og-image.png"
+        noindex
+      />
 
       <div className="container mx-auto px-4 max-w-[1400px]">
         
