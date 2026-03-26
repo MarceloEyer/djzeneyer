@@ -343,14 +343,16 @@ final class REST_Handler
 
         return [
             'current' => [
-                'id' => $current ? (int) $current->ID : 0,
-                'title' => $current ? (string) $current->post_title : 'Zen Guest',
-                'image' => $current ? (\get_the_post_thumbnail_url($current->ID, 'medium') ?: '') : '',
+                'id'         => $current ? (int) $current->ID : 0,
+                'menu_order' => $current ? (int) $current->menu_order : 0,
+                'title'      => $current ? (string) $current->post_title : 'Zen Guest',
+                'image'      => $current ? (\get_the_post_thumbnail_url($current->ID, 'medium') ?: '') : '',
             ],
             'next' => $next ? [
-                'id' => (int) $next->ID,
-                'title' => (string) $next->post_title,
-                'image' => \get_the_post_thumbnail_url($next->ID, 'medium') ?: '',
+                'id'         => (int) $next->ID,
+                'menu_order' => (int) $next->menu_order,
+                'title'      => (string) $next->post_title,
+                'image'      => \get_the_post_thumbnail_url($next->ID, 'medium') ?: '',
             ] : null,
             'progress' => $progress,
             'requirements' => $requirements,

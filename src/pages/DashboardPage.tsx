@@ -162,7 +162,7 @@ const DashboardContent = () => {
 
   if (!user || !gamipress) return null;
 
-  // --- POINT CALCULATION (BOLT: Refined discovery logic) ---
+  // --- POINT & RANK CALCULATION ---
   const main_slug = gamipress.main_points_slug || 'points';
   const mainPoints = gamipress.points?.[main_slug]?.amount ?? 0;
   const streakCount = gamipress.stats?.streak ?? 0;
@@ -173,6 +173,20 @@ const DashboardContent = () => {
   const allReqs = gamipress.rank?.requirements ?? [];
   const rankExpCurrent = allReqs.reduce((sum, r) => sum + (r.current || 0), 0);
   const rankExpRequired = allReqs.reduce((sum, r) => sum + (r.required || 0), 0) || 1000;
+
+  // menu_order is GamiPress sequential rank position (0-based → display as 1-based)
+  const rankLevel = (gamipress.rank?.current?.menu_order ?? 0) + 1;
+
+  // Active quests: real GamiPress rank requirements for next rank
+  const activeQuests = allReqs.map(req => ({
+    label: req.title,
+    progress: Math.min(100, Math.round(req.percent)),
+    done: req.percent >= 100,
+  }));
+  const completedQuests = activeQuests.filter(q => q.done).length;
+
+  // Stars: dynamic based on rank progress
+  const rankStars = rankProgress >= 66 ? 3 : rankProgress >= 33 ? 2 : rankProgress > 0 ? 1 : 0;
 
   const earnedAchievements = gamipress.achievements_earned || [];
   const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
@@ -208,8 +222,8 @@ const DashboardContent = () => {
               </div>
               <div className="flex items-center gap-3 text-sm font-bold opacity-70">
                 <span className="flex items-center gap-1.5 text-primary">
-                  <Flame size={16} className="fill-current animate-bounce" /> 
-                  LEVEL {gamipress.rank?.current?.id || 1}
+                  <Flame size={16} className="fill-current animate-bounce" />
+                  LEVEL {rankLevel}
                 </span>
                 <span className="text-white/30">•</span>
                 <span className="uppercase tracking-widest text-xs px-2 py-0.5 rounded bg-white/10 border border-white/10">
@@ -271,27 +285,36 @@ const DashboardContent = () => {
 
             {/* QUICK ACTIONS / QUESTS */}
             <GlassCard glowColor="secondary">
-              <SectionHeader title="Active Quests" icon={Sparkles} badge="3/5" />
+              <SectionHeader
+                title={t('dashboard.pendingQuests')}
+                icon={Sparkles}
+                badge={activeQuests.length > 0 ? `${completedQuests}/${activeQuests.length}` : undefined}
+              />
               <div className="space-y-5">
-                {[
-                  { label: 'Stream Zen Sessions', progress: 100, status: 'DONE', icon: CircleCheck, color: 'text-success' },
-                  { label: 'Check Events Calendar', progress: 75, status: 'Active', icon: TrendingUp, color: 'text-primary' },
-                  { label: 'Explore Shop New In', progress: 40, status: 'Pending', icon: Gift, color: 'text-secondary' },
-                ].map((quest, i) => (
-                  <div key={i} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-white/80">{quest.label}</span>
-                      <quest.icon size={12} className={quest.color} />
-                    </div>
-                    <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
-                       <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${quest.progress}%` }}
-                        className={`h-full ${quest.progress === 100 ? 'bg-success' : 'bg-primary'}`}
-                       />
-                    </div>
+                {activeQuests.length === 0 ? (
+                  <div className="py-4 text-center text-white/40 text-xs font-bold uppercase tracking-widest">
+                    {t('dashboard.allCleared')}
                   </div>
-                ))}
+                ) : (
+                  activeQuests.map((quest, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-white/80">{quest.label}</span>
+                        {quest.done
+                          ? <CircleCheck size={12} className="text-success" />
+                          : <TrendingUp size={12} className="text-primary" />
+                        }
+                      </div>
+                      <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${quest.progress}%` }}
+                          className={`h-full ${quest.done ? 'bg-success' : 'bg-primary'}`}
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </GlassCard>
 
@@ -315,17 +338,17 @@ const DashboardContent = () => {
                 </div>
                 <div className="space-y-6">
                    <div>
-                     <h4 className="text-2xl font-black font-display leading-none mb-1">Ascension</h4>
-                     <p className="text-white/40 text-xs font-bold uppercase tracking-widest">Master of Zen Rhythm</p>
+                     <h4 className="text-2xl font-black font-display leading-none mb-1">{t('dashboard.stats.ascension')}</h4>
+                     <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{currentRank}</p>
                    </div>
                    <div className="space-y-3">
                      <p className="text-sm text-white/60 italic leading-relaxed">
-                        "Your connection with the beat is reaching a new frequency. Keep exploring the artifacts to ascend."
+                        "{t('dashboard.ascension_quote')}"
                      </p>
                      <div className="flex gap-2">
-                        <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                        <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                        <Star size={12} className="text-white/10" />
+                        {[0, 1, 2].map(i => (
+                          <Star key={i} size={12} className={i < rankStars ? 'text-yellow-500 fill-yellow-500' : 'text-white/10'} />
+                        ))}
                      </div>
                    </div>
                 </div>

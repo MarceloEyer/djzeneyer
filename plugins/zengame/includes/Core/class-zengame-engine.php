@@ -55,23 +55,31 @@ final class Engine
         $cached = \get_transient($cache_key);
         if (false !== $cached) return (int) $cached;
 
-        global $wpdb;
-        $query = "
-            SELECT SUM(item_meta_qty.meta_value)
-            FROM {$wpdb->prefix}woocommerce_order_items AS items
-            INNER JOIN {$wpdb->prefix}posts AS orders ON items.order_id = orders.ID
-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_qty ON items.order_item_id = item_meta_qty.order_item_id
-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_product ON items.order_item_id = item_meta_product.order_item_id
-            INNER JOIN {$wpdb->postmeta} AS product_meta ON item_meta_product.meta_value = product_meta.post_id
-            WHERE orders.post_type = 'shop_order'
-              AND orders.post_status = 'wc-completed'
-              AND orders.post_author = %d
-              AND item_meta_qty.meta_key = '_qty'
-              AND item_meta_product.meta_key = '_product_id'
-              AND product_meta.meta_key = '_downloadable'
-              AND product_meta.meta_value = 'yes'
-        ";
-        $total = (int) $wpdb->get_var($wpdb->prepare($query, $user_id));
+        if (!\function_exists('\wc_get_orders')) {
+            \set_transient($cache_key, 0, self::STATS_CACHE_TTL);
+            return 0;
+        }
+
+        // wc_get_orders() is HPOS-compatible: works with legacy wp_posts and wc_orders table
+        $order_ids = \wc_get_orders([
+            'customer_id' => $user_id,
+            'status'      => ['wc-completed'],
+            'limit'       => -1,
+            'return'      => 'ids',
+        ]);
+
+        $total = 0;
+        foreach ($order_ids as $order_id) {
+            $order = \wc_get_order($order_id);
+            if (!$order) continue;
+            foreach ($order->get_items() as $item) {
+                $product = $item->get_product();
+                if ($product && $product->is_downloadable()) {
+                    $total += (int) $item->get_quantity();
+                }
+            }
+        }
+
         \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
         return $total;
     }
@@ -82,30 +90,36 @@ final class Engine
         $cached = \get_transient($cache_key);
         if (false !== $cached) return (int) $cached;
 
-        global $wpdb;
-        $target_slugs = \apply_filters('zengame_event_category_slugs', ['events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass']);
-        $placeholders = \array_fill(0, \count($target_slugs), '%s');
-        $slugs_list = \implode(',', $placeholders);
+        if (!\function_exists('\wc_get_orders')) {
+            \set_transient($cache_key, 0, self::STATS_CACHE_TTL);
+            return 0;
+        }
 
-        $query = "
-            SELECT SUM(item_meta_qty.meta_value)
-            FROM {$wpdb->prefix}woocommerce_order_items AS items
-            INNER JOIN {$wpdb->prefix}posts AS orders ON items.order_id = orders.ID
-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_qty ON items.order_item_id = item_meta_qty.order_item_id
-            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS item_meta_product ON items.order_item_id = item_meta_product.order_item_id
-            INNER JOIN {$wpdb->term_relationships} AS rel ON item_meta_product.meta_value = rel.object_id
-            INNER JOIN {$wpdb->term_taxonomy} AS tax ON rel.term_taxonomy_id = tax.term_taxonomy_id
-            INNER JOIN {$wpdb->terms} AS terms ON tax.term_id = terms.term_id
-            WHERE orders.post_type = 'shop_order'
-              AND orders.post_status IN ('wc-completed', 'wc-processing')
-              AND orders.post_author = %d
-              AND item_meta_qty.meta_key = '_qty'
-              AND item_meta_product.meta_key = '_product_id'
-              AND tax.taxonomy = 'product_cat'
-              AND terms.slug IN ($slugs_list)
-        ";
-        $prep_args = \array_merge([$user_id], $target_slugs);
-        $total = (int) $wpdb->get_var($wpdb->prepare($query, ...$prep_args));
+        $target_slugs = \apply_filters('zengame_event_category_slugs', [
+            'events', 'tickets', 'congressos', 'workshops', 'social', 'festivais', 'pass',
+        ]);
+
+        // wc_get_orders() is HPOS-compatible: works with legacy wp_posts and wc_orders table
+        $order_ids = \wc_get_orders([
+            'customer_id' => $user_id,
+            'status'      => ['wc-completed', 'wc-processing'],
+            'limit'       => -1,
+            'return'      => 'ids',
+        ]);
+
+        $total = 0;
+        foreach ($order_ids as $order_id) {
+            $order = \wc_get_order($order_id);
+            if (!$order) continue;
+            foreach ($order->get_items() as $item) {
+                $product_id = $item->get_product_id();
+                $terms = \wp_get_post_terms($product_id, 'product_cat', ['fields' => 'slugs']);
+                if (!\is_wp_error($terms) && !empty(\array_intersect($terms, $target_slugs))) {
+                    $total += (int) $item->get_quantity();
+                }
+            }
+        }
+
         \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
         return $total;
     }
