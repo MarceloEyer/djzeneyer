@@ -349,15 +349,23 @@ export const buildFullPath = (path: string, lang: Language): string => {
 /**
  * Normaliza chave de rota para comparação interna
  */
+/**
+ * Normaliza chave de rota para comparação interna.
+ * Otimizado: Remove RegExps pesadas substituindo por métodos nativos de string.
+ */
 export const normalizeRouteKey = (key: string): string => {
   if (!key) return '';
   const trimmed = key.trim();
   if (!trimmed || trimmed === '/' || trimmed === '/pt') return '';
 
-  return trimmed
-    .replace(/^\/pt(\/|$)/, '/')
-    .replace(/^\//, '')
-    .replace(/\/$/, '');
+  let clean = trimmed;
+  if (clean.startsWith('/pt/')) clean = clean.slice(4); // Remove prefixo /pt/ (length 4)
+  else if (clean === '/pt') return ''; // Fallback
+  else if (clean.startsWith('/')) clean = clean.slice(1); // Remove leading slash
+
+  if (clean.endsWith('/')) clean = clean.slice(0, -1); // Remove trailing slash
+
+  return clean;
 };
 
 /**
@@ -369,6 +377,12 @@ const KEY_ROUTE_MAP = new Map<string, RouteConfig>();
  * Lookup map for all possible paths (including aliases) to Logical Keys
  */
 const PATH_TO_KEY_MAP = new Map<string, string>();
+
+/**
+ * Lookup map for dynamic path prefixes (like 'events/', 'pt/eventos-zouk/') to their detail keys.
+ * O(1) lookup for nested/detail routes, avoiding O(N*L) loops in findKeyByPath.
+ */
+const PREFIX_PATH_MAP = new Map<string, string>();
 
 // Pre-calculate mappings
 ROUTES_CONFIG.forEach(route => {
@@ -383,6 +397,28 @@ ROUTES_CONFIG.forEach(route => {
       if (cleanPath) PATH_TO_KEY_MAP.set(cleanPath, route.key);
     });
   });
+
+  // 3. Prefix Map (for detail/nested routes)
+  let detailKey = route.key; // Fallback mapping
+  if (route.key === 'events') detailKey = 'events-detail';
+  else if (route.key === 'music') detailKey = 'music-detail';
+  else if (route.key === 'news') detailKey = 'news-detail';
+  else if (route.key === 'shop') detailKey = 'product-detail';
+
+  const enPaths = Array.isArray(route.paths.en) ? route.paths.en : [route.paths.en];
+  const ptPaths = Array.isArray(route.paths.pt) ? route.paths.pt : [route.paths.pt];
+
+  for (const p of [...enPaths, ...ptPaths]) {
+    if (!p) continue;
+    // remove leading slash if it exists
+    let cleanP = p.startsWith('/') ? p.slice(1) : p;
+    // remove trailing slash if it exists
+    cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
+
+    if (cleanP) {
+      PREFIX_PATH_MAP.set(cleanP + '/', detailKey);
+    }
+  }
 });
 
 /**
@@ -392,28 +428,14 @@ export const findKeyByPath = (path: string): string | undefined => {
   const cleanPath = normalizeRouteKey(path);
   if (!cleanPath) return 'home';
 
-  // 1. Busca exata (slug primário)
+  // 1. Busca exata (slug primário) - O(1) Lookup
   const exact = PATH_TO_KEY_MAP.get(cleanPath);
   if (exact) return exact;
 
-  // 2. Busca manual em todas as configs (slugs e aliases)
-  const langs: Language[] = ['en', 'pt'];
-
-  for (const route of ROUTES_CONFIG) {
-    for (const lang of langs) {
-      const paths = getLocalizedPaths(route, lang);
-      for (const p of paths) {
-        if (!p) continue;
-        const cleanP = p.replace(/\/$/, '');
-        if (cleanPath === cleanP || cleanPath.startsWith(cleanP + '/')) {
-          // Mapeamento automático para rotas de detalhe
-          if (route.key === 'events') return 'events-detail';
-          if (route.key === 'music') return 'music-detail';
-          if (route.key === 'news') return 'news-detail';
-          if (route.key === 'shop') return 'product-detail';
-          return route.key;
-        }
-      }
+  // 2. Busca de prefixo para páginas de detalhes/nested - O(K) Lookup, K é minúsculo
+  for (const [prefix, detailKey] of PREFIX_PATH_MAP.entries()) {
+    if (cleanPath.startsWith(prefix)) {
+      return detailKey;
     }
   }
 
@@ -495,8 +517,15 @@ export const getAlternateLinks = (
   // Identifica a chave lógica da página atual
   const key = findKeyByPath(currentPath);
   if (!key) {
-    // Fallback inteligente se não encontrar a chave
-    const clean = currentPath.replace(/^\/pt\//, '/').replace(/^\/pt$/, '/');
+    // Fallback inteligente se não encontrar a chave (Otimizado sem Regex)
+    let clean = currentPath;
+    if (clean.startsWith('/pt/')) clean = clean.slice(4); // Remove /pt/ (length 4)
+    else if (clean === '/pt') clean = '';
+    else if (clean.startsWith('/')) clean = clean.slice(1);
+
+    // Devolve a barra inicial
+    clean = '/' + clean;
+
     return {
       en: clean,
       pt: clean === '/' ? '/pt/' : `/pt${clean}`,
@@ -518,14 +547,21 @@ export const getAlternateLinks = (
   // Encontra qual slug (ou alias) deu match para calcular o sufixo corretamente
   const allCurrentLangPaths = getLocalizedPaths(route, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
   for (const p of allCurrentLangPaths) {
-    if (currentClean.startsWith(p + '/')) {
-      suffix = currentClean.slice(p.length);
+    let cleanP = p.startsWith('/') ? p.slice(1) : p;
+    cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
+
+    if (currentClean.startsWith(cleanP + '/')) {
+      suffix = currentClean.slice(cleanP.length);
       break;
     }
   }
 
-  alternates.en = buildFullPath(`${enSlug}${suffix}`, 'en');
-  alternates.pt = buildFullPath(`${ptSlug}${suffix}`, 'pt');
+  // Garante que enSlug e ptSlug não começam com slash para o buildFullPath
+  const cleanEnSlug = enSlug.startsWith('/') ? enSlug.slice(1) : enSlug;
+  const cleanPtSlug = ptSlug.startsWith('/') ? ptSlug.slice(1) : ptSlug;
+
+  alternates.en = buildFullPath(`${cleanEnSlug}${suffix}`, 'en');
+  alternates.pt = buildFullPath(`${cleanPtSlug}${suffix}`, 'pt');
   alternates['x-default'] = alternates.en;
 
   return alternates;
