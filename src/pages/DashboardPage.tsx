@@ -124,7 +124,7 @@ const DashboardContent = () => {
   const navigate = useNavigate();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
-  const { data: gamipress, loading: gamiLoading, error: gamiError } = useGamiPressContext();
+  const { data: gamipress, loading: gamiLoading, error: gamiError, refresh: gamiRefresh } = useGamiPressContext();
   const { data: leaderboardData } = useLeaderboardQuery(5);
 
   const routes = useMemo(() => ({
@@ -152,7 +152,7 @@ const DashboardContent = () => {
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <h2 className="text-2xl font-black text-white mb-2 font-display">{t('dashboard.error_loading')}</h2>
           <p className="text-sm text-white/40 mb-8">{gamiError}</p>
-          <button onClick={() => window.location.reload()} className="btn btn-primary btn-lg rounded-2xl w-full">
+          <button onClick={gamiRefresh} className="btn btn-primary btn-lg rounded-2xl w-full">
             {t('common.retry')}
           </button>
         </motion.div>
@@ -170,8 +170,9 @@ const DashboardContent = () => {
   const currentRank = gamipress.rank?.current?.title || '--';
   const nextRank = gamipress.rank?.next?.title || null;
   const rankProgress = gamipress.rank?.progress || 0;
-  const rankExpCurrent = gamipress.rank?.requirements?.[0]?.current || 0;
-  const rankExpRequired = gamipress.rank?.requirements?.[0]?.required || 1000;
+  const allReqs = gamipress.rank?.requirements ?? [];
+  const rankExpCurrent = allReqs.reduce((sum, r) => sum + (r.current || 0), 0);
+  const rankExpRequired = allReqs.reduce((sum, r) => sum + (r.required || 0), 0) || 1000;
 
   const earnedAchievements = gamipress.achievements_earned || [];
   const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];

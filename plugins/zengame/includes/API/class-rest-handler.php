@@ -101,7 +101,7 @@ final class REST_Handler
                 'main_points_slug' => self::get_main_points_slug(),
                 'engine_status' => [
                     'woo' => \class_exists('WooCommerce'),
-                    'gamipress' => true,
+                    'gamipress' => \defined('GAMIPRESS_VER') ? \GAMIPRESS_VER : false,
                     'cache' => \get_option('zengame_last_purge') ? 'warm' : 'running',
                     'ts' => \time(),
                 ],
@@ -144,6 +144,7 @@ final class REST_Handler
 
         global $wpdb;
         $types = \function_exists('gamipress_get_points_types') ? \gamipress_get_points_types() : [];
+        $limit = \max(1, \min(50, (int) ($request->get_param('limit') ?: 10)));
         $leaderboard = [];
 
         foreach ($types as $type) {
@@ -160,14 +161,19 @@ final class REST_Handler
                 FROM {$wpdb->usermeta} m
                 INNER JOIN {$wpdb->users} u ON m.user_id = u.ID
                 WHERE meta_key = %s AND meta_value > 0
-                ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT 10
+                ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT %d
                 ",
-                $meta_key
+                $meta_key,
+                $limit
             ));
 
             if (!$results) {
                 continue;
             }
+
+            // Prime WP object cache for all users in one query — prevents N+1 on get_avatar_url
+            $user_ids = \array_map(fn($r) => (int) $r->user_id, $results);
+            \cache_users($user_ids);
 
             $leaderboard[$slug] = [];
             foreach ($results as $row) {
@@ -414,14 +420,7 @@ final class REST_Handler
                     'achievement_type' => $type_slug,
                 ]);
             } else {
-                $all_ids = \get_posts([
-                    'post_type' => $type_slug,
-                    'posts_per_page' => -1,
-                    'fields' => 'ids',
-                    'post_status' => 'publish'
-                ]);
-
-                // Get IDs of achievements already earned to filter them out
+                // Collect earned IDs to exclude, then fetch locked in a single query
                 $earned_ids = [];
                 if (\function_exists('gamipress_get_user_achievements')) {
                     $earned_objects = \gamipress_get_user_achievements([
@@ -433,19 +432,17 @@ final class REST_Handler
                     }
                 }
 
-                $locked_ids = \array_diff($all_ids, $earned_ids);
-                
-                if (empty($locked_ids)) {
-                    $items = [];
-                } else {
-                    $items = \get_posts([
-                        'post_type' => $type_slug,
-                        'post__in' => $locked_ids,
-                        'posts_per_page' => -1,
-                        'orderby' => 'menu_order',
-                        'order' => 'ASC'
-                    ]);
+                $query_args = [
+                    'post_type' => $type_slug,
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                    'orderby' => 'menu_order',
+                    'order' => 'ASC',
+                ];
+                if (!empty($earned_ids)) {
+                    $query_args['post__not_in'] = $earned_ids;
                 }
+                $items = \get_posts($query_args);
             }
 
             if (!\is_array($items) && !($items instanceof \Traversable)) {

@@ -141,6 +141,7 @@ final class Engine
         \add_action('gamipress_award_points_to_user', fn($uid) => $this->clear_user_cache((int)$uid), 10, 1);
         \add_action('gamipress_award_achievement', fn($uid) => $this->clear_user_cache((int)$uid), 10, 1);
         \add_action('gamipress_set_user_rank', fn($uid) => $this->clear_user_cache((int)$uid), 10, 1);
+        \add_action('set_user_role', fn($uid) => $this->clear_user_cache((int)$uid), 10, 1);
     }
 
     public function clear_user_cache(int $user_id): void
