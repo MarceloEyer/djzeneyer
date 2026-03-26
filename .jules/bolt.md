@@ -49,3 +49,7 @@
 ## 2026-03-09 - Map pattern to avoid redundant function calls in REST API
 **Learning:** In `djz_get_shop_page` inside `inc/api.php`, `djz_get_product_image_ids` was being called during the initial query loop to collect image IDs for cache priming, and then called *again* for the exact same products in the subsequent formatting loop. This caused N redundant calculations per shop section.
 **Action:** When deriving data in one loop that will be needed in a subsequent loop (especially for the same collection of items), cache the intermediate result in an associative array keyed by item ID (e.g., `$product_images_map[$id] = $img_ids`). Then perform an O(1) lookup in the second loop instead of recalculating.
+
+## 2026-03-26 - Prevent memoized component re-renders from unstable function props
+**Learning:** In `MainLayout.tsx`, the `openModal` and `closeModal` functions were passed down to the `Navbar` component. Even though `Navbar` was wrapped in `React.memo`, it was still re-rendering every time the `MainLayout` re-rendered (such as when the `isAuthModalOpen` state changed). This is because the inline functions created a new reference on every render of the parent component.
+**Action:** When passing callback functions to child components wrapped in `React.memo`, always stabilize their references by wrapping the functions in `useCallback`. This preserves the function reference across renders and allows the memoization of the child component to work correctly.
