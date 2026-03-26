@@ -16,8 +16,8 @@
 
 | Chave | Recurso | TTL | Invalidação |
 |---|---|---|---|
-| `djz_gamipress_dashboard_v14_{user_id}` | Dashboard do Usuário | 24h | Award, Rank, Order |
-| `djz_gamipress_leaderboard_v14_{limit}` | Ranking Público | 1h | Toda premiação de pontos |
+| `djz_gamipress_dashboard_v15_{user_id}` | Dashboard do Usuário | 24h | Award, Rank, Order |
+| `djz_gamipress_leaderboard_v15_{limit}` | Ranking Público | 1h | Toda premiação de pontos |
 | `djz_stats_tracks_{user_id}` | Analytics de Download | 6h | Novo pedido concluído |
 | `djz_stats_events_{user_id}` | Analytics de Eventos | 6h | Novo pedido concluído |
 

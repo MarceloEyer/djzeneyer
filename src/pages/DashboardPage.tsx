@@ -207,10 +207,11 @@ const DashboardContent = () => {
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-3xl animate-pulse rounded-full" />
-              <img 
-                src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || '')}&background=0D96FF&color=fff&size=200`}
+              <img
+                src={safeUrl(user.avatar, '/default-avatar.svg')}
                 className="relative z-10 h-24 w-24 md:h-28 md:w-28 rounded-3xl object-cover border-2 border-primary/40 shadow-neon-sm"
                 alt={user.display_name}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/default-avatar.svg'; }}
               />
               <div className="absolute -bottom-2 -right-2 z-20 flex h-8 w-8 items-center justify-center rounded-xl bg-primary shadow-lg border-2 border-background">
                 <Crown size={14} className="fill-white text-white" />

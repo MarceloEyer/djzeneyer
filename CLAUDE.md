@@ -61,8 +61,8 @@ Produção: https://djzeneyer.com
 
 - `gamipress_get_rank_types()` retorna array **associativo** (chave = slug) — sempre usar `array_values()` antes de `[0]`
 - `date_earned` de conquistas vem do objeto de user-achievement (`$item->date_earned`), não de post meta
-- Leaderboard cache: TTL 1h, chave `djz_gamipress_leaderboard_v14_{limit}`, invalidado em toda premiação
-- Dashboard cache: TTL 24h, chave `djz_gamipress_dashboard_v14_{user_id}`
+- Leaderboard cache: TTL 1h, chave `djz_gamipress_leaderboard_v15_{limit}`, invalidado em toda premiação
+- Dashboard cache: TTL 24h, chave `djz_gamipress_dashboard_v15_{user_id}`
 - Stats (tracks/events): TTL 6h, keys `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}`
 
 ## SEO — regras de rotas privadas
