@@ -23,9 +23,9 @@
 
 Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
-## Baseline tecnico canonico (2026-03-06)
+## Baseline tecnico canonico (2026-03-26)
 - Arquitetura: WordPress Headless (REST API) + React SPA
-- Frontend: React 18 + TypeScript + Vite 7 + Tailwind 3 + React Query v5 + React Router 7 + i18next
+- Frontend: React 19 + TypeScript + Vite 8 + Tailwind 4 + React Query v5 + React Router 7 + i18next
 - Backend: WordPress 6.0+ (recomendado 6.9+), PHP **8.1+** (zengame exige 8.1), WooCommerce, GamiPress
 - Node: 20+
 - Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: 1989-08-30.
@@ -41,7 +41,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 5. SEO por pagina com `<HeadlessSEO />`
 6. Filtragem pesada no backend (query params/endpoint agregador), frontend apenas renderiza
 7. SQL sempre preparado e inputs sanitizados no PHP
-8. Nao atualizar ESLint para v10 (manter v9)
+8. Nao atualizar ESLint para v11+ (manter v10)
 9. Nao commitar `.env`, segredos ou credenciais
 10. `UserContext.logout` e **sincrona**; nao usar `async/await` ao chama-la.
 11. `ProfileUpdatePayload` (`useQueries.ts`) deve incluir campos customizados (`real_name`, `gender`, etc.) para sync com o plugin `zeneyer-auth`.
@@ -60,7 +60,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - `zen-bit/v1` legado; usar `zen-bit/v2`
 - Namespace SEO canonico: `zen-seo/v1` (nao `zen-seo-lite/v1`)
 - `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
-- Tailwind canonico do projeto: v3; nao aplicar convencoes exclusivas de v4 sem migracao explicita
+- Tailwind canonico do projeto: v4; convencoes de v3 (ex: `tailwind.config.js` class-based) nao se aplicam
 - SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
 - **Hybrid Prerender Architecture (2026-03)**:
   - **Build/SEO**: O `scripts/prerender.js` e o `scripts/generate-sitemap.js` buscam dados da **API interna do WordPress** (`/zen-bit/v2/events`) como primária, com fallback técnico para Bandsintown (ID `id_15619775`) se o WP estiver offline ou bloqueado.
