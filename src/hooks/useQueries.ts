@@ -655,16 +655,17 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       try {
         data = await res.json();
       } catch (e) {
-        // Not JSON
+        if (import.meta.env.DEV) {
+          console.warn('[GamiPress] Response was not valid JSON', e);
+        }
       }
 
       if (!res.ok) {
-        const errorMsg = data?.message || `Failed to fetch gamipress: ${res.status}`;
+        const errorMsg = data?.message || data?.code || `HTTP ${res.status} — ${res.statusText}`;
         throw new Error(errorMsg);
       }
-      
-      // Debug point keys — help identifying why they might be zero
-      if (data && data.points) {
+
+      if (import.meta.env.DEV && data?.points) {
         console.groupCollapsed('[GamiPress] User Data Sync');
         console.info('Main Slug:', data.main_points_slug);
         console.info('Point Keys Found:', Object.keys(data.points));
