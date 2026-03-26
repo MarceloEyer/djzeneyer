@@ -39,8 +39,8 @@ triggers:
   - LiteSpeed
   - Cloudflare
   - prerender
-version: '1.2.0'
-author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
+version: '1.2.1'
+author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity (Restored 2026-03-26)
 ---
 
 # DJ Zen Eyer — Agentic Skill (Master)

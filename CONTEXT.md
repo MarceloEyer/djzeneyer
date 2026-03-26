@@ -1,61 +1,42 @@
 # DJ Zen Eyer — Central Context
 
-> Resumo operacional rápido. Documento canônico completo: `AI_CONTEXT_INDEX.md`.
+> Resumo operacional. Documento canônico completo: `AI_CONTEXT_INDEX.md`.
 > Idioma padrão: Português Brasileiro.
 
-## Arquitetura
+## 🏗️ Arquitetura Completa
 
+```mermaid
+graph TD
+    A[React 19 SPA] <--> B[Vite 8 / OXC]
+    A <--> C[WordPress REST API]
+    C <--> D[ZenGame Pro Plugin]
+    C <--> E[ZenEYER Auth Plugin]
+    C <--> F[WooCommerce HPOS]
+    A <--> G[Cloudflare / Hostinger]
 ```
-WordPress Headless (REST API) ←→ React 19 SPA ←→ Cloudflare CDN
-         ↑                              ↑
-    4 plugins custom               Hostinger VPS
-  (auth, seo, events, game)       (LiteSpeed + PHP 8.3)
-```
 
-## Stack (2026-03-26)
+## 🛠️ Stack Baseline (2026-03-26)
+- **Frontend:** React 19, Vite 8 (OXC), Tailwind 4, React Query v5, i18next.
+- **Backend:** WordPress 6.9+, PHP 8.3, WooCommerce (HPOS), GamiPress.
+- **CI/CD:** GitHub Actions (fetch-depth: 2, plugin detection) → SSH rsync.
 
-- **Frontend:** React 19, TypeScript strict, Vite 8 (OXC), Tailwind 4, React Query v5, React Router 7, i18next
-- **Backend:** WordPress 6.9+, PHP 8.3, WooCommerce (HPOS), GamiPress
-- **Deploy:** GitHub Actions → rsync SSH → Hostinger
+## 🗺️ Mapa de Arquivos Chave
 
-## Regras de Ouro
-
-1. `t('chave')` para toda string visível — PT e EN obrigatórios
-2. Data fetching apenas via hooks em `src/hooks/useQueries.ts`
-3. SEO por página via `<HeadlessSEO />`
-4. TypeScript strict — build deve passar sem erros
-5. Backend filtra; frontend renderiza
-6. Não atualizar ESLint para v11+ (manter v10)
-
-## Endpoints Canônicos
-
-| Plugin | Namespace | Função |
-|---|---|---|
-| Tema | `djzeneyer/v1` | Menu, config, newsletter |
-| Auth | `zeneyer-auth/v1` | JWT, Google OAuth, perfil |
-| Eventos | `zen-bit/v2` | Bandsintown (SWR cached) |
-| Gamificação | `zengame/v1` | Dashboard, leaderboard, tracking |
-| SEO | `zen-seo/v1` | Metadata dinâmica |
-
-## ZenGame — Resumo Técnico
-
-- **`GET /zengame/v1/me`** — retorna: `points`, `rank` (com `menu_order`), `achievements`, `logs`, `stats`
-- **`GET /zengame/v1/leaderboard`** — ranking público por tipo de pontos
-- **`POST /zengame/v1/track`** — registra interação (download, share, listen, click)
-- Cache dashboard: 24h por `user_id` | Cache leaderboard: 1h por `limit`
-- Invalidação automática: a cada premiação de pontos, novo pedido WC ou troca de rank
-- HPOS-safe: usa `wc_get_orders()` para totalTracks e eventsAttended
-
-## Arquivos-chave
-
-| Arquivo | Responsabilidade |
+| Arquivo/Pasta | Responsabilidade |
 |---|---|
-| `src/hooks/useQueries.ts` | SSOT de todas as queries React |
-| `src/pages/DashboardPage.tsx` | Interface de gamificação do usuário |
-| `src/types/gamification.ts` | Tipos TypeScript do ZenGame |
-| `src/contexts/GamiPressContext.tsx` | Provider singleton do ZenGame |
-| `plugins/zengame/` | Plugin PHP completo (engine + REST + admin) |
-| `plugins/zeneyer-auth/` | Auth JWT + Google OAuth |
-| `src/locales/pt/translation.json` | Traduções PT |
-| `src/locales/en/translation.json` | Traduções EN |
-| `.github/workflows/deploy.yml` | CI/CD completo |
+| `src/hooks/useQueries.ts` | **SSOT Data Fetching**. Centralizador de todas as queries. |
+| `src/contexts/UserContext.tsx` | Gerenciamento de Sessão e Auth (JWT/Google). |
+| `plugins/zengame/` | Engine de gamificação (Stats, Ranks, Leaderboard). |
+| `plugins/zeneyer-auth/` | Autenticação master e validação de tokens Bearer. |
+| `src/locales/` | Traduções PT/EN em arquivos JSON UTF-8. |
+| `.github/workflows/deploy.yml` | Pipeline de deploy automatizado. |
+| `scripts/prerender.js` | Geração de HTML estático por rota para SEO. |
+
+## 🕹️ ZenGame Contracts
+- **Leaderboard:** Cache 1h. Invalidado em toda premiação.
+- **Dashboard:** Cache 24h. Invalidado via `clear_user_cache()`.
+- **Ranks:** Usar `array_values(gamipress_get_rank_types())` para evitar bug de array associativo no GamiPress.
+- **WP-CLI Deploy:** Cache clearing via `wp transient delete --search="..."`.
+
+---
+*Para execução técnica detalhada, consulte `AI_CONTEXT_INDEX.md`.*
