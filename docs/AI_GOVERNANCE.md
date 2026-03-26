@@ -7,10 +7,11 @@
 
 Em caso de conflito, aplicar nesta ordem:
 1. Instruções do usuário/sistema na tarefa atual.
-2. `AGENTS.md` (escopo por diretório).
-3. Este documento (`docs/AI_GOVERNANCE.md`).
-4. Contextos locais (`src/**/CONTEXT.md`, `.github/workflows/CONTEXT.md`).
-5. Guias específicos de assistente (`GEMINI.md`, `copilot-instructions.md`).
+2. `AI_CONTEXT_INDEX.md` — fonte canônica de stack, regras globais e endpoints.
+3. `AGENTS.md` — regras operacionais para agentes.
+4. Este documento (`docs/AI_GOVERNANCE.md`) — gates por tipo de tarefa.
+5. Contextos locais (`plugins/*/CONTEXT.md`, `src/**/CONTEXT.md`).
+6. Guias específicos de assistente (`GEMINI.md`, `CLAUDE.md`).
 
 ---
 

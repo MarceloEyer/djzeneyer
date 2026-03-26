@@ -82,9 +82,10 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Ao mexer em locales, validar o arquivo lido como UTF-8 e, se necessario, preferir escapes como `\u00A9`, `\u2014`, `\u2728`, `\u00D7`.
 
 ## Checklist de atualizacao de contexto
-- Atualizou versoes? sincronizar `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `GEMINI.md`
-- Mudou endpoint/namespace? sincronizar `docs/API.md` e skills relacionadas
+- Atualizou versões de stack? sincronizar `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `GEMINI.md`, `README.md`, `CLAUDE.md` e `SKILL.md` do djzeneyer-context
+- Mudou endpoint/namespace? sincronizar `docs/API.md`, `CONTEXT.md` e skills relacionadas
 - Mudou regra de arquitetura? sincronizar `CONTEXT.md` + skill `djzeneyer-context`
+- Mudou contrato ZenGame (cache keys, TTLs, campos da API)? sincronizar `plugins/zengame/CONTEXT.md`
 
 
 ## Politica de Atualizacao de Contexto e Skills (Obrigatoria)
@@ -120,7 +121,17 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 - **Gradientes**: Permitidos de forma sutil para profundidade; evitar em blocos de texto longo.
 - **Tom**: Manter a voz do "Amigo Zen" (humilde, generosa e profissional).
 
-## Regra operacional adicional (2026-03)
-91. Build de frontend deve passar em `npm run perf:budget` para evitar regressao de bundle.
-92. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html`.
-93. **SSOT Data Fetching**: `useQueries.ts` é o cubo central; `fetch()` em componentes é desencorajado e deve ser migrado sempre que possível.
+## Regras operacionais adicionais (2026-03)
+14. Build de frontend deve passar em `npm run perf:budget` para evitar regressão de bundle.
+15. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html`.
+16. **SSOT Data Fetching**: `useQueries.ts` é o cubo central; `fetch()` em componentes é desencorajado e deve ser migrado sempre que possível.
+
+## ZenGame / GamiPress — Contratos e Armadilhas
+
+- `gamipress_get_rank_types()` retorna array **associativo** (chave = slug do rank type); usar `array_values()` antes de indexar com `[0]` ou o rank cai sempre para fallback "Zen Guest"
+- `date_earned` de conquistas ganhas vem do objeto de user-achievement (tabela `gamipress_user_achievements`), não de post meta `_gamipress_earned_at`
+- Pedidos WooCommerce: usar exclusivamente `wc_get_orders()` — nunca SQL direto em `wp_posts` (HPOS ativo)
+- Cache dashboard: 24h (TTL), chave `djz_gamipress_dashboard_v14_{user_id}`
+- Cache leaderboard: 1h (TTL), chave `djz_gamipress_leaderboard_v14_{limit}` — invalidado em qualquer premiação via `clear_user_cache()`
+- Cache stats: 6h, chaves `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}`
+- Deploy CI: transients ZenGame são limpos via `wp transient delete --search="djz_gamipress"` após cada deploy
