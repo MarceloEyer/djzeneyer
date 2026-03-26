@@ -196,15 +196,7 @@ jobs:
             public/sitemap-pages.xml
           retention-days: 7
 
-      - name: 📤 Upload GamiPress files
-        if: hashFiles('gamipress/**') != ''
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-gamipress-${{ steps.commit.outputs.hash }}
-          path: gamipress/
-          retention-days: 7
-
-  # ═══════════════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
   # JOB 2: DEPLOY (RESTAURADO DO LOG ORIGINAL)
   # ═══════════════════════════════════════════════════════════════════════════════
   deploy:
@@ -260,19 +252,12 @@ jobs:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
 
-      - name: 📥 Download GamiPress files
-        if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v8
-        with:
-          name: build-gamipress-${{ needs.build.outputs.commit_hash }}
-          path: ./gamipress-deploy
-
       # --- SSH SETUP ---
       - name: 🔐 Setup SSH
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
           name: id_rsa
 
       # --- DIAGNOSTIC ---
@@ -358,18 +343,6 @@ jobs:
           switches: -avzr --delete --checksum
           path: templates/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/templates/
-          remote_host: ${{ env.SSH_HOST }}
-          remote_user: ${{ env.SSH_USER }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: 🎮 Deploy GamiPress/
-        if: hashFiles('gamipress-deploy/**') != ''
-        uses: burnett01/rsync-deployments@8.0.4
-        with:
-          switches: -avzr --delete --checksum
-          path: gamipress-deploy/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/gamipress/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
