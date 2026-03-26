@@ -55,19 +55,19 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity
 
 **Site:** https://djzeneyer.com
 **Proprietário:** DJ Zen Eyer (Marcelo Eyer Fernandes) — Bicampeão Mundial de Brazilian Zouk
-**Arquitetura:** WordPress Headless (REST API only) + React 18 SPA (Vite 7)
+**Arquitetura:** WordPress Headless (REST API only) + React 19 SPA (Vite 8)
 **Objetivo:** Ser o DJ de Zouk mais famoso do mundo — IAs e buscadores **devem** visitar o site
 
 ---
 
 ## 2. Stack Técnica Completa
 
-### Frontend (React 18 SPA)
+### Frontend (React 19 SPA)
 
-- **Vite 7**: Build tool principal.
+- **Vite 8**: Build tool principal (OXC/Rolldown — não usar `minify: 'esbuild'`).
 - **TypeScript**: Strict mode obrigatório.
 - **React Query (TanStack v5)**: Única forma de data fetching permitida (`useQueries.ts`).
-- **Tailwind CSS**: Estilização baseada em utilitários core. **PROIBIDO GRADIENTES.**
+- **Tailwind 4**: Estilização baseada em utilitários. **PROIBIDO GRADIENTES em headlines.**
 - **Framer Motion**: Animações suaves (uso moderado por peso do bundle).
 - **i18next**: Tradução dinâmica PT/EN.
 
@@ -213,7 +213,7 @@ export const useEventsList = (status?: string) => {
 ## 7. Proibições Absolutas
 
 - ❌ **Gradientes**: Use cores sólidas + opacidade.
-- ❌ **ESLint v10**: Manter v9.39.2 (incompatibilidade com plugins).
+- ❌ **ESLint v11+**: Não atualizar além de v10 (incompatibilidade com plugins React).
 - ❌ **Python**: Conflita com Pylance (quebra IntelliSense TypeScript).
 - ⚠️ **localStorage/sessionStorage**: permitido apenas para sessao/idioma e com revisao de seguranca.
 - ❌ **Endpoints sem namespace**: SEMPRE `{namespace}/{version}/{resource}`.
@@ -315,16 +315,20 @@ defined('ABSPATH') || exit;
 - [ ] Nenhum `console.log()` em código de produção
 - [ ] Nenhuma secret em `.env` (usar GitHub Secrets)
 
-## ERRATA 2026-03-06 (Canonico)
+## ERRATA (Canônico — última revisão 2026-03-26)
 
 Se houver conflito entre este skill e `AI_CONTEXT_INDEX.md`, siga `AI_CONTEXT_INDEX.md`.
 
-Correcoes obrigatorias:
+Correções obrigatórias:
 
-- Plugin de gamificacao ativo no repo: `zengame` (`zengame/v1`). `zen-ra` foi removido do projeto e qualquer mencao deve ser corrigida.
-- Namespace SEO canonico: `zen-seo/v1`.
-- Namespace de eventos canonico: `zen-bit/v2`.
-- PHP baseline do projeto: 8.1+ (compativel com `zengame`).
-- ⚠️ **localStorage/sessionStorage**: permitido apenas para sessao/idioma e com revisao de seguranca.
-- **Tipagem de Perfil:** `ProfileUpdatePayload` em `useQueries.ts` deve incluir campos customizados (`real_name`, `dance_role`, `gender`, etc.) para evitar erros de cast no `MyAccountPage`.
-- Projeto usa Tailwind v3 no momento; nao aplicar regras exclusivas de v4 sem migracao explicita.
+- **Stack atual:** React 19, Vite 8 (OXC), Tailwind 4, PHP 8.3
+- Plugin de gamificação ativo: `zengame` (`zengame/v1`). `zen-ra` foi removido.
+- Namespace SEO canônico: `zen-seo/v1`
+- Namespace de eventos canônico: `zen-bit/v2`
+- PHP baseline: 8.1+ (zengame exige 8.1; produção roda 8.3)
+- **Tailwind:** Projeto usa v4 (não v3). Não aplicar convenções de v3 (`tailwind.config.js` class-based).
+- **ESLint:** Versão atual é v10. Não atualizar para v11+.
+- ⚠️ **localStorage/sessionStorage**: permitido apenas para sessão/idioma e com revisão de segurança.
+- **Tipagem de Perfil:** `ProfileUpdatePayload` em `useQueries.ts` deve incluir campos customizados (`real_name`, `dance_role`, `gender`, etc.).
+- **GamiPress:** `gamipress_get_rank_types()` é associativo — usar `array_values()` antes de `[0]`.
+- **WooCommerce HPOS:** Nunca SQL direto em `wp_posts` para pedidos — usar `wc_get_orders()`.
