@@ -20,36 +20,79 @@ Em caso de conflito, aplicar nesta ordem:
 ## ✅ 2) Gates obrigatórios por tipo de tarefa
 
 ### A) Frontend (React 19 / Vite 8)
-- [ ] Data fetching via `src/hooks/useQueries.ts` (sem `fetch` solto).
-- [ ] i18n obrigatório (`t('key')`) — locales PT/EN em UTF-8.
+- [ ] Data fetching via `src/hooks/useQueries.ts` (sem `fetch` solto em componente).
+- [ ] i18n obrigatório (`t('key')`) — locales PT/EN em UTF-8 limpo.
 - [ ] Não usar `minify: 'esbuild'` (Vite 8 usa OXC nativo).
-- [ ] Página com `HeadlessSEO` e lazy loading.
+- [ ] `<HeadlessSEO />` em rotas públicas; rotas privadas (`/dashboard`, `/my-account`) usam `noindex` + OG image genérica.
+- [ ] Lazy loading para páginas (`React.lazy()` + `Suspense`).
 - [ ] Executar `npm run lint` e `npm run build` (validação de build total).
 
 ### B) Backend (PHP 8.3 / WP 6.9+)
-- [ ] Sanitização e prepared statements (SQL).
+- [ ] Sanitização e escaping (`sanitize_text_field`, `esc_html`, etc.).
+- [ ] SQL com prepared statements.
 - [ ] WP Hooks (`add_action`, `add_filter`) — sem lógica solta em arquivos.
-- [ ] WooCommerce HPOS: Usar `wc_get_orders()`. Jamais SQL em `wp_posts`.
-- [ ] ZenGame: `array_values(gamipress_get_rank_types())` para indexação.
+- [ ] WooCommerce HPOS: Usar `wc_get_orders()`. Jamais SQL direto em `wp_posts`.
+- [ ] ZenGame: `array_values(gamipress_get_rank_types())` para indexação de rank type.
 
 ### C) Documentação
 - [ ] Sem duplicidade com `AI_CONTEXT_INDEX.md`.
 - [ ] Eliminar mojibake (`Ã§`, `Â©`). Salvar sempre em UTF-8 limpo.
+- [ ] Atualização objetiva, sem divergência com instruções canônicas.
+- [ ] Se mudar processo de PR, refletir em `.github/pull_request_template.md`.
 
-### D) CI/CD
+### D) Tradução/i18n
+- [ ] Paridade de chaves `src/locales/pt/translation.json` ↔ `src/locales/en/translation.json`.
+- [ ] Nomes de chave hierárquicos (evitar colisão).
+
+### E) CI/CD
 - [ ] GitHub Actions: `fetch-depth: 2`.
-- [ ] Verificação de mudanças em `plugins/` via `git diff`.
+- [ ] Plugins: Verificação de mudanças em `plugins/` via `git diff HEAD^..HEAD`.
+- [ ] Rotas privadas (`dashboard`, `my-account`) excluídas do sitemap e do prerender.
 
 ---
 
-## ⚡ 3) Definition of Done (DoD)
+## ⚡ 3) Baseline de performance (meta)
+
+> Para este projeto (WP Headless + SPA), priorizar consistência e payload enxuto.
+
+| Métrica | Meta | Observação |
+|---|---:|---|
+| Payload REST por listagem | <= 80 KB gzip | Usar `_fields`, paginação e filtros no backend |
+| Requests repetidas por sessão (dados estáveis) | -30% a -70% | Ajustar `staleTime` por domínio |
+| JS inicial por rota principal | <= 250 KB gzip | Forçar lazy loading + split por rota |
+| TTFB API cacheável | <= 500 ms | Preferir cache/transients em endpoints estáveis |
+| Chaves i18n órfãs | 0 novas por PR | Evitar inflação de dicionário |
+
+---
+
+## 🤖 4) Template mínimo de avaliação em PR
+
+Todo PR deve incluir:
+
+```md
+### 🤖 Avaliação de sugestões de outros bots
+- Sugestões aproveitadas: [...]
+- Sugestões rejeitadas: [... + justificativa]
+- Risco residual: [baixo/médio/alto]
+- Próximos passos: [...]
+```
+
+---
+
+## 🏁 5) Critério de pronto (Definition of Done)
 
 Uma mudança é considerada pronta quando:
-- Todos os gates técnicos foram atendidos.
+- Gates do tipo de tarefa foram atendidos.
 - Build local foi verificado (`npm run build`).
 - **Nenhuma regra do `AI_CONTEXT_INDEX.md` foi violada.**
 - PR possui descrição clara do impacto.
-- Arquivos de tradução e documentação estão sem erros de encoding.
+- Arquivos de tradução e documentação estão em UTF-8 limpo.
+
+---
+
+## 6) Cadência de revisão
+- Revisar este documento a cada 30 dias ou após mudança arquitetural relevante.
+- Em caso de divergência recorrente entre agentes, atualizar primeiro este arquivo e referenciar nos demais guias.
 
 ---
 *Revisado em 2026-03-26 por DJ Zen Eyer & Antigravity.*
