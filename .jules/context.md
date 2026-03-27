@@ -63,8 +63,9 @@ Toda query usa `useQuery` / `useMutation` do React Query v5 com keys de `QUERY_K
 ### Backend PHP
 - **`gamipress_get_rank_types()`** retorna array **associativo** (chave = slug). Sempre `array_values()` antes de `[0]`.
 - **WooCommerce HPOS** — nunca SQL direto em `wp_posts` para pedidos. Usar `wc_get_orders()`.
-- **`get_avatar_url()`** pode retornar `false` (boolean), não string vazia. Em Zod: `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
-- **PHP images** — `get_the_post_thumbnail_url()` também retorna `false`. Mesmo tratamento.
+- **`get_avatar_url()`** e **`get_the_post_thumbnail_url()`** podem retornar `false` (boolean), `null` ou `undefined`.
+  Em Zod v4: `z.string().catch('')` (campo obrigatório) ou `z.string().catch('').optional()` (campo opcional).
+  ❌ Padrão antigo quebrado: `z.union([z.string(), z.literal(false)])` — falha em null/undefined.
 
 ### Cache (ZenGame)
 - `CACHE_VERSION = 'v15'` em `ZenGame::CACHE_VERSION`

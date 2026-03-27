@@ -44,8 +44,9 @@ reviews:
       instructions: |
         Schemas Zod para APIs WordPress/PHP:
         - PHP `get_avatar_url()`, `get_the_post_thumbnail_url()` retornam `false` (boolean) quando não há imagem.
-          Nunca usar `z.string()` para campos de imagem/avatar — usar `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
-        - `date_earned` de achievements pode ser null para itens não conquistados — usar `.nullable().transform(v => v ?? '')`.
+          Zod v4: `z.union([z.string(), z.literal(false)])` quebra em `null`/`undefined`.
+          Padrão correto: `z.string().catch('')` (campo obrigatório) ou `z.string().catch('').optional()` (campo opcional).
+        - `date_earned` de achievements pode ser null/undefined para itens não conquistados — usar `z.string().catch('')`.
         - Usar `.catchall(z.unknown())` em schemas de API para aceitar campos extras sem quebrar.
 
     - path: "src/hooks/useQueries.ts"

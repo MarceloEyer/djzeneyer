@@ -88,7 +88,7 @@ Produção: https://djzeneyer.com
 - **lucide-react 1.x**: ícones Facebook, Instagram, Youtube foram removidos → usar `src/components/icons/BrandIcons.tsx`.
 - **Vite base path**: assets em `public/` raiz NÃO chegam ao webroot em produção. Usar `public/images/` para assets que precisam ficar na raiz.
 - **Class components**: não podem usar `useTranslation()` → usar `withTranslation()` HOC.
-- **Zod schemas**: PHP retorna `false` para imagens sem thumbnail → `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
+- **Zod v4 + PHP false returns**: `z.union([z.string(), z.literal(false)])` quebra em `null`/`undefined`. Padrão correto: `z.string().catch('')` (campos obrigatórios) ou `z.string().catch('').optional()` (campos opcionais). Nunca usar o padrão union+literal para campos de imagem/URL.
 
 ### Build e Deploy
 - Minificador: OXC (padrão Vite 8) — nunca `minify: 'esbuild'`.

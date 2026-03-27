@@ -84,7 +84,7 @@ GET  zen-bit/v2/events/:slug            → Detalhe do evento
 - `safeUrl(null)` retorna `'#'` (truthy) — `safeUrl(url) || fallback` NUNCA executa. Sempre: `safeUrl(url, '/fallback.svg')`.
 - `loadingInitial` (não `loading`) para guards de rota privada no UserContext.
 - Ícones de marca (Facebook, Instagram, Youtube) foram removidos do lucide-react 1.x → usar `src/components/icons/BrandIcons.tsx`.
-- Schemas Zod: PHP retorna `false` para imagens sem thumbnail → `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
+- Schemas Zod (v4): PHP retorna `false`/`null`/`undefined` para imagens sem thumbnail. Padrão correto: `z.string().catch('')` (obrigatório) ou `z.string().catch('').optional()` (opcional). Nunca `z.union([z.string(), z.literal(false)])` — quebra em null.
 - Class components não podem usar `useTranslation()` → usar `withTranslation()` HOC.
 
 **Vite:**
