@@ -1641,5 +1641,10 @@
   "events_view_details": "View Details",
   "loc_to_be_defined": "TBA",
   "press_kit": "Press Kit",
-  "price_free": "Free"
+  "price_free": "Free",
+  "error_boundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred while loading this page.",
+    "reload": "Reload page"
+  }
 }

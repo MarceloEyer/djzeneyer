@@ -1644,5 +1644,10 @@
   "news_page_meta_desc": "Notícias oficiais, lançamentos e artigos sobre o universo do Zouk Brasileiro por DJ Zen Eyer.",
   "news_page_title": "Zen News | Insights & Novidades",
   "press_kit": "press_kit",
-  "price_free": "Grátis"
+  "price_free": "Grátis",
+  "error_boundary": {
+    "title": "Algo deu errado",
+    "description": "Ocorreu um erro inesperado ao carregar esta página.",
+    "reload": "Recarregar página"
+  }
 }
