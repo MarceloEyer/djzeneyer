@@ -14,7 +14,8 @@
     "i18n:check": "node scripts/check-i18n-parity.mjs",
     "format": "prettier --write .",
     "perf:baseline": "node scripts/perf-baseline.mjs",
-    "perf:budget": "node scripts/check-performance-budget.mjs"
+    "perf:budget": "node scripts/check-performance-budget.mjs",
+    "rollback": "node scripts/rollback.js"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.4.2",
