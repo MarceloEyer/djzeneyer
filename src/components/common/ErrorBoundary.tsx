@@ -1,21 +1,23 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface OwnProps {
   children: ReactNode;
 }
+
+type Props = OwnProps & WithTranslation;
 
 interface State {
   hasError: boolean;
   error?: Error;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundaryBase extends Component<Props, State> {
   public state: State = {
     hasError: false
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    // Update state so the next render will show the fallback UI.
     return { hasError: true, error };
   }
 
@@ -24,6 +26,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public render() {
+    const { t } = this.props;
+
     if (this.state.hasError) {
       return (
         <div className="min-h-[50vh] flex items-center justify-center px-4 py-12">
@@ -35,10 +39,10 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                Algo deu errado
+                {t('error_boundary.title')}
               </h2>
               <p className="text-muted-foreground mb-4">
-                Ocorreu um erro inesperado ao carregar esta página.
+                {t('error_boundary.description')}
               </p>
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <div className="mt-4 p-4 bg-black/50 rounded-lg text-left overflow-auto max-h-48 text-xs text-red-400 font-mono">
@@ -50,7 +54,7 @@ export class ErrorBoundary extends Component<Props, State> {
               onClick={() => window.location.reload()}
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90 transition-colors"
             >
-              Recarregar página
+              {t('error_boundary.reload')}
             </button>
           </div>
         </div>
@@ -61,4 +65,6 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
+const ErrorBoundary = withTranslation()(ErrorBoundaryBase);
+export { ErrorBoundary };
 export default ErrorBoundary;
