@@ -115,6 +115,8 @@ Em caso de divergência, siga esta ordem:
 - Nunca alterar ferramentas base (ESLint, Vite, TypeScript) sem aprovação explícita do mantenedor.
 - Nunca criar PRs que misturem majors e patches de dependências — separar por categoria.
 - Nunca adicionar `pnpm-lock.yaml` ou `plan.md` a PRs — o projeto usa npm.
+- **Nunca criar ou modificar arquivos em `plugins/gamipress/`** — o GamiPress foi removido do repositório no commit f9556574 e é gerenciado como plugin WordPress instalado no servidor, fora do controle de versão. Qualquer tarefa que envolva GamiPress no repositório deve ser fechada como "obsoleta".
+- **Nunca commitar arquivos de trabalho temporários**: `*.patch`, `*.orig`, `*.sh` de uso único, `update_*.sh` — esses são artefatos de trabalho, não código do projeto.
 
 ---
 
