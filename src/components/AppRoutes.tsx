@@ -1,6 +1,7 @@
 import React, { lazy } from 'react';
 import { useRoutes, RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
+import ErrorBoundary from './common/ErrorBoundary';
 const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
 // CORREÇÃO: Apontando para o local correto onde você definiu suas rotas
 import {
@@ -25,7 +26,11 @@ const generateRoutes = (lang: Language): RouteObject[] => {
       if (route.isIndex || path === '') {
         return {
           index: true,
-          element: <Component />,
+          element: (
+            <ErrorBoundary>
+              <Component />
+            </ErrorBoundary>
+          ),
         };
       }
 
@@ -33,10 +38,21 @@ const generateRoutes = (lang: Language): RouteObject[] => {
       // Nota: Não colocamos '/' antes, pois é relativo ao pai (/pt)
       return {
         path: path,
-        element: <Component />,
+        element: (
+          <ErrorBoundary>
+            <Component />
+          </ErrorBoundary>
+        ),
         // Suporte para rotas com * (wildcard) como na Loja
         children: route.hasWildcard ? [
-          { path: '*', element: <Component /> }
+          {
+            path: '*',
+            element: (
+              <ErrorBoundary>
+                <Component />
+              </ErrorBoundary>
+            )
+          }
         ] : undefined
       };
     });
@@ -51,27 +67,43 @@ const AppRoutes = () => {
     // Movido para cima para garantir prioridade na detecção
     {
       path: '/pt',
-      element: <MainLayout />,
+      element: (
+        <ErrorBoundary>
+          <MainLayout />
+        </ErrorBoundary>
+      ),
       children: generateRoutes('pt'),
     },
 
     // 🇬🇧 Rotas em Inglês (Raiz /)
     {
       path: '/',
-      element: <MainLayout />,
+      element: (
+        <ErrorBoundary>
+          <MainLayout />
+        </ErrorBoundary>
+      ),
       children: generateRoutes('en'),
     },
 
     // 🔗 ZenLink — página independente (sem Navbar/Footer)
     {
       path: '/zenlink',
-      element: <ZenLinkPage />,
+      element: (
+        <ErrorBoundary>
+          <ZenLinkPage />
+        </ErrorBoundary>
+      ),
     },
 
     // 🚫 404 Catch-all
     {
       path: '*',
-      element: <NotFound />,
+      element: (
+        <ErrorBoundary>
+          <NotFound />
+        </ErrorBoundary>
+      ),
     },
   ]);
 
