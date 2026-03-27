@@ -486,8 +486,8 @@ const MyAccountContent: React.FC = () => {
                   <div className="relative inline-block mb-6">
                     <div className="absolute -inset-2 bg-gradient-to-tr from-primary via-secondary to-accent rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity animate-pulse" />
                     <img
-                      src={safeUrl(user.avatar, '/default-avatar.svg')}
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/default-avatar.svg'; }}
+                      src={safeUrl(user.avatar, '/images/default-avatar.svg')}
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
                       className="relative w-32 h-32 rounded-full border-4 border-surface shadow-2xl object-cover"
                       alt={user.name}
                     />

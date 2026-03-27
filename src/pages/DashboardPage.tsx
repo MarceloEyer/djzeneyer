@@ -208,10 +208,10 @@ const DashboardContent = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-3xl animate-pulse rounded-full" />
               <img
-                src={safeUrl(user.avatar, '/default-avatar.svg')}
+                src={safeUrl(user.avatar, '/images/default-avatar.svg')}
                 className="relative z-10 h-24 w-24 md:h-28 md:w-28 rounded-3xl object-cover border-2 border-primary/40 shadow-neon-sm"
                 alt={user.display_name}
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/default-avatar.svg'; }}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
               />
               <div className="absolute -bottom-2 -right-2 z-20 flex h-8 w-8 items-center justify-center rounded-xl bg-primary shadow-lg border-2 border-background">
                 <Crown size={14} className="fill-white text-white" />
@@ -441,11 +441,14 @@ const DashboardContent = () => {
 };
 
 const DashboardPage = () => {
-  const { user, loading } = useUser();
+  const { user, loadingInitial } = useUser();
   const { i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
-  if (loading) {
+  // Wait for UserContext to restore session from localStorage before deciding to redirect.
+  // Using loadingInitial (not loading): `loading` is for login/register actions (default false)
+  // and would cause an immediate redirect on hard refresh before the session is restored.
+  if (loadingInitial) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center bg-background">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
