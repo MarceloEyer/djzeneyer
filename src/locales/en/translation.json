@@ -43,6 +43,7 @@
     "welcomeTribe": "Welcome to Zen Tribe!",
     "accountCreated": "Account created",
     "startExploring": "Start exploring!",
+    "ascension_quote": "Your connection with the beat is reaching a new frequency. Keep exploring the artifacts to ascend.",
     "stats": {
       "mana": "Accumulated Mana",
       "artifacts": "Artifacts Collected",
@@ -1640,5 +1641,10 @@
   "events_view_details": "View Details",
   "loc_to_be_defined": "TBA",
   "press_kit": "Press Kit",
-  "price_free": "Free"
+  "price_free": "Free",
+  "error_boundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred while loading this page.",
+    "reload": "Reload page"
+  }
 }

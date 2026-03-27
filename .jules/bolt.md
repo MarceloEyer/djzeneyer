@@ -20,32 +20,40 @@
 
 ## 2025-02-23 - Conditional Image Processing in REST API
 
-**Learning:** Iterating through all images and sizes in a list view API response adds significant CPU overhead and payload size, even when the frontend only displays a single thumbnail. For 100 items, this can result in thousands of unnecessary function calls.
-**Action:** Implement conditional logic in API endpoints to detect "list view" vs "detail view" contexts. In list views, restrict image processing to only the primary image and essential sizes.
+**Learning:** Iterating through all images and sizes in a list view API response adds significant payload size, even when the frontend only displays a single thumbnail.
+**Action:** Implement conditional logic to detect "list view" vs "detail view" contexts. In list views, restrict image processing to only the primary image and essential sizes.
 
 ## 2025-02-24 - GamiPress Achievement Earning Checks (N+1)
 
-**Learning:** Calling `gamipress_has_user_earned_achievement()` inside a loop of achievements causes one database query per item. For sites with dozens of achievements, this becomes the primary bottleneck of the user data endpoint.
+**Learning:** Calling `gamipress_has_user_earned_achievement()` inside a loop causes one database query per item.
 **Action:** Always fetch all user earnings at once using `gamipress_get_user_earnings($user_id, 'achievement')` before entering the loop. Build a local lookup map (ID -> data) to perform O(1) checks during iteration.
 
-## 2025-03-04 - Memoize static data in React functional components
-**Learning:** `AboutPage.tsx` re-created the complex static arrays `ABOUT_SCHEMA`, `MILESTONES`, and `ACHIEVEMENTS_DATA` on every render cycle. Because they needed the `t` function from `useTranslation`, they could not be easily moved outside the component.
-**Action:** Use `useMemo(() => [...], [t])` to keep them within the component so they can access hooks while preventing unnecessary allocations and downstream re-renders on unrelated state changes.
+## 2026-03-04 - Memoize static data in React functional components
+**Learning:** Static arrays inside components that use `t()` are recreated on every render.
+**Action:** Use `useMemo(() => [...], [t])` to prevent unnecessary allocations.
 
-## 2026-03-06 - [Context API Re-renders Optimization]
+## 2026-03-06 - Context API Re-renders Optimization
 
-**Learning:** Found that CartContext in `src/contexts/CartContext.tsx` was creating a new object literal `{ cart, getCart, removeItem, clearCart, loading }` on every render. Because this object is passed to `CartContext.Provider value={value}`, any state update within the Provider (e.g. `loading` changes) would cause *all* components consuming `useCart` to re-render, even if the relevant parts of the state hadn't changed.
-**Action:** When implementing Context API in React, always wrap the provider value in a `useMemo` hook, making sure to include all pieces of context state as dependencies. This ensures consumer components only re-render when the specific context state changes, not simply because the Provider component re-rendered.
+**Learning:** CartContext was creating a new object literal on every render, causing all consumers to re-render.
+**Action:** Always wrap context provider values in `useMemo` to ensure consumer components only re-render when their specific state changes.
 
 ## 2026-03-07 - Context API Re-renders Optimization (User & GamiPress)
 
-**Learning:** Both `UserContext.Provider` and `GamiPressContext.Provider` were passing unmemoized objects as their `value` props. Furthermore, the `useGamiPress` custom hook was returning a new object on every render. This creates a performance bottleneck where any update in the provider (or even its parent component) forces a cascading re-render of every component in the tree that consumes these contexts, regardless of whether the actual data they use changed.
-**Action:** Consistently apply React memoization patterns at context boundaries. Wrap context provider values in `useMemo`. When a custom hook acts as a context provider value (like `useGamiPress`), its return object must also be wrapped in `useMemo`, and any exposed functions must be stabilized with `useCallback`.
+**Learning:** Both `UserContext.Provider` and `GamiPressContext.Provider` were passing unmemoized objects as their `value` props.
+**Action:** Wrap context provider values in `useMemo`. Stabilize any exposed functions with `useCallback`.
 
 ## 2026-03-08 - UseMemo on Array Data
-**Learning:** Found that large data object definitions utilizing `t` were being recreated every render cycle in `ZenTribePage.tsx`. Attempting to micro-optimize tiny array traversals (like `find` + `filter` -> `for` loops) proved detrimental due to dependency complexities triggering unnecessary renders, and violating micro-optimization guidelines.
-**Action:** When implementing static array mapping and data definitions that rely on React contexts such as translations (`useTranslation()`), apply `useMemo` and attach `t` as a dependency to avoid re-rendering heavy allocations without sacrificing maintainability for imperceptible loop improvements.
+**Learning:** Large data object definitions utilizing `t` were being recreated every render cycle.
+**Action:** Apply `useMemo` with `t` as a dependency to avoid re-rendering heavy allocations.
 
 ## 2026-03-09 - Map pattern to avoid redundant function calls in REST API
-**Learning:** In `djz_get_shop_page` inside `inc/api.php`, `djz_get_product_image_ids` was being called during the initial query loop to collect image IDs for cache priming, and then called *again* for the exact same products in the subsequent formatting loop. This caused N redundant calculations per shop section.
-**Action:** When deriving data in one loop that will be needed in a subsequent loop (especially for the same collection of items), cache the intermediate result in an associative array keyed by item ID (e.g., `$product_images_map[$id] = $img_ids`). Then perform an O(1) lookup in the second loop instead of recalculating.
+**Learning:** `djz_get_product_image_ids` was being called twice for the same products (initial loop + formatting loop).
+**Action:** Cache intermediate results in an associative array keyed by item ID for O(1) lookup in subsequent loops.
+
+## 2026-03-10 - Unconditional Array Operations in Render Body
+**Learning:** Complex schema generation logic in `HeadlessSEO.tsx` was executed unconditionally on every render.
+**Action:** Wrap schema/metadata generation in `useMemo` with inputs as dependencies.
+
+## 2026-03-26 - Prevent memoized component re-renders from unstable function props
+**Learning:** In `MainLayout.tsx`, inline functions passed to `Navbar` (wrapped in `React.memo`) caused re-renders because they were recreated on every render of the parent component.
+**Action:** When passing callback functions to child components wrapped in `React.memo`, wrap them in `useCallback` to preserve references across renders.

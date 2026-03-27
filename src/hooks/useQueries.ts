@@ -10,10 +10,12 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
+import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
 import { type Language } from '../config/routes';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
+import { ZenGameUserDataSchema, ZenGameLeaderboardSchema, EventsApiResponseSchema, ZenBitEventListItemSchema } from '../schemas';
 
 
 // ----------------------------------------------------------------------------
@@ -290,11 +292,17 @@ export const fetchEventsFn = async ({
       console.error(`Events API Error: ${res.status}`);
       return [];
     }
-    const data: EventsApiResponse | ZenBitEventListItem[] = await res.json();
+    const rawData = await res.json();
 
-    if (Array.isArray(data)) return data;
-    if (data && typeof data === 'object' && Array.isArray((data as EventsApiResponse).events))
-      return (data as EventsApiResponse).events;
+    if (Array.isArray(rawData)) {
+      return z.array(ZenBitEventListItemSchema).parse(rawData);
+    }
+
+    if (rawData && typeof rawData === 'object' && 'events' in rawData) {
+       const parsedResponse = EventsApiResponseSchema.parse(rawData);
+       return parsedResponse.events;
+    }
+
     return [];
   } catch (err) {
     console.error('Fetch Events failed:', err);
@@ -655,23 +663,24 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
       try {
         data = await res.json();
       } catch (e) {
-        // Not JSON
+        if (import.meta.env.DEV) {
+          console.warn('[GamiPress] Response was not valid JSON', e);
+        }
       }
 
       if (!res.ok) {
-        const errorMsg = data?.message || `Failed to fetch gamipress: ${res.status}`;
+        const errorMsg = data?.message || data?.code || `HTTP ${res.status} — ${res.statusText}`;
         throw new Error(errorMsg);
       }
-      
-      // Debug point keys — help identifying why they might be zero
-      if (data && data.points) {
+
+      if (import.meta.env.DEV && data?.points) {
         console.groupCollapsed('[GamiPress] User Data Sync');
         console.info('Main Slug:', data.main_points_slug);
         console.info('Point Keys Found:', Object.keys(data.points));
         console.groupEnd();
       }
 
-      return data;
+      return ZenGameUserDataSchema.parse(data);
     },
     staleTime: STALE_TIME.GAMIPRESS,
     refetchInterval: 60_000,
@@ -699,7 +708,8 @@ export const useLeaderboardQuery = (limit = 10) => {
       const apiUrl = buildApiUrl('zengame/v1/leaderboard', { limit: String(limit) });
       const res = await fetch(apiUrl);
       if (!res.ok) throw new Error(`Leaderboard API Error: ${res.status}`);
-      return res.json();
+      const data = await res.json();
+      return ZenGameLeaderboardSchema.parse(data);
     },
     staleTime: STALE_TIME.GAMIPRESS, // Reuse gamipress stale time
   });
