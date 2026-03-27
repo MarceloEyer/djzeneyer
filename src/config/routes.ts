@@ -544,10 +544,14 @@ export const getAlternateLinks = (
   let suffix = '';
   const currentClean = normalizeRouteKey(currentPath);
   
-  // Encontra qual slug (ou alias) deu match para calcular o sufixo corretamente
-  const allCurrentLangPaths = getLocalizedPaths(route, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
+  // Encontra qual slug (ou alias) deu match para calcular o sufixo corretamente.
+  // Usa a rota de detalhe (ex: events-detail) para ter os paths com /:slug.
+  const detailRoute = KEY_ROUTE_MAP.get(key) ?? route;
+  const allCurrentLangPaths = getLocalizedPaths(detailRoute, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
   for (const p of allCurrentLangPaths) {
-    let cleanP = p.startsWith('/') ? p.slice(1) : p;
+    // Extrai apenas o prefixo estático: "/events/:slug" → "/events"
+    const staticPart = p.split('/:')[0];
+    let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
 
     if (currentClean.startsWith(cleanP + '/')) {

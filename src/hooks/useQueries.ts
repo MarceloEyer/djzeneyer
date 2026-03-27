@@ -15,7 +15,7 @@ import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
 import { type Language } from '../config/routes';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
-import { ZenGameUserDataSchema, ZenGameLeaderboardSchema, EventsApiResponseSchema, ZenBitEventListItemSchema } from '../schemas';
+import { ZenGameUserDataSchema, ZenGameLeaderboardSchema, EventsApiResponseSchema, ZenBitEventListItemSchema, EventDetailApiResponseSchema } from '../schemas';
 
 
 // ----------------------------------------------------------------------------
@@ -49,7 +49,8 @@ export interface UserProfile {
   display_name: string;
   first_name?: string;
   last_name?: string;
-  avatar_url?: string;
+  /** PHP retorna 'avatar' (get_avatar_url) — nunca 'avatar_url' */
+  avatar?: string;
   // Campos customizados do plugin ZenEyer Auth
   real_name?: string;
   preferred_name?: string;
@@ -58,6 +59,21 @@ export interface UserProfile {
   dance_role?: string[];
   gender?: '' | 'male' | 'female' | 'non-binary';
 }
+
+const UserProfileSchema = z.object({
+  id: z.number(),
+  email: z.string().email(),
+  display_name: z.string(),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  avatar: z.string().catch(''),
+  real_name: z.string().optional(),
+  preferred_name: z.string().optional(),
+  facebook_url: z.string().optional(),
+  instagram_url: z.string().optional(),
+  dance_role: z.array(z.string()).optional(),
+  gender: z.enum(['', 'male', 'female', 'non-binary']).optional(),
+}).catchall(z.unknown());
 
 export interface WCOrder {
   id: number;
@@ -544,8 +560,13 @@ export const useEventById = (
           console.error(`Event Detail API ${res.status}`);
           return null;
         }
-        const data = await res.json();
-        return (data?.event as ZenBitEventDetail) || null;
+        const json = await res.json();
+        const parsed = EventDetailApiResponseSchema.safeParse(json);
+        if (!parsed.success) {
+          console.error('[useEventById] Schema mismatch:', parsed.error.issues);
+          return null;
+        }
+        return parsed.data.event;
       } catch (err) {
         console.error('Zen BIT Event detail fetch failed:', err);
         return null;
@@ -736,8 +757,14 @@ export const useProfileQuery = (token?: string) => {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch profile');
-      const data = await res.json();
-      return data.success ? (data.data as UserProfile) : null;
+      const json = await res.json();
+      if (!json.success) return null;
+      const parsed = UserProfileSchema.safeParse(json.data);
+      if (!parsed.success) {
+        console.error('[useProfileQuery] Schema mismatch:', parsed.error.issues);
+        return null;
+      }
+      return parsed.data as UserProfile;
     },
     enabled: !!token,
     staleTime: STALE_TIME.USER_PROFILE,

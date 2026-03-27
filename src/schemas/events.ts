@@ -28,14 +28,15 @@ export const EventOfferSchema = z.object({
 
 export const EventArtistSchema = z.object({
   name: z.string(),
-  image: z.string().optional(),
+  // PHP thumbnail functions podem retornar false — catch('') evita erro de parse
+  image: z.string().catch('').optional(),
   source_url: z.string().optional(),
 }).catchall(z.unknown());
 
 export const ZenBitEventDetailSchema = ZenBitEventListItemSchema.extend({
   ends_at: z.string().optional(),
   description: z.string().optional(),
-  image: z.string().optional(),
+  image: z.string().catch('').optional(),
   artists: z.array(EventArtistSchema).optional(),
   offers: z.array(EventOfferSchema).optional(),
   tickets: z.array(z.string()).optional(),

@@ -1,10 +1,13 @@
 import { z } from 'zod';
 
+// Helper: campos de imagem/URL — PHP pode retornar false, null ou undefined
+// z.string().catch('') é o padrão Zod v4 mais robusto para esse caso
+const phpImageField = z.string().catch('');
+
 export const ZenGamePointSchema = z.object({
   name: z.string(),
   amount: z.number(),
-  // PHP image functions can return false — coerce to empty string
-  image: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
+  image: phpImageField,
 }).catchall(z.unknown());
 
 export const ZenGameRankRequirementSchema = z.object({
@@ -17,7 +20,7 @@ export const ZenGameRankRequirementSchema = z.object({
 const ZenGameRankItemSchema = z.object({
   id: z.number(),
   title: z.string(),
-  image: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
+  image: phpImageField,
 }).catchall(z.unknown());
 
 export const ZenGameRankSchema = z.object({
@@ -31,11 +34,11 @@ export const ZenGameAchievementSchema = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
-  image: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
+  image: phpImageField,
   earned: z.boolean(),
   points_awarded: z.number(),
-  // Locked achievements may have empty date_earned — coerce null to ''
-  date_earned: z.string().nullable().transform(v => v ?? ''),
+  // Conquistas não desbloqueadas têm date_earned vazio/null/undefined
+  date_earned: z.string().catch(''),
 }).catchall(z.unknown());
 
 export const ZenGameLogSchema = z.object({
@@ -71,9 +74,9 @@ export const ZenGameUserDataSchema = z.object({
 export const ZenGameLeaderboardEntrySchema = z.object({
   user_id: z.number(),
   display_name: z.string(),
-  // PHP get_avatar_url() can return false when no avatar exists
   points: z.number(),
-  avatar: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
+  // PHP get_avatar_url() pode retornar false quando não há avatar
+  avatar: phpImageField,
 }).catchall(z.unknown());
 
 export const ZenGameLeaderboardSchema = z.record(z.string(), z.array(ZenGameLeaderboardEntrySchema));
