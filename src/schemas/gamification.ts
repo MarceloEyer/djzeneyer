@@ -3,7 +3,8 @@ import { z } from 'zod';
 export const ZenGamePointSchema = z.object({
   name: z.string(),
   amount: z.number(),
-  image: z.string(),
+  // PHP image functions can return false — coerce to empty string
+  image: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
 }).catchall(z.unknown());
 
 export const ZenGameRankRequirementSchema = z.object({
@@ -13,29 +14,28 @@ export const ZenGameRankRequirementSchema = z.object({
   percent: z.number(),
 }).catchall(z.unknown());
 
+const ZenGameRankItemSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  image: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
+}).catchall(z.unknown());
+
 export const ZenGameRankSchema = z.object({
-  current: z.object({
-    id: z.number(),
-    title: z.string(),
-    image: z.string(),
-  }).catchall(z.unknown()),
+  current: ZenGameRankItemSchema,
   progress: z.number(),
   requirements: z.array(ZenGameRankRequirementSchema),
-  next: z.object({
-    id: z.number(),
-    title: z.string(),
-    image: z.string(),
-  }).catchall(z.unknown()).nullable(),
+  next: ZenGameRankItemSchema.nullable(),
 }).catchall(z.unknown());
 
 export const ZenGameAchievementSchema = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
-  image: z.string(),
+  image: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
   earned: z.boolean(),
   points_awarded: z.number(),
-  date_earned: z.string(),
+  // Locked achievements may have empty date_earned — coerce null to ''
+  date_earned: z.string().nullable().transform(v => v ?? ''),
 }).catchall(z.unknown());
 
 export const ZenGameLogSchema = z.object({
@@ -71,8 +71,9 @@ export const ZenGameUserDataSchema = z.object({
 export const ZenGameLeaderboardEntrySchema = z.object({
   user_id: z.number(),
   display_name: z.string(),
+  // PHP get_avatar_url() can return false when no avatar exists
   points: z.number(),
-  avatar: z.string(),
+  avatar: z.union([z.string(), z.literal(false)]).transform(v => v || ''),
 }).catchall(z.unknown());
 
 export const ZenGameLeaderboardSchema = z.record(z.string(), z.array(ZenGameLeaderboardEntrySchema));
