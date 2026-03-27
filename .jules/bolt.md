@@ -57,3 +57,7 @@
 ## 2026-03-26 - Prevent memoized component re-renders from unstable function props
 **Learning:** In `MainLayout.tsx`, inline functions passed to `Navbar` (wrapped in `React.memo`) caused re-renders because they were recreated on every render of the parent component.
 **Action:** When passing callback functions to child components wrapped in `React.memo`, wrap them in `useCallback` to preserve references across renders.
+
+## 2026-03-27 - Extracted Element Mappings in Array Iterators
+**Learning:** Re-evaluating inline mappings with function calls inside an array iteration logic (like `useMemo` resolving maps based on dynamic keys inside component renders) leads to unnecessary overhead in UI updates as React element objects are continually regenerated unnecessarily.
+**Action:** Always refactor constant visual configuration objects or nested JSX conditionals derived from generic conditions to pure, externalized `const` data stores for reference equality preservation.
