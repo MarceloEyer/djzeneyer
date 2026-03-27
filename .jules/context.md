@@ -1,52 +1,97 @@
 # Contexto Arquitetural: DJ Zen Eyer
+# Última revisão: 2026-03-27
 
-Este documento serve como a base de entendimento do ecossistema e arquitetura do DJ Zen Eyer, permitindo o alinhamento rápido em tarefas futuras.
+Este documento é a base de contexto para o Jules. Leia antes de qualquer tarefa.
 
-## 1. Visão Geral (A Experiência)
-- **O que é:** Plataforma web oficial do DJ Zen Eyer, Bicampeão Mundial de Brazilian Zouk.
-- **A Essência:** Uma interface "SPA" inspirada em MMORPG contemporâneo (Tribo Zen, XP, Ranks, Azul Elétrico), unindo estética premium e navegação instantânea.
-- **Produção:** `djzeneyer.com`
+---
 
-## 2. A Stack Canônica
-- **Frontend:** React 18, TypeScript strict, Vite 7, Tailwind 3. React Router 7 gerencia navegação, React Query v5 lida com estado/fetch de dados, i18next (Inglês e Português).
-- **Backend (Headless CMS):** WordPress 6.0+ (recomendado 6.9+) e PHP 8.1+ (necessário para o pacote `zengame`). As funcionalidades incluem WooCommerce (ingressos e músicas) e GamiPress.
-- **Plugins Ativos e Exclusivos do Projeto:**
-  - `zeneyer-auth`: Autenticação via JWT + Google OAuth (Namespace: `zeneyer-auth/v1`).
-  - `zen-seo-lite`: Solução completa SEO para o modo headless. (Namespace: `zen-seo/v1`).
-  - `zen-bit`: Integração e cache Bandsintown para os Eventos. (Namespace: `zen-bit/v2`).
-  - `zengame`: Gamificação centralizada e SSOT do leaderboard/progresso. (Namespace: `zengame/v1`).
-- **Infraestrutura:** Hostinger VPS (porta SSH 65002), LiteSpeed (Server Cache), Cloudflare (Edge Cache), GitHub Actions (Automação de Build & Deploy).
-- **Ambiente Dev:** Node.js 20+.
+## 1. Visão Geral
 
-## 3. As Quatro Regras de Ouro do Build e Deploy
-Para garantir performance impecável e indexação orgânica, este repositório segue a rigor uma filosofia "Build Offline" + SSG (Static Site Generation).
+Plataforma web oficial do DJ Zen Eyer (Marcelo Eyer Fernandes) — Bicampeão Mundial de Brazilian Zouk.
+Interface SPA com estética MMORPG (Tribo Zen, XP, Ranks, azul elétrico).
+Produção: `djzeneyer.com`
 
-1. **O Princípio do Build Offline ("Sem API"):**
-   - O processo de build (`npm run build`, `npm run build:full`) é executado **isolado** no GitHub Actions.
-   - **NUNCA** há acesso ao banco de dados ou a API REST de produção do WordPress nesse momento.
-   - Logo, os arquivos ou scripts de build (ex: geração de sitemap e rotas no Node.js) não devem tentar realizar `fetch` externos na API de produção, a menos que haja um mock robusto em falhas ou fallback local pré-definido.
-   - Os metadados SEO estáticos dependem do App Shell do HTML, que deve ser montado antes de qualquer hidratação assíncrona profunda do React.
+---
 
-2. **A Estratégia de Prerender (Shell Only):**
-   - Utilizamos um script customizado (`scripts/prerender.js`) via Puppeteer.
-   - **Objetivo:** Pré-renderizar o roteamento gerando as pastas (ex: `/dist/about/index.html`) e prevenindo erros 404 em acessos diretos no CDN.
-   - O Prerender deve focar em salvar instantaneamente a base estrutural (`Header`, `Footer`, `HeadlessSEO`). O SPA React e React Query cuidarão do restante quando o cliente carregar e injetar em `window.__PRERENDER_DATA__`.
+## 2. Stack Real (verificar sempre com package.json)
 
-3. **A Única Fonte de Verdade de Rotas (SSOT):**
-   - As rotas só existem se estiverem declaradas no **`scripts/routes-config.json`**.
-   - O React Router (Frontend), o Sitemap (`scripts/generate-sitemap.js`) e a verificação do pipeline no CI leem este JSON. **Nunca deixe de atualizá-lo ao criar uma nova página.**
+| Camada | Tecnologia atual |
+|---|---|
+| Frontend | React **19** + TypeScript **6** strict + Vite **8** + Tailwind **4** |
+| State/Fetch | React Query **v5** (`@tanstack/react-query`) |
+| Roteamento | React Router **7** + i18next (PT e EN) |
+| Backend | WordPress 6.9+, PHP **8.3**, WooCommerce 10.5+ (**HPOS ativo**), GamiPress |
+| Infra | Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions |
+| Node | 20+ |
 
-4. **Hierarquia de Diretórios (Fronteiras Arquiteturais):**
-   - `src/`: Lógica front-end, UIs React, Contextos, hooks (`useQueries.ts`) e UX.
-   - `scripts/`: Scripts do ecossistema NodeJS de build, teste de performance e SSR.
-   - `inc/` e `functions.php`: A orquestração no tema Headless do WordPress (Configuração de CORS, Vite SPA Injection, sanitização e limpeza).
-   - `plugins/`: Lógica pesada e modularizada de regras de negócio (SEO, Gamificação, Auth).
-   - `public/`: Assets globais intocáveis (favicon, bots de SEO, ai-bots.txt). O arquivo `index.html` não é estático final, mas um "Vite Template" dinâmico para build e injeção do Prerender.
+**Plugins exclusivos do projeto:**
+- `zeneyer-auth` → JWT + Google OAuth (`zeneyer-auth/v1`)
+- `zen-seo-lite` → SEO headless dinâmico (`zen-seo/v1`)
+- `zen-bit` → Eventos + Bandsintown (`zen-bit/v2`)
+- `zengame` → Gamificação, leaderboard, XP (`zengame/v1`)
 
-## 4. O Cérebro: useQueries.ts e Performance de Contexto
-- `src/hooks/useQueries.ts` atua como o **cubo central** de chamadas de dados do repositório, garantindo estabilidade e cache global via React Query. Nunca declare `fetch` manual.
-- **Problema clássico:** Contextos (User, GamiPress, Cart) não devem disparar renderizações da árvore inteira quando recebem um payload instável de funções ou dados imutáveis. Como base do DJ Zen Eyer, você deve **envolver todos os valores de Provider em hooks de memoização do React (`useMemo`)**, definindo o array de dependências corretamente para os provedores (`CartContext`, `UserContext`). Otimizar pequenas iterações de laços (arrays pequenos com map) é um erro de engenharia se isso afetar dependências sensíveis e causar renders artificiais.
-- **N+1 Queries:** Não cause regressão e latência na API REST utilizando lógicas encadeadas e objetos aninhados padrão do WordPress (o infame `_embed` e busca recursiva de metas em loops). **Prefira customizar campos enxutos ou buscar blocos `_fields` precisos**, assim como buscar e hidratar metas/caches na pré-query.
+---
 
-## 5. SEO / Inteligência Artificial (GEO e AEO)
-O repositório aposta no ranqueamento E-E-A-T. Você usará o `HeadlessSEO` e seus Schemas JSON-LD. Além disso, existe em `/public/ai-bots.txt` orientações de Crawler. Qualquer nova funcionalidade visual deve levar em consideração o Google Knowledge Graph. Em SEO, Marcelo Eyer Fernandes deve ser mapeado como `@type: 'Person'` combinando `'MusicGroup'` em dados semânticos complexos quando pertinente (MusicEvent, Track, Order).
+## 3. Regras de Build e Deploy
+
+1. **Build isolado no CI** — sem acesso à API de produção durante o build. Scripts de geração (sitemap, prerender) usam dados locais ou mocks.
+2. **Prerender obrigatório** — `scripts/prerender.js` via Puppeteer. Nunca remover. Gera HTML estático de cada rota para evitar 404 em CDN.
+3. **SSOT de rotas** — `scripts/routes-config.json`. React Router, sitemap e CI leem este arquivo. Ao criar nova rota, atualizar aqui primeiro.
+4. **Vite base path em produção** — `/wp-content/themes/zentheme/dist/`. Assets de `public/` ficam neste caminho, não na raiz do servidor. Para assets que precisam ficar na raiz (favicons, avatares padrão), usar `public/images/` — o CI deploya esta pasta para o webroot.
+
+**Minificador:** OXC (padrão Vite 8). **Nunca usar `minify: 'esbuild'`** — não vem bundled no Vite 8.
+
+---
+
+## 4. SSOT de Data Fetching
+
+`src/hooks/useQueries.ts` é o hub central. **Nunca declarar `fetch()` solto em componentes.**
+Toda query usa `useQuery` / `useMutation` do React Query v5 com keys de `QUERY_KEYS` em `src/config/queryClient.ts`.
+
+---
+
+## 5. Armadilhas conhecidas — ler antes de qualquer fix
+
+### Frontend
+- **`safeUrl(null)`** retorna `'#'` (string truthy) — `safeUrl(url) || fallback` nunca executa. Sempre: `safeUrl(url, '/fallback.svg')`.
+- **`loading` vs `loadingInitial`** no UserContext: `loading` é estado de ação (login/register), default `false`. `loadingInitial` é restauração de sessão, default `true`. Guards de rota privada **devem usar `loadingInitial`** — usar `loading` causa tela branca no CTRL+F5.
+- **Vite base path** — assets SVG/PNG em `public/` raiz NÃO chegam ao webroot. Usar `public/images/`.
+- **Contextos** — valores de Provider e retornos de hooks globais obrigatoriamente em `useMemo`. Funções expostas em `useCallback`.
+- **Classe components** — não podem usar hooks (`useTranslation`). Usar `withTranslation()` HOC da react-i18next.
+- **lucide-react 1.x** — ícones de marca (Facebook, Instagram, Youtube) foram **removidos**. Usar `src/components/icons/BrandIcons.tsx` (FacebookIcon, InstagramIcon, YoutubeIcon).
+
+### Backend PHP
+- **`gamipress_get_rank_types()`** retorna array **associativo** (chave = slug). Sempre `array_values()` antes de `[0]`.
+- **WooCommerce HPOS** — nunca SQL direto em `wp_posts` para pedidos. Usar `wc_get_orders()`.
+- **`get_avatar_url()`** pode retornar `false` (boolean), não string vazia. Em Zod: `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
+- **PHP images** — `get_the_post_thumbnail_url()` também retorna `false`. Mesmo tratamento.
+
+### Cache (ZenGame)
+- `CACHE_VERSION = 'v15'` em `ZenGame::CACHE_VERSION`
+- Leaderboard: `djz_gamipress_leaderboard_v15_{limit}` — TTL 1h
+- Dashboard: `djz_gamipress_dashboard_v15_{user_id}` — TTL 24h
+- Stats: `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}` — TTL 6h
+
+---
+
+## 6. SEO / Rotas privadas
+
+- `DashboardPage` e `MyAccountPage` → `<HeadlessSEO noindex />` com OG image genérica.
+- Essas rotas ficam **fora do sitemap e do prerender**.
+- Avatar do usuário **nunca** deve aparecer em OG tags.
+
+---
+
+## 7. ESLint — escopo obrigatório
+
+`eslint.config.js` deve ignorar: `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`.
+Remover qualquer um causa crash por múltiplos `tsconfigRootDir`.
+
+---
+
+## 8. Hierarquia de contexto (em caso de conflito)
+
+1. Código real (`package.json`, `src/`, `plugins/`) — fonte final
+2. `AI_CONTEXT_INDEX.md` — regras globais canônicas
+3. `AGENTS.md` — regras operacionais para agentes
+4. Este arquivo (`context.md`)
