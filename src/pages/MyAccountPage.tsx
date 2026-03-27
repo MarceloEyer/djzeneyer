@@ -9,8 +9,9 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation } from 'react-i18next';
 import {
   User, Settings, ShoppingBag, Award, Music, LogOut,
-  Bell, AlertCircle, Instagram, Save, ChevronRight, Zap, Trophy, Loader2
+  Bell, AlertCircle, Save, ChevronRight, Zap, Trophy, Loader2
 } from 'lucide-react';
+import { InstagramIcon } from '../components/icons/BrandIcons';
 import { UserStatsCards, OrdersList, RecentActivity, MusicCollection } from '../components/account';
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation, useUserOrdersQuery } from '../hooks/useQueries';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
@@ -365,7 +366,7 @@ const MyAccountContent: React.FC = () => {
               {/* Social & Dance */}
               <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-white/5 shadow-xl">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20"><Instagram className="text-secondary" size={24} /></div>
+                  <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20"><InstagramIcon className="text-secondary" size={24} /></div>
                   <h3 className="text-xl font-black font-display tracking-tight uppercase">{t('account.profile.social')}</h3>
                 </div>
                 <div className="space-y-6">

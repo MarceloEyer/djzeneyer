@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Instagram, Youtube, Music2, MessageCircle, Facebook, SendHorizontal } from 'lucide-react';
+import { Music, Music2, MessageCircle, SendHorizontal } from 'lucide-react';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../icons/BrandIcons';
 import { ARTIST } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { useSubscriptionMutation } from '../../hooks/useQueries';
@@ -65,16 +66,16 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4">
               <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
-                <Instagram size={22} />
+                <InstagramIcon size={22} />
               </a>
               <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
                 <Music2 size={22} />
               </a>
               <a href={ARTIST.social.youtube.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
-                <Youtube size={22} />
+                <YoutubeIcon size={22} />
               </a>
               <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
-                <Facebook size={22} />
+                <FacebookIcon size={22} />
               </a>
               <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp">
                 <MessageCircle size={22} />
