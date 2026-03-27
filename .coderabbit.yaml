@@ -1,18 +1,103 @@
-# .coderabbit.yaml
-# Configures CodeRabbit for concise, Portuguese-brazilian reviews.
+# .coderabbit.yaml — DJ Zen Eyer
+# Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + WordPress Headless PHP 8.3
+# Atualizado: 2026-03-27
 
 language: "pt-BR"
 
 tone_instructions: |
-  Responda sempre em Português brasileiro. 
-  Seja extremamente conciso e direto ao ponto. 
-  Foque em sinalizar erros de lógica, riscos de segurança e bugs reais. 
-  Evite elogios genéricos ou comentários óbvios para reduzir o ruído.
+  Responda sempre em Português Brasileiro.
+  Seja direto e conciso. Priorize bugs reais, riscos de segurança e violações das
+  regras do projeto. Evite elogios genéricos ou comentários sobre style sem impacto.
 
 reviews:
-  profile: "chill"
+  profile: "assertive"
   auto_review: true
   high_level_summary: true
-  
+  poem: false
+  collapse_walkthrough: true
+
+  path_filters:
+    - "!dist/**"
+    - "!dist-debug/**"
+    - "!.claude/**"
+    - "!.agents/**"
+    - "!.bolt/**"
+    - "!.gemini/**"
+    - "!.jules/**"
+    - "!plugins/gamipress/**"
+    - "!**/*.lock"
+    - "!public/sitemap*.xml"
+
+  path_instructions:
+    - path: "src/**/*.tsx"
+      instructions: |
+        Regras críticas do projeto:
+        1. TODA string visível ao usuário deve usar t('chave') de react-i18next. Strings hardcoded em português ou inglês são BUG.
+        2. Nunca usar fetch() diretamente em componentes — data fetching centralizado em src/hooks/useQueries.ts.
+        3. safeUrl(url) retorna '#' (truthy) quando url é null — nunca usar `safeUrl(x) || fallback`. Sempre `safeUrl(x, '/fallback')`.
+        4. Guards de rota privada DEVEM usar `loadingInitial` (não `loading`) do UserContext. `loading` é para ações (login/register), default false. `loadingInitial` é para restauração de sessão, default true.
+        5. Componentes de classe não podem usar hooks (useTranslation). Usar withTranslation() HOC da react-i18next.
+        6. DashboardPage e MyAccountPage devem ter noindex=true no HeadlessSEO. Avatar do usuário nunca pode aparecer em OG tags.
+        7. Ícones de marca (Facebook, Instagram, Youtube) não existem no lucide-react 1.x — usar src/components/icons/BrandIcons.tsx.
+
+    - path: "src/schemas/**/*.ts"
+      instructions: |
+        Schemas Zod para APIs WordPress/PHP:
+        - PHP `get_avatar_url()`, `get_the_post_thumbnail_url()` retornam `false` (boolean) quando não há imagem.
+          Nunca usar `z.string()` para campos de imagem/avatar — usar `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
+        - `date_earned` de achievements pode ser null para itens não conquistados — usar `.nullable().transform(v => v ?? '')`.
+        - Usar `.catchall(z.unknown())` em schemas de API para aceitar campos extras sem quebrar.
+
+    - path: "src/hooks/useQueries.ts"
+      instructions: |
+        SSOT de data fetching. Verificar:
+        - Novas queries devem usar QUERY_KEYS de src/config/queryClient.ts (não strings mágicas).
+        - staleTime deve ser um dos valores de STALE_TIME (não hardcoded).
+        - Erros de fetch devem ser tratados com throw (não return null silencioso).
+
+    - path: "plugins/zengame/**/*.php"
+      instructions: |
+        Regras PHP/WooCommerce:
+        - NUNCA SQL direto em wp_posts para pedidos. Usar wc_get_orders() (HPOS ativo).
+        - `gamipress_get_rank_types()` retorna array associativo (slug como chave). Sempre array_values() antes de [0].
+        - Cache key padrão: `djz_gamipress_{feature}_CACHE_VERSION_{user_id}`. Usar ZenGame::CACHE_VERSION constante.
+        - `get_avatar_url()` pode retornar false — coerção necessária antes de JSON encode.
+
+    - path: "plugins/zeneyer-auth/**/*.php"
+      instructions: |
+        - `format_user()` e `get_profile_data()` devem sempre retornar campo `avatar` (Google photo > Gravatar).
+        - Nunca expor dados sensíveis do usuário em rotas públicas.
+        - JWT validation deve usar a função centralizada do plugin, não reimplementar.
+
+    - path: ".github/workflows/**"
+      instructions: |
+        - fetch-depth deve ser 2 (não 0 — evita fetch de 100+ branches).
+        - Minificador: OXC (padrão Vite 8). Nunca adicionar minify: 'esbuild'.
+        - composer install NUNCA deve ter --no-security-blocking sem justificativa explícita.
+        - plugins/ só deve ser republicado quando plugins/** mudou.
+
+    - path: "src/config/routes.ts"
+      instructions: |
+        - Novas rotas privadas (dashboard, my-account) devem ter requiresAuth: true e serem excluídas de prerender e sitemap.
+        - getAlternateLinks() deve gerar hreflang correto para PT e EN.
+        - Não remover PREFIX_PATH_MAP sem substituir a otimização O(1).
+
+    - path: "src/locales/**/*.json"
+      instructions: |
+        - Novos componentes com strings visíveis DEVEM adicionar chaves em AMBOS pt/translation.json e en/translation.json.
+        - Nunca usar mojibake (Ã§, Â©, ðŸ) — arquivos devem ser UTF-8 limpo.
+        - Estrutura deve ser consistente entre PT e EN (mesmas chaves nos dois arquivos).
+
+    - path: "vite.config.ts"
+      instructions: |
+        - Não adicionar minify: 'esbuild' — Vite 8 usa OXC por padrão.
+        - base deve permanecer '/wp-content/themes/zentheme/dist/'.
+        - Nunca remover scripts/prerender.js do pipeline de build.
+
+    - path: "eslint.config.js"
+      instructions: |
+        - ignores DEVE incluir .claude, .agents, .bolt, .gemini, .jules, .devcontainer.
+          Remover qualquer um desses causa crash por múltiplos tsconfig roots.
+
 chat:
   auto_reply: true
