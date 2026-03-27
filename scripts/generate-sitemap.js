@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const BASE_URL = 'https://djzeneyer.com';
 const API_URL = 'https://djzeneyer.com/wp-json/zen-bit/v2/events';
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
-const ROUTES_DATA_PATH = path.resolve(__dirname, 'routes-data.json');
+const ROUTES_DATA_PATH = path.resolve(__dirname, '../src/config/routes-slugs.json');
 
 console.log('🗺️  Sitemap Generator v8.0 - EVENTS SUPPORT\n');
 
@@ -121,6 +121,10 @@ async function generateSitemaps() {
 
     let pageCount = 0;
     for (const route of routesData.routes) {
+      if (route.excludeFromSitemap) {
+        continue;
+      }
+
       const enSlug = route.en === '' ? '' : route.en.replace(/^\/+/, '');
       const ptSlug = route.pt === '' ? '' : route.pt.replace(/^\/+/, '');
       const enUrl = enSlug === '' ? `${BASE_URL}/` : `${BASE_URL}/${enSlug}/`;

@@ -4,7 +4,20 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'dist-debug'] },
+  {
+    ignores: [
+      'dist',
+      'dist-debug',
+      // Agent/tool workspace directories — each contains its own full TS project
+      // and would cause typescript-eslint to find multiple tsconfigRootDir candidates
+      '.claude',
+      '.agents',
+      '.bolt',
+      '.gemini',
+      '.jules',
+      '.devcontainer',
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
