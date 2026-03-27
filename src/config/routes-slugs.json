@@ -127,12 +127,18 @@
         {
             "key": "dashboard",
             "en": "dashboard",
-            "pt": "painel"
+            "pt": "painel",
+            "private": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "my-account",
             "en": "my-account",
-            "pt": "minha-conta"
+            "pt": "minha-conta",
+            "private": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "faq",

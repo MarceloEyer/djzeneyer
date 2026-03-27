@@ -65,42 +65,42 @@ if( !class_exists( 'RGC_CMB2_Conditional_Fields' ) ) {
         public function __construct() {
             add_action( 'admin_enqueue_scripts', array( $this, 'setup_admin_scripts' ) );
 
-            // TODO: Find a way to add this content if field has parameter 'js_controls' => true
+            add_filter( 'cmb2_row_classes', array( $this, 'row_classes' ), 10, 2 );
         }
 
         /**
-         * @param  array        $field_args     Current field args
+         * @param  string       $classes        Current field classes
          * @param  CMB2_Field   $field          Current field object
-         * @return array
+         * @return string
          */
-        public function classes_cb( $field_args, $field ) {
+        public function row_classes( $classes, $field ) {
 
-            $classes = array();
+            $field_args = $field->args();
 
             if( isset( $field_args['custom_classes'] ) ) {
-                $classes[] = $field_args['custom_classes'];
+                $classes .= ' ' . $field_args['custom_classes'];
             }
 
             if( ! isset( $field_args['show_if'] ) && ! isset( $field_args['hide_if'] ) ) {
                 return $classes;
             }
 
-            $classes[] = 'cmb-conditional-fields';
+            $classes .= ' cmb-conditional-fields';
 
             if( isset( $field_args['show_if'] ) && is_array( $field_args['show_if'] ) ) {
                 foreach( $field_args['show_if'] as $field => $condition ) {
 
-                    $classes[] = 'cmb-show-if-field-' . esc_attr( $field );
+                    $classes .= ' cmb-show-if-field-' . esc_attr( $field );
 
                     if( is_array( $condition ) ) {
                         foreach( $condition as $condition_value ) {
                             $condition_value = $this->parse_condition( $condition_value );
 
-                            $classes[] = 'cmb-show-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition_value );
+                            $classes .= ' cmb-show-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition_value );
                         }
                     } else {
                         $condition = $this->parse_condition( $condition );
-                        $classes[] = 'cmb-show-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition );
+                        $classes .= ' cmb-show-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition );
                     }
 
 
@@ -110,17 +110,17 @@ if( !class_exists( 'RGC_CMB2_Conditional_Fields' ) ) {
             if( isset( $field_args['hide_if'] ) && is_array( $field_args['hide_if'] ) ) {
                 foreach( $field_args['hide_if'] as $field => $condition ) {
 
-                    $classes[] = 'cmb-hide-if-field-' . esc_attr( $field );
+                    $classes .= ' cmb-hide-if-field-' . esc_attr( $field );
 
                     if( is_array( $condition ) ) {
                         foreach( $condition as $condition_value ) {
                             $condition_value = $this->parse_condition( $condition_value );
 
-                            $classes[] = 'cmb-hide-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition_value );
+                            $classes .= ' cmb-hide-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition_value );
                         }
                     } else {
                         $condition = $this->parse_condition( $condition );
-                        $classes[] = 'cmb-hide-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition );
+                        $classes .= ' cmb-hide-if-field-' . esc_attr( $field ) . '-condition-' . esc_attr( $condition );
                     }
 
                 }
@@ -155,12 +155,5 @@ if( !class_exists( 'RGC_CMB2_Conditional_Fields' ) ) {
 
     }
 
-    // TODO: Temporal solution to output html content
-    function cmb_conditional_fields_classes_cb( $field_args, $field ) {
-        $cmb2_conditional_fields = new RGC_CMB2_Conditional_Fields();
-
-        return $cmb2_conditional_fields->classes_cb( $field_args, $field );
-    }
-
-    $cmb2_conditional_fields = new RGC_CMB2_Conditional_Fields();
+$cmb2_conditional_fields = new RGC_CMB2_Conditional_Fields();
 }

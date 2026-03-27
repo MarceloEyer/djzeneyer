@@ -49,7 +49,9 @@ const TRUSTED_DOMAINS = [
     'wa.me',
     'whatsapp.com',
     'bandsintown.com',
-    'google.com'
+    'google.com',
+    'googleusercontent.com',  // Google OAuth profile photos (lh3.googleusercontent.com)
+    'gravatar.com',            // WordPress/Gravatar avatars
 ];
 
 /**

@@ -101,7 +101,7 @@ final class REST_Handler
                 'main_points_slug' => self::get_main_points_slug(),
                 'engine_status' => [
                     'woo' => \class_exists('WooCommerce'),
-                    'gamipress' => true,
+                    'gamipress' => \defined('GAMIPRESS_VER') ? \GAMIPRESS_VER : false,
                     'cache' => \get_option('zengame_last_purge') ? 'warm' : 'running',
                     'ts' => \time(),
                 ],
@@ -136,7 +136,8 @@ final class REST_Handler
             return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
         }
 
-        $cache_key = 'djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION;
+        $limit = \max(1, \min(50, (int) ($request->get_param('limit') ?: 10)));
+        $cache_key = 'djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $limit;
         $cached = \get_transient($cache_key);
         if (false !== $cached) {
             return \rest_ensure_response($cached);
@@ -160,14 +161,19 @@ final class REST_Handler
                 FROM {$wpdb->usermeta} m
                 INNER JOIN {$wpdb->users} u ON m.user_id = u.ID
                 WHERE meta_key = %s AND meta_value > 0
-                ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT 10
+                ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT %d
                 ",
-                $meta_key
+                $meta_key,
+                $limit
             ));
 
             if (!$results) {
                 continue;
             }
+
+            // Prime WP object cache for all users in one query — prevents N+1 on get_avatar_url
+            $user_ids = \array_map(fn($r) => (int) $r->user_id, $results);
+            \cache_users($user_ids);
 
             $leaderboard[$slug] = [];
             foreach ($results as $row) {
@@ -180,7 +186,7 @@ final class REST_Handler
             }
         }
 
-        \set_transient($cache_key, $leaderboard, \ZenEyer\Game\ZenGame::DEFAULT_CACHE_TTL);
+        \set_transient($cache_key, $leaderboard, \ZenEyer\Game\ZenGame::LEADERBOARD_CACHE_TTL);
 
         return \rest_ensure_response($leaderboard);
     }
@@ -205,7 +211,6 @@ final class REST_Handler
         return \rest_ensure_response([
             'success' => $success,
             'action' => $action,
-            'points_awarded' => ($action === 'download' && $success) ? 5 : 0,
         ]);
     }
 
@@ -287,7 +292,7 @@ final class REST_Handler
     private static function get_user_rank_data(int $user_id): array
     {
         $fallback = [
-            'current' => ['id' => 0, 'title' => 'Zen Guest', 'image' => ''],
+            'current' => ['id' => 0, 'menu_order' => 0, 'title' => 'Zen Guest', 'image' => ''],
             'next' => null,
             'progress' => 0,
             'requirements' => [],
@@ -297,7 +302,9 @@ final class REST_Handler
             return $fallback;
         }
 
-        $rank_types = \gamipress_get_rank_types();
+        // gamipress_get_rank_types() returns an associative array keyed by slug;
+        // array_values() normalises it to a sequential list.
+        $rank_types = \array_values(\gamipress_get_rank_types());
         if (empty($rank_types) || !isset($rank_types[0]['slug'])) {
             return $fallback;
         }
@@ -337,14 +344,16 @@ final class REST_Handler
 
         return [
             'current' => [
-                'id' => $current ? (int) $current->ID : 0,
-                'title' => $current ? (string) $current->post_title : 'Zen Guest',
-                'image' => $current ? (\get_the_post_thumbnail_url($current->ID, 'medium') ?: '') : '',
+                'id'         => $current ? (int) $current->ID : 0,
+                'menu_order' => $current ? (int) $current->menu_order : 0,
+                'title'      => $current ? (string) $current->post_title : 'Zen Guest',
+                'image'      => $current ? (\get_the_post_thumbnail_url($current->ID, 'medium') ?: '') : '',
             ],
             'next' => $next ? [
-                'id' => (int) $next->ID,
-                'title' => (string) $next->post_title,
-                'image' => \get_the_post_thumbnail_url($next->ID, 'medium') ?: '',
+                'id'         => (int) $next->ID,
+                'menu_order' => (int) $next->menu_order,
+                'title'      => (string) $next->post_title,
+                'image'      => \get_the_post_thumbnail_url($next->ID, 'medium') ?: '',
             ] : null,
             'progress' => $progress,
             'requirements' => $requirements,
@@ -414,14 +423,7 @@ final class REST_Handler
                     'achievement_type' => $type_slug,
                 ]);
             } else {
-                $all_ids = \get_posts([
-                    'post_type' => $type_slug,
-                    'posts_per_page' => -1,
-                    'fields' => 'ids',
-                    'post_status' => 'publish'
-                ]);
-
-                // Get IDs of achievements already earned to filter them out
+                // Collect earned IDs to exclude, then fetch locked in a single query
                 $earned_ids = [];
                 if (\function_exists('gamipress_get_user_achievements')) {
                     $earned_objects = \gamipress_get_user_achievements([
@@ -433,19 +435,17 @@ final class REST_Handler
                     }
                 }
 
-                $locked_ids = \array_diff($all_ids, $earned_ids);
-                
-                if (empty($locked_ids)) {
-                    $items = [];
-                } else {
-                    $items = \get_posts([
-                        'post_type' => $type_slug,
-                        'post__in' => $locked_ids,
-                        'posts_per_page' => -1,
-                        'orderby' => 'menu_order',
-                        'order' => 'ASC'
-                    ]);
+                $query_args = [
+                    'post_type' => $type_slug,
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                    'orderby' => 'menu_order',
+                    'order' => 'ASC',
+                ];
+                if (!empty($earned_ids)) {
+                    $query_args['post__not_in'] = $earned_ids;
                 }
+                $items = \get_posts($query_args);
             }
 
             if (!\is_array($items) && !($items instanceof \Traversable)) {
@@ -453,6 +453,12 @@ final class REST_Handler
             }
 
             foreach ($items as $item) {
+                // For earned achievements, GamiPress returns user-achievement objects that carry
+                // the earned date directly. Extract it before normalizing to WP_Post.
+                $date_earned = ($status === 'earned' && \is_object($item) && isset($item->date_earned))
+                    ? (string) $item->date_earned
+                    : '';
+
                 $post = self::normalize_post_object($item);
                 if (!$post) {
                     continue;
@@ -465,7 +471,7 @@ final class REST_Handler
                     'image' => \get_the_post_thumbnail_url($post->ID, 'thumbnail') ?: '',
                     'earned' => $status === 'earned',
                     'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
-                    'date_earned' => (string) (\get_post_meta($post->ID, '_gamipress_earned_at', true) ?: ''),
+                    'date_earned' => $date_earned,
                 ];
             }
         }

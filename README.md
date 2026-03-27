@@ -1,8 +1,9 @@
 # 🎧 DJ Zen Eyer — Experiência Digital Headless
 
 ![Status](https://img.shields.io/badge/status-ativo-success.svg)
-![React](https://img.shields.io/badge/React-18-blue)
-![Vite](https://img.shields.io/badge/Vite-7-purple)
+![React](https://img.shields.io/badge/React-19-blue)
+![Vite](https://img.shields.io/badge/Vite-8-purple)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-38bdf8)
 ![WordPress](https://img.shields.io/badge/WordPress-Headless-21759b)
 
 > **A experiência digital oficial do DJ Zen Eyer — Bicampeão Mundial de Brazilian Zouk.**
@@ -15,7 +16,7 @@
 
 ## ✨ Funcionalidades
 
-- **🚀 Ultra Rápido:** React 18 + Vite 7, navegação quase instantânea.
+- **🚀 Ultra Rápido:** React 19 + Vite 8, navegação quase instantânea.
 - **🌍 Bilíngue:** Suporte nativo a **Inglês** e **Português** via `i18next`.
 - **🛒 E-Commerce:** Integração completa com **WooCommerce** para venda de músicas e ingressos.
 - **🎮 Gamificação:** XP, Ranks e Conquistas (via **ZenGame**) sincronizados globalmente.
@@ -27,9 +28,9 @@
 ## 🛠️ Stack Técnica
 
 ### Frontend
-- **Framework:** React 18 + TypeScript
-- **Build:** Vite 7
-- **Estilo:** Tailwind CSS + Framer Motion
+- **Framework:** React 19 + TypeScript (strict)
+- **Build:** Vite 8 (OXC/Rolldown)
+- **Estilo:** Tailwind 4 + Framer Motion
 - **Estado:** React Query (TanStack Query v5) + Context API
 - **Roteamento:** React Router 7
 
