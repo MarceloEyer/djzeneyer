@@ -9,15 +9,46 @@ Site/plataforma oficial do DJ Zen Eyer (Marcelo Eyer Fernandes) — Bicampeão M
 Arquitetura: WordPress Headless + React 19 SPA.
 Produção: https://djzeneyer.com
 
-## Stack (2026-03-26) 🛠️
+## Stack (2026-03-27) 🛠️
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | React 19 + TypeScript strict + Vite 8 + Tailwind 4 + React Query v5 + React Router 7 + i18next |
-| Backend | WordPress 6.9+, PHP 8.3, WooCommerce 10.5+ (HPOS ativo), GamiPress |
-| Plugins repo | `zeneyer-auth`, `zen-seo-lite`, `zen-bit`, `zengame` |
-| Infra | Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions |
+| Frontend | React 19 + TypeScript 6 strict + Vite 8 + Tailwind 4 + React Query v5 + React Router 7 + i18next |
+| Backend | WordPress **6.9.4**, PHP **8.3.30**, WooCommerce **10.6.1** (HPOS ativo), GamiPress **7.8.2** |
+| Database | **MariaDB 11.8.6** (não MySQL — atenção em queries SQL raw) |
+| Plugins repo | `zeneyer-auth 2.4.0`, `zen-seo-lite 8.1.1`, `zen-bit 3.1.0`, `zengame 1.4.0` |
+| Plugins 3rd | Polylang 3.8.1, MailPoet 5.22.2, PagBank Connect 4.53.2, LiteSpeed Cache 7.8.0.1 |
+| Infra | Hostinger VPS (Linux/x86_64) + LiteSpeed + Cloudflare + GitHub Actions |
 | Node | 20+ |
+
+## 🌍 Polylang — como funciona a tradução de conteúdo
+
+O Polylang gerencia a tradução de **conteúdo WordPress** (posts, produtos, páginas).
+O i18next gerencia **strings de UI** do React. São sistemas completamente separados.
+
+- Idioma padrão: **EN** (sem prefixo de URL — `djzeneyer.com/slug`)
+- Idioma PT: prefixo `/pt/` — `djzeneyer.com/pt/slug`
+- `hide_default: 1` → EN não tem `/en/` na URL (só `/slug`)
+- `browser: 0` → detecção automática de idioma do navegador **desativada**
+- Para obter conteúdo traduzido via REST: passar `?lang=pt` na query
+- CPTs traduzidos: post, page, product, attachment
+- Taxonomias traduzidas: category, post_tag, product_cat, product_brand
+
+## ⚠️ Ambiente de Produção — atenção
+
+```
+WP_DEBUG: true         ← ATIVO EM PRODUÇÃO (risco: erros PHP viram HTML na API REST)
+WP_DEBUG_DISPLAY: true ← erros visíveis para usuários — causa <br><b>Warning no JSON
+WP_DEBUG_LOG: true
+WP_MEMORY_LIMIT: 256M  (servidor suporta 1536M — pode aumentar se necessário)
+```
+**Impacto real:** foi a causa raiz do `<br /><b>...` no response de `zengame/v1/me`.
+Correção necessária no `wp-config.php`:
+```php
+define( 'WP_DEBUG', false );
+define( 'WP_DEBUG_DISPLAY', false );
+@ini_set( 'display_errors', 0 );
+```
 
 ## 🔗 Namespaces de API
 
