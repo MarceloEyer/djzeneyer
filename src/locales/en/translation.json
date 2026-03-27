@@ -43,6 +43,7 @@
     "welcomeTribe": "Welcome to Zen Tribe!",
     "accountCreated": "Account created",
     "startExploring": "Start exploring!",
+    "ascension_quote": "Your connection with the beat is reaching a new frequency. Keep exploring the artifacts to ascend.",
     "stats": {
       "mana": "Accumulated Mana",
       "artifacts": "Artifacts Collected",
@@ -135,7 +136,7 @@
     "footer_subscribe": "Subscribe",
     "footer_subscribe_success": "Subscription successful!",
     "footer_subscribe_error": "Error during subscription.",
-    "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
+    "footer_copyright": "Â© {{year}} DJ Zen Eyer. All rights reserved.",
     "friend": "Zen Friend",
     "all": "All"
   },
@@ -285,7 +286,8 @@
     "booking_title": "zenlink.booking_title",
     "contact_direct": "zenlink.contact_direct",
     "spotify_subtitle": "zenlink.spotify_subtitle",
-    "spotify_title": "zenlink.spotify_title"
+    "spotify_title": "zenlink.spotify_title",
+    "subtitle": "2× World Champion Brazilian Zouk"
   },
   "social": {
     "instagram": "Instagram",
@@ -334,7 +336,7 @@
     "stat_events": "Events",
     "stat_years": "Years Active",
     "bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 10 countries.",
-    "bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
+    "bio_p2": "Known for a sound focused on the pure 'flow' of the dance â€” a vibe our community affectionately calls 'cremosidade' â€”, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
     "bio_p3": "Whether at reZENha, at Renata Peçanha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
     "festivals_title": "Performed at International Festivals",
     "festivals_subtitle": "Recognized at major Zouk events worldwide",
@@ -357,7 +359,7 @@
     "cta_music": "Explore Music",
     "bio_title": "Who is DJ Zen Eyer?",
     "bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>DJ and producer</strong> focused on <strong>Brazilian Zouk</strong>. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.",
-    "bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> is already a classic at festivals.",
+    "bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zen? Zen? Zen? Eyer? Eyer?\"</em> is already a classic at festivals.",
     "bio_mensa": "Member of <strong>Mensa International</strong>, he creates perfect emotional journeys for the \"flow\" in dance. He is a regular at major stages like Rio Zouk Congress.",
     "verified": "Verified Profiles",
     "bookers": {
@@ -455,7 +457,7 @@
     "page_title": "Press Kit",
     "page_meta_desc": "Official press kit for DJ Zen Eyer. Download high-res photos, bio, and technical rider.",
     "bio_title": "The Artist",
-    "bio_subtitle": "Bicampeão Mundial & Music Curator",
+    "bio_subtitle": "Two-Time World Champion & Music Curator",
     "stats_title": "Quick Stats",
     "stats_experience": "Years of Experience",
     "stats_tours": "International Tours",
@@ -997,7 +999,8 @@
         "desc": "payme.sections.donors.desc",
         "title": "payme.sections.donors.title"
       }
-    }
+    },
+    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
   },
   "footer_rights": "All rights reserved.",
   "footer_about": "About",
@@ -1032,13 +1035,13 @@
   "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. Haste is the enemy of cremosity.",
+  "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
   "events_categories": "Categories",
   "events_page_title": "DJ Zen Eyer Events | 2x World Champion Brazilian Zouk",
-  "events_page_meta_desc": "Follow DJ Zen Eyer's global schedule. Experience the 'cremosidade' at the world's top Brazilian Zouk festivals. Book your tickets and join the Zen Tribe! âœ“",
+  "events_page_meta_desc": "Follow DJ Zen Eyer's global schedule. Experience the 'cremosidade' at the world's top Brazilian Zouk festivals. Book your tickets and join the Zen Tribe! ✓",
   "events_filter_placeholder": "Filter by city or event...",
   "events_back": "Back to Events",
   "events_not_found": "Event not found",
@@ -1065,7 +1068,7 @@
     "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
     "seo": {
       "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
-      "keywords": "Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adÃ­lio porto, lambada history"
+      "keywords": "Zouk Brasileiro FAQ, o que ? zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, Renata Peçanha zouk, Adílio Porto, lambada history"
     },
     "categories": {
       "djzeneyer": {
@@ -1113,7 +1116,7 @@
         },
         "q3": {
           "q": "What is the importance of Lambada in Zouk history?",
-          "a": "Brazilian Zouk would not exist without Lambada. The fundamentals and head movements were systematized by pioneers like <strong>Renata Peçanha</strong> and <strong>AdÃ­lio Porto</strong>. As the BZC defines, the dance adapted to slow Caribbean songs, evolving into the flow we know today."
+          "a": "Brazilian Zouk would not exist without Lambada. The fundamentals and head movements were systematized by pioneers like <strong>Renata Peçanha</strong> and <strong>Adílio Porto</strong>. As the BZC defines, the dance adapted to slow Caribbean songs, evolving into the flow we know today."
         }
       },
       "culture": {
@@ -1242,9 +1245,9 @@
       "continue_shopping": "Continuar Comprando",
       "loading": "Carregando pedidos...",
       "no_orders": "Nenhum pedido encontrado",
-      "no_orders_desc": "Você ainda não realizou nenhum pedido na nossa loja.",
+      "no_orders_desc": "You have not placed any orders in our shop yet.",
       "order_number": "Pedido #{{id}}",
-      "title": "Meu Histórico de Pedidos"
+      "title": "My Order History"
     }
   },
   "not_found": {
@@ -1472,7 +1475,7 @@
       "description": "For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.",
       "contact": "Contact for Bookings"
     },
-    "thankYou": "âœ¨ Your support keeps the music alive. Thank you! âœ¨"
+    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
   },
   "events_no_results_filter": "Sorry, I couldn't find any events in this state. Maybe check the full schedule?",
   "quiz": {
@@ -1626,7 +1629,8 @@
       "desc": "If you identified with this story or want to know more about the philosophy behind my music, I love meeting people who also believe in the power of connection through art.",
       "button": "Share Your Story",
       "whatsapp_msg": "Hello Zen! I saw your story on the website and would like to share mine too."
-    }
+    },
+    "bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush."
   },
   "quiz_you_are": "You are...",
   "contact": "Contact",
@@ -1637,5 +1641,10 @@
   "events_view_details": "View Details",
   "loc_to_be_defined": "TBA",
   "press_kit": "Press Kit",
-  "price_free": "Free"
+  "price_free": "Free",
+  "error_boundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred while loading this page.",
+    "reload": "Reload page"
+  }
 }

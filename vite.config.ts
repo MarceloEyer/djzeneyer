@@ -45,23 +45,8 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       emptyOutDir: true,
       target: 'es2020',
-
-      // 🔒 PULO DO GATO ANTI-EVAL
-      minify: 'terser',
+      // Vite 8 uses OXC (Rolldown) by default — faster than terser/esbuild, no extra deps needed
       sourcemap: false,
-
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          // Segurança
-          evaluate: false,
-          unsafe: false,
-        },
-        format: {
-          comments: false,
-        },
-      },
 
       rollupOptions: {
         output: {

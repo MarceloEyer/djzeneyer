@@ -17,7 +17,7 @@
 - Produção: https://djzeneyer.com
 
 ## Stack canônica
-- Frontend: React 18, TypeScript strict, Vite 7, Tailwind 3, React Query v5, React Router 7, i18next
+- Frontend: React 19, TypeScript strict, Vite 8, Tailwind 4, React Query v5, React Router 7, i18next
 - Backend: WordPress 6.0+, PHP 8.1+, WooCommerce, GamiPress
 - Plugins customizados ativos no repo: `zeneyer-auth`, `zen-seo-lite`, `zen-bit`, `zengame`
 - Infra: Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions
@@ -32,8 +32,10 @@
 6. Filtragem pesada deve preferir backend
 7. PHP deve usar sanitização, escaping e queries preparadas
 8. Nunca commitar segredos
-9. Não atualizar ESLint para v10
+9. Não atualizar ESLint para v11+
 10. Não reintroduzir **music player embutido** no site sem decisão explícita
+11. Arquivos de tradução em `src/locales/**/*.json` devem ser editados em UTF-8. Se houver dúvida com emoji, travessão, reticências, `©` ou `×`, usar escape Unicode JSON em vez de gravar texto com encoding duvidoso.
+12. Após editar locales, verificar se não entrou mojibake (`Ã`, `â`, `ðŸ`, `Â©`) e rodar pelo menos `npm run build`.
 
 ## Regras de design e UX
 1. Direcao: Premium Contemporaneo + Imersao MMORPG.

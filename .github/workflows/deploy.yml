@@ -55,12 +55,13 @@ jobs:
       commit_hash: ${{ steps.commit.outputs.hash }}
       build_timestamp: ${{ steps.timestamp.outputs.value }}
       build_status: ${{ job.status }}
+      plugins_changed: ${{ steps.plugin_changes.outputs.changed }}
     
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: 🔖 Generate metadata
         id: commit
@@ -69,6 +70,24 @@ jobs:
       - name: ⏰ Generate timestamp
         id: timestamp
         run: echo "value=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: Detect plugin changes
+        id: plugin_changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            RANGE="HEAD^..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+
+          if git diff --name-only "$RANGE" | grep -q '^plugins/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v6
@@ -123,12 +142,9 @@ jobs:
                 cd "$dir"
                 # ⚠️ CI hardening note (do not "optimize" this without validation):
                 # Composer 2.9+ can block packages flagged by Packagist security advisories.
-                # Our auth plugin depends on firebase/php-jwt and Packagist currently marks all 6.x
-                # as blocked (PKSA-y2cr-5h3j-g3ys), which would break every deploy even when app build passes.
-                # IMPORTANT: keep --no-security-blocking until the advisory constraints are fixed.
                 # IMPORTANT: NEVER add --no-audit here; this option is not available in composer install
                 # and causes the pipeline to fail with: "The \"--no-audit\" option does not exist."
-                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction --no-security-blocking
+                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
                 rm -rf tests/ .git/ .github/ .gitignore
                 cd - > /dev/null
               fi
@@ -159,7 +175,7 @@ jobs:
           retention-days: 7
 
       - name: 📤 Upload plugins
-        if: hashFiles('plugins/**') != ''
+        if: steps.plugin_changes.outputs.changed == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: build-plugins-${{ steps.commit.outputs.hash }}
@@ -175,15 +191,7 @@ jobs:
             public/sitemap-pages.xml
           retention-days: 7
 
-      - name: 📤 Upload GamiPress files
-        if: hashFiles('gamipress/**') != ''
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-gamipress-${{ steps.commit.outputs.hash }}
-          path: gamipress/
-          retention-days: 7
-
-  # ═══════════════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
   # JOB 2: DEPLOY (RESTAURADO DO LOG ORIGINAL)
   # ═══════════════════════════════════════════════════════════════════════════════
   deploy:
@@ -226,7 +234,7 @@ jobs:
           path: ./
 
       - name: 📥 Download plugins
-        if: ${{ !inputs.skip_build }}
+        if: ${{ !inputs.skip_build && needs.build.outputs.plugins_changed == 'true' }}
         uses: actions/download-artifact@v8
         with:
           name: build-plugins-${{ needs.build.outputs.commit_hash }}
@@ -238,13 +246,6 @@ jobs:
         with:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
-
-      - name: 📥 Download GamiPress files
-        if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v8
-        with:
-          name: build-gamipress-${{ needs.build.outputs.commit_hash }}
-          path: ./gamipress-deploy
 
       # --- SSH SETUP ---
       - name: 🔐 Setup SSH
@@ -342,18 +343,6 @@ jobs:
           remote_port: ${{ env.SSH_PORT }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: 🎮 Deploy GamiPress/
-        if: hashFiles('gamipress-deploy/**') != ''
-        uses: burnett01/rsync-deployments@8.0.4
-        with:
-          switches: -avzr --delete --checksum
-          path: gamipress-deploy/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/gamipress/
-          remote_host: ${{ env.SSH_HOST }}
-          remote_user: ${{ env.SSH_USER }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: 📝 Deploy theme PHP files
         uses: appleboy/scp-action@v1.0.0
         with:
@@ -396,7 +385,7 @@ jobs:
             echo "✅ dist activated without deleting the live bundle first"
 
       - name: 🔌 Deploy plugins
-        if: hashFiles('plugins/**') != ''
+        if: ${{ !inputs.skip_build && needs.build.outputs.plugins_changed == 'true' }}
         uses: burnett01/rsync-deployments@8.0.4
         with:
           switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
@@ -466,7 +455,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.REMOTE_ROOT }}
-            if command -v wp &> /dev/null; then wp litespeed-purge all 2>/dev/null; fi
+            if command -v wp &> /dev/null; then
+              wp litespeed-purge all 2>/dev/null || true
+              # Clear ZenGame transient cache so fresh GamiPress data is fetched after deploy
+              wp transient delete --search="djz_gamipress" 2>/dev/null || true
+              wp transient delete --search="djz_stats" 2>/dev/null || true
+            fi
             if php -r "opcache_reset();" 2>/dev/null; then echo "✅ OPcache flushed"; else curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null; fi
 
       - name: 🎉 Success

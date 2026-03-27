@@ -8,7 +8,7 @@ import {
   ArrowRight, Crown, Flame, Star, Trophy, Sparkles, TrendingUp, Bell, CircleCheck
 } from 'lucide-react';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
-import { Helmet } from 'react-helmet-async';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { RecentActivity } from '../components/account';
 import { useLeaderboardQuery } from '../hooks/useQueries';
 import { safeUrl } from '../utils/sanitize';
@@ -124,7 +124,7 @@ const DashboardContent = () => {
   const navigate = useNavigate();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
-  const { data: gamipress, loading: gamiLoading, error: gamiError } = useGamiPressContext();
+  const { data: gamipress, loading: gamiLoading, error: gamiError, refresh: gamiRefresh } = useGamiPressContext();
   const { data: leaderboardData } = useLeaderboardQuery(5);
 
   const routes = useMemo(() => ({
@@ -152,7 +152,7 @@ const DashboardContent = () => {
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <h2 className="text-2xl font-black text-white mb-2 font-display">{t('dashboard.error_loading')}</h2>
           <p className="text-sm text-white/40 mb-8">{gamiError}</p>
-          <button onClick={() => window.location.reload()} className="btn btn-primary btn-lg rounded-2xl w-full">
+          <button onClick={gamiRefresh} className="btn btn-primary btn-lg rounded-2xl w-full">
             {t('common.retry')}
           </button>
         </motion.div>
@@ -162,7 +162,7 @@ const DashboardContent = () => {
 
   if (!user || !gamipress) return null;
 
-  // --- POINT CALCULATION (BOLT: Refined discovery logic) ---
+  // --- POINT & RANK CALCULATION ---
   const main_slug = gamipress.main_points_slug || 'points';
   const mainPoints = gamipress.points?.[main_slug]?.amount ?? 0;
   const streakCount = gamipress.stats?.streak ?? 0;
@@ -170,17 +170,35 @@ const DashboardContent = () => {
   const currentRank = gamipress.rank?.current?.title || '--';
   const nextRank = gamipress.rank?.next?.title || null;
   const rankProgress = gamipress.rank?.progress || 0;
-  const rankExpCurrent = gamipress.rank?.requirements?.[0]?.current || 0;
-  const rankExpRequired = gamipress.rank?.requirements?.[0]?.required || 1000;
+  const allReqs = gamipress.rank?.requirements ?? [];
+  const rankExpCurrent = allReqs.reduce((sum, r) => sum + (r.current || 0), 0);
+  const rankExpRequired = allReqs.reduce((sum, r) => sum + (r.required || 0), 0) || 1000;
+
+  // menu_order is GamiPress sequential rank position (0-based → display as 1-based)
+  const rankLevel = (gamipress.rank?.current?.menu_order ?? 0) + 1;
+
+  // Active quests: real GamiPress rank requirements for next rank
+  const activeQuests = allReqs.map(req => ({
+    label: req.title,
+    progress: Math.min(100, Math.round(req.percent)),
+    done: req.percent >= 100,
+  }));
+  const completedQuests = activeQuests.filter(q => q.done).length;
+
+  // Stars: dynamic based on rank progress
+  const rankStars = rankProgress >= 66 ? 3 : rankProgress >= 33 ? 2 : rankProgress > 0 ? 1 : 0;
 
   const earnedAchievements = gamipress.achievements_earned || [];
   const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
 
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">
-      <Helmet>
-        <title>{`${t('dashboard_page_title')} | DJ Zen Eyer`}</title>
-      </Helmet>
+      <HeadlessSEO
+        title={`${t('dashboard_page_title')} | DJ Zen Eyer`}
+        description={t('dashboard_page_meta_desc')}
+        image="/images/zen-eyer-og-image.png"
+        noindex
+      />
 
       <div className="container mx-auto px-4 max-w-[1400px]">
         
@@ -189,10 +207,11 @@ const DashboardContent = () => {
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-3xl animate-pulse rounded-full" />
-              <img 
-                src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || '')}&background=0D96FF&color=fff&size=200`}
+              <img
+                src={safeUrl(user.avatar, '/images/default-avatar.svg')}
                 className="relative z-10 h-24 w-24 md:h-28 md:w-28 rounded-3xl object-cover border-2 border-primary/40 shadow-neon-sm"
                 alt={user.display_name}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
               />
               <div className="absolute -bottom-2 -right-2 z-20 flex h-8 w-8 items-center justify-center rounded-xl bg-primary shadow-lg border-2 border-background">
                 <Crown size={14} className="fill-white text-white" />
@@ -207,8 +226,8 @@ const DashboardContent = () => {
               </div>
               <div className="flex items-center gap-3 text-sm font-bold opacity-70">
                 <span className="flex items-center gap-1.5 text-primary">
-                  <Flame size={16} className="fill-current animate-bounce" /> 
-                  LEVEL {gamipress.rank?.current?.id || 1}
+                  <Flame size={16} className="fill-current animate-bounce" />
+                  LEVEL {rankLevel}
                 </span>
                 <span className="text-white/30">•</span>
                 <span className="uppercase tracking-widest text-xs px-2 py-0.5 rounded bg-white/10 border border-white/10">
@@ -270,27 +289,36 @@ const DashboardContent = () => {
 
             {/* QUICK ACTIONS / QUESTS */}
             <GlassCard glowColor="secondary">
-              <SectionHeader title="Active Quests" icon={Sparkles} badge="3/5" />
+              <SectionHeader
+                title={t('dashboard.pendingQuests')}
+                icon={Sparkles}
+                badge={activeQuests.length > 0 ? `${completedQuests}/${activeQuests.length}` : undefined}
+              />
               <div className="space-y-5">
-                {[
-                  { label: 'Stream Zen Sessions', progress: 100, status: 'DONE', icon: CircleCheck, color: 'text-success' },
-                  { label: 'Check Events Calendar', progress: 75, status: 'Active', icon: TrendingUp, color: 'text-primary' },
-                  { label: 'Explore Shop New In', progress: 40, status: 'Pending', icon: Gift, color: 'text-secondary' },
-                ].map((quest, i) => (
-                  <div key={i} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-white/80">{quest.label}</span>
-                      <quest.icon size={12} className={quest.color} />
-                    </div>
-                    <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
-                       <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${quest.progress}%` }}
-                        className={`h-full ${quest.progress === 100 ? 'bg-success' : 'bg-primary'}`}
-                       />
-                    </div>
+                {activeQuests.length === 0 ? (
+                  <div className="py-4 text-center text-white/40 text-xs font-bold uppercase tracking-widest">
+                    {t('dashboard.allCleared')}
                   </div>
-                ))}
+                ) : (
+                  activeQuests.map((quest, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-white/80">{quest.label}</span>
+                        {quest.done
+                          ? <CircleCheck size={12} className="text-success" />
+                          : <TrendingUp size={12} className="text-primary" />
+                        }
+                      </div>
+                      <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${quest.progress}%` }}
+                          className={`h-full ${quest.done ? 'bg-success' : 'bg-primary'}`}
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </GlassCard>
 
@@ -314,17 +342,17 @@ const DashboardContent = () => {
                 </div>
                 <div className="space-y-6">
                    <div>
-                     <h4 className="text-2xl font-black font-display leading-none mb-1">Ascension</h4>
-                     <p className="text-white/40 text-xs font-bold uppercase tracking-widest">Master of Zen Rhythm</p>
+                     <h4 className="text-2xl font-black font-display leading-none mb-1">{t('dashboard.stats.ascension')}</h4>
+                     <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{currentRank}</p>
                    </div>
                    <div className="space-y-3">
                      <p className="text-sm text-white/60 italic leading-relaxed">
-                        "Your connection with the beat is reaching a new frequency. Keep exploring the artifacts to ascend."
+                        "{t('dashboard.ascension_quote')}"
                      </p>
                      <div className="flex gap-2">
-                        <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                        <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                        <Star size={12} className="text-white/10" />
+                        {[0, 1, 2].map(i => (
+                          <Star key={i} size={12} className={i < rankStars ? 'text-yellow-500 fill-yellow-500' : 'text-white/10'} />
+                        ))}
                      </div>
                    </div>
                 </div>
@@ -413,11 +441,14 @@ const DashboardContent = () => {
 };
 
 const DashboardPage = () => {
-  const { user, loading } = useUser();
+  const { user, loadingInitial } = useUser();
   const { i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
-  if (loading) {
+  // Wait for UserContext to restore session from localStorage before deciding to redirect.
+  // Using loadingInitial (not loading): `loading` is for login/register actions (default false)
+  // and would cause an immediate redirect on hard refresh before the session is restored.
+  if (loadingInitial) {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center bg-background">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>

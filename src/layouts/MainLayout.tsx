@@ -1,4 +1,4 @@
-﻿import React, { Suspense, lazy, useState } from 'react';
+import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/common/Footer';
@@ -10,10 +10,15 @@ const AuthModal = lazy(() => import('../components/auth/AuthModal'));
 const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const openModal = () => {
+  // ⚡ Bolt: Wrapped with useCallback to preserve function reference and prevent unnecessary re-renders in Navbar (which is wrapped in React.memo)
+  const openModal = useCallback(() => {
     setIsAuthModalOpen(true);
-  };
-  const closeModal = () => setIsAuthModalOpen(false);
+  }, []);
+
+  // ⚡ Bolt: Wrapped with useCallback to preserve function reference
+  const closeModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+  }, []);
 
   return (
     <>

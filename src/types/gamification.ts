@@ -21,6 +21,7 @@ export interface ZenGameRankRequirement {
 export interface ZenGameRank {
     current: {
         id: number;
+        menu_order: number;
         title: string;
         image: string;
     };
@@ -28,6 +29,7 @@ export interface ZenGameRank {
     requirements: ZenGameRankRequirement[];
     next: {
         id: number;
+        menu_order: number;
         title: string;
         image: string;
     } | null;

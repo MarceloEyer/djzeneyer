@@ -49,7 +49,9 @@ const TRUSTED_DOMAINS = [
     'wa.me',
     'whatsapp.com',
     'bandsintown.com',
-    'google.com'
+    'google.com',
+    'googleusercontent.com',  // Google OAuth profile photos (lh3.googleusercontent.com)
+    'gravatar.com',            // WordPress/Gravatar avatars
 ];
 
 /**
@@ -67,6 +69,11 @@ export const isInternalPath = (path: string | undefined | null): boolean => {
 };
 
 /**
+ * Lista de protocolos permitidos (movida para o escopo global para evitar realocações a cada chamada).
+ */
+const ALLOWED_PROTOCOLS = ['http:', 'https:', 'mailto:', 'tel:'];
+
+/**
  * Valida se uma URL é segura para uso em atributos href ou src.
  * Bloqueia javascript:, data: e outros esquemas perigosos.
  * Valida o domínio contra uma whitelist para links sensíveis.
@@ -75,9 +82,6 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
     if (!url) return fallback;
 
     const trimmedUrl = url.trim();
-
-    // Lista de protocolos permitidos
-    const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
 
     try {
         // Se for um caminho interno, consideramos seguro (desde que não seja um //esquema)
@@ -95,7 +99,7 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
         }
 
         const parsed = new URL(trimmedUrl);
-        if (!allowedProtocols.includes(parsed.protocol)) {
+        if (!ALLOWED_PROTOCOLS.includes(parsed.protocol)) {
             return fallback;
         }
 
@@ -122,7 +126,7 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
             return fallback;
         }
         // Se falhar o parse mas for algo como "tel:" ou "mailto:" que o URL() às vezes rejeita sem host
-        if (allowedProtocols.some(proto => trimmedUrl.toLowerCase().startsWith(proto))) {
+        if (ALLOWED_PROTOCOLS.some(proto => trimmedUrl.toLowerCase().startsWith(proto))) {
             return trimmedUrl;
         }
         return isInternalPath(trimmedUrl) ? trimmedUrl : fallback;
