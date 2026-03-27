@@ -348,12 +348,16 @@ class Rest_Routes
             return new WP_Error('user_not_found', 'User not found', ['status' => 404]);
         }
 
-        $token = JWT_Manager::create_token($user);
+        // Rotaciona o refresh token: revoga o antigo e emite um novo
+        // Impede reutilização indefinida caso o token anterior tenha vazado
+        JWT_Manager::revoke_refresh_token($user_id, $refresh_token);
+        $new_refresh_token = JWT_Manager::create_refresh_token($user);
 
         return rest_ensure_response([
             'success' => true,
             'data' => [
-                'token' => $token,
+                'token' => JWT_Manager::create_token($user),
+                'refresh_token' => $new_refresh_token,
             ],
         ]);
     }

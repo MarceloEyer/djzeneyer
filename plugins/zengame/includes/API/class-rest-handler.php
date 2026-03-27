@@ -113,17 +113,10 @@ final class REST_Handler
 
             return \rest_ensure_response($data);
         } catch (\Throwable $e) {
-            $msg = 'ZenGame Engine Crash: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString();
-            \error_log($msg);
-            @\file_put_contents(ABSPATH . 'zengame_crash.log', $msg);
-            $error_data = ['status' => 500];
-            if (\defined('WP_DEBUG') && \WP_DEBUG) {
-                $error_data['trace'] = $e->getTraceAsString();
-                $error_data['file'] = $e->getFile();
-                $error_data['line'] = $e->getLine();
-            }
+            // Log completo internamente; nunca expor paths/trace via REST (segurança)
+            \error_log('[ZenGame] Engine crash: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString());
 
-            return new WP_Error('engine_crash', 'ZenGame Engine Crash: ' . $e->getMessage(), $error_data);
+            return new \WP_Error('engine_crash', 'Internal server error', ['status' => 500]);
         }
     }
 
@@ -452,18 +445,28 @@ final class REST_Handler
                 continue;
             }
 
+            // Fase 1: normaliza todos os posts do tipo para extrair IDs
+            $batch = [];
             foreach ($items as $item) {
-                // For earned achievements, GamiPress returns user-achievement objects that carry
-                // the earned date directly. Extract it before normalizing to WP_Post.
                 $date_earned = ($status === 'earned' && \is_object($item) && isset($item->date_earned))
                     ? (string) $item->date_earned
                     : '';
-
                 $post = self::normalize_post_object($item);
-                if (!$post) {
-                    continue;
+                if ($post) {
+                    $batch[] = ['post' => $post, 'date_earned' => $date_earned];
                 }
+            }
 
+            // Fase 2: prime caches em lote para evitar N+1 em thumbnail e meta
+            if (!empty($batch)) {
+                $batch_ids = \array_values(\array_unique(\array_map(static fn($e) => $e['post']->ID, $batch)));
+                \_prime_post_caches($batch_ids, false, true);
+                \update_meta_cache('post', $batch_ids);
+            }
+
+            // Fase 3: monta resultado com cache quente
+            foreach ($batch as $entry) {
+                $post = $entry['post'];
                 $all[] = [
                     'id' => (int) $post->ID,
                     'title' => (string) $post->post_title,
@@ -471,7 +474,7 @@ final class REST_Handler
                     'image' => \get_the_post_thumbnail_url($post->ID, 'thumbnail') ?: '',
                     'earned' => $status === 'earned',
                     'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
-                    'date_earned' => $date_earned,
+                    'date_earned' => $entry['date_earned'],
                 ];
             }
         }
