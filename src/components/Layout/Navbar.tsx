@@ -30,19 +30,42 @@ import type { MenuItemData } from './Navbar/NavbarComponents';
 // HELPERS & CONSTANTS
 // ============================================================================
 
+const VISUAL_CONFIGS = {
+    base: { color: 'text-primary', bg: 'bg-primary/10' },
+    default: { icon: <Home size={20} />, color: 'text-white/70', bg: 'bg-white/5' },
+    event: { icon: <Calendar size={20} /> },
+    shop: { icon: <ShoppingBag size={20} /> },
+    tribe: { icon: <Users size={20} /> },
+    music: { icon: <Music size={20} /> },
+    work: { icon: <Briefcase size={20} /> },
+    media: { icon: <Newspaper size={20} /> },
+    about: { icon: <Info size={20} /> }
+} as const;
+
+// ⚡ Bolt: Extract element creation outside component to prevent multiple instantiations per render
+const PRECOMPUTED_VISUALS = {
+    event: { ...VISUAL_CONFIGS.base, icon: VISUAL_CONFIGS.event.icon },
+    shop: { ...VISUAL_CONFIGS.base, icon: VISUAL_CONFIGS.shop.icon },
+    tribe: { ...VISUAL_CONFIGS.base, icon: VISUAL_CONFIGS.tribe.icon },
+    music: { ...VISUAL_CONFIGS.base, icon: VISUAL_CONFIGS.music.icon },
+    work: { ...VISUAL_CONFIGS.base, icon: VISUAL_CONFIGS.work.icon },
+    media: { ...VISUAL_CONFIGS.base, icon: VISUAL_CONFIGS.media.icon },
+    about: { ...VISUAL_CONFIGS.base, icon: VISUAL_CONFIGS.about.icon },
+    default: VISUAL_CONFIGS.default
+} as const;
+
 const getLinkVisuals = (url: string) => {
     const path = url.toLowerCase();
-    const baseVisual = { color: 'text-primary', bg: 'bg-primary/10' };
     
-    if (path.includes('event')) return { ...baseVisual, icon: <Calendar size={20} /> };
-    if (path.includes('shop') || path.includes('loja')) return { ...baseVisual, icon: <ShoppingBag size={20} /> };
-    if (path.includes('tribe') || path.includes('tribo')) return { ...baseVisual, icon: <Users size={20} /> };
-    if (path.includes('music') || path.includes('música') || path.includes('musica')) return { ...baseVisual, icon: <Music size={20} /> };
-    if (path.includes('work') || path.includes('trabalhe')) return { ...baseVisual, icon: <Briefcase size={20} /> };
-    if (path.includes('media') || path.includes('midia')) return { ...baseVisual, icon: <Newspaper size={20} /> };
-    if (path.includes('about') || path.includes('sobre')) return { ...baseVisual, icon: <Info size={20} /> };
+    if (path.includes('event')) return PRECOMPUTED_VISUALS.event;
+    if (path.includes('shop') || path.includes('loja')) return PRECOMPUTED_VISUALS.shop;
+    if (path.includes('tribe') || path.includes('tribo')) return PRECOMPUTED_VISUALS.tribe;
+    if (path.includes('music') || path.includes('música') || path.includes('musica')) return PRECOMPUTED_VISUALS.music;
+    if (path.includes('work') || path.includes('trabalhe')) return PRECOMPUTED_VISUALS.work;
+    if (path.includes('media') || path.includes('midia')) return PRECOMPUTED_VISUALS.media;
+    if (path.includes('about') || path.includes('sobre')) return PRECOMPUTED_VISUALS.about;
     
-    return { icon: <Home size={20} />, color: 'text-white/70', bg: 'bg-white/5' };
+    return PRECOMPUTED_VISUALS.default;
 };
 
 interface NavbarProps {
