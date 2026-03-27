@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 final class ZenGame
 {
     /** @var string Global constant for cache versions */
-    public const CACHE_VERSION = 'v15';
+    public const CACHE_VERSION = 'v16';
 
     /** @var int Default Cache TTL (24 Hours) */
     public const DEFAULT_CACHE_TTL = 86400;
