@@ -41,6 +41,14 @@ Produção: https://djzeneyer.com
 - `zen-bit` → Eventos + Bandsintown (`zen-bit/v2`)
 - `zengame` → Gamificação, leaderboard, XP (`zengame/v1`)
 
+**Plugins WordPress de terceiros ativos:**
+- **GamiPress** → Motor de gamificação (pontos, ranks, conquistas)
+- **WooCommerce 10.5+** → E-commerce (HPOS ativo — nunca SQL em wp_posts)
+- **PagBank Connect** → Gateway de pagamento brasileiro (ex-PagSeguro) para WooCommerce
+- **Polylang** → Tradução de conteúdo WP (posts, páginas). A query `?lang=pt` é roteada pelo Polylang no backend. O frontend usa i18next para strings de UI — são sistemas separados.
+- **MailPoet** → Email marketing e newsletters. O endpoint `djzeneyer/v1/subscribe` integra com MailPoet.
+- **LiteSpeed Cache** → Cache server-side. Limpo no CI via SSH após deploy.
+
 ---
 
 ## Regras operacionais
