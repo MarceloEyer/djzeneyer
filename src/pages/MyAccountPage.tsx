@@ -467,6 +467,8 @@ const MyAccountContent: React.FC = () => {
       <HeadlessSEO
         title={t('account.meta_title', { stageName: t('common.artist_name') })}
         description={t('account.meta_desc')}
+        image="/images/zen-eyer-og-image.png"
+        noindex
       />
 
       <div className="min-h-screen pt-24 pb-16 bg-background selection:bg-primary selection:text-white">
@@ -484,7 +486,8 @@ const MyAccountContent: React.FC = () => {
                   <div className="relative inline-block mb-6">
                     <div className="absolute -inset-2 bg-gradient-to-tr from-primary via-secondary to-accent rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity animate-pulse" />
                     <img
-                      src={safeUrl(user.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff&size=128`}
+                      src={safeUrl(user.avatar, '/images/default-avatar.svg')}
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
                       className="relative w-32 h-32 rounded-full border-4 border-surface shadow-2xl object-cover"
                       alt={user.name}
                     />

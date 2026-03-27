@@ -221,7 +221,12 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   }
 
   // 4. Advanced Schema Logic (Breadcrumbs, FAQ, Events)
-  if (!schema) {
+  // ⚡ Bolt: Wrapped dynamic graph generation (Breadcrumbs, FAQs, Events schema) in useMemo.
+  // This prevents costly array mappings (split, filter, map) and string manipulations on every render,
+  // particularly for the complex MusicEvent mapping logic which includes Date instantiations.
+  const dynamicGraph = React.useMemo(() => {
+    if (schema) return null;
+
     const graph: Record<string, unknown>[] = [];
     const siteUrlClean = baseUrl.replace(/\/$/, '');
 
@@ -343,6 +348,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       }
     }
 
+    return graph;
+  }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage]);
+
+  if (!schema) {
     // Combine with WebPage base
     const webPageSchema = {
       '@type': 'WebPage',
@@ -355,7 +364,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       inLanguage: htmlLangAttribute,
     };
 
-    if (graph.length > 0) {
+    if (dynamicGraph && dynamicGraph.length > 0) {
       finalSchema = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -370,7 +379,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` }
           ] : []),
           webPageSchema,
-          ...graph
+          ...dynamicGraph
         ],
       };
     } else if (isHomepage) {
