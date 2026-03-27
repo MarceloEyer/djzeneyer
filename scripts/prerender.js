@@ -23,8 +23,8 @@ try {
   if (existsSync(ROUTES_DATA_PATH)) {
     const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
     data.routes.forEach(r => {
-      // Ignora rotas dinâmicas (com :param) — o prerender só cobre rotas estáticas
-      if (!r.en.includes(':') && !r.pt.includes(':')) {
+      // Ignora rotas privadas e dinâmicas; o prerender só cobre páginas públicas estáticas
+      if (!r.excludeFromPrerender && !r.en.includes(':') && !r.pt.includes(':')) {
         routesList.push(r.en === '' ? '/' : `/${r.en}`);
         routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
       }
@@ -234,6 +234,20 @@ async function prerender() {
   try {
     await startDevServer();
     const bandsintownData = await fetchEvents();
+
+    // 🌟 Inject Dynamic Event Routes into Prerender List
+    if (bandsintownData && bandsintownData.list) {
+      ['en', 'pt'].forEach(lang => {
+        if (Array.isArray(bandsintownData.list[lang])) {
+          bandsintownData.list[lang].forEach(event => {
+            if (event.canonical_path && !CONFIG.routes.includes(event.canonical_path)) {
+              CONFIG.routes.push(event.canonical_path);
+            }
+          });
+        }
+      });
+      console.log(`📋 Rotas dinâmicas de eventos injetadas. Total:`, CONFIG.routes.length);
+    }
 
     browser = await puppeteer.launch({
       headless: 'shell',

@@ -489,14 +489,18 @@ class Rest_Routes
         return isset($decoded->data->user_id) ? $decoded->data->user_id : null;
     }
 
-    // Format user data
+    // Format user data (login/register response)
     private static function format_user($user)
     {
+        $google_avatar = get_user_meta($user->ID, 'zeneyer_google_avatar', true);
+        $avatar = $google_avatar ?: (function_exists('get_avatar_url') ? (get_avatar_url($user->ID, ['size' => 200, 'default' => '404']) ?: '') : '');
+
         return [
             'id' => $user->ID,
             'email' => $user->user_email,
             'display_name' => $user->display_name,
             'roles' => $user->roles,
+            'avatar' => $avatar,
         ];
     }
 
@@ -623,6 +627,10 @@ class Rest_Routes
     {
         $user = get_userdata($user_id);
 
+        // Avatar: prefer Google OAuth photo, then Gravatar (with 404 default so empty is returned if no Gravatar)
+        $google_avatar = get_user_meta($user_id, 'zeneyer_google_avatar', true);
+        $avatar = $google_avatar ?: (function_exists('get_avatar_url') ? (get_avatar_url($user_id, ['size' => 200, 'default' => '404']) ?: '') : '');
+
         return [
             'id' => $user_id,
             'email' => $user->user_email,
@@ -633,6 +641,7 @@ class Rest_Routes
             'instagram_url' => get_user_meta($user_id, 'zen_instagram_url', true),
             'dance_role' => get_user_meta($user_id, 'zen_dance_role', true) ?: [],
             'gender' => get_user_meta($user_id, 'zen_gender', true),
+            'avatar' => $avatar,
         ];
     }
 

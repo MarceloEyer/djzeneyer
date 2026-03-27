@@ -23,9 +23,9 @@
 
 Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
-## Baseline tecnico canonico (2026-03-06)
+## Baseline tecnico canonico (2026-03-26)
 - Arquitetura: WordPress Headless (REST API) + React SPA
-- Frontend: React 18 + TypeScript + Vite 7 + Tailwind 3 + React Query v5 + React Router 7 + i18next
+- Frontend: React 19 + TypeScript + Vite 8 + Tailwind 4 + React Query v5 + React Router 7 + i18next
 - Backend: WordPress 6.0+ (recomendado 6.9+), PHP **8.1+** (zengame exige 8.1), WooCommerce, GamiPress
 - Node: 20+
 - Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: 1989-08-30.
@@ -41,7 +41,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 5. SEO por pagina com `<HeadlessSEO />`
 6. Filtragem pesada no backend (query params/endpoint agregador), frontend apenas renderiza
 7. SQL sempre preparado e inputs sanitizados no PHP
-8. Nao atualizar ESLint para v10 (manter v9)
+8. Nao atualizar ESLint para v11+ (manter v10)
 9. Nao commitar `.env`, segredos ou credenciais
 10. `UserContext.logout` e **sincrona**; nao usar `async/await` ao chama-la.
 11. `ProfileUpdatePayload` (`useQueries.ts`) deve incluir campos customizados (`real_name`, `gender`, etc.) para sync com o plugin `zeneyer-auth`.
@@ -60,7 +60,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - `zen-bit/v1` legado; usar `zen-bit/v2`
 - Namespace SEO canonico: `zen-seo/v1` (nao `zen-seo-lite/v1`)
 - `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
-- Tailwind canonico do projeto: v3; nao aplicar convencoes exclusivas de v4 sem migracao explicita
+- Tailwind canonico do projeto: v4; convencoes de v3 (ex: `tailwind.config.js` class-based) nao se aplicam
 - SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
 - **Hybrid Prerender Architecture (2026-03)**:
   - **Build/SEO**: O `scripts/prerender.js` e o `scripts/generate-sitemap.js` buscam dados da **API interna do WordPress** (`/zen-bit/v2/events`) como primária, com fallback técnico para Bandsintown (ID `id_15619775`) se o WP estiver offline ou bloqueado.
@@ -82,9 +82,10 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Ao mexer em locales, validar o arquivo lido como UTF-8 e, se necessario, preferir escapes como `\u00A9`, `\u2014`, `\u2728`, `\u00D7`.
 
 ## Checklist de atualizacao de contexto
-- Atualizou versoes? sincronizar `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `GEMINI.md`
-- Mudou endpoint/namespace? sincronizar `docs/API.md` e skills relacionadas
+- Atualizou versões de stack? sincronizar `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `GEMINI.md`, `README.md`, `CLAUDE.md` e `SKILL.md` do djzeneyer-context
+- Mudou endpoint/namespace? sincronizar `docs/API.md`, `CONTEXT.md` e skills relacionadas
 - Mudou regra de arquitetura? sincronizar `CONTEXT.md` + skill `djzeneyer-context`
+- Mudou contrato ZenGame (cache keys, TTLs, campos da API)? sincronizar `plugins/zengame/CONTEXT.md`
 
 
 ## Politica de Atualizacao de Contexto e Skills (Obrigatoria)
@@ -120,7 +121,18 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 - **Gradientes**: Permitidos de forma sutil para profundidade; evitar em blocos de texto longo.
 - **Tom**: Manter a voz do "Amigo Zen" (humilde, generosa e profissional).
 
-## Regra operacional adicional (2026-03)
-91. Build de frontend deve passar em `npm run perf:budget` para evitar regressao de bundle.
-92. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html`.
-93. **SSOT Data Fetching**: `useQueries.ts` é o cubo central; `fetch()` em componentes é desencorajado e deve ser migrado sempre que possível.
+## Regras operacionais adicionais (2026-03)
+14. Build de frontend deve passar em `npm run perf:budget` para evitar regressão de bundle.
+15. **CSP Strict Alignment**: Evitar JavaScript inline em tags (`onload`, `onclick`) e blocos `<script>` no `index.html`.
+16. **SSOT Data Fetching**: `useQueries.ts` é o cubo central; `fetch()` em componentes é desencorajado e deve ser migrado sempre que possível.
+17. **Rotas Autenticadas Privadas**: `dashboard` e `my-account` devem permanecer `noindex`, fora do sitemap público e fora do prerender, sempre usando OG image genérica do site em vez de avatar do usuário.
+
+## ZenGame / GamiPress — Contratos e Armadilhas
+
+- `gamipress_get_rank_types()` retorna array **associativo** (chave = slug do rank type); usar `array_values()` antes de indexar com `[0]` ou o rank cai sempre para fallback "Zen Guest"
+- `date_earned` de conquistas ganhas vem do objeto de user-achievement (tabela `gamipress_user_achievements`), não de post meta `_gamipress_earned_at`
+- Pedidos WooCommerce: usar exclusivamente `wc_get_orders()` — nunca SQL direto em `wp_posts` (HPOS ativo)
+- Cache dashboard: 24h (TTL), chave `djz_gamipress_dashboard_v14_{user_id}`
+- Cache leaderboard: 1h (TTL), chave `djz_gamipress_leaderboard_v14_{limit}` — invalidado em qualquer premiação via `clear_user_cache()`
+- Cache stats: 6h, chaves `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}`
+- Deploy CI: transients ZenGame são limpos via `wp transient delete --search="djz_gamipress"` após cada deploy

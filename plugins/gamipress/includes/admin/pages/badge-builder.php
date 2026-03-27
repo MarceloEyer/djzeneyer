@@ -381,7 +381,6 @@ function gamipress_badge_builder_page() {
                         'type' => 'text',
                         'desc' => gamipress_badge_builder_get_pro_notice(),
                         'attributes' => array( 'type' => 'hidden', ),
-                        'classes_cb' => 'cmb_conditional_fields_classes_cb',
                         'show_if' => array( 'fill_color_type' => 'gradient' ),
                     ),
                     'fill' => array(
@@ -411,7 +410,6 @@ function gamipress_badge_builder_page() {
                             'single' => __( 'Single', 'gamipress' ),
                             'gradient' => __( 'Gradient', 'gamipress' ),
                         ),
-                        'classes_cb' => 'cmb_conditional_fields_classes_cb',
                         'hide_if' => array(
                             'stroke_width' => '0'
                         ),
@@ -421,14 +419,12 @@ function gamipress_badge_builder_page() {
                         'type' => 'text',
                         'desc' => gamipress_badge_builder_get_pro_notice(),
                         'attributes' => array( 'type' => 'hidden', ),
-                        'classes_cb' => 'cmb_conditional_fields_classes_cb',
                         'show_if' => array( 'stroke_color_type' => 'gradient' ),
                     ),
                     'stroke' => array(
                         'name' => __( 'Color', 'gamipress' ),
                         'type' => 'colorpicker',
                         'default' => '#ff0000',
-                        'classes_cb' => 'cmb_conditional_fields_classes_cb',
                         'hide_if' => array(
                             'stroke_width' => '0'
                         ),
@@ -440,7 +436,6 @@ function gamipress_badge_builder_page() {
                             'round' => __( 'Round', 'gamipress' ),
                             'miter' => __( 'Square', 'gamipress' ),
                         ),
-                        'classes_cb' => 'cmb_conditional_fields_classes_cb',
                         'hide_if' => array(
                             'stroke_width' => '0'
                         ),

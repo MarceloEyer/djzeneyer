@@ -61,7 +61,7 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: 🔖 Generate metadata
         id: commit
@@ -77,9 +77,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]]; then
-            RANGE="${{ github.event.before }}..${{ github.sha }}"
-          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
             RANGE="HEAD^..HEAD"
           else
             RANGE="HEAD"
@@ -196,15 +194,7 @@ jobs:
             public/sitemap-pages.xml
           retention-days: 7
 
-      - name: 📤 Upload GamiPress files
-        if: hashFiles('gamipress/**') != ''
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-gamipress-${{ steps.commit.outputs.hash }}
-          path: gamipress/
-          retention-days: 7
-
-  # ═══════════════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════════
   # JOB 2: DEPLOY (RESTAURADO DO LOG ORIGINAL)
   # ═══════════════════════════════════════════════════════════════════════════════
   deploy:
@@ -259,13 +249,6 @@ jobs:
         with:
           name: build-sitemaps-${{ needs.build.outputs.commit_hash }}
           path: ./sitemaps-deploy
-
-      - name: 📥 Download GamiPress files
-        if: ${{ !inputs.skip_build }}
-        uses: actions/download-artifact@v8
-        with:
-          name: build-gamipress-${{ needs.build.outputs.commit_hash }}
-          path: ./gamipress-deploy
 
       # --- SSH SETUP ---
       - name: 🔐 Setup SSH
@@ -358,18 +341,6 @@ jobs:
           switches: -avzr --delete --checksum
           path: templates/
           remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/templates/
-          remote_host: ${{ env.SSH_HOST }}
-          remote_user: ${{ env.SSH_USER }}
-          remote_port: ${{ env.SSH_PORT }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: 🎮 Deploy GamiPress/
-        if: hashFiles('gamipress-deploy/**') != ''
-        uses: burnett01/rsync-deployments@8.0.4
-        with:
-          switches: -avzr --delete --checksum
-          path: gamipress-deploy/
-          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/gamipress/
           remote_host: ${{ env.SSH_HOST }}
           remote_user: ${{ env.SSH_USER }}
           remote_port: ${{ env.SSH_PORT }}
@@ -487,7 +458,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.REMOTE_ROOT }}
-            if command -v wp &> /dev/null; then wp litespeed-purge all 2>/dev/null; fi
+            if command -v wp &> /dev/null; then
+              wp litespeed-purge all 2>/dev/null || true
+              # Clear ZenGame transient cache so fresh GamiPress data is fetched after deploy
+              wp transient delete --search="djz_gamipress" 2>/dev/null || true
+              wp transient delete --search="djz_stats" 2>/dev/null || true
+            fi
             if php -r "opcache_reset();" 2>/dev/null; then echo "✅ OPcache flushed"; else curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null; fi
 
       - name: 🎉 Success
