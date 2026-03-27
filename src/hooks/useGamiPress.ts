@@ -36,6 +36,7 @@ const FALLBACK: GamiPressData = {
   rank: {
     current: {
       id: 0,
+      menu_order: 0,
       title: 'Zen Novice',
       image: '',
     },
