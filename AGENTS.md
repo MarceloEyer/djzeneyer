@@ -1,55 +1,129 @@
-# AGENTS.md - DJ Zen Eyer
+# AGENTS.md — DJ Zen Eyer
+# Instruções operacionais para agentes de IA neste repositório.
+# Lido por: OpenAI Codex, e qualquer agente sem arquivo de contexto dedicado.
+# Idioma padrão: Português Brasileiro.
+# Última revisão: 2026-03-27
 
-> Instruções operacionais para agentes de IA neste repositório.
-> Idioma padrão: Português Brasileiro.
+---
 
-## Precedência
-- Em caso de conflito, seguir esta ordem:
-  1. Código real do repositório
-  2. `AI_CONTEXT_INDEX.md`
-  3. Este arquivo (`AGENTS.md`)
-  4. Documentação específica em `docs/*`
-  5. Skills e guias auxiliares
+## Precedência (em caso de conflito)
 
-## Resumo do Projeto
-- Site/plataforma oficial do DJ Zen Eyer
-- Arquitetura: WordPress Headless + React SPA
-- Produção: https://djzeneyer.com
+1. Código real do repositório (`package.json`, `src/`, `plugins/`) — fonte final
+2. `AI_CONTEXT_INDEX.md` — regras canônicas globais
+3. Este arquivo (`AGENTS.md`) — regras operacionais
+4. `docs/` — referência técnica detalhada
+5. Skills em `.agents/skills/`
 
-## Stack canônica
-- Frontend: React 19, TypeScript strict, Vite 8, Tailwind 4, React Query v5, React Router 7, i18next
-- Backend: WordPress 6.0+, PHP 8.1+, WooCommerce, GamiPress
-- Plugins customizados ativos no repo: `zeneyer-auth`, `zen-seo-lite`, `zen-bit`, `zengame`
-- Infra: Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions
-- Node: 20+
+---
+
+## Projeto
+
+Site/plataforma oficial do DJ Zen Eyer (Marcelo Eyer Fernandes) — Bicampeão Mundial de Brazilian Zouk.
+Arquitetura: WordPress Headless + React SPA com estética MMORPG premium.
+Produção: https://djzeneyer.com
+
+---
+
+## Stack canônica (verificar package.json antes de assumir versões)
+
+| Camada | Tecnologia |
+|---|---|
+| Frontend | React **19** + TypeScript **6** strict + Vite **8** + Tailwind **4** |
+| State/Fetch | React Query **v5** (`@tanstack/react-query`) |
+| Roteamento | React Router **7** + i18next (EN `/` e PT `/pt`) |
+| Backend | WordPress 6.9+, PHP **8.3**, WooCommerce 10.5+ (HPOS ativo), GamiPress |
+| Infra | Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions |
+| Node | 20+ |
+
+**Plugins customizados ativos:**
+- `zeneyer-auth` → JWT + Google OAuth (`zeneyer-auth/v1`)
+- `zen-seo-lite` → SEO headless dinâmico (`zen-seo/v1`)
+- `zen-bit` → Eventos + Bandsintown (`zen-bit/v2`)
+- `zengame` → Gamificação, leaderboard, XP (`zengame/v1`)
+
+---
 
 ## Regras operacionais
-1. Todo texto visível deve usar i18n (`t('chave')`) em PT/EN
-2. SEO por página deve usar `HeadlessSEO`
-3. Páginas devem seguir lazy loading quando compatível com a arquitetura existente
-4. Data fetching no frontend deve preferir hooks centralizados e React Query
-5. Evitar `fetch()` direto em componentes de página, salvo exceção intencional e documentada
-6. Filtragem pesada deve preferir backend
-7. PHP deve usar sanitização, escaping e queries preparadas
-8. Nunca commitar segredos
-9. Não atualizar ESLint para v11+
-10. Não reintroduzir **music player embutido** no site sem decisão explícita
-11. Arquivos de tradução em `src/locales/**/*.json` devem ser editados em UTF-8. Se houver dúvida com emoji, travessão, reticências, `©` ou `×`, usar escape Unicode JSON em vez de gravar texto com encoding duvidoso.
-12. Após editar locales, verificar se não entrou mojibake (`Ã`, `â`, `ðŸ`, `Â©`) e rodar pelo menos `npm run build`.
+
+### i18n (obrigatório)
+- Todo texto visível usa `t('chave')` via `useTranslation()` de react-i18next.
+- Strings hardcoded em qualquer idioma são BUG.
+- Ao adicionar nova chave: adicionar em AMBOS `src/locales/pt/translation.json` E `src/locales/en/translation.json`.
+- Arquivos de locale devem ser UTF-8 limpo — nunca mojibake (`Ã`, `â`, `ðŸ`, `Â©`).
+
+### Data fetching (obrigatório)
+- Nunca usar `fetch()` diretamente em componentes.
+- Todo data fetching via hooks em `src/hooks/useQueries.ts` (React Query v5).
+- Keys de query via `QUERY_KEYS` em `src/config/queryClient.ts`.
+
+### SEO
+- Toda nova rota usa `<HeadlessSEO />` com parâmetros corretos.
+- Rotas privadas (`dashboard`, `my-account`) usam `<HeadlessSEO noindex />` com OG image genérica.
+- Avatar do usuário nunca deve aparecer em OG tags.
+- Ao criar nova rota pública: atualizar `scripts/routes-config.json` (SSOT de rotas).
+
+### Performance
+- Páginas: lazy loading via `React.lazy()` + `Suspense`.
+- Contextos: valores de Provider sempre em `useMemo`. Funções em `useCallback`.
+- PHP: evitar N+1 queries — usar `_prime_post_caches()` e `update_meta_cache()` para batch.
+- Nunca usar `_embed` em endpoints de lista WP REST API.
+
+### PHP / WordPress
+- WooCommerce HPOS ativo: nunca SQL em `wp_posts` para pedidos → usar `wc_get_orders()`.
+- `gamipress_get_rank_types()` retorna array associativo → sempre `array_values()` antes de `[0]`.
+- `get_avatar_url()` e `get_the_post_thumbnail_url()` podem retornar `false` → coerção: `$val ?: ''`.
+- Todo `get_param()` deve ser sanitizado. Queries SQL com prepared statements.
+
+### Armadilhas conhecidas (ler antes de qualquer fix)
+- **`safeUrl(null)`** retorna `'#'` (truthy) → `safeUrl(url) || fallback` NUNCA executa. Sempre: `safeUrl(url, '/fallback.svg')`.
+- **`loadingInitial` vs `loading`** no UserContext: usar `loadingInitial` em guards de rota privada — `loading` é para ações, default `false`, e causa tela branca no CTRL+F5.
+- **lucide-react 1.x**: ícones Facebook, Instagram, Youtube foram removidos → usar `src/components/icons/BrandIcons.tsx`.
+- **Vite base path**: assets em `public/` raiz NÃO chegam ao webroot em produção. Usar `public/images/` para assets que precisam ficar na raiz.
+- **Class components**: não podem usar `useTranslation()` → usar `withTranslation()` HOC.
+- **Zod schemas**: PHP retorna `false` para imagens sem thumbnail → `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
+
+### Build e Deploy
+- Minificador: OXC (padrão Vite 8) — nunca `minify: 'esbuild'`.
+- Prerender: `scripts/prerender.js` via Puppeteer — nunca remover.
+- ESLint ignores obrigatórios: `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`.
+- `fetch-depth: 2` no CI — nunca `0`.
+
+---
 
 ## Regras de design e UX
-1. Direcao: Premium Contemporaneo + Imersao MMORPG.
-2. Referencia: Paginas **Zen Tribe** e **Dashboard** sao os padroes de qualidade.
-3. Foco: HUDs, indicadores de progresso, micro-animacoes e **Azul Eletrico**.
-4. **PROIBIDO**: Gradiente chamativo em titulos principais e layouts estilo "template genérico".
-5. Em caso de dúvida, imitar a sofisticacao da Zen Tribe.
+
+- **Estética:** Premium contemporâneo + imersão MMORPG.
+- **Paleta:** Azul elétrico para destaques + tema escuro profundo.
+- **Referência de qualidade:** páginas Zen Tribe e Dashboard.
+- **PROIBIDO:** gradiente chamativo em títulos principais, layouts estilo "template genérico".
+
+---
+
+## Proibições absolutas
+
+- ❌ Commitar `.env`, segredos ou credenciais.
+- ❌ Deletar `.bolt`, `.devcontainer`, `.agents`, `.jules`, `.gemini` — usados por outros agentes.
+- ❌ Remover lógica de renderização por slug em NewsPage/EventsPage — crítico para SEO.
+- ❌ Remover PWA (`site.webmanifest`, service workers).
+- ❌ Fazer "resumo executivo" de arquivos de contexto (`CLAUDE.md`, `AI_CONTEXT_INDEX.md`, `AGENTS.md`, etc.) — preservar todo conteúdo técnico.
+- ❌ Alterar ferramentas base (ESLint, TypeScript major, Vite major) sem aprovação explícita.
+- ❌ `pnpm-lock.yaml` ou `plan.md` em PRs — o projeto usa npm.
+- ❌ SQL direto em `wp_posts` para pedidos WooCommerce.
+- ❌ Reintroduzir music player embutido sem decisão explícita.
+
+---
 
 ## Governança de contexto
-- Mudanças relevantes de arquitetura, API, fluxo, identidade pública, SEO estrutural, segurança ou deploy devem atualizar o contexto no mesmo trabalho
-- Se a mudança não exigir atualização de contexto, registrar explicitamente que nenhuma atualização foi necessária
 
-## Verificação local
+Mudanças relevantes de arquitetura, API, fluxo, SEO estrutural, segurança ou deploy
+**devem atualizar os arquivos de contexto no mesmo trabalho**.
+Se não exigir atualização, registrar explicitamente que nenhuma foi necessária.
+
+---
+
+## Verificação local obrigatória antes de PR
+
 ```bash
-npm run lint
-npm run build
+npm run lint    # Zero erros (warnings são aceitáveis)
+npm run build   # Build completo com prerender deve passar
 ```

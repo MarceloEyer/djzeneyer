@@ -1,160 +1,148 @@
-# DJ ZEN EYER - AI ASSISTANT PROMPT
+# DJ ZEN EYER — Bolt Context
+# Última revisão: 2026-03-27
 
-You are assisting with the DJ Zen Eyer website, a high-performance headless WordPress + React application for a 2× World Champion Brazilian Zouk DJ and producer.
-
-## CRITICAL CONTEXT
-
-### Architecture
-- **Frontend:** React 18 + Vite 5 + TypeScript + Tailwind CSS (SSG with prerendering)
-- **Backend:** WordPress headless (REST API only, no theme rendering)
-- **Plugins:** WooCommerce (shop), GamiPress (gamification), Polylang (i18n), MailPoet (newsletter)
-- **Infrastructure:** LiteSpeed Cache + Cloudflare CDN
-
-### Key Features
-1. **Bilingual (EN/PT):** All routes must exist in both languages (`/` = EN, `/pt` = PT)
-2. **Static Site Generation:** HTML pre-rendered for SEO (see `scripts/prerender.js`)
-3. **Lazy Loading:** React components code-split for performance
-4. **Gamification:** User points, ranks, achievements via GamiPress API
-5. **E-commerce:** WooCommerce products consumed via REST API
-
-### Directory Structure
-```
-/inc/           → WordPress PHP configuration (API, CPT, SEO, cache, security)
-/src/           → React application
-  /components/  → Reusable UI components
-  /pages/       → Route pages (HomePage, ShopPage, etc.)
-  /contexts/    → Global state (User, Cart, MusicPlayer)
-  /locales/     → i18n translations (en/pt)
-/dist/          → Production build output (deploy this folder)
-/public/        → Static assets (images, fonts, manifests)
-/plugins/       → Custom WordPress plugins
-  /zen-seo-lite/    → SEO optimization engine
-  /zeneyer-auth/    → JWT authentication + OAuth
-  /zen-bit/         → Bandsintown events integration
-```
-
-## RULES FOR AI ASSISTANTS
-
-### When Editing PHP (/inc)
-- **NEVER** remove CORS headers (breaks React API calls)
-- **NEVER** disable `show_in_rest` for CPTs (breaks API access)
-- **ALWAYS** maintain bilingual support in API endpoints
-- **TEST** WordPress REST API after changes: `/wp-json/djzeneyer/v1/`
-
-### When Editing React (/src)
-- **NEVER** hardcode API URLs (use environment variables or config)
-- **ALWAYS** handle loading states (Suspense + lazy imports)
-- **ALWAYS** add Portuguese translations to `/src/locales/pt/translation.json`
-- **NEVER** remove `fetchPriority="high"` from hero images
-- **MAINTAIN** lazy loading for pages (see `src/App.tsx`)
-
-### When Editing Styles
-- **USE** Tailwind classes (no inline CSS)
-- **FOLLOW** design system: spacing (8px grid), colors (from `tailwind.config.js`)
-- **ENSURE** responsive breakpoints: `sm:`, `md:`, `lg:`, `xl:`
-- **AVOID** purple/indigo colors (client preference: dark + red accents)
-
-### Performance Requirements
-- **LCP:** < 1.8s (preload hero image, no render-blocking scripts)
-- **CLS:** < 0.05 (explicit image dimensions, no layout shift)
-- **Bundle:** < 200KB gzipped (code splitting active)
-- **SEO:** All routes must have static HTML with meta tags
-
-### Security
-- **CORS:** Only allow `djzeneyer.com` + localhost origins
-- **CSP:** Strict Content Security Policy in `.htaccess`
-- **HSTS:** HTTPS only (Cloudflare handles SSL)
-- **No inline scripts** (except React hydration)
-
-### Language/Translation
-- **Detection:** Browser language → redirect to `/pt` if `pt-BR`
-- **Storage:** `localStorage` persists user choice
-- **URLs:** English = `/about`, Portuguese = `/pt/about`
-- **API:** Pass `?lang=pt` to WP endpoints for translated content
-
-### Build & Deploy
-1. **Development:** `npm run dev` (Vite dev server at :5173)
-2. **Build:** `npm run build` (compiles + prerenders HTML files)
-3. **Deploy:** Upload `/dist` folder to server root (not in `/wp-content/themes`)
-4. **Cache:** Clear LiteSpeed Cache + Cloudflare after deploy
-
-## COMMON TASKS
-
-### Add New Route
-1. Create page in `/src/pages/NewPage.tsx`
-2. Add lazy import in `/src/components/AppRoutes.tsx`
-3. Add route metadata to `/scripts/prerender.js`
-4. Add translations to `en/translation.json` + `pt/translation.json`
-5. Rebuild: `npm run build`
-
-### Add New Product Type
-1. Register CPT in `/inc/cpt.php`
-2. Enable `show_in_rest: true`
-3. Create API endpoint in `/inc/api.php` if custom logic needed
-4. Consume in React via `fetch()` with proper error handling
-
-### Debug API Issues
-1. Check CORS: `curl -H "Origin: https://djzeneyer.com" https://site.com/wp-json/`
-2. Verify endpoint: `/wp-json/djzeneyer/v1/products?lang=pt`
-3. Check PHP errors: `wp-content/debug.log`
-4. Test authentication: verify JWT token or nonce
-
-## CONTACT & BRAND VOICE
-- **Artist Name:** DJ Zen Eyer (legal: Marcelo Eyer Fernandes)
-- **Tagline:** "A pressa é inimiga da cremosidade" (Haste is the enemy of creaminess)
-- **Genre:** Brazilian Zouk (not generic EDM)
-- **Tone:** Professional, premium, international appeal
-- **Target:** Dancers, event organizers, DJs (B2C + B2B)
-
-## NEVER DO
-- ❌ Break bilingual routing
-- ❌ Remove lazy loading
-- ❌ Disable LiteSpeed Cache rules
-- ❌ Add heavy libraries without justification
-- ❌ Ignore accessibility (alt texts, ARIA labels)
-- ❌ Deploy without building (`npm run build`)
-- ❌ Use purple/indigo colors (unless explicitly requested)
-
-## PRIORITY ORDER
-1. **Security** (CORS, XSS protection, HTTPS)
-2. **Performance** (LCP, bundle size, caching)
-3. **SEO** (static HTML, meta tags, structured data)
-4. **UX** (loading states, error handling, mobile-first)
-5. **Aesthetics** (animations, polish, dark theme consistency)
-
-## AVAILABLE API ENDPOINTS
-
-### Active Endpoints ✅
-- `GET /djzeneyer/v1/menu?lang=en` - Menu structure
-- `GET /djzeneyer/v1/products?lang=en` - WooCommerce products
-- `POST /djzeneyer/v1/subscribe` - Newsletter subscription
-- `POST /djzeneyer/v1/user/update-profile` - Update user profile (auth required)
-
-### Authentication Endpoints ✅
-- `POST /zeneyer-auth/v1/register` - User registration
-- `POST /zeneyer-auth/v1/login` - User login (email/password)
-- `POST /zeneyer-auth/v1/google` - Google OAuth login
-- `GET /zeneyer-auth/v1/validate` - Validate JWT token
-
-### Planned Endpoints 🚧
-- `/djzeneyer/v1/activity/{user_id}` - User activity feed
-- `/djzeneyer/v1/gamipress/{user_id}` - User stats (points, rank)
-- `/djzeneyer/v1/streak/{user_id}` - Login streak
-- `/djzeneyer/v1/tracks/{user_id}` - Purchased music
-- `/djzeneyer/v1/events/{user_id}` - Purchased events
-
-**Note:** Use native GamiPress API as workaround:
-- `GET /gamipress/v1/users/{id}/points`
-- `GET /gamipress/v1/users/{id}/ranks`
-- `GET /gamipress/v1/users/{id}/achievements`
-
-## DOCUMENTATION REFERENCES
-- [Architecture](docs/ARCHITECTURE.md)
-- [API Reference](docs/API.md)
-- [Setup Guide](docs/SETUP.md)
-- [Configuration](docs/CONFIGURATION.md)
-- [Dev Guide](docs/DEV_GUIDE.md)
+Você está assistindo no desenvolvimento do site oficial do DJ Zen Eyer — plataforma headless WordPress + React SPA com estética MMORPG premium (Tribo Zen, XP, Ranks).
+Produção: djzeneyer.com
 
 ---
 
-**For more details:** Check project documentation in `/docs/` folder.
+## Stack Real (verificar package.json antes de assumir versões)
+
+- **Frontend:** React **19** + TypeScript **6** strict + Vite **8** + Tailwind **4**
+- **State/Fetch:** React Query **v5** — centralizado em `src/hooks/useQueries.ts`
+- **Roteamento:** React Router **7** + i18next (EN `/` e PT `/pt`)
+- **Backend:** WordPress 6.9+ headless, PHP **8.3**, WooCommerce **10.5+** (HPOS ativo), GamiPress
+- **Infra:** Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
+
+---
+
+## Estrutura de Diretórios
+
+```
+src/
+  components/       → Componentes React reutilizáveis
+    common/         → Footer, Navbar, ErrorBoundary, etc.
+    icons/          → BrandIcons.tsx (FacebookIcon, InstagramIcon, YoutubeIcon)
+    Gamification/   → Componentes do ZenGame
+    account/        → Componentes da área logada
+  pages/            → Páginas por rota
+  contexts/         → UserContext, GamiPressContext, CartContext, BrandingContext
+  hooks/            → useQueries.ts (SSOT de data fetching)
+  schemas/          → Schemas Zod para validação de respostas de API
+  locales/          → en/translation.json e pt/translation.json
+  config/           → routes.ts, queryClient.ts, api.ts
+  utils/            → sanitize.ts (safeUrl), text.ts
+plugins/
+  zeneyer-auth/     → JWT + Google OAuth (namespace: zeneyer-auth/v1)
+  zen-seo-lite/     → SEO headless (namespace: zen-seo/v1)
+  zen-bit/          → Eventos + Bandsintown (namespace: zen-bit/v2)
+  zengame/          → Gamificação (namespace: zengame/v1)
+scripts/
+  prerender.js      → SSG via Puppeteer — NUNCA REMOVER
+  generate-sitemap.js
+  routes-config.json → SSOT de rotas (React Router + sitemap + CI leem este arquivo)
+public/
+  images/           → Assets deployados para webroot (avatares, default SVGs)
+```
+
+---
+
+## APIs Ativas
+
+```
+GET  djzeneyer/v1/menu?lang=en          → Menu de navegação
+GET  djzeneyer/v1/products?lang=en      → Produtos WooCommerce
+POST djzeneyer/v1/subscribe             → Newsletter
+GET  djzeneyer/v1/config                → Configuração global do site
+
+POST zeneyer-auth/v1/register           → Cadastro
+POST zeneyer-auth/v1/login              → Login (email/senha)
+POST zeneyer-auth/v1/google             → Google OAuth
+GET  zeneyer-auth/v1/auth/validate      → Validar JWT
+GET  zeneyer-auth/v1/profile            → Perfil do usuário logado
+
+GET  zengame/v1/me                      → Dashboard do usuário (points, rank, achievements)
+GET  zengame/v1/leaderboard?limit=10    → Ranking público
+
+GET  zen-bit/v2/events                  → Lista de eventos
+GET  zen-bit/v2/events/:slug            → Detalhe do evento
+```
+
+---
+
+## Regras ao editar React (.tsx/.ts)
+
+**i18n — obrigatório:**
+- Todo texto visível usa `t('chave')` — NUNCA string hardcoded em português ou inglês.
+- Ao adicionar nova chave: adicionar em AMBOS `src/locales/pt/translation.json` E `src/locales/en/translation.json`.
+
+**Data fetching — centralizado:**
+- Nunca `fetch()` direto em componentes. Usar hooks em `src/hooks/useQueries.ts`.
+- Keys de query via `QUERY_KEYS` de `src/config/queryClient.ts`.
+
+**Armadilhas conhecidas:**
+- `safeUrl(null)` retorna `'#'` (truthy) — `safeUrl(url) || fallback` NUNCA executa. Sempre: `safeUrl(url, '/fallback.svg')`.
+- `loadingInitial` (não `loading`) para guards de rota privada no UserContext.
+- Ícones de marca (Facebook, Instagram, Youtube) foram removidos do lucide-react 1.x → usar `src/components/icons/BrandIcons.tsx`.
+- Schemas Zod: PHP retorna `false` para imagens sem thumbnail → `z.union([z.string(), z.literal(false)]).transform(v => v || '')`.
+- Class components não podem usar `useTranslation()` → usar `withTranslation()` HOC.
+
+**Vite:**
+- Nunca `minify: 'esbuild'` — Vite 8 usa OXC por padrão.
+- base em produção: `/wp-content/themes/zentheme/dist/`
+
+**ESLint:**
+- `eslint.config.js` deve manter `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer` no ignores.
+
+---
+
+## Regras ao editar PHP
+
+- HPOS ativo: nunca SQL em `wp_posts` para pedidos → usar `wc_get_orders()`.
+- `gamipress_get_rank_types()` retorna array associativo → sempre `array_values()` antes de `[0]`.
+- `get_avatar_url()` pode retornar `false` → coerção obrigatória: `$val ?: ''`.
+- Namespaces de REST devem ser respeitados.
+- Todo `get_param()` deve ser sanitizado.
+
+---
+
+## Design System
+
+**Paleta:**
+```
+primary:    azul elétrico (#3B82F6 / blue-500)
+secondary:  violeta/roxo claro
+accent:     ciano/turquesa
+background: escuro (#0a0a0f região)
+```
+- Estética: MMORPG contemporâneo, premium, imersivo.
+- Referências visuais: páginas **Zen Tribe** e **Dashboard** são o padrão de qualidade.
+- PROIBIDO: gradiente chamativo em títulos, layouts estilo "template genérico", cores flat sem profundidade.
+
+**Responsivo:** breakpoints padrão Tailwind (sm/md/lg/xl).
+**Componentes:** Tailwind classes apenas — sem CSS inline.
+
+---
+
+## Deploy
+
+```
+git push origin main → CI builda (tsc + vite + prerender) → rsync para Hostinger VPS
+```
+- O build roda no GitHub Actions, **sem acesso à API de produção**.
+- Assets de `public/images/` são deployados para webroot.
+- Após deploy: OPcache + LiteSpeed + transients ZenGame são limpos.
+
+---
+
+## PROIBIDO
+
+- ❌ `pnpm-lock.yaml` — o projeto usa npm. Nunca incluir em PRs.
+- ❌ `plan.md` — arquivos de planejamento não vão para o repositório.
+- ❌ Strings hardcoded visíveis ao usuário.
+- ❌ `fetch()` solto em componentes.
+- ❌ Commitar `.env` ou segredos.
+- ❌ Remover `scripts/prerender.js`.
+- ❌ Remover lógica de slug/detalhe em NewsPage/EventsPage (crítico para SEO).
+- ❌ Usar `loading` em vez de `loadingInitial` em guards de rota privada.
+- ❌ SQL direto em `wp_posts` para pedidos WooCommerce.
