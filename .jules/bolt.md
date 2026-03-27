@@ -49,3 +49,7 @@
 ## 2026-03-09 - Map pattern to avoid redundant function calls in REST API
 **Learning:** In `djz_get_shop_page` inside `inc/api.php`, `djz_get_product_image_ids` was being called during the initial query loop to collect image IDs for cache priming, and then called *again* for the exact same products in the subsequent formatting loop. This caused N redundant calculations per shop section.
 **Action:** When deriving data in one loop that will be needed in a subsequent loop (especially for the same collection of items), cache the intermediate result in an associative array keyed by item ID (e.g., `$product_images_map[$id] = $img_ids`). Then perform an O(1) lookup in the second loop instead of recalculating.
+
+## 2026-03-10 - Unconditional Array Operations in Render Body
+**Learning:** Found complex schema generation logic (Breadcrumbs via `location.pathname.split`, FAQs via `faqs.map`, and Event mapping with complex object creations) in `src/components/HeadlessSEO.tsx` executed unconditionally on every render in the render body. Because `HeadlessSEO` is highly used, these recalculations represent an unnecessary CPU toll for unchanged URLs.
+**Action:** When implementing generation of metadata arrays or schemas in the render path, always wrap the resulting logic in a `React.useMemo` hook, using its necessary inputs (like `location.pathname`, `faqs`, `events`) as dependencies to avoid costly string splitting and mapping on unrelated re-renders.
