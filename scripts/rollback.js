@@ -44,6 +44,21 @@ if (!existsSync('.env')) {
         const REMOTE_ROOT = envVars['REMOTE_ROOT'];
         const THEME_NAME = envVars['THEME_NAME'];
 
+        // Sanitize: reject SSH connection vars with shell metacharacters
+        const safePattern = /^[a-zA-Z0-9._@:\-]+$/;
+        const pathPattern = /^[a-zA-Z0-9._\/\-]+$/;
+        const invalidVars = [
+            !safePattern.test(SSH_HOST) && 'SSH_HOST',
+            !safePattern.test(SSH_USER) && 'SSH_USER',
+            !safePattern.test(PORT) && 'SSH_PORT',
+            !pathPattern.test(REMOTE_ROOT) && 'REMOTE_ROOT',
+            !safePattern.test(THEME_NAME) && 'THEME_NAME',
+        ].filter(Boolean);
+        if (invalidVars.length > 0) {
+            console.error(`${RED}❌ Variáveis com caracteres inválidos: ${invalidVars.join(', ')}${NC}`);
+            process.exit(1);
+        }
+
         console.log(`${YELLOW}⚠️  Atenção: Isso irá reverter o frontend em produção para o último build anterior (dist-prev).${NC}`);
 
         const rl = readline.createInterface({
