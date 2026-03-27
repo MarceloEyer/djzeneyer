@@ -91,7 +91,7 @@ const DetailCard = ({ label, value }: { label: string; value: string }) => (
 
 const SupportArtistPage: React.FC = () => {
   const { t } = useTranslation();
-  const [openCurrency, setOpenCurrency] = useState<string | null>('BRL');
+  const [openCurrency, setOpenCurrency] = useState<string | null>(null);
 
   const supportReasons = [
     { icon: Music, title: t('support.reasons.music.title'), description: t('support.reasons.music.description') },
