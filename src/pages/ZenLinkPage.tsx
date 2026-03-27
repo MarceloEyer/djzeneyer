@@ -5,10 +5,11 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Youtube, Calendar, Mail,
+  Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
-  Instagram, Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle, Music2
+  Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle, Music2
 } from 'lucide-react';
+import { YoutubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useBranding } from '../contexts/BrandingContext';
 
@@ -146,8 +147,8 @@ const ZenLinkPageComponent = () => {
   const MAIN_LINKS = [
     { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: artist.social.spotify?.url, icon: <Music2 className="h-5 w-5" />, highlight: true },
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
-    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • bastidores`, url: artist.social.instagram?.url, icon: <Instagram className="h-5 w-5" /> },
-    { title: 'YouTube', subtitle: 'Sets ao vivo', url: artist.social.youtube?.url, icon: <Youtube className="h-5 w-5" /> },
+    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • bastidores`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
+    { title: 'YouTube', subtitle: 'Sets ao vivo', url: artist.social.youtube?.url, icon: <YoutubeIcon size={20} className="h-5 w-5" /> },
     { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || '5521987413091', 'Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
     { title: 'E-mail', subtitle: artist.identity.cnpj ? 'booking@djzeneyer.com' : 'Contact me', url: `mailto:booking@djzeneyer.com`, icon: <Mail className="h-5 w-5" /> },
     // Payment links from Dashboard

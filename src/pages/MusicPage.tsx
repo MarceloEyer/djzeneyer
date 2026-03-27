@@ -3,7 +3,8 @@ import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { Music2, Youtube, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
+import { Music2, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
+import { YoutubeIcon } from '../components/icons/BrandIcons';
 import { useTrackBySlug, useTrackInteraction } from '../hooks/useQueries';
 import { useParams, Link, generatePath } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
@@ -57,7 +58,7 @@ const MusicPage: React.FC = () => {
     },
     {
       name: 'YouTube',
-      icon: <Youtube className="text-[#FF0000]" />,
+      icon: <YoutubeIcon className="text-[#FF0000]" />,
       url: ARTIST.social.youtube.url,
       color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50'
     }
