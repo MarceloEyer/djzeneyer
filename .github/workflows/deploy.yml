@@ -454,14 +454,44 @@ jobs:
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ${{ env.REMOTE_ROOT }}
-            if command -v wp &> /dev/null; then
-              wp litespeed-purge all 2>/dev/null || true
-              # Clear ZenGame transient cache so fresh GamiPress data is fetched after deploy
-              wp transient delete --search="djz_gamipress" 2>/dev/null || true
-              wp transient delete --search="djz_stats" 2>/dev/null || true
+            WP_ROOT="${{ env.REMOTE_ROOT }}"
+
+            # Locate wp-cli — check PATH and common hosting locations
+            WP_CLI=""
+            for candidate in \
+              "$(command -v wp 2>/dev/null)" \
+              "$HOME/bin/wp" \
+              "$HOME/.local/bin/wp" \
+              "/usr/local/bin/wp" \
+              "/usr/bin/wp" \
+              "$HOME/public_html/wp" \
+              "/opt/cpanel/ea-php82/root/usr/bin/wp"; do
+              if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+                WP_CLI="$candidate"
+                break
+              fi
+            done
+
+            if [ -n "$WP_CLI" ]; then
+              echo "✅ WP CLI found: $WP_CLI"
+              # LiteSpeed full purge
+              "$WP_CLI" --path="$WP_ROOT" litespeed-purge all 2>/dev/null || true
+              # Clear Vite manifest transient so new CSS/JS hashes are picked up immediately
+              "$WP_CLI" --path="$WP_ROOT" transient delete --search="djz_vite_manifest" 2>/dev/null || true
+              # Clear ZenGame transient cache
+              "$WP_CLI" --path="$WP_ROOT" transient delete --search="djz_gamipress" 2>/dev/null || true
+              "$WP_CLI" --path="$WP_ROOT" transient delete --search="djz_stats" 2>/dev/null || true
+              echo "✅ WP CLI cache purge complete"
+            else
+              echo "⚠️ WP CLI not found — LiteSpeed purge skipped (purge manually if CSS/JS looks stale)"
             fi
-            if php -r "opcache_reset();" 2>/dev/null; then echo "✅ OPcache flushed"; else curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null; fi
+
+            # OPcache flush
+            if php -r "opcache_reset();" 2>/dev/null; then
+              echo "✅ OPcache flushed"
+            else
+              curl -s "${{ env.SITE_URL }}/?opcache_reset=1" -o /dev/null
+            fi
 
       - name: 🎉 Success
         if: success()
