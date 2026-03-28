@@ -78,6 +78,12 @@ add_action('init', function() {
 });
 
 /**
+ * Disable WP 6.7+ template output buffer for late-printed styles
+ * Only useful for block editor rendering — pure overhead in headless
+ */
+add_filter('wp_should_output_buffer_template_for_enhancement', '__return_false');
+
+/**
  * Dequeue All Frontend CSS/JS
  */
 add_action('wp_enqueue_scripts', function() {
