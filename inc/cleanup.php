@@ -174,6 +174,12 @@ add_filter('update_user_metadata', function($check, $object_id, $meta_key) {
 }, 10, 3);
 
 /**
+ * Disable WooCommerce Order Attribution tracking (sbjs_*, tk_ai, tk_qs cookies)
+ * Feeds WooCommerce Analytics which is disabled — cookies serve no purpose
+ */
+add_filter('woocommerce_order_attribution_tracking_enabled', '__return_false');
+
+/**
  * Disable WooCommerce Analytics entirely (not used)
  * Elimina queries de relatórios, customer tracking e admin notes no frontend
  */
