@@ -129,9 +129,10 @@ remove_action('wp_head', 'wc_gallery_noscript');
 remove_action('wp_head', 'wc_generator_tag');
 
 /**
- * Disable WooCommerce Analytics customer tracking on frontend
- * Causa leitura+escrita no usermeta em toda pageview de usuário logado
+ * Disable WooCommerce Analytics entirely (not used)
+ * Elimina queries de relatórios, customer tracking e admin notes no frontend
  */
+add_filter('woocommerce_analytics_enabled', '__return_false');
 add_action('init', function() {
     remove_action(
         'wp_loaded',
