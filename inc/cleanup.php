@@ -122,7 +122,7 @@ add_action('wp_enqueue_scripts', function() {
     // GamiPress
     wp_dequeue_style('gamipress-css');
     wp_deregister_style('gamipress-css');
-    
+
     // Scripts
     $scripts = [
         'wp-embed',
@@ -130,6 +130,9 @@ add_action('wp_enqueue_scripts', function() {
         'wc-cart-fragments',
         'woocommerce',
         'wc-add-to-cart',
+        'gamipress-js',        // headless — React handles UI, no frontend JS needed
+        'sourcebuster-js',     // WooCommerce order attribution — disabled
+        'wc-order-attribution', // WooCommerce order attribution — disabled
     ];
     
     foreach ($scripts as $script) {
@@ -178,6 +181,12 @@ add_filter('update_user_metadata', function($check, $object_id, $meta_key) {
     if ($meta_key === 'wc_last_active') return false;
     return $check;
 }, 10, 3);
+
+/**
+ * Disable WooCommerce Geolocation redirect
+ * Prevents per-request geolocation check when not using location-based pricing
+ */
+add_filter('woocommerce_geolocation_update_customer_from_request', '__return_false');
 
 /**
  * Disable WooCommerce Order Attribution tracking (sbjs_*, tk_ai, tk_qs cookies)
