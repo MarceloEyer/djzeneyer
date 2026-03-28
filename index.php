@@ -113,5 +113,9 @@ if ($serve_file) {
     exit;
 }
 
-// 6. Fallback final: Se não é um arquivo e não é rota estática, deixa o WordPress decidir.
-return;
+// 6. Fallback: Serve o SPA shell para rotas dinâmicas/privadas sem prerender (ex: /dashboard, /my-account).
+// Chegando aqui significa: não é asset, não é rota WP, sem arquivo prerendered → React monta no cliente.
+get_header();
+echo '<div id="root"></div>';
+get_footer();
+exit;
