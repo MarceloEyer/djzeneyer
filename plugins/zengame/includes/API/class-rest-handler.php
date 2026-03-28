@@ -140,8 +140,9 @@ final class REST_Handler
         $types = \function_exists('gamipress_get_points_types') ? \gamipress_get_points_types() : [];
         $leaderboard = [];
 
-        foreach ($types as $type) {
-            $slug = (string) ($type['slug'] ?? '');
+        foreach ($types as $type_key => $type) {
+            // GamiPress keys the array by slug; 'slug' sub-field may not be present.
+            $slug = (string) ($type['slug'] ?? $type_key);
             if ($slug === '') {
                 continue;
             }
