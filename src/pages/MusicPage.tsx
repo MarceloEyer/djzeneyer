@@ -73,6 +73,46 @@ const MusicPage: React.FC = () => {
     [streamingPlatforms]
   );
 
+  // Schema for the listing page — must be declared before any conditional return
+  const musicListingSchema = useMemo(() => {
+    const baseUrl = ARTIST.site.baseUrl;
+    const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'MusicGroup',
+          '@id': `${baseUrl}/#artist`,
+          name: ARTIST.identity.stageName,
+          url: baseUrl,
+          genre: ['Brazilian Zouk', 'Zouk', 'Latin Dance Music'],
+          sameAs: [
+            ARTIST.social.spotify.url,
+            ARTIST.social.appleMusic.url,
+            ARTIST.social.soundcloud.url,
+            ARTIST.social.youtube.url,
+          ].filter(Boolean),
+        },
+        {
+          '@type': 'CollectionPage',
+          '@id': `${pageUrl}#webpage`,
+          url: pageUrl,
+          name: t('music_page_title'),
+          description: t('music_page_meta_desc'),
+          isPartOf: { '@id': `${baseUrl}/#website` },
+          about: { '@id': `${baseUrl}/#artist` },
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl },
+              { '@type': 'ListItem', position: 2, name: t('music_page_title'), item: pageUrl },
+            ],
+          },
+        },
+      ],
+    };
+  }, [t, currentLang]);
+
   // --- RENDERIZACAO DE FAIXA UNICA (DETALHE) ---
   if (!singleLoading && slug && singleTrack) {
     const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
@@ -171,7 +211,8 @@ const MusicPage: React.FC = () => {
       <HeadlessSEO
         title={`${t('music_page_title')} | DJ Zen Eyer`}
         description={t('music_page_meta_desc')}
-        url={`${window.location.origin}${getLocalizedRoute('music', currentLang)}`}
+        url={`${ARTIST.site.baseUrl}${getLocalizedRoute('music', currentLang)}`}
+        schema={musicListingSchema}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">

@@ -66,9 +66,9 @@ export const ZenGameUserDataSchema = z.object({
   achievement_highlights: z.array(ZenGameAchievementSchema).optional(),
   logs: z.array(ZenGameLogSchema),
   stats: ZenGameStatsSchema,
-  main_points_slug: z.string(),
-  lastUpdate: z.string(),
-  version: z.string(),
+  main_points_slug: z.string().catch('points'),
+  lastUpdate: z.string().catch(''),
+  version: z.string().catch(''),
 }).catchall(z.unknown());
 
 export const ZenGameLeaderboardEntrySchema = z.object({

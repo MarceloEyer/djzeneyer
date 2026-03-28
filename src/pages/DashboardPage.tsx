@@ -52,27 +52,24 @@ const SectionHeader = ({ title, icon: Icon, badge }: { title: string; icon?: Rea
   </div>
 );
 
-const Gauge = ({ progress, size = 180, strokeWidth = 14, color = 'rgb(var(--color-primary))', label, subLabel }: { progress: number; size?: number; strokeWidth?: number; color?: string; label?: string; subLabel?: string }) => {
+const Gauge = ({ progress, strokeWidth = 14, color = 'rgb(var(--color-primary))', label, subLabel }: { progress: number; strokeWidth?: number; color?: string; label?: string; subLabel?: string }) => {
+  // Responsive: use a viewBox so the SVG scales with its container
+  const size = 180;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (progress / 100) * circumference;
+  const offset = circumference - (Math.min(100, Math.max(0, progress)) / 100) * circumference;
 
   return (
-    <div className="relative flex items-center justify-center group" style={{ width: size, height: size }}>
-      <svg className="transform -rotate-90" width={size} height={size}>
-        {/* Background Circle */}
+    <div className="relative flex items-center justify-center group w-full max-w-[180px] aspect-square mx-auto">
+      <svg className="transform -rotate-90 w-full h-full" viewBox={`0 0 ${size} ${size}`}>
         <circle
           cx={size / 2} cy={size / 2} r={radius}
-          fill="transparent"
-          stroke="currentColor"
-          strokeWidth={strokeWidth}
-          className="text-white/5"
+          fill="transparent" stroke="currentColor"
+          strokeWidth={strokeWidth} className="text-white/5"
         />
-        {/* Progress Circle */}
         <motion.circle
           cx={size / 2} cy={size / 2} r={radius}
-          fill="transparent"
-          stroke={color}
+          fill="transparent" stroke={color}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
@@ -82,13 +79,11 @@ const Gauge = ({ progress, size = 180, strokeWidth = 14, color = 'rgb(var(--colo
           className="drop-shadow-[0_0_8px_rgba(var(--color-primary),0.5)]"
         />
       </svg>
-      {/* Glow Effect */}
       <div className="absolute inset-0 rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity" style={{ background: color }} />
-      
-      <div className="absolute flex flex-col items-center justify-center text-center">
-        <span className="text-3xl font-black font-display text-white">{progress}%</span>
-        {label && <span className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1">{label}</span>}
-        {subLabel && <span className="text-[9px] text-primary font-bold mt-1">{subLabel}</span>}
+      <div className="absolute flex flex-col items-center justify-center text-center px-2">
+        <span className="text-2xl sm:text-3xl font-black font-display text-white">{progress}%</span>
+        {label && <span className="text-[9px] font-black uppercase tracking-widest text-white/40 mt-1">{label}</span>}
+        {subLabel && <span className="text-[8px] text-primary font-bold mt-1 leading-tight text-center">{subLabel}</span>}
       </div>
     </div>
   );
@@ -189,7 +184,9 @@ const DashboardContent = () => {
   const rankStars = rankProgress >= 66 ? 3 : rankProgress >= 33 ? 2 : rankProgress > 0 ? 1 : 0;
 
   const earnedAchievements = gamipress.achievements_earned || [];
+  // leaderboardData is Record<pointType, entries[]> — take the first point type
   const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
+  const joinedYear = new Date().getFullYear();
 
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">
@@ -203,50 +200,50 @@ const DashboardContent = () => {
       <div className="container mx-auto px-4 max-w-[1400px]">
         
         {/* --- TOP HEADER & PROFILE --- */}
-        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex items-center gap-6">
-            <div className="relative">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="relative shrink-0">
               <div className="absolute inset-0 bg-primary/20 blur-3xl animate-pulse rounded-full" />
               <img
                 src={safeUrl(user.avatar, '/images/default-avatar.svg')}
-                className="relative z-10 h-24 w-24 md:h-28 md:w-28 rounded-3xl object-cover border-2 border-primary/40 shadow-neon-sm"
+                className="relative z-10 h-20 w-20 sm:h-28 sm:w-28 rounded-3xl object-cover border-2 border-primary/40 shadow-neon-sm"
                 alt={user.display_name}
                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
               />
-              <div className="absolute -bottom-2 -right-2 z-20 flex h-8 w-8 items-center justify-center rounded-xl bg-primary shadow-lg border-2 border-background">
-                <Crown size={14} className="fill-white text-white" />
+              <div className="absolute -bottom-2 -right-2 z-20 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-primary shadow-lg border-2 border-background">
+                <Crown size={13} className="fill-white text-white" />
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl md:text-5xl font-black font-display tracking-tighter">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-display tracking-tighter truncate">
                   {user.display_name || user.name}
                 </h1>
-                <Bell size={20} className="text-white/20 hover:text-white cursor-pointer transition-colors" />
+                <Bell size={18} className="text-white/20 hover:text-white cursor-pointer transition-colors shrink-0" />
               </div>
-              <div className="flex items-center gap-3 text-sm font-bold opacity-70">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm font-bold opacity-70">
                 <span className="flex items-center gap-1.5 text-primary">
-                  <Flame size={16} className="fill-current animate-bounce" />
-                  LEVEL {rankLevel}
+                  <Flame size={15} className="fill-current animate-bounce" />
+                  {t('dashboard.level')} {rankLevel}
                 </span>
                 <span className="text-white/30">•</span>
                 <span className="uppercase tracking-widest text-xs px-2 py-0.5 rounded bg-white/10 border border-white/10">
                   {currentRank}
                 </span>
-                <span className="hidden md:inline text-white/30">•</span>
-                <span className="hidden md:inline uppercase tracking-widest text-[10px] text-white/50">
-                  Joined {new Date().getFullYear()}
+                <span className="hidden sm:inline text-white/30">•</span>
+                <span className="hidden sm:inline uppercase tracking-widest text-[10px] text-white/50">
+                  {t('dashboard.joinedYear', { year: joinedYear })}
                 </span>
               </div>
             </div>
           </div>
           
-          <div className="flex flex-col items-end gap-2 text-right">
+          <div className="flex flex-col sm:items-end gap-2 text-left sm:text-right">
              <div className="flex items-center gap-3 mb-1">
-                <span className="text-xs font-black uppercase tracking-widest text-white/30">Rank Progression</span>
+                <span className="text-xs font-black uppercase tracking-widest text-white/30">{t('dashboard.rankProgression')}</span>
                 <span className="text-sm font-black text-primary font-display">{rankProgress}%</span>
              </div>
-             <div className="h-2 w-full md:w-64 bg-white/5 rounded-full overflow-hidden border border-white/5">
+             <div className="h-2 w-full sm:w-64 bg-white/5 rounded-full overflow-hidden border border-white/5">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${rankProgress}%` }}
@@ -254,25 +251,25 @@ const DashboardContent = () => {
                 />
              </div>
              <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1">
-                {rankExpCurrent.toLocaleString()} / {rankExpRequired.toLocaleString()} XP to level up
+                {rankExpCurrent.toLocaleString()} / {rankExpRequired.toLocaleString()} XP
              </p>
           </div>
         </div>
 
         {/* --- MAIN GRID --- */}
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-12 gap-4 sm:gap-6">
           
           {/* LEFT COLUMN (STATUS & ACTION) */}
-          <div className="col-span-12 lg:col-span-3 space-y-6">
+          <div className="col-span-12 lg:col-span-3 space-y-4 sm:space-y-6">
             
             {/* CURRENT STATUS */}
             <GlassCard glowColor="primary">
-              <SectionHeader title="Status" icon={Target} />
-              <div className="space-y-6">
+              <SectionHeader title={t('dashboard.status')} icon={Target} />
+              <div className="space-y-5">
                 {[
-                  { label: 'Daily Streak', value: `${streakCount} DAYS`, icon: Flame, color: 'text-orange-500', fill: 'fill-orange-500' },
-                  { label: 'Artifacts Found', value: artifactCount, icon: Music, color: 'text-secondary' },
-                  { label: 'Total Points', value: mainPoints.toLocaleString(), icon: Zap, color: 'text-primary', fill: 'fill-primary' }
+                  { label: t('dashboard.dayStreak'), value: `${streakCount}`, icon: Flame, color: 'text-orange-500', fill: 'fill-orange-500' },
+                  { label: t('dashboard.stats.artifacts'), value: String(artifactCount), icon: Music, color: 'text-secondary' },
+                  { label: t('dashboard.stats.mana'), value: mainPoints.toLocaleString(), icon: Zap, color: 'text-primary', fill: 'fill-primary' }
                 ].map((stat, i) => (
                   <div key={i} className="flex items-center justify-between group cursor-default">
                     <div className="flex items-center gap-3">
@@ -281,7 +278,7 @@ const DashboardContent = () => {
                       </div>
                       <span className="text-xs font-bold text-white/50">{stat.label}</span>
                     </div>
-                    <span className="text-lg font-black font-display group-hover:text-white transition-colors">{stat.value}</span>
+                    <span className="text-base sm:text-lg font-black font-display group-hover:text-white transition-colors">{stat.value}</span>
                   </div>
                 ))}
               </div>
@@ -323,21 +320,21 @@ const DashboardContent = () => {
             </GlassCard>
 
             <button onClick={() => navigate(routes.music)} className="w-full group rounded-[1.5rem] bg-gradient-to-r from-primary to-secondary p-4 flex items-center justify-between font-black uppercase tracking-widest text-xs hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-primary/20">
-              Explore Music
+              {t('dashboard.exploreMusic')}
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
 
           {/* MIDDLE COLUMN (Gauges & Activity) */}
-          <div className="col-span-12 lg:col-span-5 space-y-6">
+          <div className="col-span-12 lg:col-span-5 space-y-4 sm:space-y-6">
             
             <GlassCard noPadding glowColor="primary">
-              <div className="grid md:grid-cols-2 gap-8 p-8 items-center">
+              <div className="grid sm:grid-cols-2 gap-6 p-6 sm:p-8 items-center">
                 <div className="flex justify-center">
                   <Gauge 
                     progress={rankProgress} 
-                    label="Progress" 
-                    subLabel={nextRank ? `TO ${nextRank}` : 'MAX LEVEL'}
+                    label={t('dashboard.rankProgression')}
+                    subLabel={nextRank ? t('dashboard.toNextRank', { rank: nextRank }) : t('dashboard.maxLevel')}
                   />
                 </div>
                 <div className="space-y-6">
@@ -359,55 +356,63 @@ const DashboardContent = () => {
               </div>
             </GlassCard>
 
-            <div className="h-[500px] overflow-hidden">
+            <div className="max-h-[400px] sm:max-h-[500px] overflow-y-auto overflow-x-hidden">
                 <RecentActivity logs={gamipress.logs} hideHeader={false} />
             </div>
           </div>
 
           {/* RIGHT COLUMN (Badges & Competitive) */}
-          <div className="col-span-12 lg:col-span-4 space-y-6">
+          <div className="col-span-12 lg:col-span-4 space-y-4 sm:space-y-6">
             
             {/* BADGES EARNED */}
             <GlassCard glowColor="accent">
-              <SectionHeader title="Badges Earned" icon={Award} badge={`${earnedAchievements.length} TOTAL`} />
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
+              <SectionHeader
+                title={t('dashboard.badgesEarned')}
+                icon={Award}
+                badge={t('dashboard.totalBadges', { count: earnedAchievements.length })}
+              />
+              <div className="grid grid-cols-5 gap-2 sm:gap-3">
                 {earnedAchievements.length === 0 ? (
                   <div className="col-span-full py-6 text-center text-white/20 text-xs font-bold italic">
-                    Start exploring to earn your first badge
+                    {t('dashboard.startExploring')}
                   </div>
                 ) : (
                   earnedAchievements.slice(0, 10).map((ach) => (
                     <HexBadge key={ach.id} earned={true} title={ach.title} image={ach.image} size="3.5" />
                   ))
                 )}
-                {/* Visual placeholders for locked ones */}
                 {[...Array(Math.max(0, 10 - earnedAchievements.length))].map((_, i) => (
                   <HexBadge key={`locked-${i}`} earned={false} title="Locked" size="3.5" />
                 ))}
               </div>
               <button 
                 onClick={() => navigate(routes.myAccount)}
-                className="mt-6 w-full py-2.5 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                className="mt-5 w-full py-2.5 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white hover:bg-white/10 transition-all"
               >
-                View Achievement Tree
+                {t('dashboard.viewAchievementTree')}
               </button>
             </GlassCard>
 
             {/* LEADERBOARD PREVIEW */}
             <GlassCard glowColor="success">
-               <SectionHeader title="Leaderboard" icon={Trophy} />
-               <div className="space-y-4">
+               <SectionHeader title={t('dashboard.leaderboard')} icon={Trophy} />
+               <div className="space-y-3">
                   {leaderboard.length === 0 ? (
                     <div className="py-4 text-center text-white/20 text-xs italic">
-                      Finding tribe members...
+                      {t('dashboard.findingTribeMembers')}
                     </div>
                   ) : (
                     leaderboard.map((entry, i) => (
                       <div key={entry.user_id} className={`flex items-center gap-3 p-3 rounded-2xl transition-all ${entry.user_id === user.id ? 'bg-primary/20 border border-primary/30' : 'bg-black/30 border border-white/5'}`}>
-                        <span className={`w-5 text-sm font-black font-display ${i === 0 ? 'text-yellow-500' : 'text-white/30'}`}>{i + 1}.</span>
-                        <img src={entry.avatar} className="h-8 w-8 rounded-full border border-white/10" alt={entry.display_name} />
-                        <span className="flex-1 text-sm font-bold truncate">{entry.display_name}</span>
-                        <div className="flex items-center gap-1.5">
+                        <span className={`w-5 text-sm font-black font-display shrink-0 ${i === 0 ? 'text-yellow-500' : 'text-white/30'}`}>{i + 1}.</span>
+                        <img
+                          src={safeUrl(entry.avatar, '/images/default-avatar.svg')}
+                          className="h-8 w-8 rounded-full border border-white/10 shrink-0 object-cover"
+                          alt={entry.display_name}
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
+                        />
+                        <span className="flex-1 text-sm font-bold truncate min-w-0">{entry.display_name}</span>
+                        <div className="flex items-center gap-1 shrink-0">
                           <span className="text-xs font-black font-display text-primary">{entry.points.toLocaleString()}</span>
                           <span className="text-[10px] font-bold text-white/20 uppercase">XP</span>
                         </div>
@@ -420,15 +425,15 @@ const DashboardContent = () => {
             {/* REWARDS CARD */}
             <GlassCard glowColor="secondary" className="bg-gradient-to-br from-indigo-900/40 to-surface/20">
                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 shrink-0 rounded-2xl bg-secondary/20 flex items-center justify-center border border-secondary/30 shadow-neon-sm">
-                     <Gift size={28} className="text-secondary" />
+                  <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-2xl bg-secondary/20 flex items-center justify-center border border-secondary/30 shadow-neon-sm">
+                     <Gift size={26} className="text-secondary" />
                   </div>
-                  <div className="flex-1">
-                     <h4 className="font-black font-display text-lg uppercase tracking-tight">VIP Rewards Shop</h4>
-                     <p className="text-xs text-white/50 font-medium">Redeem your Mana for exclusive tracks, discounts and VIP experiences.</p>
+                  <div className="flex-1 min-w-0">
+                     <h4 className="font-black font-display text-base sm:text-lg uppercase tracking-tight">{t('dashboard.vipRewardsShop')}</h4>
+                     <p className="text-xs text-white/50 font-medium leading-snug">{t('dashboard.vipRewardsDesc')}</p>
                   </div>
-                  <button onClick={() => navigate(routes.shop)} className="h-10 w-10 shrink-0 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
-                     <ArrowRight size={18} />
+                  <button onClick={() => navigate(routes.shop)} className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                     <ArrowRight size={16} />
                   </button>
                </div>
             </GlassCard>

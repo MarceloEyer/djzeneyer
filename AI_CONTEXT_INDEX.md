@@ -133,7 +133,19 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 - `gamipress_get_rank_types()` retorna array **associativo** (chave = slug do rank type); usar `array_values()` antes de indexar com `[0]` ou o rank cai sempre para fallback "Zen Guest"
 - `date_earned` de conquistas ganhas vem do objeto de user-achievement (tabela `gamipress_user_achievements`), não de post meta `_gamipress_earned_at`
 - Pedidos WooCommerce: usar exclusivamente `wc_get_orders()` — nunca SQL direto em `wp_posts` (HPOS ativo)
-- Cache dashboard: 24h (TTL), chave `djz_gamipress_dashboard_v14_{user_id}`
-- Cache leaderboard: 1h (TTL), chave `djz_gamipress_leaderboard_v14_{limit}` — invalidado em qualquer premiação via `clear_user_cache()`
+- Cache dashboard: 24h (TTL), chave `djz_gamipress_dashboard_v15_{user_id}`
+- Cache leaderboard: 1h (TTL), chave `djz_gamipress_leaderboard_v15_{limit}` — invalidado em qualquer premiação via `clear_user_cache()`
 - Cache stats: 6h, chaves `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}`
 - Deploy CI: transients ZenGame são limpos via `wp transient delete --search="djz_gamipress"` após cada deploy
+- **`rankProgress` fallback**: quando `gamipress_get_rank_requirements_progress()` não está disponível, o progresso é calculado via `gamipress_get_user_points()` comparado com `_gamipress_points` meta do rank atual e próximo. O bug histórico retornava `0.0` nos dois lados do ternário — corrigido em `class-rest-handler.php`.
+- **Zod schema**: campos `main_points_slug`, `lastUpdate`, `version` usam `.catch()` para não quebrar o parse quando o PHP retorna valores inesperados.
+
+## SEO / Bots de IA — Padrões Canônicos
+
+- **Sitemap**: rotas privadas (`cart`, `checkout`, `tickets-checkout`, `reset-password`, `quiz`, `dashboard`, `my-account`) têm `excludeFromSitemap: true` em `routes-slugs.json` e são excluídas pelo `generate-sitemap.js`
+- **hreflang**: toda entrada de sitemap inclui `x-default` apontando para a versão EN
+- **robots.txt**: bots SEO (AhrefsBot, SemrushBot) têm `Allow: /` + `Crawl-delay` — nunca `Disallow: /` seguido de `Allow: /` (a primeira regra vence em RFC 9309)
+- **llms.txt / llms-full.txt**: arquivos em `public/` para crawlers de IA; devem ser UTF-8 limpo (sem mojibake)
+- **`.well-known/ai-plugin.json`**: metadados estruturados para ChatGPT Plugins e crawlers de IA; inclui identificadores Wikidata, MusicBrainz, ISNI
+- **Schema.org**: `AboutPage` usa `@type: ProfilePage` com `mainEntity` apontando para `#artist`; `MusicPage` (listagem) usa `CollectionPage` + `MusicGroup`; `PhilosophyPage` usa `Article` com `about` descrevendo Cremosidade
+- **URL canônica**: nunca hardcodar paths — usar `getLocalizedRoute()` para garantir slugs corretos em EN e PT

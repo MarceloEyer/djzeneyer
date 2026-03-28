@@ -4,550 +4,480 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://djzeneyer.com/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/about-dj-zen-eyer/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/about-dj-zen-eyer/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/sobre-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/about-dj-zen-eyer/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/sobre-dj-zen-eyer/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/sobre-dj-zen-eyer/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/about-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/about-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/sobre-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/about-dj-zen-eyer/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/zouk-events/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-events/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/eventos-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-events/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/eventos-zouk/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/eventos-zouk/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/zouk-events/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-events/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/eventos-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-events/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/zouk-music/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/musica-zouk/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/musica-zouk/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/zouk-music/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/zouk-dance-news/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-dance-news/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/noticias-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-dance-news/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/noticias-zouk/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/noticias-zouk/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/zouk-dance-news/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-dance-news/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/noticias-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-dance-news/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/zouk-philosophy/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-philosophy/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/filosofia-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-philosophy/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/filosofia-zouk/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/filosofia-zouk/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/zouk-philosophy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-philosophy/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/filosofia-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-philosophy/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/zentribe/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zentribe/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/tribo-zen/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zentribe/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/tribo-zen/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/tribo-zen/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/zentribe/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zentribe/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/tribo-zen/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zentribe/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/work-with-me/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/work-with-me/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/trabalhe-comigo/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/work-with-me/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/trabalhe-comigo/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/trabalhe-comigo/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/work-with-me/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/work-with-me/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/trabalhe-comigo/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/work-with-me/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/press-kit-dj-zen-eyer/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/press-kit-dj-zen-eyer/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/kit-de-imprensa/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/press-kit-dj-zen-eyer/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/kit-de-imprensa/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/kit-de-imprensa/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/press-kit-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/press-kit-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/kit-de-imprensa/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/press-kit-dj-zen-eyer/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/media-clipping/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/media-clipping/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/na-midia/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/media-clipping/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/na-midia/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/na-midia/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/media-clipping/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/media-clipping/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/na-midia/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/media-clipping/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/shop/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/shop/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/loja/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/shop/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/loja/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/loja/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/shop/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/shop/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/loja/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/shop/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/support-dj-zen-eyer/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/support-dj-zen-eyer/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/apoie-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/support-dj-zen-eyer/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/apoie-dj-zen-eyer/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/apoie-dj-zen-eyer/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/support-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/support-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/apoie-dj-zen-eyer/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/support-dj-zen-eyer/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/zenlink/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zenlink/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/links-zen/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zenlink/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/links-zen/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/links-zen/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/zenlink/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/cart/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/cart/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/carrinho/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/pt/carrinho/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/carrinho/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/cart/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/checkout/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/checkout/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/finalizar-compra/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/pt/finalizar-compra/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/finalizar-compra/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/checkout/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zenlink/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/links-zen/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zenlink/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/tickets/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/tickets/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/ingressos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/tickets/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/ingressos/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/ingressos/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/tickets/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/tickets-checkout/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/tickets-checkout/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/finalizar-ingressos/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/pt/finalizar-ingressos/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/finalizar-ingressos/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/tickets-checkout/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/tickets/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/ingressos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/tickets/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/faq/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/faq/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/perguntas-frequentes/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/faq/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/perguntas-frequentes/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/perguntas-frequentes/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/faq/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/faq/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/perguntas-frequentes/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/faq/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/privacy-policy/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/privacy-policy/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/privacidade/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/privacy-policy/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/privacidade/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/privacidade/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/privacy-policy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/privacy-policy/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/privacidade/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/privacy-policy/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/return-policy/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/return-policy/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/reembolso/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/return-policy/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/reembolso/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/reembolso/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/return-policy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/return-policy/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/reembolso/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/return-policy/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/terms/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/terms/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/termos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/terms/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/termos/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/termos/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/terms/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/terms/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/termos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/terms/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/conduct/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/conduct/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/regras-de-conduta/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/conduct/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/regras-de-conduta/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/regras-de-conduta/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/conduct/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/quiz/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/quiz/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/perguntas/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/pt/perguntas/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/perguntas/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/quiz/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/reset-password/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/reset-password/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/recuperar-senha/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/pt/recuperar-senha/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/recuperar-senha/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/reset-password/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/conduct/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/regras-de-conduta/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/conduct/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/payme/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/payme/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/pagamentos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/payme/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/pagamentos/</loc>
-    <lastmod>2026-03-26T15:35:41.230Z</lastmod>
+    <lastmod>2026-03-28T13:21:49.227Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/pt/pagamentos/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/payme/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/payme/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/pagamentos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/payme/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>

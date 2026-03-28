@@ -1,18 +1,59 @@
-﻿import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Heart, Music2, Sparkles } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const PhilosophyPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('philosophy', currentLang)}`;
+
+  const philosophySchema = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        '@id': `${pageUrl}#article`,
+        url: pageUrl,
+        headline: t('philosophy.page_title'),
+        description: t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName }),
+        author: {
+          '@type': 'Person',
+          '@id': `${ARTIST.site.baseUrl}/#artist`,
+          name: ARTIST.identity.stageName,
+        },
+        publisher: {
+          '@type': 'Person',
+          '@id': `${ARTIST.site.baseUrl}/#artist`,
+          name: ARTIST.identity.stageName,
+        },
+        about: [
+          { '@type': 'Thing', name: 'Cremosidade', description: 'A unique DJing philosophy developed by DJ Zen Eyer emphasizing smooth, creamy transitions in Brazilian Zouk music.' },
+          { '@type': 'MusicGenre', name: 'Brazilian Zouk' },
+        ],
+        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: ARTIST.site.baseUrl },
+            { '@type': 'ListItem', position: 2, name: t('philosophy.page_title'), item: pageUrl },
+          ],
+        },
+      },
+    ],
+  }), [t, pageUrl]);
 
   return (
     <>
       <HeadlessSEO
         title={`${t('philosophy.page_title')} | ${ARTIST.identity.stageName}`}
         description={t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
+        url={pageUrl}
+        schema={philosophySchema}
+        leadAnswer={t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
       />
 
       <div className="min-h-screen pt-24 pb-16 px-4 bg-background text-white">

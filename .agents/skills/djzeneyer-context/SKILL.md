@@ -226,7 +226,24 @@ export const useEventsList = (status?: string) => {
 
 ---
 
-## 8. Troubleshooting Comum
+## 8. Armadilhas Conhecidas e Bugs Históricos
+
+| Armadilha | Causa | Solução |
+|---|---|---|
+| `rankProgress` sempre 0 no Dashboard | Ternário PHP retornava `0.0` nos dois lados | Calcular via `gamipress_get_user_points()` vs `_gamipress_points` meta do rank |
+| Dashboard quebra com erro Zod | `version`/`lastUpdate`/`main_points_slug` sem `.catch()` | Usar `.catch('')` nesses campos do `ZenGameUserDataSchema` |
+| Avatar do leaderboard quebrado | `entry.avatar` sem `safeUrl()` | `safeUrl(entry.avatar, '/images/default-avatar.svg')` |
+| Gauge transborda em mobile | `size=180` hardcoded em px | SVG com `viewBox` + `w-full max-w-[180px] aspect-square` |
+| Strings hardcoded no Dashboard | Texto EN direto no JSX | Usar `t('dashboard.status')`, `t('dashboard.leaderboard')`, etc. |
+| URL canônica errada no AboutPage | `/about` hardcoded em vez do slug real | `getLocalizedRoute('about', currentLang)` |
+| Rotas privadas no sitemap | `cart`, `checkout`, etc. sem `excludeFromSitemap` | Adicionar flag em `routes-slugs.json` |
+| hreflang sem `x-default` | `buildUrlEntry` não gerava a tag | Adicionado `x-default` apontando para EN em `generate-sitemap.js` |
+| AhrefsBot bloqueado | `Disallow: /` antes de `Allow: /` (RFC 9309: primeira regra vence) | `Allow: /` primeiro, depois `Disallow` específicos |
+| Mojibake em `llms-full.txt` | Double-encoding latin-1→UTF-8 | `text.encode('latin-1').decode('utf-8')` para corrigir |
+| `safeUrl(null)` retorna `'#'` (truthy) | Default `fallback = '#'` | Sempre passar fallback explícito: `safeUrl(url, '/fallback.svg')` |
+| `loadingInitial` vs `loading` | `loading` é para ações (default `false`) | Usar `loadingInitial` em guards de rota privada |
+
+## 8b. Troubleshooting Comum
 
 ### Prerender falha (White Screen / Timeout)
 

@@ -20,7 +20,7 @@ console.log('🗺️  Sitemap Generator v8.0 - EVENTS SUPPORT\n');
 
 const DEFAULT_IMAGE = `${BASE_URL}/images/zen-eyer-og-image.png`;
 
-function buildUrlEntry(url, date, priority = '0.8', ptUrl = null, imageUrl = null) {
+function buildUrlEntry(url, date, priority = '0.8', altUrl = null, imageUrl = null, isEnglish = true) {
   let entry = `
   <url>
     <loc>${url}</loc>
@@ -28,10 +28,13 @@ function buildUrlEntry(url, date, priority = '0.8', ptUrl = null, imageUrl = nul
     <changefreq>weekly</changefreq>
     <priority>${priority}</priority>`;
 
-  if (ptUrl) {
+  if (altUrl) {
+    const enUrl  = isEnglish ? url : altUrl;
+    const ptUrl  = isEnglish ? altUrl : url;
     entry += `
-    <xhtml:link rel="alternate" hreflang="en" href="${url}" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="${ptUrl}" />`;
+    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="${ptUrl}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${enUrl}" />`;
   }
 
   if (imageUrl) {
@@ -131,9 +134,10 @@ async function generateSitemaps() {
       const ptUrl = ptSlug === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${ptSlug}/`;
       const priority = enSlug === '' ? '1.0' : '0.8';
 
-      // Para páginas, usamos a imagem padrão (OG Image)
-      pagesXml += buildUrlEntry(enUrl, date, priority, ptUrl, DEFAULT_IMAGE);
-      pagesXml += buildUrlEntry(ptUrl, date, priority, enUrl, DEFAULT_IMAGE);
+      // EN entry: x-default points to EN
+      pagesXml += buildUrlEntry(enUrl, date, priority, ptUrl, DEFAULT_IMAGE, true);
+      // PT entry: x-default still points to EN (canonical language)
+      pagesXml += buildUrlEntry(ptUrl, date, priority, enUrl, DEFAULT_IMAGE, false);
       pageCount += 2;
     }
     pagesXml += '\n</urlset>';
