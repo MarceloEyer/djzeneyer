@@ -7,6 +7,29 @@
 if (!defined('ABSPATH')) exit;
 
 /**
+ * Disable WordPress Comments entirely (headless — unused)
+ * Prevents WP_Comment_Query from running on every frontend request
+ */
+add_action('init', function() {
+    foreach (get_post_types() as $post_type) {
+        if (post_type_supports($post_type, 'comments')) {
+            remove_post_type_support($post_type, 'comments');
+            remove_post_type_support($post_type, 'trackbacks');
+        }
+    }
+});
+add_filter('comments_open', '__return_false', 20, 2);
+add_filter('pings_open', '__return_false', 20, 2);
+add_filter('comments_array', '__return_empty_array', 10, 2);
+add_action('rest_api_init', function() {
+    add_filter('rest_endpoints', function($endpoints) {
+        unset($endpoints['/wp/v2/comments']);
+        unset($endpoints['/wp/v2/comments/(?P<id>[\d]+)']);
+        return $endpoints;
+    });
+}, 100);
+
+/**
  * Remove <head> Bloat
  */
 add_action('after_setup_theme', function() {
