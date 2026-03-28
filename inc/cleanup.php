@@ -40,7 +40,7 @@ add_action('after_setup_theme', function() {
     remove_action('admin_print_styles', 'print_emoji_styles');
     remove_filter('the_content_feed', 'wp_staticize_emoji');
     remove_filter('comment_text_rss', 'wp_staticize_emoji');
-    
+
     // Discovery links
     remove_action('wp_head', 'rsd_link');
     remove_action('wp_head', 'wlwmanifest_link');
@@ -49,9 +49,22 @@ add_action('after_setup_theme', function() {
     remove_action('wp_head', 'rest_output_link_wp_head');
     remove_action('wp_head', 'wp_oembed_add_discovery_links');
     remove_action('template_redirect', 'rest_output_link_header', 11);
+    remove_action('template_redirect', 'wp_shortlink_header', 11);
     remove_action('wp_head', 'adjacent_posts_rel_link_wp_head');
     remove_action('wp_head', 'feed_links', 2);
     remove_action('wp_head', 'feed_links_extra', 3);
+});
+
+/**
+ * Disable MailPoet page view tracking cookie
+ * Settings change in admin was insufficient — cookie still being set
+ * with 10-year expiry on every response, interfering with LiteSpeed cache
+ */
+add_filter('option_mailpoet_settings', function($settings) {
+    if (is_array($settings)) {
+        $settings['tracking']['enabled'] = '0';
+    }
+    return $settings;
 });
 
 /**
