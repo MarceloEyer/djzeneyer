@@ -144,7 +144,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 
 - **Sitemap**: rotas privadas (`cart`, `checkout`, `tickets-checkout`, `reset-password`, `quiz`, `dashboard`, `my-account`) têm `excludeFromSitemap: true` em `routes-slugs.json` e são excluídas pelo `generate-sitemap.js`
 - **hreflang**: toda entrada de sitemap inclui `x-default` apontando para a versão EN
-- **robots.txt**: bots SEO (AhrefsBot, SemrushBot) têm `Allow: /` + `Crawl-delay` — nunca `Disallow: /` seguido de `Allow: /` (a primeira regra vence em RFC 9309)
+- **robots.txt**: bots SEO (AhrefsBot, SemrushBot) têm `Allow: /` + `Crawl-delay` — nunca `Disallow: /` sem `Allow: /` correspondente; RFC 9309 resolve conflitos pelo **match mais específico** (maior número de octets no path), e em empate perfeito prefere `Allow`
 - **llms.txt / llms-full.txt**: arquivos em `public/` para crawlers de IA; devem ser UTF-8 limpo (sem mojibake)
 - **`.well-known/ai-plugin.json`**: metadados estruturados para ChatGPT Plugins e crawlers de IA; inclui identificadores Wikidata, MusicBrainz, ISNI
 - **Schema.org**: `AboutPage` usa `@type: ProfilePage` com `mainEntity` apontando para `#artist`; `MusicPage` (listagem) usa `CollectionPage` + `MusicGroup`; `PhilosophyPage` usa `Article` com `about` descrevendo Cremosidade

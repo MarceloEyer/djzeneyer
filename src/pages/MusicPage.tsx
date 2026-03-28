@@ -115,9 +115,8 @@ const MusicPage: React.FC = () => {
 
   // --- RENDERIZACAO DE FAIXA UNICA (DETALHE) ---
   if (!singleLoading && slug && singleTrack) {
-    const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
     const trackImage = safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp');
-    const trackUrl = `${origin}${generatePath(getLocalizedRoute('music-detail', currentLang), { slug })}`;
+    const trackUrl = `${ARTIST.site.baseUrl}${generatePath(getLocalizedRoute('music-detail', currentLang), { slug })}`;
 
     const musicSchema = {
       "@context": "https://schema.org",

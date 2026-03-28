@@ -186,7 +186,8 @@ const DashboardContent = () => {
   const earnedAchievements = gamipress.achievements_earned || [];
   // leaderboardData is Record<pointType, entries[]> — take the first point type
   const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
-  const joinedYear = new Date().getFullYear();
+  // TODO: replace with user.user_registered year when the field is exposed by the auth API
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">
@@ -232,7 +233,7 @@ const DashboardContent = () => {
                 </span>
                 <span className="hidden sm:inline text-white/30">•</span>
                 <span className="hidden sm:inline uppercase tracking-widest text-[10px] text-white/50">
-                  {t('dashboard.joinedYear', { year: joinedYear })}
+                  {t('dashboard.joinedYear', { year: currentYear })}
                 </span>
               </div>
             </div>

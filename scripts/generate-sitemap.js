@@ -167,8 +167,8 @@ async function generateSitemaps() {
         const ptEventUrl = `${BASE_URL}/pt/eventos/${relativePath}/`;
 
         // Adicionamos ambos ao sitemap com link alternativo e imagem do evento
-        eventsXml += buildUrlEntry(enEventUrl, date, '0.7', ptEventUrl, event.image);
-        eventsXml += buildUrlEntry(ptEventUrl, date, '0.7', enEventUrl, event.image);
+        eventsXml += buildUrlEntry(enEventUrl, date, '0.7', ptEventUrl, event.image, true);
+        eventsXml += buildUrlEntry(ptEventUrl, date, '0.7', enEventUrl, event.image, false);
 
         eventCount += 2;
       }

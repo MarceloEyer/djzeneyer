@@ -8,9 +8,7 @@
     "type": "none"
   },
   "api": {
-    "type": "openapi",
-    "url": "https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context",
-    "is_user_authenticated": false
+    "type": "none"
   },
   "logo_url": "https://djzeneyer.com/images/zen-eyer-og-image.png",
   "contact_email": "booking@djzeneyer.com",

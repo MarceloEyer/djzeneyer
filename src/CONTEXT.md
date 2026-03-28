@@ -13,7 +13,7 @@
 ## Structure Guide
 
 - `assets/`: Imagens e SVGs otimizados.
-- `components/`: Componentes UI reutilizáveis. Ícones de redes sociais em `components/icons/BrandIcons.tsx` (lucide-react 1.x removeu Facebook/Instagram/Youtube).
+- `components/`: Componentes UI reutilizáveis. Ícones de redes sociais em `components/icons/BrandIcons.tsx` (lucide-react 1.x removeu Facebook/Instagram/YouTube).
 - `config/`: Configurações de rotas (`routes.ts`, `routes-slugs.json`) e API. `routes-slugs.json` é o SSOT de slugs EN/PT.
 - `contexts/`: Providers globais. Valores de Provider sempre em `useMemo`, funções em `useCallback`.
 - `hooks/`: Lógica de estado e fetching. `useQueries.ts` é o cubo central.

@@ -31,20 +31,21 @@ const PhilosophyPage: React.FC = () => {
           name: ARTIST.identity.stageName,
         },
         about: [
-          { '@type': 'Thing', name: 'Cremosidade', description: 'A unique DJing philosophy developed by DJ Zen Eyer emphasizing smooth, creamy transitions in Brazilian Zouk music.' },
+          // TODO: move description to i18n key 'philosophy.cremosidade_desc' for full bilingual JSON-LD
+          { '@type': 'Thing', name: 'Cremosidade', description: t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName }) },
           { '@type': 'MusicGenre', name: 'Brazilian Zouk' },
         ],
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: ARTIST.site.baseUrl },
+            { '@type': 'ListItem', position: 1, name: t('home'), item: `${ARTIST.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
             { '@type': 'ListItem', position: 2, name: t('philosophy.page_title'), item: pageUrl },
           ],
         },
       },
     ],
-  }), [t, pageUrl]);
+  }), [t, pageUrl, currentLang]);
 
   return (
     <>

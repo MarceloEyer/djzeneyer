@@ -91,6 +91,7 @@ Disallow: /pt/painel/
 Disallow: /pt/recuperar-senha/
 Disallow: /pt/finalizar-ingressos/
 Disallow: /pt/perguntas/
+Disallow: /pt/minha-conta/
 Disallow: /wc-api/
 
 # Bloquear trackbacks e comentários
