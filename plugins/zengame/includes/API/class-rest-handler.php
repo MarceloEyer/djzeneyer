@@ -218,10 +218,9 @@ final class REST_Handler
             return 'points';
         }
 
-        $slugs = \array_values(\array_filter(\wp_list_pluck($types, 'slug')));
-        if (empty($slugs)) {
-            return 'points';
-        }
+        // GamiPress keyes the array by slug — array_keys() is authoritative.
+        // wp_list_pluck($types, 'slug') is unreliable: the 'slug' sub-field may be absent.
+        $slugs = \array_values(\array_filter(\array_keys($types)));
 
         if (\in_array('points', $slugs, true)) {
             return 'points';
@@ -262,8 +261,9 @@ final class REST_Handler
         $types = \gamipress_get_points_types();
         $points = [];
 
-        foreach ($types as $type) {
-            $slug = (string) ($type['slug'] ?? '');
+        foreach ($types as $type_key => $type) {
+            // GamiPress keys the array by slug; 'slug' sub-field may not be present.
+            $slug = (string) ($type['slug'] ?? $type_key);
             if ($slug === '') {
                 continue;
             }
@@ -273,10 +273,6 @@ final class REST_Handler
                 'amount' => (int) \gamipress_get_user_points($user_id, $slug),
                 'image' => !empty($type['id']) ? (\get_the_post_thumbnail_url((int) $type['id'], 'thumbnail') ?: '') : '',
             ];
-        }
-
-        if (!isset($points['points'])) {
-            $points['points'] = ['name' => 'XP', 'amount' => 0, 'image' => ''];
         }
 
         return $points;
@@ -295,15 +291,22 @@ final class REST_Handler
             return $fallback;
         }
 
-        // gamipress_get_rank_types() returns an associative array keyed by slug;
-        // array_values() normalises it to a sequential list.
-        $rank_types = \array_values(\gamipress_get_rank_types());
-        if (empty($rank_types) || !isset($rank_types[0]['slug'])) {
+        // gamipress_get_rank_types() returns an associative array keyed by slug.
+        // Use the first array key as the slug — 'slug' sub-field may not be present.
+        $all_rank_types = \gamipress_get_rank_types();
+        if (empty($all_rank_types)) {
             return $fallback;
         }
 
-        $type = $rank_types[0];
-        $rank_slug = (string) $type['slug'];
+        \reset($all_rank_types);
+        $rank_slug = (string) \key($all_rank_types);
+        $type = \current($all_rank_types);
+        if (!empty($type['slug'])) {
+            $rank_slug = (string) $type['slug'];
+        }
+        if ($rank_slug === '') {
+            return $fallback;
+        }
         $current = \gamipress_get_user_rank($user_id, $rank_slug);
         $next = self::get_next_rank_post($rank_slug, $current);
 
