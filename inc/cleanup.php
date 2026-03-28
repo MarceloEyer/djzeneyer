@@ -129,6 +129,28 @@ remove_action('wp_head', 'wc_gallery_noscript');
 remove_action('wp_head', 'wc_generator_tag');
 
 /**
+ * Disable WooCommerce Analytics customer tracking on frontend
+ * Causa leitura+escrita no usermeta em toda pageview de usuário logado
+ */
+add_action('init', function() {
+    remove_action(
+        'wp_loaded',
+        ['Automattic\WooCommerce\Admin\API\Reports\Customers\DataStore', 'update_registered_customer']
+    );
+}, 1);
+
+/**
+ * Disable WooCommerce Blocks remote pattern fetching
+ * PTKPatternsStore queries Action Scheduler em toda requisição para agendar
+ * fetch_patterns. Site headless não usa block patterns do editor.
+ */
+add_filter('woocommerce_admin_features', function($features) {
+    unset($features['pattern-toolkit-full-composability']);
+    unset($features['pattern-toolkit-customization']);
+    return $features;
+}, 999);
+
+/**
  * Disable Translation Updates
  */
 add_filter('auto_update_translation', '__return_false');
