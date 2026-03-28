@@ -322,19 +322,28 @@ final class REST_Handler
                             continue;
                         }
 
-                        $status = \gamipress_get_user_requirement_status($user_id, $req->ID, $next->ID);
+                        // gamipress_get_user_requirement_status() accepts only 2 args: ($user_id, $requirement_id)
+                        $status = \gamipress_get_user_requirement_status($user_id, $req->ID);
                         $requirements[] = [
-                            'title' => (string) ($req->post_title ?? ''),
-                            'current' => (int) ($status['current'] ?? 0),
+                            'title'    => (string) ($req->post_title ?? ''),
+                            'current'  => (int) ($status['current'] ?? 0),
                             'required' => (int) ($status['required'] ?? 0),
-                            'percent' => (float) ($status['percent'] ?? 0),
+                            'percent'  => (float) ($status['percent'] ?? 0),
                         ];
                     }
                 }
             }
 
-            if (\function_exists('gamipress_get_user_rank_type_progress_percent')) {
-                $progress = (float) \gamipress_get_user_rank_type_progress_percent($user_id, $rank_slug);
+            // gamipress_get_user_rank_type_progress_percent() does not exist in GamiPress free.
+            // Calculate progress manually from requirements percent average.
+            if (!empty($requirements)) {
+                $total_pct = \array_sum(\array_column($requirements, 'percent'));
+                $progress = (float) ($total_pct / count($requirements));
+            } elseif ($current && $next) {
+                // Fallback: position-based progress between current and next rank menu_order
+                $current_order = (int) $current->menu_order;
+                $next_order    = (int) $next->menu_order;
+                $progress = ($next_order > $current_order) ? 0.0 : 0.0;
             }
         }
 
@@ -511,13 +520,16 @@ final class REST_Handler
 
     private static function get_user_logs(int $user_id, int $limit = 10): array
     {
-        if (!\function_exists('gamipress_get_user_logs')) {
+        // gamipress_get_user_logs() does not exist in GamiPress free.
+        // The correct function is gamipress_get_logs() which queries the gamipress-log CPT.
+        if (!\function_exists('gamipress_get_logs')) {
             return [];
         }
 
-        $logs = \gamipress_get_user_logs([
-            'user_id' => $user_id,
+        $logs = \gamipress_get_logs([
+            'user_id'        => $user_id,
             'posts_per_page' => $limit,
+            'post_status'    => 'publish',
         ]);
 
         if (!\is_array($logs) && !($logs instanceof \Traversable)) {
