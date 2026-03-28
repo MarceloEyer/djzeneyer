@@ -168,10 +168,65 @@ add_filter('heartbeat_settings', function($settings) {
 });
 
 /**
- * Remove WooCommerce Generator
+ * Remove WordPress Core Overhead (headless — no block editor, no smilies)
  */
-remove_action('wp_head', 'wc_gallery_noscript');
-remove_action('wp_head', 'wc_generator_tag');
+remove_action('init', 'smilies_init', 5);
+remove_action('init', '_register_core_block_patterns_and_categories', 10);
+remove_action('init', '_wp_register_default_font_collections', 10);
+
+/**
+ * Disable WordPress native sitemaps
+ * Zen SEO Lite provides the sitemap; having two wastes crawl budget
+ */
+add_filter('wp_sitemaps_enabled', '__return_false');
+
+/**
+ * Disable WooCommerce version check on frontend
+ * Runs every request — admin-only concern, no value on the frontend
+ */
+if (!is_admin()) {
+    remove_action('init', ['WC_Install', 'check_version'], 5);
+}
+
+/**
+ * Disable WooCommerce Remote Inbox Notifications on frontend
+ * Fires DB queries on every request — admin dashboard feature only
+ */
+add_action('after_setup_theme', function() {
+    if (is_admin()) return;
+    remove_action(
+        'init',
+        ['Automattic\WooCommerce\Admin\RemoteInboxNotifications\RemoteInboxNotificationsEngine', 'on_init'],
+        0
+    );
+}, 5);
+
+/**
+ * Remove frontend wp_head output not needed in headless
+ * Must run at 'wp' hook (after init) because WC adds wc_gallery_noscript / wc_generator_tag
+ * at after_setup_theme:11 — top-level remove_action fires at load time (too early)
+ */
+add_action('wp', function() {
+    // GamiPress OG meta tags — Zen SEO Lite handles all meta/schema
+    remove_action('wp_head', 'gamipress_maybe_render_open_graph_meta_tags', 10);
+    // oEmbed host JS — allows third parties to embed this site; not needed in headless
+    remove_action('wp_head', 'wp_oembed_add_host_js', 10);
+    // WooCommerce head output — re-removed here to fix timing
+    remove_action('wp_head', 'wc_gallery_noscript', 10);
+    remove_action('wp_head', 'wc_generator_tag', 10);
+}, 5);
+
+/**
+ * Remove WooCommerce footer output not needed in headless
+ */
+add_action('wp_footer', function() {
+    // noscript JS detection cookie — headless SPA always requires JS
+    remove_action('wp_footer', 'wc_no_js', 10);
+    // WC Structured Data JSON-LD — Zen SEO Lite handles all Schema.org output
+    if (function_exists('WC') && isset(WC()->structured_data)) {
+        remove_action('wp_footer', [WC()->structured_data, 'output_structured_data'], 10);
+    }
+}, 1);
 
 /**
  * Prevent WooCommerce from updating wc_last_active usermeta on every frontend request
