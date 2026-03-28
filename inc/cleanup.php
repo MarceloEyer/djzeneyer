@@ -129,6 +129,15 @@ remove_action('wp_head', 'wc_gallery_noscript');
 remove_action('wp_head', 'wc_generator_tag');
 
 /**
+ * Prevent WooCommerce from updating wc_last_active usermeta on every frontend request
+ * Feeds WooCommerce Analytics which is disabled — data serves no purpose
+ */
+add_filter('update_user_metadata', function($check, $object_id, $meta_key) {
+    if ($meta_key === 'wc_last_active') return false;
+    return $check;
+}, 10, 3);
+
+/**
  * Disable WooCommerce Analytics entirely (not used)
  * Elimina queries de relatórios, customer tracking e admin notes no frontend
  */
