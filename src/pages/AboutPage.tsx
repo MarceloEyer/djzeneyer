@@ -18,6 +18,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation, Trans } from 'react-i18next';
 import { ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
 
 const getDynamicWhatsAppUrl = (number: string, message?: string) => {
@@ -34,10 +35,11 @@ const getDynamicWhatsAppUrl = (number: string, message?: string) => {
 // ============================================================================
 
 const AboutPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { artist } = useBranding();
   const prefersReducedMotion = useReducedMotion();
-  const currentPath = '/about';
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const currentPath = `/${getLocalizedRoute('about', currentLang).replace(/^\//, '')}`;
   const currentUrl = `${artist.site.baseUrl}${currentPath}`;
 
   // SCHEMA.ORG PARA A PAGINA ABOUT
@@ -46,18 +48,27 @@ const AboutPage: React.FC = () => {
     '@graph': [
       {
         ...ARTIST_SCHEMA_BASE,
+        '@id': `${artist.site.baseUrl}/#artist`,
       },
       {
-        '@type': 'WebPage',
-        '@id': `${artist.site.baseUrl}/about#webpage`,
-        url: `${artist.site.baseUrl}/about`,
+        '@type': 'ProfilePage',
+        '@id': `${currentUrl}#webpage`,
+        url: currentUrl,
         name: t('about.seo.name'),
         description: t('about.seo.description'),
         isPartOf: { '@id': `${artist.site.baseUrl}/#website` },
         about: { '@id': `${artist.site.baseUrl}/#artist` },
+        mainEntity: { '@id': `${artist.site.baseUrl}/#artist` },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: t('home'), item: `${artist.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
+            { '@type': 'ListItem', position: 2, name: t('about.seo.name'), item: currentUrl },
+          ],
+        },
       },
     ],
-  }), [t, artist]);
+  }), [t, artist, currentUrl, currentLang]);
 
   const MILESTONES = useMemo(() => [
     {

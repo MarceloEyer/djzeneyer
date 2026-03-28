@@ -341,10 +341,24 @@ final class REST_Handler
                 $total_pct = \array_sum(\array_column($requirements, 'percent'));
                 $progress = (float) ($total_pct / count($requirements));
             } elseif ($current && $next) {
-                // Fallback: position-based progress between current and next rank menu_order
-                $current_order = (int) $current->menu_order;
-                $next_order    = (int) $next->menu_order;
-                $progress = ($next_order > $current_order) ? 0.0 : 0.0;
+                // Fallback: use points-based progress when requirements are unavailable.
+                // gamipress_get_user_points() returns the user's current points for the
+                // main points type; we compare against the next rank's minimum points meta.
+                $main_slug   = self::get_main_points_slug();
+                $user_points = \function_exists('gamipress_get_user_points')
+                    ? (int) \gamipress_get_user_points($user_id, $main_slug)
+                    : 0;
+                $next_min    = (int) \get_post_meta($next->ID, '_gamipress_points', true);
+                $curr_min    = (int) \get_post_meta($current->ID, '_gamipress_points', true);
+
+                if ($next_min > $curr_min && $user_points >= $curr_min) {
+                    $progress = min(99.0, round(
+                        (($user_points - $curr_min) / ($next_min - $curr_min)) * 100,
+                        1
+                    ));
+                } else {
+                    $progress = 0.0;
+                }
             }
         }
 

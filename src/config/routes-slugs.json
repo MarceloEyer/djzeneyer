@@ -107,12 +107,16 @@
         {
             "key": "cart",
             "en": "cart",
-            "pt": "carrinho"
+            "pt": "carrinho",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "checkout",
             "en": "checkout",
-            "pt": "finalizar-compra"
+            "pt": "finalizar-compra",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "tickets",
@@ -122,7 +126,9 @@
         {
             "key": "tickets-checkout",
             "en": "tickets-checkout",
-            "pt": "finalizar-ingressos"
+            "pt": "finalizar-ingressos",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "dashboard",
@@ -168,12 +174,16 @@
         {
             "key": "quiz",
             "en": "quiz",
-            "pt": "perguntas"
+            "pt": "perguntas",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "reset-password",
             "en": "reset-password",
-            "pt": "recuperar-senha"
+            "pt": "recuperar-senha",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "payme",

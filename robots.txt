@@ -77,10 +77,21 @@ Disallow: /*?*sort=*          # Parâmetros de ordenação
 Disallow: /*?*filter=*        # Parâmetros de filtro
 Disallow: /*?*page=*          # Paginação (se gera duplicação)
 
-# Bloquear páginas de e-commerce privadas (WooCommerce)
+# Bloquear páginas privadas e de e-commerce
 Disallow: /cart/
 Disallow: /checkout/
 Disallow: /my-account/
+Disallow: /dashboard/
+Disallow: /reset-password/
+Disallow: /tickets-checkout/
+Disallow: /quiz/
+Disallow: /pt/carrinho/
+Disallow: /pt/finalizar-compra/
+Disallow: /pt/painel/
+Disallow: /pt/recuperar-senha/
+Disallow: /pt/finalizar-ingressos/
+Disallow: /pt/perguntas/
+Disallow: /pt/minha-conta/
 Disallow: /wc-api/
 
 # Bloquear trackbacks e comentários
@@ -214,23 +225,34 @@ Disallow: /wp-admin/
 # ==============================================================================
 # Controle de scrapers e bots que consomem muitos recursos
 
-# AHREFS (SEO Crawler - muito agressivo)
+# AHREFS (SEO Crawler)
 User-agent: AhrefsBot
-Disallow: /
-# Se quiser permitir com limite:
 Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
 Crawl-delay: 10
 
 # SEMRUSH (SEO Crawler)
 User-agent: SemrushBot
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
 Crawl-delay: 10
 
 # MAJESTIC (SEO Crawler)
 User-agent: MJ12bot
+Allow: /
+Disallow: /wp-admin/
 Crawl-delay: 10
 
 # DOTBOT (Moz/OpenSiteExplorer)
 User-agent: DotBot
+Allow: /
+Disallow: /wp-admin/
 Crawl-delay: 5
 
 # SCRAPY (Framework de scraping genérico)
@@ -254,6 +276,11 @@ Disallow: /
 Sitemap: https://djzeneyer.com/sitemap.xml
 Sitemap: https://djzeneyer.com/sitemap-pages.xml
 Sitemap: https://djzeneyer.com/sitemap-events.xml
+
+# AI crawlers: structured data for LLMs
+# https://djzeneyer.com/llms.txt
+# https://djzeneyer.com/llms-full.txt
+# https://djzeneyer.com/.well-known/ai-plugin.json
 
 # ==============================================================================
 # 📚 REFERÊNCIAS E BOAS PRÁTICAS
