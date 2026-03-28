@@ -94,7 +94,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         if (token && savedUser) {
           const parsedUser = JSON.parse(savedUser);
-          setUser(parsedUser);
+          // Garante que o token de zen_jwt esteja sempre presente no user,
+          // mesmo se zen_user foi salvo por versão anterior sem o campo token.
+          setUser({ ...parsedUser, token, isLoggedIn: true });
 
           // Validação silenciosa
           fetch(`${API_URL}/auth/validate`, {
