@@ -11,6 +11,7 @@ node_modules
 dist/*
 !dist/assets/.vite/
 dist-ssr
+dist-debug/
 *.local
 
 # Editor directories and files
