@@ -680,33 +680,40 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
 
       const res = await fetch(apiUrl, { headers });
 
-      let data;
+      // Tenta parsear o JSON. Se falhar (ex: WP_DEBUG emite HTML antes do JSON),
+      // lança erro explícito em vez de deixar `data` undefined e quebrar o Zod parse.
+      let data: unknown;
       try {
         data = await res.json();
       } catch (e) {
-        if (import.meta.env.DEV) {
-          console.warn('[GamiPress] Response was not valid JSON', e);
-        }
+        const bodyPreview = await res.text().catch(() => '');
+        const hint = bodyPreview.slice(0, 120).replace(/\s+/g, ' ');
+        throw new Error(
+          `[GamiPress] Resposta não é JSON válido (HTTP ${res.status}). Verifique WP_DEBUG no wp-config.php. Preview: ${hint}`
+        );
       }
 
       if (!res.ok) {
-        const errorMsg = data?.message || data?.code || `HTTP ${res.status} — ${res.statusText}`;
+        const err = data as Record<string, unknown>;
+        const errorMsg = (err?.message as string) || (err?.code as string) || `HTTP ${res.status} — ${res.statusText}`;
         throw new Error(errorMsg);
       }
 
-      if (import.meta.env.DEV && data?.points) {
+      if (import.meta.env.DEV && (data as Record<string, unknown>)?.points) {
+        const d = data as Record<string, unknown>;
         console.groupCollapsed('[GamiPress] User Data Sync');
-        console.info('Main Slug:', data.main_points_slug);
-        console.info('Point Keys Found:', Object.keys(data.points));
+        console.info('Main Slug:', d.main_points_slug);
+        console.info('Point Keys Found:', Object.keys(d.points as object));
         console.groupEnd();
       }
 
       return ZenGameUserDataSchema.parse(data);
     },
     staleTime: STALE_TIME.GAMIPRESS,
+    // refetchInterval só executa quando não há erro — retry: 1 permite recuperar de falhas transitórias
     refetchInterval: 60_000,
     enabled: Boolean(token),
-    retry: false,
+    retry: 1,
   });
 };
 
