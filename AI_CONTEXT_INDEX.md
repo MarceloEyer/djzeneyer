@@ -130,16 +130,49 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 
 ## ZenGame / GamiPress — Contratos e Armadilhas
 
-- `gamipress_get_rank_types()` retorna array **associativo** (chave = slug do rank type); usar `array_values()` antes de indexar com `[0]` ou o rank cai sempre para fallback "Zen Guest"
-- `date_earned` de conquistas ganhas vem do objeto de user-achievement (tabela `gamipress_user_achievements`), não de post meta `_gamipress_earned_at`
+### ⚠️ Bugs críticos já corrigidos (março/2026) — NÃO reverter
+
+O dashboard mostrava pontuação 0 e rank "Zen Guest" para todos os usuários.
+Causa raiz: **`gamipress_get_points_types()` e `gamipress_get_rank_types()` retornam
+arrays associativos cuja CHAVE é o slug** (ex: `['zen-points' => [...]]`).
+O código antigo tentava ler o sub-campo `$type['slug']` que frequentemente não existe.
+
+**Commits que corrigiram (em ordem):**
+
+| Commit | O que corrigiu |
+|--------|---------------|
+| `32ec16e8` | `get_main_points_slug()`: trocou `wp_list_pluck($types,'slug')` por `array_keys($types)` — o método antigo retornava array vazio → slug caía para `'points'` em vez de `'zen-points'` |
+| `32ec16e8` | `get_user_points()`: loop `foreach($types as $type)` trocado por `foreach($types as $type_key => $type)` com `$slug = $type['slug'] ?? $type_key` |
+| `32ec16e8` | `get_user_rank_data()`: `array_values(gamipress_get_rank_types())[0]['slug']` trocado por `reset() + key()` — `array_values()` descarta as chaves, tornando `[0]['slug']` sempre vazio |
+| `32ec16e8` | Removido fallback espúrio `$points['points'] = ['amount'=>0]` que injetava chave `'points'` falsa quando o slug real era `'zen-points'` |
+| `f270a721` | `gamipress_get_user_requirement_status()` só aceita 2 args; código passava 3 → PHP fatal |
+| `f270a721` | `gamipress_get_user_rank_type_progress_percent()` não existe no GamiPress free → substituído por média dos `percent` dos requirements |
+| `f270a721` | `gamipress_get_user_logs()` não existe → substituído por `gamipress_get_logs()` |
+| `1faf5c2e` | `rankProgress` fallback: ternário `($a > $b) ? 0.0 : 0.0` (sempre 0) substituído por cálculo real via pontos vs `_gamipress_points` meta do próximo rank |
+| `2e2e652e` | `CACHE_VERSION` v15 → v16: invalida transients stale que cacheavam dados errados por 24h |
+
+### Regras fixas sobre arrays do GamiPress
+
+- `gamipress_get_points_types()` → `array<slug, data>` — usar `array_keys()`, nunca `wp_list_pluck($arr, 'slug')`
+- `gamipress_get_rank_types()` → `array<slug, data>` — usar `reset() + key()` para pegar o primeiro, nunca `array_values()[0]`
+- `gamipress_get_user_requirement_status($user_id, $req_id)` → **2 argumentos apenas**
+- `gamipress_get_user_logs()` → **não existe** no GamiPress free; usar `gamipress_get_logs(['user_id'=>$uid])`
+- `gamipress_get_user_rank_type_progress_percent()` → **não existe** no GamiPress free
+
+### Cache
+
+- Dashboard: 24h, chave `djz_gamipress_dashboard_v16_{user_id}` (`CACHE_VERSION = 'v16'` em `class-zengame.php`)
+- Leaderboard: 1h, chave `djz_gamipress_leaderboard_v16_{limit}` — invalidado em qualquer premiação via `clear_user_cache()`
+- Stats: 6h, chaves `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}`
+- **Ao corrigir bugs que afetam dados cached: sempre bumpar `CACHE_VERSION`** — sem isso o WordPress serve o cache errado por horas mesmo após o deploy
+
+### Outros
+
+- `date_earned` de conquistas vem do objeto de user-achievement (tabela `gamipress_user_achievements`), não de post meta
 - Pedidos WooCommerce: usar exclusivamente `wc_get_orders()` — nunca SQL direto em `wp_posts` (HPOS ativo)
-- Cache dashboard: 24h (TTL), chave `djz_gamipress_dashboard_v16_{user_id}` (`CACHE_VERSION = 'v16'` em `class-zengame.php`)
-- Cache leaderboard: 1h (TTL), chave `djz_gamipress_leaderboard_v16_{limit}` — invalidado em qualquer premiação via `clear_user_cache()`
-- Cache stats: 6h, chaves `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}`
 - Deploy CI: transients ZenGame são limpos via `wp transient delete --search="djz_gamipress"` após cada deploy
-- **`WP_DEBUG` em produção**: `WP_DEBUG_DISPLAY: true` faz o PHP emitir HTML (`<br><b>Warning...`) antes do JSON no body REST → `res.json()` falha → dashboard mostra erro. Fix obrigatório no `wp-config.php`: `define('WP_DEBUG', false); define('WP_DEBUG_DISPLAY', false); @ini_set('display_errors', 0);`
-- **`rankProgress` fallback**: quando `gamipress_get_rank_requirements_progress()` não está disponível, o progresso é calculado via `gamipress_get_user_points()` comparado com `_gamipress_points` meta do rank atual e próximo. O bug histórico retornava `0.0` nos dois lados do ternário — corrigido em `class-rest-handler.php`.
-- **Zod schema**: campos `main_points_slug`, `lastUpdate`, `version` usam `.catch()` para não quebrar o parse quando o PHP retorna valores inesperados.
+- **`WP_DEBUG` em produção**: `WP_DEBUG_DISPLAY: true` emite HTML antes do JSON → `res.json()` falha. Fix: `define('WP_DEBUG', false); define('WP_DEBUG_DISPLAY', false); @ini_set('display_errors', 0);`
+- **Zod schema**: campos `main_points_slug`, `lastUpdate`, `version` usam `.catch('')` para não quebrar o parse quando o PHP retorna null
 
 ## SEO / Bots de IA — Padrões Canônicos
 
