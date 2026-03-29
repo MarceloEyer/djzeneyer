@@ -61,14 +61,13 @@ const NewsPage: React.FC = () => {
 
   // --- RENDERIZAÇÃO DE POST ÚNICO ---
   if (!loading && slug && singlePost) {
-    const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
     const postImage = safeUrl(
       singlePost.featured_image_src_full ||
       singlePost.featured_image_src ||
       singlePost._embedded?.['wp:featuredmedia']?.[0]?.source_url,
       '/images/zen-eyer-og-image.png'
     );
-    const postUrl = `${origin}${generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: singlePost.slug })}`;
+    const postUrl = `${ARTIST.site.baseUrl}${generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: singlePost.slug })}`;
 
     const articleSchema = {
       "@context": "https://schema.org",

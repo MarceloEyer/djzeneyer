@@ -18,11 +18,13 @@ export const MusicCollection: React.FC = () => {
     const trackInteraction = useTrackInteraction(user?.token);
 
     const handleDownload = (track: any) => {
-        if (track.links?.download) {
+        // Valida a URL antes de abrir — bloqueia javascript:, data: e domínios não confiáveis
+        const downloadUrl = safeUrl(track.links?.download ?? '', '');
+        if (downloadUrl) {
             // Track the interaction (awards points even if GDrive)
             trackInteraction.mutate({ action: 'download', objectId: track.id });
-            // Direct download/redirect
-            window.open(track.links.download, '_blank');
+            // Abre em nova aba com noopener,noreferrer para prevenir tab-napping
+            window.open(downloadUrl, '_blank', 'noopener,noreferrer');
         }
     };
 
