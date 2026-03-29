@@ -689,7 +689,8 @@ export const useGamipressQuery = (userId?: number, token?: string) => {
         const bodyPreview = await res.text().catch(() => '');
         const hint = bodyPreview.slice(0, 120).replace(/\s+/g, ' ');
         throw new Error(
-          `[GamiPress] Resposta não é JSON válido (HTTP ${res.status}). Verifique WP_DEBUG no wp-config.php. Preview: ${hint}`
+          `[GamiPress] Resposta não é JSON válido (HTTP ${res.status}). Verifique WP_DEBUG no wp-config.php. Preview: ${hint}`,
+          { cause: e }
         );
       }
 

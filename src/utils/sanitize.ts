@@ -1,9 +1,43 @@
 import DOMPurify from 'dompurify';
 
+// ---------------------------------------------------------------------------
+// Hook global DOMPurify (registrado uma única vez por carregamento de módulo)
+// ---------------------------------------------------------------------------
+// 1. Força rel="noopener noreferrer" em <a target="_blank"> (previne tab-napping)
+// 2. Remove href/src com protocolos perigosos que passem por brechas de parser
+//    (DOMPurify já bloqueia a maioria, mas o hook adiciona defesa em profundidade)
+// ---------------------------------------------------------------------------
+if (typeof window !== 'undefined' && DOMPurify.isSupported) {
+    DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+        if (node instanceof Element) {
+            // <a> com target="_blank" deve ter rel seguro
+            if (node.tagName === 'A') {
+                if (node.getAttribute('target') === '_blank') {
+                    node.setAttribute('rel', 'noopener noreferrer');
+                }
+                const href = node.getAttribute('href');
+                if (href && isDangerousUrl(href)) {
+                    node.removeAttribute('href');
+                }
+            }
+            // <img> (e qualquer outra tag com src): bloqueia protocolos perigosos
+            if (node.hasAttribute('src')) {
+                const src = node.getAttribute('src') ?? '';
+                if (isDangerousUrl(src)) {
+                    node.removeAttribute('src');
+                }
+            }
+        }
+    });
+}
+
+// ---------------------------------------------------------------------------
+// sanitizeHtml — uso geral (conteúdo WordPress, descrições, etc.)
+// ---------------------------------------------------------------------------
 /**
- * Sanitiza uma string HTML para uso seguro com dangerouslySetInnerHTML.
+ * Sanitiza HTML externo para uso seguro com dangerouslySetInnerHTML.
  * Permite tags básicas de formatação mas remove scripts e atributos perigosos.
- * 
+ *
  * @param html String HTML vinda de fonte externa (ex: WP API)
  * @returns String HTML limpa
  */
@@ -13,14 +47,20 @@ export const sanitizeHtml = (html: string | undefined | null): string => {
     return DOMPurify.sanitize(html, {
         ALLOWED_TAGS: [
             'b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li',
-            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'img', 'blockquote'
+            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'div', 'img', 'blockquote',
         ],
-        ALLOWED_ATTR: ['href', 'target', 'src', 'alt', 'class', 'id', 'title']
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'class', 'id', 'title'],
+        // FORCE_BODY: envolve o fragmento num <body> virtual, prevenindo ataques
+        // de mXSS onde o parser reinterpreta o HTML fora de contexto.
+        FORCE_BODY: true,
     }) as string;
 };
 
+// ---------------------------------------------------------------------------
+// sanitizeTitleHtml — títulos e headings (inline tags apenas)
+// ---------------------------------------------------------------------------
 /**
- * Sanitiza uma string HTML para uso seguro em títulos e headings (inline tags only).
+ * Sanitiza HTML para uso em títulos — aceita apenas tags inline seguras.
  * Retorna tags estritamente necessárias, evitando quebras de layout.
  */
 export const sanitizeTitleHtml = (html: string | undefined | null): string => {
@@ -28,10 +68,14 @@ export const sanitizeTitleHtml = (html: string | undefined | null): string => {
 
     return DOMPurify.sanitize(html, {
         ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'span', 'br'],
-        ALLOWED_ATTR: ['class']
+        ALLOWED_ATTR: ['class'],
+        FORCE_BODY: true,
     }) as string;
 };
 
+// ---------------------------------------------------------------------------
+// safeUrl — validação de URLs em href / src
+// ---------------------------------------------------------------------------
 /**
  * Lista de domínios confiáveis para prevenir Open Redirect e SSRF.
  */
@@ -55,6 +99,22 @@ const TRUSTED_DOMAINS = [
 ];
 
 /**
+ * Regex de protocolos perigosos (sem null-byte no pattern para satisfazer no-control-regex).
+ * O null-byte é removido antes da checagem pela função isDangerousUrl().
+ */
+const DANGEROUS_PROTOCOL_RE = /^\s*(javascript|data|vbscript|file|about):/i;
+
+/**
+ * Remove null-bytes e outros caracteres de controle que browsers ignoram ao parsear URLs
+ * mas que podem ser usados para bypass de validação (e.g. "java\x00script:").
+ */
+// eslint-disable-next-line no-control-regex
+const STRIP_CTRL_RE = /[\x00-\x1f]/g;
+
+const isDangerousUrl = (url: string): boolean =>
+    DANGEROUS_PROTOCOL_RE.test(url.replace(STRIP_CTRL_RE, ''));
+
+/**
  * Verifica se uma URL ou caminho é interno ao site.
  */
 export const isInternalPath = (path: string | undefined | null): boolean => {
@@ -69,22 +129,27 @@ export const isInternalPath = (path: string | undefined | null): boolean => {
 };
 
 /**
- * Lista de protocolos permitidos (movida para o escopo global para evitar realocações a cada chamada).
+ * Lista de protocolos permitidos.
  */
 const ALLOWED_PROTOCOLS = ['http:', 'https:', 'mailto:', 'tel:'];
 
 /**
  * Valida se uma URL é segura para uso em atributos href ou src.
  * Bloqueia javascript:, data: e outros esquemas perigosos.
- * Valida o domínio contra uma whitelist para links sensíveis.
+ * Valida o domínio contra uma allowlist para links externos.
  */
 export const safeUrl = (url: string | undefined | null, fallback: string = '#'): string => {
     if (!url) return fallback;
 
     const trimmedUrl = url.trim();
 
+    // Bloqueia protocolos perigosos antes de qualquer outro parse
+    if (isDangerousUrl(trimmedUrl)) {
+        return fallback;
+    }
+
     try {
-        // Se for um caminho interno, consideramos seguro (desde que não seja um //esquema)
+        // Se for um caminho interno, consideramos seguro (desde que não seja //esquema)
         if (isInternalPath(trimmedUrl)) {
             return trimmedUrl;
         }
@@ -103,29 +168,28 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
             return fallback;
         }
 
-        // Validação de Domínio
-        const domain = parsed.hostname.toLowerCase();
-        const isTrustedDomain = TRUSTED_DOMAINS.some(
-            trusted => domain === trusted || domain.endsWith(`.${trusted}`)
-        );
-
         // Para protocolos não-web (mailto/tel), aceitamos após validação de protocolo
         if (parsed.protocol === 'mailto:' || parsed.protocol === 'tel:') {
             return trimmedUrl;
         }
 
-        // Para links web, forçamos HTTPS em domínios externos e aceitamos HTTP apenas para domínios confiáveis.
+        // Validação de domínio para links web
+        const domain = parsed.hostname.toLowerCase();
+        const isTrustedDomain = TRUSTED_DOMAINS.some(
+            trusted => domain === trusted || domain.endsWith(`.${trusted}`)
+        );
+
+        // Para links web, forçamos HTTPS em domínios externos e aceitamos HTTP apenas em domínios confiáveis
         if (parsed.protocol === 'http:' && !isTrustedDomain) {
             return fallback;
         }
 
         return trimmedUrl;
     } catch {
-        // Se não for uma URL válida (ex: caminhos internos complexos), mas contém esquemas perigosos, bloqueamos
-        if (/^(javascript|data|vbscript|file|about):/i.test(trimmedUrl)) {
+        // Se não for uma URL válida mas não contém esquemas perigosos, tenta como caminho interno
+        if (isDangerousUrl(trimmedUrl)) {
             return fallback;
         }
-        // Se falhar o parse mas for algo como "tel:" ou "mailto:" que o URL() às vezes rejeita sem host
         if (ALLOWED_PROTOCOLS.some(proto => trimmedUrl.toLowerCase().startsWith(proto))) {
             return trimmedUrl;
         }
@@ -133,19 +197,26 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
     }
 };
 
+// ---------------------------------------------------------------------------
+// safeRedirect — previne Open Redirect (CWE-601)
+// ---------------------------------------------------------------------------
 /**
  * Garante que um redirecionamento seja para uma rota interna ou domínio confiável.
- * Previne ataques de Open Redirect (CWE-601).
  */
 export const safeRedirect = (url: string | undefined | null, fallback: string = '/'): string => {
     if (!url) return fallback;
 
-    // 1. Se for um caminho interno puro (começa com /), é seguro
+    // 1. Bloqueia protocolos perigosos imediatamente
+    if (isDangerousUrl(url)) {
+        return fallback;
+    }
+
+    // 2. Se for um caminho interno puro (começa com /), é seguro
     if (isInternalPath(url)) {
         return url;
     }
 
-    // 2. Se for uma URL absoluta, verificamos se o host é confiável
+    // 3. Se for uma URL absoluta, verificamos se o host é confiável
     try {
         const parsed = new URL(url);
         if (!['http:', 'https:'].includes(parsed.protocol)) {
@@ -153,7 +224,6 @@ export const safeRedirect = (url: string | undefined | null, fallback: string = 
         }
 
         const domain = parsed.hostname.toLowerCase();
-
         if (TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
             return url;
         }
@@ -164,20 +234,26 @@ export const safeRedirect = (url: string | undefined | null, fallback: string = 
     return fallback;
 };
 
+// ---------------------------------------------------------------------------
+// sanitizePath — paths de navegação interna
+// ---------------------------------------------------------------------------
 /**
- * Robust Path Sanitization to prevent XSS and malformed internal links.
- * Used primarily in navigation components.
+ * Sanitização robusta de paths para prevenir XSS e links malformados.
+ * Usada principalmente em componentes de navegação.
  */
 export const sanitizePath = (path: string): string => {
     if (!path) return '/';
-    // Remove qualquer tentativa de protocolo ou host (ex: javascript:, http:, //example.com)
-    // 1. Remove protocolos
+
+    // Bloqueia protocolos perigosos antes de qualquer processamento
+    if (isDangerousUrl(path)) return '/';
+
+    // 1. Remove qualquer tentativa de protocolo ou host (ex: javascript:, http:, //example.com)
     let clean = path.replace(/^[a-zA-Z]+:\/*|^[\\/]+/g, '/');
     // 2. Garante que comece com uma barra única e remove caracteres perigosos
     clean = '/' + clean.replace(/[^\w./?=&#%-]/g, '').replace(/\/+/g, '/').replace(/^\/+/, '');
 
-    // 3. Bloqueia explicitamente esquemas perigosos se ainda restarem
-    if (/^(javascript|data|vbscript):/i.test(clean)) return '/';
+    // 3. Verificação final de esquemas perigosos (belt-and-suspenders)
+    if (isDangerousUrl(clean)) return '/';
 
     return clean;
 };
