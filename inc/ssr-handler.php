@@ -68,13 +68,27 @@ function djz_serve_ssr()
 
     // Se arquivo SSR existe, servir
     if (file_exists($ssr_file)) {
+        // SEGURANÇA: Verificar via realpath() que o arquivo está dentro de dist/
+        // Isso elimina qualquer chance de Path Traversal mesmo após sanitização do path.
+        $dist_dir   = realpath($theme_path . '/dist');
+        $real_file  = realpath($ssr_file);
+
+        if ($dist_dir === false || $real_file === false) {
+            return;
+        }
+
+        // O arquivo resolvido deve começar com o diretório dist/ (+ separador)
+        if (strpos($real_file, $dist_dir . DIRECTORY_SEPARATOR) !== 0) {
+            return;
+        }
+
         // Headers SEO-friendly
         header('Content-Type: text/html; charset=UTF-8');
         header('X-Prerendered: true');
         header('X-Prerender-File: ' . $display_filename);
 
-        // Ler e servir arquivo
-        readfile($ssr_file);
+        // Ler e servir arquivo (caminho já validado por realpath)
+        readfile($real_file);
         exit;
     }
 }
@@ -96,13 +110,25 @@ if (isset($_GET['debug_ssr'])) {
         echo "Path: " . htmlspecialchars($path) . "\n";
 
         $theme_path = get_stylesheet_directory();
-        if (empty($clean_path)) {
+        $clean_path_debug = '';
+        $previous_debug   = '';
+        while ($clean_path_debug !== $previous_debug) {
+            $previous_debug   = $clean_path_debug;
+            $clean_path_debug = str_replace(['..', './', '../'], '', $path ?? '');
+            $clean_path_debug = preg_replace('/[^a-zA-Z0-9\/\-_]/', '', $clean_path_debug);
+        }
+        $clean_path_debug = trim($clean_path_debug, '/');
+        if (empty($clean_path_debug)) {
             $ssr_file = $theme_path . '/dist/index.html';
         } else {
-            $ssr_file = $theme_path . '/dist/' . $clean_path . '/index.html';
+            $ssr_file = $theme_path . '/dist/' . $clean_path_debug . '/index.html';
         }
-        echo "SSR File: " . htmlspecialchars($ssr_file) . "\n";
-        echo "SSR Exists: " . (file_exists($ssr_file) ? 'YES' : 'NO') . "\n";
+        $dist_dir_dbg  = realpath($theme_path . '/dist');
+        $real_file_dbg = realpath($ssr_file);
+        $safe_path     = ($dist_dir_dbg && $real_file_dbg && strpos($real_file_dbg, $dist_dir_dbg . DIRECTORY_SEPARATOR) === 0)
+                         ? $real_file_dbg : '(blocked — path outside dist)';
+        echo "SSR File: " . htmlspecialchars($safe_path) . "\n";
+        echo "SSR Exists: " . ($safe_path !== '(blocked — path outside dist)' && file_exists($safe_path) ? 'YES' : 'NO') . "\n";
         echo "-->\n";
     });
 }
