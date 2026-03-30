@@ -51,7 +51,10 @@ class Google_Provider {
         
         // Update Google ID
         update_user_meta($user->ID, 'zeneyer_google_id', $user_data['sub']);
-        
+
+        // Trigger standard WP login hook for GamiPress and other plugins (streak, achievements, etc.)
+        do_action('wp_login', $user->user_login, $user);
+
         do_action('zeneyer_auth_google_login', $user->ID, $user_data);
         
         return $user;

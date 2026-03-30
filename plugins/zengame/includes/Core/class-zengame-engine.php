@@ -166,7 +166,7 @@ final class Engine
 
         // Leaderboard rankings change whenever any user's points change.
         // Clear the most common limit variants so the next request fetches fresh data.
-        foreach ([10, 25, 50] as $limit) {
+        foreach ([5, 10, 25, 50] as $limit) {
             \delete_transient('djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $limit);
         }
     }
