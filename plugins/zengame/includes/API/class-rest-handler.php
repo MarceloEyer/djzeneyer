@@ -325,11 +325,21 @@ final class REST_Handler
 
                         // gamipress_get_user_requirement_status() accepts only 2 args: ($user_id, $requirement_id)
                         $status = \gamipress_get_user_requirement_status($user_id, $req->ID);
+                        $req_current  = (int) ($status['current'] ?? 0);
+                        $req_required = (int) ($status['required'] ?? 0);
+
+                        // Recalculate percent from current/required directly.
+                        // gamipress_get_user_requirement_status() may return percent=0 even when
+                        // current and required are correct (known GamiPress free inconsistency).
+                        $req_percent = $req_required > 0
+                            ? \min(100.0, \round(($req_current / $req_required) * 100, 1))
+                            : ($req_current > 0 ? 100.0 : 0.0);
+
                         $requirements[] = [
                             'title'    => (string) ($req->post_title ?? ''),
-                            'current'  => (int) ($status['current'] ?? 0),
-                            'required' => (int) ($status['required'] ?? 0),
-                            'percent'  => (float) ($status['percent'] ?? 0),
+                            'current'  => $req_current,
+                            'required' => $req_required,
+                            'percent'  => $req_percent,
                         ];
                     }
                 }
@@ -337,7 +347,12 @@ final class REST_Handler
 
             // gamipress_get_user_rank_type_progress_percent() does not exist in GamiPress free.
             // Calculate progress manually from requirements percent average.
-            if (!empty($requirements)) {
+            // Secondary fallback: if all requirements returned current=0 (function returned all zeros),
+            // treat as unavailable and fall through to the points-based calculation below.
+            $requirements_have_data = !empty($requirements) &&
+                \array_sum(\array_column($requirements, 'current')) > 0;
+
+            if ($requirements_have_data) {
                 $total_pct = \array_sum(\array_column($requirements, 'percent'));
                 $progress = (float) ($total_pct / count($requirements));
             } elseif ($current && $next) {
@@ -348,8 +363,9 @@ final class REST_Handler
                 $user_points = \function_exists('gamipress_get_user_points')
                     ? (int) \gamipress_get_user_points($user_id, $main_slug)
                     : 0;
-                $next_min    = (int) \get_post_meta($next->ID, '_gamipress_points', true);
-                $curr_min    = (int) \get_post_meta($current->ID, '_gamipress_points', true);
+                // GamiPress stores minimum points in _gamipress_points_to_unlock (not _gamipress_points).
+                $next_min    = (int) \get_post_meta($next->ID, '_gamipress_points_to_unlock', true);
+                $curr_min    = (int) \get_post_meta($current->ID, '_gamipress_points_to_unlock', true);
 
                 if ($next_min > $curr_min && $user_points >= $curr_min) {
                     $progress = min(99.0, round(
@@ -431,8 +447,10 @@ final class REST_Handler
         $ach_types = \gamipress_get_achievement_types();
         $all = [];
 
-        foreach ($ach_types as $type) {
-            $type_slug = (string) ($type['slug'] ?? '');
+        foreach ($ach_types as $type_key => $type) {
+            // gamipress_get_achievement_types() retorna array associativo chave=slug,
+            // igual ao get_rank_types(). O sub-campo 'slug' pode não existir — usar a chave.
+            $type_slug = (string) ($type['slug'] ?? $type_key);
             if ($type_slug === '') {
                 continue;
             }
