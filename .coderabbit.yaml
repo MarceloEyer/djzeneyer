@@ -11,7 +11,8 @@ tone_instructions: |
 
 reviews:
   profile: "assertive"
-  auto_review: true
+  auto_review:
+    enabled: true
   high_level_summary: true
   poem: false
   collapse_walkthrough: true
