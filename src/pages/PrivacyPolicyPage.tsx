@@ -1,11 +1,17 @@
 import React, { useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, Database, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const PrivacyPolicyPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const canonicalUrl = useMemo(
+    () => `https://djzeneyer.com/${getLocalizedRoute('privacy', currentLang).replace(/^\//, '')}`,
+    [currentLang]
+  );
 
   // ⚡ Bolt: Wrapped static content objects dependent on context with useMemo
   // to prevent unnecessary re-allocations on every render cycle.
@@ -39,11 +45,11 @@ const PrivacyPolicyPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('privacy_page.seo.title')}</title>
-        <meta name="description" content={t('privacy_page.seo.description')} />
-        <meta name="robots" content="index, follow" />
-      </Helmet>
+      <HeadlessSEO
+        title={t('privacy_page.seo.title')}
+        description={t('privacy_page.seo.description')}
+        url={canonicalUrl}
+      />
 
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">

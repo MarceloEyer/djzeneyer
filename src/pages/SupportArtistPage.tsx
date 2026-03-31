@@ -1,6 +1,7 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { 
   DollarSign, 
   CreditCard, 
@@ -90,7 +91,8 @@ const DetailCard = ({ label, value }: { label: string; value: string }) => (
 // ============================================================================
 
 const SupportArtistPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const [openCurrency, setOpenCurrency] = useState<string | null>(null);
 
   const supportReasons = [
@@ -113,7 +115,8 @@ const SupportArtistPage: React.FC = () => {
         title={t('support.seo.title')}
         description={t('support.seo.description')}
         keywords={t('support.seo.keywords')}
-        image="/images/zen-eyer-og-image.svg"
+        url={`https://djzeneyer.com/${getLocalizedRoute('support', currentLang).replace(/^\//, '')}`}
+        image="/images/zen-eyer-og-image.png"
       />
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10">

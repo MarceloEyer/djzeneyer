@@ -14,6 +14,7 @@ import React, { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 
@@ -194,7 +195,8 @@ AchievementCard.displayName = 'AchievementCard';
 // COMPONENTE PRINCIPAL
 // ============================================================================
 const ZenTribePage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const { user } = useUser();
 
   // Membership tiers (com tradução)
@@ -251,9 +253,11 @@ const ZenTribePage: React.FC = () => {
     }
   };
 
-  // URLs para hrefLang (SSOT)
-  const currentPath = '/zentribe';
-  const currentUrl = 'https://djzeneyer.com' + currentPath;
+  // URL canônica via SSOT — garante slug correto em EN e PT
+  const currentUrl = useMemo(
+    () => `https://djzeneyer.com/${getLocalizedRoute('zentribe', currentLang).replace(/^\//, '')}`,
+    [currentLang]
+  );
 
   const schema = useMemo(() => getOrganizationSchema(t), [t]);
 

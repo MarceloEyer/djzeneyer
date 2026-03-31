@@ -1,14 +1,14 @@
 // src/pages/ShopPage.tsx
 // Visual inspirado em Netflix para venda de ingressos de eventos
 
-import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
-import { getLocalizedRoute } from '../config/routes';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Toast } from '../components/common/Toast';
 import {
   Loader2,
@@ -337,8 +337,12 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
 // --- Componente Principal da Página ---
 const ShopPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const currentLang = i18n.language.split('-')[0];
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
+  const canonicalUrl = useMemo(
+    () => `https://djzeneyer.com/${getLocalizedRoute('shop', currentLang).replace(/^\//, '')}`,
+    [currentLang]
+  );
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
 
   const { data: shopData, isLoading: loading } = useShopPageQuery(currentLang);
@@ -390,10 +394,11 @@ const ShopPage: React.FC = () => {
         <div className="absolute -top-40 left-[-15%] h-[460px] w-[460px] rounded-full bg-primary/15 blur-3xl" />
         <div className="absolute top-[28%] right-[-12%] h-[420px] w-[420px] rounded-full bg-cyan-500/10 blur-3xl" />
       </div>
-      <Helmet>
-        <title>{t('shop.page_title')} | {t('common.artist_name')}</title>
-        <meta name="description" content={t('shop.page_meta_desc')} />
-      </Helmet>
+      <HeadlessSEO
+        title={`${t('shop.page_title')} | ${t('common.artist_name')}`}
+        description={t('shop.page_meta_desc')}
+        url={canonicalUrl}
+      />
 
       <Toast
         message={t('shop.product_added')}

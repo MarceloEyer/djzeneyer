@@ -1,12 +1,14 @@
-﻿import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, Download, Image as ImageIcon } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const MediaPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   const clippingData = ARTIST.mediaClipping || [];
 
@@ -38,7 +40,8 @@ const MediaPage: React.FC = () => {
       <HeadlessSEO
         title={`${t('media_page.title')} | ${ARTIST.identity.stageName}`}
         description={t('media_page.subtitle')}
-        image="/images/zen-eyer-og-image.svg"
+        url={`https://djzeneyer.com/${getLocalizedRoute('media', currentLang).replace(/^\//, '')}`}
+        image="/images/zen-eyer-og-image.png"
       />
 
       <div className="min-h-screen pt-40 pb-24 bg-background relative overflow-hidden">

@@ -1,12 +1,18 @@
-﻿import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Users, Shield, AlertTriangle, Ban, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const CodeOfConductPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const lastUpdated = t('conduct_page.last_updated_date');
+  const canonicalUrl = useMemo(
+    () => `https://djzeneyer.com/${getLocalizedRoute('conduct', currentLang).replace(/^\//, '')}`,
+    [currentLang]
+  );
 
   const principles = [
     {
@@ -94,11 +100,11 @@ const CodeOfConductPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('conduct_page.title')} | {t('common.artist_name')}</title>
-        <meta name="description" content={t('conduct_page.subtitle')} />
-        <meta name="robots" content="index, follow" />
-      </Helmet>
+      <HeadlessSEO
+        title={`${t('conduct_page.title')} | ${t('common.artist_name')}`}
+        description={t('conduct_page.subtitle')}
+        url={canonicalUrl}
+      />
 
       <div className="min-h-screen pt-24 pb-16 relative overflow-hidden">
         {/* Background Decorations - Premium Glows */}

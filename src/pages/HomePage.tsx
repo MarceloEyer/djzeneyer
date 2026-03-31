@@ -255,7 +255,7 @@ const HomePage: React.FC = () => {
                 <span>{t('home.cta_soundcloud')}</span>
               </a>
               <Link
-                to={getLocalizedRoute('work-with-me', currentLang)}
+                to={getLocalizedRoute('booking', currentLang)}
                 className="btn btn-outline btn-lg flex items-center gap-2 backdrop-blur-sm"
                 aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
@@ -365,7 +365,7 @@ const HomePage: React.FC = () => {
                 <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{t('home.press.desc')}</p>
-              <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+              <Link to={getLocalizedRoute('booking', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {t('home.press.cta')} →
               </Link>
             </motion.div>
@@ -374,7 +374,7 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
-              <Link to={getLocalizedRoute('work-with-me', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
+              <Link to={getLocalizedRoute('booking', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {t('home.bookers.cta')} →
               </Link>
             </motion.div>

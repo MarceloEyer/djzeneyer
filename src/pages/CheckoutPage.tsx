@@ -203,6 +203,7 @@ const CheckoutPage: React.FC = () => {
       <HeadlessSEO
         title={t('common.checkout.title')}
         description={t('common.checkout.description')}
+        noindex
         isHomepage={false}
       />
 

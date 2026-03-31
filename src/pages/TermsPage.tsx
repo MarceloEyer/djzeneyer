@@ -1,11 +1,17 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { FileText, AlertCircle, Scale, Ban, CheckCircle } from 'lucide-react';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const TermsPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const canonicalUrl = useMemo(
+    () => `https://djzeneyer.com/${getLocalizedRoute('terms', currentLang).replace(/^\//, '')}`,
+    [currentLang]
+  );
 
   // ⚡ Bolt: Wrapped static content objects dependent on context with useMemo
   // to prevent unnecessary re-allocations on every render cycle.
@@ -88,11 +94,11 @@ const TermsPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('legal.terms_page.title')} | {t('common.artist_name')}</title>
-        <meta name="description" content={t('legal.terms_page.subtitle')} />
-        <meta name="robots" content="index, follow" />
-      </Helmet>
+      <HeadlessSEO
+        title={`${t('legal.terms_page.title')} | ${t('common.artist_name')}`}
+        description={t('legal.terms_page.subtitle')}
+        url={canonicalUrl}
+      />
 
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
