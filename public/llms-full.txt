@@ -72,8 +72,8 @@ DJ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** 
 
 ## Technical Infrastructure
 
-- **Frontend SPA:** React 18, Vite 7, Tailwind CSS, Framer Motion, React Router 7, i18next (EN/PT).
-- **Backend CMS:** WordPress 6.0+ via REST API in headless mode. PHP 8.3, MariaDB.
+- **Frontend SPA:** React 19, Vite 8, Tailwind CSS 4, React Router 7, i18next (EN/PT).
+- **Backend CMS:** WordPress 6.9.4 via REST API in headless mode. PHP 8.3.30, MariaDB 11.8.6.
 - **Plugins:** WooCommerce, GamiPress, Polylang, MailPoet, LiteSpeed Cache, ZenEyer Auth, Zen BIT, Zen SEO Lite Pro.
 - **Infrastructure:** Hostinger VPS (LiteSpeed), Cloudflare CDN, GitHub Actions CI/CD.
 - **AI Readiness:** JSON-LD (Person Schema), automated Hreflang (EN/PT), llms.txt, llms-full.txt, ai-bots.txt, dedicated AI context endpoint. Enriched Knowledge Panel data active.

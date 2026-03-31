@@ -209,6 +209,84 @@ Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 
+# xAI (Grok)
+User-agent: Grokbot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# META AI (treinamento — diferente do facebookexternalhit que é preview de links)
+User-agent: meta-externalagent
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# BYTEDANCE / TIKTOK AI
+User-agent: Bytespider
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# DUCKDUCKGO AI (DuckAssist)
+User-agent: DuckAssistBot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# AMAZON AI (Alexa, Q, Kendra)
+User-agent: Amazonbot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# YOU.COM AI Search
+User-agent: YouBot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# DIFFBOT (Knowledge Graph AI)
+User-agent: Diffbot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# AI2BOT (Allen Institute for AI)
+User-agent: AI2Bot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# BRAVE SEARCH AI
+User-agent: BraveBot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# NAVER AI (Cloova — Coreia do Sul)
+User-agent: Yeti
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# QWEN / ALIBABA AI
+User-agent: Qwenbot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# MISTRAL AI
+User-agent: MistralBot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
+# TIMPI SEARCH (índice independente)
+User-agent: Timpibot
+Allow: /
+Allow: /wp-json/djzeneyer/v1/ai-context
+Disallow: /wp-admin/
+
 # ==============================================================================
 # 🛡️ BOTS AGRESSIVOS (LIMITADOS OU BLOQUEADOS)
 # ==============================================================================
