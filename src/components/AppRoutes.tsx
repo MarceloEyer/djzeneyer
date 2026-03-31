@@ -59,54 +59,57 @@ const generateRoutes = (lang: Language): RouteObject[] => {
   });
 };
 
+// ⚡ Bolt: Extracted static routes array generation outside the component body.
+// This prevents O(N) reallocation, nested JSX instantiation, and `useRoutes`
+// hook array recreation on every re-render of the top-level AppRoutes component.
+const NotFound = NOT_FOUND_COMPONENT;
+const staticRoutes: RouteObject[] = [
+  // 🇧🇷 Rotas em Português (Raiz /pt)
+  // Movido para cima para garantir prioridade na detecção
+  {
+    path: '/pt',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: generateRoutes('pt'),
+  },
+
+  // 🇬🇧 Rotas em Inglês (Raiz /)
+  {
+    path: '/',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: generateRoutes('en'),
+  },
+
+  // 🔗 ZenLink — página independente (sem Navbar/Footer)
+  {
+    path: '/zenlink',
+    element: (
+      <ErrorBoundary>
+        <ZenLinkPage />
+      </ErrorBoundary>
+    ),
+  },
+
+  // 🚫 404 Catch-all
+  {
+    path: '*',
+    element: (
+      <ErrorBoundary>
+        <NotFound />
+      </ErrorBoundary>
+    ),
+  },
+];
+
 const AppRoutes = () => {
-  const NotFound = NOT_FOUND_COMPONENT;
-
-  const element = useRoutes([
-    // 🇧🇷 Rotas em Português (Raiz /pt)
-    // Movido para cima para garantir prioridade na detecção
-    {
-      path: '/pt',
-      element: (
-        <ErrorBoundary>
-          <MainLayout />
-        </ErrorBoundary>
-      ),
-      children: generateRoutes('pt'),
-    },
-
-    // 🇬🇧 Rotas em Inglês (Raiz /)
-    {
-      path: '/',
-      element: (
-        <ErrorBoundary>
-          <MainLayout />
-        </ErrorBoundary>
-      ),
-      children: generateRoutes('en'),
-    },
-
-    // 🔗 ZenLink — página independente (sem Navbar/Footer)
-    {
-      path: '/zenlink',
-      element: (
-        <ErrorBoundary>
-          <ZenLinkPage />
-        </ErrorBoundary>
-      ),
-    },
-
-    // 🚫 404 Catch-all
-    {
-      path: '*',
-      element: (
-        <ErrorBoundary>
-          <NotFound />
-        </ErrorBoundary>
-      ),
-    },
-  ]);
-
+  const element = useRoutes(staticRoutes);
   return element;
 };
 

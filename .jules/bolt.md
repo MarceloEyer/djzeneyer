@@ -61,3 +61,6 @@
 ## 2026-03-27 - Extracted Element Mappings in Array Iterators
 **Learning:** Re-evaluating inline mappings with function calls inside an array iteration logic (like `useMemo` resolving maps based on dynamic keys inside component renders) leads to unnecessary overhead in UI updates as React element objects are continually regenerated unnecessarily.
 **Action:** Always refactor constant visual configuration objects or nested JSX conditionals derived from generic conditions to pure, externalized `const` data stores for reference equality preservation.
+## 2026-03-31 - AppRoutes useRoutes Hook Array Reallocation
+**Learning:** In `src/components/AppRoutes.tsx`, the array argument containing calls to `generateRoutes()` and nested JSX instantiations (like `<ErrorBoundary>`) was defined directly inside the component body. This resulted in the entire application's route tree being regenerated on every render of `AppRoutes`, causing O(N) reallocation and unnecessary diffing overhead.
+**Action:** When using React Router's `useRoutes` or defining stable routing arrays, always extract the route configuration object array outside the component body into a static module-level constant to maintain reference equality and prevent render-phase object allocations.
