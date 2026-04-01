@@ -61,3 +61,7 @@
 ## 2026-03-27 - Extracted Element Mappings in Array Iterators
 **Learning:** Re-evaluating inline mappings with function calls inside an array iteration logic (like `useMemo` resolving maps based on dynamic keys inside component renders) leads to unnecessary overhead in UI updates as React element objects are continually regenerated unnecessarily.
 **Action:** Always refactor constant visual configuration objects or nested JSX conditionals derived from generic conditions to pure, externalized `const` data stores for reference equality preservation.
+
+## 2026-03-28 - Prevent O(N) allocation in React Router definition
+**Learning:** Defining the route array directly inside `useRoutes` (like in `AppRoutes.tsx`) causes the entire nested array and all included JSX elements (such as `<ErrorBoundary>`, `<MainLayout>`) to be recreated on every single render cycle of the component.
+**Action:** Always extract static route array definitions into module-level constants outside the component body. This preserves reference equality, bypasses O(N) memory allocations, and prevents React from unnecessarily re-instantiating the entire route tree.

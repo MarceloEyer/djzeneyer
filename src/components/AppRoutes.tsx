@@ -59,54 +59,58 @@ const generateRoutes = (lang: Language): RouteObject[] => {
   });
 };
 
+const NotFound = NOT_FOUND_COMPONENT;
+
+// ⚡ Bolt: Extracted route array definition to module-level static constant to prevent
+// O(N) object reallocation and nested JSX re-instantiation on every render of AppRoutes.
+// Expected Impact: Eliminates unnecessary React reconciliation loops when parent layout components (like routers) trigger render cycles.
+const appRouteDefinitions: RouteObject[] = [
+  // 🇧🇷 Rotas em Português (Raiz /pt)
+  // Movido para cima para garantir prioridade na detecção
+  {
+    path: '/pt',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: generateRoutes('pt'),
+  },
+
+  // 🇬🇧 Rotas em Inglês (Raiz /)
+  {
+    path: '/',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: generateRoutes('en'),
+  },
+
+  // 🔗 ZenLink — página independente (sem Navbar/Footer)
+  {
+    path: '/zenlink',
+    element: (
+      <ErrorBoundary>
+        <ZenLinkPage />
+      </ErrorBoundary>
+    ),
+  },
+
+  // 🚫 404 Catch-all
+  {
+    path: '*',
+    element: (
+      <ErrorBoundary>
+        <NotFound />
+      </ErrorBoundary>
+    ),
+  },
+];
+
 const AppRoutes = () => {
-  const NotFound = NOT_FOUND_COMPONENT;
-
-  const element = useRoutes([
-    // 🇧🇷 Rotas em Português (Raiz /pt)
-    // Movido para cima para garantir prioridade na detecção
-    {
-      path: '/pt',
-      element: (
-        <ErrorBoundary>
-          <MainLayout />
-        </ErrorBoundary>
-      ),
-      children: generateRoutes('pt'),
-    },
-
-    // 🇬🇧 Rotas em Inglês (Raiz /)
-    {
-      path: '/',
-      element: (
-        <ErrorBoundary>
-          <MainLayout />
-        </ErrorBoundary>
-      ),
-      children: generateRoutes('en'),
-    },
-
-    // 🔗 ZenLink — página independente (sem Navbar/Footer)
-    {
-      path: '/zenlink',
-      element: (
-        <ErrorBoundary>
-          <ZenLinkPage />
-        </ErrorBoundary>
-      ),
-    },
-
-    // 🚫 404 Catch-all
-    {
-      path: '*',
-      element: (
-        <ErrorBoundary>
-          <NotFound />
-        </ErrorBoundary>
-      ),
-    },
-  ]);
-
+  const element = useRoutes(appRouteDefinitions);
   return element;
 };
 
