@@ -61,3 +61,11 @@
 ## 2026-03-27 - Extracted Element Mappings in Array Iterators
 **Learning:** Re-evaluating inline mappings with function calls inside an array iteration logic (like `useMemo` resolving maps based on dynamic keys inside component renders) leads to unnecessary overhead in UI updates as React element objects are continually regenerated unnecessarily.
 **Action:** Always refactor constant visual configuration objects or nested JSX conditionals derived from generic conditions to pure, externalized `const` data stores for reference equality preservation.
+
+## 2026-03-30 - Prevent re-creations of local component functions inside memoized roots
+**Learning:** Functions created unconditionally within memoized top-level components (e.g., event handlers like `handleAnswer` inside `React.memo(ZoukPersonaQuizPage)`) are re-created on every state-induced re-render. Since these components hold localized states that change frequently, constant function recreation incurs noticeable allocation and Garbage Collection overhead, as well as breaking reference equality on deeply nested components.
+**Action:** Always wrap event handlers and pure component logic functions with `useCallback` when inside stateful UI pages. Leverage functional state updates `setFoo(prev => ...)` to remove state dependencies from the dependency arrays entirely and increase closure stability.
+
+## 2026-03-31 - Cache Intl.NumberFormat instances to prevent CPU overhead during rendering
+**Learning:** Instantiating `new Intl.NumberFormat()` inside high-frequency utility functions (like `formatPrice`) that are called on every product card render generates significant CPU overhead and memory allocations. V8 engines are slow at instantiating Intl formatters compared to actually calling `.format()` on an existing instance.
+**Action:** Extract and cache `Intl.NumberFormat` instantiations in a module-level `Map` within a utility file, keying them by locale, currency, and options. Always reuse the cached instances in UI components to drastically reduce execution time during map operations and re-renders.

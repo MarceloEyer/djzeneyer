@@ -8,6 +8,7 @@ import { getLocalizedRoute } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { ProductImage, ProductCategory } from '../types/product';
+import { getCurrencyFormatter } from '../utils/currency';
 
 interface Product {
   id: number;
@@ -61,7 +62,7 @@ const TicketsPage: React.FC = () => {
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
     return isNaN(numPrice)
       ? price
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
+      : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   };
 
   return (

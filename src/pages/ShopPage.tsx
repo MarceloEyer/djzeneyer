@@ -10,6 +10,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
 import { getLocalizedRoute } from '../config/routes';
 import { Toast } from '../components/common/Toast';
+import { getCurrencyFormatter } from '../utils/currency';
 import {
   Loader2,
   ChevronLeft,
@@ -367,7 +368,7 @@ const ShopPage: React.FC = () => {
     const currency = isPortuguese ? 'BRL' : 'USD'; // OPTIMIZATION: Dynamic currency symbol
     return isNaN(numPrice)
       ? price
-      : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(numPrice);
+      : getCurrencyFormatter(locale, currency).format(numPrice);
   }, [isPortuguese]);
 
   const featuredProduct = Array.isArray(shopData?.featured) 
