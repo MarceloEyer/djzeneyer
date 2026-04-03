@@ -164,7 +164,11 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     ? `${finalDescription.substring(0, 157)}...`
     : finalDescription;
 
-  const finalUrlRaw = data?.canonical || url || baseUrl;
+  // Fallback: usa a URL atual da página (pathname + baseUrl) em vez da homepage.
+  // Evita canonical incorreto quando url prop não é passado — corrige
+  // "Duplicate without user-selected canonical" no Search Console.
+  const currentPageUrl = `${baseUrl.replace(/\/$/, '')}${location.pathname}`;
+  const finalUrlRaw = data?.canonical || url || currentPageUrl;
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
   const finalUrl = safeUrl(ensureTrailingSlash(absoluteUrl));
 
