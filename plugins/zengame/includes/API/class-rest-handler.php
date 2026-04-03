@@ -569,13 +569,21 @@ final class REST_Handler
             return [];
         }
 
-        $formatted = [];
+        $batch = [];
         foreach ($logs as $log) {
             $post = self::normalize_post_object($log);
-            if (!$post) {
-                continue;
+            if ($post) {
+                $batch[] = $post;
             }
+        }
 
+        if (!empty($batch)) {
+            $batch_ids = \array_values(\array_unique(\array_map(static fn($p) => $p->ID, $batch)));
+            \update_meta_cache('post', $batch_ids);
+        }
+
+        $formatted = [];
+        foreach ($batch as $post) {
             $formatted[] = [
                 'id' => (int) $post->ID,
                 'type' => (string) \get_post_meta($post->ID, '_gamipress_log_type', true),
