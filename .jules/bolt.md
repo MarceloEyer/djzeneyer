@@ -61,3 +61,7 @@
 ## 2026-03-27 - Extracted Element Mappings in Array Iterators
 **Learning:** Re-evaluating inline mappings with function calls inside an array iteration logic (like `useMemo` resolving maps based on dynamic keys inside component renders) leads to unnecessary overhead in UI updates as React element objects are continually regenerated unnecessarily.
 **Action:** Always refactor constant visual configuration objects or nested JSX conditionals derived from generic conditions to pure, externalized `const` data stores for reference equality preservation.
+
+## 2024-04-03 - Otimização wp_get_attachment_image_src
+**Learning:** Otimizar `wp_get_attachment_image_src` substituindo por chamadas únicas à `wp_get_attachment_metadata` é eficaz em performance, mas requer fallback da imagem original se um tamanho não puder ser gerado (e.g. imagens base menores que a resolução pedida), e a manual passagem da função de filtro nativa de reconstrução `wp_get_attachment_url` para não quebrar integrações de CDN/media.
+**Action:** Ao otimizar extração em lote de mídia e meta-dados com loop sobre resoluções (tamanhos de imagem), além de fazer fallback na string base, use sempre apply_filters() nas URLs concatenadas manualmente.

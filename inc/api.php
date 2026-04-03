@@ -353,10 +353,18 @@ function djz_query_products(array $options = [])
                         : ['thumbnail', 'medium', 'medium_large', 'large'];
 
                     $img_sizes = [];
+                    $meta = wp_get_attachment_metadata($img_id);
+                    $base_url = trailingslashit(dirname((string) $src));
+
                     foreach ($sizes as $size) {
-                        $img_src = wp_get_attachment_image_src($img_id, $size);
-                        if ($img_src) {
-                            $img_sizes[$size] = $img_src[0];
+                        if (is_array($meta) && isset($meta['sizes'][$size]['file'])) {
+                            // URL reconstruction bypasses filters intentionally for raw performance in headless
+                            $file_url = $base_url . $meta['sizes'][$size]['file'];
+                            // Manually apply the core hook to restore CDN compatibility
+                            $img_sizes[$size] = apply_filters('wp_get_attachment_url', $file_url, $img_id);
+                        } else {
+                            // Fallback to the original source URL if the specific size was not generated (e.g. image too small) or no meta (SVG)
+                            $img_sizes[$size] = $src;
                         }
                     }
                     if (!empty($img_sizes)) {
@@ -659,10 +667,16 @@ function djz_get_shop_page($request)
                         ];
                         $sizes = ['medium', 'medium_large'];
                         $img_sizes = [];
+                        $meta = wp_get_attachment_metadata($img_id);
+                        $base_url = trailingslashit(dirname((string) $src));
+
                         foreach ($sizes as $size) {
-                            $img_src = wp_get_attachment_image_src($img_id, $size);
-                            if ($img_src)
-                                $img_sizes[$size] = $img_src[0];
+                            if (is_array($meta) && isset($meta['sizes'][$size]['file'])) {
+                                $file_url = $base_url . $meta['sizes'][$size]['file'];
+                                $img_sizes[$size] = apply_filters('wp_get_attachment_url', $file_url, $img_id);
+                            } else {
+                                $img_sizes[$size] = $src;
+                            }
                         }
                         if (!empty($img_sizes))
                             $img_data['sizes'] = $img_sizes;
