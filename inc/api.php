@@ -659,10 +659,14 @@ function djz_get_shop_page($request)
                         ];
                         $sizes = ['medium', 'medium_large'];
                         $img_sizes = [];
-                        foreach ($sizes as $size) {
-                            $img_src = wp_get_attachment_image_src($img_id, $size);
-                            if ($img_src)
-                                $img_sizes[$size] = $img_src[0];
+                        $meta = wp_get_attachment_metadata($img_id);
+                        if ($meta && isset($meta['sizes'])) {
+                            $base_url = trailingslashit(dirname($src));
+                            foreach ($sizes as $size) {
+                                if (isset($meta['sizes'][$size])) {
+                                    $img_sizes[$size] = $base_url . $meta['sizes'][$size]['file'];
+                                }
+                            }
                         }
                         if (!empty($img_sizes))
                             $img_data['sizes'] = $img_sizes;
