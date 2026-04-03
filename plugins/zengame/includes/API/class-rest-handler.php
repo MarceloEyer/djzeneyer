@@ -569,13 +569,24 @@ final class REST_Handler
             return [];
         }
 
-        $formatted = [];
+        // Fase 1: normaliza os posts e extrai os IDs para evitar N+1 no meta cache
+        $batch = [];
         foreach ($logs as $log) {
             $post = self::normalize_post_object($log);
-            if (!$post) {
-                continue;
+            if ($post) {
+                $batch[] = $post;
             }
+        }
 
+        // Fase 2: prime cache para todos os logs em lote
+        if (!empty($batch)) {
+            $batch_ids = \array_values(\array_unique(\array_map(static fn($p) => $p->ID, $batch)));
+            \update_meta_cache('post', $batch_ids);
+        }
+
+        // Fase 3: monta resultado com cache quente
+        $formatted = [];
+        foreach ($batch as $post) {
             $formatted[] = [
                 'id' => (int) $post->ID,
                 'type' => (string) \get_post_meta($post->ID, '_gamipress_log_type', true),
