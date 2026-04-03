@@ -38,6 +38,9 @@ final class Engine
     {
         $this->init_cache_hooks();
         \add_action('wp_login', [$this, 'update_login_streak'], 10, 2);
+        // Atualiza streak em qualquer requisição REST autenticada.
+        // Cobre usuários que voltam ao site usando JWT (sem novo login).
+        \add_filter('rest_pre_dispatch', [$this, 'maybe_update_streak_on_rest'], 10, 3);
 
         // Register ZenGame triggers in GamiPress
         \add_filter('gamipress_activity_triggers', [$this, 'register_triggers']);
@@ -127,6 +130,32 @@ final class Engine
     // ─────────────────────────────────────────────────────────────────────────
     // GAMIFICATION LOGIC
     // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Chamado via rest_pre_dispatch para atualizar streak de usuários JWT
+     * que voltam ao site sem fazer um novo login (wp_login não dispara para eles).
+     *
+     * @param mixed            $result  Passthrough.
+     * @param \WP_REST_Server  $server  Passthrough.
+     * @param \WP_REST_Request $request Passthrough.
+     * @return mixed $result inalterado.
+     */
+    public function maybe_update_streak_on_rest($result, $server, $request)
+    {
+        static $done = false;
+        if ($done) return $result;
+        $done = true;
+
+        $user_id = \get_current_user_id();
+        if ($user_id > 0) {
+            $user = \get_user_by('ID', $user_id);
+            if ($user instanceof \WP_User) {
+                $this->update_login_streak($user->user_login, $user);
+            }
+        }
+
+        return $result;
+    }
 
     public function update_login_streak(string $user_login, \WP_User $user): void
     {

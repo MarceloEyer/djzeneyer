@@ -277,7 +277,11 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         const eventTitle = (typeof event.title === 'object' ? event.title.rendered : event.title) || event.name || 'Zouk Event';
         const canonicalUrl = event.canonical_url || event.url || undefined;
         const startDate = event.starts_at || event.event_date || event.start_date;
-        const endDate = event.ends_at || event.end_date;
+        const endDateRaw = event.ends_at || event.end_date;
+        // Google requer endDate — estima +3h quando a API não fornece
+        const endDate = endDateRaw || (startDate
+          ? new Date(new Date(startDate).getTime() + 3 * 60 * 60 * 1000).toISOString()
+          : undefined);
 
         // Check if event is in the past
         // eslint-disable-next-line react-hooks/purity
@@ -286,27 +290,33 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         // Location mapping
         const locName = event.location?.venue || event.event_location || 'TBA';
 
-        // Offers mapping - FIX: tickets is a string array in ZenBitEventDetail
-        let eventOffers: Record<string, unknown> | undefined = undefined;
-        const ticketUrl = event.event_ticket || 
+        // Offers — Google requer este campo mesmo para eventos passados
+        const ticketUrl = event.event_ticket ||
                          (Array.isArray(event.tickets) && typeof event.tickets[0] === 'string' ? event.tickets[0] : undefined) ||
                          (Array.isArray(event.offers) && event.offers[0]?.url ? event.offers[0].url : undefined);
+        const eventOffers = {
+          '@type': 'Offer',
+          url: ticketUrl || canonicalUrl || finalUrl,
+          availability: isPast
+            ? 'https://schema.org/Discontinued'
+            : ticketUrl
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/LimitedAvailability',
+          price: '0',
+          priceCurrency: 'USD',
+          validFrom: startDate,
+        };
 
-        if (ticketUrl && !isPast) {
-          eventOffers = {
-            '@type': 'Offer',
-            url: ticketUrl,
-            availability: 'https://schema.org/InStock',
-            validFrom: startDate,
-          };
-        }
+        // description — Google exige campo não-vazio
+        const eventDesc = stripHtml(event.description || event.desc || '').substring(0, 300)
+          || `Live Brazilian Zouk DJ set by ${artist.identity.stageName} at ${locName}.`;
 
         return {
           '@type': 'MusicEvent',
           name: eventTitle,
           ...(canonicalUrl ? { url: canonicalUrl } : {}),
           startDate: startDate,
-          ...(endDate ? { endDate } : {}),
+          endDate,
           // REMOVE eventStatus for past events as per technical review
           ...(!isPast ? { eventStatus: 'https://schema.org/EventScheduled' } : {}),
           eventAttendanceMode: locName.toLowerCase().includes('online')
@@ -323,13 +333,18 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             }
           },
           image: event.image || finalImage,
-          description: stripHtml(event.description || event.desc || '').substring(0, 300),
+          description: eventDesc,
           performer: {
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             sameAs: Array.isArray(ARTIST_SCHEMA_BASE.sameAs) ? ARTIST_SCHEMA_BASE.sameAs[0] : ARTIST_SCHEMA_BASE.sameAs
           },
-          ...(eventOffers ? { offers: eventOffers } : {}),
+          offers: eventOffers,
+          organizer: {
+            '@type': 'Person',
+            name: artist.identity.stageName,
+            url: artist.site.baseUrl,
+          },
         };
       }).filter(e => !!e.startDate); // Ensure required startDate
 
