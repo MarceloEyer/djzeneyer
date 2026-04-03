@@ -4,14 +4,13 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Music2, MessageCircle, SendHorizontal } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../icons/BrandIcons';
-import { ARTIST } from '../../data/artistData';
+import { ARTIST, CURRENT_YEAR } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { useSubscriptionMutation } from '../../hooks/useQueries';
 
 
 const Footer: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
@@ -143,7 +142,7 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar - Simplified */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
-          <p>{t('footer_copyright', { year: currentYear })}</p>
+          <p>{t('footer_copyright', { year: CURRENT_YEAR })}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
             <Link to={getLocalizedRoute('privacy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>

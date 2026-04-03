@@ -7,7 +7,7 @@
 import type { Festival, SocialLink } from '../types';
 
 const START_YEAR = 2015;
-const CURRENT_YEAR = new Date().getFullYear();
+export const CURRENT_YEAR = new Date().getFullYear();
 
 // --- DADOS PRINCIPAIS ---
 export const ARTIST = {
