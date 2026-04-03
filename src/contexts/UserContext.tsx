@@ -10,6 +10,7 @@ interface WordPressUser {
   isLoggedIn: boolean;
   token?: string;
   avatar?: string;
+  user_registered?: string;
   roles?: string[];
 }
 

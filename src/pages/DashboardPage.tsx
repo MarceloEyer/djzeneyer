@@ -186,8 +186,8 @@ const DashboardContent = () => {
   const earnedAchievements = gamipress.achievements_earned || [];
   // leaderboardData is Record<pointType, entries[]> — take the first point type
   const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
-  // TODO: replace with user.user_registered year when the field is exposed by the auth API
-  const currentYear = new Date().getFullYear();
+
+  const currentYear = user?.user_registered ? new Date(user.user_registered.replace(' ', 'T')).getFullYear() : new Date().getFullYear();
 
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">

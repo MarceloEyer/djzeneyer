@@ -505,6 +505,7 @@ class Rest_Routes
             'display_name' => $user->display_name,
             'roles' => $user->roles,
             'avatar' => $avatar,
+            'user_registered' => $user->user_registered,
         ];
     }
 
@@ -646,6 +647,7 @@ class Rest_Routes
             'dance_role' => get_user_meta($user_id, 'zen_dance_role', true) ?: [],
             'gender' => get_user_meta($user_id, 'zen_gender', true),
             'avatar' => $avatar,
+            'user_registered' => get_userdata($user_id)->user_registered,
         ];
     }
 
