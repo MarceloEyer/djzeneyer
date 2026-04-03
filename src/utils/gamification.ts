@@ -1,5 +1,7 @@
 // src/utils/gamification.ts
 
+import { getCurrencyFormatter } from './currency';
+
 /**
  * Utilitários para a UI de Gamificação do ZenGame
  */
@@ -39,7 +41,7 @@ export function getProgressColor(percent: number): string {
  * Formata quantidade de pontos com separador de milhar brasileiro
  */
 export function formatPoints(points: number): string {
-    return new Intl.NumberFormat('pt-BR').format(points);
+    return getCurrencyFormatter('pt-BR', 'BRL', true).format(points);
 }
 
 /**

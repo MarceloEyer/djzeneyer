@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { getCurrencyFormatter } from '../../utils/currency';
 
 interface Order {
   id: number;
@@ -47,10 +48,8 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
 
   const formatCurrency = (value: string) => {
     const numValue = parseFloat(value);
-    return new Intl.NumberFormat(i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(numValue);
+    const locale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
+    return getCurrencyFormatter(locale, 'BRL').format(numValue);
   };
 
   if (loading) {

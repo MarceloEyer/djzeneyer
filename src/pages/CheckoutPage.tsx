@@ -8,6 +8,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { sanitizeHtml, safeRedirect } from '../utils/sanitize';
+import { getCurrencyFormatter } from '../utils/currency';
 
 interface PaymentMethod {
   id: string;
@@ -165,7 +166,7 @@ const CheckoutPage: React.FC = () => {
 
     return isNaN(numPrice)
       ? price.toString()
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
+      : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   };
 
   if (loading) {

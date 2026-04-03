@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useCart } from '../contexts/CartContext';
+import { getCurrencyFormatter } from '../utils/currency';
 
 interface CartItem {
   key: string;
@@ -45,7 +46,7 @@ const CartPage: React.FC = () => {
 
     return isNaN(numPrice)
       ? price.toString()
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
+      : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   };
 
   if (loading) {

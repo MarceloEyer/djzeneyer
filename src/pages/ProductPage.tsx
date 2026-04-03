@@ -7,6 +7,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
 import { ProductImage, ProductCategory } from '../types/product';
+import { getCurrencyFormatter } from '../utils/currency';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
@@ -109,7 +110,7 @@ const ProductPage: React.FC = () => {
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
     return isNaN(numPrice)
       ? price
-      : new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(numPrice);
+      : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   }, [isPortuguese]);
 
   const gallery = useMemo(() => {
