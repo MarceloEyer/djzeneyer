@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -7,53 +7,19 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
-import { ProductImage, ProductCategory } from '../types/product';
-
-interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  price: string;
-  regular_price: string;
-  sale_price: string;
-  on_sale: boolean;
-  images: ProductImage[];
-  stock_status: string;
-  lang: string;
-  short_description?: string;
-  categories?: ProductCategory[];
-}
+import { useProductsQuery } from '../hooks/useQueries';
 
 const TicketsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
 
-  const [tickets, setTickets] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  // ⚡ Bolt: Use `useProductsQuery` to leverage React Query caching. This prevents redundant network
+  // requests and loading spinners when navigating back to the tickets page.
+  const { data: ticketsData, isLoading: loading } = useProductsQuery(currentLang);
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      setLoading(true);
-      const baseUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || `${window.location.origin}/wp-json/`;
-      const apiUrl = `${baseUrl}djzeneyer/v1/products?lang=${currentLang}`;
-
-      try {
-        const response = await fetch(apiUrl);
-        if (response.ok) {
-          const data = await response.json();
-          // Filter for tickets/events if possible, for now just show all
-          setTickets(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch tickets', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTickets();
-  }, [currentLang]);
+  // ⚡ Bolt: Memoize the fallback array to maintain a stable reference and prevent unnecessary re-renders.
+  const tickets = useMemo(() => ticketsData || [], [ticketsData]);
 
   const formatPrice = (price: string) => {
     if (!price) return t('price_free');
