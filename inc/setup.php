@@ -90,6 +90,7 @@ function djz_get_gamipress_rank_tiers(): array
     }
 
     $tiers = [];
+    update_meta_cache('post', wp_list_pluck($ranks, 'ID'));
     foreach ($ranks as $rank) {
         $min_points = (int) get_post_meta($rank->ID, '_gamipress_points_required', true);
         if ($min_points <= 0) {
