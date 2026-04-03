@@ -61,3 +61,7 @@
 ## 2026-03-27 - Extracted Element Mappings in Array Iterators
 **Learning:** Re-evaluating inline mappings with function calls inside an array iteration logic (like `useMemo` resolving maps based on dynamic keys inside component renders) leads to unnecessary overhead in UI updates as React element objects are continually regenerated unnecessarily.
 **Action:** Always refactor constant visual configuration objects or nested JSX conditionals derived from generic conditions to pure, externalized `const` data stores for reference equality preservation.
+
+## 2026-03-27 - Extracted Date Parsing from Render Loops
+**Learning:** Instantiating `new Date()` or calling `Date.now()` inside React render bodies, `useMemo` hooks, or array `.map()` iterations causes unnecessary object allocations and violates React hook purity (triggering ESLint warnings or unexpected re-evaluations).
+**Action:** Always extract static dates into global constants (e.g., `CURRENT_YEAR` in `artistData.ts`) and use lightweight operations like `Date.parse()` or string slicing (`String(date).substring(0, 4)`) inside loops to prevent reallocation overhead and maintain pure render cycles.
