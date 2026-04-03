@@ -1,11 +1,18 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, CreditCard, Landmark, Globe, Zap, Heart, Briefcase } from 'lucide-react';
 import { paymentMethods } from '../data/paymentMethods';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const PayMePage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+    const canonicalUrl = useMemo(
+        () => `https://djzeneyer.com/${getLocalizedRoute('payme', currentLang).replace(/^\//, '')}`,
+        [currentLang]
+    );
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [activeAccordion, setActiveAccordion] = useState<string | null>('pix');
 
@@ -23,6 +30,12 @@ const PayMePage: React.FC = () => {
     };
 
     return (
+        <>
+        <HeadlessSEO
+            title={`${t('payme.page_title', 'Pay Me')} | ${t('common.artist_name')}`}
+            description={t('payme.subtitle')}
+            url={canonicalUrl}
+        />
         <div className="min-h-screen pt-24 pb-12 px-4 relative overflow-hidden">
             {/* Background Decorations - Premium Glows */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
@@ -132,6 +145,7 @@ const PayMePage: React.FC = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 

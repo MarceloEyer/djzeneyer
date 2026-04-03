@@ -63,6 +63,7 @@ const CartPage: React.FC = () => {
       <HeadlessSEO
         title={t('common.cart.title')}
         description={t('common.cart.description')}
+        noindex
         isHomepage={false}
       />
 

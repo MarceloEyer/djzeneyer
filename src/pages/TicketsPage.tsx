@@ -1,10 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getLocalizedRoute } from '../config/routes';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { ProductImage, ProductCategory } from '../types/product';
@@ -26,7 +26,7 @@ interface Product {
 
 const TicketsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const currentLang = i18n.language.split('-')[0];
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
 
   const [tickets, setTickets] = useState<Product[]>([]);
@@ -69,6 +69,7 @@ const TicketsPage: React.FC = () => {
       <HeadlessSEO
         title={t('common.checkout.tickets_title')}
         description={t('common.checkout.description')}
+        url={`https://djzeneyer.com/${getLocalizedRoute('tickets', currentLang).replace(/^\//, '')}`}
         isHomepage={false}
       />
 

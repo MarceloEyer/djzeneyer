@@ -3,11 +3,12 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
 import { ProductImage, ProductCategory } from '../types/product';
+import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 interface Product {
   id: number;
@@ -34,8 +35,12 @@ const ProductPage: React.FC = () => {
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
   const isPortuguese = i18n.language.startsWith('pt');
-  const currentLang = i18n.language.split('-')[0];
-  const shopPath = isPortuguese ? '/pt/loja' : '/shop';
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const shopPath = getLocalizedRoute('shop', currentLang);
+  const canonicalUrl = useMemo(
+    () => slug ? `https://djzeneyer.com/${getLocalizedRoute('shop', currentLang).replace(/^\//, '')}/${slug}` : undefined,
+    [currentLang, slug]
+  );
   const placeholderImage = 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer';
 
   const fetchProduct = useCallback(async () => {
@@ -144,13 +149,13 @@ const ProductPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{product.name} | {t('common.artist_name')}</title>
-        <meta
-          name="description"
-          content={product.short_description || product.description || product.name}
-        />
-      </Helmet>
+      <HeadlessSEO
+        title={`${product.name} | ${t('common.artist_name')}`}
+        description={product.short_description || product.description || product.name}
+        url={canonicalUrl}
+        image={product.images?.[0]?.src}
+        type="product"
+      />
 
       <div className="min-h-screen bg-background text-white pb-20">
         <div className="container mx-auto px-4 py-10">

@@ -1,17 +1,20 @@
-﻿import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const ReturnPolicyPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   return (
     <>
       <HeadlessSEO
         title={t('legal.return_policy.page_title')}
         description={t('legal.return_policy.page_meta_desc')}
+        url={`https://djzeneyer.com/${getLocalizedRoute('returns', currentLang).replace(/^\//, '')}`}
         isHomepage={false}
       />
 

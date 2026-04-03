@@ -1,14 +1,21 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Music, Calendar, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 
 const NotFoundPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   return (
+    <>
+    <HeadlessSEO
+      title={t('not_found.title', '404 — Page Not Found')}
+      description={t('not_found.description', 'The page you are looking for does not exist.')}
+      noindex
+    />
     <div className="min-h-screen pt-24 flex items-center justify-center">
       <div className="container mx-auto px-4 py-12 text-center">
         <div className="max-w-xl mx-auto">
@@ -90,6 +97,7 @@ const NotFoundPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
