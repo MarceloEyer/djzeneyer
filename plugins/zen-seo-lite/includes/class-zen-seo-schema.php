@@ -129,7 +129,6 @@ class Zen_SEO_Schema
     {
         $settings = Zen_SEO_Helpers::get_global_settings();
 
-        // FIX: get_bloginfo() can return null in early REST contexts; coerce to string.
         $blog_name = (string) \get_bloginfo('name');
         $real_name = !empty($settings['real_name']) ? (string) $settings['real_name'] : $blog_name;
         $name = \sanitize_text_field($real_name ?: 'DJ Zen Eyer');
