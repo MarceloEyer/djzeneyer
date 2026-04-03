@@ -269,10 +269,13 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
     // 4.3 Event Schema (If on events page or specific event)
     if (events && events.length > 0) {
-      const musicEvents = events.map((event) => {
+      // ⚡ Bolt: Consolidated mapping and filtering into a single loop using reduce to prevent multiple iterations and intermediate array allocations.
+      const musicEvents = events.reduce((acc: any[], event) => {
+        const startDate = event.starts_at || event.event_date || event.start_date;
+        if (!startDate) return acc; // Ensure required startDate directly during mapping
+
         const eventTitle = (typeof event.title === 'object' ? event.title.rendered : event.title) || event.name || 'Zouk Event';
         const canonicalUrl = event.canonical_url || event.url || undefined;
-        const startDate = event.starts_at || event.event_date || event.start_date;
         const endDate = event.ends_at || event.end_date;
 
         // Check if event is in the past
@@ -297,7 +300,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           };
         }
 
-        return {
+        acc.push({
           '@type': 'MusicEvent',
           name: eventTitle,
           ...(canonicalUrl ? { url: canonicalUrl } : {}),
@@ -326,8 +329,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             sameAs: Array.isArray(ARTIST_SCHEMA_BASE.sameAs) ? ARTIST_SCHEMA_BASE.sameAs[0] : ARTIST_SCHEMA_BASE.sameAs
           },
           ...(eventOffers ? { offers: eventOffers } : {}),
-        };
-      }).filter(e => !!e.startDate); // Ensure required startDate
+        });
+
+        return acc;
+      }, []);
 
       if (musicEvents.length > 1) {
         graph.push({

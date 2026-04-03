@@ -172,22 +172,33 @@ const EventListContent = ({ lang }: { lang: string }) => {
     return Array.from(r).sort();
   }, [events]);
 
-  const filteredEvents = useMemo(() => {
-    if (selectedRegion === 'all') return events;
-    return events.filter((e: ZenBitEventListItem) => e.location?.region === selectedRegion);
-  }, [events, selectedRegion]);
-
-  const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
+  // ⚡ Bolt: Combined filtering and grouping into a single O(N) iteration pass instead of sequential O(N) operations (.filter() then .forEach()).
+  // This reduces memory allocations for intermediate arrays and halves the iteration overhead on large event sets.
+  const { filteredEvents, groupedEvents } = useMemo(() => {
     const groups: Record<string, ZenBitEventListItem[]> = {};
-    filteredEvents.forEach((e: ZenBitEventListItem) => {
+    const filtered: ZenBitEventListItem[] = [];
+
+    events.forEach((e: ZenBitEventListItem) => {
+      // Filter logic
+      if (selectedRegion !== 'all' && e.location?.region !== selectedRegion) {
+        return;
+      }
+
+      filtered.push(e);
+
+      // Grouping logic
       const date = new Date(e.starts_at);
       if (isNaN(date.getTime())) return;
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
-    return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [filteredEvents]);
+
+    return {
+      filteredEvents: filtered,
+      groupedEvents: Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]))
+    };
+  }, [events, selectedRegion]);
 
 
   const share = (e: ZenBitEventListItem) => {
