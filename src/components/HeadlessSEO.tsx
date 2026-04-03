@@ -291,21 +291,48 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         const locName = event.location?.venue || event.event_location || 'TBA';
 
         // Offers — Google requer este campo mesmo para eventos passados
-        const ticketUrl = event.event_ticket ||
-                         (Array.isArray(event.tickets) && typeof event.tickets[0] === 'string' ? event.tickets[0] : undefined) ||
-                         (Array.isArray(event.offers) && event.offers[0]?.url ? event.offers[0].url : undefined);
-        const eventOffers = {
+        // Mapeia todas as opções de tickets disponíveis
+        let eventOffers: Record<string, unknown> | Record<string, unknown>[];
+        const baseOffer = {
           '@type': 'Offer',
-          url: ticketUrl || canonicalUrl || finalUrl,
-          availability: isPast
-            ? 'https://schema.org/Discontinued'
-            : ticketUrl
-              ? 'https://schema.org/InStock'
-              : 'https://schema.org/LimitedAvailability',
           price: '0',
           priceCurrency: 'USD',
           validFrom: startDate,
         };
+
+        if (Array.isArray(event.tickets) && event.tickets.length > 0) {
+          eventOffers = event.tickets.filter((t: unknown) => typeof t === 'string').map((ticketUrl: string) => ({
+            ...baseOffer,
+            url: ticketUrl,
+            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
+          }));
+        } else if (Array.isArray(event.offers) && event.offers.length > 0) {
+          eventOffers = event.offers.filter((o: unknown) => (o as { url?: string })?.url).map((offer: unknown) => ({
+            ...baseOffer,
+            url: (offer as { url: string }).url,
+            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
+          }));
+        } else {
+          const ticketUrl = event.event_ticket || undefined;
+          eventOffers = {
+            ...baseOffer,
+            url: ticketUrl || canonicalUrl || finalUrl,
+            availability: isPast
+              ? 'https://schema.org/Discontinued'
+              : ticketUrl
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/LimitedAvailability',
+          };
+        }
+
+        // Se eventOffers for um array vazio (fallback de safety), converte para fallback unitário
+        if (Array.isArray(eventOffers) && eventOffers.length === 0) {
+          eventOffers = {
+            ...baseOffer,
+            url: canonicalUrl || finalUrl,
+            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/LimitedAvailability',
+          };
+        }
 
         // description — Google exige campo não-vazio
         const eventDesc = stripHtml(event.description || event.desc || '').substring(0, 300)
