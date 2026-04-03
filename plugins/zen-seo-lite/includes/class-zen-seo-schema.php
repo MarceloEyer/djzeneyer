@@ -478,8 +478,6 @@ class Zen_SEO_Schema
     /**
      * Get sameAs URLs from settings
      *
-     * FIX: Use null coalescing on every array access before casting/trimming
-     * to prevent "Passing null to parameter #1 ($string) of type string" deprecation.
      */
     private function get_same_as_urls($settings)
     {
@@ -515,7 +513,6 @@ class Zen_SEO_Schema
         ];
 
         foreach ($platforms as $platform) {
-            // FIX: ?? '' prevents null being passed to trim() and esc_url()
             $value = \trim((string) ($settings[$platform] ?? ''));
             if ($value !== '') {
                 $urls[] = \esc_url($value);
