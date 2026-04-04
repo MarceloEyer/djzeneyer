@@ -9,6 +9,7 @@ import { useEventsQuery } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
 import { getLocalizedRoute } from '../config/routes';
 import patternSvg from '../assets/images/pattern.svg';
+import { getDateTimeFormatter } from '../utils/date';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -25,11 +26,11 @@ interface EventsListProps {
 // ============================================================================
 
 const formatDate = (date: Date, options: Intl.DateTimeFormatOptions, locale: string) => {
-  return date.toLocaleDateString(locale, options);
+  return getDateTimeFormatter(locale, options).format(date);
 };
 
 const formatTime = (date: Date, locale: string) => {
-  return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+  return getDateTimeFormatter(locale, { hour: '2-digit', minute: '2-digit' }).format(date);
 };
 
 function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {

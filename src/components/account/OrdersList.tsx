@@ -11,6 +11,7 @@ import { ShoppingBag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { getCurrencyFormatter } from '../../utils/currency';
+import { formatDateVal } from '../../utils/date';
 
 interface Order {
   id: number;
@@ -97,7 +98,7 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
                   {t('account.orders.order_number', { id: order.id })}
                 </h3>
                 <p className="text-sm text-white/60">
-                  {new Date(order.date_created).toLocaleDateString()}
+                  {formatDateVal(order.date_created, currentLang)}
                 </p>
               </div>
               <div className="text-right">
