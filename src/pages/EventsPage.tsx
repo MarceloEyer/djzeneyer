@@ -8,6 +8,7 @@ import { sanitizeHtml } from '../utils/sanitize';
 import { ARTIST } from '../data/artistData';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
+import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 
@@ -118,7 +119,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
                 <Calendar size={20} />
               </div>
               <span className="font-bold">
-                {isValidDate ? eventDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' }) : t('tba')}
+                {isValidDate ? getDateTimeFormatter(lang, { day: 'numeric', month: 'long', year: 'numeric' }).format(eventDate) : t('tba')}
               </span>
             </div>
             <div className="flex items-center gap-4 text-white/80">

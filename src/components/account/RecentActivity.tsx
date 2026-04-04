@@ -9,6 +9,7 @@ import React, { memo } from 'react';
 import { Music, Calendar, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ZenGameLog } from '../../types/gamification';
+import { getDateTimeFormatter } from '../../utils/date';
 
 interface RecentActivityProps {
   logs?: ZenGameLog[];
@@ -23,7 +24,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
     if (!dateString) return '';
     try {
       const date = new Date(dateString);
-      return new Intl.DateTimeFormat(i18n.language === 'pt' ? 'pt-BR' : 'en-US', {
+      return getDateTimeFormatter(i18n.language === 'pt' ? 'pt-BR' : 'en-US', {
         day: '2-digit',
         month: 'short',
         hour: '2-digit',
