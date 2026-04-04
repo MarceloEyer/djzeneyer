@@ -166,7 +166,9 @@ final class Engine
 
         if ($last === $today) return;
 
-        $yesterday = \date('Y-m-d', \strtotime('-1 day', \current_time('timestamp')));
+        // Calcular "ontem" a partir de $today (já no timezone do WP) para evitar
+        // discrepância entre date() (PHP/UTC) e current_time() (WP timezone).
+        $yesterday = \date('Y-m-d', \strtotime($today . ' -1 day'));
         $streak = ($last === $yesterday) ? $streak + 1 : 1;
 
         \update_user_meta($user_id, 'zen_last_login', $today);
