@@ -1,6 +1,7 @@
 // src/utils/gamification.ts
 
 import { getCurrencyFormatter } from './currency';
+import { getDateTimeFormatter } from './date';
 
 /**
  * Utilitários para a UI de Gamificação do ZenGame
@@ -53,7 +54,7 @@ export function formatLogDate(dateString: string): string {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
 
-        return new Intl.DateTimeFormat('pt-BR', {
+        return getDateTimeFormatter('pt-BR', {
             day: '2-digit',
             month: 'short',
             hour: '2-digit',

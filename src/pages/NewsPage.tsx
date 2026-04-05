@@ -15,6 +15,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
+import { getDateTimeFormatter } from '../utils/date';
 
 // ============================================================================
 // HELPERS
@@ -25,11 +26,11 @@ const formatDate = (dateString: string, lang: string = 'pt-BR') => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return dateString;
 
-    return date.toLocaleDateString(lang, {
+    return getDateTimeFormatter(lang, {
       day: '2-digit',
       month: 'long',
       year: 'numeric'
-    });
+    }).format(date);
   } catch (e) {
     console.error('[NewsPage] Error formatting date:', e, dateString);
     return dateString;
@@ -170,7 +171,7 @@ const NewsPage: React.FC = () => {
             <div className="text-right text-white/50 text-sm hidden md:block">
               <p>{t('news.curatorship')}</p>
               <p>{t('news.zouk_production')}</p>
-              <p>{new Date().toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+              <p>{getDateTimeFormatter(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</p>
             </div>
           </header>
 
