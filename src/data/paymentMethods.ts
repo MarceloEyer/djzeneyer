@@ -1,3 +1,5 @@
+import { ARTIST } from './artistData';
+
 export interface PaymentMethod {
     id: string;
     type: 'pix' | 'bank' | 'paypal' | 'wire';
@@ -11,6 +13,9 @@ export interface PaymentMethod {
     category: 'donor' | 'contractor' | 'both';
 }
 
+const brl = ARTIST.payment.interGlobal.brazil;
+const usd = ARTIST.payment.interGlobal.usd;
+
 export const paymentMethods: PaymentMethod[] = [
     {
         id: 'pix',
@@ -19,8 +24,8 @@ export const paymentMethods: PaymentMethod[] = [
         descriptionKey: 'payme.methods.pix.desc',
         category: 'both',
         details: [
-            { labelKey: 'payme.fields.pix_key', value: 'djzeneyer@gmail.com', copyable: true },
-            { labelKey: 'payme.fields.name', value: 'Marcelo Eyer', copyable: false }
+            { labelKey: 'payme.fields.pix_key', value: brl.pixKey, copyable: true },
+            { labelKey: 'payme.fields.name', value: brl.accountName, copyable: false }
         ]
     },
     {
@@ -30,9 +35,9 @@ export const paymentMethods: PaymentMethod[] = [
         descriptionKey: 'payme.methods.inter_brl.desc',
         category: 'both',
         details: [
-            { labelKey: 'payme.fields.bank', value: 'Banco Inter (077)', copyable: false },
-            { labelKey: 'payme.fields.agency', value: '0001', copyable: true },
-            { labelKey: 'payme.fields.account', value: '1234567-8', copyable: true },
+            { labelKey: 'payme.fields.bank', value: brl.bank, copyable: false },
+            { labelKey: 'payme.fields.agency', value: brl.branch, copyable: true },
+            { labelKey: 'payme.fields.account', value: brl.account, copyable: true },
             { labelKey: 'payme.fields.document', value: '***.***.***-**', copyable: true }
         ]
     },
@@ -43,7 +48,7 @@ export const paymentMethods: PaymentMethod[] = [
         descriptionKey: 'payme.methods.paypal.desc',
         category: 'donor',
         details: [
-            { labelKey: 'payme.fields.link', value: 'https://paypal.me/djzeneyer', copyable: true }
+            { labelKey: 'payme.fields.link', value: ARTIST.payment.paypal.me, copyable: true }
         ]
     },
     {
@@ -53,9 +58,9 @@ export const paymentMethods: PaymentMethod[] = [
         descriptionKey: 'payme.methods.wire_usd.desc',
         category: 'contractor',
         details: [
-            { labelKey: 'payme.fields.swift', value: 'INTERUS33', copyable: true },
-            { labelKey: 'payme.fields.routing', value: '123456789', copyable: true },
-            { labelKey: 'payme.fields.account', value: '987654321', copyable: true }
+            { labelKey: 'payme.fields.swift', value: usd.wireRouting, copyable: true },
+            { labelKey: 'payme.fields.routing', value: usd.achRouting, copyable: true },
+            { labelKey: 'payme.fields.account', value: usd.accountNumber, copyable: true }
         ]
     }
 ];

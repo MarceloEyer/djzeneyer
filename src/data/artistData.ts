@@ -48,6 +48,7 @@ export const ARTIST = {
 
   // 📊 Estatísticas (estimativas / não conflitam com fontes externas)
   stats: {
+    startingYear: START_YEAR,
     yearsActive: CURRENT_YEAR - START_YEAR,
     countriesPlayed: 10,
     lastUpdated: new Date().toISOString().split('T')[0],
@@ -279,6 +280,7 @@ export const ARTIST = {
       state: 'RJ',
       country: 'Brazil',
       areaDetail: 'Born in Rio de Janeiro, based in Niterói',
+      displayArea: 'Rio de Janeiro / Niterói',
     },
   },
 
@@ -366,6 +368,11 @@ export const ARTIST = {
     baseUrl: 'https://djzeneyer.com',
     defaultDescription:
       'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at Ilha do Zouk DJ Championship.',
+    media: {
+      photosUrl: 'https://photos.djzeneyer.com',
+      epkPdf: '/media/dj-zen-eyer-bio.pdf',
+      logosZip: '/media/dj-zen-eyer-logos.zip',
+    },
     pages: {
       home: '/',
       about: '/about',
