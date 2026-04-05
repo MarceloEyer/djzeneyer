@@ -65,3 +65,8 @@
 ## 2026-03-27 - Extracted Date Parsing from Render Loops
 **Learning:** Instantiating `new Date()` or calling `Date.now()` inside React render bodies, `useMemo` hooks, or array `.map()` iterations causes unnecessary object allocations and violates React hook purity (triggering ESLint warnings or unexpected re-evaluations).
 **Action:** Always extract static dates into global constants (e.g., `CURRENT_YEAR` in `artistData.ts`) and use lightweight operations like `Date.parse()` or string slicing (`String(date).substring(0, 4)`) inside loops to prevent reallocation overhead and maintain pure render cycles.
+
+## 2026-04-05 - Cached Intl.DateTimeFormat for Performance
+
+**Learning:** Instantiating `new Intl.DateTimeFormat()` inside React render bodies, `useMemo` hooks, or array `.map()` loops (or implicitly via `toLocaleDateString` and `toLocaleTimeString`) creates unnecessary overhead and memory allocations, violating React hook purity.
+**Action:** Extract formatters into a module-level cache (like `getDateTimeFormatter` in `src/utils/date.ts`) and use O(1) cache lookups to prevent CPU overhead and unnecessary re-allocations in hot code paths.
