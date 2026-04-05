@@ -24,11 +24,12 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
+import { ARTIST } from '../data/artistData';
 
 const PRESS_LINKS = {
-  photos: 'https://photos.djzeneyer.com',
-  epk: '/media/dj-zen-eyer-bio.pdf',
-  logos: '/media/dj-zen-eyer-logos.zip'
+  photos: ARTIST.site.media.photosUrl,
+  epk: ARTIST.site.media.epkPdf,
+  logos: ARTIST.site.media.logosZip,
 };
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
@@ -410,7 +411,7 @@ const PressKitPage: React.FC = () => {
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg flex items-center justify-center gap-3">
                     <Phone size={20} /> WhatsApp
                   </a>
-                  <a href={`mailto:booking@djzeneyer.com`} className="btn btn-outline btn-lg flex items-center justify-center gap-3">
+                  <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline btn-lg flex items-center justify-center gap-3">
                     <Mail size={20} /> Email
                   </a>
                   <a href={artist.social.instagram?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center justify-center gap-3">
@@ -426,7 +427,7 @@ const PressKitPage: React.FC = () => {
                       </div>
                       <div>
                         <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">{t('presskit.contact.base')}</div>
-                        <div className="text-white/60">Rio de Janeiro / Niterói</div>
+                        <div className="text-white/60">{ARTIST.contact.location.displayArea}</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">

@@ -16,7 +16,7 @@ import {
 
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation, Trans } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
@@ -325,7 +325,7 @@ const AboutPage: React.FC = () => {
                 {t('about.cta.desc')}
               </p>
               <motion.a
-                href={getDynamicWhatsAppUrl(artist.identity.whatsapp || '5521987413091', t('about.cta.whatsapp_msg'))}
+                href={getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('about.cta.whatsapp_msg'))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg inline-flex items-center gap-3"

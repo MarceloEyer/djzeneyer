@@ -12,6 +12,7 @@ import {
 import { YoutubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useBranding } from '../contexts/BrandingContext';
+import { ARTIST } from '../data/artistData';
 
 // Helper for WhatsApp (recreated here with dynamic data)
 const getDynamicWhatsAppUrl = (number: string, message?: string) => {
@@ -149,8 +150,8 @@ const ZenLinkPageComponent = () => {
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
     { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • bastidores`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
     { title: 'YouTube', subtitle: 'Sets ao vivo', url: artist.social.youtube?.url, icon: <YoutubeIcon size={20} className="h-5 w-5" /> },
-    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || '5521987413091', 'Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
-    { title: 'E-mail', subtitle: artist.identity.cnpj ? 'booking@djzeneyer.com' : 'Contact me', url: `mailto:booking@djzeneyer.com`, icon: <Mail className="h-5 w-5" /> },
+    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, 'Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
+    { title: 'E-mail', subtitle: ARTIST.contact.email, url: `mailto:${ARTIST.contact.email}`, icon: <Mail className="h-5 w-5" /> },
     // Payment links from Dashboard
     ...(artist.payment.paypal.me ? [{ title: 'PayPal', subtitle: 'Support my music', url: artist.payment.paypal.me, icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
     ...(artist.payment.wise.url ? [{ title: 'Wise', subtitle: 'International support', url: artist.payment.wise.url, icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),

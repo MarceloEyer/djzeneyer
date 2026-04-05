@@ -151,10 +151,10 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="mt-4 text-xs opacity-30 flex justify-center gap-4">
-            <a href="https://www.wikidata.org/wiki/Q136551855" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href={ARTIST.identifiers.wikidataUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Wikidata
             </a>
-            <a href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href={ARTIST.identifiers.musicbrainzUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               MusicBrainz
             </a>
           </div>
