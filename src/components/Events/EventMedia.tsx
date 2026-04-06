@@ -4,6 +4,7 @@ import { safeUrl, sanitizeTitleHtml } from '../../utils/sanitize';
 import { stripHtml } from '../../utils/text';
 import { Music } from 'lucide-react';
 import patternSvg from '../../assets/images/pattern.svg';
+import { getDateTimeFormatter } from '../../utils/date';
 
 interface EventMediaProps {
     image?: string;
@@ -27,11 +28,11 @@ export const EventMedia: React.FC<EventMediaProps> = ({
     const { i18n } = useTranslation();
     const lang = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
 
-    const formattedDate = date ? new Date(date).toLocaleDateString(lang, {
+    const formattedDate = date ? getDateTimeFormatter(lang, {
         day: '2-digit',
         month: 'short',
         year: 'numeric'
-    }) : '';
+    }).format(new Date(date)) : '';
 
     const renderFallback = () => (
         <div className="w-full h-full bg-gradient-to-br from-surface to-background relative flex flex-col items-center justify-center p-8 text-center overflow-hidden border border-white/5 rounded-[2.5rem]">
