@@ -217,18 +217,18 @@ const HomePage: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div className="max-w-4xl mx-auto" initial="hidden" animate="visible" variants={CONTAINER_VARIANTS}>
+          <div className="max-w-4xl mx-auto">
+            {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
+              <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
+            </h1>
+
+          <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
                 <Trophy size={16} />
                 <span className="font-semibold">{t('home.hero_badge')}</span>
               </div>
-            </motion.div>
-
-            <motion.div variants={ITEM_VARIANTS} className="mb-4">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight">
-                <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
-              </h1>
             </motion.div>
 
             <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
@@ -277,6 +277,7 @@ const HomePage: React.FC = () => {
               />
             </motion.p>
           </motion.div>
+          </div>
         </div>
 
         <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
