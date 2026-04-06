@@ -81,6 +81,19 @@
         .wp-block-post-title, .wp-block-post-content, .entry-content, .entry-title {
             display: none !important;
         }
+
+        /* Aviso de JavaScript desativado */
+        .noscript-js-warning {
+            background: #ff4b2b;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-family: sans-serif;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 9999;
+        }
     </style>
 
     <?php wp_head(); ?>
@@ -89,7 +102,7 @@
     <?php wp_body_open(); ?>
 
     <noscript>
-        <div style="background:#ff4b2b; color:white; padding:15px; text-align:center; font-family:sans-serif; position:fixed; bottom:0; width:100%; z-index:9999;">
+        <div class="noscript-js-warning">
             <b>Nota:</b> O JavaScript está desativado. Para uma experiência completa e interativa, por favor, ative o JavaScript no seu navegador.
         </div>
     </noscript>

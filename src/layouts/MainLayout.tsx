@@ -2,7 +2,6 @@ import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/common/Footer';
-import { HeadlessSEO } from '../components/HeadlessSEO';
 import ScrollToTop from '../components/ScrollToTop';
 
 const AuthModal = lazy(() => import('../components/auth/AuthModal'));
@@ -23,7 +22,6 @@ const MainLayout: React.FC = () => {
   return (
     <>
       <ScrollToTop />
-      <HeadlessSEO />
 
       <div className="flex flex-col min-h-screen bg-background text-white">
         <Navbar onLoginClick={openModal} />
