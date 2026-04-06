@@ -102,6 +102,14 @@ class Rest_Routes
             'permission_callback' => '__return_true', // Logout should always be accessible even with expired main token
         ]);
 
+        // Invalidate settings cache when relevant options change
+        add_action('update_option_zeneyer_auth_settings', function () {
+            delete_transient('djz_auth_settings_v1');
+        });
+        add_action('update_option_users_can_register', function () {
+            delete_transient('djz_auth_settings_v1');
+        });
+
         // 8. Settings
         register_rest_route(self::NAMESPACE , '/settings', [
             'methods' => WP_REST_Server::READABLE,
@@ -440,16 +448,27 @@ class Rest_Routes
     // Get public settings
     public static function get_settings()
     {
+        $cache_key = 'djz_auth_settings_v1';
+        $cached    = get_transient($cache_key);
+
+        if ($cached !== false) {
+            return rest_ensure_response($cached);
+        }
+
         $options = get_option('zeneyer_auth_settings', []);
 
-        return rest_ensure_response([
+        $payload = [
             'success' => true,
-            'data' => [
-                'google_client_id' => isset($options['google_client_id']) ? $options['google_client_id'] : '',
+            'data'    => [
+                'google_client_id'     => isset($options['google_client_id']) ? $options['google_client_id'] : '',
                 'registration_enabled' => get_option('users_can_register'),
-                'site_name' => get_bloginfo('name'),
+                'site_name'            => get_bloginfo('name'),
             ],
-        ]);
+        ];
+
+        set_transient($cache_key, $payload, HOUR_IN_SECONDS);
+
+        return rest_ensure_response($payload);
     }
 
     // Check authentication
