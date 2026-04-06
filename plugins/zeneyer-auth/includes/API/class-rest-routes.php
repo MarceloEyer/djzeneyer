@@ -102,14 +102,6 @@ class Rest_Routes
             'permission_callback' => '__return_true', // Logout should always be accessible even with expired main token
         ]);
 
-        // Invalidate settings cache when relevant options change
-        add_action('update_option_zeneyer_auth_settings', function () {
-            delete_transient('djz_auth_settings_v1');
-        });
-        add_action('update_option_users_can_register', function () {
-            delete_transient('djz_auth_settings_v1');
-        });
-
         // 8. Settings
         register_rest_route(self::NAMESPACE , '/settings', [
             'methods' => WP_REST_Server::READABLE,
@@ -905,6 +897,21 @@ class Rest_Routes
                 'method' => 'user_meta'
             ]);
         }
+    }
+
+    /**
+     * Register cache invalidation hooks for the settings transient.
+     * Must be called on every request (not just REST), so admin saves also invalidate the cache.
+     */
+    public static function register_cache_hooks()
+    {
+        add_action('update_option_zeneyer_auth_settings', [__CLASS__, 'invalidate_settings_cache']);
+        add_action('update_option_users_can_register',   [__CLASS__, 'invalidate_settings_cache']);
+    }
+
+    public static function invalidate_settings_cache()
+    {
+        delete_transient('djz_auth_settings_v1');
     }
 }
 
