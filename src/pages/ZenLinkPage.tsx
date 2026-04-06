@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
-  Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle, Music2
+  Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle
 } from 'lucide-react';
 import { YoutubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -129,11 +129,11 @@ const ZenLinkPageComponent = () => {
   const microFacts = [
     {
       icon: <Trophy className="h-4 w-4" />,
-      label: '2× campeão mundial',
+      label: t('zenlink.micro_champion'),
     },
     {
       icon: <Award className="h-4 w-4" />,
-      label: `Ilha do Zouk (2022)`,
+      label: t('zenlink.micro_island'),
     },
     {
       icon: <MapPin className="h-4 w-4" />,
@@ -141,16 +141,16 @@ const ZenLinkPageComponent = () => {
     },
     {
       icon: <Disc3 className="h-4 w-4" />,
-      label: `${new Date().getFullYear() - artist.stats.startingYear}+ anos de pista`,
+      label: `${new Date().getFullYear() - artist.stats.startingYear}+ ${t('zenlink.micro_years_label')}`,
     },
   ];
 
   const MAIN_LINKS = [
-    { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: artist.social.spotify?.url, icon: <Music2 className="h-5 w-5" />, highlight: true },
+    { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: artist.social.spotify?.url, icon: <SpotifyIcon />, highlight: true },
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
-    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • bastidores`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
-    { title: 'YouTube', subtitle: 'Sets ao vivo', url: artist.social.youtube?.url, icon: <YoutubeIcon size={20} className="h-5 w-5" /> },
-    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, 'Olá Zen! Vi seu link na bio.'), icon: <MessageCircle className="h-5 w-5" /> },
+    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
+    { title: 'YouTube', subtitle: t('zenlink.youtube_subtitle'), url: artist.social.youtube?.url, icon: <YoutubeIcon size={20} className="h-5 w-5" /> },
+    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), icon: <MessageCircle className="h-5 w-5" /> },
     { title: 'E-mail', subtitle: ARTIST.contact.email, url: `mailto:${ARTIST.contact.email}`, icon: <Mail className="h-5 w-5" /> },
     // Payment links from Dashboard
     ...(artist.payment.paypal.me ? [{ title: 'PayPal', subtitle: 'Support my music', url: artist.payment.paypal.me, icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
@@ -184,8 +184,8 @@ const ZenLinkPageComponent = () => {
                     src={`${artist.site.baseUrl}/images/zen-eyer-profile.jpg`}
                     alt={artist.identity.stageName}
                     className="relative h-20 w-20 rounded-2xl border border-white/20 object-cover"
-                    loading="lazy"
-                    decoding="async"
+                    loading="eager"
+                    decoding="sync"
                     onError={(e) => { e.currentTarget.src = `${artist.site.baseUrl}/images/zen-eyer-og-image.png`; }}
                   />
                 </div>

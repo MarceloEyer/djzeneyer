@@ -322,11 +322,15 @@
     "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
     "quiz_title": "Quiz: Qual seu Persona?",
     "quiz_subtitle": "Descubra qual é o seu estilo no Zouk",
-    "booking_subtitle": "zenlink.booking_subtitle",
-    "booking_title": "zenlink.booking_title",
-    "contact_direct": "zenlink.contact_direct",
-    "spotify_subtitle": "zenlink.spotify_subtitle",
-    "spotify_title": "zenlink.spotify_title"
+    "booking_subtitle": "Festivais, congressos e eventos privados",
+    "booking_title": "Contrate-me",
+    "contact_direct": "Booking e contato",
+    "spotify_subtitle": "Ouça minhas músicas",
+    "spotify_title": "Spotify",
+    "micro_champion": "2× Campeão Mundial",
+    "micro_island": "Ilha do Zouk (2022)",
+    "micro_years_label": "anos de pista",
+    "whatsapp_message": "Olá Zen! Vi seu link na bio."
   },
   "events_add_google": "Adicionar à Agenda",
   "social": {

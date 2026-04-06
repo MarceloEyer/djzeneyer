@@ -298,12 +298,16 @@
     "hero_subtitle": "Brazilian Zouk Two-Time World Champion",
     "quiz_title": "Zouk Persona Quiz",
     "quiz_subtitle": "Discover your unique dance style",
-    "booking_subtitle": "zenlink.booking_subtitle",
-    "booking_title": "zenlink.booking_title",
-    "contact_direct": "zenlink.contact_direct",
-    "spotify_subtitle": "zenlink.spotify_subtitle",
-    "spotify_title": "zenlink.spotify_title",
-    "subtitle": "2× World Champion Brazilian Zouk"
+    "booking_subtitle": "Festivals, congresses & private events",
+    "booking_title": "Book Me",
+    "contact_direct": "Booking & inquiries",
+    "spotify_subtitle": "Stream my music",
+    "spotify_title": "Spotify",
+    "subtitle": "2× World Champion Brazilian Zouk",
+    "micro_champion": "2× World Champion",
+    "micro_island": "Ilha do Zouk (2022)",
+    "micro_years_label": "years on stage",
+    "whatsapp_message": "Hi Zen! I saw your link in bio."
   },
   "social": {
     "instagram": "Instagram",
