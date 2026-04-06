@@ -69,3 +69,7 @@
 
 **Learning:** Instantiating `new Intl.DateTimeFormat()` or calling `Date.prototype.toLocaleDateString()` inside React render bodies or array `.map()` iterations causes significant CPU overhead and memory allocation (e.g., ~20x slower than a cached formatter).
 **Action:** Always extract `Intl.DateTimeFormat` into a module-level `Map` cache (e.g., `getDateTimeFormatter` in `src/utils/date.ts`) and reuse the cached formatter instances for formatting dates and times across the application.
+## 2026-04-06 - Extract Framer Motion Variants from Render Body
+
+**Learning:** Declaring static `framer-motion` variant objects (like `cardVariants` or `itemVariants`) inside React functional components causes unnecessary object reallocation on every render. This defeats the purpose of wrapping components in `React.memo` since the objects inside the component are continually recreated.
+**Action:** Always extract static animation configuration objects (like `framer-motion` variants) to the module scope (outside the component) to preserve reference equality and eliminate reallocation overhead during React rendering cycles.

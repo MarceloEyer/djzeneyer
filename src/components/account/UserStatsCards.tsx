@@ -24,12 +24,12 @@ interface UserStatsCardsProps {
   stats: UserStats;
 }
 
+const cardVariants = {
+  hover: { y: -5, transition: { type: 'spring', stiffness: 400, damping: 10 } }
+};
+
 export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) => {
   const { t } = useTranslation();
-
-  const cardVariants = {
-    hover: { y: -5, transition: { type: 'spring', stiffness: 400, damping: 10 } }
-  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
