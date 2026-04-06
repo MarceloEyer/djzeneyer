@@ -199,7 +199,7 @@ const FAQPage: React.FC = () => {
         >
           <h3 className="text-2xl font-display font-bold mb-6">{t('faq.not_found')}</h3>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href={`https://wa.me/${ARTIST.contact.whatsapp.number}?text=${encodeURIComponent(t('about.cta.whatsapp_msg'))}`} className="btn btn-primary px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105">
+            <a href={`https://wa.me/${ARTIST.contact.whatsapp.number}?text=${encodeURIComponent(t('about.cta.whatsapp_msg'))}`} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105">
               <Mic2 size={18} /> {t('faq.cta_whatsapp')}
             </a>
             <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 border border-white/30 hover:bg-white/10 transition-transform hover:scale-105">
