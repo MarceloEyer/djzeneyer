@@ -365,9 +365,10 @@ async function prerender() {
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
         try {
-          // Espera o h1 ou filhos do root carregar
-          await page.waitForSelector('#root > *', { timeout: 10000 });
-          await wait(2500); // Respiro para React Helmet async injetar tags no <head> e i18n
+          // Aguarda o <h1> estar no DOM (garante que React renderizou o conteúdo real, não skeleton)
+          await page.waitForSelector('h1', { timeout: 10000 });
+          // Respiro estendido: i18next PT precisa de mais tempo para carregar traduções + Helmet injetar tags
+          await wait(4000);
         } catch (e) {
           console.warn(`⚠️ Warning: Timeout on ${route}`);
         }
