@@ -440,16 +440,27 @@ class Rest_Routes
     // Get public settings
     public static function get_settings()
     {
+        $cache_key = 'djz_auth_settings_v1';
+        $cached    = get_transient($cache_key);
+
+        if ($cached !== false) {
+            return rest_ensure_response($cached);
+        }
+
         $options = get_option('zeneyer_auth_settings', []);
 
-        return rest_ensure_response([
+        $payload = [
             'success' => true,
-            'data' => [
-                'google_client_id' => isset($options['google_client_id']) ? $options['google_client_id'] : '',
+            'data'    => [
+                'google_client_id'     => isset($options['google_client_id']) ? $options['google_client_id'] : '',
                 'registration_enabled' => get_option('users_can_register'),
-                'site_name' => get_bloginfo('name'),
+                'site_name'            => get_bloginfo('name'),
             ],
-        ]);
+        ];
+
+        set_transient($cache_key, $payload, HOUR_IN_SECONDS);
+
+        return rest_ensure_response($payload);
     }
 
     // Check authentication
@@ -886,6 +897,21 @@ class Rest_Routes
                 'method' => 'user_meta'
             ]);
         }
+    }
+
+    /**
+     * Register cache invalidation hooks for the settings transient.
+     * Must be called on every request (not just REST), so admin saves also invalidate the cache.
+     */
+    public static function register_cache_hooks()
+    {
+        add_action('update_option_zeneyer_auth_settings', [__CLASS__, 'invalidate_settings_cache']);
+        add_action('update_option_users_can_register',   [__CLASS__, 'invalidate_settings_cache']);
+    }
+
+    public static function invalidate_settings_cache()
+    {
+        delete_transient('djz_auth_settings_v1');
     }
 }
 

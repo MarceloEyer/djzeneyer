@@ -109,6 +109,8 @@ final class ZenEyer_Auth_Pro
         // 3. API Routes
         if (\class_exists('\ZenEyer\Auth\API\Rest_Routes')) {
             \add_action('rest_api_init', ['\ZenEyer\Auth\API\Rest_Routes', 'register_routes']);
+            // Cache invalidation must run on every request (not just REST) so admin saves also bust the cache.
+            \ZenEyer\Auth\API\Rest_Routes::register_cache_hooks();
         }
 
         // 4. Admin Settings (Only if in admin area)
