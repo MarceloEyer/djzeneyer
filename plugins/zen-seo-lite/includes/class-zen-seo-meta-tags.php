@@ -26,9 +26,11 @@ class Zen_SEO_Meta_Tags
         \remove_action('wp_head', '_wp_render_title_tag', 1);
         \add_filter('document_title_parts', '__return_empty_array', 9999);
 
-        // Add our SEO
-        \add_action('wp_head', [$this, 'render_meta_tags'], 1);
-        \add_action('wp_head', [$this, 'render_schema'], 2);
+        // Headless mode: meta tags are managed entirely by the React SPA (HeadlessSEO / react-helmet-async).
+        // Injecting them here via wp_head() would produce duplicate canonical, OG, hreflang, and
+        // Twitter Card tags in the prerendered HTML. The REST API endpoints remain active.
+        // \add_action('wp_head', [$this, 'render_meta_tags'], 1);
+        // \add_action('wp_head', [$this, 'render_schema'], 2);
     }
 
     /**
