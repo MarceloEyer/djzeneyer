@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
-  Sparkles, Trophy, ArrowUpRight, MessageCircle
+  Sparkles, Trophy, ArrowUpRight, MessageCircle, Wand2
 } from 'lucide-react';
 import { YoutubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -117,8 +117,10 @@ const SmartMusicCard = ({ platforms }: { platforms: any[] }) => {
 };
 
 const ZenLinkPageComponent = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { artist } = useBranding();
+  const quizSlug = i18n.language === 'pt' ? 'perguntas' : 'quiz';
+  const quizUrl = `${artist.site.baseUrl}${i18n.language === 'pt' ? '/pt' : ''}/${quizSlug}`;
 
   const MUSIC_PLATFORMS = [
     { name: 'Spotify', icon: <SpotifyIcon />, url: artist.social.spotify?.url, color: '#1DB954' },
@@ -135,6 +137,7 @@ const ZenLinkPageComponent = () => {
 
   const MAIN_LINKS = [
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
+    { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: quizUrl, icon: <Wand2 className="h-5 w-5" />, highlight: true },
     { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
     { title: 'YouTube', subtitle: t('zenlink.youtube_subtitle'), url: artist.social.youtube?.url, icon: <YoutubeIcon size={20} className="h-5 w-5" /> },
     { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), icon: <MessageCircle className="h-5 w-5" /> },
