@@ -15,7 +15,7 @@ Em caso de divergência, seguir nesta ordem:
 ## Baseline Técnico (Snapshot 2026-03-26) 🚀
 
 - **Frontend:** React 19 + TypeScript strict + Vite 8 (OXC) + Tailwind 4 + React Query v5 + React Router 7 + i18next
-- **Backend:** WordPress 6.9+ (Headless) + PHP 8.3 + WooCommerce 10.5+ (HPOS ativo) + GamiPress (ZenGame Pro 1.4.1)
+- **Backend:** WordPress 6.9+ (Headless) + PHP 8.3 + WooCommerce 10.5+ (HPOS ativo) + GamiPress (ZenGame Pro 1.4.0)
 - **Node:** 20+
 
 ## 🛡️ Regras Críticas (Obrigatórias)

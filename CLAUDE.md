@@ -72,7 +72,7 @@ define( 'WP_DEBUG_DISPLAY', false );
 1. **i18n obrigatório** — toda string visível usa `t('chave')` em PT e EN
 2. **React Query SSOT** — data fetching apenas via `src/hooks/useQueries.ts`; nunca `fetch()` solto em componentes
 3. **Backend filtra, frontend renderiza** — filtragem pesada sempre no PHP/query params
-4. **ESLint v11+** — não atualizar para v11+ (manter versão atual do projeto)
+4. **ESLint (v10)** — não atualizar para v11+ (manter versão atual do projeto)
 5. **Prerender** — nunca remover `scripts/prerender.js`; é o que evita tela branca no deploy
 6. **Locales UTF-8** — arquivos `translation.json` em UTF-8 limpo, sem mojibake (`Ã§`, `Â©`, `ðŸ`)
 7. **Plugins CI** — `plugins/` só é republicado quando `plugins/**` muda (detectado por `git diff HEAD^..HEAD`)
@@ -92,8 +92,8 @@ define( 'WP_DEBUG_DISPLAY', false );
 
 - `gamipress_get_rank_types()` retorna array **associativo** (chave = slug) — sempre usar `array_values()` antes de `[0]`
 - `date_earned` de conquistas vem do objeto de user-achievement (`$item->date_earned`), não de post meta
-- Leaderboard cache: TTL 1h, chave `djz_gamipress_leaderboard_v15_{limit}`, invalidado em toda premiação
-- Dashboard cache: TTL 24h, chave `djz_gamipress_dashboard_v15_{user_id}`
+- Leaderboard cache: TTL 1h, chave `djz_gamipress_leaderboard_v16_{limit}`, invalidado em toda premiação
+- Dashboard cache: TTL 24h, chave `djz_gamipress_dashboard_v16_{user_id}`
 - Stats (tracks/events): TTL 6h, keys `djz_stats_tracks_{uid}` e `djz_stats_events_{uid}`
 - **`rankProgress` fallback**: quando `gamipress_get_rank_requirements_progress()` não existe (GamiPress free), o progresso é calculado via `gamipress_get_user_points()` vs `_gamipress_points` meta. Bug histórico: ternário retornava `0.0` nos dois lados — corrigido em `class-rest-handler.php`.
 - **Zod schema ZenGame**: `main_points_slug`, `lastUpdate`, `version` usam `.catch()` — se o PHP retornar valor inesperado, o parse não quebra o dashboard inteiro.
@@ -103,7 +103,7 @@ define( 'WP_DEBUG_DISPLAY', false );
 - `DashboardPage` e `MyAccountPage` usam `<HeadlessSEO noindex />` com OG image genérica do site
 - Essas rotas são excluídas do sitemap e do prerender
 - Avatar do usuário **nunca** deve aparecer como preview social
-- Rotas de checkout (`cart`, `checkout`, `tickets-checkout`), `reset-password` e `quiz` têm `excludeFromSitemap: true` em `routes-slugs.json`
+- Rotas de checkout (`cart`, `checkout`, `tickets-checkout`), `reset-password` e `quiz` têm `excludeFromSitemap: true` em `scripts/routes-data.json`
 - **hreflang**: toda entrada de sitemap inclui `x-default` apontando para a versão EN
 - **URL canônica**: sempre usar `getLocalizedRoute()` — nunca hardcodar paths como `/about`
 - **robots.txt**: bots SEO (AhrefsBot, SemrushBot) devem ter `Allow: /` + `Crawl-delay` — nunca `Disallow: /` seguido de `Allow: /`

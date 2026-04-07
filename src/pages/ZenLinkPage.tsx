@@ -189,7 +189,7 @@ const ZenLinkPageComponent = () => {
               </div>
 
               {artist.philosophy.slogan && (
-                <p className=”mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light”>
+                <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
                   &ldquo;{artist.philosophy.slogan}&rdquo;
                 </p>
               )}
