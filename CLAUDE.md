@@ -84,6 +84,7 @@ define( 'WP_DEBUG_DISPLAY', false );
 - Remover renderização de slug/detalhe em `NewsPage`/`EventsPage` — crítico para SEO
 - Commitar `.env`, segredos ou credenciais
 - Usar `minify: 'esbuild'` no Vite — Vite 8 usa OXC por padrão; esbuild não vem bundled
+- Usar aspas tipográficas `"` `"` (U+201C/U+201D) em JSX — o parser OXC rejeita como "Invalid Character". Usar `&ldquo;` / `&rdquo;` ou aspas retas `"`
 - SQL direto em `wp_posts` para pedidos WooCommerce — usar `wc_get_orders()` (HPOS-compat)
 - Chamar `logout()` com `async/await` — a função é síncrona por design
 - Adicionar `HeadlessSEO` com dados do usuário em rotas privadas (dashboard, my-account) — usar `noindex` + OG image genérica
