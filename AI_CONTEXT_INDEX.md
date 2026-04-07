@@ -16,9 +16,9 @@
 1. **Codigo real do repositorio** (fonte final): `package.json`, `functions.php`, `inc/`, `plugins/*`, `src/*`
 2. **Este arquivo** (`AI_CONTEXT_INDEX.md`)
 3. `AGENTS.md`
-4. `GEMINI.md`
-5. `CONTEXT.md` e demais `*CONTEXT.md`
-6. `docs/*` (referencia operacional; pode conter historico)
+4. `docs/AI_GOVERNANCE.md` e `docs/*` (referência operacional e governance)
+5. `GEMINI.md`
+6. `CONTEXT.md` e demais `*CONTEXT.md`
 7. Skills em `.agents/skills/*` (guia de execucao; nunca sobrepoe codigo/indice)
 
 Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.

@@ -68,7 +68,7 @@ Produção: https://djzeneyer.com
 - Toda nova rota usa `<HeadlessSEO />` com parâmetros corretos.
 - Rotas privadas (`dashboard`, `my-account`) usam `<HeadlessSEO noindex />` com OG image genérica.
 - Avatar do usuário nunca deve aparecer em OG tags.
-- Ao criar nova rota pública: atualizar `scripts/routes-config.json` (SSOT de rotas).
+- Ao criar nova rota pública: atualizar `scripts/routes-data.json` (SSOT de rotas).
 
 ### Performance
 - Páginas: lazy loading via `React.lazy()` + `Suspense`.
@@ -92,7 +92,7 @@ Produção: https://djzeneyer.com
 - **`rankProgress` ZenGame**: o fallback de progresso por posição de rank retornava `0.0` nos dois lados do ternário — corrigido. Ao alterar lógica de rank, sempre testar o caminho sem `gamipress_get_rank_requirements_progress()`.
 - **URL canônica em páginas**: nunca hardcodar paths como `/about` — usar `getLocalizedRoute('about', currentLang)` para garantir o slug correto (`/about-dj-zen-eyer` em EN, `/pt/sobre-dj-zen-eyer` em PT).
 - **robots.txt AhrefsBot**: `Disallow: /` seguido de `Allow: /` no mesmo bloco — a primeira regra vence (RFC 9309). Sempre colocar `Allow: /` antes dos `Disallow` específicos.
-- **Sitemap**: rotas de checkout/privadas devem ter `excludeFromSitemap: true` em `routes-slugs.json`. O `generate-sitemap.js` lê esse campo — não editar o XML manualmente.
+- **Sitemap**: rotas de checkout/privadas devem ter `excludeFromSitemap: true` em `scripts/routes-data.json`. O `generate-sitemap.js` lê esse campo — não editar o XML manualmente.
 - **llms-full.txt**: arquivo deve ser UTF-8 limpo. Double-encoding (latin-1 re-encodado como UTF-8) produz mojibake silencioso — validar com `python3 -c "open('public/llms-full.txt').read()"` após edições.
 
 ### Build e Deploy
