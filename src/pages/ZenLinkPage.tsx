@@ -247,7 +247,7 @@ const ZenLinkPageComponent = () => {
             animate={{ opacity: 1 }}
             className="mt-8 space-y-3"
           >
-            <
+            <a
               href={artist.site.baseUrl}
               className="flex items-center justify-center gap-2 rounded-xl border border-white/5 bg-gray-900/50 px-4 py-3 text-xs text-zinc-400 hover:text-white transition-all"
             >
