@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
-  Sparkles, Globe, Trophy, Award, MapPin, Disc3, ArrowUpRight, MessageCircle
+  Sparkles, Trophy, ArrowUpRight, MessageCircle
 } from 'lucide-react';
 import { YoutubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -131,22 +131,9 @@ const ZenLinkPageComponent = () => {
       icon: <Trophy className="h-4 w-4" />,
       label: t('zenlink.micro_champion'),
     },
-    {
-      icon: <Award className="h-4 w-4" />,
-      label: t('zenlink.micro_island'),
-    },
-    {
-      icon: <MapPin className="h-4 w-4" />,
-      label: `${artist.identity.city} • ${artist.identity.state}`,
-    },
-    {
-      icon: <Disc3 className="h-4 w-4" />,
-      label: `${new Date().getFullYear() - artist.stats.startingYear}+ ${t('zenlink.micro_years_label')}`,
-    },
   ];
 
   const MAIN_LINKS = [
-    { title: t('zenlink.spotify_title'), subtitle: t('zenlink.spotify_subtitle'), url: artist.social.spotify?.url, icon: <SpotifyIcon />, highlight: true },
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
     { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
     { title: 'YouTube', subtitle: t('zenlink.youtube_subtitle'), url: artist.social.youtube?.url, icon: <YoutubeIcon size={20} className="h-5 w-5" /> },
@@ -195,28 +182,31 @@ const ZenLinkPageComponent = () => {
                     {artist.identity.stageName}
                   </h1>
                   <p className="text-sm text-zinc-200/90">{artist.identity.fullName}</p>
-                  <p className="mt-1 text-xs text-primary-light font-medium">✨ World Champion DJ</p>
                 </div>
               </div>
 
-              <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
-                “{artist.philosophy.slogan}”
-              </p>
+              {artist.philosophy.slogan && (
+                <p className=”mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light”>
+                  “{artist.philosophy.slogan}”
+                </p>
+              )}
             </div>
           </motion.header>
 
-          <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mb-6 grid grid-cols-2 gap-2"
-          >
-            {microFacts.map((fact) => (
-              <div key={fact.label} className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-zinc-300 backdrop-blur-md">
-                <span className="text-primary">{fact.icon}</span>
-                <span className="truncate">{fact.label}</span>
-              </div>
-            ))}
-          </motion.section>
+          {microFacts.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mb-6 flex gap-2"
+            >
+              {microFacts.map((fact) => (
+                <div key={fact.label} className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-zinc-300 backdrop-blur-md">
+                  <span className="text-primary">{fact.icon}</span>
+                  <span className="truncate">{fact.label}</span>
+                </div>
+              ))}
+            </motion.section>
+          )}
 
           <section className="space-y-3">
             <SmartMusicCard platforms={MUSIC_PLATFORMS} />
@@ -254,19 +244,7 @@ const ZenLinkPageComponent = () => {
             animate={{ opacity: 1 }}
             className="mt-8 space-y-3"
           >
-            {artist.identifiers.wikidata && (
-              <a
-                href={`https://www.wikidata.org/wiki/${artist.identifiers.wikidata}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-xs font-medium text-emerald-200/80 hover:bg-emerald-500/10 transition-colors"
-              >
-                <Globe className="h-4 w-4" />
-                Wikidata Certified Profile ({artist.identifiers.wikidata})
-              </a>
-            )}
-
-            <a
+            <
               href={artist.site.baseUrl}
               className="flex items-center justify-center gap-2 rounded-xl border border-white/5 bg-gray-900/50 px-4 py-3 text-xs text-zinc-400 hover:text-white transition-all"
             >
