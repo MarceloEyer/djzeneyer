@@ -24,7 +24,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
-import { ARTIST } from '../data/artistData';
+import { ARTIST, CURRENT_YEAR } from '../data/artistData';
 
 const PRESS_LINKS = {
   photos: ARTIST.site.media.photosUrl,
@@ -116,7 +116,7 @@ const PressKitPage: React.FC = () => {
         color: 'bg-gradient-to-br from-blue-500/80 to-blue-700/80'
       },
       {
-        number: `${new Date().getFullYear() - artist.stats.startingYear}+`,
+        number: `${CURRENT_YEAR - artist.stats.startingYear}+`,
         label: t('presskit.stats.years'),
         icon: <Calendar size={32} />,
         color: 'bg-gradient-to-br from-purple-500/80 to-purple-700/80'

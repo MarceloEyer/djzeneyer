@@ -273,19 +273,27 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
     // 4.3 Event Schema (If on events page or specific event)
     if (events && events.length > 0) {
+      // eslint-disable-next-line react-hooks/purity
+      const now = Date.now();
+      const threeHoursMs = 3 * 60 * 60 * 1000;
       const musicEvents = events.map((event) => {
         const eventTitle = (typeof event.title === 'object' ? event.title.rendered : event.title) || event.name || 'Zouk Event';
         const canonicalUrl = event.canonical_url || event.url || undefined;
         const startDate = event.starts_at || event.event_date || event.start_date;
         const endDateRaw = event.ends_at || event.end_date;
+
+        let parsedStartDate = 0;
+        if (startDate) {
+          parsedStartDate = Date.parse(startDate);
+        }
+
         // Google requer endDate — estima +3h quando a API não fornece
-        const endDate = endDateRaw || (startDate
-          ? new Date(new Date(startDate).getTime() + 3 * 60 * 60 * 1000).toISOString()
+        const endDate = endDateRaw || (startDate && !isNaN(parsedStartDate)
+          ? new Date(parsedStartDate + threeHoursMs).toISOString()
           : undefined);
 
         // Check if event is in the past
-        // eslint-disable-next-line react-hooks/purity
-        const isPast = startDate ? new Date(startDate).getTime() < Date.now() : false;
+        const isPast = startDate && !isNaN(parsedStartDate) ? parsedStartDate < now : false;
 
         // Location mapping
         const locName = event.location?.venue || event.event_location || 'TBA';
