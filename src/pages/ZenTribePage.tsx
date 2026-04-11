@@ -87,17 +87,19 @@ interface BenefitCardProps {
   color: string;
 }
 
+const BENEFIT_CARD_VARIANTS = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+};
+
 const BenefitCard = memo(({ icon, title, description, color }: BenefitCardProps) => (
   <motion.div
     className="card p-6 glow transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
-    variants={{
-      hidden: { y: 20, opacity: 0 },
-      visible: {
-        y: 0,
-        opacity: 1,
-        transition: { duration: 0.5, ease: 'easeOut' },
-      },
-    }}
+    variants={BENEFIT_CARD_VARIANTS}
   >
     <div className={`w-12 h-12 rounded-full bg-${color}/20 flex items-center justify-center mb-4`}>
       {icon}
