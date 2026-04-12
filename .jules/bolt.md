@@ -73,3 +73,7 @@
 
 **Learning:** Declaring static `framer-motion` variant objects (like `cardVariants` or `itemVariants`) inside React functional components causes unnecessary object reallocation on every render. This defeats the purpose of wrapping components in `React.memo` since the objects inside the component are continually recreated.
 **Action:** Always extract static animation configuration objects (like `framer-motion` variants) to the module scope (outside the component) to preserve reference equality and eliminate reallocation overhead during React rendering cycles.
+## 2026-04-06 - Extract Framer Motion Variants from Render Body
+
+**Learning:** Declaring static `framer-motion` variant objects (like `cardVariants` or `itemVariants`) inside React functional components causes unnecessary object reallocation on every render. This defeats the purpose of wrapping components in `React.memo` since the objects inside the component are continually recreated.
+**Action:** Always extract static animation configuration objects (like `framer-motion` variants) to the module scope (outside the component) to preserve reference equality and eliminate reallocation overhead during React rendering cycles.
