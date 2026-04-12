@@ -37,13 +37,14 @@ const MusicPage: React.FC = () => {
 
   const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
 
-  const streamingPlatforms = useMemo(() => [
-    {
-      name: 'Spotify',
-      icon: <SpotifyIcon />,
-      url: ARTIST.social.spotify.url,
-      color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50'
-    },
+  const spotifyPlatform = useMemo(() => ({
+    name: 'Spotify',
+    icon: <SpotifyIcon />,
+    url: ARTIST.social.spotify.url,
+    color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50'
+  }), []);
+
+  const secondaryPlatforms = useMemo(() => [
     {
       name: 'Apple Music',
       icon: <Music2 className="text-[#FA243C]" />,
@@ -63,15 +64,6 @@ const MusicPage: React.FC = () => {
       color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50'
     }
   ], []);
-
-  const spotifyPlatform = useMemo(
-    () => streamingPlatforms.find((platform) => platform.name === 'Spotify'),
-    [streamingPlatforms]
-  );
-  const secondaryPlatforms = useMemo(
-    () => streamingPlatforms.filter((platform) => platform.name !== 'Spotify'),
-    [streamingPlatforms]
-  );
 
   // Schema for the listing page — must be declared before any conditional return
   const musicListingSchema = useMemo(() => {
