@@ -134,11 +134,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: MusicPage,
     paths: { en: slug('music', 'en') as string, pt: slug('music', 'pt') as string },
   },
-  {
-    key: 'music-detail',
-    component: MusicPage,
-    paths: { en: `${slug('music', 'en')}/:slug`, pt: `${slug('music', 'pt')}/:slug` },
-  },
 
   // News / Blog
   {
@@ -401,7 +396,6 @@ ROUTES_CONFIG.forEach(route => {
   // 3. Prefix Map (for detail/nested routes)
   let detailKey = route.key; // Fallback mapping
   if (route.key === 'events') detailKey = 'events-detail';
-  else if (route.key === 'music') detailKey = 'music-detail';
   else if (route.key === 'news') detailKey = 'news-detail';
   else if (route.key === 'shop') detailKey = 'product-detail';
 

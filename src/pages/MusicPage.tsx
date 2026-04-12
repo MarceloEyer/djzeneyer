@@ -3,15 +3,14 @@ import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { Music2, Cloud, Play, ArrowLeft, Coffee, Download, ExternalLink } from 'lucide-react';
+import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
 import { YoutubeIcon } from '../components/icons/BrandIcons';
-import { useTrackBySlug, useTrackInteraction } from '../hooks/useQueries';
-import { useParams, Link, generatePath } from 'react-router-dom';
+import { useTrackInteraction } from '../hooks/useQueries';
+import { Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
-import { sanitizeHtml, safeUrl } from '../utils/sanitize';
-import { stripHtml } from '../utils/text';
+import { safeUrl } from '../utils/sanitize';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -20,8 +19,51 @@ const SpotifyIcon = () => (
   </svg>
 );
 
+// --- Framer Motion variants (module scope) ---
+const SPOTIFY_VARIANTS = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
+};
+
+const SECONDARY_ITEM_VARIANTS = {
+  hidden: { opacity: 0, y: 10 },
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1 + 0.3 } }),
+};
+
+const CARD_VARIANTS = (delay: number) => ({
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { delay } },
+});
+
+// --- Static platform data (module scope) ---
+const SPOTIFY_PLATFORM = {
+  name: 'Spotify',
+  url: ARTIST.social.spotify.url,
+  color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50',
+};
+
+const SECONDARY_PLATFORMS = [
+  {
+    name: 'Apple Music',
+    icon: <Music2 className="text-[#FA243C]" />,
+    url: ARTIST.social.appleMusic.url,
+    color: 'hover:bg-[#FA243C]/20 border-[#FA243C]/20 hover:border-[#FA243C]/50',
+  },
+  {
+    name: 'SoundCloud',
+    icon: <Cloud className="text-[#FF5500]" />,
+    url: ARTIST.social.soundcloud.url,
+    color: 'hover:bg-[#FF5500]/20 border-[#FF5500]/20 hover:border-[#FF5500]/50',
+  },
+  {
+    name: 'YouTube',
+    icon: <YoutubeIcon className="text-[#FF0000]" />,
+    url: ARTIST.social.youtube.url,
+    color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50',
+  },
+];
+
 const MusicPage: React.FC = () => {
-  const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
   const { user } = useUser();
   const currentLang = normalizeLanguage(i18n.language);
@@ -35,37 +77,6 @@ const MusicPage: React.FC = () => {
     }
   };
 
-  const { data: singleTrack, isLoading: singleLoading } = useTrackBySlug(slug);
-
-  const spotifyPlatform = useMemo(() => ({
-    name: 'Spotify',
-    icon: <SpotifyIcon />,
-    url: ARTIST.social.spotify.url,
-    color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50'
-  }), []);
-
-  const secondaryPlatforms = useMemo(() => [
-    {
-      name: 'Apple Music',
-      icon: <Music2 className="text-[#FA243C]" />,
-      url: ARTIST.social.appleMusic.url,
-      color: 'hover:bg-[#FA243C]/20 border-[#FA243C]/20 hover:border-[#FA243C]/50'
-    },
-    {
-      name: 'SoundCloud',
-      icon: <Cloud className="text-[#FF5500]" />,
-      url: ARTIST.social.soundcloud.url,
-      color: 'hover:bg-[#FF5500]/20 border-[#FF5500]/20 hover:border-[#FF5500]/50'
-    },
-    {
-      name: 'YouTube',
-      icon: <YoutubeIcon className="text-[#FF0000]" />,
-      url: ARTIST.social.youtube.url,
-      color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50'
-    }
-  ], []);
-
-  // Schema for the listing page — must be declared before any conditional return
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
     const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
@@ -105,98 +116,6 @@ const MusicPage: React.FC = () => {
     };
   }, [t, currentLang]);
 
-  // --- RENDERIZACAO DE FAIXA UNICA (DETALHE) ---
-  if (!singleLoading && slug && singleTrack) {
-    const trackImage = safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp');
-    const trackUrl = `${ARTIST.site.baseUrl}${generatePath(getLocalizedRoute('music-detail', currentLang), { slug })}`;
-
-    const musicSchema = {
-      "@context": "https://schema.org",
-      "@type": "MusicRecording",
-      "name": stripHtml(singleTrack.title?.rendered || t('music.pageTitle')),
-      "image": trackImage,
-      "url": trackUrl,
-      "byArtist": {
-        "@type": "MusicGroup",
-        "name": ARTIST.identity.stageName
-      }
-    };
-
-    return (
-      <>
-        <HeadlessSEO
-          title={`${singleTrack.title?.rendered || t('music.pageTitle')} | Zen Music`}
-          description={singleTrack.excerpt?.rendered || t('music.pageDesc')}
-          url={trackUrl}
-          image={trackImage}
-          type="music.song"
-          schema={musicSchema}
-        />
-        <div className="min-h-screen bg-background text-white pt-24 pb-20">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <Link to={getLocalizedRoute('music', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-10 font-bold">
-              <ArrowLeft size={20} /> {t('music.back')}
-            </Link>
-
-            <div className="bg-surface/30 border border-white/10 rounded-3xl p-8 md:p-12 overflow-hidden relative group">
-              <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
-                <div className="w-64 h-64 rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
-                  <img
-                    src={safeUrl(singleTrack.featured_image_src_full || singleTrack.featured_image_src, '/images/hero-background.webp')}
-                    className="w-full h-full object-cover"
-                    alt={
-                      singleTrack.title?.rendered
-                        ? t('common.image_alts.music_track', {
-                            title: stripHtml(singleTrack.title.rendered),
-                          })
-                        : t('common.image_alts.music_track', { title: 'New Track' })
-                    }
-                  />
-                </div>
-
-                <div className="text-center md:text-left flex-1">
-                  <h1 className="text-4xl md:text-6xl font-black font-display mb-4" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singleTrack.title?.rendered) }} />
-                  <p className="text-primary font-bold mb-8 tracking-widest uppercase">{t('music.artist_tag')}</p>
-
-                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    {(singleTrack.links as any)?.spotify && (
-                      <a
-                        href={safeUrl((singleTrack.links as any).spotify)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-primary px-8 py-3 rounded-full flex items-center gap-2 relative overflow-hidden group/btn shadow-[0_0_20px_rgba(29,185,84,0.3)] hover:shadow-[0_0_30px_rgba(29,185,84,0.5)] transition-all bg-[#1DB954] text-black border-none"
-                      >
-                        <Play fill="currentColor" size={18} /> {t('common.platforms.spotify')}
-                      </a>
-                    )}
-                    {(singleTrack.links as any)?.soundcloud && (
-                      <a
-                        href={safeUrl((singleTrack.links as any).soundcloud)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-outline px-8 py-3 rounded-full flex items-center gap-2 border-white/20"
-                      >
-                        <Cloud size={18} /> {t('common.platforms.soundcloud')}
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-16 border-t border-white/5 pt-10">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><Music2 size={18} className="text-primary" /> {t('music.about_track')}</h2>
-                <div
-                  className="prose prose-invert max-w-none text-white/60"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(singleTrack.content?.rendered || singleTrack.excerpt?.rendered || "") }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <HeadlessSEO
@@ -232,49 +151,46 @@ const MusicPage: React.FC = () => {
 
           <div className="space-y-6 mb-16">
             {/* Spotify - Featured Hero */}
-            {spotifyPlatform && (
-              <motion.a
-                key={spotifyPlatform.name}
-                href={safeUrl(spotifyPlatform.url)}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
-                animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
-                transition={prefersReducedMotion ? undefined : { duration: 0.5 }}
-                className="flex items-center justify-between p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="flex items-center gap-6 relative z-10">
-                  <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-black rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
-                    <SpotifyIcon />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
-                      {spotifyPlatform.name}
-                    </span>
-                    <span className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-white mt-1 opacity-90 transition-opacity group-hover:opacity-100">
-                      {t('music.listen_now')}
-                    </span>
-                  </div>
+            <motion.a
+              variants={SPOTIFY_VARIANTS}
+              initial={prefersReducedMotion ? false : 'hidden'}
+              animate={prefersReducedMotion ? undefined : 'visible'}
+              href={safeUrl(SPOTIFY_PLATFORM.url)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex items-center gap-6 relative z-10">
+                <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-black rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
+                  <SpotifyIcon />
                 </div>
-                <div className="flex items-center gap-4 relative z-10">
-                  <Play fill="white" className="text-white scale-150 opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0 duration-500 hidden md:block" />
-                  <ExternalLink size={24} className="text-[#1DB954] group-hover:text-white transition-colors" />
+                <div className="flex flex-col">
+                  <span className="text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
+                    {SPOTIFY_PLATFORM.name}
+                  </span>
+                  <span className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-white mt-1 opacity-90 transition-opacity group-hover:opacity-100">
+                    {t('music.listen_now')}
+                  </span>
                 </div>
-              </motion.a>
-            )}
+              </div>
+              <div className="flex items-center gap-4 relative z-10">
+                <ExternalLink size={24} className="text-[#1DB954] group-hover:text-white transition-colors" />
+              </div>
+            </motion.a>
 
             {/* Other Platforms Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {secondaryPlatforms.map((platform, index) => (
+              {SECONDARY_PLATFORMS.map((platform, index) => (
                 <motion.a
                   key={platform.name}
+                  custom={index}
+                  variants={SECONDARY_ITEM_VARIANTS}
+                  initial={prefersReducedMotion ? false : 'hidden'}
+                  animate={prefersReducedMotion ? undefined : 'visible'}
                   href={safeUrl(platform.url)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-                  animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                  transition={prefersReducedMotion ? undefined : { delay: index * 0.1 + 0.3 }}
                   className={`flex items-center justify-between p-5 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
                 >
                   <div className="flex items-center gap-3">
@@ -288,11 +204,11 @@ const MusicPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Download / Steal Card */}
+            {/* Download / Grab & Go Card */}
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={prefersReducedMotion ? undefined : { delay: 0.7 }}
+              variants={CARD_VARIANTS(0.7)}
+              initial={prefersReducedMotion ? false : 'hidden'}
+              animate={prefersReducedMotion ? undefined : 'visible'}
               className="bg-red-500/5 border border-red-500/10 rounded-3xl p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -312,9 +228,9 @@ const MusicPage: React.FC = () => {
 
             {/* Support / Coffee Card */}
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={prefersReducedMotion ? undefined : { delay: 0.8 }}
+              variants={CARD_VARIANTS(0.8)}
+              initial={prefersReducedMotion ? false : 'hidden'}
+              animate={prefersReducedMotion ? undefined : 'visible'}
               className="bg-primary/5 border border-primary/10 rounded-3xl p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
