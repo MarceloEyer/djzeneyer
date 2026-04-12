@@ -88,6 +88,7 @@ define( 'WP_DEBUG_DISPLAY', false );
 - SQL direto em `wp_posts` para pedidos WooCommerce — usar `wc_get_orders()` (HPOS-compat)
 - Chamar `logout()` com `async/await` — a função é síncrona por design
 - Adicionar `HeadlessSEO` com dados do usuário em rotas privadas (dashboard, my-account) — usar `noindex` + OG image genérica
+- Declarar objetos `variants` do Framer Motion dentro de componentes — sempre extrair para escopo de módulo (antes do componente), especialmente em `memo()`. Objetos inline criam nova referência a cada render e anulam o React.memo
 
 ## ZenGame / GamiPress — armadilhas conhecidas
 

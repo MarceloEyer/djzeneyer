@@ -127,6 +127,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 16. **SSOT Data Fetching**: `useQueries.ts` é o cubo central; `fetch()` em componentes é desencorajado e deve ser migrado sempre que possível.
 17. **Rotas Autenticadas Privadas**: `dashboard` e `my-account` devem permanecer `noindex`, fora do sitemap público e fora do prerender, sempre usando OG image genérica do site em vez de avatar do usuário.
 18. **Lint Scope Guard**: `eslint.config.js` deve ignorar diretórios de infraestrutura de agentes/worktrees (`.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`) para evitar conflito de múltiplos `tsconfig` e manter o lint focado no app principal.
+19. **Framer Motion variants**: objetos `variants` (e equivalentes estáticos como `whileHover/whileTap`) DEVEM ser declarados no escopo de módulo (fora de qualquer função/componente), especialmente quando o componente usa `React.memo`. Declarar dentro do componente cria nova referência por render → `React.memo` torna-se ineficaz. Objetos state-dependentes (ex: `animate={{ height: isOpen ? 'auto' : 0 }}`) são a única exceção válida para inline.
 
 ## ZenGame / GamiPress — Contratos e Armadilhas
 
