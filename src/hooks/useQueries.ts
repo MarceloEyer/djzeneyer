@@ -124,23 +124,6 @@ import type {
   EventsApiResponse,
 } from '../types/events';
 
-export interface MusicTrack {
-  id: number;
-  title: { rendered: string };
-  category_name: string;
-  tag_names: string[];
-  links: {
-    download: string;
-    soundcloud: string;
-    youtube: string;
-  };
-  featured_image_src?: string | null;
-  featured_image_src_full?: string | null;
-  slug: string;
-  content?: { rendered: string };
-  excerpt?: { rendered: string };
-}
-
 export interface WPPost {
   id: number;
   date: string;
@@ -230,7 +213,6 @@ declare global {
         en?: WPPost[];
         pt?: WPPost[];
       };
-      tracks?: MusicTrack[];
       fetchedAt?: string;
     };
   }
@@ -244,7 +226,7 @@ const getPrerenderData = <T>(
   if (!data || !data[field]) return null;
   
   const bucket = data[field];
-  // For data that is not language-specific (like tracks)
+  // For data that is not language-specific
   if (Array.isArray(bucket)) return bucket as T;
   
   const keyedBucket = bucket as Record<string, T>;
@@ -255,8 +237,6 @@ const getPrerenderData = <T>(
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
 const getPrerenderMenu = (lang?: string) => getPrerenderData<MenuItem[]>(lang, 'menu');
 const getPrerenderNews = (lang?: string) => getPrerenderData<WPPost[]>(lang, 'news');
-const getPrerenderTracks = () => getPrerenderData<MusicTrack[]>(undefined, 'tracks');
-
 export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   const prerenderMenu = getPrerenderMenu(lang);
   if (prerenderMenu && prerenderMenu.length > 0) return prerenderMenu;
@@ -324,21 +304,6 @@ export const fetchEventsFn = async ({
     console.error('Fetch Events failed:', err);
     return [];
   }
-};
-
-export const fetchTracksFn = async (): Promise<MusicTrack[]> => {
-  const prerenderTracks = getPrerenderTracks();
-  if (prerenderTracks && prerenderTracks.length > 0) return prerenderTracks;
-
-  const apiUrl = buildApiUrl('wp/v2/remixes', {
-    per_page: '100',
-    // OPTIMIZATION: Limit fields to reduce payload size
-    _fields: 'id,title,category_name,tag_names,links,featured_image_src,slug',
-  });
-  const res = await fetch(apiUrl);
-  if (!res.ok) throw new Error('Failed to fetch tracks');
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
 };
 
 export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
@@ -439,22 +404,6 @@ export const useEventsQuery = (
     ...options
   });
 };
-
-// ============================================================================
-// TRACKS QUERY (PÚBLICO)
-// ============================================================================
-
-export const useTracksQuery = (options: { enabled?: boolean } = {}) => {
-  return useQuery({
-    queryKey: QUERY_KEYS.tracks.list(),
-    queryFn: fetchTracksFn,
-    staleTime: STALE_TIME.TRACKS,
-    gcTime: 15 * 60 * 1000,
-    ...options,
-  });
-};
-
-// useTrackBySlug removido — MusicPage é um hub de links, sem detalhe de faixa individual
 
 // ============================================================================
 // NEWS QUERY (PÚBLICO)
@@ -864,33 +813,5 @@ export const useSubscriptionMutation = () => {
   });
 };
 
-// ============================================================================
-// INTERACTION TRACKING
-// ============================================================================
-
-export const useTrackInteraction = (token?: string) => {
-  return useMutation({
-    mutationFn: async ({ action, objectId }: { action: string; objectId?: number }) => {
-      if (!token) return { success: false, guest: true };
-      
-      const apiUrl = buildApiUrl('zengame/v1/track');
-      const res = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ action, object_id: objectId }),
-      });
-
-      if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.message || 'Tracking failed');
-      }
-      
-      return res.json();
-    },
-  });
-};
 
 

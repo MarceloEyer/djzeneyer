@@ -35,9 +35,6 @@ const STALE_TIME = {
   /** News/Posts: 5 minutos */
   POSTS: 5 * 60 * 1000,
 
-  /** Músicas: 5 minutos (catálogo estável) */
-  TRACKS: 5 * 60 * 1000,
-
   /** Produtos: 10 minutos (catálogo tende a ser estável durante a sessão) */
   PRODUCTS: 10 * 60 * 1000,
 
@@ -84,7 +81,7 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // Cache padrão: 5 minutos
-      staleTime: STALE_TIME.TRACKS,
+      staleTime: STALE_TIME.POSTS,
 
       // Garbage collection: 10 minutos
       gcTime: CACHE_TIME.DEFAULT,
@@ -141,13 +138,6 @@ export const QUERY_KEYS = {
     detail: (slug: string) => ['posts', 'detail', slug] as const,
   },
 
-  /** Músicas/Tracks */
-  tracks: {
-    all: ['tracks'] as const,
-    list: (filters?: Record<string, string>) => ['tracks', 'list', filters] as const,
-    detail: (slug: string) => ['tracks', 'detail', slug] as const,
-  },
-
   /** Produtos (Shop) */
   products: {
     all: ['products'] as const,
@@ -181,7 +171,6 @@ export const QUERY_KEYS = {
 export const invalidateQueries = {
   menu: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.menu.all }),
   events: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.events.all }),
-  tracks: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tracks.all }),
   products: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.products.all }),
   posts: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.posts.all }),
   cart: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.cart.current }),

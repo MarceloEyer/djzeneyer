@@ -1,5 +1,5 @@
 // src/pages/MyAccountPage.tsx
-// v20.0 - PREMIUM UI OVERHAUL + UNIFIED MANA BAR + MUSIC COLLECTION
+// v20.1 - Removida aba Music (sem catálogo de faixas no site)
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,11 +8,11 @@ import { useUser } from '../contexts/UserContext';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation } from 'react-i18next';
 import {
-  User, Settings, ShoppingBag, Award, Music, LogOut,
+  User, Settings, ShoppingBag, Award, LogOut,
   Bell, AlertCircle, Save, ChevronRight, Zap, Trophy, Loader2
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
-import { UserStatsCards, OrdersList, RecentActivity, MusicCollection } from '../components/account';
+import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
 import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation, useUserOrdersQuery } from '../hooks/useQueries';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
@@ -168,7 +168,6 @@ const MyAccountContent: React.FC = () => {
     { id: 'overview', label: t('account.tabs.overview'), icon: User, color: 'primary' },
     { id: 'orders', label: t('account.tabs.orders'), icon: ShoppingBag, color: 'secondary' },
     { id: 'achievements', label: t('account.tabs.achievements'), icon: Award, color: 'accent' },
-    { id: 'music', label: t('account.tabs.music'), icon: Music, color: 'primary' },
     { id: 'settings', label: t('account.tabs.settings'), icon: Settings, color: 'secondary' },
   ], [t]);
 
@@ -322,9 +321,6 @@ const MyAccountContent: React.FC = () => {
             )}
           </motion.div>
         );
-
-      case 'music':
-        return <MusicCollection />;
 
       case 'settings': {
         return (

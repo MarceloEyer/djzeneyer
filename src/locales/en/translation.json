@@ -1181,7 +1181,6 @@
       "overview": "Overview",
       "orders": "Orders",
       "achievements": "Achievements",
-      "music": "My Music",
       "settings": "Settings",
       "not_found": "Tab not found"
     },
@@ -1232,13 +1231,6 @@
     "no_achievements": "No achievements yet",
     "no_achievements_desc": "Start exploring and engaging to unlock your first achievements!",
     "start_journey": "Start Your Journey",
-    "music": {
-      "title": "My Music Collection",
-      "browse": "Browse Music",
-      "empty_title": "Your music library",
-      "empty_desc": "Access exclusive tracks, mixes, and playlists curated by DJ Zen Eyer",
-      "explore": "Explore Music"
-    },
     "security": {
       "title": "Security",
       "change_password": "Change Password"

@@ -1249,7 +1249,6 @@
       "overview": "Visão Geral",
       "orders": "Pedidos",
       "achievements": "Conquistas",
-      "music": "Minha Música",
       "settings": "Configurações",
       "not_found": "Aba não encontrada"
     },
@@ -1326,13 +1325,6 @@
       "title": "Zona de Perigo",
       "desc": "Depois de sair, você precisará entrar novamente para acessar seus benefícios.",
       "logout": "Sair da Conta"
-    },
-    "music": {
-      "title": "Minha Coleção",
-      "browse": "Explorar Músicas",
-      "empty_title": "Nenhuma música ainda",
-      "empty_desc": "Suas tracks baixadas e coleções aparecerão aqui.",
-      "explore": "Explorar Agora"
     }
   },
   "not_found": {

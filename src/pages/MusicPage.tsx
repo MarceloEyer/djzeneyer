@@ -5,9 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
 import { YoutubeIcon } from '../components/icons/BrandIcons';
-import { useTrackInteraction } from '../hooks/useQueries';
 import { Link } from 'react-router-dom';
-import { useUser } from '../contexts/UserContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 import { safeUrl } from '../utils/sanitize';
@@ -65,17 +63,8 @@ const SECONDARY_PLATFORMS = [
 
 const MusicPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { user } = useUser();
   const currentLang = normalizeLanguage(i18n.language);
   const prefersReducedMotion = useReducedMotion();
-  const trackInteraction = useTrackInteraction(user?.token);
-
-  const handleTrackInteraction = (action: string, objectId?: number, url?: string) => {
-    trackInteraction.mutate({ action, objectId });
-    if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  };
 
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
@@ -218,12 +207,14 @@ const MusicPage: React.FC = () => {
                 <Download className="text-red-500" /> {t('music.steal_button')}
               </h3>
               <p className="text-white/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
-              <button
-                onClick={() => handleTrackInteraction('download_hub', 0, 'https://download.djzeneyer.com')}
+              <a
+                href="https://download.djzeneyer.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
               >
                 {t('music.steal_cta')} <ExternalLink size={16} />
-              </button>
+              </a>
             </motion.div>
 
             {/* Support / Coffee Card */}

@@ -7,4 +7,3 @@
 export { UserStatsCards } from './UserStatsCards';
 export { OrdersList } from './OrdersList';
 export { RecentActivity } from './RecentActivity';
-export { MusicCollection } from './MusicCollection';
