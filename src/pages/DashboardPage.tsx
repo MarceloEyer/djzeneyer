@@ -13,6 +13,7 @@ import { RecentActivity } from '../components/account';
 import { useLeaderboardQuery } from '../hooks/useQueries';
 import { safeUrl } from '../utils/sanitize';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { CURRENT_YEAR } from '../data/artistData';
 
 // ============================================================================
 // 1. SUB-COMPONENTS (PREMIUM VISUALS)
@@ -166,19 +167,33 @@ const DashboardContent = () => {
   const nextRank = gamipress.rank?.next?.title || null;
   const rankProgress = gamipress.rank?.progress || 0;
   const allReqs = gamipress.rank?.requirements ?? [];
-  const rankExpCurrent = allReqs.reduce((sum, r) => sum + (r.current || 0), 0);
-  const rankExpRequired = allReqs.reduce((sum, r) => sum + (r.required || 0), 0) || 1000;
+
+  // ⚡ Bolt: Consolidated multiple array passes (.reduce, .map, .filter) into a single loop
+  // to avoid O(N*3) iterations and redundant memory allocations.
+  let rankExpCurrent = 0;
+  let rankExpRequired = 0;
+  let completedQuests = 0;
+  const activeQuests = new Array(allReqs.length);
+
+  for (let i = 0; i < allReqs.length; i++) {
+    const req = allReqs[i];
+    rankExpCurrent += req.current || 0;
+    rankExpRequired += req.required || 0;
+
+    const done = req.percent >= 100;
+    if (done) completedQuests++;
+
+    activeQuests[i] = {
+      label: req.title,
+      progress: Math.min(100, Math.round(req.percent)),
+      done,
+    };
+  }
+
+  rankExpRequired = rankExpRequired || 1000;
 
   // menu_order is GamiPress sequential rank position (0-based → display as 1-based)
   const rankLevel = (gamipress.rank?.current?.menu_order ?? 0) + 1;
-
-  // Active quests: real GamiPress rank requirements for next rank
-  const activeQuests = allReqs.map(req => ({
-    label: req.title,
-    progress: Math.min(100, Math.round(req.percent)),
-    done: req.percent >= 100,
-  }));
-  const completedQuests = activeQuests.filter(q => q.done).length;
 
   // Stars: dynamic based on rank progress
   const rankStars = rankProgress >= 66 ? 3 : rankProgress >= 33 ? 2 : rankProgress > 0 ? 1 : 0;
@@ -187,7 +202,8 @@ const DashboardContent = () => {
   // leaderboardData is Record<pointType, entries[]> — take the first point type
   const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
 
-  const currentYear = user?.user_registered_year || new Date().getFullYear();
+  // ⚡ Bolt: Use static CURRENT_YEAR instead of new Date().getFullYear() on render
+  const currentYear = user?.user_registered_year || CURRENT_YEAR;
 
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">

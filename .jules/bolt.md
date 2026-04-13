@@ -77,3 +77,7 @@
 
 **Learning:** Declaring a static array and searching it via `.find()` or `.filter()` inside a `useMemo` hook (e.g., `streamingPlatforms.find()`) evaluates repeatedly with every dependency change, adding unnecessary CPU overhead for values that never change during runtime. Array operations have O(N) complexity compared to O(1) for direct definitions or object lookups.
 **Action:** Extract specific subset data directly as discrete objects or arrays wrapped in `useMemo` with an empty dependency array `[]`. This bypasses the need for runtime list filtering entirely, improving performance significantly (approx 23x faster execution).
+## 2026-05-15 - Unnecessary Micro-optimizations on Small Arrays
+
+**Learning:** Replacing declarative array operations (like chained `.reduce()`, `.map()`, `.filter()`) with a single imperative `for` loop on tiny arrays (e.g., rendering small lists of requirements or quests) is an unmeasurable micro-optimization that needlessly sacrifices code readability.
+**Action:** Only apply this O(N) single-pass consolidation pattern to demonstrably large datasets where the bottleneck can be measured.
