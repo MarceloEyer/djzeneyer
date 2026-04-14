@@ -126,6 +126,18 @@ class Zen_SEO_Sitemap
             'no_found_rows' => true,
             'update_post_meta_cache' => true,
             'update_post_term_cache' => false,
+            'meta_query' => [
+                'relation' => 'OR',
+                [
+                    'key'     => '_zen_seo_data',
+                    'compare' => 'NOT EXISTS',
+                ],
+                [
+                    'key'     => '_zen_seo_data',
+                    'value'   => '"noindex";i:1',
+                    'compare' => 'NOT LIKE',
+                ],
+            ],
         ];
 
         // If Polylang is active, get English posts only (translations will be added via hreflang)
@@ -136,13 +148,6 @@ class Zen_SEO_Sitemap
         $posts = \get_posts($args);
 
         foreach ($posts as $post) {
-            // Check if post should be indexed
-            $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
-
-            if (!empty($meta['noindex'])) {
-                continue;
-            }
-
             $translations = Zen_SEO_Helpers::get_translations($post->ID);
 
             // Skip if no valid URL
