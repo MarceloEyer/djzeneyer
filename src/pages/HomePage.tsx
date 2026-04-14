@@ -240,7 +240,7 @@ const HomePage: React.FC = () => {
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
-              {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as any)} icon={stat.icon} />)}
+              {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as unknown as Parameters<typeof t>[0])} icon={stat.icon} />)}
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
@@ -334,7 +334,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {FEATURES_DATA.map(feature => (
-              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as any)} description={t(feature.descKey as any)} variants={ITEM_VARIANTS} />
+              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as unknown as Parameters<typeof t>[0])} description={t(feature.descKey as unknown as Parameters<typeof t>[0])} variants={ITEM_VARIANTS} />
             ))}
           </motion.div>
         </div>

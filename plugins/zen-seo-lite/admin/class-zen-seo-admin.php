@@ -2,7 +2,7 @@
 namespace ZenEyer\SEO;
 
 if (!\defined('ABSPATH')) {
-    \exit;
+    exit;
 }
 
 class Zen_SEO_Admin
@@ -688,7 +688,7 @@ class Zen_SEO_Admin
             \header('Expires: 0');
             
             echo \wp_json_encode($settings, JSON_PRETTY_PRINT);
-            \exit;
+            exit;
         }
 
         // 2. Handle Import

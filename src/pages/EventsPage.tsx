@@ -215,7 +215,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}`}
-        events={events as any}
+        events={events as unknown as EventListItem[]}
       />
       {/* Filter Bar */}
       {regions.length > 0 && (
@@ -247,7 +247,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
           const [y, m] = key.split('-');
           const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
           const monthShort = MONTH_NAMES[Number(m) - 1];
-          const name = t(`events_month_${monthShort}` as any);
+          const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
           return (
             <section key={key}>
               <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">

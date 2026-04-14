@@ -305,7 +305,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {(artist.festivals || []).slice(0, 9).map((festival: any, index: number) => (
+                {(artist.festivals || []).slice(0, 9).map((festival: { name: string; country: string; date: string; flag: string }, index: number) => (
                   <motion.div
                     key={index}
                     whileHover={{ scale: 1.02 }}

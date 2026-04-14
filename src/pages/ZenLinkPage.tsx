@@ -51,7 +51,7 @@ const itemVariants = {
 
 
 // --- Smart Music Card Component ---
-const SmartMusicCard = ({ platforms }: { platforms: any[] }) => {
+const SmartMusicCard = ({ platforms }: { platforms: { id: string; name: string; url: string; icon: string }[] }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
