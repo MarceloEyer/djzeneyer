@@ -1,5 +1,5 @@
 // src/components/HeadlessSEO.tsx
-// VERSÃO 8.3.0 - FIX: HTML LANG DYNAMIC & SOCIAL FALLBACK
+// VERSÃO 8.3.0 - HTML LANG DYNAMIC & SOCIAL FALLBACK
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -499,7 +499,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta property="og:description" content={truncatedDesc} />
       <meta property="og:url" content={finalUrl} />
 
-      {/* FIX: Garante que as imagens sempre apareçam */}
+      {/* Garante que as imagens sempre apareçam */}
       {finalImage && (
         <>
           <meta property="og:image" content={finalImage} />
@@ -520,7 +520,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         </>
       )}
 
-      {/* Twitter Cards (X) - FIX: Adicionado summary_large_image explicitamente */}
+      {/* Twitter Cards (X) - Adicionado summary_large_image explicitamente */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
