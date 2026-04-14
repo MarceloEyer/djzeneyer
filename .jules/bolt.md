@@ -81,6 +81,11 @@
 
 **Learning:** Replacing declarative array operations (like chained `.reduce()`, `.map()`, `.filter()`) with a single imperative `for` loop on tiny arrays (e.g., rendering small lists of requirements or quests) is an unmeasurable micro-optimization that needlessly sacrifices code readability.
 **Action:** Only apply this O(N) single-pass consolidation pattern to demonstrably large datasets where the bottleneck can be measured.
+## 2026-05-18 - N+1 Query in REST API Batch Processing
+
+**Learning:** Calling functions that query the database (like `get_items()`) inside a `foreach` loop for multiple objects (e.g., iterating through multiple WooCommerce orders) causes severe N+1 performance bottlenecks.
+**Action:** Always extract the necessary IDs from the object list, construct a single database query (often using a `WHERE IN` clause) to fetch all related items simultaneously, group them in memory, and map them back to the respective items.
+
 ## 2026-05-18 - Optimize WP_Query for Metadata Filtering
 
 **Learning:** Iterating through WordPress query results in PHP using `get_post_meta()` inside a loop to conditionally skip items based on metadata flags (like `noindex`) causes extreme N+1 performance issues, dramatically slowing down sitemap or data collection generation on large databases.
