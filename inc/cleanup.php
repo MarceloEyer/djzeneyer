@@ -211,7 +211,7 @@ add_action('wp', function() {
     remove_action('wp_head', 'gamipress_maybe_render_open_graph_meta_tags', 10);
     // oEmbed host JS — allows third parties to embed this site; not needed in headless
     remove_action('wp_head', 'wp_oembed_add_host_js', 10);
-    // WooCommerce head output — re-removed here to fix timing
+    // WooCommerce head output — re-removed here due to hook timing
     remove_action('wp_head', 'wc_gallery_noscript', 10);
     remove_action('wp_head', 'wc_generator_tag', 10);
 }, 5);
