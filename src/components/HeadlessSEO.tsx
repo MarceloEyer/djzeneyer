@@ -499,7 +499,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta property="og:description" content={truncatedDesc} />
       <meta property="og:url" content={finalUrl} />
 
-      {/* FIX: Garante que as imagens sempre apareçam */}
+      {/* Garante que as imagens sempre apareçam */}
       {finalImage && (
         <>
           <meta property="og:image" content={finalImage} />
