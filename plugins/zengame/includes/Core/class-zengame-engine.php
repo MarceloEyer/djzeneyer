@@ -72,13 +72,42 @@ final class Engine
         ]);
 
         $total = 0;
-        foreach ($order_ids as $order_id) {
-            $order = \wc_get_order($order_id);
-            if (!$order) continue;
-            foreach ($order->get_items() as $item) {
-                $product = $item->get_product();
-                if ($product && $product->is_downloadable()) {
-                    $total += (int) $item->get_quantity();
+        if (!empty($order_ids)) {
+            global $wpdb;
+            $placeholders = \implode(',', \array_fill(0, \count($order_ids), '%d'));
+
+            // Single SQL: product_id + qty for all line items across all completed orders.
+            // woocommerce_order_items/itemmeta are HPOS-safe (unchanged by HPOS).
+            // order IDs come from wc_get_orders() above (already HPOS-compatible).
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT
+                        MAX(CASE WHEN im.meta_key = '_product_id' THEN im.meta_value END) AS product_id,
+                        MAX(CASE WHEN im.meta_key = '_qty'        THEN im.meta_value END) AS qty
+                     FROM {$wpdb->prefix}woocommerce_order_items i
+                     INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta im
+                         ON i.order_item_id = im.order_item_id
+                        AND im.meta_key IN ('_product_id', '_qty')
+                     WHERE i.order_id IN ($placeholders)
+                       AND i.order_item_type = 'line_item'
+                     GROUP BY i.order_item_id, i.order_id",
+                    ...$order_ids
+                )
+            );
+
+            if ($rows) {
+                // Check downloadable via _downloadable post meta (WP caches after first read).
+                // Avoids wc_product_meta_lookup (can be stale after bulk imports).
+                $unique_pids = \array_unique(\array_column($rows, 'product_id'));
+                $is_downloadable = [];
+                foreach ($unique_pids as $pid) {
+                    $is_downloadable[(int) $pid] = \get_post_meta((int) $pid, '_downloadable', true) === 'yes';
+                }
+
+                foreach ($rows as $row) {
+                    if (!empty($is_downloadable[(int) $row->product_id])) {
+                        $total += (int) $row->qty;
+                    }
                 }
             }
         }
@@ -111,14 +140,42 @@ final class Engine
         ]);
 
         $total = 0;
-        foreach ($order_ids as $order_id) {
-            $order = \wc_get_order($order_id);
-            if (!$order) continue;
-            foreach ($order->get_items() as $item) {
-                $product_id = $item->get_product_id();
-                $terms = \wp_get_post_terms($product_id, 'product_cat', ['fields' => 'slugs']);
-                if (!\is_wp_error($terms) && !empty(\array_intersect($terms, $target_slugs))) {
-                    $total += (int) $item->get_quantity();
+        if (!empty($order_ids)) {
+            global $wpdb;
+            $placeholders = \implode(',', \array_fill(0, \count($order_ids), '%d'));
+
+            // Single SQL for all line items — same HPOS reasoning as get_user_total_tracks.
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT
+                        MAX(CASE WHEN im.meta_key = '_product_id' THEN im.meta_value END) AS product_id,
+                        MAX(CASE WHEN im.meta_key = '_qty'        THEN im.meta_value END) AS qty
+                     FROM {$wpdb->prefix}woocommerce_order_items i
+                     INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta im
+                         ON i.order_item_id = im.order_item_id
+                        AND im.meta_key IN ('_product_id', '_qty')
+                     WHERE i.order_id IN ($placeholders)
+                       AND i.order_item_type = 'line_item'
+                     GROUP BY i.order_item_id, i.order_id",
+                    ...$order_ids
+                )
+            );
+
+            if ($rows) {
+                // Deduplicate: check product categories only once per unique product_id.
+                // wp_get_post_terms() caches internally after first call per product.
+                $unique_pids = \array_unique(\array_column($rows, 'product_id'));
+                $is_event = [];
+                foreach ($unique_pids as $pid) {
+                    $terms = \wp_get_post_terms((int) $pid, 'product_cat', ['fields' => 'slugs']);
+                    $is_event[(int) $pid] = !\is_wp_error($terms)
+                        && !empty(\array_intersect($terms, $target_slugs));
+                }
+
+                foreach ($rows as $row) {
+                    if (!empty($is_event[(int) $row->product_id])) {
+                        $total += (int) $row->qty;
+                    }
                 }
             }
         }

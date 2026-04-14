@@ -624,11 +624,12 @@ class Rest_Routes
                        MAX(CASE WHEN im.meta_key = '_qty' THEN im.meta_value END) as quantity,
                        MAX(CASE WHEN im.meta_key = '_line_total' THEN im.meta_value END) as total
                 FROM {$wpdb->prefix}woocommerce_order_items i
-                LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta im ON i.order_item_id = im.order_item_id
+                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta im
+                    ON i.order_item_id = im.order_item_id
+                   AND im.meta_key IN ('_qty', '_line_total')
                 WHERE i.order_id IN ($placeholders)
                   AND i.order_item_type = 'line_item'
-                  AND im.meta_key IN ('_qty', '_line_total')
-                GROUP BY i.order_item_id
+                GROUP BY i.order_item_id, i.order_id, i.order_item_name
             ", ...$order_ids);
 
             $results = $wpdb->get_results($query);
