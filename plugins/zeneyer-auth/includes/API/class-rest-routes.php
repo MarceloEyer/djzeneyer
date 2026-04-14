@@ -613,20 +613,48 @@ class Rest_Routes
             'return' => 'objects',
         ]);
 
+        global $wpdb;
+
+        $order_ids = [];
+        foreach ($orders as $order) {
+            $order_ids[] = $order->get_id();
+        }
+
+        $items_by_order = [];
+        if (!empty($order_ids)) {
+            $ids_placeholder = implode(',', array_fill(0, count($order_ids), '%d'));
+
+            $query = $wpdb->prepare("
+                SELECT i.order_id, i.order_item_name as name,
+                       MAX(CASE WHEN im.meta_key = '_qty' THEN im.meta_value END) as quantity,
+                       MAX(CASE WHEN im.meta_key = '_line_total' THEN im.meta_value END) as total
+                FROM {$wpdb->prefix}woocommerce_order_items i
+                LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta im ON i.order_item_id = im.order_item_id
+                WHERE i.order_id IN ($ids_placeholder) AND i.order_item_type = 'line_item'
+                GROUP BY i.order_item_id, i.order_id, i.order_item_name
+            ", ...$order_ids);
+
+            $results = $wpdb->get_results($query);
+
+            if ($results) {
+                foreach ($results as $row) {
+                    $items_by_order[$row->order_id][] = [
+                        'name' => (string) $row->name,
+                        'quantity' => (int) $row->quantity,
+                        'total' => (string) $row->total,
+                    ];
+                }
+            }
+        }
+
         $payload = [];
         foreach ($orders as $order) {
-            $line_items = [];
-            foreach ($order->get_items() as $item) {
-                $line_items[] = [
-                    'name' => (string) $item->get_name(),
-                    'quantity' => (int) $item->get_quantity(),
-                    'total' => (string) $item->get_total(),
-                ];
-            }
+            $order_id = $order->get_id();
+            $line_items = isset($items_by_order[$order_id]) ? $items_by_order[$order_id] : [];
 
             $date = $order->get_date_created();
             $payload[] = [
-                'id' => (int) $order->get_id(),
+                'id' => (int) $order_id,
                 'status' => (string) $order->get_status(),
                 'date_created' => $date ? $date->date('c') : '',
                 'total' => (string) $order->get_total(),
