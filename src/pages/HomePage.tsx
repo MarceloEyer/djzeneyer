@@ -231,7 +231,7 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
+            <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white mb-2 font-light">
               {t('home.hero_subtitle')}
             </motion.p>
 
