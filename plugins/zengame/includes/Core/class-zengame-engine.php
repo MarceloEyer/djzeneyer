@@ -72,15 +72,24 @@ final class Engine
         ]);
 
         $total = 0;
-        foreach ($order_ids as $order_id) {
-            $order = \wc_get_order($order_id);
-            if (!$order) continue;
-            foreach ($order->get_items() as $item) {
-                $product = $item->get_product();
-                if ($product && $product->is_downloadable()) {
-                    $total += (int) $item->get_quantity();
-                }
-            }
+        if (!empty($order_ids)) {
+            global $wpdb;
+            $placeholders = \implode(',', \array_fill(0, \count($order_ids), '%d'));
+            $query = "
+                SELECT SUM(woim_qty.meta_value)
+                FROM {$wpdb->prefix}woocommerce_order_items woi
+                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta woim_qty ON woi.order_item_id = woim_qty.order_item_id AND woim_qty.meta_key = '_qty'
+                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta woim_pid ON woi.order_item_id = woim_pid.order_item_id AND woim_pid.meta_key = '_product_id'
+                LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta woim_vid ON woi.order_item_id = woim_vid.order_item_id AND woim_vid.meta_key = '_variation_id'
+                INNER JOIN {$wpdb->prefix}wc_product_meta_lookup p_meta ON p_meta.product_id = CASE
+                    WHEN woim_vid.meta_value IS NOT NULL AND woim_vid.meta_value != '0' AND woim_vid.meta_value != '' THEN woim_vid.meta_value
+                    ELSE woim_pid.meta_value
+                END
+                WHERE woi.order_id IN ($placeholders)
+                AND woi.order_item_type = 'line_item'
+                AND p_meta.downloadable = 1
+            ";
+            $total = (int) $wpdb->get_var($wpdb->prepare($query, $order_ids));
         }
 
         \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
