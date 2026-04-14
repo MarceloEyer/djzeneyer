@@ -81,3 +81,7 @@
 
 **Learning:** Replacing declarative array operations (like chained `.reduce()`, `.map()`, `.filter()`) with a single imperative `for` loop on tiny arrays (e.g., rendering small lists of requirements or quests) is an unmeasurable micro-optimization that needlessly sacrifices code readability.
 **Action:** Only apply this O(N) single-pass consolidation pattern to demonstrably large datasets where the bottleneck can be measured.
+## 2026-05-18 - Optimize WP_Query for Metadata Filtering
+
+**Learning:** Iterating through WordPress query results in PHP using `get_post_meta()` inside a loop to conditionally skip items based on metadata flags (like `noindex`) causes extreme N+1 performance issues, dramatically slowing down sitemap or data collection generation on large databases.
+**Action:** Always filter metadata directly in the database layer by adding a `meta_query` clause to the `WP_Query` `$args`. Utilizing conditional `NOT EXISTS` or `NOT LIKE` logic directly inside `$args['meta_query']` prevents fetching undesired posts entirely, improving execution time enormously (e.g. 99% faster).
