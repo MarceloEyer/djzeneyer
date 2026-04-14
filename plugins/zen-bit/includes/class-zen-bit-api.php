@@ -16,7 +16,7 @@
  * CHANGELOG v3.1.0 — 2026-03-06
  *   FEAT JWT Authentication Bridge — Admin endpoints now support Authorization: Bearer tokens.
  *   FEAT Sitemap Integration — Admin actions now clear sitemap cache automatically.
- *   FIX  Double-fetch eliminated in get_event(). Now uses a 3-tier lookup through SWR pools.
+ *   PATCH  Double-fetch eliminated in get_event(). Now uses a 3-tier lookup through SWR pools.
  *   DOCS Standardized PHPDoc and engineering headers.
  *
  * @package ZenBit
@@ -378,7 +378,7 @@ class Zen_BIT_API_V2
     /**
      * Returns the full detail payload for a single event (ZenBitEventDetail shape).
      *
-     * PERFORMANCE FIX (v3.1.0 — double-fetch eliminated):
+     * PERFORMANCE PATCH (v3.1.0 — double-fetch eliminated):
      * ──────────────────────────────────────────────────────
      * The previous implementation called fetch_from_bandsintown('upcoming') and
      * fetch_from_bandsintown('past') on EVERY request, making 2 live HTTP calls
