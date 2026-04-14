@@ -520,7 +520,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         </>
       )}
 
-      {/* Twitter Cards (X) - FIX: Adicionado summary_large_image explicitamente */}
+      {/* Twitter Cards (X) */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
