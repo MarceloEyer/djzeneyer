@@ -1231,8 +1231,8 @@
       }
     },
     "not_found": "Não achou o que procurava?",
-    "cta_email": "Send Email",
-    "cta_whatsapp": "Talk on WhatsApp"
+    "cta_email": "Enviar E-mail",
+    "cta_whatsapp": "Falar no WhatsApp"
   },
   "account": {
     "loading": "Carregando seus dados...",

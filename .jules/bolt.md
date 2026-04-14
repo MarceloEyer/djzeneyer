@@ -85,3 +85,8 @@
 
 **Learning:** Calling functions that query the database (like `get_items()`) inside a `foreach` loop for multiple objects (e.g., iterating through multiple WooCommerce orders) causes severe N+1 performance bottlenecks.
 **Action:** Always extract the necessary IDs from the object list, construct a single database query (often using a `WHERE IN` clause) to fetch all related items simultaneously, group them in memory, and map them back to the respective items.
+
+## 2026-05-18 - Optimize WP_Query for Metadata Filtering
+
+**Learning:** Iterating through WordPress query results in PHP using `get_post_meta()` inside a loop to conditionally skip items based on metadata flags (like `noindex`) causes extreme N+1 performance issues, dramatically slowing down sitemap or data collection generation on large databases.
+**Action:** Always filter metadata directly in the database layer by adding a `meta_query` clause to the `WP_Query` `$args`. Utilizing conditional `NOT EXISTS` or `NOT LIKE` logic directly inside `$args['meta_query']` prevents fetching undesired posts entirely, improving execution time enormously (e.g. 99% faster).

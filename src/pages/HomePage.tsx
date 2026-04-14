@@ -225,13 +225,13 @@ const HomePage: React.FC = () => {
 
           <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-white text-sm font-medium backdrop-blur-sm">
                 <Trophy size={16} />
                 <span className="font-semibold">{t('home.hero_badge')}</span>
               </div>
             </motion.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white/90 mb-2 font-light">
+            <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white mb-2 font-light">
               {t('home.hero_subtitle')}
             </motion.p>
 
