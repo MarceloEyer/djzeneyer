@@ -52,40 +52,6 @@ final class Engine
     // OPTIMIZED ANALYTICS (SQL DIRECT)
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function get_user_total_tracks(int $user_id): int
-    {
-        $cache_key = 'djz_stats_tracks_' . $user_id;
-        $cached = \get_transient($cache_key);
-        if (false !== $cached) return (int) $cached;
-
-        if (!\function_exists('\wc_get_orders')) {
-            \set_transient($cache_key, 0, self::STATS_CACHE_TTL);
-            return 0;
-        }
-
-        // wc_get_orders() is HPOS-compatible: works with legacy wp_posts and wc_orders table
-        $order_ids = \wc_get_orders([
-            'customer_id' => $user_id,
-            'status'      => ['wc-completed'],
-            'limit'       => -1,
-            'return'      => 'ids',
-        ]);
-
-        $total = 0;
-        foreach ($order_ids as $order_id) {
-            $order = \wc_get_order($order_id);
-            if (!$order) continue;
-            foreach ($order->get_items() as $item) {
-                $product = $item->get_product();
-                if ($product && $product->is_downloadable()) {
-                    $total += (int) $item->get_quantity();
-                }
-            }
-        }
-
-        \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
-        return $total;
-    }
 
     public function get_user_events_attended(int $user_id): int
     {
@@ -193,7 +159,6 @@ final class Engine
     {
         \delete_transient('djz_gamipress_dashboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $user_id);
         \delete_transient('djz_stats_events_' . $user_id);
-        \delete_transient('djz_stats_tracks_' . $user_id);
 
         // Leaderboard rankings change whenever any user's points change.
         // Clear the most common limit variants so the next request fetches fresh data.
@@ -224,9 +189,7 @@ final class Engine
     public function register_triggers(array $triggers): array
     {
         $triggers['ZenGame'] = [
-            'zengame_download' => \__('Download a track', 'zengame'),
             'zengame_share'    => \__('Share content', 'zengame'),
-            'zengame_listen'   => \__('Listen to a preview', 'zengame'),
             'zengame_click'    => \__('Click a premium button', 'zengame'),
         ];
         return $triggers;
@@ -253,9 +216,7 @@ final class Engine
     public function get_trigger_label(string $label, string $trigger): string
     {
         $labels = [
-            'zengame_download' => \__('Download a track', 'zengame'),
             'zengame_share'    => \__('Share content', 'zengame'),
-            'zengame_listen'   => \__('Listen to a preview', 'zengame'),
             'zengame_click'    => \__('Click a premium button', 'zengame'),
         ];
 

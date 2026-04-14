@@ -10,7 +10,7 @@
    - `GET /me` — Dashboard completo do usuário autenticado (cookie ou Bearer JWT). Inclui: `points`, `rank` (com `menu_order`), `achievements_earned`, `achievements_locked`, `logs`, `stats`, `main_points_slug`.
    - `GET /leaderboard?limit=10` — Ranking público cacheado, agrupado por tipo de pontos.
    - `POST /track` — Registra interação (download, share, listen, click) e dispara hooks do GamiPress.
-3. **Agregação:** Cruza GamiPress com WooCommerce (`totalTracks` via `is_downloadable()`, `eventsAttended` via categorias de pedido — HPOS-safe via `wc_get_orders()`).
+3. **Agregação:** Cruza GamiPress com WooCommerce (`eventsAttended` via categorias de pedido — HPOS-safe via `wc_get_orders()`).
 
 ## 🚀 Cache & Performance
 
@@ -18,7 +18,6 @@
 |---|---|---|---|
 | `djz_gamipress_dashboard_v15_{user_id}` | Dashboard do Usuário | 24h | Award, Rank, Order |
 | `djz_gamipress_leaderboard_v15_{limit}` | Ranking Público | 1h | Toda premiação de pontos |
-| `djz_stats_tracks_{user_id}` | Analytics de Download | 6h | Novo pedido concluído |
 | `djz_stats_events_{user_id}` | Analytics de Eventos | 6h | Novo pedido concluído |
 
 > **Invalidação:** `clear_user_cache($uid)` apaga dashboard, stats E leaderboard (limits 10, 25, 50) a cada premiação, novo pedido ou troca de rank.
@@ -38,7 +37,6 @@
 
 ## Funções Principais
 
-- `Engine::get_user_total_tracks()` — conta tracks baixáveis via `wc_get_orders()` (HPOS-safe)
 - `Engine::get_user_events_attended()` — filtra pedidos por categoria de produto (HPOS-safe)
 - `Engine::clear_user_cache()` — invalida dashboard + stats + leaderboard do usuário
 - `Engine::track_interaction()` — dispara `do_action('zengame_{action}')` para GamiPress
@@ -57,7 +55,7 @@
     "progress": 45.5,
     "requirements": [{ "title": "...", "current": 45, "required": 100, "percent": 45.0 }]
   },
-  "stats": { "totalTracks": 12, "eventsAttended": 3, "streak": 7, "streakFire": true }
+  "stats": { "eventsAttended": 3, "streak": 7, "streakFire": true }
 }
 ```
 

@@ -14,7 +14,7 @@ The High-Performance Bridge for GamiPress + Headless WordPress. ZenGame Pro tran
 
 == Features ==
 
-* **Elite Performance**: Direct SQL optimization for WooCommerce stats (tracks purchased, events attended).
+* **Elite Performance**: Direct SQL optimization for WooCommerce stats (events attended).
 * **Smart Caching**: Smart transient management that invalidates only when points or ranks change.
 * **Headless Ready**: Clean, secure REST API endpoints designed for React/Next.js integrations.
 * **Login Streaks**: Native daily login streak tracking for better user retention.

@@ -87,7 +87,6 @@ final class REST_Handler
             $data = [
                 'user_id' => $user_id,
                 'stats' => [
-                    'totalTracks' => self::$engine->get_user_total_tracks($user_id),
                     'eventsAttended' => self::$engine->get_user_events_attended($user_id),
                     'streak' => (int) \get_user_meta($user_id, 'zen_login_streak', true),
                     'streakFire' => ((int) \get_user_meta($user_id, 'zen_login_streak', true)) >= 3,
