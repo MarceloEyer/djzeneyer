@@ -81,3 +81,6 @@
 
 **Learning:** Replacing declarative array operations (like chained `.reduce()`, `.map()`, `.filter()`) with a single imperative `for` loop on tiny arrays (e.g., rendering small lists of requirements or quests) is an unmeasurable micro-optimization that needlessly sacrifices code readability.
 **Action:** Only apply this O(N) single-pass consolidation pattern to demonstrably large datasets where the bottleneck can be measured.
+## 2026-04-14 - [Resolve N+1 in WP get_posts meta extraction]
+**Learning:** When doing bulk export or iteration over get_posts and manually extracting get_post_meta inside a loop, it triggers severe N+1 database querying unless update_post_meta_cache is manually turned on in WP_Query args, or explicitly cached manually by extracting the post batch IDs and calling update_meta_cache.
+**Action:** We've successfully resolved the O(N) query inflation down to O(1) inside zen-seo-lite plugin sitemap generation by utilizing update_post_meta_cache inside the arguments along with a fallback batch caching mechanism.

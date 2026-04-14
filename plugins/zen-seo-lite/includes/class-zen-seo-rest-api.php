@@ -428,9 +428,16 @@ class Zen_SEO_REST_API
             'posts_per_page' => \apply_filters('zen_seo_sitemap_limit', 1000),
             'orderby' => 'modified',
             'order' => 'DESC',
+            'update_post_meta_cache' => true,
         ];
 
         $posts = \get_posts($args);
+
+        // Preload meta cache manually as a fallback to ensure N+1 doesn't happen
+        $post_ids = \array_map(function($p) { return $p->ID; }, $posts);
+        if (!empty($post_ids)) {
+            \update_meta_cache('post', $post_ids);
+        }
 
         foreach ($posts as $post) {
             $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
