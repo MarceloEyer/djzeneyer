@@ -1,8 +1,3 @@
-# 2026-05-20 - Gate de Uso do Bolt
-
-**Learning:** Este arquivo é memória histórica de padrões e aprendizados, não backlog automático. Entradas antigas, futuras ou fora de ordem podem conter contexto incompleto e não autorizam PR por si só.
-**Action:** Em auditorias proativas, usar as learnings como checklist de investigação, mas abrir PR somente quando o padrão existir no código atual, houver benefício real e existir evidência objetiva. Não abrir PR para limpeza de comentários ou micro-otimização sem evidência objetiva.
-
 ## 2025-02-19 - WP REST API _embed Performance
 
 **Learning:** Using `_embed` in WP REST API requests triggers significant overhead due to multiple internal queries (N+1) for fetching related objects like authors, terms, media, and comments. For list endpoints returning many items (e.g., 100 tracks), this causes a major performance bottleneck on the backend.
@@ -90,49 +85,3 @@
 
 **Learning:** Calling functions that query the database (like `get_items()`) inside a `foreach` loop for multiple objects (e.g., iterating through multiple WooCommerce orders) causes severe N+1 performance bottlenecks.
 **Action:** Always extract the necessary IDs from the object list, construct a single database query (often using a `WHERE IN` clause) to fetch all related items simultaneously, group them in memory, and map them back to the respective items.
-
-## 2026-05-18 - Optimize WP_Query for Metadata Filtering
-
-**Learning:** Iterating through WordPress query results in PHP using `get_post_meta()` inside a loop to conditionally skip items based on metadata flags (like `noindex`) causes extreme N+1 performance issues, dramatically slowing down sitemap or data collection generation on large databases.
-**Action:** Always filter metadata directly in the database layer by adding a `meta_query` clause to the `WP_Query` `$args`. Utilizing conditional `NOT EXISTS` or `NOT LIKE` logic directly inside `$args['meta_query']` prevents fetching undesired posts entirely, improving execution time enormously (e.g. 99% faster).
-## 2026-06-25 - Avoid new Date() inside large array iterations and useMemo
-
-**Learning:** Instantiating `new Date()` inside loops (like `forEach` or `map`) and `useMemo` hooks for parsing ISO 8601 date strings to extract parts (e.g., year, month, day) adds massive memory allocation overhead and CPU time compared to O(1) string slicing operations. In a benchmark of 10,000 items, `new Date()` took ~112ms versus ~4ms for `substring()`.
-**Action:** Always prefer string slicing (`substring(0, 7)`) when grouping or extracting static parts from guaranteed format date strings like ISO 8601 within large datasets, `useMemo` iterations, and component render cycles.
-## 2026-04-09 - Avoid string split for static prefix extraction
-
-**Learning:** Using `String.prototype.split` (e.g., `path.split('/:')[0]`) in high-frequency rendering paths (like routing and URL mapping loops) causes unnecessary garbage collection due to array allocation. Micro-benchmarks show that using `String.prototype.indexOf` combined with `String.prototype.slice` is around 45x faster.
-**Action:** Always prefer native non-allocating string operations like `indexOf`, `startsWith`, `endsWith`, and `slice` over methods that allocate new objects or arrays (`split`, `replace` with regex) in performance-critical code paths.
-
-## 2026-06-25 - Cached Intl.NumberFormat via toLocaleString
-
-**Learning:** Calling `Number.prototype.toLocaleString()` implicitly instantiates an `Intl.NumberFormat` object on every call. In benchmarks, this causes ~8x more CPU overhead and memory allocations compared to reusing a cached formatter instance, which is especially noticeable during React renders and inside `.map()` array iterations (like leaderboard rendering).
-**Action:** Always replace `toLocaleString()` with a cached formatter instance from a module-level cache (like `getCurrencyFormatter(locale, currency, true).format(value)`) to prevent redundant object allocations and improve render performance.
-
-## 2026-06-26 - Prevent redundant function calls during render cycles
-
-**Learning:** Repeatedly calling a deterministic function like `getLocalizedRoute` with the same dynamic arguments multiple times within a component's render body (e.g. passing it to multiple `<Link to={...}>` elements) leads to redundant O(N) calculations on every React reconciliation cycle.
-**Action:** Consolidate these multiple calls into a single object map wrapped in `useMemo` with the dynamic argument as its dependency. This evaluates the localized paths only once when the language changes, rather than recalculating them on every unrelated state or context update.
-
-## 2026-06-27 - Inline Spread of Arrays in React Render Cycles
-**Learning:** Using the spread operator (e.g., `[...array1, ...array2]`) inline directly within a component's render body (like for `.map()` iteration) forces JavaScript to allocate a completely new array object on *every single render cycle*, regardless of whether the source arrays have changed. In highly re-rendered components, this causes significant garbage collection overhead and potential performance stutters.
-**Action:** Always extract dynamic array combinations/spreads into a `useMemo` hook, using the source arrays (or their parent objects) as the dependency array, to preserve reference equality and eliminate O(N) reallocation overhead.
-
-## 2026-06-28 - Render Loop Overhead via Inline Array Allocation and Split
-
-**Learning:** Allocating a static array (`['jan', 'feb', ...]`) and performing string splitting (`key.split('-')`) inside the callback of a `.map()` iteration forces continuous garbage collection overhead on every React rendering cycle, significantly impacting performance on large lists.
-**Action:** Always extract static array configurations to the module scope (outside the component) and replace allocating string operations like `split()` with non-allocating alternatives like `slice()` when iterating over datasets in render loops.
-
-## 2024-05-18 - Replacing `String.prototype.split()` with zero-allocation alternatives
-**Learning:** `String.prototype.split()` creates an intermediate array, which adds overhead and garbage collection pressure, particularly in hot paths like routing maps or render loops.
-**Action:** When extracting substrings or indices in performance-critical code paths, utilize zero-allocation native string methods like `indexOf()` combined with `slice()` instead of chained `.split()` calls. Focus primarily on hot paths and leave isolated, infrequent calls alone.
-
-## 2024-05-18 - Stable empty array fallback
-
-**Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
-**Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.
-
-## 2026-05-18 - Inline Arrays in Render Iterations
-
-**Learning:** Declaring static inline arrays like `[0, 1, 2]` or `['leader', 'follower']` inside a React component return creates a new array reference on each render.
-**Action:** Extract reused static arrays to module scope when they are used for render iteration. For dynamic lengths, prefer the clearest expression and avoid claiming allocation savings unless the rendered children themselves are also memoized.
