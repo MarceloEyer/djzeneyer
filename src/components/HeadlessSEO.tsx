@@ -393,7 +393,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             url: artist.site.baseUrl,
-            sameAs: artist.social.instagram?.url || (artist.social.instagram as any)
+            sameAs: artist.social.instagram?.url || (artist.social.instagram as unknown as string)
           },
           subEvent: musicEvents
         });

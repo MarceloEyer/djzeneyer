@@ -30,7 +30,7 @@ export const BrandingProvider: React.FC<{ children: ReactNode }> = ({ children }
     return {
       ...data,
       // Ensure we have at least the critical site fields from fallback if missing
-      site: (FALLBACK_ARTIST as any).site, 
+      site: (FALLBACK_ARTIST as unknown as { site: unknown }).site,
     };
   }, [data]);
 

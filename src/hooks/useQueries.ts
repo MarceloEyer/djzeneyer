@@ -121,7 +121,7 @@ import type {
   ZenBitEventListItem,
   ZenBitEventDetail,
   FetchEventsParams,
-  EventsApiResponse,
+
 } from '../types/events';
 
 export interface WPPost {

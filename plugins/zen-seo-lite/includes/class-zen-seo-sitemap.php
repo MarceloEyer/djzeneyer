@@ -2,7 +2,7 @@
 namespace ZenEyer\SEO;
 
 if (!\defined('ABSPATH')) {
-    \exit;
+    exit;
 }
 
 class Zen_SEO_Sitemap
@@ -80,7 +80,7 @@ class Zen_SEO_Sitemap
         }
 
         echo $sitemap;
-        \exit;
+        exit;
     }
 
     /**

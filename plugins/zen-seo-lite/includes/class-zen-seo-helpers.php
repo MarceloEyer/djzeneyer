@@ -9,7 +9,7 @@
 namespace ZenEyer\SEO;
 
 if (!\defined('ABSPATH')) {
-    \exit;
+    exit;
 }
 
 class Zen_SEO_Helpers
