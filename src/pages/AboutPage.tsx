@@ -26,6 +26,47 @@ const getDynamicWhatsAppUrl = (number: string, message?: string) => {
   return `https://wa.me/${number}?text=${encodeURIComponent(message || defaultMsg)}`;
 };
 
+
+// --- Framer Motion Static Configs ---
+// ⚡ Bolt: Extracted static animation configurations to module scope to prevent
+// unnecessary object reallocations on every render.
+const VIEWPORT_ONCE = { once: true };
+const VIEWPORT_ONCE_MARGIN = { once: true, margin: "-50px" };
+
+const FADE_IN_UP_INITIAL = { opacity: 0, y: 30 };
+const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
+const FADE_IN_UP_TRANSITION = { duration: 0.8 };
+
+const SCALE_IN_INITIAL = { scale: 0.8, opacity: 0 };
+const SCALE_IN_ANIMATE = { scale: 1, opacity: 1 };
+const SCALE_IN_TRANSITION = { delay: 0.2, duration: 0.6 };
+
+const ITEM_INITIAL = { opacity: 0, y: 20 };
+const ITEM_ANIMATE = { opacity: 1, y: 0 };
+
+const FADE_IN_INITIAL = { opacity: 0 };
+const FADE_IN_ANIMATE = { opacity: 1 };
+
+const CTA_HOVER = { scale: 1.05 };
+const CTA_TAP = { scale: 0.95 };
+
+
+const MILESTONE_VARIANTS = {
+  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  visible: (index: number) => ({
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.35, delay: index * 0.06, ease: "easeOut" }
+  })
+};
+
+const ITEM_VARIANTS = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (index: number) => ({
+    opacity: 1, y: 0,
+    transition: { delay: index * 0.1 }
+  })
+};
+
 // ============================================================================
 // SCHEMA.ORG PARA A PAGINA ABOUT
 // ============================================================================
@@ -153,15 +194,15 @@ const AboutPage: React.FC = () => {
         <div className="pt-24 pb-12 relative md:pt-32 md:pb-20">
           <div className="container mx-auto max-w-6xl relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              initial={FADE_IN_UP_INITIAL}
+              animate={FADE_IN_UP_ANIMATE}
+              transition={FADE_IN_UP_TRANSITION}
               className="text-center"
             >
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
+                initial={SCALE_IN_INITIAL}
+                animate={SCALE_IN_ANIMATE}
+                transition={SCALE_IN_TRANSITION}
                 className="inline-block mb-4"
               >
                 <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
@@ -189,10 +230,7 @@ const AboutPage: React.FC = () => {
               {ACHIEVEMENTS_DATA.map((item, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  viewport={VIEWPORT_ONCE} custom={index} variants={ITEM_VARIANTS} initial="hidden" whileInView="visible"
                   className="group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors duration-500 rounded-2xl" />
@@ -217,9 +255,9 @@ const AboutPage: React.FC = () => {
         <section className="py-20 px-4 relative z-10">
           <div className="container mx-auto max-w-4xl">
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              initial={FADE_IN_INITIAL}
+              whileInView={FADE_IN_ANIMATE}
+              viewport={VIEWPORT_ONCE}
               className="space-y-8 text-lg md:text-xl text-white/70 leading-relaxed font-light"
             >
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p1')) }} />
@@ -236,9 +274,9 @@ const AboutPage: React.FC = () => {
         <section className="py-20 px-4 bg-surface/30">
           <div className="container mx-auto max-w-5xl">
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial={ITEM_INITIAL}
+              whileInView={ITEM_ANIMATE}
+              viewport={VIEWPORT_ONCE}
               className="text-4xl md:text-5xl font-display font-bold text-center mb-16"
             >
               <Trans i18nKey="about.timeline.title">
@@ -250,10 +288,10 @@ const AboutPage: React.FC = () => {
               {MILESTONES.map((milestone, index) => (
                 <motion.div
                   key={index}
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 18, scale: 0.98 }}
-                  whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={prefersReducedMotion ? undefined : { duration: 0.35, delay: index * 0.06, ease: "easeOut" }}
+                  initial={prefersReducedMotion ? false : "hidden"}
+                  whileInView={prefersReducedMotion ? undefined : "visible"}
+                  viewport={VIEWPORT_ONCE_MARGIN}
+                  custom={index} variants={prefersReducedMotion ? undefined : MILESTONE_VARIANTS}
                   className="relative"
                 >
                   <div className="card p-6 md:p-8 hover:border-primary/50 transition-all duration-300">
@@ -286,9 +324,9 @@ const AboutPage: React.FC = () => {
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl">
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              initial={FADE_IN_INITIAL}
+              whileInView={FADE_IN_ANIMATE}
+              viewport={VIEWPORT_ONCE}
               className="card p-8 md:p-12 text-center bg-surface/50 rounded-2xl border border-white/10"
             >
               <Heart className="w-16 h-16 mx-auto mb-6 text-primary" />
@@ -309,10 +347,10 @@ const AboutPage: React.FC = () => {
         <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              initial={FADE_IN_UP_INITIAL}
+              whileInView={ITEM_ANIMATE}
+              viewport={VIEWPORT_ONCE}
+              transition={FADE_IN_UP_TRANSITION}
               className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-10 md:p-12 border border-primary/30 text-center"
             >
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
@@ -329,8 +367,8 @@ const AboutPage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg inline-flex items-center gap-3"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={CTA_HOVER}
+                whileTap={CTA_TAP}
               >
                 <Envelope className="w-5 h-5" />
                 {t('about.cta.button')}
