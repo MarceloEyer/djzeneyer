@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Music2, MessageCircle, SendHorizontal } from 'lucide-react';
+import { Music, Music2, MessageCircle, SendHorizontal, Heart } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
@@ -91,6 +91,12 @@ const Footer: React.FC = () => {
               <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
               <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
               <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
+              <li className="pt-1">
+                <Link to={getLocalizedRoute('support', currentLang)} className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors font-semibold">
+                  <Heart size={13} />
+                  {t('footer_support_artist')}
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -103,7 +109,6 @@ const Footer: React.FC = () => {
               <li><Link to={getLocalizedRoute('philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('philosophy.page_title')}</Link></li>
               <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
               <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to={getLocalizedRoute('conduct', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('conduct_page.title')}</Link></li>
             </ul>
           </div>
 
@@ -148,6 +153,8 @@ const Footer: React.FC = () => {
             <Link to={getLocalizedRoute('privacy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
             <span>&bull;</span>
             <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
+            <span>&bull;</span>
+            <Link to={getLocalizedRoute('conduct', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_conduct')}</Link>
           </div>
 
           <div className="mt-4 text-xs opacity-30 flex justify-center gap-4">

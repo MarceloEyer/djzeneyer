@@ -696,13 +696,17 @@
   },
   "philosophy": {
     "page_title": "Artistic Philosophy",
+    "hero_title_rich": "Artistic <1>Philosophy</1>",
     "style_title": "The Style",
     "mission_title": "Mission",
     "coming_soon_title": "Vision",
     "coming_soon_desc": "Complete artistic manifesto of {{name}} is being updated for the 2026 world tour."
   },
   "philosophy_page": {
+    "manifesto_badge": "Artistic Manifesto",
+    "hero_subtitle": "The philosophy behind every beat, every transition, every moment on the dance floor.",
     "style_title": "The Style",
+    "style_desc": "The unmistakable sonic signature — deep bass, smooth transitions and an energy that transforms any dance floor into an experience.",
     "connection": "Real Connection",
     "connection_desc": "Music as a bridge between two souls, creating a moment of absolute presence.",
     "flow": "State of Flow",
@@ -1467,7 +1471,7 @@
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
-      "title": "Support the <0>Music</0>",
+      "title": "Support the <1>Music</1>",
       "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
     },
     "payment": {

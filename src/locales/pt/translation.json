@@ -696,13 +696,17 @@
   },
   "philosophy": {
     "page_title": "Filosofia Artística",
+    "hero_title_rich": "Filosofia <1>Artística</1>",
     "style_title": "O Estilo",
     "mission_title": "Missão",
     "coming_soon_title": "Visão",
     "coming_soon_desc": "O manifesto artístico completo de {{name}} está sendo atualizado para a tour mundial de 2026."
   },
   "philosophy_page": {
+    "manifesto_badge": "Manifesto Artístico",
+    "hero_subtitle": "A filosofia por trás de cada batida, cada transição, cada momento na pista.",
     "style_title": "O Estilo",
+    "style_desc": "A assinatura sonora inconfundível — graves profundos, transições suaves e uma energia que transforma qualquer pista em experiência.",
     "connection": "Conexão Real",
     "connection_desc": "A música como ponte entre duas almas, criando um momento de presença absoluta.",
     "flow": "Estado de Flow",
@@ -1531,7 +1535,7 @@
       "keywords": "apoiar artista, contratar dj, métodos de pagamento, pagamentos internacionais, brazilian zouk dj"
     },
     "header": {
-      "title": "Apoie a <0>Música</0>",
+      "title": "Apoie a <1>Música</1>",
       "description": "Seu apoio ajuda a criar novas músicas, conteúdo educacional e a fortalecer a comunidade de Brazilian Zouk em todo o mundo. Seja contratando para um evento ou fazendo uma doação, cada contribuição faz a diferença."
     },
     "payment": {
