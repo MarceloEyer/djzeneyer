@@ -152,6 +152,8 @@ const Footer: React.FC = () => {
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
             <Link to={getLocalizedRoute('privacy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
             <span>&bull;</span>
+            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
+            <span>&bull;</span>
             <Link to={getLocalizedRoute('conduct', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_conduct')}</Link>
           </div>
 
