@@ -702,7 +702,10 @@
     "coming_soon_desc": "O manifesto artístico completo de {{name}} está sendo atualizado para a tour mundial de 2026."
   },
   "philosophy_page": {
+    "manifesto_badge": "Manifesto Artístico",
+    "hero_subtitle": "A filosofia por trás de cada batida, cada transição, cada momento na pista.",
     "style_title": "O Estilo",
+    "style_desc": "A assinatura sonora inconfundível — graves profundos, transições suaves e uma energia que transforma qualquer pista em experiência.",
     "connection": "Conexão Real",
     "connection_desc": "A música como ponte entre duas almas, criando um momento de presença absoluta.",
     "flow": "Estado de Flow",

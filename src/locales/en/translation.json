@@ -702,7 +702,10 @@
     "coming_soon_desc": "Complete artistic manifesto of {{name}} is being updated for the 2026 world tour."
   },
   "philosophy_page": {
+    "manifesto_badge": "Artistic Manifesto",
+    "hero_subtitle": "The philosophy behind every beat, every transition, every moment on the dance floor.",
     "style_title": "The Style",
+    "style_desc": "The unmistakable sonic signature — deep bass, smooth transitions and an energy that transforms any dance floor into an experience.",
     "connection": "Real Connection",
     "connection_desc": "Music as a bridge between two souls, creating a moment of absolute presence.",
     "flow": "State of Flow",
