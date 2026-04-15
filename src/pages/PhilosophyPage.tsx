@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Heart, Music2, Sparkles } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 // ─── Framer Motion — module-level constants ───────────────────────────────────
@@ -107,7 +107,9 @@ const PhilosophyPage: React.FC = () => {
             </div>
 
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-black font-display mb-6 leading-none tracking-tight">
-              {t('philosophy.page_title')}
+              <Trans i18nKey="philosophy.hero_title_rich">
+                Filosofia <span className="text-primary">Artística</span>
+              </Trans>
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">

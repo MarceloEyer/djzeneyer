@@ -696,6 +696,7 @@
   },
   "philosophy": {
     "page_title": "Artistic Philosophy",
+    "hero_title_rich": "Artistic <1>Philosophy</1>",
     "style_title": "The Style",
     "mission_title": "Mission",
     "coming_soon_title": "Vision",
@@ -1470,7 +1471,7 @@
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
-      "title": "Support the <0>Music</0>",
+      "title": "Support the <1>Music</1>",
       "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
     },
     "payment": {
