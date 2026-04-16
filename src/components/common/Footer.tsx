@@ -80,6 +80,12 @@ const Footer: React.FC = () => {
                 <MessageCircle size={22} />
               </a>
             </div>
+            <div className="mt-5">
+              <Link to={getLocalizedRoute('support', currentLang)} className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors font-semibold text-sm">
+                <Heart size={13} />
+                {t('footer_support_artist')}
+              </Link>
+            </div>
           </div>
 
           {/* 2. Quick Links */}
@@ -91,12 +97,6 @@ const Footer: React.FC = () => {
               <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
               <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
               <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
-              <li className="pt-1">
-                <Link to={getLocalizedRoute('support', currentLang)} className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors font-semibold">
-                  <Heart size={13} />
-                  {t('footer_support_artist')}
-                </Link>
-              </li>
             </ul>
           </div>
 
