@@ -106,7 +106,7 @@ const SupportArtistPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-background relative overflow-hidden">
+    <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 min-h-screen bg-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
@@ -120,16 +120,16 @@ const SupportArtistPage: React.FC = () => {
       />
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
             <Heart size={16} /> {t('payme.subtitle')}
           </div>
-          <h1 className="text-5xl md:text-7xl font-black font-display mb-8 text-white tracking-tighter uppercase leading-[0.9]">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-white tracking-tighter uppercase leading-[0.9]">
             <Trans i18nKey="support.header.title">
                Apoie a <span className="text-primary">Música</span>
             </Trans>
           </h1>
-          <p className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
             {t('support.header.description')}
           </p>
         </motion.div>
@@ -267,12 +267,12 @@ const SupportArtistPage: React.FC = () => {
         </div>
 
         {/* Reasons & Business */}
-        <div className="grid lg:grid-cols-2 gap-8 items-stretch pt-20">
+        <div className="grid lg:grid-cols-2 gap-8 items-stretch pt-12 sm:pt-20">
           <motion.div 
             initial={{ opacity: 0, x: -20 }} 
             whileInView={{ opacity: 1, x: 0 }} 
             viewport={{ once: true }} 
-            className="card p-8 bg-surface/30 backdrop-blur-md"
+            className="card p-5 sm:p-8 bg-surface/30 backdrop-blur-md"
           >
             <h3 className="text-2xl font-black font-display mb-8 uppercase tracking-widest flex items-center gap-2 text-white">
               <Sparkles size={24} className="text-primary" /> {t('support.reasons.title')}
@@ -296,7 +296,7 @@ const SupportArtistPage: React.FC = () => {
             initial={{ opacity: 0, x: 20 }} 
             whileInView={{ opacity: 1, x: 0 }} 
             viewport={{ once: true }} 
-            className="card p-8 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 flex flex-col justify-center text-center"
+            className="card p-5 sm:p-8 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 flex flex-col justify-center text-center"
           >
             <Banknote className="mx-auto mb-6 text-primary" size={56} />
             <h3 className="text-3xl font-black font-display mb-6 uppercase tracking-tighter text-white">{t('support.business.title')}</h3>

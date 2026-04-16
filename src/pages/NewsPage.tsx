@@ -107,7 +107,7 @@ const NewsPage: React.FC = () => {
                   <span>•</span>
                   <span>{t('news.by')} {singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')}</span>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black font-display leading-tight mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost?.title?.rendered ?? '') }} />
+                <h1 className="text-2xl sm:text-4xl md:text-6xl font-black font-display leading-tight mb-6 sm:mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost?.title?.rendered ?? '') }} />
 
                 {postImage !== '#' && (
                   <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
@@ -162,7 +162,7 @@ const NewsPage: React.FC = () => {
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                 {t('news.live_feed')}
               </motion.div>
-              <h1 className="text-5xl md:text-7xl font-black font-display tracking-tight text-white leading-none">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display tracking-tight text-white leading-none">
                 <Trans i18nKey="news.title">
                   Latest <span className="text-primary">Stories</span>
                 </Trans>
@@ -200,7 +200,7 @@ const NewsPage: React.FC = () => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
 
-                      <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full md:w-3/4 text-left">
+                      <div className="absolute bottom-0 left-0 p-4 sm:p-8 md:p-16 w-full md:w-3/4 text-left">
                         <div className="flex items-center gap-4 text-primary font-bold mb-4">
                           <span className="bg-primary/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md border border-primary/30">
                             {t('news.featured')}
@@ -210,7 +210,7 @@ const NewsPage: React.FC = () => {
                           </span>
                         </div>
                         <h2
-                        className="text-4xl md:text-6xl font-black font-display leading-tight mb-6 group-hover:text-primary transition-colors text-white"
+                        className="text-2xl sm:text-4xl md:text-6xl font-black font-display leading-tight mb-4 sm:mb-6 group-hover:text-primary transition-colors text-white"
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(featuredPost?.title?.rendered || '') }}
                       />
                       <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
@@ -228,7 +228,7 @@ const NewsPage: React.FC = () => {
                 </motion.article>
               )}
 
-              <h2 className="text-4xl md:text-5xl font-display font-black text-center mb-16 text-white uppercase tracking-tight">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-display font-black text-center mb-10 sm:mb-16 text-white uppercase tracking-tight">
                 <Trans i18nKey="news.latest_stories_title">
                   Trending <span className="text-primary">News</span>
                 </Trans>

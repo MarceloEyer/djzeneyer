@@ -44,7 +44,7 @@ const MediaPage: React.FC = () => {
         image="/images/zen-eyer-og-image.png"
       />
 
-      <div className="min-h-screen pt-40 pb-24 bg-background relative overflow-hidden">
+      <div className="min-h-screen pt-24 sm:pt-40 pb-16 sm:pb-24 bg-background relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
@@ -53,12 +53,12 @@ const MediaPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-20"
+            className="text-center mb-10 sm:mb-20"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
               <Newspaper size={16} /> {t('media_page.verified_profiles')}
             </div>
-            <h1 className="text-5xl md:text-7xl font-black font-display mb-8 text-white tracking-tighter uppercase leading-[0.9]">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-white tracking-tighter uppercase leading-[0.9]">
               Press & Media
             </h1>
             <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
@@ -66,7 +66,7 @@ const MediaPage: React.FC = () => {
             </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-3 gap-12">
+          <div className="grid lg:grid-cols-3 gap-8 sm:gap-12">
             {/* Main Content: Clipping List */}
             <div className="lg:col-span-2 space-y-8">
               <h2 className="text-3xl font-black font-display text-white uppercase tracking-widest mb-8 border-l-4 border-primary pl-6">
