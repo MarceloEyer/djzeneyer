@@ -225,7 +225,7 @@ const HomePage: React.FC = () => {
 
           <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full text-white text-sm font-medium backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-bold tracking-widest uppercase">
                 <Trophy size={16} />
                 <span className="font-semibold">{t('home.hero_badge')}</span>
               </div>
