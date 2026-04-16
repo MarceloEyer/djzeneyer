@@ -200,7 +200,7 @@ const PressKitPage: React.FC = () => {
       />
 
       <div className="min-h-screen bg-[#0a0a0a] text-white">
-        <section className="pt-32 pb-14">
+        <section className="pt-24 sm:pt-32 pb-10 sm:pb-14">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -211,7 +211,7 @@ const PressKitPage: React.FC = () => {
               <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-xs font-bold uppercase tracking-[0.28em] text-primary">
                 {t('presskit.tag')}
               </div>
-              <h1 className="mt-6 text-4xl font-black uppercase tracking-tight text-white md:text-6xl">
+              <h1 className="mt-6 text-2xl sm:text-4xl font-black uppercase tracking-tight text-white md:text-6xl">
                 {t('presskit.title_prefix')} <span className="text-primary">{t('presskit.title_suffix')}</span>
               </h1>
               <p className="mt-5 text-lg text-white/70 md:text-xl">{t('presskit.role')}</p>
@@ -235,7 +235,7 @@ const PressKitPage: React.FC = () => {
           </motion.div>
         </div>
 
-        <section className="py-32">
+        <section className="py-16 sm:py-32">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0 }}
@@ -244,7 +244,7 @@ const PressKitPage: React.FC = () => {
               transition={{ duration: 1 }}
               className="mx-auto max-w-6xl"
             >
-              <div className="grid items-center gap-20 lg:grid-cols-2">
+              <div className="grid items-center gap-10 sm:gap-20 lg:grid-cols-2">
                 <div className="relative">
                   <motion.div
                     className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl"
@@ -264,7 +264,7 @@ const PressKitPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <h2 className="mb-8 flex items-center gap-4 text-5xl font-black">
+                  <h2 className="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4 text-3xl sm:text-5xl font-black">
                     <Music2 className="text-primary" size={48} />
                     {t('presskit.bio.title')}
                   </h2>
@@ -292,11 +292,11 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-[#0d0d0d] py-32">
+        <section className="bg-[#0d0d0d] py-16 sm:py-32">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 px-4 text-center">
-                <h2 className="mb-6 text-5xl font-black uppercase tracking-tighter">
+                <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
                   Line-ups <span className="text-primary">Internacionais</span>
                 </h2>
                 <p className="mx-auto max-w-2xl text-xl text-white/50">
@@ -329,11 +329,11 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        <section id="media-kit" className="py-32">
+        <section id="media-kit" className="py-16 sm:py-32">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 text-center">
-                <h2 className="mb-6 text-5xl font-black">{t('presskit.media.title')}</h2>
+                <h2 className="mb-6 text-3xl sm:text-5xl font-black">{t('presskit.media.title')}</h2>
                 <p className="mx-auto max-w-2xl text-xl text-white/50">{t('presskit.media.subtitle')}</p>
               </div>
 
@@ -346,11 +346,11 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="py-32">
+        <section className="py-16 sm:py-32">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
-              <div className="mb-16 text-center">
-                <h2 className="mb-6 text-5xl font-black uppercase tracking-tighter">
+              <div className="mb-10 sm:mb-16 text-center">
+                <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
                   Galeria de <span className="text-primary">Imprensa</span>
                 </h2>
                 <p className="text-xl text-white/50">{t('presskit.gallery.subtitle')}</p>
@@ -395,7 +395,7 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="py-32">
+        <section className="py-16 sm:py-32">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -403,9 +403,9 @@ const PressKitPage: React.FC = () => {
               viewport={{ once: true }}
               className="mx-auto max-w-4xl text-center"
             >
-              <div className="rounded-[3rem] border border-white/10 bg-gradient-to-br from-primary/10 via-surface/50 to-accent/10 p-16 shadow-3xl">
-                <h2 className="mb-8 text-5xl font-black uppercase tracking-tighter md:text-6xl">{t('presskit.contact.title')}</h2>
-                <p className="mx-auto mb-12 max-w-2xl text-xl leading-relaxed text-white/60">{t('presskit.contact.subtitle')}</p>
+              <div className="rounded-[2rem] sm:rounded-[3rem] border border-white/10 bg-gradient-to-br from-primary/10 via-surface/50 to-accent/10 p-6 sm:p-16 shadow-3xl">
+                <h2 className="mb-6 sm:mb-8 text-3xl sm:text-5xl font-black uppercase tracking-tighter md:text-6xl">{t('presskit.contact.title')}</h2>
+                <p className="mx-auto mb-8 sm:mb-12 max-w-2xl text-base sm:text-xl leading-relaxed text-white/60">{t('presskit.contact.subtitle')}</p>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg flex items-center justify-center gap-3">
@@ -419,7 +419,7 @@ const PressKitPage: React.FC = () => {
                   </a>
                 </div>
 
-                <div className="mt-16 border-t border-white/10 pt-10">
+                <div className="mt-8 sm:mt-16 border-t border-white/10 pt-6 sm:pt-10">
                   <div className="mb-12 grid gap-10 text-left md:grid-cols-3">
                     <div className="flex items-start gap-4">
                       <div className="rounded-lg bg-primary/20 p-2">

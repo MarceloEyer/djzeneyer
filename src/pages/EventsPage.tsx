@@ -106,13 +106,13 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         </div>
 
         {/* Content */}
-        <div className="lg:col-span-7 bg-surface/30 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden">
+        <div className="lg:col-span-7 bg-surface/30 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-5 sm:p-8 md:p-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 text-white/5 pointer-events-none">
             <Music size={120} className="rotate-12" />
           </div>
 
           <div className="relative z-10">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-8 leading-[0.9] tracking-tighter uppercase whitespace-pre-line" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-[0.9] tracking-tighter uppercase whitespace-pre-line" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
 
             <div className="flex items-center gap-4 text-white/80 mb-4">
               <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">

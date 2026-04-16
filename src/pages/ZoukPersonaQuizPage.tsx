@@ -232,7 +232,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-gray-800/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/10"
+                className="bg-gray-800/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-2xl border border-white/10"
               >
                 <div className="flex justify-between items-center mb-6 text-sm text-gray-400 font-mono">
                   <span>{t('quiz.ui.question_count', { current: currentQuestion + 1, total: QUESTIONS.length })}</span>
@@ -275,7 +275,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className={`bg-gradient-to-br ${result.color} p-1 rounded-2xl shadow-2xl`}
               >
-                <div className="bg-gray-900 rounded-xl p-8 md:p-12 text-center h-full">
+                <div className="bg-gray-900 rounded-xl p-5 sm:p-8 md:p-12 text-center h-full">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1, rotate: 360 }}
@@ -286,7 +286,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                   </motion.div>
 
                   <h3 className="text-white/60 uppercase tracking-widest text-sm font-bold mb-2">{t('quiz.ui.you_are')}</h3>
-                  <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-white">
+                  <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-2 text-white">
                     {t(`quiz.personas.${result.id}.title`)}
                   </h1>
                   <p className="text-xl text-primary font-medium mb-6">{t(`quiz.personas.${result.id}.subtitle`)}</p>

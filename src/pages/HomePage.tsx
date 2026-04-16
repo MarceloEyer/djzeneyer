@@ -80,7 +80,7 @@ const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
 ));
 
 const FeatureCard = React.memo(({ icon, title, description, variants }: FeatureCardProps) => (
-  <motion.article className="card p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
+  <motion.article className="card p-5 sm:p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-white/70">{description}</p>
@@ -219,7 +219,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
             {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
               <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
             </h1>
 
@@ -231,7 +231,7 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-xl md:text-2xl text-white mb-2 font-light">
+            <motion.p variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-white mb-2 font-light">
               {t('home.hero_subtitle')}
             </motion.p>
 
@@ -243,12 +243,12 @@ const HomePage: React.FC = () => {
               {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as unknown as Parameters<typeof t>[0])} icon={stat.icon} />)}
             </motion.div>
 
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap gap-4 justify-center mb-6">
+            <motion.div variants={ITEM_VARIANTS} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center mb-6">
               <a
                 href={ARTIST.social.soundcloud.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-primary btn-lg flex items-center gap-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
+                className="btn btn-primary btn-lg flex items-center gap-2 min-h-[44px] shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
                 aria-label="Listen to DJ Zen Eyer on SoundCloud"
               >
                 <PlayCircle size={22} />
@@ -256,7 +256,7 @@ const HomePage: React.FC = () => {
               </a>
               <Link
                 to={getLocalizedRoute('booking', currentLang)}
-                className="btn btn-outline btn-lg flex items-center gap-2 backdrop-blur-sm"
+                className="btn btn-outline btn-lg flex items-center gap-2 min-h-[44px] backdrop-blur-sm"
                 aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
                 <Mail size={22} />
@@ -361,7 +361,7 @@ const HomePage: React.FC = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-4 sm:p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
@@ -370,7 +370,7 @@ const HomePage: React.FC = () => {
                 {t('home.press.cta')} →
               </Link>
             </motion.div>
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-4 sm:p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
               <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
@@ -402,7 +402,7 @@ const HomePage: React.FC = () => {
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
 
         <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
-          <motion.h2 variants={ITEM_VARIANTS} className="text-4xl md:text-6xl font-bold mb-6 font-display">
+          <motion.h2 variants={ITEM_VARIANTS} className="text-2xl sm:text-4xl md:text-6xl font-bold mb-6 font-display">
             <Trans i18nKey="home.tribe.title">
               Junte-se à <span className="text-primary">Zen Tribe</span>
             </Trans>

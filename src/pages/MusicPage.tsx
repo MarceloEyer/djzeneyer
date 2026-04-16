@@ -122,7 +122,7 @@ const MusicPage: React.FC = () => {
               animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
               className="mb-6"
             >
-              <h1 className="text-5xl md:text-8xl font-black font-display tracking-tighter uppercase">
+              <h1 className="text-3xl sm:text-5xl md:text-8xl font-black font-display tracking-tighter uppercase">
                 <Trans i18nKey="music.hub_title_rich">
                   <span className="text-primary">Streaming</span> Hub
                 </Trans>
@@ -147,7 +147,7 @@ const MusicPage: React.FC = () => {
               href={safeUrl(SPOTIFY_PLATFORM.url)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
+              className="flex items-center justify-between p-5 sm:p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="flex items-center gap-6 relative z-10">
@@ -155,7 +155,7 @@ const MusicPage: React.FC = () => {
                   <SpotifyIcon />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
+                  <span className="text-xl sm:text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
                     {SPOTIFY_PLATFORM.name}
                   </span>
                   <span className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-white mt-1 opacity-90 transition-opacity group-hover:opacity-100">
@@ -198,7 +198,7 @@ const MusicPage: React.FC = () => {
               variants={CARD_VARIANTS(0.7)}
               initial={prefersReducedMotion ? false : 'hidden'}
               animate={prefersReducedMotion ? undefined : 'visible'}
-              className="bg-red-500/5 border border-red-500/10 rounded-3xl p-8 relative overflow-hidden group"
+              className="bg-red-500/5 border border-red-500/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <Download size={160} />
@@ -222,7 +222,7 @@ const MusicPage: React.FC = () => {
               variants={CARD_VARIANTS(0.8)}
               initial={prefersReducedMotion ? false : 'hidden'}
               animate={prefersReducedMotion ? undefined : 'visible'}
-              className="bg-primary/5 border border-primary/10 rounded-3xl p-8 relative overflow-hidden group"
+              className="bg-primary/5 border border-primary/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <Coffee size={160} />

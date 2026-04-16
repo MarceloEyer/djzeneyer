@@ -405,7 +405,7 @@ const ZenTribePage: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-4xl font-bold mb-6 font-display">
+                <h2 className="text-2xl sm:text-4xl font-bold mb-6 font-display">
                   {t('zenTribe.levelUpTitle')}
                 </h2>
                 <p className="text-lg text-white/70 mb-8">
@@ -445,7 +445,7 @@ const ZenTribePage: React.FC = () => {
               </motion.div>
 
               <motion.div
-                className="lg:w-1/2 bg-surface rounded-xl p-8"
+                className="lg:w-1/2 w-full bg-surface rounded-xl p-5 sm:p-8"
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}

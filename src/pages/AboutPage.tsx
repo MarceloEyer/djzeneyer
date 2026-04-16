@@ -210,13 +210,13 @@ const AboutPage: React.FC = () => {
                   {t('about.hero.badge')}
                 </div>
               </motion.div>
-              <h1 className="text-5xl md:text-7xl font-black font-display mb-6 text-white leading-tight">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 text-white leading-tight">
                 <Trans i18nKey="about.hero.title">
                   {/* Fallback text if translation fails */}
                   The <span className="text-primary">Journey</span>
                 </Trans>
               </h1>
-              <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
                 {t('about.hero.subtitle')}
               </p>
             </motion.div>
@@ -277,7 +277,7 @@ const AboutPage: React.FC = () => {
               initial={ITEM_INITIAL}
               whileInView={ITEM_ANIMATE}
               viewport={VIEWPORT_ONCE}
-              className="text-4xl md:text-5xl font-display font-bold text-center mb-16"
+              className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-center mb-16"
             >
               <Trans i18nKey="about.timeline.title">
                 Moments that <span className="text-primary">Changed Everything</span>
@@ -295,7 +295,7 @@ const AboutPage: React.FC = () => {
                   className="relative"
                 >
                   <div className="card p-6 md:p-8 hover:border-primary/50 transition-all duration-300">
-                    <div className="flex items-start gap-6">
+                    <div className="flex items-start gap-4 sm:gap-6">
                       <div
                         className={`flex-shrink-0 w-16 h-16 rounded-full ${milestone.color} flex items-center justify-center`}
                       >
@@ -351,7 +351,7 @@ const AboutPage: React.FC = () => {
               whileInView={ITEM_ANIMATE}
               viewport={VIEWPORT_ONCE}
               transition={FADE_IN_UP_TRANSITION}
-              className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-10 md:p-12 border border-primary/30 text-center"
+              className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-6 sm:p-10 md:p-12 border border-primary/30 text-center"
             >
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
@@ -359,14 +359,14 @@ const AboutPage: React.FC = () => {
                   Let's <span className="text-primary">Talk?</span>
                 </Trans>
               </h2>
-              <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+              <p className="text-base sm:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
                 {t('about.cta.desc')}
               </p>
               <motion.a
                 href={getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('about.cta.whatsapp_msg'))}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-primary btn-lg inline-flex items-center gap-3"
+                className="btn btn-primary btn-lg inline-flex items-center gap-3 min-h-[44px]"
                 whileHover={CTA_HOVER}
                 whileTap={CTA_TAP}
               >
