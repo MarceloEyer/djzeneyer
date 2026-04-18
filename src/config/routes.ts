@@ -482,16 +482,12 @@ export const getRoutesForLanguage = (lang: Language) => {
 };
 
 /**
- * Encontra a rota correspondente a um caminho
+ * Encontra a rota correspondente a um caminho.
+ * Usa findKeyByPath + KEY_ROUTE_MAP para lookup O(1)/O(K) em vez de O(N*M).
  */
-export const findRouteByPath = (path: string, lang: Language): RouteConfig | undefined => {
-  return ROUTES_CONFIG.find(route => {
-    const paths = getLocalizedPaths(route, lang);
-    return paths.some(p => {
-      const fullPath = buildFullPath(p, lang);
-      return path === fullPath || path.startsWith(fullPath + '/');
-    });
-  });
+export const findRouteByPath = (path: string): RouteConfig | undefined => {
+  const key = findKeyByPath(path);
+  return key ? KEY_ROUTE_MAP.get(key) : undefined;
 };
 
 /**
