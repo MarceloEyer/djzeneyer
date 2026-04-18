@@ -81,3 +81,7 @@
 
 **Learning:** Replacing declarative array operations (like chained `.reduce()`, `.map()`, `.filter()`) with a single imperative `for` loop on tiny arrays (e.g., rendering small lists of requirements or quests) is an unmeasurable micro-optimization that needlessly sacrifices code readability.
 **Action:** Only apply this O(N) single-pass consolidation pattern to demonstrably large datasets where the bottleneck can be measured.
+
+## 2026-04-14 - [Optimization] Eliminado N+1 Query em get_user_events_attended
+**Learning:** O uso de `wc_get_order` e `wp_get_post_terms` dentro de loops aninhados causava um gargalo significativo (N+1), especialmente para usuários com muitos pedidos e itens.
+**Action:** Substituí os loops por uma única consulta SQL otimizada usando `$wpdb`. A consulta utiliza `JOIN` entre as tabelas de itens de pedido e metadados do WooCommerce, além de um subquery `EXISTS` para filtrar por categorias de produtos, garantindo performance e evitando contagem duplicada.

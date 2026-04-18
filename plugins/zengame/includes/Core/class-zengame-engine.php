@@ -110,17 +110,32 @@ final class Engine
             'return'      => 'ids',
         ]);
 
-        $total = 0;
-        foreach ($order_ids as $order_id) {
-            $order = \wc_get_order($order_id);
-            if (!$order) continue;
-            foreach ($order->get_items() as $item) {
-                $product_id = $item->get_product_id();
-                $terms = \wp_get_post_terms($product_id, 'product_cat', ['fields' => 'slugs']);
-                if (!\is_wp_error($terms) && !empty(\array_intersect($terms, $target_slugs))) {
-                    $total += (int) $item->get_quantity();
-                }
-            }
+        if (empty($order_ids) || empty($target_slugs)) {
+            $total = 0;
+        } else {
+            global $wpdb;
+            $order_ids_sql = \implode(',', \array_map('intval', $order_ids));
+            $placeholders  = \implode(',', \array_fill(0, \count($target_slugs), '%s'));
+
+            $total = (int) $wpdb->get_var($wpdb->prepare(
+                "SELECT SUM(CAST(im_qty.meta_value AS UNSIGNED))
+                FROM {$wpdb->prefix}woocommerce_order_items AS items
+                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS im_product ON items.order_item_id = im_product.order_item_id
+                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS im_qty ON items.order_item_id = im_qty.order_item_id
+                WHERE items.order_id IN ($order_ids_sql)
+                AND items.order_item_type = 'line_item'
+                AND im_product.meta_key = '_product_id'
+                AND im_qty.meta_key = '_qty'
+                AND EXISTS (
+                    SELECT 1 FROM {$wpdb->prefix}term_relationships tr
+                    JOIN {$wpdb->prefix}term_taxonomy tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                    JOIN {$wpdb->prefix}terms t ON tt.term_id = t.term_id
+                    WHERE tr.object_id = CAST(im_product.meta_value AS UNSIGNED)
+                    AND tt.taxonomy = 'product_cat'
+                    AND t.slug IN ($placeholders)
+                )",
+                $target_slugs
+            ));
         }
 
         \set_transient($cache_key, $total, self::STATS_CACHE_TTL);
