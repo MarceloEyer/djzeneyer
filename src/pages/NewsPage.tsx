@@ -39,6 +39,12 @@ const formatDate = (dateString: string, lang: string = 'pt-BR') => {
 
 // ============================================================================
 
+// ─── Framer Motion — module-level constants ───────────────────────────────────
+const LIVE_FEED_INITIAL = { opacity: 0, x: -20 };
+const LIVE_FEED_ANIMATE = { opacity: 1, x: 0 };
+const ARTICLE_INITIAL = { opacity: 0, y: 20 };
+const ARTICLE_ANIMATE = { opacity: 1, y: 0 };
+
 // ============================================================================
 // COMPONENT
 // ============================================================================
@@ -155,8 +161,8 @@ const NewsPage: React.FC = () => {
           <header className="mb-16 border-b border-white/10 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={LIVE_FEED_INITIAL}
+                animate={LIVE_FEED_ANIMATE}
                 className="flex items-center gap-2 text-primary font-bold tracking-widest text-xs uppercase mb-2"
               >
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
@@ -237,8 +243,8 @@ const NewsPage: React.FC = () => {
                 {secondaryPosts.map((post, index) => (
                   <motion.article
                     key={post.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={ARTICLE_INITIAL}
+                    whileInView={ARTICLE_ANIMATE}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
                     className="group flex flex-col h-full bg-surface/30 rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 hover:bg-surface/50 transition-all duration-300 text-left"
