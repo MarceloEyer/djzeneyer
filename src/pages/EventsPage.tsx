@@ -181,9 +181,9 @@ const EventListContent = ({ lang }: { lang: string }) => {
   const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
     const groups: Record<string, ZenBitEventListItem[]> = {};
     filteredEvents.forEach((e: ZenBitEventListItem) => {
-      const date = new Date(e.starts_at);
-      if (isNaN(date.getTime())) return;
-      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      if (!e.starts_at || e.starts_at.length < 7) return;
+      // ⚡ Bolt: Replaced expensive `new Date()` allocation with O(1) string slice for ISO 8601 strings
+      const key = e.starts_at.substring(0, 7);
       if (!groups[key]) groups[key] = [];
       groups[key].push(e);
     });
@@ -256,7 +256,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
               </h2>
               <div className="space-y-3">
                 {monthEvents.map((e) => {
-                  const eventDay = new Date(e.starts_at);
+                  // ⚡ Bolt: Prevented Date instantiation inside rendering loop, utilizing O(1) string slice
+                  const dayStr = e.starts_at && e.starts_at.length >= 10 ? e.starts_at.substring(8, 10) : '??';
                   const identifier = e.canonical_path
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
@@ -266,7 +267,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
                   return (
                     <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
-                      <div className="text-3xl font-black min-w-[50px]">{String(eventDay.getDate()).padStart(2, '0')}</div>
+                      <div className="text-3xl font-black min-w-[50px]">{dayStr}</div>
                       <div className="flex-1">
                         <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${loc.country})` : ''}</div>
                         <Link to={detailHref}>
