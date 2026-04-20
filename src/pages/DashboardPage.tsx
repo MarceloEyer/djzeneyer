@@ -14,6 +14,7 @@ import { useLeaderboardQuery } from '../hooks/useQueries';
 import { safeUrl } from '../utils/sanitize';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { CURRENT_YEAR } from '../data/artistData';
+import { getNumberFormatter } from '../utils/number';
 
 // ============================================================================
 // 1. SUB-COMPONENTS (PREMIUM VISUALS)
@@ -268,7 +269,7 @@ const DashboardContent = () => {
                 />
              </div>
              <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1">
-                {rankExpCurrent.toLocaleString()} / {rankExpRequired.toLocaleString()} XP
+                {getNumberFormatter(i18n.language || 'en').format(rankExpCurrent)} / {getNumberFormatter(i18n.language || 'en').format(rankExpRequired)} XP
              </p>
           </div>
         </div>
@@ -286,7 +287,7 @@ const DashboardContent = () => {
                 {[
                   { label: t('dashboard.dayStreak'), value: `${streakCount}`, icon: Flame, color: 'text-orange-500', fill: 'fill-orange-500' },
                   { label: t('dashboard.stats.artifacts'), value: String(artifactCount), icon: Music, color: 'text-secondary' },
-                  { label: t('dashboard.stats.mana'), value: mainPoints.toLocaleString(), icon: Zap, color: 'text-primary', fill: 'fill-primary' }
+                  { label: t('dashboard.stats.mana'), value: getNumberFormatter(i18n.language || 'en').format(mainPoints), icon: Zap, color: 'text-primary', fill: 'fill-primary' }
                 ].map((stat, i) => (
                   <div key={i} className="flex items-center justify-between group cursor-default">
                     <div className="flex items-center gap-3">
@@ -430,7 +431,7 @@ const DashboardContent = () => {
                         />
                         <span className="flex-1 text-sm font-bold truncate min-w-0">{entry.display_name}</span>
                         <div className="flex items-center gap-1 shrink-0">
-                          <span className="text-xs font-black font-display text-primary">{entry.points.toLocaleString()}</span>
+                          <span className="text-xs font-black font-display text-primary">{getNumberFormatter(i18n.language || 'en').format(entry.points)}</span>
                           <span className="text-[10px] font-bold text-white/20 uppercase">XP</span>
                         </div>
                       </div>

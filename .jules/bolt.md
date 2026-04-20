@@ -94,3 +94,7 @@
 
 **Learning:** Instantiating `new Date()` inside loops (like `forEach` or `map`) and `useMemo` hooks for parsing ISO 8601 date strings to extract parts (e.g., year, month, day) adds massive memory allocation overhead and CPU time compared to O(1) string slicing operations. In a benchmark of 10,000 items, `new Date()` took ~112ms versus ~4ms for `substring()`.
 **Action:** Always prefer string slicing (`substring(0, 7)`) when grouping or extracting static parts from guaranteed format date strings like ISO 8601 within large datasets, `useMemo` iterations, and component render cycles.
+## 2026-06-25 - Avoid toLocaleString in loops and render bodies
+
+**Learning:** Instantiating `Intl.NumberFormat` internally on every call to `Number.prototype.toLocaleString()` inside React render bodies or array `.map()` iterations causes significant CPU overhead and memory allocation (e.g., ~5x slower than a cached formatter).
+**Action:** Always extract `Intl.NumberFormat` into a module-level `Map` cache (e.g., `getNumberFormatter` in `src/utils/number.ts`) and reuse the cached formatter instances for formatting numbers across the application.
