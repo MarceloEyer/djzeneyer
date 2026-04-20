@@ -10,6 +10,7 @@ import React, { memo } from 'react';
 import { TrendingUp, Star, Award, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { getNumberFormatter } from '../../utils/number';
 
 interface UserStats {
   level: number;
@@ -29,7 +30,7 @@ const cardVariants = {
 };
 
 export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -72,7 +73,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
         </div>
         <div>
           <p className="text-4xl font-black text-white font-display tracking-tighter mb-1">
-            {stats.xp.toLocaleString()} <span className="text-lg text-secondary/70">XP</span>
+            {getNumberFormatter(i18n.language).format(stats.xp)} <span className="text-lg text-secondary/70">XP</span>
           </p>
           <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest leading-none">
             {stats.xpToNext > 0
