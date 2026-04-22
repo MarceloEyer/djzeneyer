@@ -301,7 +301,7 @@ jobs:
       # --- DEPLOY STEPS (IGUAL AO ORIGINAL v4.1) ---
       
       - name: 🚀 Deploy dist/
-        uses: burnett01/rsync-deployments@8.0.4
+        uses: burnett01/rsync-deployments@8.0.5
         with:
           switches: -avzr --delete --checksum
           path: dist/
@@ -314,7 +314,7 @@ jobs:
       # ESTE PASSO É O SEGREDO QUE ESTAVA FALTANDO! 👇
       - name: 📚 Deploy inc/
         if: hashFiles('inc/**') != ''
-        uses: burnett01/rsync-deployments@8.0.4
+        uses: burnett01/rsync-deployments@8.0.5
         with:
           switches: -avzr --delete --checksum
           path: inc/
@@ -327,7 +327,7 @@ jobs:
       # ADICIONADO PARA GARANTIR TEMAS MODERNOS
       - name: 📚 Deploy parts/
         if: hashFiles('parts/**') != ''
-        uses: burnett01/rsync-deployments@8.0.4
+        uses: burnett01/rsync-deployments@8.0.5
         with:
           switches: -avzr --delete --checksum
           path: parts/
@@ -339,7 +339,7 @@ jobs:
           
       - name: 📚 Deploy templates/
         if: hashFiles('templates/**') != ''
-        uses: burnett01/rsync-deployments@8.0.4
+        uses: burnett01/rsync-deployments@8.0.5
         with:
           switches: -avzr --delete --checksum
           path: templates/
@@ -392,7 +392,7 @@ jobs:
 
       - name: 🔌 Deploy plugins
         if: ${{ !inputs.skip_build && needs.build.outputs.plugins_changed == 'true' }}
-        uses: burnett01/rsync-deployments@8.0.4
+        uses: burnett01/rsync-deployments@8.0.5
         with:
           switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
           path: plugins/
@@ -428,7 +428,7 @@ jobs:
 
       - name: 📄 Deploy public assets
         if: hashFiles('public/**') != ''
-        uses: burnett01/rsync-deployments@8.0.4
+        uses: burnett01/rsync-deployments@8.0.5
         with:
           switches: -avz --ignore-missing-args
           path: temp_public/
