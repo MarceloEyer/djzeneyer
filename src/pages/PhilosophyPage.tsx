@@ -19,7 +19,7 @@ const PhilosophyPage: React.FC = () => {
         '@id': `${pageUrl}#article`,
         url: pageUrl,
         headline: t('philosophy.page_title'),
-        description: t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName }),
+        description: t('philosophy.cremosidade_desc'),
         author: {
           '@type': 'Person',
           '@id': `${ARTIST.site.baseUrl}/#artist`,
@@ -31,8 +31,7 @@ const PhilosophyPage: React.FC = () => {
           name: ARTIST.identity.stageName,
         },
         about: [
-          // TODO: move description to i18n key 'philosophy.cremosidade_desc' for full bilingual JSON-LD
-          { '@type': 'Thing', name: 'Cremosidade', description: t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName }) },
+          { '@type': 'Thing', name: 'Cremosidade', description: t('philosophy.cremosidade_desc') },
           { '@type': 'MusicGenre', name: 'Brazilian Zouk' },
         ],
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
@@ -51,10 +50,10 @@ const PhilosophyPage: React.FC = () => {
     <>
       <HeadlessSEO
         title={`${t('philosophy.page_title')} | ${ARTIST.identity.stageName}`}
-        description={t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
+        description={t('philosophy.cremosidade_desc')}
         url={pageUrl}
         schema={philosophySchema}
-        leadAnswer={t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
+        leadAnswer={t('philosophy.cremosidade_desc')}
       />
 
       <div className="min-h-screen pt-24 pb-16 px-4 bg-background text-white">
