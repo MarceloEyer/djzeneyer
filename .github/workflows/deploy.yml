@@ -123,11 +123,15 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
-      # ⭐ ADIÇÃO: PRERENDER (Obrigatório para evitar tela branca)
+      # ⭐ PRERENDER (Obrigatório para evitar tela branca)
+      # Nota: .puppeteerrc.cjs define skipDownload:true globalmente para que
+      # `npm ci` seja leve em todos os ambientes (Bolt.new, local, CI).
+      # O Chrome é instalado aqui, explicitamente, só onde é necessário.
       - name: 🎨 Prerender pages (SSG)
         run: |
+          echo "🌐 Installing Chrome for Puppeteer..."
+          npx puppeteer browsers install chrome
           echo "🎨 Starting prerender..."
-          if ! npm list puppeteer >/dev/null 2>&1; then npm install puppeteer; fi
           node scripts/prerender.js
           if [ ! -f "dist/index.html" ]; then echo "❌ Prerender failed"; exit 1; fi
           echo "✅ Prerender OK"

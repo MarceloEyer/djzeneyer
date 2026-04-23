@@ -15,5 +15,8 @@
     "provider": "github-actions",
     "autoDeployOnPush": true,
     "target": "production"
+  },
+  "scripts": {
+    "start": "npm run dev"
   }
 }

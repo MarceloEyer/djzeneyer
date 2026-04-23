@@ -135,6 +135,7 @@ git push origin main → CI builda (tsc + vite + prerender) → rsync para Hosti
 - O build roda no GitHub Actions, **sem acesso à API de produção**.
 - Assets de `public/images/` são deployados para webroot.
 - Após deploy: OPcache + LiteSpeed + transients ZenGame são limpos.
+- **Puppeteer/Chromium** — `.puppeteerrc.cjs` tem `skipDownload: true`. O `npm install`/`npm ci` NÃO baixa Chromium. O Chrome é instalado explicitamente no CI (`npx puppeteer browsers install chrome`) só no passo de prerender. Em Bolt.new e local, o prerender não é executado — isso é normal e esperado.
 
 ---
 
