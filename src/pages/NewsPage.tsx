@@ -42,11 +42,16 @@ const formatDate = (dateString: string, lang: string = 'pt-BR') => {
 // ============================================================================
 // COMPONENT
 // ============================================================================
+
 const NewsPage: React.FC = () => {
   const params = useParams();
   const slug = params.slug;
   const { i18n, t } = useTranslation();
   const normalizedLanguage = normalizeLanguage(i18n.language);
+
+  // ⚡ Bolt: Extract static date evaluation into a ref-like variable or state initialized once on mount
+  // to avoid React purity warnings about Date.now() inside render loops, and to avoid conditional hook calls.
+  const [currentDateMs] = React.useState(() => Date.now());
 
   // Queries centralizadas
   const { data: postsData, isLoading: loadingList } = useNewsQuery(normalizedLanguage, { enabled: !slug });
@@ -171,7 +176,8 @@ const NewsPage: React.FC = () => {
             <div className="text-right text-white/50 text-sm hidden md:block">
               <p>{t('news.curatorship')}</p>
               <p>{t('news.zouk_production')}</p>
-              <p>{getDateTimeFormatter(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</p>
+              {/* ⚡ Bolt: Using state initialized once on mount to prevent repeated allocations and avoid stale dates in long-lived SPAs */}
+              <p>{getDateTimeFormatter(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' }).format(currentDateMs)}</p>
             </div>
           </header>
 

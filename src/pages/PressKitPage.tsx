@@ -315,7 +315,8 @@ const PressKitPage: React.FC = () => {
                     <div className="flex-1 text-left">
                       <div className="text-lg font-bold leading-tight text-white">{festival.name}</div>
                       <div className="mt-1 text-sm uppercase tracking-widest text-white/40">
-                        {festival.country} • {new Date(festival.date).getFullYear()}
+                        {/* ⚡ Bolt: Using O(1) string slice instead of O(N) new Date() object allocation in array map */}
+                        {festival.country} • {festival.date.substring(0, 4)}
                       </div>
                     </div>
                   </motion.div>
