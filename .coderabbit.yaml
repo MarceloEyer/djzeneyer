@@ -1,6 +1,6 @@
 # .coderabbit.yaml — DJ Zen Eyer
 # Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + WordPress Headless PHP 8.3
-# Atualizado: 2026-03-27
+# Atualizado: 2026-04-24
 
 language: "pt-BR"
 
@@ -11,9 +11,18 @@ tone_instructions: |
 
 reviews:
   profile: "assertive"
+  request_changes_workflow: true
   auto_review:
     enabled: true
+    # PRs gerados por bots de segurança/dependência são revisados pelo Codex.
+    # CodeRabbit foca em PRs de código humano para evitar ruído.
+    ignore_title_keywords:
+      - "[Snyk]"
+      - "dependabot"
+      - "Dependabot"
+  auto_incremental_review: true
   high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai resumo"
   poem: false
   collapse_walkthrough: true
 
@@ -40,6 +49,9 @@ reviews:
         5. Componentes de classe não podem usar hooks (useTranslation). Usar withTranslation() HOC da react-i18next.
         6. DashboardPage e MyAccountPage devem ter noindex=true no HeadlessSEO. Avatar do usuário nunca pode aparecer em OG tags.
         7. Ícones de marca (Facebook, Instagram, Youtube) não existem no lucide-react 1.x — usar src/components/icons/BrandIcons.tsx.
+        8. Framer Motion: objetos `variants`, `whileHover`, `whileTap` NUNCA inline no corpo do componente — extrair para escopo de módulo com SCREAMING_CASE (ex: `const CARD_VARIANTS = {...}`). Inline cria nova referência a cada render e anula React.memo.
+        9. Aspas tipográficas "…" (U+201C/U+201D) em JSX quebram o parser OXC — usar &ldquo;/&rdquo; ou aspas retas "".
+        10. Intl.DateTimeFormat e Intl.NumberFormat NUNCA em render ou .map() sem cache — usar getDateTimeFormatter() e getNumberFormatter() de src/utils/.
 
     - path: "src/schemas/**/*.ts"
       instructions: |
@@ -100,6 +112,19 @@ reviews:
       instructions: |
         - ignores DEVE incluir .claude, .agents, .bolt, .gemini, .jules, .devcontainer.
           Remover qualquer um desses causa crash por múltiplos tsconfig roots.
+
+    - path: "src/utils/**"
+      instructions: |
+        Utilitários com caching obrigatório:
+        - `getDateTimeFormatter(locale, options)` em src/utils/date.ts — NUNCA instanciar Intl.DateTimeFormat diretamente em render ou .map().
+        - `getNumberFormatter(locale, options?)` em src/utils/number.ts — idem para Intl.NumberFormat.
+        - `safeUrl(url, fallback?)` em src/utils/sanitize.ts — fallback padrão é '#' (truthy), sempre passar '/fallback.svg' quando necessário.
+
+    - path: "scripts/**"
+      instructions: |
+        - scripts/prerender.js NUNCA deve ser removido — é o que evita tela branca em produção.
+        - scripts/routes-config.json é SSOT de rotas (React Router + sitemap + CI). Mudanças aqui refletem em 3 sistemas.
+        - Puppeteer: .puppeteerrc.cjs tem skipDownload:true — Chrome só é instalado no CI via `npx puppeteer browsers install chrome`.
 
 chat:
   auto_reply: true
