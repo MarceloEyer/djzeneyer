@@ -8,6 +8,11 @@ import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { safeUrl } from '../../utils/sanitize';
 
+// ⚡ Bolt: Extract static animation configuration objects to module scope
+// to preserve reference equality and eliminate reallocation overhead during React renders
+const SCALE_HOVER_VARIANT = { scale: 1.05 };
+const ACHIEVEMENT_HOVER_VARIANT = { scale: 1.1, rotate: 5 };
+
 const GamificationWidget: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { points, rank, level, nextLevelPoints, progressToNextLevel, achievements, loading } = useGamiPressContext();
@@ -52,7 +57,7 @@ const GamificationWidget: React.FC = () => {
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Level */}
         <motion.div
-          whileHover={{ scale: 1.05 }}
+          whileHover={SCALE_HOVER_VARIANT}
           className="bg-black/30 rounded-lg p-4 border border-primary/20"
         >
           <div className="flex items-center gap-2 mb-2">
@@ -65,7 +70,7 @@ const GamificationWidget: React.FC = () => {
 
         {/* Points */}
         <motion.div
-          whileHover={{ scale: 1.05 }}
+          whileHover={SCALE_HOVER_VARIANT}
           className="bg-black/30 rounded-lg p-4 border border-secondary/20"
         >
           <div className="flex items-center gap-2 mb-2">
@@ -114,7 +119,7 @@ const GamificationWidget: React.FC = () => {
             {safeAchievements.slice(0, 6).map((achievement, index) => (
               <motion.div
                 key={achievement?.id || index}
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileHover={ACHIEVEMENT_HOVER_VARIANT}
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${achievement?.earned
                   ? 'bg-gradient-to-br from-primary to-secondary'
                   : 'bg-white/5 opacity-40'
