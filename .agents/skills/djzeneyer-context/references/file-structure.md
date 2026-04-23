@@ -1,4 +1,4 @@
-﻿# File Structure â€” DJ Zen Eyer
+# File Structure â€” DJ Zen Eyer
 
 ## ðŸŽ¨ Frontend (React SPA â€” Vite)
 

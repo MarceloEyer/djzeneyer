@@ -1,4 +1,4 @@
-﻿# Instrucoes para GitHub Copilot - DJ Zen Eyer
+# Instrucoes para GitHub Copilot - DJ Zen Eyer
 
 ## Idioma
 Responda em Portugues Brasileiro.

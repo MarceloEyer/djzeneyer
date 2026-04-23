@@ -1,4 +1,4 @@
-﻿# DJ Zen Eyer Press Kit
+# DJ Zen Eyer Press Kit
 > Official EPK for booking, festivals, media coverage, and promoter decks.
 
 ## Profile

@@ -1,4 +1,4 @@
-﻿# SETUP.md - Guia de Instalacao
+# SETUP.md - Guia de Instalacao
 
 ## Pre-requisitos
 - Node.js 20+

@@ -1,4 +1,4 @@
-﻿# ðŸ“– DocumentaÃ§Ã£o â€” DJ Zen Eyer
+# ðŸ“– DocumentaÃ§Ã£o â€” DJ Zen Eyer
 
 DocumentaÃ§Ã£o tÃ©cnica completa do projeto DJ Zen Eyer.
 

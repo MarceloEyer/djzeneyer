@@ -1,4 +1,4 @@
-﻿import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { extname, join, dirname } from 'path';
 import { fileURLToPath } from 'url';

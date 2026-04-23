@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useParams, Link, generatePath } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { motion } from 'framer-motion';

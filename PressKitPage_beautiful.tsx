@@ -1,4 +1,4 @@
-﻿// src/pages/PressKitPage.tsx
+// src/pages/PressKitPage.tsx
 // ============================================================================
 // PRESS KIT PAGE - ATUALIZADO (Links Corrigidos)
 // ============================================================================
