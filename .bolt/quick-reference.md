@@ -11,7 +11,7 @@ npm run build                  # Full production build with prerendering
 npm run preview               # Preview production build locally
 
 # Utilities
-npm run gen:sitemap           # Generate sitemap
+npm run generate-sitemaps     # Generate sitemap
 npm run lint                  # Run ESLint
 npm run format                # Format code with Prettier
 ```
@@ -24,7 +24,7 @@ npm run format                # Format code with Prettier
 | `src/components/AppRoutes.tsx` | Route definitions |
 | `inc/api.php` | WordPress REST API endpoints |
 | `inc/setup.php` | WordPress theme setup & CORS |
-| `tailwind.config.js` | Design system configuration |
+| `vite.config.ts` | Vite + Tailwind 4 config (sem tailwind.config.js — Tailwind 4 é CSS-first) |
 | `scripts/prerender.js` | SSG prerendering script |
 
 ## 🔌 API Quick Test
@@ -92,15 +92,17 @@ function djz_allowed_origins(): array {
 
 ### Colors
 ```js
-// Primary: Red accents
-'red-500': '#ef4444'
-'red-600': '#dc2626'
+// Primary: azul elétrico
+'blue-500': '#3B82F6'   // primary
+// Secondary: violeta/roxo claro  (secondary É violet — não evitar)
+// Accent: ciano/turquesa
 
 // Dark theme base
-'gray-900': '#111827'
-'gray-800': '#1f2937'
+background: '#0a0a0f'   // região
 
-// AVOID: purple, indigo, violet
+// EVITAR: gradientes chamativos em títulos, paleta flat sem profundidade
+// Estética: MMORPG contemporâneo, premium, imersivo
+// Referências de qualidade: Dashboard e Zen Tribe pages
 ```
 
 ### Spacing
@@ -125,11 +127,15 @@ space-8  // 32px
 
 | English | Portuguese |
 |---------|-----------|
-| `/` | `/pt` |
-| `/about` | `/pt/sobre` |
-| `/shop` | `/pt/loja` |
-| `/events` | `/pt/eventos` |
-| `/music` | `/pt/musica` |
+| `/` | `/pt/` |
+| `/about-dj-zen-eyer/` | `/pt/sobre-dj-zen-eyer/` |
+| `/zouk-events/` | `/pt/eventos-zouk/` |
+| `/zouk-music/` | `/pt/musica-zouk/` |
+| `/shop/` | `/pt/loja/` |
+| `/zen-tribe/` | `/pt/zen-tribo/` |
+| `/events/{slug}` | `/pt/eventos/{slug}` |
+
+Regra: idioma EN não tem prefixo `/en/` — apenas `/slug`. PT sempre `/pt/slug`.
 
 ## 📱 Responsive Breakpoints
 

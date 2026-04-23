@@ -1,5 +1,5 @@
 # DJ ZEN EYER — Bolt Context
-# Última revisão: 2026-03-27
+# Última revisão: 2026-04-23
 
 Você está assistindo no desenvolvimento do site oficial do DJ Zen Eyer — plataforma headless WordPress + React SPA com estética MMORPG premium (Tribo Zen, XP, Ranks).
 Produção: djzeneyer.com
@@ -31,7 +31,7 @@ src/
   schemas/          → Schemas Zod para validação de respostas de API
   locales/          → en/translation.json e pt/translation.json
   config/           → routes.ts, queryClient.ts, api.ts
-  utils/            → sanitize.ts (safeUrl), text.ts
+  utils/            → sanitize.ts (safeUrl), text.ts, date.ts (getDateTimeFormatter cache), number.ts (getNumberFormatter cache)
 plugins/
   zeneyer-auth/     → JWT + Google OAuth (namespace: zeneyer-auth/v1)
   zen-seo-lite/     → SEO headless (namespace: zen-seo/v1)
@@ -86,6 +86,9 @@ GET  zen-bit/v2/events/:slug            → Detalhe do evento
 - Ícones de marca (Facebook, Instagram, Youtube) foram removidos do lucide-react 1.x → usar `src/components/icons/BrandIcons.tsx`.
 - Schemas Zod (v4): PHP retorna `false`/`null`/`undefined` para imagens sem thumbnail. Padrão correto: `z.string().catch('')` (obrigatório) ou `z.string().catch('').optional()` (opcional). Nunca `z.union([z.string(), z.literal(false)])` — quebra em null.
 - Class components não podem usar `useTranslation()` → usar `withTranslation()` HOC.
+- **Framer Motion variants**: NUNCA declarar objetos `variants` (ou `whileHover`/`whileTap` estáticos) dentro do corpo do componente. Extrair para escopo de módulo com SCREAMING_CASE antes do componente (`const CARD_VARIANTS = {...}`). Objetos inline criam nova referência a cada render e anulam `React.memo`.
+- **Intl.DateTimeFormat / Intl.NumberFormat**: NUNCA instanciar dentro de render, `.map()` ou hooks sem cache. Usar `getDateTimeFormatter(locale, options)` de `src/utils/date.ts` e `getNumberFormatter(locale)` de `src/utils/number.ts`.
+- **Aspas tipográficas em JSX**: `"` `"` (U+201C/U+201D) quebram o build OXC com `Invalid Character`. Usar `&ldquo;` / `&rdquo;` ou aspas retas `"`.
 
 **Vite:**
 - Nunca `minify: 'esbuild'` — Vite 8 usa OXC por padrão.
