@@ -265,7 +265,7 @@ const PressKitPage: React.FC = () => {
 
                 <div>
                   <h2 className="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4 text-3xl sm:text-5xl font-black">
-                    <Music2 className="text-primary" size={48} />
+                    <Music2 className="text-primary w-8 h-8 sm:w-12 sm:h-12" />
                     {t('presskit.bio.title')}
                   </h2>
 
@@ -275,7 +275,7 @@ const PressKitPage: React.FC = () => {
                     <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p3')) }} />
                   </div>
 
-                  <div className="mt-12 grid grid-cols-2 gap-6 rounded-3xl border border-white/5 bg-surface/50 p-8">
+                  <div className="mt-12 grid grid-cols-2 gap-6 rounded-3xl border border-white/5 bg-surface/50 p-4 sm:p-8">
                     {quickStatsItems.map((item, index) => (
                       <div key={index} className="flex items-start gap-3">
                         <div className="rounded-xl bg-primary/10 p-3">{item.icon}</div>
@@ -459,7 +459,7 @@ const PressKitPage: React.FC = () => {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 rounded-xl bg-white/5 px-4 py-3 transition-all duration-300 hover:bg-primary/20 hover:text-primary"
+                          className="flex items-center justify-center gap-2 rounded-xl bg-white/5 px-4 py-3 min-h-[44px] transition-all duration-300 hover:bg-primary/20 hover:text-primary"
                         >
                           {link.icon}
                           <span className="text-sm font-semibold">{link.name}</span>

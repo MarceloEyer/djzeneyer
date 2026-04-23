@@ -241,7 +241,7 @@ const AboutPage: React.FC = () => {
                     <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">
                       {item.value}
                     </div>
-                    <div className="text-primary font-bold text-xs md:text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
+                    <div className="text-primary font-bold text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
                       {item.label}
                     </div>
                   </div>

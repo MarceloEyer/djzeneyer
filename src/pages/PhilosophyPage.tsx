@@ -106,7 +106,7 @@ const PhilosophyPage: React.FC = () => {
               {t('philosophy_page.manifesto_badge')}
             </div>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black font-display mb-6 leading-none tracking-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 leading-none tracking-tight">
               <Trans i18nKey="philosophy.hero_title_rich">
                 Filosofia <span className="text-primary">Artística</span>
               </Trans>

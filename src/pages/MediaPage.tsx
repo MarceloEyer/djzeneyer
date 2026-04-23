@@ -129,11 +129,11 @@ const MediaPage: React.FC = () => {
                         <p className="text-white/40 text-xs line-clamp-1">{asset.description}</p>
                       </div>
                       {asset.available ? (
-                        <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold uppercase">
+                        <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-3 min-h-[44px] text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold uppercase">
                           {t('media_page.download')} <Download size={18} />
                         </a>
                       ) : (
-                        <span className="text-[10px] text-white/20 uppercase font-black">{t('media_page.coming_soon')}</span>
+                        <span className="text-xs text-white/20 uppercase font-black">{t('media_page.coming_soon')}</span>
                       )}
                     </div>
                   ))}
@@ -153,7 +153,7 @@ const MediaPage: React.FC = () => {
                     { label: t('media_page.cnpj'), value: ARTIST.identity.taxId },
                   ].map((fact, i) => (
                     <div key={i} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
-                      <div className="text-[10px] text-primary font-black uppercase tracking-[0.2em] mb-1">{fact.label}</div>
+                      <div className="text-xs text-primary font-black uppercase tracking-[0.2em] mb-1">{fact.label}</div>
                       <div className="text-white font-bold text-sm">{fact.value}</div>
                     </div>
                   ))}

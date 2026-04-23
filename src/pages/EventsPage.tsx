@@ -222,7 +222,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           <button
             onClick={() => setSelectedRegion('all')}
-            className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
           >
             {t('common.all')}
           </button>
@@ -230,7 +230,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
             >
               {region}
             </button>
@@ -269,14 +269,14 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
                       <div className="text-3xl font-black min-w-[50px]">{dayStr}</div>
                       <div className="flex-1">
-                        <div className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${loc.country})` : ''}</div>
+                        <div className="text-xs text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${loc.country})` : ''}</div>
                         <Link to={detailHref}>
                           <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
                         </Link>
                       </div>
                       <div className="flex gap-2">
                         <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" />
-                        <button onClick={() => share(e)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
+                        <button onClick={() => share(e)} className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
                           <Share2 size={16} />
                         </button>
                       </div>
@@ -334,8 +334,8 @@ const EventsPage: React.FC = () => {
           <Music className="absolute -right-8 -bottom-8 text-white/5 w-48 h-48 rotate-12 z-10" />
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
-            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <Link to={getLocalizedRoute('presskit', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 rounded-xl font-bold text-sm">Press Kit</Link>
+            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
+            <Link to={getLocalizedRoute('presskit', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">Press Kit</Link>
           </div>
         </section>
       </div>
