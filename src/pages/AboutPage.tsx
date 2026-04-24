@@ -16,7 +16,7 @@ import {
 
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation, Trans } from 'react-i18next';
-import { ARTIST, ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_ALIAS } from '../data/artistData';
+import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
@@ -90,9 +90,6 @@ const AboutPage: React.FC = () => {
       {
         ...ARTIST_SCHEMA_BASE,
         '@id': `${artist.site.baseUrl}/#artist`,
-      },
-      {
-        ...ARTIST_SCHEMA_ALIAS,
       },
       {
         '@type': 'ProfilePage',

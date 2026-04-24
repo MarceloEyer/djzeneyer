@@ -5,7 +5,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_ALIAS } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { getAlternateLinks, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
@@ -209,7 +209,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           inLanguage: ['en', 'pt-BR'],
         },
         { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` },
-        { ...ARTIST_SCHEMA_ALIAS, '@id': `${baseUrl}/#artist-alias` },
         {
           '@type': 'WebPage',
           '@id': `${baseUrl}/#webpage`,
@@ -431,8 +430,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
               name: 'DJ Zen Eyer',
               publisher: { '@id': `${baseUrl}/#artist` },
             },
-            { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` },
-            { ...ARTIST_SCHEMA_ALIAS, '@id': `${baseUrl}/#artist-alias` }
+            { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` }
           ] : []),
           webPageSchema,
           ...dynamicGraph
@@ -453,7 +451,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             inLanguage: ['en', 'pt-BR'],
           },
           { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` },
-          { ...ARTIST_SCHEMA_ALIAS, '@id': `${baseUrl}/#artist-alias` },
           webPageSchema,
         ],
       };
