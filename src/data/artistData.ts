@@ -461,27 +461,51 @@ export const ARTIST_SCHEMA_BASE = {
   mainEntityOfPage: {
     '@id': `${ARTIST.site.baseUrl}/about#webpage`,
   },
-  // Provas externas: páginas públicas indexáveis que falam sobre o artista
+  // Provas externas: páginas oficiais de eventos reais que listam Zen Eyer como DJ
   subjectOf: [
     {
       '@type': 'WebPage',
-      url: 'https://myza.co.za/entertainment/brazilian-dj-zen-eyer-and-kaysha-unite-brazil-and-africa-in-epic-zouk-remix-of-diamonds/',
-      name: 'Brazilian DJ Zen Eyer and Kaysha Unite Brazil and Africa — MyZA Entertainment',
+      url: 'https://www.dutchzouk.nl/artists',
+      name: 'Dutch International Zouk Congress — Artists',
     },
     {
       '@type': 'WebPage',
-      url: 'https://timebusinessnews.com/the-global-rise-of-brazilian-zouk-music-and-cultural-evolution/',
-      name: 'The Global Rise of Brazilian Zouk Music — Time Business News',
+      url: 'https://slovenianzoukmarathon.com/',
+      name: 'Slovenian Zouk Marathon — DJs',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://www.lisbonzoukmarathon.com/march2026',
+      name: 'Lisbon Zouk Marathon March 2026',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://neozouk.com/',
+      name: 'Neo Festival — DJs Confirmados',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
+      name: 'Ilha do Zouk — DJs',
     },
     {
       '@type': 'WebPage',
       url: 'https://danxer.com/artist/1022/zen-eyer',
       name: 'Zen Eyer — Danxer Artist Profile',
     },
+  ],
+  // Eventos reais em que Zen Eyer é performer — prova direta de atuação
+  performerIn: [
     {
-      '@type': 'WebPage',
-      url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
-      name: 'DJ Zen Eyer — World Champion DJ — Ilha do Zouk',
+      '@type': 'Event',
+      name: 'Lisbon Zouk Marathon 2026',
+      url: 'https://www.lisbonzoukmarathon.com/march2026',
+      startDate: '2026-03-25',
+      endDate: '2026-03-30',
+      location: {
+        '@type': 'Place',
+        name: 'Lisbon, Portugal',
+      },
     },
   ],
 };
