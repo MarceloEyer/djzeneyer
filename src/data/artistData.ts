@@ -399,62 +399,58 @@ export const getWhatsAppUrl = (message?: string) => {
   )}`;
 };
 
-const getSocialUrls = () => Object.values(ARTIST.social).map(s => s.url);
+// Schema.org Person base (consolidated for Knowledge Graph)
+export const ARTIST_SCHEMA_SAME_AS = [
+  'https://www.wikidata.org/wiki/Q136551855',
+  'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+  'https://www.discogs.com/artist/16872046',
+  'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+  'https://music.apple.com/artist/1439280950',
+  'https://www.deezer.com/artist/52900762',
+  'https://soundcloud.com/djzeneyer',
+  'https://www.instagram.com/djzeneyer/',
+  'https://www.youtube.com/@djzeneyer',
+  'https://www.tiktok.com/@djzeneyer',
+  'https://www.facebook.com/pages/685038544932605',
+  'https://www.songkick.com/artists/8815204',
+] as const;
 
-const getVerificationUrls = () => [
-  ARTIST.identifiers.wikidataUrl,
-  ARTIST.identifiers.knowledgeGraphUrl,
-  ARTIST.identifiers.musicbrainzUrl,
-  `https://isni.org/isni/${ARTIST.identifiers.isni}`,
-  `https://orcid.org/${ARTIST.identifiers.orcid}`,
-  ARTIST.identifiers.discogsUrl,
-  ARTIST.identifiers.residentAdvisorUrl,
-  ARTIST.identifiers.danceWikiFandom,
-];
-
-// Schema.org MusicGroup base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
-  name: ARTIST.identity.stageName,
-  givenName: 'Marcelo',
-  familyName: 'Eyer Fernandes',
-  additionalName: 'Zen Eyer',
-  alternateName: [ARTIST.identity.shortName, ARTIST.identity.fullName],
-  description: `${ARTIST.titles.primary}. Known for the "${ARTIST.philosophy.style}" musical style.`,
-  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Electronic'],
-  jobTitle: ['DJ', 'Music Producer', 'Remixer', 'Artist'],
-  birthDate: ARTIST.identity.birthDate,
-  birthPlace: {
-    '@type': 'Place',
-    name: 'Rio de Janeiro, Brazil',
-  },
+  name: 'Zen Eyer',
+  alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
+  description: 'Zen Eyer is a Brazilian Zouk DJ, music producer and remixer.',
+  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+  jobTitle: ['DJ', 'Music Producer', 'Remixer'],
+  url: ARTIST.site.baseUrl,
+  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+  sameAs: ARTIST_SCHEMA_SAME_AS,
+  identifier: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Wikidata',
+      value: 'Q136551855',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'MusicBrainz',
+      value: '13afa63c-8164-4697-9cad-c5100062a154',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Spotify',
+      value: '68SHKGndTlq3USQ2LZmyLw',
+    },
+  ],
   nationality: {
     '@type': 'Country',
     name: 'Brazil',
   },
-  url: ARTIST.site.baseUrl,
-  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-  sameAs: [...getSocialUrls(), ...getVerificationUrls()],
-  potentialAction: {
-    '@type': 'ListenAction',
-    target: [
-      {
-        '@type': 'EntryPoint',
-        url: ARTIST.social.spotify.url,
-        actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/IOSPlatform', 'http://schema.org/AndroidPlatform']
-      },
-      {
-        '@type': 'EntryPoint',
-        url: ARTIST.social.soundcloud.url,
-        actionPlatform: ['http://schema.org/DesktopWebPlatform', 'http://schema.org/IOSPlatform', 'http://schema.org/AndroidPlatform']
-      }
-    ]
-  },
   award: [
     {
       '@type': 'Award',
-      name: 'World Champion Brazilian Zouk DJ - Best Performance',
+      name: 'World Champion Brazilian Zouk DJ - Best DJ Performance',
       datePublished: '2022',
     },
     {
@@ -463,43 +459,11 @@ export const ARTIST_SCHEMA_BASE = {
       datePublished: '2022',
     },
   ],
-  memberOf: {
-    '@type': 'Organization',
-    name: ARTIST.mensa.organization,
-    url: ARTIST.mensa.url,
-  },
-  // 🌎 Conexão semântica com pioneiros e autoridades do Zouk Brasileiro
-  // (fortalece o Grafo de Conhecimento e os sinais E-E-A-T)
   knowsAbout: [
     'Brazilian Zouk',
     'DJing',
     'Music Production',
     'Remixing',
-    'Festival Performance',
-    'Dance Music',
-    'Lambada',
     'Cremosidade',
-    'Zouk Music Theory',
-  ],
-  mentions: [
-    {
-      '@type': 'Person',
-      name: 'Renata Peçanha',
-      description: 'Pioneer and major figure of Brazilian Zouk. Founder of Rio Zouk Congress.',
-      url: 'https://en.wikipedia.org/wiki/Brazilian_Zouk',
-    },
-    {
-      '@type': 'Person',
-      name: 'Adílio Porto',
-      description: 'Pioneer of Brazilian Zouk and Lambada, who helped systematize the foundational techniques of the dance.',
-    },
-    {
-      '@type': 'Organization',
-      name: 'Brazilian Zouk Council',
-      alternateName: 'BZC',
-      description:
-        'International governing body for Brazilian Zouk, defining official techniques and standards.',
-      url: 'https://www.brazilianzoukcouncil.com/',
-    },
   ],
 };

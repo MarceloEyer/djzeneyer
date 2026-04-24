@@ -117,43 +117,9 @@ const HomePage: React.FC = () => {
         "name": seoSettings?.real_name || "DJ Zen Eyer - Official Website",
         "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
-        "inLanguage": ["en", "pt-BR"],
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": `${ARTIST.site.baseUrl}/search?q={search_term_string}`,
-          "query-input": "required name=search_term_string"
-        }
+        "inLanguage": ["en", "pt-BR"]
       },
-      {
-        ...ARTIST_SCHEMA_BASE,
-        "@id": `${ARTIST.site.baseUrl}/#artist`,
-        "name": seoSettings?.real_name || "DJ Zen Eyer",
-        "nationality": { "@type": "Country", "name": "Brazil" },
-        "birthDate": ARTIST.identity.birthDate,
-        "jobTitle": "DJ & Music Producer",
-        "knowsAbout": ["Brazilian Zouk", "Music Production", "DJing", "Remixing", "Kizomba"],
-        "homeLocation": {
-          "@type": "Place",
-          "address": { "@type": "PostalAddress", "addressLocality": "São Paulo", "addressRegion": "SP", "addressCountry": "BR" }
-        },
-        "award": [
-          { "@type": "Award", "name": "Best Remix", "description": "Brazilian Zouk World Championships", "dateAwarded": "2022" },
-          { "@type": "Award", "name": "Best DJ Performance", "description": "Brazilian Zouk World Championships", "dateAwarded": "2022" }
-        ],
-        "hasOccupation": [
-          {
-            "@type": "Occupation",
-            "name": "DJ",
-            "skills": "Audio Mixing, Playlist Curation, Live Performance",
-            "occupationalCategory": "27-2099.00"
-          },
-          {
-            "@type": "Occupation",
-            "name": "Music Producer",
-            "skills": "Audio Engineering, Remixing, Mastering"
-          },
-        ],
-      },
+      ARTIST_SCHEMA_BASE,
       {
         "@type": "WebPage",
         "@id": `${ARTIST.site.baseUrl}/#webpage`,
