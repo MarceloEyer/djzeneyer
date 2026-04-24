@@ -1,35 +1,29 @@
-# Instrucoes para GitHub Copilot - DJ Zen Eyer
+# Instruções para IA do repositório DJ Zen Eyer
 
 ## Idioma
-Responda em Portugues Brasileiro.
+Responda em Português Brasileiro.
 
-## Precedencia
-- Seguir `AI_CONTEXT_INDEX.md`.
-- Em conflito, o codigo do repositorio prevalece.
+## Fonte de verdade
+- `AI_CONTEXT_INDEX.md` é o contexto canônico do projeto.
+- `AGENTS.md` define regras operacionais.
+- Em conflito, o código real do repositório prevalece.
 
-## Contexto Tecnico
-- Frontend: React 18 + TypeScript + Vite 7 + Tailwind 3
-- Backend: WordPress Headless + PHP 8.1+
-- Estado/dados: React Query v5 + Context API
-- i18n: i18next (PT/EN)
-- Routing: React Router 7
-- Node: 20+
+## Stack atual
+- Frontend: React 19 + TypeScript 6 strict + Vite 8 + Tailwind 4
+- Estado/dados: React Query v5
+- Roteamento: React Router 7 + i18next
+- Backend: WordPress 6.9+ + PHP 8.3 + WooCommerce 10.5+ + GamiPress
+- Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
 
-## Convencoes
-- Data fetching centralizado em `src/hooks/useQueries.ts`
-- i18n para strings visiveis
-- Paginas lazy-loaded
-- `<HeadlessSEO />` por pagina
-- Navbar em `src/components/Layout/Navbar.tsx`
-- SQL com prepare + sanitizacao
+## Regras importantes
+- Strings visíveis devem usar `t('chave')`.
+- Data fetching no frontend deve passar por `src/hooks/useQueries.ts`.
+- Não usar `fetch()` diretamente em componentes quando houver hook disponível.
+- Toda página pública deve usar `<HeadlessSEO />`.
+- Rotas privadas devem permanecer `noindex`.
+- Não editar pedidos WooCommerce com SQL direto em `wp_posts`.
+- `public/` e `scripts/` devem respeitar o pipeline de prerender e sitemap.
 
-## Plugins/Namespaces canonicos
-- `zeneyer-auth` -> `zeneyer-auth/v1`
-- `zen-seo-lite` -> `zen-seo/v1`
-- `zen-bit` -> `zen-bit/v2`
-- `zengame` -> `zengame/v1`
-
-## Restricoes
-- Nao atualizar ESLint para v10
-- Nao commitar `.env`/credenciais
-- WordPress e API headless (sem frontend server-side WordPress)
+## Contexto adicional
+- Consultar `AGENTS.md` e `AI_CONTEXT_INDEX.md` antes de propor mudanças estruturais.
+- PRs do repositório podem receber comentário automático de `@codex review` via workflow dedicado.

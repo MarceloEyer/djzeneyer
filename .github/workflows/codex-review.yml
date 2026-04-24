@@ -1,0 +1,67 @@
+name: Codex Review Prompt
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  post-codex-review-prompt:
+    name: Post Codex review prompt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post review comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- codex-auto-review -->';
+            const { owner, repo } = context.repo;
+            const { number: issue_number, title, user } = context.payload.pull_request;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              core.info(`Codex prompt already exists on PR #${issue_number}; skipping.`);
+              return;
+            }
+
+            const body = [
+              marker,
+              '@codex review',
+              '',
+              'Contexto canônico do projeto:',
+              '- WordPress Headless + React 19 + TypeScript strict + Vite 8 + Tailwind 4',
+              '- React Query v5 como única camada de data fetching no frontend',
+              '- i18n obrigatória para strings visíveis',
+              '- SEO por página com `<HeadlessSEO />`',
+              '- Rotas privadas usam `noindex` e OG genérica',
+              '- Consulte `AGENTS.md` e `AI_CONTEXT_INDEX.md` antes da revisão',
+              '',
+              'Pedido automático:',
+              '- Revisar bugs, regressões, performance, SEO e aderência às regras do projeto',
+              '- Comentário gerado por workflow para funcionar também em PRs criados por bots',
+              '',
+              `PR: #${issue_number} - ${title}`,
+              `Autor: @${user.login}`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });

@@ -143,7 +143,7 @@ export const QUERY_KEYS = {
     all: ['products'] as const,
     list: (lang?: string) => ['products', 'list', lang] as const,
     collections: (lang?: string, limit?: number) => ['products', 'collections', lang, limit] as const,
-    detail: (id: number) => ['products', 'detail', id] as const,
+    detail: (slug: string) => ['products', 'detail', slug] as const,
   },
 
   /** Carrinho */

@@ -1,39 +1,66 @@
 // src/pages/ProductPage.tsx
 // Product detail page for WooCommerce products
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
-import { ProductImage, ProductCategory } from '../types/product';
 import { getCurrencyFormatter } from '../utils/currency';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { useAddToCartMutation, useProductQuery, type WCProductDetail } from '../hooks/useQueries';
 
-interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  price: string;
-  regular_price: string;
-  sale_price: string;
-  on_sale: boolean;
-  images: ProductImage[];
-  stock_status: string;
-  short_description?: string;
-  description?: string;
-  categories?: ProductCategory[];
+interface ProductGalleryProps {
+  product: WCProductDetail;
+  placeholderImage: string;
 }
+
+const ProductGallery = React.memo(({ product, placeholderImage }: ProductGalleryProps) => {
+  const [activeImage, setActiveImage] = useState<string | null>(product.images?.[0]?.src || null);
+
+  const gallery = useMemo(() => {
+    if (!product.images?.length) return [];
+    return product.images.filter((img) => img?.src);
+  }, [product.images]);
+
+  const mainImageObject = product.images?.[0];
+  const optimizedMainImage = mainImageObject?.sizes?.large || mainImageObject?.sizes?.medium_large || mainImageObject?.src;
+  const mainImage = activeImage || optimizedMainImage || placeholderImage;
+
+  return (
+    <div>
+      <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
+        <img
+          src={safeUrl(mainImage)}
+          alt={product.name || ''}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      {gallery.length > 1 && (
+        <div className="mt-4 grid grid-cols-4 gap-3">
+          {gallery.map((img, index) => (
+            <button
+              key={`${img.src}-${index}`}
+              type="button"
+              onClick={() => setActiveImage(img.src)}
+              className={`rounded-lg overflow-hidden border transition-all ${
+                activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-white/10 hover:border-white/30'
+              }`}
+            >
+              <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+});
 
 const ProductPage: React.FC = () => {
   const { slug } = useParams();
   const { t, i18n } = useTranslation();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [addingToCart, setAddingToCart] = useState(false);
-  const [activeImage, setActiveImage] = useState<string | null>(null);
 
   const isPortuguese = i18n.language.startsWith('pt');
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
@@ -44,92 +71,29 @@ const ProductPage: React.FC = () => {
   );
   const placeholderImage = 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer';
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchProduct = async () => {
-      if (!slug) {
-        if (isMounted) {
-          setError(t('shop.product_not_found'));
-          setLoading(false);
-        }
-        return;
-      }
-      const baseUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || `${window.location.origin}/wp-json/`;
-      const apiUrl = `${baseUrl}djzeneyer/v1/products?slug=${encodeURIComponent(slug)}&lang=${currentLang}`;
-
-      try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`${t('shop.generic_error')}: ${response.status}`);
-        const data = await response.json();
-        const nextProduct = Array.isArray(data) ? data[0] : null;
-
-        if (isMounted) {
-          if (!nextProduct) {
-            setError(t('shop.product_not_found'));
-          } else {
-            setProduct(nextProduct);
-            setActiveImage(nextProduct.images?.[0]?.src || null);
-            setError(null);
-          }
-          setLoading(false);
-        }
-      } catch (err) {
-        if (isMounted) {
-          const error = err as Error;
-          console.error('Error fetching product:', error);
-          setError(error.message || t('shop.generic_error'));
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchProduct();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [slug, currentLang, t]);
-  const addToCart = async () => {
-    if (!product) return;
-    setAddingToCart(true);
-    try {
-      const response = await fetch('/wp-json/wc/store/cart/add-item', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': (window as unknown as { wpData?: { nonce: string } }).wpData?.nonce || '',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ id: product.id, quantity: 1 }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add to cart');
-      }
-    } catch (err) {
-      console.error('Error adding to cart:', err);
-    } finally {
-      setAddingToCart(false);
-    }
-  };
+  const { data: product, isLoading, error } = useProductQuery(currentLang, slug);
+  const addToCartMutation = useAddToCartMutation();
 
   const formatPrice = useCallback((price: string) => {
     if (!price) return 'R$ 0,00';
     const numPrice = parseFloat(price);
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
-    return isNaN(numPrice)
+    return Number.isNaN(numPrice)
       ? price
       : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   }, [isPortuguese]);
 
-  const productImages = product?.images;
-  const gallery = useMemo(() => {
-    if (!productImages?.length) return [];
-    return productImages.filter((img) => img?.src);
-  }, [productImages]);
+  const handleAddToCart = useCallback(async () => {
+    if (!product) return;
 
-  if (loading) {
+    try {
+      await addToCartMutation.mutateAsync({ productId: product.id, quantity: 1 });
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+    }
+  }, [addToCartMutation, product]);
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white">
         <Loader2 className="animate-spin text-primary" size={48} />
@@ -138,12 +102,14 @@ const ProductPage: React.FC = () => {
   }
 
   if (error || !product) {
+    const errorMessage = error instanceof Error ? error.message : t('shop.product_not_found');
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white p-6">
         <div className="text-center max-w-md">
           <AlertCircle className="mx-auto mb-4 text-error" size={48} />
           <h2 className="text-2xl font-bold mb-2">{t('shop.product_not_found')}</h2>
-          <p className="opacity-70">{error}</p>
+          <p className="opacity-70">{errorMessage}</p>
           <Link to={shopPath} className="mt-6 btn btn-primary inline-flex items-center gap-2">
             <ArrowLeft size={18} />
             {t('common.checkout.back_shop')}
@@ -152,12 +118,6 @@ const ProductPage: React.FC = () => {
       </div>
     );
   }
-
-  // Optimization: Use large or medium_large for main image if available, fallback to full src
-  const mainImageObject = product.images?.[0];
-  const optimizedMainImage = mainImageObject?.sizes?.large || mainImageObject?.sizes?.medium_large || mainImageObject?.src;
-
-  const mainImage = activeImage || optimizedMainImage || placeholderImage;
 
   return (
     <>
@@ -177,31 +137,9 @@ const ProductPage: React.FC = () => {
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div>
-              <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
-                <img
-                  src={safeUrl(mainImage)}
-                  alt={product.name || ''}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            <ProductGallery key={product.slug} product={product} placeholderImage={placeholderImage} />
 
-              {gallery.length > 1 && (
-                <div className="mt-4 grid grid-cols-4 gap-3">
-                  {gallery.map((img, index) => (
-                    <button
-                      key={`${img.src}-${index}`}
-                      onClick={() => setActiveImage(img.src)}
-                      className={`rounded-lg overflow-hidden border ${activeImage === img.src ? 'border-primary' : 'border-white/10'}`}
-                    >
-                      <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div>
+            <div className="space-y-6">
               <div className="flex flex-wrap gap-2 mb-4">
                 {product.categories?.map((category) => (
                   <span
@@ -237,11 +175,11 @@ const ProductPage: React.FC = () => {
 
               {product.stock_status === 'instock' ? (
                 <button
-                  onClick={addToCart}
-                  disabled={addingToCart}
+                  onClick={handleAddToCart}
+                  disabled={addToCartMutation.isPending}
                   className="btn btn-primary btn-lg flex items-center gap-2 mb-6"
                 >
-                  {addingToCart ? <Loader2 className="animate-spin" /> : <ShoppingCart />}
+                  {addToCartMutation.isPending ? <Loader2 className="animate-spin" /> : <ShoppingCart />}
                   {t('shop.buy_now')}
                 </button>
               ) : (
