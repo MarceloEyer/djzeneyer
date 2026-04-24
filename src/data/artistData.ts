@@ -411,7 +411,6 @@ export const ARTIST_SCHEMA_SAME_AS = [
   'https://www.instagram.com/djzeneyer/',
   'https://www.youtube.com/@djzeneyer',
   'https://www.tiktok.com/@djzeneyer',
-  'https://www.facebook.com/pages/685038544932605',
   'https://www.songkick.com/artists/8815204',
 ] as const;
 
@@ -422,7 +421,7 @@ export const ARTIST_SCHEMA_BASE = {
   alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
-  jobTitle: ['DJ', 'Music Producer', 'Remixer'],
+  jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: ARTIST_SCHEMA_SAME_AS,
@@ -448,16 +447,8 @@ export const ARTIST_SCHEMA_BASE = {
     name: 'Brazil',
   },
   award: [
-    {
-      '@type': 'Award',
-      name: 'World Champion Brazilian Zouk DJ - Best DJ Performance',
-      datePublished: '2022',
-    },
-    {
-      '@type': 'Award',
-      name: 'World Champion Brazilian Zouk DJ - Best Remix',
-      datePublished: '2022',
-    },
+    'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
+    'World Champion Brazilian Zouk DJ - Best Remix, 2022',
   ],
   knowsAbout: [
     'Brazilian Zouk',
@@ -472,11 +463,6 @@ export const ARTIST_SCHEMA_BASE = {
   },
   // Provas externas: páginas públicas indexáveis que falam sobre o artista
   subjectOf: [
-    {
-      '@type': 'WebPage',
-      url: 'https://pt.everybodywiki.com/DJ_Zen_Eyer',
-      name: 'DJ Zen Eyer — EverybodyWiki',
-    },
     {
       '@type': 'WebPage',
       url: 'https://myza.co.za/entertainment/brazilian-dj-zen-eyer-and-kaysha-unite-brazil-and-africa-in-epic-zouk-remix-of-diamonds/',

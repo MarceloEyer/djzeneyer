@@ -216,7 +216,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           name: finalTitle,
           isPartOf: { '@id': `${baseUrl}/#website` },
           about: { '@id': `${baseUrl}/#artist` },
-          mainEntityOfPage: { '@id': `${baseUrl}/#artist` },
+          mainEntity: { '@id': `${baseUrl}/#artist` },
           description: truncatedDesc,
           inLanguage: htmlLangAttribute,
         },
