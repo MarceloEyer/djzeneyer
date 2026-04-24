@@ -1,21 +1,19 @@
 name: 🤖 Trigger All Bot Reviews
 
-# CodeRabbit e Codex não disparam em PRs de bots por padrão (anti-bot-war).
-# Jules não tem auto-review nativo.
-# Este workflow garante que os 3 bots revisem TODOS os PRs — de bots ou humanos.
-# Única exclusão: coderabbitai[bot] (review-only bot, nunca cria PRs de código).
+# CodeRabbit, Codex e Jules precisam de um prompt explícito para revisar.
+# Este workflow garante que os 3 bots recebam prompt em TODOS os PRs, inclusive PRs criados por bots.
 
 on:
-  pull_request:
-    types: [opened, ready_for_review]
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:
+  issues: write
   pull-requests: write
 
 jobs:
   trigger-reviews:
     name: Trigger CodeRabbit + Codex + Jules
-    if: github.event.pull_request.user.login != 'coderabbitai[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger CodeRabbit review
@@ -23,11 +21,31 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const marker = '<!-- coderabbit-auto-review -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            if (comments.some((comment) => comment.body?.includes(marker))) {
+              core.info(`CodeRabbit prompt already exists on PR #${issue_number}; skipping.`);
+              return;
+            }
+
             await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: '@coderabbitai review'
+              owner,
+              repo,
+              issue_number,
+              body: [
+                marker,
+                '@coderabbitai review',
+                '',
+                'Revisar bugs, regressões, performance, SEO e aderência às regras do projeto.',
+              ].join('\n')
             });
 
       - name: Trigger Codex review
@@ -35,11 +53,37 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const marker = '<!-- codex-auto-review -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            if (comments.some((comment) => comment.body?.includes(marker))) {
+              core.info(`Codex prompt already exists on PR #${issue_number}; skipping.`);
+              return;
+            }
+
             await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: '@codex review'
+              owner,
+              repo,
+              issue_number,
+              body: [
+                marker,
+                '@codex review',
+                '',
+                'Contexto canônico do projeto:',
+                '- WordPress Headless + React 19 + TypeScript strict + Vite 8 + Tailwind 4',
+                '- React Query v5 como única camada de data fetching no frontend',
+                '- i18n obrigatória para strings visíveis',
+                '- SEO por página com `<HeadlessSEO />`',
+                '- Rotas privadas usam `noindex` e OG genérica',
+                '- Consulte `AGENTS.md` e `AI_CONTEXT_INDEX.md` antes da revisão',
+              ].join('\n')
             });
 
       - name: Trigger Jules review
@@ -47,9 +91,30 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const marker = '<!-- jules-auto-review -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            if (comments.some((comment) => comment.body?.includes(marker))) {
+              core.info(`Jules prompt already exists on PR #${issue_number}; skipping.`);
+              return;
+            }
+
             await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: '@jules Por favor, revise este PR. Verifique qualidade do código, possíveis bugs, impactos de performance e conformidade com as regras do projeto (stack: React 19 + TypeScript 6 + Vite 8 + WordPress Headless PHP 8.3).'
+              owner,
+              repo,
+              issue_number,
+              body: [
+                marker,
+                '@jules Por favor, revise este PR.',
+                '',
+                'Verifique qualidade do código, possíveis bugs, impactos de performance e conformidade com as regras do projeto.',
+                'Stack canônica: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + WordPress Headless PHP 8.3.',
+              ].join('\n')
             });

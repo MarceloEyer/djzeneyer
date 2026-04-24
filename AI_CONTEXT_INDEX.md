@@ -128,7 +128,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 17. **Rotas Autenticadas Privadas**: `dashboard` e `my-account` devem permanecer `noindex`, fora do sitemap público e fora do prerender, sempre usando OG image genérica do site em vez de avatar do usuário.
 18. **Lint Scope Guard**: `eslint.config.js` deve ignorar diretórios de infraestrutura de agentes/worktrees (`.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`) para evitar conflito de múltiplos `tsconfig` e manter o lint focado no app principal.
 19. **Framer Motion variants**: objetos `variants` (e equivalentes estáticos como `whileHover/whileTap`) DEVEM ser declarados no escopo de módulo (fora de qualquer função/componente), especialmente quando o componente usa `React.memo`. Declarar dentro do componente cria nova referência por render → `React.memo` torna-se ineficaz. Objetos state-dependentes (ex: `animate={{ height: isOpen ? 'auto' : 0 }}`) são a única exceção válida para inline.
-20. **Codex Auto-Review**: o workflow `.github/workflows/codex-review.yml` deve comentar automaticamente `@codex review` em todo PR aberto/reaberto/synchronize, inclusive PRs criados por bots. Se isso parar de acontecer, primeiro valide se o workflow existe na branch default e se `pull-requests: write` está disponível.
+20. **Bot Auto-Review**: o workflow `.github/workflows/trigger-bot-reviews.yml` deve comentar automaticamente `@coderabbitai review`, `@codex review` e `@jules` em todo PR aberto/reaberto/synchronize, inclusive PRs criados por bots. Se isso parar de acontecer, primeiro valide se o workflow existe na branch default e se `issues: write` / `pull-requests: write` estão disponíveis.
 
 ## ZenGame / GamiPress — Contratos e Armadilhas
 
