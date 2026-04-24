@@ -99,7 +99,3 @@
 
 **Learning:** Calling `Number.prototype.toLocaleString()` implicitly instantiates an `Intl.NumberFormat` object on every call. In benchmarks, this causes ~8x more CPU overhead and memory allocations compared to reusing a cached formatter instance, which is especially noticeable during React renders and inside `.map()` array iterations (like leaderboard rendering).
 **Action:** Always replace `toLocaleString()` with a cached formatter instance from a module-level cache (like `getCurrencyFormatter(locale, currency, true).format(value)`) to prevent redundant object allocations and improve render performance.
-## 2025-06-25 - Extract framer-motion variants
-
-**Learning:** Declaring static `framer-motion` variant objects inline inside React functional components (like `whileHover={{ scale: 1.05 }}`) causes unnecessary object reallocation on every render.
-**Action:** Always extract static animation configuration objects (like `framer-motion` variants) to the module scope (outside the component) to preserve reference equality and eliminate reallocation overhead during React rendering cycles.

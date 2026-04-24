@@ -49,7 +49,7 @@ const PhilosophyPage: React.FC = () => {
         '@id': `${pageUrl}#article`,
         url: pageUrl,
         headline: t('philosophy.page_title'),
-        description: t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName }),
+        description: t('philosophy.cremosidade_desc'),
         author: {
           '@type': 'Person',
           '@id': `${ARTIST.site.baseUrl}/#artist`,
@@ -80,10 +80,10 @@ const PhilosophyPage: React.FC = () => {
     <>
       <HeadlessSEO
         title={`${t('philosophy.page_title')} | ${ARTIST.identity.stageName}`}
-        description={t('philosophy.coming_soon_desc', { name: ARTIST.identity.stageName })}
+        description={t('philosophy.cremosidade_desc')}
         url={pageUrl}
         schema={philosophySchema}
-        leadAnswer={t('philosophy_page.cremosidade_desc')}
+        leadAnswer={t('philosophy.cremosidade_desc')}
       />
 
       <div className="min-h-screen bg-background text-white">

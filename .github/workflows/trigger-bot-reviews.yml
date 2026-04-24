@@ -1,0 +1,42 @@
+name: 🤖 Trigger Bot Reviews on Jules PRs
+
+# Quando Jules (google-labs-jules) abre um PR, os outros bots de revisão
+# (CodeRabbit e Codex) não disparam automaticamente por terem filtro de bot-author.
+# Este workflow posta os comandos de trigger como comentário, forçando a revisão.
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  trigger-reviews:
+    name: Trigger CodeRabbit + Codex
+    if: github.event.pull_request.user.login == 'google-labs-jules'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger CodeRabbit review
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: '@coderabbitai review'
+            });
+
+      - name: Trigger Codex review
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: '@codex review'
+            });

@@ -8,8 +8,7 @@ import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { safeUrl } from '../../utils/sanitize';
 
-// ⚡ Bolt: Extract static animation configuration objects to module scope
-// to preserve reference equality and eliminate reallocation overhead during React renders
+// ─── Framer Motion — module-level constants ───────────────────────────────────
 const SCALE_HOVER_VARIANT = { scale: 1.05 };
 const ACHIEVEMENT_HOVER_VARIANT = { scale: 1.1, rotate: 5 };
 

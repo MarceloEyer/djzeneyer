@@ -315,7 +315,7 @@ const PressKitPage: React.FC = () => {
                     <div className="flex-1 text-left">
                       <div className="text-lg font-bold leading-tight text-white">{festival.name}</div>
                       <div className="mt-1 text-sm uppercase tracking-widest text-white/40">
-                        {festival.country} • {/* ⚡ Bolt: Prevent costly object allocation in loop */ String(festival.date).substring(0, 4)}
+                        {festival.country} • {String(festival.date).substring(0, 4)}
                       </div>
                     </div>
                   </motion.div>
