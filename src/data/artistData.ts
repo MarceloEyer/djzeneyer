@@ -419,7 +419,7 @@ export const ARTIST_SCHEMA_BASE = {
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
   alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer performing at international festivals.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
@@ -498,6 +498,15 @@ export const ARTIST_SCHEMA_BASE = {
   performerIn: [
     {
       '@type': 'Event',
+      name: 'Dutch International Zouk Congress 2026',
+      url: 'https://www.dutchzouk.nl/artists',
+      location: {
+        '@type': 'Place',
+        name: 'Netherlands',
+      },
+    },
+    {
+      '@type': 'Event',
       name: 'Lisbon Zouk Marathon 2026',
       url: 'https://www.lisbonzoukmarathon.com/march2026',
       startDate: '2026-03-25',
@@ -505,6 +514,24 @@ export const ARTIST_SCHEMA_BASE = {
       location: {
         '@type': 'Place',
         name: 'Lisbon, Portugal',
+      },
+    },
+    {
+      '@type': 'Event',
+      name: 'Slovenian Zouk Marathon',
+      url: 'https://slovenianzoukmarathon.com/',
+      location: {
+        '@type': 'Place',
+        name: 'Slovenia',
+      },
+    },
+    {
+      '@type': 'Event',
+      name: 'Neo Festival',
+      url: 'https://neozouk.com/',
+      location: {
+        '@type': 'Place',
+        name: 'Brazil',
       },
     },
   ],
