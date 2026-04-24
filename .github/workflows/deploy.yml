@@ -129,8 +129,8 @@ jobs:
       # O Chrome é instalado aqui, explicitamente, só onde é necessário.
       - name: 🎨 Prerender pages (SSG)
         run: |
-          echo "🌐 Installing Chrome for Puppeteer..."
-          npx puppeteer browsers install chrome
+          echo "🌐 Installing Chrome Headless Shell for Puppeteer..."
+          npx puppeteer browsers install chrome-headless-shell
           echo "🎨 Starting prerender..."
           node scripts/prerender.js
           if [ ! -f "dist/index.html" ]; then echo "❌ Prerender failed"; exit 1; fi
