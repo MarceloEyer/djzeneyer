@@ -490,6 +490,11 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'WebPage',
+      url: 'https://renatapecanha.wixsite.com/zoukinrio/c%C3%B3pia-artistas',
+      name: 'Zouk in Rio — Artists and Deejays',
+    },
+    {
+      '@type': 'WebPage',
       url: 'https://danxer.com/artist/1022/zen-eyer',
       name: 'Zen Eyer — Danxer Artist Profile',
     },
@@ -532,6 +537,15 @@ export const ARTIST_SCHEMA_BASE = {
       location: {
         '@type': 'Place',
         name: 'Brazil',
+      },
+    },
+    {
+      '@type': 'Event',
+      name: 'Zouk in Rio 2026',
+      url: 'https://renatapecanha.wixsite.com/zoukinrio/c%C3%B3pia-artistas',
+      location: {
+        '@type': 'Place',
+        name: 'Rio de Janeiro, Brazil',
       },
     },
   ],
