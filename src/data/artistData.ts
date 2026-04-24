@@ -420,7 +420,7 @@ export const ARTIST_SCHEMA_BASE = {
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
   alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
-  description: 'Zen Eyer is a Brazilian Zouk DJ, music producer and remixer.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer', 'Remixer'],
   url: ARTIST.site.baseUrl,
