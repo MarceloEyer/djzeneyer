@@ -208,7 +208,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           publisher: { '@id': `${baseUrl}/#artist` },
           inLanguage: ['en', 'pt-BR'],
         },
-        { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` },
+        ARTIST_SCHEMA_BASE,
         {
           '@type': 'WebPage',
           '@id': `${baseUrl}/#webpage`,
@@ -430,7 +430,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
               name: 'DJ Zen Eyer',
               publisher: { '@id': `${baseUrl}/#artist` },
             },
-            { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` }
+            ARTIST_SCHEMA_BASE
           ] : []),
           webPageSchema,
           ...dynamicGraph
@@ -450,7 +450,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             publisher: { '@id': `${baseUrl}/#artist` },
             inLanguage: ['en', 'pt-BR'],
           },
-          { ...ARTIST_SCHEMA_BASE, '@id': `${baseUrl}/#artist` },
+          ARTIST_SCHEMA_BASE,
           webPageSchema,
         ],
       };

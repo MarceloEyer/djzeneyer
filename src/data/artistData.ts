@@ -466,4 +466,36 @@ export const ARTIST_SCHEMA_BASE = {
     'Remixing',
     'Cremosidade',
   ],
+  // A página About é a Entity Home canônica da Person no Knowledge Graph
+  mainEntityOfPage: {
+    '@id': `${ARTIST.site.baseUrl}/about#webpage`,
+  },
+  // Provas externas: páginas públicas indexáveis que falam sobre o artista
+  subjectOf: [
+    {
+      '@type': 'WebPage',
+      url: 'https://pt.everybodywiki.com/DJ_Zen_Eyer',
+      name: 'DJ Zen Eyer — EverybodyWiki',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://myza.co.za/entertainment/brazilian-dj-zen-eyer-and-kaysha-unite-brazil-and-africa-in-epic-zouk-remix-of-diamonds/',
+      name: 'Brazilian DJ Zen Eyer and Kaysha Unite Brazil and Africa — MyZA Entertainment',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://timebusinessnews.com/the-global-rise-of-brazilian-zouk-music-and-cultural-evolution/',
+      name: 'The Global Rise of Brazilian Zouk Music — Time Business News',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://danxer.com/artist/1022/zen-eyer',
+      name: 'Zen Eyer — Danxer Artist Profile',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
+      name: 'DJ Zen Eyer — World Champion DJ — Ilha do Zouk',
+    },
+  ],
 };

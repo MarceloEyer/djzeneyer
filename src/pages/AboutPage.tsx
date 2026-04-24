@@ -87,10 +87,7 @@ const AboutPage: React.FC = () => {
   const ABOUT_SCHEMA = useMemo(() => ({
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        ...ARTIST_SCHEMA_BASE,
-        '@id': `${artist.site.baseUrl}/#artist`,
-      },
+      ARTIST_SCHEMA_BASE,
       {
         '@type': 'ProfilePage',
         '@id': `${currentUrl}#webpage`,
