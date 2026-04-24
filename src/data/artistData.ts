@@ -422,18 +422,48 @@ export const ARTIST_SCHEMA_BASE = {
   alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
   description: 'Zen Eyer is a Brazilian Zouk DJ, music producer and remixer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
-  jobTitle: 'DJ and Music Producer',
+  jobTitle: ['DJ', 'Music Producer', 'Remixer'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: ARTIST_SCHEMA_SAME_AS,
+  identifier: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Wikidata',
+      value: 'Q136551855',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'MusicBrainz',
+      value: '13afa63c-8164-4697-9cad-c5100062a154',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Spotify',
+      value: '68SHKGndTlq3USQ2LZmyLw',
+    },
+  ],
   nationality: {
     '@type': 'Country',
     name: 'Brazil',
   },
+  award: [
+    {
+      '@type': 'Award',
+      name: 'World Champion Brazilian Zouk DJ - Best DJ Performance',
+      datePublished: '2022',
+    },
+    {
+      '@type': 'Award',
+      name: 'World Champion Brazilian Zouk DJ - Best Remix',
+      datePublished: '2022',
+    },
+  ],
   knowsAbout: [
     'Brazilian Zouk',
     'DJing',
     'Music Production',
     'Remixing',
+    'Cremosidade',
   ],
 };
