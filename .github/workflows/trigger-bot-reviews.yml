@@ -1,8 +1,9 @@
-name: 🤖 Trigger Bot Reviews on Bot PRs
+name: 🤖 Trigger All Bot Reviews
 
-# CodeRabbit e Codex não disparam automaticamente em PRs criados por bots
-# (proteção anti-bot-war por padrão). Este workflow posta os comandos de
-# trigger como comentário, forçando a revisão automática em TODOS os PRs de bots.
+# CodeRabbit e Codex não disparam em PRs de bots por padrão (anti-bot-war).
+# Jules não tem auto-review nativo.
+# Este workflow garante que os 3 bots revisem TODOS os PRs — de bots ou humanos.
+# Única exclusão: coderabbitai[bot] (review-only bot, nunca cria PRs de código).
 
 on:
   pull_request:
@@ -13,13 +14,8 @@ permissions:
 
 jobs:
   trigger-reviews:
-    name: Trigger CodeRabbit + Codex
-    if: |
-      github.event.pull_request.user.login == 'google-labs-jules' ||
-      github.event.pull_request.user.login == 'dependabot[bot]' ||
-      github.event.pull_request.user.login == 'snyk-bot' ||
-      github.event.pull_request.user.login == 'renovate[bot]' ||
-      github.event.pull_request.user.login == 'github-actions[bot]'
+    name: Trigger CodeRabbit + Codex + Jules
+    if: github.event.pull_request.user.login != 'coderabbitai[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger CodeRabbit review
@@ -44,4 +40,16 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
               body: '@codex review'
+            });
+
+      - name: Trigger Jules review
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: '@jules Por favor, revise este PR. Verifique qualidade do código, possíveis bugs, impactos de performance e conformidade com as regras do projeto (stack: React 19 + TypeScript 6 + Vite 8 + WordPress Headless PHP 8.3).'
             });
