@@ -42,12 +42,12 @@ const MyAccountContent: React.FC = () => {
   const { data: gamipress, loading: loadingGP, error: errorGP } = useGamiPressContext();
 
   // Sync state correctly if parameter changes externally while page is mounted
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab && tab !== activeTab) {
-      setActiveTab(tab);
-    }
-  }, [searchParams, activeTab]);
+  // Avoid setting state in effect. We can just derive the tab from searchParams,
+  // or handle the searchParams updates strictly via handleTabChange.
+  // Actually, deriving state during render is better:
+  if (searchParams.get('tab') && searchParams.get('tab') !== activeTab) {
+    setActiveTab(searchParams.get('tab') as string);
+  }
 
   // Handle manual tab switching and URL update
   const handleTabChange = React.useCallback((tabId: string) => {
@@ -68,12 +68,16 @@ const MyAccountContent: React.FC = () => {
   const [profileSaved, setProfileSaved] = useState(false);
 
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS DO BRAIN (GamiPress)
+  // Ensure we use precise dependencies for the memoization or avoid manual memoization objects if simple.
+  const rankNewMember = t('dashboard.rank_new_member');
+  const rankZenNovice = t('dashboard.rank_zen_novice');
+
   const userStats: UserStats = useMemo(() => {
-    if (!user || !gamipress) {
+    if (!gamipress) {
       return {
         level: 0,
         xp: 0,
-        rank: t('dashboard.rank_new_member'),
+        rank: rankNewMember,
         xpToNext: 0,
         totalAchievements: 0,
         recentAchievements: 0
@@ -81,10 +85,8 @@ const MyAccountContent: React.FC = () => {
     }
 
     const mainPoints = gamipress.points.points?.amount || 0;
-    const currentRank = gamipress.rank?.current?.title || t('dashboard.rank_zen_novice');
+    const currentRank = gamipress.rank?.current?.title || rankZenNovice;
 
-    // Defer level logic to the "Brain" or keep simple visual level (100pt/lvl) if not provided by API
-    // Per Dashboard_CONTEXT.md, Brain should return high-level data.
     const level = Math.floor(mainPoints / 100) + 1;
     const xpToNext = gamipress.rank?.next ? (100 - (mainPoints % 100)) : 0;
     const totalAchievements = Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0;
@@ -98,7 +100,7 @@ const MyAccountContent: React.FC = () => {
       totalAchievements,
       recentAchievements
     };
-  }, [user, gamipress, t]);
+  }, [gamipress, rankNewMember, rankZenNovice]);
 
   // Redirect se não logado
   useEffect(() => {
@@ -115,18 +117,19 @@ const MyAccountContent: React.FC = () => {
   const { data: orders = [], isLoading: loadingOrders } = useUserOrdersQuery(user?.id, user?.token, 5);
 
   // Sync profile data to form state
-  useEffect(() => {
-    if (profileData) {
-      setProfileForm({
-        realName: profileData.real_name || user?.name || '',
-        preferredName: profileData.preferred_name || '',
-        facebookUrl: profileData.facebook_url || '',
-        instagramUrl: profileData.instagram_url || '',
-        danceRole: profileData.dance_role || [],
-        gender: profileData.gender || '',
-      });
-    }
-  }, [profileData, user?.name]);
+  const [prevProfileData, setPrevProfileData] = useState(profileData);
+  if (profileData && profileData !== prevProfileData) {
+    setPrevProfileData(profileData);
+    setProfileForm((prev) => ({
+      ...prev,
+      realName: profileData.real_name || user?.name || '',
+      preferredName: profileData.preferred_name || '',
+      facebookUrl: profileData.facebook_url || '',
+      instagramUrl: profileData.instagram_url || '',
+      danceRole: profileData.dance_role || [],
+      gender: profileData.gender || '',
+    }));
+  }
 
 
   const handleLogout = React.useCallback(() => {

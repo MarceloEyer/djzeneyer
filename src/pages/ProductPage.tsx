@@ -44,42 +44,52 @@ const ProductPage: React.FC = () => {
   );
   const placeholderImage = 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer';
 
-  const fetchProduct = useCallback(async () => {
-    if (!slug) {
-      setError(t('shop.product_not_found'));
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    const baseUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || `${window.location.origin}/wp-json/`;
-    const apiUrl = `${baseUrl}djzeneyer/v1/products?slug=${encodeURIComponent(slug)}&lang=${currentLang}`;
-
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`${t('shop.generic_error')}: ${response.status}`);
-      const data = await response.json();
-      const nextProduct = Array.isArray(data) ? data[0] : null;
-      if (!nextProduct) {
-        setError(t('shop.product_not_found'));
-      } else {
-        setProduct(nextProduct);
-        setActiveImage(nextProduct.images?.[0]?.src || null);
-      }
-    } catch (err) {
-      const error = err as Error;
-      console.error('Error fetching product:', error);
-      setError(error.message || t('shop.generic_error'));
-    } finally {
-      setLoading(false);
-    }
-  }, [slug, t, currentLang]);
-
   useEffect(() => {
+    let isMounted = true;
+
+    const fetchProduct = async () => {
+      if (!slug) {
+        if (isMounted) {
+          setError(t('shop.product_not_found'));
+          setLoading(false);
+        }
+        return;
+      }
+      const baseUrl = (window as unknown as { wpData?: { restUrl: string } }).wpData?.restUrl || `${window.location.origin}/wp-json/`;
+      const apiUrl = `${baseUrl}djzeneyer/v1/products?slug=${encodeURIComponent(slug)}&lang=${currentLang}`;
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`${t('shop.generic_error')}: ${response.status}`);
+        const data = await response.json();
+        const nextProduct = Array.isArray(data) ? data[0] : null;
+
+        if (isMounted) {
+          if (!nextProduct) {
+            setError(t('shop.product_not_found'));
+          } else {
+            setProduct(nextProduct);
+            setActiveImage(nextProduct.images?.[0]?.src || null);
+            setError(null);
+          }
+          setLoading(false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          const error = err as Error;
+          console.error('Error fetching product:', error);
+          setError(error.message || t('shop.generic_error'));
+          setLoading(false);
+        }
+      }
+    };
+
     fetchProduct();
-  }, [fetchProduct]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug, currentLang, t]);
   const addToCart = async () => {
     if (!product) return;
     setAddingToCart(true);
@@ -113,10 +123,11 @@ const ProductPage: React.FC = () => {
       : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   }, [isPortuguese]);
 
+  const productImages = product?.images;
   const gallery = useMemo(() => {
-    if (!product?.images?.length) return [];
-    return product.images.filter((img) => img?.src);
-  }, [product?.images]);
+    if (!productImages?.length) return [];
+    return productImages.filter((img) => img?.src);
+  }, [productImages]);
 
   if (loading) {
     return (
