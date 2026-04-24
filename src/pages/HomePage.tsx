@@ -10,7 +10,7 @@ import {
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST, ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_ALIAS } from '../data/artistData';
 import { EventsList } from '../components/EventsList';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
@@ -153,6 +153,9 @@ const HomePage: React.FC = () => {
             "skills": "Audio Engineering, Remixing, Mastering"
           },
         ],
+      },
+      {
+        ...ARTIST_SCHEMA_ALIAS,
       },
       {
         "@type": "WebPage",

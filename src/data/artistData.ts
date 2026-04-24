@@ -503,3 +503,12 @@ export const ARTIST_SCHEMA_BASE = {
     },
   ],
 };
+
+export const ARTIST_SCHEMA_ALIAS = {
+  '@type': 'Person',
+  '@id': `${ARTIST.site.baseUrl}/#artist-alias`,
+  name: ARTIST.identity.shortName,
+  alternateName: ARTIST.identity.stageName,
+  jobTitle: 'DJ',
+  genre: 'Brazilian Zouk',
+};

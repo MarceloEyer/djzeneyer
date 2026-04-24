@@ -129,6 +129,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 18. **Lint Scope Guard**: `eslint.config.js` deve ignorar diretórios de infraestrutura de agentes/worktrees (`.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`) para evitar conflito de múltiplos `tsconfig` e manter o lint focado no app principal.
 19. **Framer Motion variants**: objetos `variants` (e equivalentes estáticos como `whileHover/whileTap`) DEVEM ser declarados no escopo de módulo (fora de qualquer função/componente), especialmente quando o componente usa `React.memo`. Declarar dentro do componente cria nova referência por render → `React.memo` torna-se ineficaz. Objetos state-dependentes (ex: `animate={{ height: isOpen ? 'auto' : 0 }}`) são a única exceção válida para inline.
 20. **Bot Auto-Review**: o workflow `.github/workflows/trigger-bot-reviews.yml` deve comentar automaticamente `@coderabbitai review`, `@codex review` e `@jules` em todo PR aberto/reaberto/synchronize, inclusive PRs criados por bots. Se isso parar de acontecer, primeiro valide se o workflow existe na branch default e se `issues: write` / `pull-requests: write` estão disponíveis.
+21. **Person Schema Alias**: o grafo JSON-LD canônico deve manter `ARTIST_SCHEMA_BASE` e também publicar o alias `ARTIST_SCHEMA_ALIAS` com `name: 'Zen Eyer'`, `alternateName: 'DJ Zen Eyer'`, `jobTitle: 'DJ'` e `genre: 'Brazilian Zouk'` quando montar páginas de SEO e homepage/about.
 
 ## ZenGame / GamiPress — Contratos e Armadilhas
 
