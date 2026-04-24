@@ -108,6 +108,10 @@ export interface WCProduct {
   lang?: string;
 }
 
+export interface WCProductDetail extends WCProduct {
+  description?: string;
+}
+
 export interface ShopPageViewModel {
   products: WCProduct[];
   featured?: WCProduct[];
@@ -335,6 +339,23 @@ export const fetchProductsFn = async (
   return Array.isArray(data) ? data : [];
 };
 
+export const fetchProductFn = async (
+  lang?: string,
+  slug?: string
+): Promise<WCProductDetail | null> => {
+  if (!slug) return null;
+
+  const params: Record<string, string> = { slug };
+  if (lang) params.lang = lang;
+
+  const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch product');
+
+  const data = await res.json();
+  return Array.isArray(data) ? (data[0] as WCProductDetail | undefined) ?? null : null;
+};
+
 export const fetchProductCollectionsFn = async (
   lang?: string,
   limit = 10
@@ -534,6 +555,15 @@ export const useProductsQuery = (lang?: string, filters: Record<string, string> 
     queryKey: [...QUERY_KEYS.products.list(lang), filters],
     queryFn: () => fetchProductsFn(lang, filters),
     staleTime: STALE_TIME.PRODUCTS,
+  });
+};
+
+export const useProductQuery = (lang?: string, slug?: string) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.products.detail(slug || ''), lang],
+    queryFn: () => fetchProductFn(lang, slug),
+    staleTime: STALE_TIME.PRODUCTS,
+    enabled: Boolean(slug),
   });
 };
 

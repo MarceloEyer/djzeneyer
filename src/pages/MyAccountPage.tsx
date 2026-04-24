@@ -68,6 +68,7 @@ const MyAccountContent: React.FC = () => {
   const [profileSaved, setProfileSaved] = useState(false);
 
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS DO BRAIN (GamiPress)
+  // Ensure we use precise dependencies for the memoization or avoid manual memoization objects if simple.
   const userStats: UserStats = useMemo(() => {
     if (!user || !gamipress) {
       return {
