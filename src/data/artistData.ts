@@ -50,7 +50,7 @@ export const ARTIST = {
   stats: {
     startingYear: START_YEAR,
     yearsActive: CURRENT_YEAR - START_YEAR,
-    countriesPlayed: 10,
+    countriesPlayed: 14, // 🇧🇷🇺🇸🇩🇪🇵🇱🇸🇮🇦🇺🇳🇱🇵🇹🇨🇿🇨🇭🇪🇸🇭🇷🇮🇹🇮🇪 — Lituânia em breve (→15)
     lastUpdated: new Date().toISOString().split('T')[0],
   },
 
