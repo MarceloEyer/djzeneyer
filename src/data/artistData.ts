@@ -50,7 +50,7 @@ export const ARTIST = {
   stats: {
     startingYear: START_YEAR,
     yearsActive: CURRENT_YEAR - START_YEAR,
-    countriesPlayed: 10,
+    countriesPlayed: 15, // 🇧🇷🇺🇸🇩🇪🇵🇱🇸🇮🇦🇺🇳🇱🇵🇹🇨🇿🇨🇭🇪🇸🇭🇷🇮🇹🇮🇪🇱🇹
     lastUpdated: new Date().toISOString().split('T')[0],
   },
 
@@ -401,18 +401,28 @@ export const getWhatsAppUrl = (message?: string) => {
 
 // Schema.org Person base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
-  'https://www.google.com/search?kgmid=/g/11ff3mhh10',
+  // Authoritative databases (semantically rich first)
   'https://www.wikidata.org/wiki/Q136551855',
+  // Knowledge Graph anchor (Kalicube best practice — after semantic source)
+  'https://www.google.com/search?kgmid=/g/11ff3mhh10',
   'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
   'https://www.discogs.com/artist/16872046',
+  // Streaming / music platforms
   'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
   'https://music.apple.com/artist/1439280950',
   'https://www.deezer.com/artist/52900762',
   'https://soundcloud.com/djzeneyer',
+  // Social / video
   'https://www.instagram.com/djzeneyer/',
-  'https://www.youtube.com/@djzeneyer',
+  'https://www.youtube.com/channel/UCJ_5oAEFTG18jga_JFxG00w',
   'https://www.tiktok.com/@djzeneyer',
+  // Live / touring platforms
   'https://www.songkick.com/artists/8815204',
+  'https://www.bandsintown.com/a/15619775',
+  'https://ra.co/dj/djzeneyer',
+  // Artist directories
+  'https://genius.com/artists/Zen-eyer',
+  'https://www.viberate.com/artist/zen-eyer/',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
@@ -420,7 +430,7 @@ export const ARTIST_SCHEMA_BASE = {
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
   alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer performing at international festivals.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
@@ -500,16 +510,19 @@ export const ARTIST_SCHEMA_BASE = {
       name: 'Zen Eyer — Danxer Artist Profile',
     },
   ],
-  // Eventos reais em que Zen Eyer é performer — prova direta de atuação
+  // Eventos reais em que Zen Eyer é performer — prova direta de atuação (bidirecional com performerIn)
   performerIn: [
     {
       '@type': 'Event',
       name: 'Dutch International Zouk Congress 2026',
-      url: 'https://www.dutchzouk.nl/artists',
+      url: 'https://www.dutchzouk.nl/',
+      startDate: '2026-10-15',
+      endDate: '2026-10-18',
       location: {
         '@type': 'Place',
-        name: 'Netherlands',
+        name: 'Etten-Leur, Netherlands',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
@@ -521,33 +534,55 @@ export const ARTIST_SCHEMA_BASE = {
         '@type': 'Place',
         name: 'Lisbon, Portugal',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
-      name: 'Slovenian Zouk Marathon',
+      name: 'Slovenian Zouk Marathon 2026',
       url: 'https://slovenianzoukmarathon.com/',
+      startDate: '2026-04-09',
+      endDate: '2026-04-13',
       location: {
         '@type': 'Place',
-        name: 'Slovenia',
+        name: 'Ljubljana, Slovenia',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
-      name: 'Neo Festival',
+      name: 'Neo Festival 2026',
       url: 'https://neozouk.com/',
+      startDate: '2026-01-04',
+      endDate: '2026-01-07',
       location: {
         '@type': 'Place',
-        name: 'Brazil',
+        name: 'Rio de Janeiro, Brazil',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
       name: 'Zouk in Rio 2026',
       url: 'https://renatapecanha.wixsite.com/zoukinrio/c%C3%B3pia-artistas',
+      startDate: '2026-06-26',
+      endDate: '2026-06-28',
       location: {
         '@type': 'Place',
         name: 'Rio de Janeiro, Brazil',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+    },
+    {
+      '@type': 'Event',
+      name: 'Ilha do Zouk',
+      url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
+      startDate: '2022-04-20',
+      endDate: '2022-04-24',
+      location: {
+        '@type': 'Place',
+        name: 'Ilha Grande, Rio de Janeiro, Brazil',
+      },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
   ],
 };

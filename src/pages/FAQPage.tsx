@@ -65,7 +65,7 @@ const CATEGORIES = ['djzeneyer', 'rankings', 'technical', 'culture', 'community'
 // COMPONENTE PRINCIPAL
 // ============================================================================
 const FAQPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const [openIndex, setOpenIndex] = useState<string | null>(null);
 
@@ -85,11 +85,16 @@ const FAQPage: React.FC = () => {
         cat === 'technical' ? <Brain size={24} /> :
           cat === 'culture' ? <HeartPulse size={24} /> :
             <Users size={24} />,
-    questions: ['q1', 'q2', 'q3'].map(qKey => ({
-      question: t(`faq.categories.${cat}.${qKey}.q`),
-      answer: t(`faq.categories.${cat}.${qKey}.a`)
-    }))
-  })), [t]);
+    questions: (cat === 'djzeneyer' ? ['q1', 'q2', 'q3', 'q4'] : ['q1', 'q2', 'q3'])
+      .filter(qKey =>
+        i18n.exists(`faq.categories.${cat}.${qKey}.q`) &&
+        i18n.exists(`faq.categories.${cat}.${qKey}.a`)
+      )
+      .map(qKey => ({
+        question: t(`faq.categories.${cat}.${qKey}.q`),
+        answer: t(`faq.categories.${cat}.${qKey}.a`)
+      }))
+  })), [t, i18n]);
 
   // SSR/Prerender context
   const currentUrl = useMemo(

@@ -1113,6 +1113,17 @@
       "desc": "Se você se identificou com essa história ou quer saber mais sobre a filosofia por trás da minha música, adoro conhecer pessoas que também acreditam no poder da conexão através da arte.",
       "button": "Compartilhe Sua História",
       "whatsapp_msg": "Olá Zen! Vi sua história no site e gostaria de compartilhar a minha também."
+    },
+    "performed_at": {
+      "title": "Tocando em <1>Festivais Internacionais</1>",
+      "subtitle": "Zen Eyer é DJ e produtor musical de Zouk Brasileiro, se apresentando em festivais internacionais.",
+      "badge": "Tour Mundial",
+      "countries": {
+        "Netherlands": "Holanda",
+        "Portugal": "Portugal",
+        "Slovenia": "Eslovênia",
+        "Brazil": "Brasil"
+      }
     }
   },
   "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
@@ -1168,6 +1179,10 @@
         "q3": {
           "q": "Quais são os principais títulos e conquistas do Zen Eyer?",
           "a": "Em 2022, Zen Eyer conquistou dois títulos de peso no Ilha do Zouk: <strong>Melhor Performance DJ</strong> e <strong>Melhor Remix</strong>. Ele também é DJ oficial de grandes congressos como o Rio Zouk Congress (da pioneira Renata Peçanha). No entanto, ele valoriza mais as amizades e as conexões criadas através da música do que os troféus."
+        },
+        "q4": {
+          "q": "Onde Zen Eyer se apresenta internacionalmente?",
+          "a": "Zen Eyer se apresenta nos principais festivais de Zouk Brasileiro ao redor do mundo. Eventos recentes e futuros incluem o <strong>Dutch International Zouk Congress</strong> (Holanda), <strong>Lisbon Zouk Marathon</strong> (Portugal), <strong>Slovenian Zouk Marathon</strong> (Eslovênia), <strong>Neo Festival</strong> (Brasil) e <strong>Zouk in Rio</strong> (Brasil). Ele também é DJ oficial do histórico <strong>Rio Zouk Congress</strong> no Rio de Janeiro."
         }
       },
       "rankings": {
@@ -1480,6 +1495,13 @@
       "genre": "Gênero Principal",
       "links": "Links Úteis & Redes Sociais",
       "whatsapp_message": "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking. Como podemos prosseguir?"
+    },
+    "canonical_bio": {
+      "title": "Bio para Imprensa e Organizadores",
+      "subtitle": "Copie e cole nos materiais de imprensa do seu evento.",
+      "copy_button": "Copiar Bio",
+      "copied": "Copiado!",
+      "text": "Zen Eyer (Marcelo Eyer Fernandes) é DJ e produtor musical de Zouk Brasileiro, se apresentando em festivais internacionais. Nascido em Niterói, Rio de Janeiro, conquistou dois títulos mundiais no Ilha do Zouk 2022 (Melhor Performance DJ e Melhor Remix) e é membro da Mensa International. Conhecido pelo seu estilo de 'cremosidade' — sets fluidos e sem pressa que priorizam a conexão profunda na pista — Zen Eyer já se apresentou em grandes festivais de Zouk no Brasil, Europa e Américas, incluindo o Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon e Rio Zouk Congress."
     }
   },
   "support": {

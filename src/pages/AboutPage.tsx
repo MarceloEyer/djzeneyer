@@ -51,6 +51,14 @@ const CTA_HOVER = { scale: 1.05 };
 const CTA_TAP = { scale: 0.95 };
 
 
+const PERFORMED_AT_EVENTS = [
+  { name: 'Dutch International Zouk Congress', country: 'Netherlands', flag: '🇳🇱', url: 'https://www.dutchzouk.nl/artists' },
+  { name: 'Lisbon Zouk Marathon', country: 'Portugal', flag: '🇵🇹', url: 'https://www.lisbonzoukmarathon.com/march2026' },
+  { name: 'Slovenian Zouk Marathon', country: 'Slovenia', flag: '🇸🇮', url: 'https://slovenianzoukmarathon.com/' },
+  { name: 'Neo Festival', country: 'Brazil', flag: '🇧🇷', url: 'https://neozouk.com/' },
+  { name: 'Zouk in Rio', country: 'Brazil', flag: '🇧🇷', url: 'https://renatapecanha.wixsite.com/zoukinrio/c%C3%B3pia-artistas' },
+] as const;
+
 const MILESTONE_VARIANTS = {
   hidden: { opacity: 0, y: 18, scale: 0.98 },
   visible: (index: number) => ({
@@ -264,6 +272,54 @@ const AboutPage: React.FC = () => {
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p5')) }} />
               <p className="text-primary font-semibold" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p6')) }} />
             </motion.div>
+          </div>
+        </section>
+
+        {/* Performed At Section */}
+        <section className="py-16 px-4 relative z-10 bg-surface/20">
+          <div className="container mx-auto max-w-5xl">
+            <motion.div
+              initial={FADE_IN_UP_INITIAL}
+              whileInView={FADE_IN_UP_ANIMATE}
+              viewport={VIEWPORT_ONCE}
+              transition={FADE_IN_UP_TRANSITION}
+              className="text-center mb-10"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-5 text-xs font-bold tracking-widest uppercase">
+                <Globe size={14} /> {t('about.performed_at.badge')}
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-display font-bold mb-4">
+                <Trans i18nKey="about.performed_at.title">
+                  Performing at International <span className="text-primary">Festivals</span>
+                </Trans>
+              </h2>
+              <p className="text-white/50 max-w-xl mx-auto text-base leading-relaxed">
+                {t('about.performed_at.subtitle')}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {PERFORMED_AT_EVENTS.map((event, index) => (
+                <motion.a
+                  key={index}
+                  href={event.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={prefersReducedMotion ? false : 'hidden'}
+                  whileInView={prefersReducedMotion ? undefined : 'visible'}
+                  viewport={VIEWPORT_ONCE_MARGIN}
+                  custom={index}
+                  variants={prefersReducedMotion ? undefined : ITEM_VARIANTS}
+                  className="group flex items-center gap-4 rounded-xl border border-white/10 bg-surface/40 p-4 transition-all hover:border-primary/40 hover:bg-surface/60"
+                >
+                  <span className="text-3xl grayscale transition-all duration-500 group-hover:grayscale-0 flex-shrink-0">{event.flag}</span>
+                  <div className="min-w-0">
+                    <div className="text-base font-bold text-white leading-tight group-hover:text-primary transition-colors truncate">{event.name}</div>
+                    <div className="text-xs text-white/40 uppercase tracking-widest mt-1">{t(`about.performed_at.countries.${event.country}`, event.country)}</div>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
           </div>
         </section>
 
