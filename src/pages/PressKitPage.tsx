@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -21,7 +21,9 @@ import {
   PlayCircle,
   Radio,
   Database,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Check
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../data/artistData';
@@ -83,6 +85,14 @@ const PressKitPage: React.FC = () => {
 
   const currentPath = location.pathname;
   const currentUrl = `https://djzeneyer.com${currentPath}`;
+
+  const [isCopied, setIsCopied] = useState(false);
+  const handleCopyBio = useCallback(() => {
+    navigator.clipboard.writeText(t('presskit.canonical_bio.text')).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500);
+    });
+  }, [t]);
 
   const relevantLinks = useMemo(
     () => [
@@ -286,6 +296,38 @@ const PressKitPage: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Canonical Bio for Press & Organizers */}
+        <section className="py-12 sm:py-16">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mx-auto max-w-4xl"
+            >
+              <div className="rounded-2xl border border-white/10 bg-surface/40 p-6 sm:p-8">
+                <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-white">{t('presskit.canonical_bio.title')}</h2>
+                    <p className="mt-1 text-sm text-white/40">{t('presskit.canonical_bio.subtitle')}</p>
+                  </div>
+                  <button
+                    onClick={handleCopyBio}
+                    className="flex items-center gap-2 rounded-xl bg-primary/20 px-5 py-2.5 text-sm font-bold text-primary transition-all hover:bg-primary/30 min-h-[44px]"
+                  >
+                    {isCopied ? <Check size={16} /> : <Copy size={16} />}
+                    {isCopied ? t('presskit.canonical_bio.copied') : t('presskit.canonical_bio.copy_button')}
+                  </button>
+                </div>
+                <div className="rounded-xl bg-black/40 p-5 sm:p-6 text-sm leading-relaxed text-white/70 select-all border border-white/5 cursor-text">
+                  {t('presskit.canonical_bio.text')}
                 </div>
               </div>
             </motion.div>

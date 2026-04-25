@@ -1110,6 +1110,10 @@
         "q3": {
           "q": "What are Zen Eyer's main titles and achievements?",
           "a": "In 2022, Zen Eyer won two prestigious titles at Ilha do Zouk: <strong>Best DJ Performance</strong> and <strong>Best Remix</strong>. He is also an official DJ for major congresses like Rio Zouk Congress (by pioneer Renata Peçanha). However, he values friendships and the connections created through music more than the trophies."
+        },
+        "q4": {
+          "q": "Where does Zen Eyer perform internationally?",
+          "a": "Zen Eyer performs at top Brazilian Zouk festivals around the world. Recent and upcoming events include the <strong>Dutch International Zouk Congress</strong> (Netherlands), <strong>Lisbon Zouk Marathon</strong> (Portugal), <strong>Slovenian Zouk Marathon</strong> (Slovenia), <strong>Neo Festival</strong> (Brazil), and <strong>Zouk in Rio</strong> (Brazil). He is also an official DJ for the historic <strong>Rio Zouk Congress</strong> in Rio de Janeiro."
         }
       },
       "rankings": {
@@ -1415,6 +1419,13 @@
       "genre": "Main Genre",
       "links": "Useful Links & Social Media",
       "whatsapp_message": "Hello Zen Eyer! I'd like to talk about a possible collaboration or booking. How can we proceed?"
+    },
+    "canonical_bio": {
+      "title": "Bio for Press & Organizers",
+      "subtitle": "Copy and paste for your event's press materials.",
+      "copy_button": "Copy Bio",
+      "copied": "Copied!",
+      "text": "Zen Eyer (Marcelo Eyer Fernandes) is a Brazilian Zouk DJ and music producer performing at international festivals. Born in Niterói, Rio de Janeiro, he won two world titles at Ilha do Zouk 2022 (Best DJ Performance and Best Remix) and is a member of Mensa International. Known for his signature 'cremosidade' style — fluid, unhurried sets that prioritize deep connection on the dance floor — Zen Eyer has performed at major Zouk festivals across Brazil, Europe, and the Americas, including the Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon, and Rio Zouk Congress."
     }
   },
   "events_add_google": "Add to Calendar",
@@ -1647,7 +1658,12 @@
       "button": "Share Your Story",
       "whatsapp_msg": "Hello Zen! I saw your story on the website and would like to share mine too."
     },
-    "bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush."
+    "bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
+    "performed_at": {
+      "title": "Performing at International <1>Festivals</1>",
+      "subtitle": "Zen Eyer is a Brazilian Zouk DJ and music producer performing at international festivals.",
+      "badge": "World Tour"
+    }
   },
   "quiz_you_are": "You are...",
   "contact": "Contact",
