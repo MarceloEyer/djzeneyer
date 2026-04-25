@@ -401,10 +401,10 @@ export const getWhatsAppUrl = (message?: string) => {
 
 // Schema.org Person base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
-  // Knowledge Graph anchor (Kalicube best practice)
-  'https://www.google.com/search?kgmid=/g/11ff3mhh10',
-  // Authoritative databases
+  // Authoritative databases (semantically rich first)
   'https://www.wikidata.org/wiki/Q136551855',
+  // Knowledge Graph anchor (Kalicube best practice — after semantic source)
+  'https://www.google.com/search?kgmid=/g/11ff3mhh10',
   'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
   'https://www.discogs.com/artist/16872046',
   // Streaming / music platforms
@@ -430,7 +430,7 @@ export const ARTIST_SCHEMA_BASE = {
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
   alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer performing at international festivals.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
@@ -561,7 +561,7 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'Event',
-      name: 'Ilha do Zouk DJ Championship',
+      name: 'Ilha do Zouk',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
       location: {
         '@type': 'Place',
