@@ -315,7 +315,7 @@ const AboutPage: React.FC = () => {
                   <span className="text-3xl grayscale transition-all duration-500 group-hover:grayscale-0 flex-shrink-0">{event.flag}</span>
                   <div className="min-w-0">
                     <div className="text-base font-bold text-white leading-tight group-hover:text-primary transition-colors truncate">{event.name}</div>
-                    <div className="text-xs text-white/40 uppercase tracking-widest mt-1">{event.country}</div>
+                    <div className="text-xs text-white/40 uppercase tracking-widest mt-1">{t(`about.performed_at.countries.${event.country}`, event.country)}</div>
                   </div>
                 </motion.a>
               ))}

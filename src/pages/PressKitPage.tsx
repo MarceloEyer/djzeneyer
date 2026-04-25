@@ -91,6 +91,8 @@ const PressKitPage: React.FC = () => {
     navigator.clipboard.writeText(t('presskit.canonical_bio.text')).then(() => {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2500);
+    }).catch(() => {
+      setIsCopied(false);
     });
   }, [t]);
 

@@ -1662,7 +1662,13 @@
     "performed_at": {
       "title": "Performing at International <1>Festivals</1>",
       "subtitle": "Zen Eyer is a Brazilian Zouk DJ and music producer performing at international festivals.",
-      "badge": "World Tour"
+      "badge": "World Tour",
+      "countries": {
+        "Netherlands": "Netherlands",
+        "Portugal": "Portugal",
+        "Slovenia": "Slovenia",
+        "Brazil": "Brazil"
+      }
     }
   },
   "quiz_you_are": "You are...",

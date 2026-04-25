@@ -1117,7 +1117,13 @@
     "performed_at": {
       "title": "Tocando em <1>Festivais Internacionais</1>",
       "subtitle": "Zen Eyer é DJ e produtor musical de Zouk Brasileiro, se apresentando em festivais internacionais.",
-      "badge": "Tour Mundial"
+      "badge": "Tour Mundial",
+      "countries": {
+        "Netherlands": "Holanda",
+        "Portugal": "Portugal",
+        "Slovenia": "Eslovênia",
+        "Brazil": "Brasil"
+      }
     }
   },
   "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
