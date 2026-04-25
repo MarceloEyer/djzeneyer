@@ -401,6 +401,7 @@ export const getWhatsAppUrl = (message?: string) => {
 
 // Schema.org Person base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
+  'https://www.google.com/search?kgmid=/g/11ff3mhh10',
   'https://www.wikidata.org/wiki/Q136551855',
   'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
   'https://www.discogs.com/artist/16872046',
