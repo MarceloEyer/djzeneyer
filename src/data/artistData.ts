@@ -510,16 +510,19 @@ export const ARTIST_SCHEMA_BASE = {
       name: 'Zen Eyer — Danxer Artist Profile',
     },
   ],
-  // Eventos reais em que Zen Eyer é performer — prova direta de atuação
+  // Eventos reais em que Zen Eyer é performer — prova direta de atuação (bidirecional com performerIn)
   performerIn: [
     {
       '@type': 'Event',
       name: 'Dutch International Zouk Congress 2026',
-      url: 'https://www.dutchzouk.nl/artists',
+      url: 'https://www.dutchzouk.nl/',
+      startDate: '2026-10-15',
+      endDate: '2026-10-18',
       location: {
         '@type': 'Place',
-        name: 'Netherlands',
+        name: 'Etten-Leur, Netherlands',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
@@ -531,42 +534,55 @@ export const ARTIST_SCHEMA_BASE = {
         '@type': 'Place',
         name: 'Lisbon, Portugal',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
-      name: 'Slovenian Zouk Marathon',
+      name: 'Slovenian Zouk Marathon 2026',
       url: 'https://slovenianzoukmarathon.com/',
+      startDate: '2026-04-09',
+      endDate: '2026-04-13',
       location: {
         '@type': 'Place',
-        name: 'Slovenia',
+        name: 'Ljubljana, Slovenia',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
-      name: 'Neo Festival',
+      name: 'Neo Festival 2026',
       url: 'https://neozouk.com/',
+      startDate: '2026-01-04',
+      endDate: '2026-01-07',
       location: {
         '@type': 'Place',
-        name: 'Brazil',
+        name: 'Rio de Janeiro, Brazil',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
       name: 'Zouk in Rio 2026',
       url: 'https://renatapecanha.wixsite.com/zoukinrio/c%C3%B3pia-artistas',
+      startDate: '2026-06-26',
+      endDate: '2026-06-28',
       location: {
         '@type': 'Place',
         name: 'Rio de Janeiro, Brazil',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
     {
       '@type': 'Event',
       name: 'Ilha do Zouk',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
+      startDate: '2022-04-20',
+      endDate: '2022-04-24',
       location: {
         '@type': 'Place',
         name: 'Ilha Grande, Rio de Janeiro, Brazil',
       },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
     },
   ],
 };
