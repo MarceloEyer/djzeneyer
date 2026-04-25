@@ -401,18 +401,28 @@ export const getWhatsAppUrl = (message?: string) => {
 
 // Schema.org Person base (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
+  // Knowledge Graph anchor (Kalicube best practice)
   'https://www.google.com/search?kgmid=/g/11ff3mhh10',
+  // Authoritative databases
   'https://www.wikidata.org/wiki/Q136551855',
   'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
   'https://www.discogs.com/artist/16872046',
+  // Streaming / music platforms
   'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
   'https://music.apple.com/artist/1439280950',
   'https://www.deezer.com/artist/52900762',
   'https://soundcloud.com/djzeneyer',
+  // Social / video
   'https://www.instagram.com/djzeneyer/',
-  'https://www.youtube.com/@djzeneyer',
+  'https://www.youtube.com/channel/UCJ_5oAEFTG18jga_JFxG00w',
   'https://www.tiktok.com/@djzeneyer',
+  // Live / touring platforms
   'https://www.songkick.com/artists/8815204',
+  'https://www.bandsintown.com/a/15619775',
+  'https://ra.co/dj/djzeneyer',
+  // Artist directories
+  'https://genius.com/artists/Zen-eyer',
+  'https://www.viberate.com/artist/zen-eyer/',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
@@ -547,6 +557,15 @@ export const ARTIST_SCHEMA_BASE = {
       location: {
         '@type': 'Place',
         name: 'Rio de Janeiro, Brazil',
+      },
+    },
+    {
+      '@type': 'Event',
+      name: 'Ilha do Zouk DJ Championship',
+      url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
+      location: {
+        '@type': 'Place',
+        name: 'Ilha Grande, Rio de Janeiro, Brazil',
       },
     },
   ],
