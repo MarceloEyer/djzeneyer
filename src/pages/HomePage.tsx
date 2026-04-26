@@ -175,7 +175,7 @@ const HomePage: React.FC = () => {
                 height="1080"
                 loading="eager"
                 fetchPriority="high"
-                decoding="async"
+                decoding="sync"
               />
             </picture>
           </motion.div>
