@@ -45,7 +45,7 @@ const MyAccountContent: React.FC = () => {
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab && tab !== activeTab) {
-      setActiveTab(tab);
+      setTimeout(() => setActiveTab(tab), 0);
     }
   }, [searchParams, activeTab]);
 
@@ -82,7 +82,7 @@ const MyAccountContent: React.FC = () => {
     }
 
     const mainPoints = gamipress.points.points?.amount || 0;
-    const currentRank = gamipress.rank?.current?.title || t('dashboard.rank_zen_novice');
+    const currentRank = gamipress.rank?.current ? gamipress.rank.current.title : t('dashboard.rank_zen_novice');
 
     // Defer level logic to the "Brain" or keep simple visual level (100pt/lvl) if not provided by API
     // Per Dashboard_CONTEXT.md, Brain should return high-level data.
@@ -118,14 +118,14 @@ const MyAccountContent: React.FC = () => {
   // Sync profile data to form state
   useEffect(() => {
     if (profileData) {
-      setProfileForm({
+      setTimeout(() => setProfileForm({
         realName: profileData.real_name || user?.name || '',
         preferredName: profileData.preferred_name || '',
         facebookUrl: profileData.facebook_url || '',
         instagramUrl: profileData.instagram_url || '',
         danceRole: profileData.dance_role || [],
         gender: profileData.gender || '',
-      });
+      }), 0);
     }
   }, [profileData, user?.name]);
 
@@ -293,7 +293,7 @@ const MyAccountContent: React.FC = () => {
                 >
                   <div className="relative z-10 flex flex-col items-center text-center">
                     <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-white/5'}`}>
-                      {ach?.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} /> : <Award size={32} />}
+                      {ach?.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
                     </div>
                     <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || t('account.achievement_unknown')}</h4>
                     <p className="text-sm text-white/40 mb-6 leading-relaxed">
@@ -488,6 +488,9 @@ const MyAccountContent: React.FC = () => {
                       onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
                       className="relative w-32 h-32 rounded-full border-4 border-surface shadow-2xl object-cover"
                       alt={user.name}
+                      loading="eager"
+                      width="128"
+                      height="128"
                     />
                   </div>
                   <h2 className="text-2xl font-black font-display tracking-tight mb-2 truncate px-2">{user.display_name || user.name}</h2>

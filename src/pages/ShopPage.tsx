@@ -66,6 +66,8 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
           className="w-full h-full object-cover"
           loading="eager"
           fetchPriority="high"
+          width="1200"
+          height="675"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent" />
@@ -164,6 +166,8 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
             className="w-full h-full object-cover"
             loading="lazy"
             decoding="async"
+            width="640"
+            height="360"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent group-hover/card:from-black/35 transition-colors" />
           {product.on_sale && (

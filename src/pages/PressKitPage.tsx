@@ -266,6 +266,9 @@ const PressKitPage: React.FC = () => {
                       src="/images/artist/dj-zen-eyer-smiling-at-deck.jpg"
                       alt="DJ Zen Eyer"
                       className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0"
+                      loading="lazy"
+                      width="800"
+                      height="1000"
                     />
                     <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
                     <div className="absolute bottom-6 left-6 right-6">
@@ -419,6 +422,8 @@ const PressKitPage: React.FC = () => {
                       alt={photo.alt}
                       className="h-full w-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0"
                       loading="lazy"
+                      width="600"
+                      height="800"
                     />
                   </motion.div>
                 ))}
