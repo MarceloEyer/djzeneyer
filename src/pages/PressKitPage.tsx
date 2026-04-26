@@ -281,7 +281,7 @@ const PressKitPage: React.FC = () => {
                     {t('presskit.bio.title')}
                   </h2>
 
-                  <div className="space-y-6 text-justify text-lg leading-relaxed text-white/70">
+                  <div className="space-y-6 text-justify text-lg leading-relaxed text-white/70 safe-html-contrast">
                     <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p1')) }} />
                     <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p2')) }} />
                     <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p3')) }} />

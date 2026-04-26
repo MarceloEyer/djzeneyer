@@ -263,7 +263,7 @@ const AboutPage: React.FC = () => {
               initial={FADE_IN_INITIAL}
               whileInView={FADE_IN_ANIMATE}
               viewport={VIEWPORT_ONCE}
-              className="space-y-8 text-lg md:text-xl text-white/70 leading-relaxed font-light"
+              className="space-y-8 text-lg md:text-xl text-white/70 leading-relaxed font-light safe-html-contrast"
             >
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p1')) }} />
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p2')) }} />

@@ -265,7 +265,7 @@ const HomePage: React.FC = () => {
       <section className="py-20 bg-surface" id="about">
         <div className="container mx-auto px-4">
           <motion.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
-            <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none">
+            <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none safe-html-contrast">
               <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home.bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-white/90">
                 <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_intro')) }} />
