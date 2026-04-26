@@ -125,7 +125,7 @@ class Zen_SEO_Sitemap
             'order' => 'DESC',
             'no_found_rows' => true,
             'update_post_meta_cache' => true,
-            'update_post_term_cache' => false,
+            'update_post_term_cache' => true, // Optimization: Load term caches for Polylang performance
             'meta_query' => [
                 'relation' => 'OR',
                 [
@@ -146,6 +146,29 @@ class Zen_SEO_Sitemap
         }
 
         $posts = \get_posts($args);
+
+        if (empty($posts)) {
+            return '';
+        }
+
+        // Optimization: Resolve N+1 by priming all caches for the fetched posts in one batch.
+        $batch_ids = \wp_list_pluck($posts, 'ID');
+        \_prime_post_caches($batch_ids, true, true);
+
+        // Pre-prime translation IDs as well to avoid N+1 in get_permalink()
+        if (\function_exists('pll_get_post_translations')) {
+            $all_ids = $batch_ids;
+            foreach ($posts as $post) {
+                $trans = \pll_get_post_translations($post->ID);
+                if (\is_array($trans)) {
+                    $all_ids = \array_merge($all_ids, \array_values($trans));
+                }
+            }
+            $all_ids = \array_unique($all_ids);
+            if (\count($all_ids) > \count($batch_ids)) {
+                \_prime_post_caches($all_ids, true, true);
+            }
+        }
 
         foreach ($posts as $post) {
             $translations = Zen_SEO_Helpers::get_translations($post->ID);
