@@ -45,7 +45,7 @@ const MyAccountContent: React.FC = () => {
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab && tab !== activeTab) {
-      setTimeout(() => setActiveTab(tab), 0);
+      setActiveTab(tab);
     }
   }, [searchParams, activeTab]);
 
@@ -118,14 +118,14 @@ const MyAccountContent: React.FC = () => {
   // Sync profile data to form state
   useEffect(() => {
     if (profileData) {
-      setTimeout(() => setProfileForm({
+      setProfileForm({
         realName: profileData.real_name || user?.name || '',
         preferredName: profileData.preferred_name || '',
         facebookUrl: profileData.facebook_url || '',
         instagramUrl: profileData.instagram_url || '',
         danceRole: profileData.dance_role || [],
         gender: profileData.gender || '',
-      }), 0);
+      });
     }
   }, [profileData, user?.name]);
 
