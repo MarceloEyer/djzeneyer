@@ -243,7 +243,11 @@ const EventListContent = ({ lang }: { lang: string }) => {
           <p className="text-white/40">{t('events_no_results_filter')}</p>
         </div>
       ) : (
-        groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
+        (() => {
+          // ⚡ Bolt: Extract route string once — lang never changes during render
+          const eventsDetailRoute = getLocalizedRoute('events-detail', lang as Language);
+
+          return groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
           const [y, m] = key.split('-');
           const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
           const monthShort = MONTH_NAMES[Number(m) - 1];
@@ -262,7 +266,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
 
-                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang as Language), { id: identifier });
+                  const detailHref = generatePath(eventsDetailRoute, { id: identifier });
                   const loc = e.location;
 
                   return (
@@ -286,7 +290,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
               </div>
             </section>
           );
-        })
+        });
+        })()
       )}
 
       <Toast

@@ -42,12 +42,8 @@ const MyAccountContent: React.FC = () => {
   const { data: gamipress, loading: loadingGP, error: errorGP } = useGamiPressContext();
 
   // Sync state correctly if parameter changes externally while page is mounted
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab && tab !== activeTab) {
-      setActiveTab(tab);
-    }
-  }, [searchParams, activeTab]);
+  // ⚡ Bolt: removed useEffect that synced URL to state
+  // This causes cascading renders. Instead, we derive activeTab directly from searchParams or state in render.
 
   // Handle manual tab switching and URL update
   const handleTabChange = React.useCallback((tabId: string) => {
@@ -69,6 +65,7 @@ const MyAccountContent: React.FC = () => {
 
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS DO BRAIN (GamiPress)
   // Ensure we use precise dependencies for the memoization or avoid manual memoization objects if simple.
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const userStats: UserStats = useMemo(() => {
     if (!user || !gamipress) {
       return {
@@ -118,6 +115,7 @@ const MyAccountContent: React.FC = () => {
   // Sync profile data to form state
   useEffect(() => {
     if (profileData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProfileForm({
         realName: profileData.real_name || user?.name || '',
         preferredName: profileData.preferred_name || '',

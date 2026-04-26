@@ -273,7 +273,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
     // 4.3 Event Schema (If on events page or specific event)
     if (events && events.length > 0) {
-      // eslint-disable-next-line react-hooks/purity
       const now = Date.now();
       const threeHoursMs = 3 * 60 * 60 * 1000;
       const musicEvents = events.map((event) => {

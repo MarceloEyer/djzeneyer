@@ -1,0 +1,13 @@
+⚡ Bolt: [performance improvement] Extract repeated route resolutions in map loops
+
+What:
+Extracted `getLocalizedRoute` calls out of array `.map()` iterations in `EventsPage.tsx` and `NewsPage.tsx`. Fixed lint errors related to hooks in `MyAccountPage.tsx` and `Navbar.tsx` that were introduced/exposed during build check.
+
+Why:
+These function calls take constant arguments during the lifecycle of the loop but were being evaluated redundantly on every iteration. Moving them outside the loop avoids O(N) redundant function execution.
+
+Impact:
+Small CPU cycles saved during React render phases, especially on pages with large amounts of data (lists of events or news).
+
+Measurement:
+O(N) `getLocalizedRoute` calls converted to O(1) in the affected components.

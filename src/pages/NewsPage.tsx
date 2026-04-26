@@ -240,7 +240,11 @@ const NewsPage: React.FC = () => {
                 </Trans>
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-                {secondaryPosts.map((post, index) => (
+                {(() => {
+                  // ⚡ Bolt: Extract route string once — lang never changes during render
+                  const newsDetailRoute = getLocalizedRoute('news-detail', normalizedLanguage);
+
+                  return secondaryPosts.map((post, index) => (
                   <motion.article
                     key={post.id}
                     initial={ARTICLE_INITIAL}
@@ -249,7 +253,7 @@ const NewsPage: React.FC = () => {
                     transition={{ delay: index * 0.1 }}
                     className="group flex flex-col h-full bg-surface/30 rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 hover:bg-surface/50 transition-all duration-300 text-left"
                   >
-                    <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })} className="block h-56 overflow-hidden relative">
+                    <Link to={generatePath(newsDetailRoute, { slug: post.slug })} className="block h-56 overflow-hidden relative">
                       <img
                         src={safeUrl(post.featured_image_src || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
                         alt={stripHtml(post?.title?.rendered || '')}
@@ -264,7 +268,7 @@ const NewsPage: React.FC = () => {
                       <div className="text-xs text-primary mb-3 font-bold uppercase tracking-wider flex items-center gap-2">
                         <Hash size={12} /> {t('news.label')}
                       </div>
-                      <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })}>
+                      <Link to={generatePath(newsDetailRoute, { slug: post.slug })}>
                         <h3
                           className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2 text-white"
                           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post?.title?.rendered || '') }}
@@ -278,13 +282,14 @@ const NewsPage: React.FC = () => {
                         <span className="text-xs text-white/40 font-medium">
                           {formatDate(post.date, i18n.language)}
                         </span>
-                        <Link to={generatePath(getLocalizedRoute('news-detail', normalizedLanguage), { slug: post.slug })} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
+                        <Link to={generatePath(newsDetailRoute, { slug: post.slug })} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
                           {t('news.read_more')}
                         </Link>
                       </div>
                     </div>
                   </motion.article>
-                ))}
+                ));
+                })()}
               </div>
             </>
           )}
