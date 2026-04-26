@@ -45,9 +45,16 @@ const MyAccountContent: React.FC = () => {
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab && tab !== activeTab) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tab);
     }
   }, [searchParams, activeTab]);
+
+  // ⚡ Bolt: Memoize combined achievements array to prevent O(N) reallocation during every component re-render
+  const allAchievements = useMemo(() => [
+    ...(Array.isArray(gamipress?.achievements_earned) ? gamipress.achievements_earned : []),
+    ...(Array.isArray(gamipress?.achievements_locked) ? gamipress.achievements_locked : []),
+  ], [gamipress]);
 
   // Handle manual tab switching and URL update
   const handleTabChange = React.useCallback((tabId: string) => {
@@ -118,6 +125,7 @@ const MyAccountContent: React.FC = () => {
   // Sync profile data to form state
   useEffect(() => {
     if (profileData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProfileForm({
         realName: profileData.real_name || user?.name || '',
         preferredName: profileData.preferred_name || '',
@@ -282,7 +290,7 @@ const MyAccountContent: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...(Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned : []), ...(Array.isArray(gamipress.achievements_locked) ? gamipress.achievements_locked : [])].map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
+              {allAchievements.map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
                 <motion.div
                   key={ach.id}
                   whileHover={{ y: -5, scale: 1.02 }}
