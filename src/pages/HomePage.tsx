@@ -3,7 +3,7 @@
 
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, Variants } from 'framer-motion';
+import { motion, Variants, useReducedMotion } from 'framer-motion';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   PlayCircle, Calendar, Users, Music, Award, Trophy,
@@ -100,6 +100,7 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 
 const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const { data: seoSettings } = useZenSeoSettings();
 
   const currentLang = normalizeLanguage(i18n.language);
@@ -254,7 +255,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
+        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: shouldReduceMotion ? 0 : [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
           <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2" />
           </div>
