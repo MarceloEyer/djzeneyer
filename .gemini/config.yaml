@@ -1,40 +1,39 @@
 # .gemini/config.yaml — DJ Zen Eyer
-# Configures Gemini Code Assist for this repository.
-# Última revisão: 2026-03-27
+# Schema oficial: https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github
+# Atualizado: 2026-04-26
 
-language: "pt-BR"
+have_fun: false
 
-tone_instructions: |
-  Responda sempre em Português Brasileiro.
-  Seja direto e técnico. Foque em código concreto.
-  Evite resumos de PRs — o CodeRabbit já faz isso com mais profundidade.
+memory_config:
+  disabled: false
 
-review:
-  style: "concise"
-  language: "pt-BR"
-  summary_length: "short"
-  show_changelog: false
-  show_activity: false
-  metadata:
-    display: false
-  system_instructions: |
-    Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + WordPress headless PHP 8.3.
-    Data fetching centralizado em src/hooks/useQueries.ts (React Query v5) — nunca fetch() solto.
-    Toda string visível usa t('chave') via i18next — strings hardcoded são BUG.
-    safeUrl(null) retorna '#' truthy — sempre safeUrl(url, '/fallback') com segundo argumento.
-    Guards de rota privada usam loadingInitial (não loading) do UserContext.
-    lucide-react 1.x: Facebook/Instagram/Youtube removidos — usar src/components/icons/BrandIcons.tsx.
-    PHP: get_avatar_url() pode retornar false (boolean) — coerção obrigatória antes de JSON.
-    WooCommerce HPOS ativo: nunca SQL em wp_posts — usar wc_get_orders().
-    ESLint ignores obrigatórios: .claude, .agents, .bolt, .gemini, .jules, .devcontainer.
+code_review:
+  disable: false
+  # Postar apenas problemas de severidade MEDIUM ou superior.
+  # LOW = style nit; MEDIUM = bug potencial; HIGH = bug confirmado; CRITICAL = segurança/dados
+  comment_severity_threshold: MEDIUM
+  # Máximo de comentários inline por PR (evita spam em PRs grandes de bots)
+  max_review_comments: 25
+  pull_request_opened:
+    help: false
+    # Resumo automático do PR — útil para PRs criados por bots (Jules, Bolt)
+    summary: true
+    code_review: true
+    # Não revisar drafts — aguardar o PR estar pronto
+    include_drafts: false
 
-    IMPORTANTE — REGRA CRÍTICA PARA ARQUIVOS DE CONTEXTO:
-    Nunca faça "resumo executivo" de arquivos como CLAUDE.md, AI_CONTEXT_INDEX.md, GEMINI.md,
-    AGENTS.md, docs/AI_GOVERNANCE.md, plugins/zengame/CONTEXT.md ou qualquer arquivo em
-    .agents/skills/. Esses arquivos contêm contexto técnico crítico acumulado.
-    Ao editar, PRESERVAR todo conteúdo existente e APENAS ADICIONAR informação nova.
-    Reduzir essas documentações é uma regressão grave — equivale a apagar memória técnica do projeto.
-
-chat:
-  conciseness: "high"
-  auto_reply: true
+# Ignorar arquivos que não são código do projeto
+ignore_patterns:
+  - "dist/**"
+  - "dist-debug/**"
+  - ".claude/**"
+  - ".agents/**"
+  - ".bolt/**"
+  - ".gemini/**"
+  - ".jules/**"
+  - ".devcontainer/**"
+  - "plugins/gamipress/**"
+  - "**/*.lock"
+  - "public/sitemap*.xml"
+  - "pr_comments_utf8.json"
+  - "PressKitPage_beautiful.tsx"
