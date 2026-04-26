@@ -1,0 +1,11 @@
+**What**
+- Fix SEO i18n inconsistency on HomePage where the `<h1>` tag had a hardcoded string while the page `<title>` updated based on the selected language.
+
+**Why**
+- Crawlers observing a localized `<title>` (e.g. Portuguese) alongside a hardcoded English `<h1>` might get confused and register an inconsistency in keyword relevance signals.
+
+**Impact**
+- SEO scores will improve across multiple languages. Screen readers will now properly read the fully translated title. The visual look of the application is 100% identical and LCP metrics are preserved.
+
+**Measurement**
+- Tested local Vite server (`pnpm dev`) using Playwright visual checks. The visually hidden `h1.sr-only` correctly exposes the translated title to the DOM, while the previously visible `<h1>` was seamlessly converted to a `div` element with `aria-hidden="true"`.

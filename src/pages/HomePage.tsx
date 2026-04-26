@@ -184,10 +184,13 @@ const HomePage: React.FC = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
-            {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
+            {/* H1 invisível contendo o título da página internacionalizado para SEO */}
+            <h1 className="sr-only">{t('home.page_title')}</h1>
+
+            {/* Título visual fora do container animado para LCP */}
+            <div aria-hidden="true" className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
               <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
-            </h1>
+            </div>
 
           <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
             <motion.div variants={ITEM_VARIANTS} className="mb-6">
