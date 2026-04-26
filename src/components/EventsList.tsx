@@ -38,6 +38,10 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
+  // Otimização O(1): Memoriza a rota base do detalhe de evento para o idioma atual,
+  // prevenindo chamadas repetidas a getLocalizedRoute dentro do map cycle.
+  const detailRouteBase = useMemo(() => getLocalizedRoute('events-detail', lang), [lang]);
+
   // React Query: v2 defaults
   const { data: events = [], isLoading: loading, error } = useEventsQuery({
     mode: 'upcoming',
@@ -86,8 +90,6 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     );
   }
   const visibleEvents = events.slice(0, limit);
-
-
   return (
     <div className="w-full">
       {variant === 'full' && showTitle && (
@@ -109,7 +111,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
             ? event.canonical_path.split('/').pop() || event.event_id
             : event.event_id;
 
-          const detailHref = generatePath(getLocalizedRoute('events-detail', lang), { id: identifier });
+          const detailHref = generatePath(detailRouteBase, { id: identifier });
 
           // --- COMPACT CARD (used in Home) ---
           if (variant === 'compact') {
