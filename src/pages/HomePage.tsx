@@ -27,7 +27,7 @@ interface StatCardProps {
 }
 
 interface FeatureCardProps {
-  icon: React.ReactNode;
+  icon: React.ElementType;
   title: string;
   description: string;
   variants: Variants;
@@ -44,9 +44,9 @@ interface FestivalBadgeProps {
 // ============================================================================
 
 const FEATURES_DATA = [
-  { id: 'music', icon: <Music size={32} />, titleKey: 'home.feat_exclusive_title', descKey: 'home.feat_exclusive_desc' },
-  { id: 'achievements', icon: <Award size={32} />, titleKey: 'home.feat_achievements_title', descKey: 'home.feat_achievements_desc' },
-  { id: 'community', icon: <Users size={32} />, titleKey: 'home.feat_community_title', descKey: 'home.feat_community_desc' },
+  { id: 'music', icon: Music as React.ElementType, titleKey: 'home.feat_exclusive_title', descKey: 'home.feat_exclusive_desc' },
+  { id: 'achievements', icon: Award as React.ElementType, titleKey: 'home.feat_achievements_title', descKey: 'home.feat_achievements_desc' },
+  { id: 'community', icon: Users as React.ElementType, titleKey: 'home.feat_community_title', descKey: 'home.feat_community_desc' },
 ] as const;
 
 const FESTIVALS_HIGHLIGHT = ARTIST.festivals.slice(0, 6);
@@ -79,9 +79,9 @@ const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
   </motion.div>
 ));
 
-const FeatureCard = React.memo(({ icon, title, description, variants }: FeatureCardProps) => (
+const FeatureCard = React.memo(({ icon: Icon, title, description, variants }: FeatureCardProps) => (
   <motion.li className="card p-5 sm:p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
-    <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
+    <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4"><Icon size={32} aria-hidden="true" /></div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-white/70">{description}</p>
   </motion.li>
