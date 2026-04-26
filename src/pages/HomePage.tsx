@@ -80,11 +80,11 @@ const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
 ));
 
 const FeatureCard = React.memo(({ icon, title, description, variants }: FeatureCardProps) => (
-  <motion.article className="card p-5 sm:p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
+  <motion.li className="card p-5 sm:p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4">{icon}</div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-white/70">{description}</p>
-  </motion.article>
+  </motion.li>
 ));
 
 const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
@@ -298,11 +298,11 @@ const HomePage: React.FC = () => {
       {/* FEATURES GRID */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+          <motion.ul role="list" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {FEATURES_DATA.map(feature => (
               <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as unknown as Parameters<typeof t>[0])} description={t(feature.descKey as unknown as Parameters<typeof t>[0])} variants={ITEM_VARIANTS} />
             ))}
-          </motion.div>
+          </motion.ul>
         </div>
       </section>
 
