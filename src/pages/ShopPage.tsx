@@ -254,17 +254,17 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
   }, []);
 
   useEffect(() => {
+    // Initial sync
     checkScroll();
-    const carousel = carouselRef.current;
-    if (carousel) {
-      carousel.addEventListener('scroll', checkScroll);
-      window.addEventListener('resize', checkScroll); // OPTIMIZATION: Resync on resize
-      return () => {
-        carousel.removeEventListener('scroll', checkScroll);
-        window.removeEventListener('resize', checkScroll);
-      };
-    }
   }, [products, checkScroll]);
+
+  useEffect(() => {
+    // Resync on window resize (passive for performance)
+    window.addEventListener('resize', checkScroll, { passive: true });
+    return () => {
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [checkScroll]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
@@ -316,6 +316,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
 
         <div
           ref={carouselRef}
+          onScroll={checkScroll}
           className="flex gap-2 overflow-x-auto scrollbar-hide px-6 md:px-12 lg:px-20 py-10 -my-10 scroll-smooth items-stretch"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
