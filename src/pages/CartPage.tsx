@@ -111,7 +111,7 @@ const CartPage: React.FC = () => {
                   >
                     <div className="w-20 h-20 bg-white/5 rounded-md overflow-hidden flex-shrink-0">
                       {item.images && item.images[0] ? (
-                        <img src={item.images[0].src} alt={item.name} className="w-full h-full object-cover" />
+                        <img src={item.images[0].src} alt={item.name} className="w-full h-full object-cover" loading="lazy" width="80" height="80" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-white/20">
                           <ShoppingCart size={24} />

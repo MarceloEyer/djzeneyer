@@ -130,6 +130,9 @@ const GamificationWidget: React.FC = () => {
                     src={safeUrl(achievement.image)}
                     alt={achievement.title || t('gamification.achievement')}
                     className="w-6 h-6 object-contain"
+                    loading="lazy"
+                    width="24"
+                    height="24"
                   />
                 ) : (
                   <Award size={16} className={achievement?.earned ? 'text-white' : 'text-white/30'} />

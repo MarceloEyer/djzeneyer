@@ -99,7 +99,7 @@ const HexBadge = ({ earned, title, image, size = '14' }: { earned: boolean; titl
     <div className={`clip-hex flex items-center justify-center p-[2px] ${earned ? 'bg-gradient-to-br from-primary to-secondary' : 'bg-white/10'}`} style={{ width: `${size}rem`, height: `${size}rem` }}>
       <div className="clip-hex h-full w-full bg-surface-dark flex items-center justify-center overflow-hidden bg-black/40">
         {image ? (
-          <img src={safeUrl(image)} alt={title} className="h-2/3 w-2/3 object-contain" />
+          <img src={safeUrl(image)} alt={title} className="h-2/3 w-2/3 object-contain" loading="lazy" width="64" height="64" />
         ) : (
           <Award className={`h-1/2 w-1/2 ${earned ? 'text-primary' : 'text-white/20'}`} />
         )}
@@ -226,6 +226,9 @@ const DashboardContent = () => {
                 src={safeUrl(user.avatar, '/images/default-avatar.svg')}
                 className="relative z-10 h-20 w-20 sm:h-28 sm:w-28 rounded-3xl object-cover border-2 border-primary/40 shadow-neon-sm"
                 alt={user.display_name}
+                loading="eager"
+                width="112"
+                height="112"
                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
               />
               <div className="absolute -bottom-2 -right-2 z-20 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-primary shadow-lg border-2 border-background">
@@ -427,6 +430,9 @@ const DashboardContent = () => {
                           src={safeUrl(entry.avatar, '/images/default-avatar.svg')}
                           className="h-8 w-8 rounded-full border border-white/10 shrink-0 object-cover"
                           alt={entry.display_name}
+                          loading="lazy"
+                          width="32"
+                          height="32"
                           onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
                         />
                         <span className="flex-1 text-sm font-bold truncate min-w-0">{entry.display_name}</span>

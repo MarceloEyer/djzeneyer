@@ -127,6 +127,9 @@ const NewsPage: React.FC = () => {
                       src={postImage}
                       className="w-full h-full object-cover"
                       alt={stripHtml(singlePost?.title?.rendered || '')}
+                      loading="eager"
+                      width="1200"
+                      height="675"
                     />
                   </div>
                 )}
@@ -209,6 +212,8 @@ const NewsPage: React.FC = () => {
                         alt={stripHtml(featuredPost?.title?.rendered || '')}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         loading="eager"
+                        width="1200"
+                        height="675"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
 
@@ -261,6 +266,8 @@ const NewsPage: React.FC = () => {
                         alt={stripHtml(post?.title?.rendered || '')}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         loading="lazy"
+                        width="800"
+                        height="600"
                       />
                       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white border border-white/10">
                         <Clock size={12} className="inline mr-1" /> {t('news.read_time', { min: 3 })}

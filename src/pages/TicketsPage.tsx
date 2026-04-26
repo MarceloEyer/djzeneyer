@@ -74,6 +74,9 @@ const TicketsPage: React.FC = () => {
                       src={safeUrl(ticket.images[0]?.src, 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event')}
                       alt={ticket.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                      width="600"
+                      height="400"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-80" />
                     <div className="absolute bottom-4 left-4 right-4">

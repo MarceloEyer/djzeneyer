@@ -176,6 +176,8 @@ const ZenLinkPageComponent = () => {
                     className="relative h-20 w-20 rounded-2xl border border-white/20 object-cover"
                     loading="eager"
                     decoding="sync"
+                    width="80"
+                    height="80"
                     onError={(e) => { e.currentTarget.src = `${artist.site.baseUrl}/images/zen-eyer-og-image.png`; }}
                   />
                 </div>

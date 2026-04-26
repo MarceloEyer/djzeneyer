@@ -35,6 +35,9 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
           src={safeUrl(mainImage)}
           alt={product.name || ''}
           className="w-full h-full object-cover"
+          loading="eager"
+          width="800"
+          height="800"
         />
       </div>
 
@@ -49,7 +52,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
                 activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-white/10 hover:border-white/30'
               }`}
             >
-              <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" />
+              <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
             </button>
           ))}
         </div>

@@ -91,7 +91,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
             {event.image ? (
-              <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+              <img src={event.image} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" />
             ) : (
               <div className="w-full h-full bg-surface flex items-center justify-center text-white/10">
                 <Music size={80} />
