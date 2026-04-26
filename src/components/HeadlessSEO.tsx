@@ -234,106 +234,110 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     const graph: Record<string, unknown>[] = [];
     const siteUrlClean = baseUrl.replace(/\/$/, '');
 
-    // 4.1 BreadcrumbList (Automatic)
+    // 4.1 BreadcrumbList (Single-pass logic)
     const pathSegments = location.pathname.split('/').filter(Boolean);
     if (pathSegments.length > 0) {
-      const breadcrumbList = {
+      const itemListElement: Record<string, unknown>[] = [];
+      for (let i = 0; i < pathSegments.length; i++) {
+        const segment = pathSegments[i];
+        const path = `/${pathSegments.slice(0, i + 1).join('/')}`;
+        const isLast = i === pathSegments.length - 1;
+        itemListElement.push({
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@id': `${siteUrlClean}${path}${isLast ? '' : '/'}`,
+            name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+          },
+        });
+      }
+      graph.push({
         '@type': 'BreadcrumbList',
         '@id': `${finalUrl}#breadcrumb`,
-        itemListElement: pathSegments.map((segment, index) => {
-          const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
-          const isLast = index === pathSegments.length - 1;
-          return {
-            '@type': 'ListItem',
-            position: index + 1,
-            item: {
-              '@id': `${siteUrlClean}${path}${isLast ? '' : '/'}`,
-              name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
-            },
-          };
-        }),
-      };
-      graph.push(breadcrumbList);
+        itemListElement
+      });
     }
 
-    // 4.2 FAQPage Schema
+    // 4.2 FAQPage Schema (Optimized reduction)
     if (faqs && faqs.length > 0) {
-      graph.push({
-        '@type': 'FAQPage',
-        mainEntity: faqs.map(faq => ({
+      const mainEntity: Record<string, unknown>[] = [];
+      for (const faq of faqs) {
+        mainEntity.push({
           '@type': 'Question',
           name: faq.q,
           acceptedAnswer: {
             '@type': 'Answer',
             text: faq.a,
           },
-        })),
+        });
+      }
+      graph.push({
+        '@type': 'FAQPage',
+        mainEntity
       });
     }
 
-    // 4.3 Event Schema (If on events page or specific event)
+    // 4.3 Event Schema (Single-pass MusicEvent mapping)
     if (events && events.length > 0) {
       // eslint-disable-next-line react-hooks/purity
       const now = Date.now();
       const threeHoursMs = 3 * 60 * 60 * 1000;
-      const musicEvents = events.map((event) => {
+      const musicEvents: Record<string, unknown>[] = [];
+
+      for (const event of events) {
+        const startDate = (event.starts_at as string) || (event.event_date as string) || (event.start_date as string);
+        if (!startDate) continue;
+
         const eventTitle = (typeof event.title === 'object' ? event.title.rendered : event.title) || event.name || 'Zouk Event';
-        const canonicalUrl = event.canonical_url || event.url || undefined;
-        const startDate = event.starts_at || event.event_date || event.start_date;
-        const endDateRaw = event.ends_at || event.end_date;
+        const canonicalUrl = (event.canonical_url as string) || (event.url as string) || undefined;
+        const endDateRaw = (event.ends_at as string) || (event.end_date as string);
 
-        let parsedStartDate = 0;
-        if (startDate) {
-          parsedStartDate = Date.parse(startDate);
-        }
-
-        // Google requer endDate — estima +3h quando a API não fornece
-        const endDate = endDateRaw || (startDate && !isNaN(parsedStartDate)
+        const parsedStartDate = Date.parse(startDate);
+        const endDate = endDateRaw || (!isNaN(parsedStartDate)
           ? new Date(parsedStartDate + threeHoursMs).toISOString()
           : undefined);
 
-        // Check if event is in the past
-        const isPast = startDate && !isNaN(parsedStartDate) ? parsedStartDate < now : false;
-
-        // Location mapping
+        const isPast = !isNaN(parsedStartDate) ? parsedStartDate < now : false;
         const locName = event.location?.venue || event.event_location || 'TBA';
 
-        // Offers — Google requer este campo mesmo para eventos passados
-        // Mapeia todas as opções de tickets disponíveis
+        // Optimized Offers Generation
         let eventOffers: Record<string, unknown> | Record<string, unknown>[];
         const baseOffer = {
           '@type': 'Offer',
           price: '0',
           priceCurrency: 'USD',
           validFrom: startDate,
+          availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
         };
 
         if (Array.isArray(event.tickets) && event.tickets.length > 0) {
-          eventOffers = event.tickets.filter((t: unknown) => typeof t === 'string').map((ticketUrl: string) => ({
-            ...baseOffer,
-            url: ticketUrl,
-            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
-          }));
+          const tickets: Record<string, unknown>[] = [];
+          for (const ticketUrl of event.tickets) {
+            if (typeof ticketUrl === 'string') {
+              tickets.push({ ...baseOffer, url: ticketUrl });
+            }
+          }
+          eventOffers = tickets;
         } else if (Array.isArray(event.offers) && event.offers.length > 0) {
-          eventOffers = event.offers.filter((o: unknown) => (o as { url?: string })?.url).map((offer: unknown) => ({
-            ...baseOffer,
-            url: (offer as { url: string }).url,
-            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
-          }));
+          const offers: Record<string, unknown>[] = [];
+          for (const offer of event.offers) {
+            const u = (offer as { url?: string })?.url;
+            if (u) {
+              offers.push({ ...baseOffer, url: u });
+            }
+          }
+          eventOffers = offers;
         } else {
-          const ticketUrl = event.event_ticket || undefined;
           eventOffers = {
             ...baseOffer,
-            url: ticketUrl || canonicalUrl || finalUrl,
+            url: (event.event_ticket as string) || canonicalUrl || finalUrl,
             availability: isPast
               ? 'https://schema.org/Discontinued'
-              : ticketUrl
-                ? 'https://schema.org/InStock'
-                : 'https://schema.org/LimitedAvailability',
+              : (event.event_ticket ? 'https://schema.org/InStock' : 'https://schema.org/LimitedAvailability'),
           };
         }
 
-        // Se eventOffers for um array vazio (fallback de safety), converte para fallback unitário
+        // Fallback for empty processed offers
         if (Array.isArray(eventOffers) && eventOffers.length === 0) {
           eventOffers = {
             ...baseOffer,
@@ -342,17 +346,12 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           };
         }
 
-        // description — Google exige campo não-vazio
-        const eventDesc = stripHtml(event.description || event.desc || '').substring(0, 300)
-          || `Live Brazilian Zouk DJ set by ${artist.identity.stageName} at ${locName}.`;
-
-        return {
+        musicEvents.push({
           '@type': 'MusicEvent',
           name: eventTitle,
           ...(canonicalUrl ? { url: canonicalUrl } : {}),
-          startDate: startDate,
+          startDate,
           endDate,
-          // REMOVE eventStatus for past events as per technical review
           ...(!isPast ? { eventStatus: 'https://schema.org/EventScheduled' } : {}),
           eventAttendanceMode: locName.toLowerCase().includes('online')
             ? 'https://schema.org/OnlineEventAttendanceMode'
@@ -368,7 +367,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             }
           },
           image: event.image || finalImage,
-          description: eventDesc,
+          description: stripHtml(event.description || event.desc || '').substring(0, 300) || `Live Brazilian Zouk DJ set by ${artist.identity.stageName} at ${locName}.`,
           performer: {
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
@@ -380,8 +379,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             name: artist.identity.stageName,
             url: artist.site.baseUrl,
           },
-        };
-      }).filter(e => !!e.startDate); // Ensure required startDate
+        });
+      }
 
       if (musicEvents.length > 1) {
         graph.push({
