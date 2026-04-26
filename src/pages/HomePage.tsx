@@ -335,8 +335,8 @@ const HomePage: React.FC = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-4 sm:p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
-              <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-4 sm:p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="press-card-title">
+              <h3 id="press-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{t('home.press.desc')}</p>
@@ -344,8 +344,8 @@ const HomePage: React.FC = () => {
                 {t('home.press.cta')} →
               </Link>
             </motion.div>
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-4 sm:p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors">
-              <h3 className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-4 sm:p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="bookers-card-title">
+              <h3 id="bookers-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
