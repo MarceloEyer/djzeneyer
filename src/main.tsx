@@ -17,20 +17,6 @@ declare global {
   }
 }
 
-if (import.meta.env.DEV) {
-  console.log('[Main] 🚀 Inicializando aplicação DJ Zen Eyer...');
-
-  // Verifica se wpData está disponível
-  if (window.wpData) {
-    console.log('[Main] ✅ wpData encontrado:', {
-      siteUrl: window.wpData.rootUrl || window.wpData.siteUrl,
-      restUrl: window.wpData.restUrl,
-      hasNonce: !!window.wpData.nonce,
-    });
-  } else {
-    console.warn('[Main] ⚠️ wpData não encontrado no window');
-  }
-}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -41,7 +27,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </React.StrictMode>
 );
-
-if (import.meta.env.DEV) {
-  console.log('[Main] ✅ Aplicação montada com sucesso');
-}

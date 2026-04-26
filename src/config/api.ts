@@ -160,12 +160,3 @@ export const getAuthHeaders = (token?: string): HeadersInit => {
   return headers;
 };
 
-// ============================================================================
-// DEBUG HELPERS (apenas em desenvolvimento)
-// ============================================================================
-
-if (import.meta.env.DEV) {
-  console.log('[API Config] 🔧 Modo Desenvolvimento');
-  console.log('[API Config] 📍 REST URL:', getRestUrl());
-  console.log('[API Config] 🌐 Site URL:', getSiteUrl());
-}
