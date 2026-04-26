@@ -1,7 +1,7 @@
 // src/pages/HomePage.tsx
 // VERSÃO FINAL: DIAMOND MASTER (Integrated with Zen SEO Plugin v8.0.0)
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { Trans, useTranslation } from 'react-i18next';
@@ -95,10 +95,27 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 ));
 
 // ============================================================================
-// 4. PAGE COMPONENT
+// 4. MODULE-SCOPED ANIMATION CONSTANTS
+// ============================================================================
+const SCROLL_ANIMATE_ACTIVE = { y: [0, 10, 0] };
+const SCROLL_ANIMATE_INACTIVE = { y: 0 };
+const SCROLL_TRANSITION_ACTIVE = { repeat: Infinity, duration: 2 };
+const SCROLL_TRANSITION_INACTIVE = { duration: 0.5 };
+
+// ============================================================================
+// 5. PAGE COMPONENT
 // ============================================================================
 
 const HomePage: React.FC = () => {
+  const [shouldAnimateScroll, setShouldAnimateScroll] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldAnimateScroll(false);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const { t, i18n } = useTranslation();
   const { data: seoSettings } = useZenSeoSettings();
 
@@ -246,7 +263,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
+        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={shouldAnimateScroll ? SCROLL_ANIMATE_ACTIVE : SCROLL_ANIMATE_INACTIVE} transition={shouldAnimateScroll ? SCROLL_TRANSITION_ACTIVE : SCROLL_TRANSITION_INACTIVE} aria-hidden="true">
           <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2" />
           </div>
