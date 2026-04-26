@@ -104,3 +104,7 @@
 
 **Learning:** Repeatedly calling a deterministic function like `getLocalizedRoute` with the same dynamic arguments multiple times within a component's render body (e.g. passing it to multiple `<Link to={...}>` elements) leads to redundant O(N) calculations on every React reconciliation cycle.
 **Action:** Consolidate these multiple calls into a single object map wrapped in `useMemo` with the dynamic argument as its dependency. This evaluates the localized paths only once when the language changes, rather than recalculating them on every unrelated state or context update.
+
+## 2026-06-27 - Inline Spread of Arrays in React Render Cycles
+**Learning:** Using the spread operator (e.g., `[...array1, ...array2]`) inline directly within a component's render body (like for `.map()` iteration) forces JavaScript to allocate a completely new array object on *every single render cycle*, regardless of whether the source arrays have changed. In highly re-rendered components, this causes significant garbage collection overhead and potential performance stutters.
+**Action:** Always extract dynamic array combinations/spreads into a `useMemo` hook, using the source arrays (or their parent objects) as the dependency array, to preserve reference equality and eliminate O(N) reallocation overhead.
