@@ -2,17 +2,24 @@
 # Instruções operacionais para agentes de IA neste repositório.
 # Lido por: OpenAI Codex, e qualquer agente sem arquivo de contexto dedicado.
 # Idioma padrão: Português Brasileiro.
-# Última revisão: 2026-03-27
+# Última revisão: 2026-04-26
 
 ---
 
 ## Precedência (em caso de conflito)
 
-1. Código real do repositório (`package.json`, `src/`, `plugins/`) — fonte final
-2. `AI_CONTEXT_INDEX.md` — regras canônicas globais
-3. Este arquivo (`AGENTS.md`) — regras operacionais
-4. `docs/` — referência técnica detalhada
-5. Skills em `.agents/skills/`
+> A hierarquia canônica está definida em `AI_CONTEXT_INDEX.md § Ordem de precedência`.
+> Resumo: código real > AI_CONTEXT_INDEX.md > AGENTS.md > docs/ > skills.
+
+---
+
+## Onboarding: leia antes de qualquer tarefa
+
+1. `AI_CONTEXT_INDEX.md` — regras globais, stack canônica, endpoints, bugs conhecidos
+2. Este arquivo (`AGENTS.md`) — regras operacionais e checklists
+3. Skill `djzeneyer-context` em `.agents/skills/djzeneyer-context/` — contexto completo do projeto
+4. Para tarefas de WP/PHP: skill `wp-project-triage` antes de mudanças estruturais
+5. Para tarefas de SEO: skill `seo-audit` antes de criar/modificar rotas públicas
 
 ---
 
@@ -139,4 +146,71 @@ Se não exigir atualização, registrar explicitamente que nenhuma foi necessár
 ```bash
 npm run lint    # Zero erros (warnings são aceitáveis)
 npm run build   # Build completo com prerender deve passar
+```
+
+> Nota: este projeto não possui suite de testes automatizados (Vitest/Playwright/PHPUnit).
+> Validação é feita via lint + build + inspeção manual. Não inventar comandos de teste que não existem.
+
+---
+
+## Skills disponíveis em `.agents/skills/`
+
+| Skill | Quando usar |
+|---|---|
+| `djzeneyer-context` | **Qualquer tarefa** neste repositório — ler sempre primeiro |
+| `dream-project` | Após sessão de trabalho relevante — consolidar contexto |
+| `wp-project-triage` | Antes de mudanças estruturais em WP (plugins, endpoints, hooks) |
+| `wp-rest-api` | Ao criar ou modificar endpoints REST |
+| `react-best-practices` | Ao escrever componentes React (**ignorar regras de Next.js/Server Components**) |
+| `codeql-security` | Ao escrever sanitização PHP ou escaping (em `.agent/skills/`) |
+| `seo-audit` | Ao criar ou modificar rotas públicas |
+| `content-strategy` | Ao planejar conteúdo de blog/news (usar com `zen-content-voice`) |
+| `zen-content-voice` | Ao criar qualquer copy, post, social ou email para DJ Zen Eyer |
+
+> `codeql-security` está em `.agent/skills/codeql-security/` (diretório separado — atenção ao caminho).
+
+---
+
+## Checklist: nova rota pública
+
+1. Adicionar entrada em `scripts/routes-data.json` com `excludeFromSitemap: false`
+2. Criar chaves i18n em `src/locales/pt/translation.json` **e** `src/locales/en/translation.json`
+3. Adicionar `<HeadlessSEO />` com `title`, `description`, `url` e `schema` corretos
+4. Usar `React.lazy()` + `Suspense` para a página (lazy loading obrigatório)
+5. Usar `getLocalizedRoute('slug', lang)` para URLs — nunca hardcodar paths
+6. Verificar que o hreflang no sitemap gerado está correto
+
+---
+
+## Git workflow
+
+- **Branches:** `feat/`, `fix/`, `hotfix/`, `docs/`, `chore/`
+- **Commits:** mensagem no imperativo em PT-BR (`Adiciona`, `Corrige`, `Remove`, `Atualiza`)
+- **PRs:** usar template em `.github/pull_request_template.md`; um domínio por PR (frontend OU PHP, nunca misturar)
+- **Nunca commitar diretamente em `main`** — usar branch + PR + revisão
+
+---
+
+## Polylang vs i18next
+
+São sistemas completamente separados e não se comunicam:
+
+| Sistema | Gerencia | Como usar |
+|---|---|---|
+| **Polylang** | Conteúdo WordPress (posts, produtos, páginas) | Passar `?lang=pt` na query REST para obter conteúdo traduzido |
+| **i18next** | Strings de UI do React | `t('chave')` via `useTranslation()` |
+
+Nunca misturar: não passar chaves i18next para a API WP, e não exibir conteúdo WP sem passar pelo Polylang.
+
+---
+
+## Ambiente local
+
+```bash
+cp .env.example .env      # configurar VITE_API_URL e outras variáveis
+npm install               # instalar dependências
+npm run dev               # frontend em http://localhost:5173
+# Backend: WordPress em servidor externo (configurar VITE_API_URL no .env)
+npm run lint              # validar código
+npm run build             # build + prerender (obrigatório antes de push)
 ```

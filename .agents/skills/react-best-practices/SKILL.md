@@ -6,6 +6,10 @@ source: community
 date_added: "2026-02-27"
 ---
 
+> ⚠️ **ESCOPO DESTE PROJETO:** Este projeto usa **Vite 8 + React Router 7**, não Next.js.
+> Ignorar todas as regras prefixadas com `server-`, referências a Server Components, App Router, Streaming SSR ou Vercel Edge Functions.
+> Regras de Client Components, hooks, memoização e performance são válidas e aplicáveis.
+
 # Vercel React Best Practices
 
 Comprehensive performance optimization guide for React and Next.js applications, maintained by Vercel. Contains 45 rules across 8 categories, prioritized by impact to guide automated refactoring and code generation.
