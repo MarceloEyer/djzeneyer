@@ -257,14 +257,14 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
     checkScroll();
     const carousel = carouselRef.current;
     if (carousel) {
-      carousel.addEventListener('scroll', checkScroll);
-      window.addEventListener('resize', checkScroll); // OPTIMIZATION: Resync on resize
+      carousel.addEventListener('scroll', checkScroll, { passive: true });
+      window.addEventListener('resize', checkScroll, { passive: true }); // OPTIMIZATION: Resync on resize
       return () => {
         carousel.removeEventListener('scroll', checkScroll);
         window.removeEventListener('resize', checkScroll);
       };
     }
-  }, [products, checkScroll]);
+  }, [checkScroll]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
