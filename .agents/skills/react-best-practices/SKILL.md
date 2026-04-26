@@ -1,14 +1,37 @@
 ---
 name: react-best-practices
-description: "React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance pat..."
+description: "React performance optimization guidelines (client-side). Este projeto usa Vite 8 + React Router 7 — regras server-side (Server Components, App Router, SSR) são INAPLICÁVEIS. Usar para: memoização, bundle size, re-renders, client-side data fetching."
 risk: unknown
 source: community
 date_added: "2026-02-27"
 ---
 
-> ⚠️ **ESCOPO DESTE PROJETO:** Este projeto usa **Vite 8 + React Router 7**, não Next.js.
-> Ignorar todas as regras prefixadas com `server-`, referências a Server Components, App Router, Streaming SSR ou Vercel Edge Functions.
-> Regras de Client Components, hooks, memoização e performance são válidas e aplicáveis.
+> ⚠️ **ESCOPO DESTE PROJETO — Vite 8 + React Router 7, NÃO Next.js**
+
+## Regras inaplicáveis neste projeto (ignorar completamente)
+
+As seguintes regras são exclusivas de Next.js/Server Components e **não se aplicam**:
+
+| Regra | Motivo para ignorar |
+|---|---|
+| `server-cache-react` | React.cache() é Server Components only |
+| `server-cache-lru` | Cross-request caching é SSR only |
+| `server-serialization` | Não há passagem de dados servidor→cliente em SPA |
+| `server-parallel-fetching` | Server Components não existem |
+| `server-after-nonblocking` | after() é Next.js only |
+| `async-suspense-boundaries` | ⚠️ **PERIGOSO aqui** — Suspense para data fetching requer SSR; useSuspenseQuery sem SSR causa tela branca no prerender Puppeteer deste projeto |
+| `bundle-dynamic-imports` | Usar `React.lazy()` + `Suspense` em vez de `next/dynamic` |
+
+## Regras válidas e aplicáveis (usar)
+
+Todas as outras categorias se aplicam normalmente:
+- **Eliminating Waterfalls** (`async-defer-await`, `async-parallel`, `async-api-routes`) ✅
+- **Bundle Size** (`bundle-barrel-imports`, `bundle-defer-third-party`, `bundle-conditional`, `bundle-preload`) ✅
+- **Client-Side Data Fetching** (`client-swr-dedup`, `client-event-listeners`) ✅ — neste projeto usar React Query v5
+- **Re-render Optimization** (todos os `rerender-*`) ✅
+- **Rendering Performance** (todos os `rendering-*`) ✅
+- **JavaScript Performance** (todos os `js-*`) ✅
+- **Advanced Patterns** (`advanced-event-handler-refs`, `advanced-use-latest`) ✅
 
 # Vercel React Best Practices
 

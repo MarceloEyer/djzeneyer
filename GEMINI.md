@@ -6,11 +6,10 @@
 
 ## Precedência
 
-Em caso de divergência, seguir nesta ordem:
-1. Código real do repositório
-2. `AI_CONTEXT_INDEX.md`
-3. `AGENTS.md`
-4. Este arquivo (`GEMINI.md`)
+> **Hierarquia canônica definida em `AI_CONTEXT_INDEX.md § Ordem de precedência`.** Não redefina aqui.
+> Este arquivo (`GEMINI.md`) ocupa a posição 5 na hierarquia — contém apenas overrides para Gemini/Jules.
+
+Resumo: `código real` > `AI_CONTEXT_INDEX.md` > `AGENTS.md` > `docs/*` > `GEMINI.md` > `CLAUDE.md` > `skills`
 
 ## Baseline Técnico (Snapshot 2026-03-26) 🚀
 

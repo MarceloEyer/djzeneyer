@@ -60,12 +60,11 @@ define( 'WP_DEBUG_DISPLAY', false );
 
 ## Hierarquia de contexto (em caso de conflito)
 
-1. Código real (`package.json`, `src/`, `plugins/`, `inc/`) — fonte final
-2. `AI_CONTEXT_INDEX.md` — regras globais, stack, endpoints canônicos
-3. `AGENTS.md` — regras operacionais para agentes
-4. `docs/AI_GOVERNANCE.md` — gates por tipo de tarefa
-5. `GEMINI.md` — overrides para Gemini/Jules
-6. Este arquivo (`CLAUDE.md`) — contexto específico para Claude Code
+> **Hierarquia canônica definida em `AI_CONTEXT_INDEX.md § Ordem de precedência`.** Não redefina aqui.
+> Este arquivo (`CLAUDE.md`) ocupa a posição 6 (abaixo de `GEMINI.md`) — contém apenas overrides específicos para Claude Code.
+
+Resumo da ordem canônica:
+`código real` > `AI_CONTEXT_INDEX.md` > `AGENTS.md` > `docs/*` > `GEMINI.md` > `CLAUDE.md` > `skills`
 
 ## 🧱 Regras Críticas (não negociáveis)
 

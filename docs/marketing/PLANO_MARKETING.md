@@ -1,5 +1,5 @@
 # Plano de Marketing Internacional — DJ Zen Eyer
-> Versão 1.0 — Abril 2026
+> Versão 1.1 — Abril 2026 (atualizado com dados reais verificados)
 > Foco prioritário: consolidar autoridade global e expandir na Europa
 > Filosofia: amplificar o que já existe, não inventar nova identidade
 
@@ -18,6 +18,23 @@
 | Streaming | Spotify, Apple Music, Deezer, Tidal, Amazon Music, SoundCloud, Bandcamp | Médio — presença, mas baixo volume de lançamentos |
 | Infraestrutura | Site com gamificação, loja, newsletter, SEO headless | Alto — poucos DJs de nicho têm isso |
 | Credencial intelectual | Mensa International (top 2% QI) | Médio — diferencial para imprensa e podcasts |
+
+### Baseline real (verificado em abril 2026)
+
+| Plataforma | Número atual | Contexto |
+|---|---|---|
+| Spotify — ouvintes mensais | **~2.500** | Baixo para o nível de credencial; sala de crescimento enorme |
+| Twitter/X — seguidores | **~615** | Plataforma de menor prioridade para o público de Zouk |
+| Instagram — seguidores | **~7.000** | Principal rede — milestone próxima: 20k |
+| TikTok | Início | Maior alavanca de crescimento não aproveitada |
+| SoundCloud | Ativo | Sets e remixes; público de DJs e professores |
+| Mixcloud | Ativo | Mixes de sets — credencial para organizadores |
+
+**Análise:** A disparidade entre credencial (2× campeão mundial) e números de streaming (2.5K ouvintes/mês) é a maior oportunidade. Artistas com títulos equivalentes em outros gêneros têm 10–50× mais ouvintes. Isso confirma que o problema é **distribuição e cadência**, não qualidade.
+
+### Tour 2026 — status oficial
+
+Press release publicado em PR.com (2026) confirma tour internacional com performances confirmadas na **Polônia** e **República Tcheca (Praga)**. Anúncio coberto também pelo CarryOnHarry.com.
 
 ### Lacunas prioritárias (o que está impedindo o crescimento)
 
@@ -202,18 +219,30 @@ Identificar 5–10 dançarinos de Zouk com 10k–100k seguidores nos países-alv
 
 #### 4.1 Festivais europeus prioritários
 
-| Festival | País | Tamanho | Status |
+Calendário verificado via LatinDanceCalendar.com, Danceplace.com e DanceEvents.info (abril 2026):
+
+**Confirmados para 2026 (booking a confirmar ou já confirmado):**
+
+| Festival | País | Data 2026 | Status |
 |---|---|---|---|
-| Dutch International Zouk Congress | Holanda | Grande | **Confirmado 2026** |
-| Polish Zouk Festival | Polônia | Médio-grande | **Confirmado 2025** |
-| Slovenian Zouk Marathon | Eslovênia | Médio | **Confirmado 2026** |
-| Lisbon Zouk Marathon | Portugal | Médio-grande | **Confirmado 2026** |
-| Berlin Zouk Festival | Alemanha | Médio-grande | Alvo 2026/2027 |
-| Lithuanian Zouk Festival | Lituânia | Médio | Alvo 2026/2027 |
-| Irish Zouk Congress | Irlanda | Médio | Alvo 2027 |
-| Italian Zouk Congress | Itália | Médio | Alvo 2027 |
-| Spanish Zouk Congress | Espanha | Médio | Alvo 2027 |
-| Croatian Zouk Festival | Croácia | Médio | Alvo 2027 |
+| Wrocław Zouk Experience — Summer | Polônia | 5–7 Jun | **Tour confirmada — Polônia** |
+| Cracow Zouk Marathon | Polônia | 26–28 Jun | Alvo prioritário |
+| Brazilian Zouk Dance Congress | Rep. Tcheca (Praga) | 9–13 Jul | **Tour confirmada — Praga** |
+| Bonn SoulZouk Festival | Alemanha | 30 Jul–2 Ago | Alvo prioritário |
+| Xplosion Zouk Berlin Festival | Alemanha | 31 Jul–2 Ago | Alvo prioritário |
+| Silesian Zouk Festival | Polônia (Katowice) | 6–8 Nov | Alvo prioritário |
+| Dutch International Zouk Congress (14ª ed.) | Holanda (Etten-Leur) | 15–18 Out | Alvo prioritário |
+
+**Alvos para 2027 (baseado em presença histórica de Zen Eyer no país):**
+
+| Festival | País | Frequência | Prioridade |
+|---|---|---|---|
+| Slovenian Zouk Marathon | Eslovênia | Anual | Alta — já tocou no país |
+| Lithuanian Zouk Festival | Lituânia | Anual | Alta — já tocou no país |
+| Irish Zouk Congress | Irlanda | Anual | Média — já tocou no país |
+| Italian Zouk Congress | Itália | Anual | Média — já tocou no país |
+| Spanish Zouk Congress | Espanha | Anual | Média — já tocou no país |
+| Croatian Zouk Festival | Croácia | Anual | Baixa — já tocou no país |
 
 #### 4.2 Estratégia de outreach: dar antes de pedir
 
@@ -315,14 +344,17 @@ O RA é referência para DJs europeus e influencia o Google Knowledge Graph.
 
 | Métrica | Meta 6 meses | Meta 12 meses | Como medir |
 |---|---|---|---|
-| Ouvintes mensais Spotify | 5.000 | 15.000 | Spotify for Artists |
-| Seguidores Instagram | +30% do baseline | +80% | Instagram Insights |
-| Seguidores TikTok | 2.000 | 10.000 | TikTok Analytics |
-| Inscritos newsletter | 500 | 2.000 | MailPoet |
-| Festivas internacionais/ano | 12 | 18 | Agenda |
-| Artigos de blog publicados | 5 | 15 | WordPress |
-| Aparições em podcasts | 3 | 8 | Manual |
-| Países no Knowledge Graph | 15 | 20+ | Wikidata |
+| Métrica | Baseline (Abr 2026) | Meta 6 meses | Meta 12 meses | Como medir |
+|---|---|---|---|---|
+| Ouvintes mensais Spotify | ~2.500 | 8.000 | 20.000 | Spotify for Artists |
+| Seguidores Instagram | ~7.000 | 12.000 (+70%) | 20.000 (+185%) | Instagram Insights |
+| Seguidores TikTok | <100 | 3.000 | 10.000 | TikTok Analytics |
+| Twitter/X seguidores | ~615 | 1.500 | 3.000 | X Analytics |
+| Inscritos newsletter | — | 500 | 2.000 | MailPoet |
+| Festivais internacionais/ano | ~8 | 14 | 20 | Agenda |
+| Artigos de blog publicados | 0 | 5 | 15 | WordPress |
+| Aparições em podcasts | 0 | 3 | 8 | Manual |
+| Países com presença em festivais | 15 | 18 | 22+ | Wikidata/Agenda |
 
 ---
 
@@ -364,6 +396,20 @@ A Cremosidade não é um slogan de marketing. É uma filosofia de como a música
 
 ## Referências e fontes
 
+**Dados verificados:**
+- djzeneyer.com/about-dj-zen-eyer — perfil oficial
+- PR.com press release (2026) — confirmação da tour Europa + América do Norte
+- CarryOnHarry.com — cobertura da tour 2026
+- Spotify: open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw — ~2.5K ouvintes/mês
+- SoundCloud: soundcloud.com/djzeneyer — ativo
+- Mixcloud: mixcloud.com/djzeneyer — sets publicados
+- Danceplace.com — histórico de Ilha do Zouk 2022 (20–24 Abr)
+- LatinDanceCalendar.com — calendário de festivais de Zouk Europa 2026
+- DanceEvents.info — resumo de eventos Zouk 2026
+- SilesianZoukFestival.pl — Silesian Zouk Festival Nov 6-8, 2026, Katowice
+- Wikidata Q136551855 — entidade canônica de Zen Eyer
+
+**Referências acadêmicas e de negócios:**
 - Kevin Kelly, "1000 True Fans" (2008) — teoria de nicho sobre fãs engajados vs audiência genérica
 - Robert Cialdini, "Influence" (1984) — princípios de escassez, reciprocidade e prova social
 - Chartmetric Research — dados de crescimento de artistas de nicho em streaming

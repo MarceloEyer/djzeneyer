@@ -155,19 +155,65 @@ npm run build   # Build completo com prerender deve passar
 
 ## Skills disponíveis em `.agents/skills/`
 
+Todas as skills estão em `.agents/skills/` (28 skills). Todas têm um arquivo `SKILL.md`.
+
+### Skills de contexto e governança (ler primeiro)
+
 | Skill | Quando usar |
 |---|---|
-| `djzeneyer-context` | **Qualquer tarefa** neste repositório — ler sempre primeiro |
+| `djzeneyer-context` | **Qualquer tarefa** neste repositório — ler **sempre** primeiro |
 | `dream-project` | Após sessão de trabalho relevante — consolidar contexto |
-| `wp-project-triage` | Antes de mudanças estruturais em WP (plugins, endpoints, hooks) |
-| `wp-rest-api` | Ao criar ou modificar endpoints REST |
-| `react-best-practices` | Ao escrever componentes React (**ignorar regras de Next.js/Server Components**) |
-| `codeql-security` | Ao escrever sanitização PHP ou escaping (em `.agent/skills/`) |
-| `seo-audit` | Ao criar ou modificar rotas públicas |
-| `content-strategy` | Ao planejar conteúdo de blog/news (usar com `zen-content-voice`) |
-| `zen-content-voice` | Ao criar qualquer copy, post, social ou email para DJ Zen Eyer |
 
-> `codeql-security` está em `.agent/skills/codeql-security/` (diretório separado — atenção ao caminho).
+### Skills de WordPress / PHP
+
+| Skill | Quando usar |
+|---|---|
+| `wp-project-triage` | Antes de **qualquer** mudança estrutural em WP (plugins, hooks, endpoints) |
+| `wp-rest-api` | Ao criar ou modificar endpoints REST |
+| `wp-plugin-development` | Ao criar ou modificar plugins WordPress customizados |
+| `wp-headless` | Ao trabalhar com REST API WordPress como headless CMS |
+| `wp-performance` | Ao otimizar queries PHP, N+1 queries, cache WordPress |
+| `wp-wpcli-and-ops` | Operações via WP-CLI, deploy, manutenção de servidor |
+| `wp-phpstan` | Ao fazer análise estática PHP com PHPStan |
+| `wp-interactivity-api` | ⚠️ N/A neste projeto (usa React SPA, não WP Interactivity API) |
+| `wordpress-router` | Ao configurar rotas WordPress headless |
+
+### Skills de React / Frontend
+
+| Skill | Quando usar |
+|---|---|
+| `react-best-practices` | Ao escrever/revisar React — **ignorar categorias `server-`** (Next.js only) |
+| `react-patterns` | Ao criar componentes com hooks, composition, memoização |
+| `tailwind-patterns` | Ao escrever CSS com Tailwind v4 (CSS-first config) |
+| `typescript-pro` | Ao resolver tipagem complexa, generics, strict TypeScript |
+| `clean-code` | Ao revisar ou refatorar qualquer código |
+| `web-quality-skills` | Ao revisar qualidade geral do frontend (acessibilidade, performance) |
+| `auth-implementation-patterns` | Ao implementar fluxos JWT / Google OAuth |
+
+### Skills de segurança
+
+| Skill | Quando usar |
+|---|---|
+| `codeql-security` | Ao escrever sanitização PHP, escaping, prepared statements |
+| `backend-security-coder` | Ao implementar endpoints com inputs externos no PHP |
+
+### Skills de SEO
+
+| Skill | Quando usar |
+|---|---|
+| `seo-audit` | Ao criar ou modificar **qualquer** rota pública |
+| `schema-markup` | Ao configurar JSON-LD / Schema.org em páginas |
+| `seo-authority-builder` | Ao criar conteúdo para autoridade SEO de longo prazo |
+| `seo-meta-optimizer` | Ao otimizar meta tags, títulos, descriptions, OG |
+
+### Skills de conteúdo e marketing (sempre usar em par)
+
+| Skill | Quando usar |
+|---|---|
+| `zen-content-voice` | Ao criar **qualquer** copy, post, social ou email para DJ Zen Eyer |
+| `content-strategy` | Ao planejar calendário de conteúdo, clusters de tópicos |
+| `copywriting` | Ao criar copy de landing pages, emails, CTAs |
+| `social-content` | Ao criar posts, reels, threads para Instagram/TikTok/YouTube |
 
 ---
 
