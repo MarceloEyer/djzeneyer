@@ -106,6 +106,14 @@ const HomePage: React.FC = () => {
   const currentPath = i18n.language === 'pt' ? '/pt' : '/';
   const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
 
+  // ⚡ Bolt: Memoize localized routes to avoid O(N) recalculations on every render
+  const routes = useMemo(() => ({
+    booking: getLocalizedRoute('booking', currentLang),
+    events: getLocalizedRoute('events', currentLang),
+    music: getLocalizedRoute('music', currentLang),
+    zentribe: getLocalizedRoute('zentribe', currentLang),
+  }), [currentLang]);
+
   // --- SCHEMA STATIC DATA (Rich Snippets) ---
   const schemaData = useMemo(() => ({
     "@context": "https://schema.org",
@@ -255,7 +263,7 @@ const HomePage: React.FC = () => {
                 <span>{t('home.cta_soundcloud')}</span>
               </a>
               <Link
-                to={getLocalizedRoute('booking', currentLang)}
+                to={routes.booking}
                 className="btn btn-outline btn-lg flex items-center gap-2 min-h-[44px] backdrop-blur-sm"
                 aria-label="Book DJ Zen Eyer or Get Press Kit"
               >
@@ -270,7 +278,7 @@ const HomePage: React.FC = () => {
                 components={[
                   <Link
                     key="music-link"
-                    to={getLocalizedRoute('music', currentLang)}
+                    to={routes.music}
                     className="text-primary hover:text-primary/80 underline underline-offset-4"
                   />
                 ]}
@@ -316,7 +324,7 @@ const HomePage: React.FC = () => {
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-              <Link to={getLocalizedRoute('events', currentLang)} className="btn btn-primary btn-lg flex items-center gap-2">
+              <Link to={routes.events} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
                 <span>{t('home.shows.cta')}</span>
               </Link>
@@ -366,7 +374,7 @@ const HomePage: React.FC = () => {
                 <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{t('home.press.desc')}</p>
-              <Link to={getLocalizedRoute('booking', currentLang)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
+              <Link to={routes.booking} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {t('home.press.cta')} →
               </Link>
             </motion.div>
@@ -375,7 +383,7 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
               <p className="text-white/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
-              <Link to={getLocalizedRoute('booking', currentLang)} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
+              <Link to={routes.booking} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {t('home.bookers.cta')} →
               </Link>
             </motion.div>
@@ -411,7 +419,7 @@ const HomePage: React.FC = () => {
             {t('home.tribe.subtitle')}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
-            <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary btn-lg min-w-[200px]">
+            <Link to={routes.zentribe} className="btn btn-primary btn-lg min-w-[200px]">
               {t('nav.tribe')}
             </Link>
           </motion.div>

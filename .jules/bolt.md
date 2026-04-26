@@ -99,3 +99,8 @@
 
 **Learning:** Calling `Number.prototype.toLocaleString()` implicitly instantiates an `Intl.NumberFormat` object on every call. In benchmarks, this causes ~8x more CPU overhead and memory allocations compared to reusing a cached formatter instance, which is especially noticeable during React renders and inside `.map()` array iterations (like leaderboard rendering).
 **Action:** Always replace `toLocaleString()` with a cached formatter instance from a module-level cache (like `getCurrencyFormatter(locale, currency, true).format(value)`) to prevent redundant object allocations and improve render performance.
+
+## 2026-06-26 - Prevent redundant function calls during render cycles
+
+**Learning:** Repeatedly calling a deterministic function like `getLocalizedRoute` with the same dynamic arguments multiple times within a component's render body (e.g. passing it to multiple `<Link to={...}>` elements) leads to redundant O(N) calculations on every React reconciliation cycle.
+**Action:** Consolidate these multiple calls into a single object map wrapped in `useMemo` with the dynamic argument as its dependency. This evaluates the localized paths only once when the language changes, rather than recalculating them on every unrelated state or context update.
