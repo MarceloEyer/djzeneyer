@@ -281,6 +281,13 @@
    UTILITY CLASSES
    ======================================== */
 @layer utilities {
+  .safe-html-contrast strong, .safe-html-contrast b, .safe-html-contrast em, .safe-html-contrast i, .safe-html-contrast span {
+    color: white !important;
+  }
+  .safe-html-contrast strong, .safe-html-contrast b {
+    font-weight: bold !important;
+  }
+
   .text-neon {
     text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
   }
