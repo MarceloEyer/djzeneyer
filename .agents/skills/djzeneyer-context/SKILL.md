@@ -39,7 +39,7 @@ triggers:
   - LiteSpeed
   - Cloudflare
   - prerender
-version: '1.2.1'
+version: '1.2.2'
 author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity (Restored 2026-03-26)
 ---
 
@@ -74,7 +74,7 @@ author: Marcelo Eyer Fernandes (DJ Zen Eyer) & Antigravity (Restored 2026-03-26)
 ### Backend (WP 6.9+ / PHP 8.3)
 
 - **Headless**: WP não renderiza HTML.
-- **WooCommerce 10.5+**: HPOS ativo.
+- **WooCommerce 10.6.1**: HPOS ativo.
 - **GamiPress**: Gamificação brain.
 - **Security**: Namespaces, Prepared Statements e Sanitização obrigatórios.
 

@@ -30,3 +30,10 @@ dist-test/
 # Claude Code worktrees (gerados automaticamente, não commitar)
 .claude/worktrees/
 pnpm-lock.yaml
+
+# Arquivos temporários / debug / backups de raiz
+*_old.json
+*_backup.json
+*_beautiful.tsx
+pr_comments*.json
+check_client_error.mjs
