@@ -130,8 +130,8 @@ const HomePage: React.FC = () => {
       ARTIST_SCHEMA_BASE,
       {
         "@type": "WebPage",
-        "@id": `${ARTIST.site.baseUrl}/#webpage`,
-        "url": ARTIST.site.baseUrl,
+        "@id": `${currentUrl}#webpage`,
+        "url": currentUrl,
         "name": t('home.page_title'),
         "description": t('home.page_meta_desc'),
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
@@ -143,11 +143,11 @@ const HomePage: React.FC = () => {
         },
         "breadcrumb": {
           "@type": "BreadcrumbList",
-          "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": ARTIST.site.baseUrl }]
+          "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": currentUrl }]
         }
       }
     ],
-  }), [seoSettings, t]);
+  }), [seoSettings, t, currentUrl]);
 
   return (
     <>

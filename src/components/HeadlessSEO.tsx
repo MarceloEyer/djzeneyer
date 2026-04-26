@@ -211,8 +211,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         ARTIST_SCHEMA_BASE,
         {
           '@type': 'WebPage',
-          '@id': `${baseUrl}/#webpage`,
-          url: baseUrl,
+          '@id': `${finalUrl}#webpage`,
+          url: finalUrl,
           name: finalTitle,
           isPartOf: { '@id': `${baseUrl}/#website` },
           about: { '@id': `${baseUrl}/#artist` },
