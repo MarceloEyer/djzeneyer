@@ -1,5 +1,9 @@
 # API.md - Referencia Canonica de Endpoints
 
+> **Nota:** Este arquivo é um resumo de namespaces e rotas principais.
+> Para a documentação completa com parâmetros, payloads, schemas e exemplos, ver:
+> **[`docs/api-endpoints.md`](api-endpoints.md)** — fonte completa de endpoints.
+
 Base REST: `https://djzeneyer.com/wp-json`
 
 ## Namespaces oficiais

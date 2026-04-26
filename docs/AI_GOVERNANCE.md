@@ -90,9 +90,29 @@ Uma mudança é considerada pronta quando:
 
 ---
 
-## 6) Cadência de revisão
-- Revisar este documento a cada 30 dias ou após mudança arquitetural relevante.
-- Em caso de divergência recorrente entre agentes, atualizar primeiro este arquivo e referenciar nos demais guias.
+## 6) Rotina mensal de sincronização (ativa — obrigatória)
+
+Executar a cada 30 dias ou após mudança arquitetural, de endpoint ou de fluxo importante.
+
+### Checklist mensal
+
+- [ ] Rodar checklist de `AI_CONTEXT_INDEX.md § Checklist de atualização de contexto`
+- [ ] Verificar versões de stack em `AI_CONTEXT_INDEX.md` e `CLAUDE.md` (npm, WP, WooCommerce, plugins)
+- [ ] Atualizar métricas reais em `docs/marketing/PLANO_MARKETING.md § Métricas`
+- [ ] Atualizar status de execução no Notion (📊 Marketing — Execução do Plano 2026)
+- [ ] Verificar se `docs/PRODUCT_DECISIONS.md` reflete decisões tomadas no período
+- [ ] Bump version da skill `djzeneyer-context` se houve mudança relevante de arquitetura
+- [ ] Atualizar `public/llms.txt` com novos festivais e lançamentos do período
+- [ ] Verificar se `.agents/skills/` tem skills desatualizadas ou novas skills a criar
+- [ ] Revisar este documento — atualizar data abaixo
+
+### Quando disparar fora do ciclo mensal
+
+- Mudança de namespace de API → sincronizar `docs/API.md`, `docs/api-endpoints.md`, `CONTEXT.md` e skills relacionadas
+- Mudança de stack major (React, Vite, WP, WooCommerce) → sincronizar todos os arquivos de contexto
+- Nova decisão de produto irreversível → adicionar em `docs/PRODUCT_DECISIONS.md`
+- Novo festival confirmado → atualizar `docs/marketing/PLANO_MARKETING.md` e Notion
 
 ---
-*Revisado em 2026-03-26 por DJ Zen Eyer & Antigravity.*
+
+*Revisado em 2026-04-27 por DJ Zen Eyer & Claude.*
