@@ -33,18 +33,8 @@ export function useMenu(): MenuItem[] {
 
   const langToFetch = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
-  const { data, isLoading, error } = useMenuQuery(langToFetch);
+  const { data } = useMenuQuery(langToFetch);
 
-  if (import.meta.env.DEV) {
-    console.log(
-      '[useMenu]',
-      'lang:', langToFetch,
-      'loading:', isLoading,
-      'cached:', Boolean(data),
-      'items:', data?.length || 0
-    );
-    if (data) console.dir(data);
-  }
 
   const formattedItems = useMemo<MenuItem[]>(() => {
     if (!Array.isArray(data)) return [];
@@ -57,9 +47,6 @@ export function useMenu(): MenuItem[] {
     }));
   }, [data]);
 
-  if (error && import.meta.env.DEV) {
-    console.error('[useMenu] Failed to fetch menu:', error);
-  }
 
   return formattedItems;
 }

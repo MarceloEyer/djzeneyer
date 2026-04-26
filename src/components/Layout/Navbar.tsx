@@ -164,7 +164,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                     </nav>
 
                     <div className="hidden md:flex items-center gap-4">
-                        {import.meta.env.DEV && console.log('[Navbar] Rendered items:', processedMenuItems.length)}
                         <LanguageSelector />
                         {user?.isLoggedIn ? <UserMenu /> : (
                             <button onClick={handleLoginButtonClick} className="btn btn-primary btn-sm flex items-center gap-2 shadow-lg shadow-primary/20">
