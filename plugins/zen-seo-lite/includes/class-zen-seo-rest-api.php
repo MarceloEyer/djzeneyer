@@ -428,9 +428,32 @@ class Zen_SEO_REST_API
             'posts_per_page' => \apply_filters('zen_seo_sitemap_limit', 1000),
             'orderby' => 'modified',
             'order' => 'DESC',
+            'meta_query' => [
+                'relation' => 'OR',
+                [
+                    'key'     => '_zen_seo_data',
+                    'compare' => 'NOT EXISTS',
+                ],
+                [
+                    'key'     => '_zen_seo_data',
+                    'value'   => '"noindex";i:1',
+                    'compare' => 'NOT LIKE',
+                ],
+            ],
         ];
 
         $posts = \get_posts($args);
+
+        if (empty($posts)) {
+            return \rest_ensure_response([
+                'success' => true,
+                'data' => $data
+            ]);
+        }
+
+        // Optimization: Batch pre-load posts and metadata to avoid N+1 queries in the loop
+        $batch_ids = \wp_list_pluck($posts, 'ID');
+        \_prime_post_caches($batch_ids, true, true);
 
         foreach ($posts as $post) {
             $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
