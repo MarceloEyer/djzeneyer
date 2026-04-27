@@ -101,6 +101,22 @@ Produção: https://djzeneyer.com
 - **robots.txt AhrefsBot**: `Disallow: /` seguido de `Allow: /` no mesmo bloco — a primeira regra vence (RFC 9309). Sempre colocar `Allow: /` antes dos `Disallow` específicos.
 - **Sitemap**: rotas de checkout/privadas devem ter `excludeFromSitemap: true` em `scripts/routes-data.json`. O `generate-sitemap.js` lê esse campo — não editar o XML manualmente.
 - **llms-full.txt**: arquivo deve ser UTF-8 limpo. Double-encoding (latin-1 re-encodado como UTF-8) produz mojibake silencioso — validar com `python3 -c "open('public/llms-full.txt').read()"` após edições.
+- **MusicEvent Schema.org — campos OBRIGATÓRIOS** (Google Search Console rejeita eventos sem eles):
+  Toda vez que criar ou editar schema MusicEvent — em `HeadlessSEO.tsx`, em `build_event_schema()` (PHP) ou em qualquer outro lugar — os campos abaixo devem estar presentes. Usar fallback, nunca omitir:
+
+  | Campo | Regra |
+  |---|---|
+  | `eventStatus` | Sempre `EventScheduled` — INCLUSIVE em eventos passados. Só mudar para `EventCancelled`/`EventPostponed` se a API retornar dado explícito. |
+  | `endDate` | Obrigatório. Fallback: `startDate` + 4 horas. |
+  | `location.address` | `PostalAddress` com sub-campos preenchidos. **Nunca emitir string vazia** — omitir sub-campo se vazio. Não usar nome do venue como `streetAddress`. |
+  | `description` | Obrigatório. Fallback: `"Live Brazilian Zouk DJ set by DJ Zen Eyer at {venue}."` |
+  | `image` | Obrigatório. Fallback: OG image padrão do site (`/og-image.jpg`). |
+  | `offers` | Obrigatório. Fallback: `Offer` com `url = canonical_url`, `availability = InStock` (futuro) ou `Discontinued` (passado). |
+  | `performer` | Sempre presente — entidade `MusicGroup` DJ Zen Eyer. |
+
+  Arquivos que implementam essa lógica:
+  - **React**: `src/components/HeadlessSEO.tsx` — bloco `musicEvents.push()`
+  - **PHP**: `plugins/zen-bit/includes/class-zen-bit-normalizer.php` — `build_event_schema()`
 
 ### Build e Deploy
 - Minificador: OXC (padrão Vite 8) — nunca `minify: 'esbuild'`.

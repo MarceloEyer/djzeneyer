@@ -109,6 +109,15 @@ Resumo da ordem canônica:
 - **URL canônica**: sempre usar `getLocalizedRoute()` — nunca hardcodar paths como `/about`
 - **robots.txt**: bots SEO (AhrefsBot, SemrushBot) devem ter `Allow: /` + `Crawl-delay` — nunca `Disallow: /` seguido de `Allow: /`
 - **Schema.org**: `AboutPage` → `ProfilePage`; `MusicPage` listagem → `CollectionPage` + `MusicGroup`; `PhilosophyPage` → `Article` com `about: Cremosidade`
+- **Schema.org MusicEvent — campos obrigatórios** (Google Search Console rejeita sem eles):
+  - `eventStatus` → sempre `EventScheduled` — inclusive em eventos passados. Só mudar se a API retornar cancelamento/adiamento explícito.
+  - `endDate` → obrigatório. Fallback: `startDate + 4h`.
+  - `location.address` → sub-campos só se não-vazios. Nunca emitir string vazia. Não usar venue name como `streetAddress`.
+  - `description` → fallback: `"Live Brazilian Zouk DJ set by DJ Zen Eyer at {venue}."`.
+  - `image` → fallback: OG image padrão (`/og-image.jpg`).
+  - `offers` → fallback: `Offer` com `url = canonical_url` + `availability` correta por data.
+  - `performer` → sempre presente (entidade DJ Zen Eyer).
+  - Implementado em: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/includes/class-zen-bit-normalizer.php`.
 - **`.well-known/ai-plugin.json`**: metadados para ChatGPT Plugins e crawlers de IA — não remover
 - **`llms.txt` / `llms-full.txt`**: devem ser UTF-8 limpo — validar após edições
 

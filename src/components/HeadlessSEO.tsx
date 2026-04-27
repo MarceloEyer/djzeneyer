@@ -346,28 +346,40 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           };
         }
 
+        // Campos de localização — omitir sub-campos vazios para não enganar o Google
+        const eventCity = event.location?.city || '';
+        const eventCountry = event.location?.country || '';
+        const isOnline = locName.toLowerCase().includes('online');
+        const addressObj: Record<string, string> = { '@type': 'PostalAddress' };
+        if (!isOnline && locName && locName !== 'TBA') addressObj['streetAddress'] = locName;
+        if (eventCity) addressObj['addressLocality'] = eventCity;
+        if (eventCountry) addressObj['addressCountry'] = eventCountry;
+
+        const eventDescription = stripHtml(
+          event.description || (event.desc as string | undefined) || ''
+        ).substring(0, 300) ||
+          `Live Brazilian Zouk DJ set by ${artist.identity.stageName} at ${locName}.`;
+
         musicEvents.push({
           '@type': 'MusicEvent',
           name: eventTitle,
           ...(canonicalUrl ? { url: canonicalUrl } : {}),
           startDate,
           endDate,
-          ...(!isPast ? { eventStatus: 'https://schema.org/EventScheduled' } : {}),
-          eventAttendanceMode: locName.toLowerCase().includes('online')
+          // eventStatus obrigatório em TODOS os eventos — passado ou futuro.
+          // Eventos passados que aconteceram normalmente recebem EventScheduled.
+          // Só alterar para EventCancelled/EventPostponed quando a API retornar esse dado.
+          eventStatus: 'https://schema.org/EventScheduled',
+          eventAttendanceMode: isOnline
             ? 'https://schema.org/OnlineEventAttendanceMode'
             : 'https://schema.org/OfflineEventAttendanceMode',
           location: {
             '@type': 'Place',
             name: locName,
-            address: {
-              '@type': 'PostalAddress',
-              streetAddress: locName,
-              addressLocality: event.location?.city || '',
-              addressCountry: event.location?.country || '',
-            }
+            address: addressObj,
           },
-          image: event.image || finalImage,
-          description: stripHtml(event.description || event.desc || '').substring(0, 300) || `Live Brazilian Zouk DJ set by ${artist.identity.stageName} at ${locName}.`,
+          image: (event.image as string | undefined) || finalImage,
+          description: eventDescription,
           performer: {
             '@type': 'MusicGroup',
             name: artist.identity.stageName,

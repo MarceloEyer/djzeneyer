@@ -235,51 +235,116 @@ class Zen_BIT_Normalizer
 
     /**
      * Gera schema MusicEvent para um evento (list_item OU detail já normalizado).
-     * Campos opcionais só são incluídos quando presentes.
+     *
+     * REGRA PERMANENTE (Google Search Console):
+     * Os campos abaixo são OBRIGATÓRIOS em todo MusicEvent — nunca omitir:
+     *   - eventStatus    : sempre EventScheduled (salvo cancelamento/adiamento explícito)
+     *   - location.address : omitir sub-campos vazios, nunca emitir string vazia
+     *   - endDate        : fallback = startDate + 4 horas
+     *   - description    : fallback = texto padrão "Live Brazilian Zouk DJ set by..."
+     *   - image          : fallback = OG image padrão do site
+     *   - offers         : fallback = Offer com url = canonical_url + availability correta
+     *   - performer      : sempre presente (entidade DJ Zen Eyer)
      */
     public static function build_event_schema(array $event): array
     {
         if (empty($event['starts_at']))
             return [];
 
-        $loc = $event['location'] ?? [];
-        $schema = [
-            '@type' => 'MusicEvent',
-            'name' => $event['title'] ?? '',
-            'startDate' => $event['starts_at'],
-            'eventStatus' => 'https://schema.org/EventScheduled',
-            'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
-            'url' => $event['canonical_url'] ?? '',
-            'location' => [
-                '@type' => 'Place',
-                'name' => $loc['venue'] ?? '',
-                'address' => [
-                    '@type' => 'PostalAddress',
-                    'addressLocality' => $loc['city'] ?? '',
-                    'addressRegion' => $loc['region'] ?? '',
-                    'addressCountry' => $loc['country'] ?? '',
-                ],
-            ],
-        ];
+        $loc        = $event['location'] ?? [];
+        $venue_name = $loc['venue'] ?? '';
+        $city       = $loc['city'] ?? '';
+        $region     = $loc['region'] ?? '';
+        $country    = $loc['country'] ?? '';
+        $is_online  = stripos($venue_name, 'online') !== false;
 
-        // Campos do detalhe
-        if (!empty($event['ends_at']))
-            $schema['endDate'] = $event['ends_at'];
-        if (!empty($event['description']))
-            $schema['description'] = $event['description'];
-        if (!empty($event['image']))
-            $schema['image'] = $event['image'];
-        if (!empty($event['source_url']))
-            $schema['sameAs'] = $event['source_url'];
+        // Endereço — emitir apenas sub-campos não-vazios para evitar erros do Google
+        $address = ['@type' => 'PostalAddress'];
+        if (!$is_online && $venue_name && $venue_name !== 'TBA')
+            $address['streetAddress'] = $venue_name;
+        if ($city)    $address['addressLocality'] = $city;
+        if ($region)  $address['addressRegion']   = $region;
+        if ($country) $address['addressCountry']  = $country;
 
-        if (!empty($event['offers'])) {
-            $offer = $event['offers'][0];
-            $schema['offers'] = [
-                '@type' => 'Offer',
-                'url' => $offer['url'],
-                'availability' => 'https://schema.org/InStock',
+        // endDate: fallback startDate + 4h quando não fornecido
+        $start_ts = strtotime($event['starts_at']);
+        $end_date = !empty($event['ends_at'])
+            ? $event['ends_at']
+            : gmdate('c', $start_ts + 4 * 3600);
+
+        $is_past = $start_ts < time();
+
+        // description: fallback descritivo quando vazio
+        $description = !empty($event['description'])
+            ? wp_strip_all_tags($event['description'])
+            : sprintf(
+                'Live Brazilian Zouk DJ set by DJ Zen Eyer%s.',
+                $venue_name && $venue_name !== 'TBA' ? ' at ' . $venue_name : ''
+            );
+        $description = substr($description, 0, 300);
+
+        // image: fallback OG padrão do site
+        $default_image = home_url('/og-image.jpg');
+        $image = !empty($event['image']) ? $event['image'] : $default_image;
+
+        // canonical url para offers
+        $canonical_url = !empty($event['canonical_url']) ? $event['canonical_url'] : home_url('/eventos/');
+
+        // offers: usar dados reais quando disponíveis, senão fallback
+        if (!empty($event['offers']) && is_array($event['offers'])) {
+            $offer    = $event['offers'][0];
+            $offers = [
+                '@type'        => 'Offer',
+                'url'          => $offer['url'] ?? $canonical_url,
+                'availability' => $is_past
+                    ? 'https://schema.org/Discontinued'
+                    : 'https://schema.org/InStock',
+            ];
+            if (!empty($offer['price']))       $offers['price']         = $offer['price'];
+            if (!empty($offer['priceCurrency'])) $offers['priceCurrency'] = $offer['priceCurrency'];
+        } elseif (!empty($event['event_ticket'])) {
+            $offers = [
+                '@type'        => 'Offer',
+                'url'          => $event['event_ticket'],
+                'availability' => $is_past
+                    ? 'https://schema.org/Discontinued'
+                    : 'https://schema.org/InStock',
+            ];
+        } else {
+            $offers = [
+                '@type'        => 'Offer',
+                'url'          => $canonical_url,
+                'availability' => $is_past
+                    ? 'https://schema.org/Discontinued'
+                    : 'https://schema.org/LimitedAvailability',
             ];
         }
+
+        $schema = [
+            '@type'               => 'MusicEvent',
+            'name'                => $event['title'] ?? '',
+            'startDate'           => $event['starts_at'],
+            'endDate'             => $end_date,
+            // eventStatus SEMPRE presente — passado ou futuro
+            // Só alterar para EventCancelled/EventPostponed quando a API retornar esse dado
+            'eventStatus'         => 'https://schema.org/EventScheduled',
+            'eventAttendanceMode' => $is_online
+                ? 'https://schema.org/OnlineEventAttendanceMode'
+                : 'https://schema.org/OfflineEventAttendanceMode',
+            'url'                 => $canonical_url,
+            'description'         => $description,
+            'image'               => $image,
+            'location'            => [
+                '@type'   => 'Place',
+                'name'    => $venue_name ?: 'TBA',
+                'address' => $address,
+            ],
+            'performer'           => self::build_performer_entity(),
+            'offers'              => $offers,
+        ];
+
+        if (!empty($event['source_url']))
+            $schema['sameAs'] = $event['source_url'];
 
         return $schema;
     }
