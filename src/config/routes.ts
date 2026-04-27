@@ -533,7 +533,10 @@ export const getAlternateLinks = (
     };
   }
 
-  const route = KEY_ROUTE_MAP.get(key) || KEY_ROUTE_MAP.get(key.replace('-detail', ''));
+  let route = KEY_ROUTE_MAP.get(key);
+  if (!route && key.endsWith('-detail')) {
+    route = KEY_ROUTE_MAP.get(key.slice(0, -7));
+  }
   if (!route) return alternates;
 
   // Pega os slugs primários
@@ -550,7 +553,8 @@ export const getAlternateLinks = (
   const allCurrentLangPaths = getLocalizedPaths(detailRoute, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
   for (const p of allCurrentLangPaths) {
     // Extrai apenas o prefixo estático: "/events/:slug" → "/events"
-    const staticPart = p.split('/:')[0];
+    const dynamicIdx = p.indexOf('/:');
+    const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
     let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
 

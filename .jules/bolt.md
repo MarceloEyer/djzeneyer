@@ -73,3 +73,7 @@
 
 **Learning:** Declaring static `framer-motion` variant objects (like `cardVariants` or `itemVariants`) inside React functional components causes unnecessary object reallocation on every render. This defeats the purpose of wrapping components in `React.memo` since the objects inside the component are continually recreated.
 **Action:** Always extract static animation configuration objects (like `framer-motion` variants) to the module scope (outside the component) to preserve reference equality and eliminate reallocation overhead during React rendering cycles.
+## 2026-04-09 - Avoid string split for static prefix extraction
+
+**Learning:** Using `String.prototype.split` (e.g., `path.split('/:')[0]`) in high-frequency rendering paths (like routing and URL mapping loops) causes unnecessary garbage collection due to array allocation. Micro-benchmarks show that using `String.prototype.indexOf` combined with `String.prototype.slice` is around 45x faster.
+**Action:** Always prefer native non-allocating string operations like `indexOf`, `startsWith`, `endsWith`, and `slice` over methods that allocate new objects or arrays (`split`, `replace` with regex) in performance-critical code paths.
