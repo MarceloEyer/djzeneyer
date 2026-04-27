@@ -62,9 +62,13 @@ define('EMPTY_TRASH_DAYS', 30);
 
 // Cron — desativar WP-Cron nativo e usar cron de sistema (mais confiável em VPS)
 define('DISABLE_WP_CRON', true);
-// No crontab do servidor: */5 * * * * curl -s https://djzeneyer.com/wp-cron.php?doing_wp_cron > /dev/null
+// No crontab do servidor (PHP CLI é mais eficiente que curl — sem overhead de rede):
+// */5 * * * * /usr/bin/php /caminho/para/wp/wp-cron.php > /dev/null 2>&1
+// Alternativa com wp-cli: */5 * * * * wp --path=/caminho/para/wp cron event run --due-now
 
 // JWT para autenticação headless
+// ⚠️ SEGURANÇA: usar chave aleatória de 64+ chars — nunca hardcodar em repositório
+// Gerar: openssl rand -hex 32 (64 chars hex) ou openssl rand -base64 48
 define('JWT_AUTH_SECRET_KEY',    'TROCAR_POR_CHAVE_SEGURA_64_CHARS');
 define('JWT_AUTH_CORS_ENABLE',   true);
 
@@ -81,25 +85,33 @@ Trocar todas as `AUTH_KEY`, `SECURE_AUTH_KEY`, `LOGGED_IN_KEY`, etc.
 
 ### 1.3 .htaccess (raiz do WordPress)
 
+> **Nota**: Snippet para Apache 2.4+. Adaptar em servidores com versão anterior.
+> A CSP é gerada dinamicamente pelo PHP (`inc/csp.php`) — não declarar aqui.
+
 ```apache
-# Bloquear acesso direto a wp-config.php
+# Bloquear acesso direto a wp-config.php (Apache 2.4+)
 <files wp-config.php>
-order allow,deny
-deny from all
+  Require all denied
 </files>
 
 # Bloquear XML-RPC (não usado em headless)
 <Files xmlrpc.php>
-  Order Deny,Allow
-  Deny from all
+  Require all denied
 </Files>
 
 # Headers de segurança
 <IfModule mod_headers.c>
+  Header unset Server
+  Header unset X-Powered-By
+  Header always unset X-Pingback
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+  # COOP: unsafe-none permite o popup do Google Login comunicar com o site
+  Header always set Cross-Origin-Opener-Policy "unsafe-none"
+  # Nota: Content-Security-Policy é gerada pelo PHP (inc/csp.php) — não definir aqui
 </IfModule>
 
 # Compressão (LiteSpeed também faz, mas é bom ter no .htaccess como fallback)
@@ -153,18 +165,21 @@ deny from all
 
 ### 2.6 REST API — Headers CORS (via plugin ou functions.php do tema)
 
+> **Origens canônicas**: `https://djzeneyer.com`, `https://www.djzeneyer.com`, `http://localhost:5173`, `http://127.0.0.1:5173`.
+> Gerenciadas pela função `djz_allowed_origins()` em `inc/setup.php` — não duplicar aqui.
+
 ```php
 // Em functions.php do tema (djzeneyer theme):
+// Referencia djz_allowed_origins() definida em inc/setup.php
 add_action('rest_api_init', function () {
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
     add_filter('rest_pre_serve_request', function ($value) {
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-        $allowed = ['https://djzeneyer.com', 'http://localhost:5173', 'http://localhost:5174'];
-        if (in_array($origin, $allowed, true)) {
+        $origin = esc_url_raw( wp_unslash( $_SERVER['HTTP_ORIGIN'] ?? '' ) );
+        if (in_array($origin, djz_allowed_origins(), true)) {
             header('Access-Control-Allow-Origin: ' . $origin);
             header('Access-Control-Allow-Credentials: true');
             header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-            header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce');
+            header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With');
         }
         return $value;
     });
@@ -193,7 +208,7 @@ add_action('rest_api_init', function () {
 
 **Regras de exclusão de cache (LiteSpeed Cache > Cache > Do Not Cache):**
 
-```
+```text
 URI contém: /dashboard
 URI contém: /my-account
 URI contém: /minha-conta
@@ -249,17 +264,21 @@ Cookie contém: wordpress_logged_in
 
 ### 3.5 Configurações Avançadas (LiteSpeed Cache > Advanced)
 
-| Setting | Valor |
-|---|---|
+| Setting | Valor | Observação |
+|---|---|---|
 | Instant Click | ✅ ON | Prefetch ao hover nos links internos |
 | Object Cache | ✅ ON | Cache de objetos PHP (reduz queries DB) |
 | HTTP/2 Push | ❌ OFF | Cloudflare já gerencia; duplicar causa overhead |
 | Browser Cache TTL | 31536000 (1 ano) | Assets estáticos com hash de Vite |
 
+> **Object Cache**: Requer Redis ou Memcached instalado no servidor para funcionar completamente.
+> No Hostinger VPS, verificar se o Redis está disponível (`php -m | grep redis`).
+> Sem backend de cache, o LiteSpeed usa cache em memória local (menos eficiente mas funcional).
+
 ### 3.6 ESI (Edge Side Includes)
 
-| Setting | Valor |
-|---|---|
+| Setting | Valor | Observação |
+|---|---|---|
 | Enable ESI | ❌ OFF | Não usamos ESI no stack headless |
 
 ---
@@ -464,7 +483,7 @@ Ativar apenas quando:
 
 ### 9.2 Endpoints REST
 
-```
+```text
 GET /wp-json/zen-bit/v2/events              → lista de eventos
 GET /wp-json/zen-bit/v2/events/{id}         → detalhe de evento
 GET /wp-json/zen-bit/v2/events/{id}/schema  → JSON-LD MusicEvent
@@ -498,7 +517,7 @@ Os campos abaixo NUNCA devem ser omitidos na geração de schema:
 
 ### 10.1 Endpoints REST
 
-```
+```text
 GET /wp-json/zen-seo/v1/meta       → meta tags por URL
 GET /wp-json/zen-seo/v1/settings   → configurações globais (OG image, nome)
 GET /wp-json/zen-seo/v1/sitemap    → sitemap gerado dinamicamente
@@ -518,7 +537,7 @@ POST /wp-json/zen-seo/v1/cache/clear → limpar cache SEO (CI/deploy)
 ### 10.3 Rotas excluídas do sitemap
 
 Configurar no plugin:
-```
+```text
 /dashboard, /painel
 /my-account, /minha-conta
 /cart, /checkout
@@ -543,11 +562,11 @@ Configurar no plugin:
 | Refresh Token Expiry | 30 dias |
 | Google OAuth Client ID | Configurado no Google Cloud Console |
 | Google OAuth Client Secret | Configurado no Google Cloud Console |
-| CORS Origins | `https://djzeneyer.com`, `http://localhost:5173` |
+| CORS Origins | Ver [seção 2.6](#26-rest-api--headers-cors-via-plugin-ou-functionsphp-do-tema) — gerenciado por `djz_allowed_origins()` |
 
 ### 11.2 Endpoints REST
 
-```
+```text
 POST /wp-json/zeneyer-auth/v1/login
 POST /wp-json/zeneyer-auth/v1/register
 POST /wp-json/zeneyer-auth/v1/google
@@ -577,7 +596,7 @@ GET  /wp-json/zeneyer-auth/v1/me
 
 ### 12.1 Endpoints REST
 
-```
+```text
 GET /wp-json/zengame/v1/me          → dashboard do usuário logado
 GET /wp-json/zengame/v1/leaderboard → ranking geral
 ```
@@ -741,7 +760,7 @@ define('QM_DISABLED', false);
 
 Adicionar aos responses:
 
-```
+```text
 X-Content-Type-Options: nosniff
 X-Frame-Options: SAMEORIGIN
 Referrer-Policy: strict-origin-when-cross-origin
@@ -750,7 +769,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 ### 15.8 Page Rules (legacy — migrar para Cache Rules quando possível)
 
-```
+```text
 djzeneyer.com/wp-admin*
   → Cache Level: Bypass
   → SSL: Full

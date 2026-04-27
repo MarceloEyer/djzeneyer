@@ -14,10 +14,10 @@ Produção: https://djzeneyer.com
 | Camada | Tecnologia |
 |---|---|
 | Frontend | React 19 + TypeScript 6 strict + Vite 8 + Tailwind 4 + React Query v5 + React Router 7 + i18next |
-| Backend | WordPress **6.9.4**, PHP **8.3.30**, WooCommerce **10.6.1** (HPOS ativo), GamiPress **7.8.2** |
+| Backend | WordPress **6.9.4**, PHP **8.3.30**, WooCommerce **10.7.0** (HPOS ativo), GamiPress **7.8.7** |
 | Database | **MariaDB 11.8.6** (não MySQL — atenção em queries SQL raw) |
 | Plugins repo | `zeneyer-auth 2.4.0`, `zen-seo-lite 8.1.1`, `zen-bit 3.1.0`, `zengame 1.4.0` |
-| Plugins 3rd | Polylang 3.8.3, MailPoet 5.23.2, PagBank Connect 4.54.1 (inativo), LiteSpeed Cache 7.8.1, GamiPress 7.8.7, WooCommerce 10.7.0 |
+| Plugins 3rd | Polylang 3.8.3, MailPoet 5.23.2, PagBank Connect 4.54.1 (inativo), LiteSpeed Cache 7.8.1 |
 | Infra | Hostinger VPS (Linux/x86_64) + LiteSpeed + Cloudflare + GitHub Actions |
 | Node | 20+ |
 
