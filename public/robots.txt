@@ -1,7 +1,7 @@
 # ==============================================================================
 # 🎵 DJ ZEN EYER - ROBOTS.TXT (RFC 9309 COMPLIANT)
 # ==============================================================================
-# Última atualização: 2025-01-03
+# Última atualização: 2026-04-27
 # Propósito: SEO otimizado + crawling inteligente para buscadores e IAs
 # Padrão: RFC 9309 (Robots Exclusion Protocol)
 # Validação: https://www.google.com/webmasters/tools/robots-testing-tool
@@ -303,14 +303,23 @@ Crawl-delay: 10
 
 # SEMRUSH (SEO Crawler)
 User-agent: SemrushBot
+Allow: /
+Disallow: /wp-admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /my-account/
 Crawl-delay: 10
 
 # MAJESTIC (SEO Crawler)
 User-agent: MJ12bot
+Allow: /
+Disallow: /wp-admin/
 Crawl-delay: 10
 
 # DOTBOT (Moz/OpenSiteExplorer)
 User-agent: DotBot
+Allow: /
+Disallow: /wp-admin/
 Crawl-delay: 5
 
 # SCRAPY (Framework de scraping genérico)

@@ -96,10 +96,10 @@
       ]
     },
     {
-      "name": "Contact",
-      "short_name": "Contact",
-      "description": "Get in touch",
-      "url": "/contact",
+      "name": "Book DJ Zen Eyer",
+      "short_name": "Booking",
+      "description": "Book DJ Zen Eyer for your event",
+      "url": "/work-with-me",
       "icons": [
         {
           "src": "/favicon-96x96.png",

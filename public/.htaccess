@@ -179,6 +179,9 @@ CacheKeyModify -qs:_ga
     <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
         Header set Cache-Control "public, max-age=15552000"
     </FilesMatch>
+    <FilesMatch "\.webmanifest$">
+        Header set Cache-Control "public, max-age=3600"
+    </FilesMatch>
 </IfModule>
 
 # ==============================================================================
@@ -195,6 +198,9 @@ Options -Indexes
 # ==============================================================================
 # 8. ROTEAMENTO PADRÃO DO WORDPRESS
 # ==============================================================================
+# (bloco "# BEGIN WordPress" abaixo — gerado e gerenciado pelo WordPress core;
+#  não editar manualmente — o WP regenera automaticamente ao salvar permalinks)
+
 # ==============================================================================
 # 9. AI VISIBILITY (llms.txt)
 # ==============================================================================

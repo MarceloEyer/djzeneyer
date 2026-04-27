@@ -1,1 +1,10 @@
-google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+# ads.txt — IAB Ads.txt Declaration
+# https://iabtechlab.com/ads-txt/
+#
+# Este site não utiliza Google AdSense ou redes de anúncios programáticos no momento.
+# Arquivo mantido para evitar warnings de "ads.txt not found" em ferramentas de SEO.
+#
+# Para ativar AdSense: substituir pela linha abaixo com o ID real da conta:
+# google.com, pub-XXXXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+#
+# Última revisão: 2026-04-27
