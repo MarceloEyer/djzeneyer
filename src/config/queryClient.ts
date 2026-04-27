@@ -26,26 +26,26 @@ import type { FetchEventsParams } from '../types/events';
  * Após esse tempo, dados são considerados "stale" e podem ser atualizados
  */
 const STALE_TIME = {
-  /** Menu: 5 minutos (muda raramente) */
-  MENU: 5 * 60 * 1000,
+  /** Menu: 2 horas — estrutura muda ~1x/mês, nunca em tempo real */
+  MENU: 2 * 60 * 60 * 1000,
 
-  /** Eventos: 5 minutos (equilíbrio entre frescor e menos requests) */
-  EVENTS: 5 * 60 * 1000,
+  /** Eventos: 30 minutos — agenda sincronizada via prerender; detalhe muda raramente */
+  EVENTS: 30 * 60 * 1000,
 
-  /** News/Posts: 5 minutos */
-  POSTS: 5 * 60 * 1000,
+  /** News/Posts: 15 minutos — conteúdo editorial, não em tempo real */
+  POSTS: 15 * 60 * 1000,
 
-  /** Produtos: 10 minutos (catálogo tende a ser estável durante a sessão) */
-  PRODUCTS: 10 * 60 * 1000,
+  /** Produtos: 30 minutos (catálogo estável durante a sessão) */
+  PRODUCTS: 30 * 60 * 1000,
 
   /** Carrinho: 30 segundos (muda frequentemente) */
   CART: 30 * 1000,
 
-  /** Perfil do usuário: 5 minutos */
-  USER_PROFILE: 5 * 60 * 1000,
+  /** Perfil do usuário: 10 minutos — dados pessoais mudam raramente em sessão */
+  USER_PROFILE: 10 * 60 * 1000,
 
-  /** GamiPress: 1 minuto (pontos/achievements atualizam rápido) */
-  GAMIPRESS: 1 * 60 * 1000,
+  /** GamiPress: 2 minutos (pontos/achievements atualizam rápido) */
+  GAMIPRESS: 2 * 60 * 1000,
 };
 
 /**

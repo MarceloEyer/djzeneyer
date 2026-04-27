@@ -229,11 +229,43 @@ function startDevServer() {
   });
 }
 
+/**
+ * Busca o menu do WP para injetar no __PRERENDER_DATA__.
+ * O menu muda raramente — injetar elimina o fetch de v1/menu do critical path.
+ */
+async function fetchMenuData() {
+  const langs = ['en', 'pt'];
+  const result = {};
+  for (const lang of langs) {
+    try {
+      const res = await fetch(`${SITE_BASE_URL}/wp-json/djzeneyer/v1/menu?lang=${lang}`, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        result[lang] = Array.isArray(data) ? data : [];
+      } else {
+        result[lang] = [];
+      }
+    } catch {
+      result[lang] = [];
+    }
+  }
+  const total = (result.en?.length || 0) + (result.pt?.length || 0);
+  if (total > 0) {
+    console.log(`🗂️ Menu: ${result.en?.length || 0} itens EN, ${result.pt?.length || 0} itens PT.`);
+  } else {
+    console.warn('⚠️ Menu vazio — v1/menu não respondeu. Usuários farão fetch normal.');
+  }
+  return result;
+}
+
 async function prerender() {
   let browser = null;
   try {
     await startDevServer();
-    const bandsintownData = await fetchEvents();
+    const [bandsintownData, menuData] = await Promise.all([fetchEvents(), fetchMenuData()]);
 
     // 🌟 Inject Dynamic Event Routes into Prerender List
     if (bandsintownData && bandsintownData.list) {
@@ -257,12 +289,16 @@ async function prerender() {
     const page = await browser.newPage();
 
     // 🛡️ API INTERCEPTION: Global for all pages
+    // __PRERENDER_DATA__ é injetado no Puppeteer E gravado no HTML (ver abaixo).
+    // Isso elimina os fetches de events e menu do critical path de carregamento.
+    const prerenderPayloadObj = {
+      events: bandsintownData.list,
+      menu: menuData,
+      fetchedAt: bandsintownData.fetchedAt,
+    };
     await page.evaluateOnNewDocument((payload) => {
       window.__PRERENDER_DATA__ = payload;
-    }, {
-      events: bandsintownData.list,
-      fetchedAt: bandsintownData.fetchedAt,
-    });
+    }, prerenderPayloadObj);
 
     await page.setRequestInterception(true);
     page.on('request', request => {
@@ -285,7 +321,7 @@ async function prerender() {
         }
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
-        if (reqUrl.includes('/v1/menu')) mockData = [];
+        if (reqUrl.includes('/v1/menu')) mockData = menuData[lang] || menuData.en || [];
 
         if (reqUrl.includes('/zen-bit/v2/events/')) {
           const eventId = reqUrl.split('/zen-bit/v2/events/')[1]?.split('?')[0];
@@ -376,11 +412,20 @@ async function prerender() {
         const html = await page.content();
 
         if (html.length > 500) {
-          // ⭐ VITE BASE PATH: Agora o Vite já gera caminhos como '/wp-content/themes/zentheme/dist/assets/...'
-          // Não precisamos mais do replace manual, apenas injetamos a meta tag.
-          const finalHtml = html.includes('name="prerender-generated"')
+          // ⭐ Injeta __PRERENDER_DATA__ no HTML salvo para que usuários reais também
+          // usem os dados sem chamar a API (elimina o fetch de events/menu do critical path).
+          // JSON.stringify com escape de </script> para evitar XSS por dados maliciosos.
+          const prerenderPayload = JSON.stringify(prerenderPayloadObj).replace(/<\/script>/gi, '<\\/script>');
+          const prerenderInlineScript = `<script>window.__PRERENDER_DATA__=${prerenderPayload};</script>`;
+
+          let finalHtml = html.includes('name="prerender-generated"')
             ? html
             : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+
+          // Injeta antes do </head> (garante que está disponível antes do JS principal)
+          if (!finalHtml.includes('window.__PRERENDER_DATA__')) {
+            finalHtml = finalHtml.replace('</head>', `${prerenderInlineScript}\n</head>`);
+          }
 
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
