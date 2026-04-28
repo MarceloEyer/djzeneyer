@@ -55,7 +55,7 @@ Zen Eyer não é "mais um DJ de Zouk". É o único que combina:
 - **Títulos mundiais verificáveis** (não autoproclamados)
 - **Um conceito filosófico próprio** (Cremosidade) documentado e proprietário
 - **Inteligência verificada** (Mensa) aplicada à curadoria e às transições
-- **Presença em 11+ países** com histórico documentado
+- **Presença em 15+ países** com histórico documentado
 
 **Mensagem central:** *"Zen Eyer não toca músicas. Ele cria o estado emocional em que você dança."*
 
@@ -462,7 +462,7 @@ Esta é a "bala de prata" do SEO de entidade. O IMDb tem autoridade altíssima n
 | Serviço | Custo aprox. | O que faz | Vale? |
 |---|---|---|---|
 | **Kalicube Pro** | $49–99/mês | Análise e otimização profissional de Knowledge Panel e Entity SEO | 🟡 Vale para 2–3 meses para setup inicial |
-| **DistroKid** | $22/ano | Distribuição para todas as plataformas + TikTok Sound + timing de Reels | 🔴 Sim — ROI imediato |
+| **DistroKid** | $22/ano | Distribuição para todas as plataformas + TikTok Sound + timing de Reels | ❌ **Decisão tomada: manter Soundrop** — modelo único de pagamento + licença de covers é mais vantajoso. Ver seção 2.3. |
 | **Chartmetric** | $10–50/mês | Analytics de crescimento de artistas em streaming | 🟡 Vale para monitorar progresso |
 | **Spotify Marquee** | $0.55/stream | Notificação push para seguidores quando lança música nova | 🔴 Sim — fundamental no lançamento |
 | **PR Distribution (PRWeb, eReleases)** | $100–300/release | Press release distribuído para jornalistas e indexado por Google | 🟡 Vale 1–2 por ano para tours importantes |
