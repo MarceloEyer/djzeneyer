@@ -426,13 +426,13 @@ export const ARTIST_SCHEMA_SAME_AS = [
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
-  '@type': 'Person',
+  '@type': ['Person', 'MusicGroup'],
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
-  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
-  jobTitle: ['DJ', 'Music Producer'],
+  alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName, 'Marcelo Eyer'],
+  description: 'Zen Eyer (Marcelo Eyer Fernandes) is a 2× World Champion Brazilian Zouk DJ and music producer from Rio de Janeiro, Brazil. Pioneer of the Cremosidade mixing philosophy.',
+  genre: ['Brazilian Zouk', 'Zouk'],
+  jobTitle: ['DJ', 'Music Producer', 'Remixer'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   sameAs: ARTIST_SCHEMA_SAME_AS,
@@ -449,24 +449,87 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'PropertyValue',
+      propertyID: 'ISNI',
+      value: '0000000528931015',
+    },
+    {
+      '@type': 'PropertyValue',
       propertyID: 'Spotify',
       value: '68SHKGndTlq3USQ2LZmyLw',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Discogs',
+      value: '16872046',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'ORCID',
+      value: '0009-0006-2948-2148',
     },
   ],
   nationality: {
     '@type': 'Country',
     name: 'Brazil',
+    sameAs: 'https://www.wikidata.org/wiki/Q155',
   },
+  birthDate: ARTIST.identity.birthDate,
+  birthPlace: {
+    '@type': 'Place',
+    name: 'Rio de Janeiro, Brazil',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Rio de Janeiro',
+      addressCountry: 'BR',
+    },
+  },
+  homeLocation: {
+    '@type': 'Place',
+    name: 'Niterói, Rio de Janeiro, Brazil',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Niterói',
+      addressRegion: 'Rio de Janeiro',
+      addressCountry: 'BR',
+    },
+  },
+  hasOccupation: [
+    {
+      '@type': 'Occupation',
+      name: 'DJ',
+      occupationLocation: { '@type': 'Country', name: 'Brazil' },
+      description: 'Professional Brazilian Zouk DJ performing at international festivals and congresses.',
+    },
+    {
+      '@type': 'Occupation',
+      name: 'Music Producer',
+      occupationLocation: { '@type': 'Country', name: 'Brazil' },
+      description: 'Music producer specializing in Brazilian Zouk remixes and original tracks.',
+    },
+  ],
+  memberOf: [
+    {
+      '@type': 'Organization',
+      name: 'Mensa International',
+      url: 'https://www.mensa.org',
+      description: 'High IQ society — top 2% of the population.',
+    },
+  ],
   award: [
-    'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
-    'World Champion Brazilian Zouk DJ - Best Remix, 2022',
+    'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
+    'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
   ],
   knowsAbout: [
     'Brazilian Zouk',
+    'Zouk Brasileiro',
     'DJing',
     'Music Production',
     'Remixing',
     'Cremosidade',
+    'Partner Dance',
+    'Music Theory',
+    'BPM and Rhythm for Dance',
+    'Zouk Festival Production',
   ],
   // A página About é a Entity Home canônica da Person no Knowledge Graph
   mainEntityOfPage: {

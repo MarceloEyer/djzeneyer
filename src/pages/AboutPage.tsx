@@ -182,6 +182,7 @@ const AboutPage: React.FC = () => {
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}
         leadAnswer={t('about.seo.lead_answer')}
+
       />
 
       {/* Layout visual */}

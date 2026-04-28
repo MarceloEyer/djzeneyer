@@ -84,6 +84,7 @@ const PhilosophyPage: React.FC = () => {
         url={pageUrl}
         schema={philosophySchema}
         leadAnswer={t('philosophy.cremosidade_desc')}
+
       />
 
       <div className="min-h-screen bg-background text-white">

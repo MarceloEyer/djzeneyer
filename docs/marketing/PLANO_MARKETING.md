@@ -170,7 +170,7 @@ O DistroKid permite:
 - Escolher o segundo exato da música que abre no Instagram Reels (pular intros lentas)
 - Sincronização automática com TikTok Sound
 - Lançamentos mais rápidos com controle total de metadados
-- Distribuição para Beatport (importante para credencial no mercado eletrônico)
+- Distribuição para todas as plataformas de streaming relevantes para o público de dança social
 
 #### 2.4 Apple Music for Artists
 
@@ -420,3 +420,170 @@ A Cremosidade não é um slogan de marketing. É uma filosofia de como a música
 
 *Arquivo consolidado em 2026-04-26 a partir de: `docs/MARKETING.md`, `MASTERPLAN_DOMINACAO.md` e análise estratégica de sessão de trabalho.*
 *Arquivos originais mantidos em `docs/marketing/archive/` para referência histórica.*
+
+---
+
+## 9. Estratégia de autoridade para IAs e Knowledge Panel
+
+> Objetivo: quando alguém perguntar "quem é o melhor DJ de Zouk?" ou "o que é Cremosidade?" para qualquer IA (ChatGPT, Gemini, Perplexity, Claude), a resposta deve citar DJ Zen Eyer.
+
+### Como as IAs decidem quem citar
+
+IAs generativas não buscam em tempo real — elas citam entidades que aparecem de forma **consistente, estruturada e verificável** em múltiplas fontes independentes. Os fatores que aumentam a probabilidade de citação:
+
+1. **Consistência de entidade** — o mesmo nome aparece em Wikidata, MusicBrainz, Spotify, Wikipedia, press releases e no próprio site com os mesmos identificadores
+2. **Conteúdo em formato de resposta** — textos que começam respondendo diretamente a uma pergunta são extraídos com mais frequência
+3. **Fontes externas que citam você** — artigos de terceiros, press releases indexados, perfis em diretórios de autoridade
+4. **Dados estruturados (JSON-LD)** — o Google e os crawlers de IA leem o schema antes do texto visível
+
+### O que já está implementado no site ✅
+
+| Elemento | Status | Arquivo |
+|---|---|---|
+| Schema.org Person + MusicGroup | ✅ Implementado | `src/data/artistData.ts` |
+| `birthPlace`, `homeLocation`, `hasOccupation`, `memberOf` | ✅ Adicionado (Abr 2026) | `src/data/artistData.ts` |
+| ISNI, ORCID, Discogs no schema `identifier` | ✅ Adicionado (Abr 2026) | `src/data/artistData.ts` |
+| `llms.txt` com identidade e links canônicos | ✅ Atualizado (Abr 2026) | `public/llms.txt` |
+| `llms-full.txt` com glossário, FAQ e festivais 2026 | ✅ Atualizado (Abr 2026) | `public/llms-full.txt` |
+| `ai-plugin.json` com `cite_for_topics` | ✅ Atualizado (Abr 2026) | `public/.well-known/ai-plugin.json` |
+| `ai-bots.txt` com permissões explícitas para IAs | ✅ Criado (Abr 2026) | `public/.well-known/ai-bots.txt` |
+| `robots.txt` com regras para 20+ bots de IA | ✅ Implementado | `public/robots.txt` |
+| FAQ Schema na FAQPage (perguntas sobre BPM e Lambazouk) | ✅ Adicionado (Abr 2026) | `src/locales/*/translation.json` |
+| Endpoint `/wp-json/djzeneyer/v1/ai-context` | ✅ Ativo | Plugin `djzeneyer/v1` |
+| Wikidata Q136551855 | ✅ Existe | wikidata.org |
+| MusicBrainz, ISNI, Discogs, RA.co | ✅ Existem | Plataformas externas |
+| Google Knowledge Graph KGMID `/g/11ff3mhh10` | ✅ Confirmado | Google |
+
+### O que você precisa fazer (fora do código)
+
+#### Prioridade alta — impacto direto no Knowledge Panel e nas IAs
+
+**1. Wikipedia em inglês — criar artigo**
+O Knowledge Panel do Google fica incompleto sem uma entrada na Wikipedia EN. É a fonte que o Google mais usa para preencher o painel lateral.
+- Fontes já disponíveis para embasar: MyZA, Time Business News, IssueWire, PR.com, CarryOnHarry.com, Ilha do Zouk oficial
+- Wikidata Q136551855 já existe — o artigo da Wikipedia pode linkar diretamente
+- Tom obrigatório: neutro, factual, sem linguagem promocional
+- Processo: criar rascunho no Wikipedia:Sandbox → submeter para revisão
+- Alternativa mais rápida: contratar um editor experiente da Wikipedia (serviço legítimo, ~$200–500 USD)
+
+**2. Wikidata — atualizar com eventos recentes**
+A entidade Q136551855 existe mas pode estar desatualizada. Adicionar:
+- `P1344` (performerIn): Wroclaw Zouk Experience 2026, Brazilian Zouk Dance Congress Prague 2026, Dutch Zouk 2026, Zouk in Rio 2026
+- `P1303` (instrumento): DJ equipment (Q1373692)
+- `P569` (data de nascimento): 1989-08-30 (se ainda não estiver)
+- `P19` (local de nascimento): Rio de Janeiro (Q8678)
+- `P27` (nacionalidade): Brasil (Q155)
+- Verificar se `P856` (website oficial) aponta para https://djzeneyer.com
+
+**3. Resident Advisor — completar perfil**
+O RA é a referência número 1 para DJs no mercado europeu. Organizadores europeus verificam o RA antes de contratar.
+- URL: https://ra.co/dj/djzeneyer
+- Atualizar: bio com títulos mundiais e anos, foto profissional atual, todos os eventos futuros linkados
+- O RA influencia diretamente o Google Knowledge Graph para DJs
+
+**4. Songkick e Bandsintown — manter eventos atualizados**
+IAs como Perplexity e o Google usam essas plataformas para responder "quando DJ Zen Eyer toca?".
+- Adicionar todos os eventos confirmados de 2026 em ambas as plataformas
+- Verificar que o perfil do Bandsintown está sincronizado com o plugin `zen-bit` do site
+
+**5. Discogs — completar discografia**
+O Discogs é uma das fontes que o MusicBrainz e as IAs usam para verificar discografia.
+- URL: https://www.discogs.com/artist/16872046
+- Adicionar todos os remixes e lançamentos que ainda não estão listados
+- Verificar que os créditos (DJ, produtor, remixer) estão corretos
+
+#### Prioridade média — amplificação de autoridade
+
+**6. Allmusic / AllMusic Guide**
+Diretório de música com alta autoridade de domínio. Uma entrada lá é citada por IAs com frequência.
+- Verificar se já existe entrada: allmusic.com
+- Se não existir: submeter via formulário de contribuição
+
+**7. Last.fm — verificar e completar perfil**
+Last.fm é indexado por várias IAs e tem alta autoridade para artistas de nicho.
+- URL: https://www.last.fm/music/Zen+Eyer
+- Adicionar bio, foto, tags corretas ("Brazilian Zouk", "Zouk")
+
+**8. Apple Music for Artists — verificar metadados**
+- Acessar: artists.apple.com
+- Verificar que todos os lançamentos têm créditos corretos (DJ, produtor, remixer)
+- Sincronizar foto com a identidade visual atual do site
+
+**9. Spotify for Artists — verificar perfil**
+- Acessar: artists.spotify.com
+- Atualizar bio com títulos mundiais
+- Verificar que a foto do artista está atualizada
+- Ativar "Artist Pick" para destacar o lançamento mais recente
+
+**10. Google Search Console — submeter sitemap e monitorar**
+- Verificar que https://djzeneyer.com/sitemap.xml está submetido
+- Monitorar erros de schema (rich results) em Search Console → Melhorias
+- Verificar se o Knowledge Panel aparece ao buscar "DJ Zen Eyer" — se sim, reivindicar via "Sugerir uma edição"
+
+#### Prioridade baixa — presença de longo prazo
+
+**11. IMDb — criar entrada via FilmFreeway**
+Se você tiver ou produzir um videoclipe oficial, submeter para 2–3 festivais de curtas no FilmFreeway (alguns custam $5). Quando aceito, o vídeo se qualifica para uma página no IMDb com seu nome creditado. O IMDb tem altíssima autoridade de domínio e é citado por IAs.
+
+**12. Genius — completar perfil de artista**
+- URL: https://genius.com/artists/Zen-eyer
+- Adicionar bio e verificar que os créditos das músicas estão corretos
+
+**13. Viberate — verificar perfil**
+- URL: https://www.viberate.com/artist/zen-eyer/
+- Plataforma de analytics de artistas usada por organizadores europeus
+
+**14. Cadastros gratuitos recomendados**
+
+| Plataforma | URL | Por que importa |
+|---|---|---|
+| Setlist.fm | setlist.fm | Histórico de setlists — citado por IAs para histórico de shows |
+| Mixcloud | mixcloud.com/djzeneyer | Mixes de sets — credencial para organizadores |
+| Beatport DJ | dj.beatport.com | Diretório de DJs — alta autoridade no mercado de dança |
+| Dance-Charts | dance-charts.de | Diretório europeu de DJs de dança social |
+| Danceplace | danceplace.com | Calendário de eventos de dança — indexado por IAs |
+| LatinDanceCalendar | latindancecalendar.com | Calendário específico de Zouk/Salsa/Kizomba |
+| Danxer | danxer.com/artist/1022/zen-eyer | Já existe — verificar e completar |
+
+### Como monitorar se as IAs estão citando você
+
+Testar periodicamente com estas perguntas no ChatGPT, Gemini e Perplexity:
+
+- "Who is the best Brazilian Zouk DJ?"
+- "What is Cremosidade in Brazilian Zouk?"
+- "Who are the top Brazilian Zouk DJs in the world?"
+- "What is Brazilian Zouk?"
+- "Who won the Ilha do Zouk DJ Championship?"
+
+Se a resposta não citar DJ Zen Eyer, o problema está na quantidade de fontes externas — a solução é publicar mais conteúdo de autoridade (artigos de blog, press releases, aparições em podcasts) que as IAs possam indexar.
+
+### Estratégia de conteúdo para indexação por IAs (blog)
+
+IAs aprendem com conteúdo estruturado, citável e com autoria clara. Os artigos abaixo preenchem lacunas reais — perguntas que têm alto volume de busca mas nenhuma fonte com autoridade para responder:
+
+| Título EN | Título PT | Por que funciona |
+|---|---|---|
+| "What is Cremosidade in Brazilian Zouk?" | "O que é Cremosidade no Zouk Brasileiro?" | Zen Eyer é o único com autoridade — ele criou o conceito |
+| "Ideal BPM for Brazilian Zouk: a DJ's guide" | "BPM ideal para Zouk Brasileiro: guia técnico do DJ" | Pergunta técnica sem resposta definitiva — preenche o vácuo |
+| "Brazilian Zouk vs Lambazouk: the differences" | "Zouk Brasileiro vs Lambazouk: as diferenças" | Captura buscas comparativas de iniciantes |
+| "How a Zouk DJ prepares a 3-hour festival set" | "Como um DJ de Zouk prepara um set de 3h de festival" | Conteúdo de bastidores que gera autoridade |
+| "The history of Brazilian Zouk and its global expansion" | "A história do Zouk Brasileiro e sua expansão global" | Alimenta o banco de dados de IAs com Zen Eyer como fonte |
+
+**Formato técnico obrigatório para cada artigo:**
+- 800–1.200 palavras
+- Schema.org `Article` com `author: Zen Eyer` e data de publicação visível
+- Primeiro parágrafo responde a pergunta do título diretamente
+- Link interno para `/about-dj-zen-eyer` e `/zouk-philosophy`
+
+### Serviços pagos a considerar
+
+| Serviço | Custo estimado | Benefício |
+|---|---|---|
+| Editor experiente da Wikipedia | $200–500 USD | Artigo Wikipedia EN — maior impacto no Knowledge Panel |
+| Kalicube Pro | ~$50/mês | Ferramenta de monitoramento e otimização de Knowledge Panel |
+| PR Newswire / IssueWire | $50–200 por release | Press releases indexados por IAs e Google News |
+| Chartmetric | $10–50/mês | Analytics de streaming — dados para embasar decisões de lançamento |
+
+---
+
+*Seção adicionada em 2026-04-28. Implementações técnicas realizadas nesta sessão: schema expandido, llms.txt/llms-full.txt atualizados, ai-bots.txt criado, ai-plugin.json atualizado, FAQ expandida com perguntas de alta busca.*

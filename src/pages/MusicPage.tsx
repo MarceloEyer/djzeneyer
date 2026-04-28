@@ -77,7 +77,7 @@ const MusicPage: React.FC = () => {
           '@id': `${baseUrl}/#artist`,
           name: ARTIST.identity.stageName,
           url: baseUrl,
-          genre: ['Brazilian Zouk', 'Zouk', 'Latin Dance Music'],
+          genre: ['Brazilian Zouk', 'Zouk'],
           sameAs: [
             ARTIST.social.spotify.url,
             ARTIST.social.appleMusic.url,
