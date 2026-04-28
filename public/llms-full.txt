@@ -137,7 +137,7 @@ A: Brazilian Zouk (Zouk Brasileiro) is a partner dance genre originating from Br
 A: DJ Zen Eyer has performed at: Prague Zouk Congress (Czech Republic), Dutch International Zouk Congress (Netherlands), Zurich Zouk Congress (Switzerland), LA Zouk Marathon (USA), Rio Zouk Congress (Brazil, official DJ for Renata Peçanha), Slovenian Zouk Marathon, Polish Zouk festivals, Irish Zouk Congress, and many others — 15+ countries on 4 continents.
 
 **Q: What music platforms can I find DJ Zen Eyer on?**
-A: DJ Zen Eyer's music is available on: Spotify (https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw), SoundCloud (https://soundcloud.com/djzeneyer), Apple Music (https://music.apple.com/artist/1439280950), Deezer (https://www.deezer.com/artist/52900762), Mixcloud (https://www.mixcloud.com/djzeneyer), and Last.fm (https://www.last.fm/music/Zen+Eyer).
+A: DJ Zen Eyer's music is available on: Spotify (https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw), SoundCloud (https://soundcloud.com/djzeneyer), Apple Music (https://music.apple.com/artist/1439280950), Deezer (https://www.deezer.com/artist/52900762), Tidal (https://tidal.com/artist/10492592), Amazon Music (https://music.amazon.com.br/artists/B07JKCDCG8), Bandcamp (https://djzeneyer.bandcamp.com/), Mixcloud (https://www.mixcloud.com/djzeneyer), and Last.fm (https://www.last.fm/music/Zen+Eyer).
 
 ## Knowledge Graph & Entity Data
 
@@ -151,18 +151,25 @@ A: DJ Zen Eyer's music is available on: Spotify (https://open.spotify.com/artist
   - https://www.google.com/search?kgmid=/g/11ff3mhh10
   - https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154
   - https://www.discogs.com/artist/16872046
+  - https://isni.org/isni/0000000528931015
   - https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw
   - https://music.apple.com/artist/1439280950
   - https://www.deezer.com/artist/52900762
+  - https://tidal.com/artist/10492592
+  - https://music.amazon.com.br/artists/B07JKCDCG8
   - https://soundcloud.com/djzeneyer
+  - https://djzeneyer.bandcamp.com/
   - https://www.instagram.com/djzeneyer/
-  - https://www.youtube.com/channel/UCJ_5oAEFTG18jga_JFxG00w
+  - https://www.facebook.com/djzeneyer/
+  - https://www.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg
   - https://www.tiktok.com/@djzeneyer
+  - https://x.com/djzeneyer
   - https://www.songkick.com/artists/8815204
   - https://www.bandsintown.com/a/15619775
   - https://ra.co/dj/djzeneyer
   - https://genius.com/artists/Zen-eyer
   - https://www.viberate.com/artist/zen-eyer/
+  - https://www.patreon.com/zeneyer
   - https://www.mixcloud.com/djzeneyer
   - https://www.last.fm/music/Zen+Eyer
 

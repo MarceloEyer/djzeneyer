@@ -47,9 +47,13 @@ DJ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating 
 ## External Authority & Verification
 
 - [Wikidata Profile](https://www.wikidata.org/wiki/Q136551855): Verifiable structured data and canonical entity.
+- [ISNI](https://isni.org/isni/0000000528931015): International Standard Name Identifier — cross-institution identity anchor.
 - [MusicBrainz Artist](https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154): Discography and music industry identifiers.
 - [SoundCloud](https://soundcloud.com/djzeneyer): Primary hub for live sets and remixes.
 - [Spotify](https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw): Original tracks and official releases.
+- [Bandcamp](https://djzeneyer.bandcamp.com/): Independent music releases and direct support.
+- [Tidal](https://tidal.com/artist/10492592): Lossless audio platform — artist profile.
+- [Amazon Music](https://music.amazon.com.br/artists/B07JKCDCG8): Artist profile on Amazon Music.
 
 ## Frequently Asked Questions (Structured for AI Extraction)
 

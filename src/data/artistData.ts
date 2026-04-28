@@ -407,15 +407,22 @@ export const ARTIST_SCHEMA_SAME_AS = [
   'https://www.google.com/search?kgmid=/g/11ff3mhh10',
   'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
   'https://www.discogs.com/artist/16872046',
+  // Academic / authority identifiers
+  'https://isni.org/isni/0000000528931015',
   // Streaming / music platforms
   'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
   'https://music.apple.com/artist/1439280950',
   'https://www.deezer.com/artist/52900762',
+  'https://tidal.com/artist/10492592',
+  'https://music.amazon.com.br/artists/B07JKCDCG8',
   'https://soundcloud.com/djzeneyer',
+  'https://djzeneyer.bandcamp.com/',
   // Social / video
   'https://www.instagram.com/djzeneyer/',
-  'https://www.youtube.com/channel/UCJ_5oAEFTG18jga_JFxG00w',
+  'https://www.facebook.com/djzeneyer/',
+  'https://www.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
   'https://www.tiktok.com/@djzeneyer',
+  'https://x.com/djzeneyer',
   // Live / touring platforms
   'https://www.songkick.com/artists/8815204',
   'https://www.bandsintown.com/a/15619775',
@@ -423,6 +430,7 @@ export const ARTIST_SCHEMA_SAME_AS = [
   // Artist directories
   'https://genius.com/artists/Zen-eyer',
   'https://www.viberate.com/artist/zen-eyer/',
+  'https://www.patreon.com/zeneyer',
   // Radio / social listening
   'https://www.mixcloud.com/djzeneyer',
   'https://www.last.fm/music/Zen+Eyer',
