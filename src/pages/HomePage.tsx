@@ -136,6 +136,10 @@ const HomePage: React.FC = () => {
         "name": t('home.page_title'),
         "description": t('home.page_meta_desc'),
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
+        "speakable": {
+          "@type": "SpeakableSpecification",
+          "cssSelector": ["h1", ".lead-answer", "[data-speakable]"]
+        },
         "primaryImageOfPage": {
           "@type": "ImageObject",
           "url": seoSettings?.default_og_image || `${ARTIST.site.baseUrl}/images/hero-background.webp`,

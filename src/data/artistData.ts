@@ -423,6 +423,9 @@ export const ARTIST_SCHEMA_SAME_AS = [
   // Artist directories
   'https://genius.com/artists/Zen-eyer',
   'https://www.viberate.com/artist/zen-eyer/',
+  // Radio / social listening
+  'https://www.mixcloud.com/djzeneyer',
+  'https://www.last.fm/music/Zen+Eyer',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
@@ -463,10 +466,41 @@ export const ARTIST_SCHEMA_BASE = {
   ],
   knowsAbout: [
     'Brazilian Zouk',
+    'Zouk Brasileiro',
     'DJing',
     'Music Production',
     'Remixing',
     'Cremosidade',
+    'Partner Dancing',
+    'Latin Dance Music',
+    'Dance Music Production',
+    'Brazilian Music',
+    'Social Dancing',
+    'DJ Mixing Techniques',
+    'Music Curation',
+    'Festival DJ Sets',
+    'Lambazouk',
+    'Zouk Music History',
+  ],
+  hasOccupation: [
+    {
+      '@type': 'Occupation',
+      name: 'DJ',
+      occupationLocation: {
+        '@type': 'Country',
+        name: 'Brazil',
+      },
+      description:
+        'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses across 4 continents.',
+      skills: 'DJ Mixing, Music Curation, Live Performance, Cremosidade Transitions',
+    },
+    {
+      '@type': 'Occupation',
+      name: 'Music Producer',
+      description:
+        'Music producer creating original tracks, remixes, and edits for Brazilian Zouk dancing.',
+      skills: 'Music Production, Remixing, Arranging, Sound Design',
+    },
   ],
   // A página About é a Entity Home canônica da Person no Knowledge Graph
   mainEntityOfPage: {

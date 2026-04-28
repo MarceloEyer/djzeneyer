@@ -64,6 +64,10 @@ const PhilosophyPage: React.FC = () => {
           { '@type': 'Thing', name: 'Cremosidade', description: t('philosophy_page.cremosidade_desc') },
           { '@type': 'MusicGenre', name: 'Brazilian Zouk' },
         ],
+        speakable: {
+          '@type': 'SpeakableSpecification',
+          cssSelector: ['h1', '.lead-answer', '[data-speakable]'],
+        },
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
         breadcrumb: {
           '@type': 'BreadcrumbList',

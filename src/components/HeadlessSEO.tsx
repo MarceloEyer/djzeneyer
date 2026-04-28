@@ -76,6 +76,10 @@ interface HeadlessSEOProps {
   leadAnswer?: string;
   faqs?: { q: string; a: string }[]; // NOVO: Suporte a FAQ Schema
   events?: EventSchemaData[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
+  /** Injeta speakable no nó WebPage para Google Assistant / IA de voz.
+   *  true  → seletores padrão: h1, .lead-answer, [data-speakable]
+   *  string[] → seletores CSS customizados */
+  speakable?: boolean | string[];
 }
 
 // ============================================================================
@@ -115,6 +119,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   leadAnswer,
   faqs,
   events,
+  speakable,
 }) => {
   const { artist } = useBranding();
   const baseUrl = artist.site.baseUrl;
@@ -417,6 +422,18 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage]);
 
   if (!schema) {
+    // Speakable spec — injeta seletores CSS para Google Assistant / LLMs de voz
+    const speakableSpec = speakable
+      ? {
+          speakable: {
+            '@type': 'SpeakableSpecification',
+            cssSelector: Array.isArray(speakable)
+              ? speakable
+              : ['h1', '.lead-answer', '[data-speakable]'],
+          },
+        }
+      : {};
+
     // Combine with WebPage base
     const webPageSchema = {
       '@type': 'WebPage',
@@ -427,6 +444,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       about: { '@id': `${baseUrl}/#artist` },
       description: truncatedDesc,
       inLanguage: htmlLangAttribute,
+      ...speakableSpec,
     };
 
     if (dynamicGraph && dynamicGraph.length > 0) {

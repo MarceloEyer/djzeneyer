@@ -105,6 +105,10 @@ const AboutPage: React.FC = () => {
         isPartOf: { '@id': `${artist.site.baseUrl}/#website` },
         about: { '@id': `${artist.site.baseUrl}/#artist` },
         mainEntity: { '@id': `${artist.site.baseUrl}/#artist` },
+        speakable: {
+          '@type': 'SpeakableSpecification',
+          cssSelector: ['h1', '.lead-answer', '[data-speakable]'],
+        },
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
