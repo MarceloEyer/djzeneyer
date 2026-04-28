@@ -31,7 +31,7 @@ jobs:
     steps:
       # ── CodeRabbit ────────────────────────────────────────────────────────
       - name: Trigger CodeRabbit review
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -69,7 +69,7 @@ jobs:
 
       # ── Codex ─────────────────────────────────────────────────────────────
       - name: Trigger Codex review
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -114,7 +114,7 @@ jobs:
         if: >
           github.event.pull_request.user.login != 'google-labs-jules' &&
           github.event.pull_request.user.type != 'Bot'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
