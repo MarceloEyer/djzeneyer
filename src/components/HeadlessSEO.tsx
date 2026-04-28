@@ -76,9 +76,11 @@ interface HeadlessSEOProps {
   leadAnswer?: string;
   faqs?: { q: string; a: string }[]; // NOVO: Suporte a FAQ Schema
   events?: EventSchemaData[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
-  /** Injeta speakable no nó WebPage para Google Assistant / IA de voz.
-   *  true  → seletores padrão: h1, .lead-answer, [data-speakable]
-   *  string[] → seletores CSS customizados */
+  /** Injeta speakable no nó WebPage gerado automaticamente (Google Assistant / IA de voz).
+   *  ⚠️  Só tem efeito quando `schema` NÃO é fornecido — se `schema` for passado,
+   *      adicione `speakable` diretamente no nó WebPage/Article do schema customizado.
+   *  true      → seletores padrão: h1, [data-speakable]
+   *  string[]  → seletores CSS customizados (strings vazias são ignoradas) */
   speakable?: boolean | string[];
 }
 
@@ -423,13 +425,18 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
   if (!schema) {
     // Speakable spec — injeta seletores CSS para Google Assistant / LLMs de voz
+    // Sanitiza: trim + remove strings vazias + fallback para defaults se array vazio
+    const DEFAULT_SPEAKABLE = ['h1', '[data-speakable]'];
+    const normalizedSpeakableSelectors = Array.isArray(speakable)
+      ? speakable.map((s) => s.trim()).filter(Boolean)
+      : DEFAULT_SPEAKABLE;
     const speakableSpec = speakable
       ? {
           speakable: {
             '@type': 'SpeakableSpecification',
-            cssSelector: Array.isArray(speakable)
-              ? speakable
-              : ['h1', '.lead-answer', '[data-speakable]'],
+            cssSelector: normalizedSpeakableSelectors.length > 0
+              ? normalizedSpeakableSelectors
+              : DEFAULT_SPEAKABLE,
           },
         }
       : {};

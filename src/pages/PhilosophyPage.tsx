@@ -116,7 +116,7 @@ const PhilosophyPage: React.FC = () => {
               </Trans>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed" data-speakable>
               {t('philosophy_page.hero_subtitle')}
             </p>
           </motion.div>

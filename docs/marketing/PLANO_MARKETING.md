@@ -13,7 +13,7 @@
 |---|---|---|
 | Títulos mundiais | 2× Campeão — Ilha do Zouk 2022 (Best DJ Performance + Best Remix) | Alto — credencial objetiva, não autoproclamada |
 | Conceito próprio | "Cremosidade" — filosofia sonora única, proprietária | Alto — diferencia de todos os outros DJs de Zouk |
-| Presença internacional | 11+ países, 4 continentes | Alto — prova social para organizadores europeus |
+| Presença internacional | 15+ países, 4 continentes | Alto — prova social para organizadores europeus |
 | Autoridade digital | Wikidata Q136551855, MusicBrainz, ISNI, Google KGMID, Discogs, RA.co | Médio — base sólida, mas subaproveitada |
 | Streaming | Spotify, Apple Music, Deezer, Tidal, Amazon Music, SoundCloud, Bandcamp, Mixcloud, Last.fm | Médio — presença, mas baixo volume de lançamentos |
 | Infraestrutura | Site com gamificação, loja, newsletter, SEO headless, llms.txt, Schema.org completo | Alto — poucos DJs de nicho têm isso |
@@ -177,15 +177,16 @@ Escolher músicas com alto volume de busca em gêneros de dança populares (Bach
 
 Quem busca a música original encontra a versão Zouk. Isso captura audiência já engajada com dança.
 
-#### 2.3 Distribuidora — avaliar migração para DistroKid (🔴 AÇÃO MANUAL)
+#### 2.3 Distribuidora — manter Soundrop (decisão tomada)
 
-O DistroKid permite:
-- Escolher o segundo exato da música que abre no Instagram Reels (pular intros lentas)
-- Sincronização automática com TikTok Sound (game-changer para viralização)
-- Lançamentos mais rápidos com controle total de metadados
-- Distribuição para Beatport (importante para credencial no mercado eletrônico)
+**Decisão:** Continuar com a Soundrop. Motivos:
+- Modelo de pagamento **único** (paga uma vez, a música rende para sempre) — melhor ROI a longo prazo
+- **Licença de covers simplificada** — fundamental para um DJ de remixes de Zouk
+- Migrar para DistroKid implicaria custo anual recorrente e perder os benefícios de covers
 
-**Ação:** Criar conta em distrokid.com e migrar próximos lançamentos.
+A única vantagem real do DistroKid — escolher o segundo exato que toca no Instagram Reels — não compensa. Se uma música tiver intro lenta, a solução é editar a música antes de distribuir, não trocar de distribuidora.
+
+**Para o Beatport:** Lançar uma faixa lá separadamente (Beatport aceita envio direto via distribuidoras compatíveis). Verificar se a Soundrop distribui para Beatport — se não, considerar envio pontual via Record Union ou similar, sem migrar tudo.
 
 #### 2.4 Beatport — lançar ao menos uma faixa (🔴 AÇÃO MANUAL)
 
@@ -221,9 +222,23 @@ Acessar `artists.apple.com` e:
 - **Responder comentários nas primeiras 2 horas** após publicação
 - **Nunca deletar vídeos** — o algoritmo pode distribuí-los semanas depois
 
-#### 3.3 Polarização mínima viável
+#### 3.3 Polarização mínima viável — frases prontas para redes sociais
 
-Identidade forte cria engajamento. Uma frase como *"A Cremosidade é o único jeito de se conectar profundamente. O resto é apenas cardio e passos mecânicos"* vai incomodar alguns tradicionalistas — que vão compartilhar para criticar, dobrando o alcance e atraindo crentes ferrenhos. Use com responsabilidade e autenticidade.
+Identidade forte cria engajamento. Afirmações filosóficas autênticas dividem opiniões — quem concorda compartilha por identificação, quem discorda compartilha para debater. Ambos alimentam o algoritmo da mesma forma.
+
+**Frases de "polarização Cremosidade" prontas para usar em posts/Reels:**
+
+> *"Um DJ que só toca músicas é uma playlist cara. Um DJ de Zouk existe para criar um estado emocional que o dançarino não saberia criar sozinho."*
+
+> *"A Cremosidade não é um estilo de DJ. É uma decisão de não interromper o momento em que o dançarino se esquece de si mesmo."*
+
+> *"BPM não é o que faz o Zouk funcionar. O espaço entre as notas é o que faz o corpo se mover."*
+
+> *"Tem DJs que tocam músicas. Tem DJs que tocam dançarinos. Prefiro o segundo."*
+
+> *"A pressa é inimiga da cremosidade. E a cremosidade é o único lugar onde o Zouk realmente acontece."*
+
+**Como usar:** Postar uma frase por semana no Instagram/TikTok como texto estático ou sobreposição de vídeo. Não explicar, não justificar. Deixar o debate nos comentários acontecer naturalmente.
 
 #### 3.4 Colaborações com micro-influenciadores de dança (🔴 AÇÃO MANUAL)
 
@@ -464,7 +479,7 @@ IAs aprendem com conteúdo estruturado, citável e com autoria clara:
 | Artigos de autoridade (5 fundacionais) | Blog do site (WordPress) | H1 como pergunta, resposta no 1º parágrafo |
 | Q&A expandido | `llms.txt`, `llms-full.txt` | Já implementado — manter atualizado |
 | Bio otimizada para IA | RA.co, Last.fm, Resident Advisor, AllMusic | Texto em 3ª pessoa, citar títulos e Cremosidade |
-| Press releases | PR.com, eReleases, PRNewswire | Distribuição para jornalistas e indexadores |
+| Entrevistas editoriais | Portais de dança, blogs com histórico, podcasts com transcrição | Fontes verificáveis para Wikipedia e para IAs |
 | Entrevistas e podcasts | Transcrições publicadas no blog | Conteúdo indexável com citações verificáveis |
 
 **Perguntas prioritárias que as IAs devem saber responder com Zen Eyer como fonte:**
@@ -478,7 +493,37 @@ IAs aprendem com conteúdo estruturado, citável e com autoria clara:
 
 ---
 
-#### 6.9 Resident Advisor — completar perfil (🔴 AÇÃO MANUAL)
+#### 6.9 Wikipedia — passo a passo realista (🔴 AÇÃO MANUAL — longo prazo)
+
+**Contexto importante:** O Zouk Brasileiro é um nicho muito específico. Os maiores eventos do mundo têm 1.500 pessoas. Nem Renata Peçanha (a maior referência técnica do estilo) tem artigo na Wikipedia EN. Isso significa que o caminho para a Wikipedia EN é mais longo, mas não impossível — é um caminho de construção de fontes primeiro.
+
+**O que o Wikipedia EN exige:** Fontes secundárias, independentes, não-triviais. Artigos de jornais/revistas contam. Sites de press release pagos (PR.com, IssueWire) **não contam**. Perfis em sites de eventos de dança **não contam**.
+
+**Fase A — EverybodyWiki (já existe, completar agora)**
+- https://pt.everybodywiki.com/DJ_Zen_Eyer e https://en.everybodywiki.com/Djzeneyer já existem
+- Completar com: foto atual, títulos 2022, lista de festivais, links externos, KGMID
+- Custo: R$0. Indexado pelo Google, alimenta IAs.
+
+**Fase B — Fontes verificáveis (meses 1–6)**
+O objetivo é conseguir 3–5 fontes independentes publicadas que o Wikipedia aceite. Foco em portais que têm histórico editorial real:
+- Blogs especializados em dança social com histórico (Dança em Foco, DanceUK, Dance Magazine)
+- Entrevistas em podcasts COM TRANSCRIÇÃO publicada no site
+- Reportagem em jornal/portal (G1 Cultura, R7, Folha) sobre "DJ brasileiro campeão mundial de Zouk"
+- Páginas de artistas em festivais internacionais com descrição editorial (não só lista de DJs)
+
+**Fase C — Wikipedia PT (meses 4–8)**
+Com 3 fontes em mãos, criar em `pt.wikipedia.org`. Critérios são similares ao EN mas a comunidade é menor e menos agressiva na remoção. Uma vez publicado em PT, fortalece o caso para o EN.
+
+**Fase D — Wikipedia EN (meses 8–18)**
+Com Wikipedia PT existindo + fontes em EN + artigos de blog publicados e indexados:
+- Contratar editor especializado em Wikipedia (R$800–2.000 uma única vez)
+- Serviços: WikiExperts, WikiStrategies, ou freelancers brasileiros especializados
+
+**Custo estimado total:** R$0–2.500 ao longo de 12–18 meses, sendo o grosso apenas na fase D.
+
+---
+
+#### 6.10 Resident Advisor — completar perfil (🔴 AÇÃO MANUAL)
 
 O perfil `ra.co/dj/djzeneyer` existe no `sameAs` mas precisa de:
 - Bio atualizada com títulos mundiais e anos
@@ -514,10 +559,10 @@ Aparições em podcasts geram backlinks de autoridade e conteúdo transcrito que
 | Festivais internacionais/ano | ~8 | 14 | 20 | Agenda |
 | Artigos de blog publicados | 0 | 5 | 15 | WordPress |
 | Aparições em podcasts | 0 | 3 | 8 | Manual |
-| Países com presença em festivais | 11 | 15 | 20+ | Wikidata/Agenda |
+| Países com presença em festivais | 15+ | 18 | 22+ | Wikidata/Agenda |
 | Wikipedia EN | ❌ Não existe | ✅ Publicado | ✅ Expandido | Wikipedia |
 | IMDb entry | ❌ Não existe | ✅ Criado | ✅ Verificado | IMDb |
-| Google Knowledge Panel reivindicado | ❓ Verificar | ✅ Reivindicado | ✅ Foto oficial | Google |
+| Google Knowledge Panel reivindicado | ✅ Reivindicado | ✅ Foto oficial | ✅ Completo | Google |
 
 ---
 
@@ -595,34 +640,38 @@ A estratégia de IA não é um truque técnico. É garantir que quando alguém p
 > Itens marcados com 🔴 são de alta prioridade e requerem ação manual do artista.
 
 ### Semana 1–2
-- [ ] 🔴 Reivindicar Google Knowledge Panel
-- [ ] 🔴 Verificar/ativar Google Search Console
-- [ ] 🔴 Ativar Bing Webmaster Tools
-- [ ] 🔴 Reivindicar Spotify for Artists
-- [ ] 🔴 Reivindicar Apple Music for Artists
+
+- [x] ✅ Google Knowledge Panel — já reivindicado (KGMID `/g/11ff3mhh10` ativo)
+- [x] ✅ Spotify for Artists — perfil verificado
+- [x] ✅ Apple Music for Artists — perfil verificado
+- [ ] 🔴 Verificar/ativar Google Search Console (se ainda não ativo)
+- [ ] 🔴 Ativar Bing Webmaster Tools (alimenta o ChatGPT via Bing)
 - [ ] 🔴 Atualizar bio no RA.co com títulos mundiais e Cremosidade
 
 ### Mês 1
-- [ ] 🔴 Publicar artigo: "O que é Cremosidade no Zouk Brasileiro?" (PT + EN)
-- [ ] 🔴 Atualizar Wikidata com festivais 2025–2026
-- [ ] 🔴 Iniciar rascunho do artigo Wikipedia EN
+
+- [ ] 🔴 Publicar artigo 1: "O que é Cremosidade no Zouk Brasileiro?" (PT + EN) — rascunhos em `docs/blog-articles/`
+- [ ] 🔴 Atualizar Wikidata Q136551855 com festivais 2025–2026
 - [ ] 🔴 Configurar sequência de 5 e-mails no MailPoet
 - [ ] 🔴 Atualizar bio no Last.fm, Discogs, AllMusic
+- [ ] 🔴 Verificar e expandir EverybodyWiki (PT + EN já existem — completar com dados atuais)
 
 ### Mês 2–3
-- [ ] 🔴 Publicar restante dos 5 artigos fundacionais
-- [ ] 🔴 Submeter artigo Wikipedia EN
+
+- [ ] 🔴 Publicar artigos 2–5 (rascunhos em `docs/blog-articles/`)
 - [ ] 🔴 Criar/publicar EPK premium em PDF
-- [ ] 🔴 Produzir videoclipe para estratégia IMDb
-- [ ] 🔴 Avaliar migração para DistroKid
-- [ ] 🔴 Lançar 1 remix com SEO otimizado
+- [ ] 🔴 Produzir vídeo de performance editado (3–5 min) para estratégia IMDb
+- [ ] 🔴 Lançar 1 remix com SEO otimizado (título: "[Música] - Zouk Remix - DJ Zen Eyer")
+- [ ] 🔴 Conseguir 2–3 entrevistas em portais de dança/cultura (pré-requisito para Wikipedia)
 
 ### Mês 3–6
-- [ ] 🔴 Submeter videoclipe para 2–3 festivais no FilmFreeway
+
+- [ ] 🔴 Submeter videoclipe para 2–3 festivais no FilmFreeway ($5–$15 cada)
 - [ ] 🔴 Criar entrada no IMDb após aceite no festival
+- [ ] 🔴 Iniciar rascunho da Wikipedia PT com base nas entrevistas publicadas
 - [ ] 🔴 Iniciar sequência de outreach com organizadores europeus
-- [ ] 🔴 Aparecer em 1–2 podcasts de Zouk/dança
-- [ ] 🔴 Lançar faixa no Beatport
+- [ ] 🔴 Aparecer em 1–2 podcasts de Zouk/dança (com transcrição publicada no site)
+- [ ] 🔴 Lançar faixa no Beatport (via distribuidora compatível, sem migrar da Soundrop)
 
 ---
 
