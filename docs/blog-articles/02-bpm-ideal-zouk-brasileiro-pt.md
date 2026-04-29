@@ -1,4 +1,5 @@
 # ARTIGO 02 — PORTUGUÊS
+
 # Pronto para copiar e colar no WordPress
 
 ---

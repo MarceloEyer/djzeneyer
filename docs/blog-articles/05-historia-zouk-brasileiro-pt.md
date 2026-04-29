@@ -1,4 +1,5 @@
 # ARTIGO 05 — PORTUGUÊS
+
 # Pronto para copiar e colar no WordPress
 
 ---
@@ -51,7 +52,7 @@ A partir de 2015, o Zouk Brasileiro chegou a uma maturidade onde as diferenças 
 
 Foi nesse contexto que DJ Zen Eyer desenvolveu a filosofia da Cremosidade — uma resposta à pergunta de como a música pode potencializar, e não apenas acompanhar, o Zouk Brasileiro. A proposta de transições invisíveis, curva emocional planejada e fusão de raízes com modernidade encontrou eco numa comunidade que estava cada vez mais exigente com a qualidade da experiência sonora.
 
-Em 2022, DJ Zen Eyer ganhou os títulos de Best DJ Performance e Best Remix no Ilha do Zouk Championship — o campeonato mundial de DJs de Zouk Brasileiro —, tornando-se bicampeão mundial.
+Em 2022, DJ Zen Eyer ganhou os títulos de Best DJ Performance e Best Remix no Ilha do Zouk Championship — o campeonato mundial de DJs de Zouk Brasileiro — tornando-se bicampeão mundial.
 
 **O Zouk Brasileiro hoje**
 

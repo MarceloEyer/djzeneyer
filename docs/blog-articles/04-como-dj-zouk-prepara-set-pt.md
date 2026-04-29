@@ -1,4 +1,5 @@
 # ARTIGO 04 — PORTUGUÊS
+
 # Pronto para copiar e colar no WordPress
 
 ---
@@ -49,7 +50,7 @@ Um set típico de festival tem aproximadamente:
 | Descida | 20–30 min | Resolução emocional |
 | Fechamento | 10–20 min | Memória, despedida |
 
-Cada músicas que escolho para cada segmento precisa fazer sentido dentro dessa curva. Uma música que seria perfeita para o pico pode destruir a abertura.
+Cada música que escolho para cada segmento precisa fazer sentido dentro dessa curva. Uma música que seria perfeita para o pico pode destruir a abertura.
 
 **Fase 3 — Preparação técnica (dia antes)**
 

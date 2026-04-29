@@ -34,12 +34,12 @@
 
 ### Tour 2026 — status oficial
 
-Press release publicado em PR.com (2026) confirma tour internacional com performances confirmadas na **Polônia** e **República Tcheca (Praga)**. Cobertura independente: CarryOnHarry.com.
+Tour internacional com performances confirmadas na **Polônia** e **República Tcheca (Praga)**. Cobertura independente: CarryOnHarry.com. *(Nota: PR.com é serviço de press release pago — não conta como fonte editorial para Wikipedia ou Knowledge Graph.)*
 
 ### Lacunas prioritárias
 
 1. **Volume de lançamentos baixo** — sem cadência regular no Spotify/plataformas
-2. **Conteúdo de autoridade ausente** — nenhum artigo respondendo as perguntas que IAs indexam sobre Zouk
+2. **Conteúdo de autoridade ausente** — nenhum artigo respondendo às perguntas que IAs indexam sobre Zouk
 3. **TikTok/Reels sem estratégia** — o formato que mais cresce na dança está subaproveitado
 4. **Newsletter sem funil** — MailPoet ativo mas sem sequência de boas-vindas
 5. **Página de booking sem urgência** — não comunica escassez nem valor premium
@@ -106,7 +106,7 @@ Publicar em PT e EN no WordPress (`djzeneyer.com/news`). Estes artigos preenchem
 **Formato técnico obrigatório:**
 - 800–1.200 palavras
 - Schema.org `Article` com `author: Zen Eyer` e data de publicação visível
-- Primeiro parágrafo responde a pergunta do título — sem enrolação
+- Primeiro parágrafo responde à pergunta do título — sem enrolação
 - Link interno para `djzeneyer.com/about` e `djzeneyer.com/zouk-music`
 
 #### 1.2 Wikipedia EN — criar entrada oficial (🔴 AÇÃO MANUAL — URGENTE)
@@ -114,11 +114,11 @@ Publicar em PT e EN no WordPress (`djzeneyer.com/news`). Estes artigos preenchem
 Este é o maior gap de autoridade. IAs (ChatGPT, Gemini, Perplexity) priorizam fontes Wikipedia quando disponíveis. Sem um artigo, a IA pode não ter base para citar Zen Eyer com confiança.
 
 Fontes já disponíveis para embasar o artigo:
-- MyZA, Time Business News, IssueWire (press releases publicados)
 - Ilha do Zouk oficial (danceplace.com documenta a vitória de 2022)
 - Wikidata Q136551855 (já existe — o Wikipedia pode linkar)
-- PR.com tour 2026 (cobertura independente)
 - CarryOnHarry.com (cobertura independente)
+
+> ⚠️ **Nota:** PR.com e IssueWire são serviços de press release pagos sem revisão editorial. O Wikipedia os rejeita como fontes não-confiáveis — não incluir nas referências do artigo.
 
 **Processo:**
 1. Redigir em tom neutro (sem linguagem promocional)
@@ -229,13 +229,13 @@ Identidade forte cria engajamento. Afirmações filosóficas autênticas dividem
 **Frases de "polarização Cremosidade" prontas para usar em posts/Reels:**
 
 > *"Um DJ que só toca músicas é uma playlist cara. Um DJ de Zouk existe para criar um estado emocional que o dançarino não saberia criar sozinho."*
-
+>
 > *"A Cremosidade não é um estilo de DJ. É uma decisão de não interromper o momento em que o dançarino se esquece de si mesmo."*
-
+>
 > *"BPM não é o que faz o Zouk funcionar. O espaço entre as notas é o que faz o corpo se mover."*
-
+>
 > *"Tem DJs que tocam músicas. Tem DJs que tocam dançarinos. Prefiro o segundo."*
-
+>
 > *"A pressa é inimiga da cremosidade. E a cremosidade é o único lugar onde o Zouk realmente acontece."*
 
 **Como usar:** Postar uma frase por semana no Instagram/TikTok como texto estático ou sobreposição de vídeo. Não explicar, não justificar. Deixar o debate nos comentários acontecer naturalmente.
@@ -394,24 +394,17 @@ Os itens abaixo já estão ativos no site e funcionando:
 
 #### 6.4 Google Knowledge Panel — estratégia de completude
 
-**Status atual:** Painel existe (Google KGMID `/g/11ff3mhh10` confirmado em `sameAs`).
+**Status atual:** Painel já reivindicado (Google KGMID `/g/11ff3mhh10` ativo e confirmado em `sameAs`). Nenhuma ação de reivindicação necessária.
 
 **Para completar e fortalecer o painel:**
 
 | Ação | Onde fazer | Impacto |
 |---|---|---|
-| Reivindicar o painel | google.com/search — "Suggest an edit" no próprio painel | Alto — permite editar foto, título, links |
 | Verificar perfil no Google Search Console | search.google.com/search-console | Alto — confirma propriedade do site para o Google |
 | Adicionar foto oficial ao Wikidata | Wikidata Q136551855 → `P18` (image) | Alto — aparece no painel |
 | Completar Wikidata com festivais recentes | Wikidata Q136551855 | Médio — enriquece o painel |
 | Publicar artigo Wikipedia EN | en.wikipedia.org/wiki/Zen_Eyer | Muito alto — fonte mais confiável para o Google |
 | Manter `sameAs` consistente | Já implementado no código | Médio — fortalece a entidade canônica |
-
-**Como reivindicar o Google Knowledge Panel (🔴 AÇÃO MANUAL):**
-1. Buscar "DJ Zen Eyer" no Google
-2. No Knowledge Panel, clicar em "Claim this Knowledge Panel"
-3. Verificar identidade via perfil social ou site oficial
-4. Após verificação, é possível sugerir foto, descrição e links oficiais
 
 ---
 
@@ -573,7 +566,7 @@ Em ordem de impacto:
 1. **Publicar primeiro artigo de blog** — "O que é Cremosidade no Zouk Brasileiro?" em PT e EN. O mais urgente porque alimenta IAs com autoridade duradoura.
 2. **Criar/expandir Wikipedia EN** — maior gap de autoridade. Sem isso, IAs têm base fraca para citar Zen Eyer.
 3. **Configurar sequência de 5 e-mails no MailPoet** — cada dia sem isso, inscritos entram sem boas-vindas.
-4. **Reivindicar Google Knowledge Panel** — baixo esforço, alto impacto na aparência nos resultados.
+4. **Completar Google Knowledge Panel** — já reivindicado (KGMID `/g/11ff3mhh10`). Focar em adicionar foto oficial ao Wikidata (`P18`) para aparecer no painel.
 5. **Criar 3 vídeos TikTok/Reels** no formato "antes e depois" — testar o formato antes de escalar.
 6. **Atualizar RA.co + Last.fm + Discogs** — bio atualizada com títulos e Cremosidade.
 7. **Atualizar Wikidata** com festivais 2025–2026 como `performerIn`.
@@ -614,8 +607,7 @@ A estratégia de IA não é um truque técnico. É garantir que quando alguém p
 
 **Dados verificados:**
 - djzeneyer.com/about-dj-zen-eyer — perfil oficial
-- PR.com press release (2026) — confirmação da tour Europa + América do Norte
-- CarryOnHarry.com — cobertura da tour 2026
+- CarryOnHarry.com — cobertura editorial independente da tour 2026
 - Spotify: open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw — ~2.5K ouvintes/mês
 - SoundCloud: soundcloud.com/djzeneyer — ativo
 - Mixcloud: mixcloud.com/djzeneyer — sets publicados

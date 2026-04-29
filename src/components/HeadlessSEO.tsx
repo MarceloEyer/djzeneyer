@@ -5,7 +5,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { getAlternateLinks, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
@@ -390,7 +390,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           performer: {
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
-            sameAs: Array.isArray(ARTIST_SCHEMA_BASE.sameAs) ? ARTIST_SCHEMA_BASE.sameAs[0] : ARTIST_SCHEMA_BASE.sameAs
+            sameAs: ARTIST_SCHEMA_SAME_AS
           },
           offers: eventOffers,
           organizer: {
@@ -411,7 +411,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             url: artist.site.baseUrl,
-            sameAs: artist.social.instagram?.url || (artist.social.instagram as unknown as string)
+            sameAs: ARTIST_SCHEMA_SAME_AS
           },
           subEvent: musicEvents
         });

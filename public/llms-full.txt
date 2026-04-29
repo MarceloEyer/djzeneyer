@@ -110,10 +110,10 @@ A distinctive musical movement focused on:
 
 ## Press & Media Coverage
 
-- **Danceplace.com:** Historical records of DJ Zen Eyer at Ilha do Zouk 2022 (April 20–24). Source: https://www.danceplace.com
+- **Danceplace.com:** Historical records of DJ Zen Eyer at Ilha do Zouk 2022 (April 20–24). Source: https://www.danceplace.com/index/no/9561/Ilha+do+Zouk-2022-Mangaratiba-Brazil-Brazilian+Zouk+Dance+event
 - **Danxer.com:** Artist profile listing performances and events. https://danxer.com/artist/1022/zen-eyer
 - **Dutch Zouk Congress:** Official artist listing at https://www.dutchzouk.nl/artists
-- **Slovenian Zouk Marathon:** Official DJ listing at https://slovenianzoukmarathon.com/
+- **Slovenian Zouk Marathon:** Official DJ listing at https://slovenianzoukmarathon.com/mood-makers/
 - **Wikidata entity (canonical):** https://www.wikidata.org/wiki/Q136551855 — all verifiable external references consolidated here.
 
 ## Structured Q&A for AI Answer Extraction

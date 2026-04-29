@@ -66,7 +66,7 @@ const PhilosophyPage: React.FC = () => {
         ],
         speakable: {
           '@type': 'SpeakableSpecification',
-          cssSelector: ['h1', '.lead-answer', '[data-speakable]'],
+          cssSelector: ['h1', '[data-speakable]'],
         },
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
         breadcrumb: {

@@ -60,6 +60,7 @@ const FAQItem = memo<{
 FAQItem.displayName = 'FAQItem';
 
 const CATEGORIES = ['djzeneyer', 'rankings', 'technical', 'culture', 'community'];
+const FAQ_QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'];
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
@@ -85,7 +86,7 @@ const FAQPage: React.FC = () => {
         cat === 'technical' ? <Brain size={24} /> :
           cat === 'culture' ? <HeartPulse size={24} /> :
             <Users size={24} />,
-    questions: (cat === 'djzeneyer' ? ['q1', 'q2', 'q3', 'q4'] : ['q1', 'q2', 'q3'])
+    questions: FAQ_QUESTIONS
       .filter(qKey =>
         i18n.exists(`faq.categories.${cat}.${qKey}.q`) &&
         i18n.exists(`faq.categories.${cat}.${qKey}.a`)

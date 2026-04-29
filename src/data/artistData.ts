@@ -462,6 +462,16 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'PropertyValue',
+      propertyID: 'ISNI',
+      value: '0000000528931015',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Discogs',
+      value: '16872046',
+    },
+    {
+      '@type': 'PropertyValue',
       propertyID: 'Spotify',
       value: '68SHKGndTlq3USQ2LZmyLw',
     },
@@ -469,6 +479,22 @@ export const ARTIST_SCHEMA_BASE = {
   nationality: {
     '@type': 'Country',
     name: 'Brazil',
+  },
+  birthPlace: {
+    '@type': 'City',
+    name: 'Rio de Janeiro',
+    addressCountry: 'BR',
+  },
+  homeLocation: {
+    '@type': 'City',
+    name: 'Niterói',
+    addressCountry: 'BR',
+  },
+  memberOf: {
+    '@type': 'Organization',
+    name: 'Mensa International',
+    url: 'https://www.mensa.org',
+    description: 'High-IQ society for individuals in the top 2% of intelligence.',
   },
   award: [
     'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
