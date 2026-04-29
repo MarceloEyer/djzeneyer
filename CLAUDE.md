@@ -90,6 +90,8 @@ Estas decisões foram tomadas pelo dono do projeto em abril de 2026. Bots de cod
 | **EverybodyWiki já existe (PT + EN)** | Ação é completar/atualizar, não criar |
 | **`speakable` schema verboso é intencional** | Hardcoded nos custom schemas das páginas. Não refatorar HeadlessSEO para auto-injetar em schemas arbitrários |
 | **Renata Peçanha é referência no nicho Zouk apenas** | Sem presença em mídia mainstream, TV ou Wikipedia. Não citar como fonte de credibilidade mainstream |
+| **DJ Zen Eyer NÃO é engenheiro de software** | Rótulo incorreto — removido de todos os arquivos llms. Ele é DJ e produtor musical. |
+| **YouTube: dois canais distintos** | `UCEVHG-5iyNLWK3Zeungvdqg` = canal ativo (@djzeneyer). `UCJ_5oAEFTG18jga_JFxG00w` = Topic channel auto-criado pelo YouTube Music. Ambos ficam no sameAs. |
 
 ## ⛔ DO NOT
 
