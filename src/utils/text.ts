@@ -15,18 +15,40 @@ export const stripHtml = (html: string): string => {
         }
     }
 
-    // SSR Fallback or if DOMParser is unavailable: use Regex
-    let result = html;
-    // Remove HTML comments globally
-    result = result.replace(/<!--[\s\S]*?-->/g, '');
-    // Remove all tags generically (covers script, style, and any other tag).
-    // Specific-tag regexes like /<script\b...>/ can be bypassed and are flagged
-    // by CodeQL (js/bad-tag-filter). A single generic pass + final sweep is equivalent
-    // in safety, avoiding false positives and O(N^2) loops on deeply nested tags.
-    result = result.replace(/<[^>]*>/g, '');
+    // SSR Fallback or if DOMParser is unavailable: use an O(N) iterative parser
+    // This avoids CodeQL bypass flags (js/bad-tag-filter) caused by generic regexes
+    // or nested tags, and runs significantly faster than recursive replaces.
+    let result = '';
+    let i = 0;
+    const len = html.length;
+    while (i < len) {
+        if (html[i] === '<') {
+            if (html.startsWith('<!--', i)) {
+                const end = html.indexOf('-->', i + 4);
+                i = end === -1 ? len : end + 3;
+            } else {
+                const end = html.indexOf('>', i + 1);
+                i = end === -1 ? len : end + 1;
+            }
+        } else if (html[i] === '>') {
+            i++; // drop stray absolute sweep
+        } else {
+            // Fast-forward to the next tag or stray bracket
+            const nextTag = html.indexOf('<', i);
+            const nextClose = html.indexOf('>', i);
+            const next = (nextTag !== -1 && nextClose !== -1)
+                ? Math.min(nextTag, nextClose)
+                : Math.max(nextTag, nextClose);
 
-    // Final absolute sweep: drop any stray or nested angle brackets
-    result = result.replace(/[<>]/g, '');
+            if (next === -1) {
+                result += html.slice(i);
+                break;
+            } else {
+                result += html.slice(i, next);
+                i = next;
+            }
+        }
+    }
 
     // Single-pass entity decoder to prevent double-unescaping (CodeQL: js/double-escaping)
     const entityMap: Record<string, string> = {
