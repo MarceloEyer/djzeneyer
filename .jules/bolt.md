@@ -108,3 +108,8 @@
 ## 2026-06-27 - Inline Spread of Arrays in React Render Cycles
 **Learning:** Using the spread operator (e.g., `[...array1, ...array2]`) inline directly within a component's render body (like for `.map()` iteration) forces JavaScript to allocate a completely new array object on *every single render cycle*, regardless of whether the source arrays have changed. In highly re-rendered components, this causes significant garbage collection overhead and potential performance stutters.
 **Action:** Always extract dynamic array combinations/spreads into a `useMemo` hook, using the source arrays (or their parent objects) as the dependency array, to preserve reference equality and eliminate O(N) reallocation overhead.
+
+## 2026-06-28 - Render Loop Overhead via Inline Array Allocation and Split
+
+**Learning:** Allocating a static array (`['jan', 'feb', ...]`) and performing string splitting (`key.split('-')`) inside the callback of a `.map()` iteration forces continuous garbage collection overhead on every React rendering cycle, significantly impacting performance on large lists.
+**Action:** Always extract static array configurations to the module scope (outside the component) and replace allocating string operations like `split()` with non-allocating alternatives like `slice()` when iterating over datasets in render loops.
