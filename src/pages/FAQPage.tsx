@@ -104,12 +104,15 @@ const FAQPage: React.FC = () => {
 
   // Extract FAQs for the HeadlessSEO component to generate the FAQPage schema
   const faqList = useMemo(() => {
-    return faqData.flatMap(category =>
-      category.questions.map(q => ({
-        q: (q.question as unknown) as string,
-        a: stripHtml((q.answer as unknown) as string) // Clean text for robots/LLMs
-      }))
-    );
+    return faqData.reduce((acc, category) => {
+      for (const q of category.questions) {
+        acc.push({
+          q: (q.question as unknown) as string,
+          a: stripHtml((q.answer as unknown) as string) // Clean text for robots/LLMs
+        });
+      }
+      return acc;
+    }, [] as Array<{ q: string; a: string }>);
   }, [faqData]);
 
   return (
