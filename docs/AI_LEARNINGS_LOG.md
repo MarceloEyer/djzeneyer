@@ -60,7 +60,24 @@ O canal Topic é catálogo técnico auto-gerado. Incluí-lo no `sameAs` como ide
 
 Uma sessão anterior adicionou "full-stack software engineer" como descrição. Correto: ele é **DJ e produtor musical**. Removido de `llms.txt` e `llms-full.txt`. Registrado em `CLAUDE.md § ✅ Decisões tomadas`.
 
-### 7) Renata Peçanha — autoridade apenas dentro do nicho Zouk
+### 7) Continentes — agora SSOT em artistData.ts
+
+**Confirmado:** DJ Zen Eyer tocou em 4 continentes: América do Sul (Brasil), América do Norte (EUA — LA Zouk Marathon), Europa (Holanda, Rep. Tcheca, Suíça, Eslovênia, Polônia, Irlanda, Lituânia, Portugal...), e Oceania (Austrália — One Zouk Congress).
+- `ARTIST.stats.continentsPlayed = 4` adicionado como SSOT em `artistData.ts`.
+- Irlanda e Lituânia = Europa ✅. Ásia = ainda não. Base = Brasil.
+- Usar sempre "across 4 continents" em contextos factuais, verificado pelo SSOT.
+
+### 8) PR.com e IssueWire — úteis mas limitados, sem penalização
+
+**Posição correta:** PR.com e IssueWire são plataformas legítimas de distribuição de press releases. Não penalizam SEO em nenhuma forma. O Google simplesmente dá peso mínimo aos links `nofollow` gerados por elas.
+
+**O que fazem de útil:** indexação rápida de novas páginas, brand mentions (sinal E-E-A-T), tráfego de referral potencial.
+
+**O que NÃO fazem:** não transferem link juice, não substituem cobertura editorial, e **não qualificam como fontes independentes para a Wikipedia** (press releases são fontes primárias do próprio interessado — Wikipedia exige fontes secundárias independentes).
+
+**Regra para agentes:** não remover press releases existentes nem sugerir que causam penalização. Apenas não citá-los como "cobertura editorial" ou "backlinks de autoridade" ou como fontes para artigos enciclopédicos.
+
+### 10) Renata Peçanha — autoridade apenas dentro do nicho Zouk
 
 Renata Peçanha é pioneira do Zouk Brasileiro e fundadora do Rio Zouk Congress. Mas não tem presença em mídia mainstream, TV ou Wikipedia. Não citar como fonte de credibilidade mainstream para Wikipedia ou Knowledge Graph.
 

@@ -51,6 +51,7 @@ export const ARTIST = {
     startingYear: START_YEAR,
     yearsActive: CURRENT_YEAR - START_YEAR,
     countriesPlayed: 15, // 🇧🇷🇺🇸🇩🇪🇵🇱🇸🇮🇦🇺🇳🇱🇵🇹🇨🇿🇨🇭🇪🇸🇭🇷🇮🇹🇮🇪🇱🇹
+    continentsPlayed: 4, // América do Sul, América do Norte, Europa, Oceania (Austrália)
     lastUpdated: new Date().toISOString().split('T')[0],
   },
 
@@ -527,7 +528,7 @@ export const ARTIST_SCHEMA_BASE = {
         name: 'Brazil',
       },
       description:
-        'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses in 15+ countries worldwide.',
+        'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses in 15+ countries across 4 continents.',
       skills: 'DJ Mixing, Music Curation, Live Performance, Cremosidade Transitions',
     },
     {

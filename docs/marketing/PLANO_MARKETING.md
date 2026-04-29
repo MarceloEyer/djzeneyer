@@ -34,7 +34,7 @@
 
 ### Tour 2026 — status oficial
 
-Tour internacional com performances confirmadas na **Polônia** e **República Tcheca (Praga)**. Cobertura independente: CarryOnHarry.com. *(Nota: PR.com é serviço de press release pago — não conta como fonte editorial para Wikipedia ou Knowledge Graph.)*
+Tour internacional com performances confirmadas na **Polônia** e **República Tcheca (Praga)**. Cobertura independente: CarryOnHarry.com.
 
 ### Lacunas prioritárias
 
@@ -118,7 +118,7 @@ Fontes já disponíveis para embasar o artigo:
 - Wikidata Q136551855 (já existe — o Wikipedia pode linkar)
 - CarryOnHarry.com (cobertura independente)
 
-> ⚠️ **Nota:** PR.com e IssueWire são serviços de press release pagos sem revisão editorial. O Wikipedia os rejeita como fontes não-confiáveis — não incluir nas referências do artigo.
+> **Nota sobre press releases (PR.com, IssueWire):** São plataformas legítimas que não penalizam nem prejudicam o SEO. Os links gerados são quase todos `nofollow`, então não transferem autoridade diretamente — mas contribuem com indexação rápida e brand mentions (sinais E-E-A-T). Para fins de **Wikipedia**, press releases são considerados fontes primárias do próprio interessado e não qualificam como fontes independentes. Use-os para visibilidade de marca, não como base para artigos enciclopédicos.
 
 **Processo:**
 1. Redigir em tom neutro (sem linguagem promocional)
