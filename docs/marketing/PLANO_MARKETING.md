@@ -34,7 +34,7 @@
 
 ### Tour 2026 — status oficial
 
-Tour internacional com performances confirmadas na **Polônia** e **República Tcheca (Praga)**. Cobertura independente: CarryOnHarry.com.
+Tour internacional com performance confirmada na **República Tcheca (Praga)** — Prague Zouk Congress, 9–13 Jul. Wrocław Zouk Experience (Polônia) foi realizado em edição anterior. Cobertura independente: CarryOnHarry.com.
 
 ### Lacunas prioritárias
 
@@ -259,7 +259,7 @@ Identificar 5–10 dançarinos de Zouk com 10k–100k seguidores nos países-alv
 
 | Festival | País | Data 2026 | Status |
 |---|---|---|---|
-| Wrocław Zouk Experience — Summer | Polônia | 5–7 Jun | **Tour confirmada** |
+| Wrocław Zouk Experience — Summer | Polônia | 5–7 Jun | ✅ Realizado (edição anterior) |
 | Cracow Zouk Marathon | Polônia | 26–28 Jun | Alvo prioritário |
 | Brazilian Zouk Dance Congress | Rep. Tcheca (Praga) | 9–13 Jul | **Tour confirmada** |
 | Bonn SoulZouk Festival | Alemanha | 30 Jul–2 Ago | Alvo prioritário |
