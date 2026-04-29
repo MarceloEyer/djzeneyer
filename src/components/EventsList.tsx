@@ -33,6 +33,119 @@ const formatTime = (date: Date, locale: string) => {
   return getDateTimeFormatter(locale, { hour: '2-digit', minute: '2-digit' }).format(date);
 };
 
+interface CardProps {
+  event: any;
+  detailHref: string;
+  currentLocale: string;
+  locTitle?: string;
+}
+
+const CompactCard = memo(({ event, detailHref, currentLocale }: CardProps) => {
+  const eventDate = new Date(event.starts_at);
+  const loc = event.location;
+  const eventLocation = `${loc.city}, ${loc.country || ''}`;
+  const formattedTime = formatTime(eventDate, currentLocale);
+
+  return (
+    <article
+      className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
+    >
+      <Link to={detailHref} className="flex items-start gap-4 p-4">
+        <time dateTime={event.starts_at} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]">
+          <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
+          <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
+        </time>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
+          <div className="space-y-1 text-sm text-white/70 text-left">
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="flex-shrink-0 text-primary" />
+              <span className="truncate">{loc.venue || loc.city}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={14} className="flex-shrink-0 text-white/40" />
+              <span className="truncate">{eventLocation} • {formattedTime}</span>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </article>
+  );
+});
+
+const FullCard = memo(({ event, detailHref, currentLocale, locTitle }: CardProps) => {
+  const eventDate = new Date(event.starts_at);
+  const loc = event.location;
+  const eventLocation = `${loc.city}, ${loc.country || ''}`;
+  const formattedTime = formatTime(eventDate, currentLocale);
+
+  return (
+    <article
+      className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden bg-surface/30 border border-white/5 rounded-2xl"
+    >
+      <Link to={detailHref}>
+        <div className="relative aspect-[16/9] overflow-hidden">
+          <div className="w-full h-full bg-gradient-to-br from-surface to-background flex items-center justify-center relative p-6 text-center group-hover:scale-105 transition-transform duration-500">
+            <div
+              className="absolute inset-0 opacity-[0.03]"
+              style={{ backgroundImage: `url(${patternSvg})`, backgroundSize: '30px' }}
+            />
+            <div className="relative z-10 w-full">
+              <h3
+                 className="text-2xl font-black uppercase tracking-tighter font-display text-white/90 leading-[0.9] break-words line-clamp-3"
+                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
+              />
+               <div className="mt-3 w-8 h-0.5 bg-primary/30 mx-auto rounded-full" />
+            </div>
+          </div>
+          {/* Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+
+          {/* Date Badge */}
+          <div className="absolute top-4 left-4">
+            <div className="bg-background/80 backdrop-blur-md border border-white/10 rounded-lg p-2 text-center min-w-[60px]">
+              <div className="text-xl font-bold text-primary leading-none">{eventDate.getDate()}</div>
+              <div className="text-[10px] uppercase font-semibold text-white/70 mt-1">
+                {formatDate(eventDate, { month: 'short' }, currentLocale)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <h3
+            className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors h-[3.5rem] flex items-center"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
+          />
+
+          <div className="space-y-3 text-sm text-white/60">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <MapPin size={14} className="text-primary" />
+              </div>
+              <div className="min-w-0">
+                <div className="font-semibold text-white">
+                  {loc.venue || locTitle}
+                </div>
+                <div className="truncate text-xs">{eventLocation}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
+                <Clock size={14} className="text-white/40" />
+              </div>
+              <div className="text-xs uppercase tracking-wider font-medium text-white/80">
+                {formattedTime}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </article>
+  );
+});
+
 function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: EventsListProps) {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
@@ -98,115 +211,27 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
 
       <div className={variant === 'compact' ? "space-y-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
         {visibleEvents.map((event) => {
-          const eventDate = new Date(event.starts_at);
-          const loc = event.location;
-          const eventLocation = `${loc.city}, ${loc.country || ''}`;
-
-          const formattedTime = formatTime(eventDate, currentLocale);
-
-          // Canonical Link handling — SINCRONIZADO COM EVENTSPAGE PARA EVITAR 404
           const identifier = event.canonical_path
             ? event.canonical_path.split('/').pop() || event.event_id
             : event.event_id;
 
           const detailHref = generatePath(getLocalizedRoute('events-detail', lang), { id: identifier });
 
-          // --- COMPACT CARD (used in Home) ---
-          if (variant === 'compact') {
-            return (
-              <article
-                key={event.event_id}
-                className="card hover:border-primary/50 transition-all duration-300 group bg-surface/30 border border-white/5 rounded-xl overflow-hidden"
-              >
-                <Link to={detailHref} className="flex items-start gap-4 p-4">
-                  <time dateTime={event.starts_at} className="flex-shrink-0 text-center bg-surface rounded-lg p-3 border border-white/10 min-w-[70px]">
-                    <div className="text-2xl font-bold text-primary">{eventDate.getDate()}</div>
-                    <div className="text-xs uppercase text-white/60">{formatDate(eventDate, { month: 'short' }, currentLocale)}</div>
-                  </time>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-white mb-1 line-clamp-1 group-hover:text-primary transition-colors text-left" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
-                    <div className="space-y-1 text-sm text-white/70 text-left">
-                      <div className="flex items-center gap-2">
-                        <MapPin size={14} className="flex-shrink-0 text-primary" />
-                        <span className="truncate">{loc.venue || loc.city}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock size={14} className="flex-shrink-0 text-white/40" />
-                        <span className="truncate">{eventLocation} • {formattedTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </article>
-            );
-          }
-
-          // --- FULL CARD ---
-          return (
-            <article
+          return variant === 'compact' ? (
+            <CompactCard
               key={event.event_id}
-              className="card group hover:border-primary/50 transition-all duration-300 overflow-hidden bg-surface/30 border border-white/5 rounded-2xl"
-            >
-              <Link to={detailHref}>
-                <div className="relative aspect-[16/9] overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-surface to-background flex items-center justify-center relative p-6 text-center group-hover:scale-105 transition-transform duration-500">
-                    <div
-                      className="absolute inset-0 opacity-[0.03]"
-                      style={{ backgroundImage: `url(${patternSvg})`, backgroundSize: '30px' }}
-                    />
-                    <div className="relative z-10 w-full">
-                      <h3 
-                         className="text-2xl font-black uppercase tracking-tighter font-display text-white/90 leading-[0.9] break-words line-clamp-3"
-                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} 
-                      />
-                       <div className="mt-3 w-8 h-0.5 bg-primary/30 mx-auto rounded-full" />
-                    </div>
-                  </div>
-                  {/* Overlay Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
-
-                  {/* Date Badge */}
-                  <div className="absolute top-4 left-4">
-                    <div className="bg-background/80 backdrop-blur-md border border-white/10 rounded-lg p-2 text-center min-w-[60px]">
-                      <div className="text-xl font-bold text-primary leading-none">{eventDate.getDate()}</div>
-                      <div className="text-[10px] uppercase font-semibold text-white/70 mt-1">
-                        {formatDate(eventDate, { month: 'short' }, currentLocale)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <h3
-                    className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors h-[3.5rem] flex items-center"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }}
-                  />
-
-                  <div className="space-y-3 text-sm text-white/60">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <MapPin size={14} className="text-primary" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-semibold text-white">
-                          {loc.venue || t('loc_to_be_defined')}
-                        </div>
-                        <div className="truncate text-xs">{eventLocation}</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
-                        <Clock size={14} className="text-white/40" />
-                      </div>
-                      <div className="text-xs uppercase tracking-wider font-medium text-white/80">
-                        {formattedTime}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </article>
+              event={event}
+              detailHref={detailHref}
+              currentLocale={currentLocale}
+            />
+          ) : (
+            <FullCard
+              key={event.event_id}
+              event={event}
+              detailHref={detailHref}
+              currentLocale={currentLocale}
+              locTitle={t('loc_to_be_defined')}
+            />
           );
         })}
       </div>
