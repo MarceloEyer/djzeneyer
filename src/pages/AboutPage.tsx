@@ -105,6 +105,10 @@ const AboutPage: React.FC = () => {
         isPartOf: { '@id': `${artist.site.baseUrl}/#website` },
         about: { '@id': `${artist.site.baseUrl}/#artist` },
         mainEntity: { '@id': `${artist.site.baseUrl}/#artist` },
+        speakable: {
+          '@type': 'SpeakableSpecification',
+          cssSelector: ['h1', '[data-speakable]'],
+        },
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
@@ -221,7 +225,7 @@ const AboutPage: React.FC = () => {
                   The <span className="text-primary">Journey</span>
                 </Trans>
               </h1>
-              <p className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
                 {t('about.hero.subtitle')}
               </p>
             </motion.div>

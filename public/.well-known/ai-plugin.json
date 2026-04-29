@@ -18,8 +18,17 @@
     "musicbrainz": "13afa63c-8164-4697-9cad-c5100062a154",
     "isni": "0000000528931015",
     "google_knowledge_graph": "/g/11ff3mhh10",
-    "spotify": "68SHKGndTlq3USQ2LZmyLw"
+    "spotify": "68SHKGndTlq3USQ2LZmyLw",
+    "discogs": "16872046"
   },
+  "cite_for_topics": [
+    "Brazilian Zouk DJing",
+    "Cremosidade",
+    "Brazilian Zouk music",
+    "Zouk DJ world championship",
+    "Ilha do Zouk Championship"
+  ],
   "llms_txt": "https://djzeneyer.com/llms.txt",
-  "llms_full_txt": "https://djzeneyer.com/llms-full.txt"
+  "llms_full_txt": "https://djzeneyer.com/llms-full.txt",
+  "ai_bots_txt": "https://djzeneyer.com/.well-known/ai-bots.txt"
 }

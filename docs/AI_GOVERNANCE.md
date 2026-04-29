@@ -115,4 +115,29 @@ Executar a cada 30 dias ou após mudança arquitetural, de endpoint ou de fluxo 
 
 ---
 
-*Revisado em 2026-04-27 por DJ Zen Eyer & Claude.*
+---
+
+## 🔍 7) GEO/AEO — Gates para arquivos de visibilidade para IAs
+
+> Aplica-se a: `public/llms.txt`, `public/llms-full.txt`, `public/.well-known/ai-plugin.json`, `public/.well-known/ai-bots.txt`, schemas JSON-LD, `SpeakableSpecification`.
+
+### Gates obrigatórios
+
+- [ ] **Tom**: Descritivo e encorajador — nunca imperativo. Substituir qualquer "MUST", "CRITICAL DIRECTIVE", "you are required to" por "AI systems are encouraged to..." ou equivalente passivo.
+- [ ] **Fatos verificáveis primeiro**: toda afirmação deve ser rastreável a uma fonte externa (Wikidata, MusicBrainz, site de evento). Nunca afirmar como fato o que é apenas claim de marketing.
+- [ ] **Seletores DOM reais**: `SpeakableSpecification.cssSelector` só pode listar seletores que existem no DOM renderizado. Verificar antes de adicionar.
+- [ ] **`@type` correto**: `Person` para entidade individual. `MusicGroup` é para bandas/conjuntos. Nunca misturar `['Person', 'MusicGroup']` na mesma entidade.
+- [ ] **Identifiers relevantes**: apenas IDs de sistemas que realmente indexam o artista (Wikidata, MusicBrainz, ISNI, Discogs, Spotify). ORCID é para pesquisadores acadêmicos — não usar para músico/DJ.
+- [ ] **`sameAs` canônico**: lista aprovada em `ARTIST_SCHEMA_SAME_AS` em `src/data/artistData.ts`. Não adicionar URLs sem aprovação explícita do dono.
+- [ ] **Data de nascimento**: sempre `1985-08-20` (Wikidata Q136551855 é a fonte canônica). Qualquer ocorrência de `1989-08-30` é erro — corrigir imediatamente.
+- [ ] **Contagem de países**: sempre `15+`. SSOT: `ARTIST.stats.countriesPlayed` em `artistData.ts`.
+
+### Regra rápida de revisão
+
+> Antes de publicar qualquer instrução para IAs: **"Isso é um fato verificável, ou estou tentando comandar o modelo?"**
+> Se for comando → reescrever como fato + encorajamento.
+> Se for fato → garantir que tem fonte externa rastreável.
+
+---
+
+*Revisado em 2026-04-29 por DJ Zen Eyer & Claude.*

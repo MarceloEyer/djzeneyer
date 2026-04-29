@@ -5,7 +5,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { getAlternateLinks, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
@@ -76,6 +76,12 @@ interface HeadlessSEOProps {
   leadAnswer?: string;
   faqs?: { q: string; a: string }[]; // NOVO: Suporte a FAQ Schema
   events?: EventSchemaData[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
+  /** Injeta speakable no nó WebPage gerado automaticamente (Google Assistant / IA de voz).
+   *  ⚠️  Só tem efeito quando `schema` NÃO é fornecido — se `schema` for passado,
+   *      adicione `speakable` diretamente no nó WebPage/Article do schema customizado.
+   *  true      → seletores padrão: h1, [data-speakable]
+   *  string[]  → seletores CSS customizados (strings vazias são ignoradas) */
+  speakable?: boolean | string[];
 }
 
 // ============================================================================
@@ -115,6 +121,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   leadAnswer,
   faqs,
   events,
+  speakable,
 }) => {
   const { artist } = useBranding();
   const baseUrl = artist.site.baseUrl;
@@ -383,7 +390,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           performer: {
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
-            sameAs: Array.isArray(ARTIST_SCHEMA_BASE.sameAs) ? ARTIST_SCHEMA_BASE.sameAs[0] : ARTIST_SCHEMA_BASE.sameAs
+            sameAs: ARTIST_SCHEMA_SAME_AS
           },
           offers: eventOffers,
           organizer: {
@@ -404,7 +411,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             url: artist.site.baseUrl,
-            sameAs: artist.social.instagram?.url || (artist.social.instagram as unknown as string)
+            sameAs: ARTIST_SCHEMA_SAME_AS
           },
           subEvent: musicEvents
         });
@@ -417,6 +424,23 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage]);
 
   if (!schema) {
+    // Speakable spec — injeta seletores CSS para Google Assistant / LLMs de voz
+    // Sanitiza: trim + remove strings vazias + fallback para defaults se array vazio
+    const DEFAULT_SPEAKABLE = ['h1', '[data-speakable]'];
+    const normalizedSpeakableSelectors = Array.isArray(speakable)
+      ? speakable.map((s) => s.trim()).filter(Boolean)
+      : DEFAULT_SPEAKABLE;
+    const speakableSpec = speakable
+      ? {
+          speakable: {
+            '@type': 'SpeakableSpecification',
+            cssSelector: normalizedSpeakableSelectors.length > 0
+              ? normalizedSpeakableSelectors
+              : DEFAULT_SPEAKABLE,
+          },
+        }
+      : {};
+
     // Combine with WebPage base
     const webPageSchema = {
       '@type': 'WebPage',
@@ -427,6 +451,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       about: { '@id': `${baseUrl}/#artist` },
       description: truncatedDesc,
       inLanguage: htmlLangAttribute,
+      ...speakableSpec,
     };
 
     if (dynamicGraph && dynamicGraph.length > 0) {

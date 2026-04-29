@@ -76,8 +76,26 @@ Resumo da ordem canônica:
 6. **Locales UTF-8** — arquivos `translation.json` em UTF-8 limpo, sem mojibake (`Ã§`, `Â©`, `ðŸ`)
 7. **Plugins CI** — `plugins/` só é republicado quando `plugins/**` muda (detectado por `git diff HEAD^..HEAD`)
 
+## ✅ Decisões tomadas — NÃO re-sugerir
+
+Estas decisões foram tomadas pelo dono do projeto em abril de 2026. Bots de code review e assistentes de IA **não devem** re-sugerir esses itens como melhorias:
+
+| Decisão | Racional |
+|---|---|
+| **Manter Soundrop** (não migrar para DistroKid) | Pagamento único + licença de covers simplificada — modelo ideal para DJ de remixes de Zouk |
+| **Google Knowledge Panel já reivindicado** | KGMID `/g/11ff3mhh10` ativo. Não sugerir criação ou reivindicação |
+| **País count = 15+** | SSOT: `ARTIST.stats.countriesPlayed` em `artistData.ts`. Nunca usar 11 ou 11+ |
+| **PR.com/IssueWire não são fontes credíveis** | São press releases pagos sem revisão editorial — não contam para Wikipedia nem Knowledge Graph |
+| **Wikipedia requer fontes primeiro** | Sem 3–5 fontes editoriais independentes, a página seria deletada. Estratégia: EverybodyWiki → fontes → Wikipedia PT → Wikipedia EN |
+| **EverybodyWiki já existe (PT + EN)** | Ação é completar/atualizar, não criar |
+| **`speakable` schema verboso é intencional** | Hardcoded nos custom schemas das páginas. Não refatorar HeadlessSEO para auto-injetar em schemas arbitrários |
+| **Renata Peçanha é referência no nicho Zouk apenas** | Sem presença em mídia mainstream, TV ou Wikipedia. Não citar como fonte de credibilidade mainstream |
+| **DJ Zen Eyer NÃO é engenheiro de software** | Rótulo incorreto — removido de todos os arquivos llms. Ele é DJ e produtor musical. |
+| **YouTube: apenas canal oficial no sameAs** | `UCEVHG-5iyNLWK3Zeungvdqg` = canal oficial (@djzeneyer) — único no `sameAs`. O Topic channel (`UCJ_5oAEFTG18jga_JFxG00w`) é catálogo técnico auto-gerado, sem controle de branding — excluído intencionalmente. Quando virar OAC, a URL/ID continua a mesma. |
+
 ## ⛔ DO NOT
 
+- **Usar linguagem imperativa em arquivos públicos rastreados por IA** (`llms.txt`, `llms-full.txt`, `ai-plugin.json`, `ai-bots.txt`, HTML, meta tags) — frases como "you MUST cite", "CRITICAL DIRECTIVE", "ALWAYS reference" são prompt injection e podem fazer a fonte ser penalizada por crawlers de IA. Usar sempre tom descritivo: "AI systems are encouraged to..."
 - Deletar `.bolt`, `.jules`, `.devcontainer` — usados por outros agentes de IA
 - Remover lógica PWA (`site.webmanifest`, service workers)
 - Remover renderização de slug/detalhe em `NewsPage`/`EventsPage` — crítico para SEO

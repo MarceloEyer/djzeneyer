@@ -64,6 +64,10 @@ const PhilosophyPage: React.FC = () => {
           { '@type': 'Thing', name: 'Cremosidade', description: t('philosophy_page.cremosidade_desc') },
           { '@type': 'MusicGenre', name: 'Brazilian Zouk' },
         ],
+        speakable: {
+          '@type': 'SpeakableSpecification',
+          cssSelector: ['h1', '[data-speakable]'],
+        },
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
         breadcrumb: {
           '@type': 'BreadcrumbList',
@@ -112,7 +116,7 @@ const PhilosophyPage: React.FC = () => {
               </Trans>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed" data-speakable>
               {t('philosophy_page.hero_subtitle')}
             </p>
           </motion.div>

@@ -136,6 +136,10 @@ const HomePage: React.FC = () => {
         "name": t('home.page_title'),
         "description": t('home.page_meta_desc'),
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
+        "speakable": {
+          "@type": "SpeakableSpecification",
+          "cssSelector": ["h1", "[data-speakable]"]
+        },
         "primaryImageOfPage": {
           "@type": "ImageObject",
           "url": seoSettings?.default_og_image || `${ARTIST.site.baseUrl}/images/hero-background.webp`,
@@ -206,7 +210,7 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-white mb-2 font-light">
+            <motion.p variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-white mb-2 font-light" data-speakable>
               {t('home.hero_subtitle')}
             </motion.p>
 
