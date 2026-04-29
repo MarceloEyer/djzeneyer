@@ -420,10 +420,8 @@ export const ARTIST_SCHEMA_SAME_AS = [
   // Social / video
   'https://www.instagram.com/djzeneyer/',
   'https://www.facebook.com/djzeneyer/',
-  // Active channel (youtube.com/@djzeneyer) — posts videos manually
+  // Official channel (youtube.com/@djzeneyer) — will become OAC; Topic channel excluded intentionally
   'https://www.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-  // Topic channel (Zen Eyer - Topic) — auto-created by YouTube Music for releases
-  'https://www.youtube.com/channel/UCJ_5oAEFTG18jga_JFxG00w',
   'https://www.tiktok.com/@djzeneyer',
   'https://x.com/djzeneyer',
   'https://www.linkedin.com/in/eyermarcelo/',
