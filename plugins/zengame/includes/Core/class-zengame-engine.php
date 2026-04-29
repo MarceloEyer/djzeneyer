@@ -99,6 +99,7 @@ final class Engine
                 // Check downloadable via _downloadable post meta (WP caches after first read).
                 // Avoids wc_product_meta_lookup (can be stale after bulk imports).
                 $unique_pids = \array_unique(\array_column($rows, 'product_id'));
+                \update_meta_cache('post', $unique_pids);
                 $is_downloadable = [];
                 foreach ($unique_pids as $pid) {
                     $is_downloadable[(int) $pid] = \get_post_meta((int) $pid, '_downloadable', true) === 'yes';
