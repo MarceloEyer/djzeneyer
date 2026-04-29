@@ -112,3 +112,6 @@
 ## 2026-06-27 - Inline Spread of Arrays in React Render Cycles
 **Learning:** Using the spread operator (e.g., `[...array1, ...array2]`) inline directly within a component's render body (like for `.map()` iteration) forces JavaScript to allocate a completely new array object on *every single render cycle*, regardless of whether the source arrays have changed. In highly re-rendered components, this causes significant garbage collection overhead and potential performance stutters.
 **Action:** Always extract dynamic array combinations/spreads into a `useMemo` hook, using the source arrays (or their parent objects) as the dependency array, to preserve reference equality and eliminate O(N) reallocation overhead.
+## 2024-04-29 - O(N) Array Searches in React Render Cycles
+**Learning:** Checking for item existence in an array using `.some()` or `.find()` inside a React render loop (especially when passed as a prop to memoized children like `ProductRow`) causes an O(N) search on every single re-render. If the target ID is not in the array, the search scans the entire array every time.
+**Action:** When filtering or checking existence against arrays populated from APIs, extract the IDs into a `Set` within a `useMemo` block. This reduces the search to O(1) via `Set.has()` during render cycles, protecting components from performance degradation as list sizes grow.

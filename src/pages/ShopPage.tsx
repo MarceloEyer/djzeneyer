@@ -386,6 +386,11 @@ const ShopPage: React.FC = () => {
   const newReleases = shopData?.new_releases || [];
   const bestSellers = shopData?.best_sellers || [];
   const curatedSelection = shopData?.curated || [];
+
+  const newReleasesIds = useMemo(() => new Set((shopData?.new_releases || []).map((p: { id: number }) => p.id)), [shopData?.new_releases]);
+  const bestSellersIds = useMemo(() => new Set((shopData?.best_sellers || []).map((p: { id: number }) => p.id)), [shopData?.best_sellers]);
+  const curatedSelectionIds = useMemo(() => new Set((shopData?.curated || []).map((p: { id: number }) => p.id)), [shopData?.curated]);
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
@@ -448,8 +453,8 @@ const ShopPage: React.FC = () => {
               title={t('shop.new_releases')}
               products={newReleases}
               onAddToCart={handleAddToCart}
-              isAdding={newReleases.some(p => p.id === addingToCart)}
-              activeProductId={addingToCart}
+              isAdding={addingToCart !== null && newReleasesIds.has(addingToCart)}
+              activeProductId={addingToCart !== null && newReleasesIds.has(addingToCart) ? addingToCart : null}
               formatPrice={formatPrice}
               productBasePath={productBasePath}
             />
@@ -458,8 +463,8 @@ const ShopPage: React.FC = () => {
               title={t('badge_sale')}
               products={bestSellers}
               onAddToCart={handleAddToCart}
-              isAdding={bestSellers.some(p => p.id === addingToCart)}
-              activeProductId={addingToCart}
+              isAdding={addingToCart !== null && bestSellersIds.has(addingToCart)}
+              activeProductId={addingToCart !== null && bestSellersIds.has(addingToCart) ? addingToCart : null}
               formatPrice={formatPrice}
               productBasePath={productBasePath}
             />
@@ -468,8 +473,8 @@ const ShopPage: React.FC = () => {
               title={t('shop.top_picks')}
               products={curatedSelection}
               onAddToCart={handleAddToCart}
-              isAdding={curatedSelection.some(p => p.id === addingToCart)}
-              activeProductId={addingToCart}
+              isAdding={addingToCart !== null && curatedSelectionIds.has(addingToCart)}
+              activeProductId={addingToCart !== null && curatedSelectionIds.has(addingToCart) ? addingToCart : null}
               formatPrice={formatPrice}
               productBasePath={productBasePath}
             />
