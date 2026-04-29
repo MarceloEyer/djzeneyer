@@ -379,7 +379,7 @@
     "stat_countries": "Países",
     "stat_events": "Eventos",
     "stat_years": "Experiência",
-    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Ilha do Zouk (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 10 países.",
+    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Ilha do Zouk (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em mais de 15 países.",
     "bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
     "bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
     "festivals_title": "Festivais & Eventos",
@@ -1463,8 +1463,8 @@
     },
     "bio": {
       "title": "A Jornada Sonora",
-      "p1": "<strong>DJ Zen Eyer</strong> é referência mundial em Brazilian Zouk, conhecido por sua abordagem única que prioriza a conexão e o 'flow' na pista de dança.",
-      "p2": "Com passagens por 10 países e premiações internacionais, ele criou o conceito de 'Cremosidade' — sets que evoluem gradualmente, respeitando o tempo do dançarino.",
+      "p1": "<strong>DJ Zen Eyer</strong> é DJ e produtor de Brazilian Zouk, conhecido por sua abordagem que prioriza a conexão e o 'flow' na pista de dança.",
+      "p2": "Com passagens por 15+ países e premiações internacionais, ele popularizou e nomeou o conceito de 'Cremosidade' — sets que evoluem gradualmente, respeitando o tempo do dançarino.",
       "p3": "Membro da Mensa International, Zen utiliza sua percepção aguçada para curar jornadas emocionais perfeitas, seja em grandes festivais ou sessões íntimas da Zen Tribe.",
       "quickStats": {
         "cremosidade": "Cremosidade",
