@@ -1,8 +1,9 @@
-# Guia de Configuração — DJ Zen Eyer
+# Guia de Configuracao - DJ Zen Eyer
 
-> **Fonte canônica de configuração** para WordPress, plugins e Cloudflare.
-> Substitui `docs/CONFIGURATION.md` (que passa a ser legado).
-> Última revisão: 2026-04-27
+> Documento historico de configuracao.
+> A referencia atual e `docs/CONFIGURATION.md`.
+> Regras globais e precedencia vivem em `AI_CONTEXT_INDEX.md`.
+> Ultima revisao: 2026-04-27
 
 ---
 

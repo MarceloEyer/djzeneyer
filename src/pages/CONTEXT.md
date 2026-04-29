@@ -1,17 +1,22 @@
-# Pages Context - /src/pages
+﻿# Pages Context - /src/pages
 
-> **Responsibility:** Main route components and data orchestration.
+> Contexto local das rotas e paginas.
+> Base canonica: `AI_CONTEXT_INDEX.md`.
 
-## Rules
-1. **Lazy Loading:** Todas as páginas em `App.tsx` devem usar `React.lazy()`.
-2. **SEO First:** A primeira linha de cada página (após imports) deve ser a renderização do `<HeadlessSEO />`.
-3. **Data Fetching:** Usar as chaves de query de `useQueries.ts`.
-4. **Layout:** Quase todas as páginas devem estar envolvidas pelo `MainLayout.tsx`.
+## Regras centrais
 
-## Layout Details
-- `EventsPage.tsx`: Foco em visual de calendário e links Apple/Google.
-- `ProductPage.tsx`: Integração WooCommerce.
-- `PayMePage.tsx`: Fluxos de pagamento e tradução rigorosa.
+- Paginas usam `React.lazy()` + `Suspense`.
+- A primeira responsabilidade da pagina e renderizar SEO correto quando a rota for publica.
+- Paginas consomem dados via hooks, nao via fetch isolado.
+- Transformacoes pesadas devem ficar fora do render sempre que possivel.
+- Rotas privadas usam `noindex`.
 
----
-*Páginas pesadas = Tela branca. Otimize e use lazy loading.*
+## Pontos de cuidado
+
+- Nao espalhar fetch e filtro dentro da view.
+- Nao hardcodar paths quando existir rota localizada.
+- Pagina deve receber dados prontos para render, nao montar pipeline inteiro so na tela.
+
+## Observacao
+
+Se houver conflito entre este arquivo e o indice canonico, vale o indice canonico.

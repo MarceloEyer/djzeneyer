@@ -1,16 +1,28 @@
 # Plugins Context - /plugins
 
-> **Type:** Custom WordPress Plugins.
+> Visao geral dos plugins customizados.
+> Para o contexto canonico de IA, seguir `AI_CONTEXT_INDEX.md` e os `CONTEXT.md` especificos de cada plugin.
 
-## Key Plugins
-- `zeneyer-auth`: Lógica de autenticação via JWT.
-- `zen-seo-lite-pro`: Gerenciamento de metadados para o Headless.
-- `zen-plugins-overview`: Diagnóstico do sistema.
+## Plugins principais
 
-## Rules
-1. **Modularidade:** Manter plugins focados em uma única responsabilidade.
-2. **Compatibility:** Garantir compatibilidade com PHP 8.3 e WP 6.0+.
-3. **Updates:** Plugins customizados não devem ser sobrescritos por atualizações automáticas.
+- `zeneyer-auth` - autenticacao JWT e Google OAuth.
+- `zen-seo-lite` - SEO headless e schema.
+- `zen-bit` - eventos e Bandsintown.
+- `zengame` - gamificacao, leaderboard e pontos.
 
----
-*Aqui reside o "cérebro" customizado do site.*
+## Regras gerais
+
+- Cada plugin deve manter responsabilidade clara.
+- Compatibilidade com PHP 8.3 e WordPress 6.9+.
+- Mudancas de comportamento em plugin devem refletir nos docs canonicos e no contexto do proprio plugin.
+
+## Onde procurar detalhe
+
+- `plugins/zeneyer-auth/CONTEXT.md`
+- `plugins/zen-seo-lite/CONTEXT.md`
+- `plugins/zen-bit/CONTEXT.md`
+- `plugins/zengame/CONTEXT.md`
+
+## Observacao
+
+Este arquivo funciona como porta de entrada. O detalhe tecnico fica nos contexts especificos e no indice canonico.

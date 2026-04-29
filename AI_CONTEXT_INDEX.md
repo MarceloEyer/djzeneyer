@@ -71,9 +71,22 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 ## Fluxo para qualquer tarefa
 1. Ler este indice
 2. Ler `AGENTS.md`
-3. Ler o arquivo tecnico mais proximo da mudanca (`docs/ARCHITECTURE.md`, `docs/API.md`, etc.)
-4. Validar contra o codigo real antes de editar docs
-5. Se encontrou conflito, corrigir docs no mesmo PR
+3. Ler `docs/AI_LEARNINGS.md` quando a tarefa tocar padroes ja consolidados por PRs, reviews ou portagens
+4. Ler o arquivo tecnico mais proximo da mudanca (`docs/ARCHITECTURE.md`, `docs/API.md`, etc.)
+5. Validar contra o codigo real antes de editar docs
+6. Se encontrou conflito, corrigir docs no mesmo PR
+
+## Mapa de documentos
+
+- `CLAUDE.md` - contexto local mais completo para Claude Code.
+- `GEMINI.md` - override curto para Gemini / Jules.
+- `CONTEXT.md` - resumo rapido do ecossistema de contexto.
+- `README.md` - visao publica do projeto.
+- `docs/README.md` - indice da documentacao tecnica.
+- `docs/AI_LEARNINGS.md` - memoria operacional ativa.
+- `docs/AI_LEARNINGS_LOG.md` - historico legado.
+- `docs/CONFIGURATION.md` - configuracao canonica atual.
+- `docs/config.md` - snapshot historico de configuracao.
 
 ## Regra de Locales
 - Arquivos alvo: `src/locales/en/*.json` e `src/locales/pt/*.json`
@@ -97,6 +110,21 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
   4. Skill relacionada em `.agents/skills/*` quando instrucoes da skill ficarem desatualizadas
 - Nao concluir tarefa estrutural sem sincronizar contexto.
 - Se nao houver mudanca relevante de comportamento, registrar explicitamente que "nenhuma atualizacao de contexto foi necessaria".
+
+## Aprendizados consolidados
+
+> Fonte secundaria de memoria operacional para bots de IA. Use para evitar repetir erros que ja apareceram em PRs fechados, portagens manuais ou reviews recorrentes.
+
+- Schema de pessoa unica: `ARTIST_SCHEMA_BASE` deve manter apenas `@type: 'Person'` para Zen Eyer. Nao criar `MusicGroup` para a entidade individual.
+- Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. ORCID nao deve entrar no schema do artista.
+- FAQ expansivel: quando adicionar `q4`/`q5`, validar existencia com i18n antes de renderizar e manter paridade PT/EN.
+- Copy defensiva: `PressKit` e similares devem tratar erro de clipboard e resetar estado local no `catch`.
+- Portagem canonica: se um PR duplicar outro branch mais completo, portar as mudancas validas para o PR canonicamente escolhido e fechar o duplicado.
+- Dependencias de seguranca: PRs automatizados de pacote precisam atualizar `package-lock.json` junto com `package.json`; caso contrario a remediacao nao entra no deploy.
+- Performance de loop: em SEO, sitemap e listas, preferir single-pass, cache priming e reducao de alocacoes para evitar N+1.
+- Bot review workflow: PRs abertos/reabertos/synchronize devem disparar `@coderabbitai review`, `@codex review` e `@jules`.
+- Rate limit de bots: comentarios de "rate limit exceeded" sao sinal de saturacao; evite bursts e PRs redundantes no mesmo tema.
+- Regras de pagina: textos visiveis nao devem ser hardcoded quando ja existir chave i18n apropriada.
 
 ## 🆔 IDENTIDADE CANÔNICA (SSOT)
 - **Fonte de Verdade**: `src/data/artistData.ts` é a única fonte canônica para a identidade pública renderizada (nome, data de nascimento, bio, links).

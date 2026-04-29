@@ -1,20 +1,19 @@
-# Análise Técnica: ESLint 9 vs ESLint 10
+# ESLint Analysis - Legacy Note
 
-## Contexto
-O projeto **DJ Zen Eyer** optou por manter a versão **9.39.2** do ESLint, apesar da disponibilidade da v10. Esta decisão foi tomada para garantir a integridade das validações de código React.
+> Este arquivo registra uma decisao antiga sobre ESLint.
+> A referencia atual e `AI_CONTEXT_INDEX.md`.
 
-## O Problema de Compatibilidade
-Atualmente (Q1 2026), dois plugins fundamentais para o desenvolvimento React não oferecem suporte estável ao ESLint 10:
+## Estado atual do projeto
 
-1.  **eslint-plugin-react-hooks (v5.2.0)**: Responsável por validar as regras de hooks (`useEffect`, `useState`). Sem ele, erros de dependências de hooks passam desapercebidos.
-2.  **eslint-plugin-react (v7.37.5)**: Valida sintaxe JSX, acessibilidade e boas práticas de componentes.
+- ESLint em uso no projeto: 10.x
+- A stack atual e definida pelo `package.json`
+- Qualquer analise antiga que trate ESLint 9 como bloqueio deve ser lida como historica
 
-## Avaliação de Vulnerabilidades
-Embora scanners de segurança apontem vulnerabilidades (ajv ReDoS e esbuild XSS) no ESLint 9:
-- São vulnerabilidades que afetam apenas o ambiente de **desenvolvimento/build**.
-- O risco real é baixíssimo, pois exigiria arquivos de configuração malformados ou ataques locais ao dev server.
-- **Nenhum destes riscos atinge o código que vai para produção.**
+## Regra pratica
 
-## Decisão Técnica
-- **Manter ESLint 9.39.2** até que o ecossistema React (plugins acima) atualize para suporte oficial ao ESLint 10 e ao novo formato `FlatConfig`.
-- **Revisão agendada**: Q2/Q3 2026.
+- Nao atualizar ESLint major sem validar a stack inteira.
+- Nao deixar docs antigos contradizerem o estado atual do projeto.
+
+## Observacao
+
+Se este arquivo entrar em conflito com o indice canonico, o indice canonico vale.

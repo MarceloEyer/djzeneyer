@@ -1,18 +1,26 @@
-# Config Context - /src/config
+﻿# Config Context - /src/config
 
-> **Authority:** API Endpoints & Application Routing.
+> Contexto local de rotas e configuracao da aplicacao.
+> Base canonica: `AI_CONTEXT_INDEX.md`.
 
-## Rules
-1. **SSOT (Single Source of Truth):**
-   - API URLs: `api.ts`
-   - Route Mappings: `routes.ts`
-2. **Priority:** Sempre usar `getApiConfig()` que prioriza `window.wpData` (injetado via PHP) antes de variáveis de ambiente.
-3. **Security:** O `nonce` do WordPress deve ser obtido via `getNonce()` para qualquer requisição POST/PUT/DELETE.
+## Responsabilidade
 
-## Key Files
-- `api.ts`: Configuração central da API REST.
-- `routes.ts`: Mapeamento de rotas PT/EN. **Não altere sem atualizar o `routes-data.json` nos scripts.**
-- `siteConfig.ts`: Metadados globais.
+API URLs, rotas localizadas e configuracoes globais do frontend.
 
----
-*Configurações erradas aqui quebram a comunicação com o WordPress.*
+## Regras centrais
+
+- `api.ts` continua sendo a base para endpoints.
+- `routes.ts` continua sendo a base para mapeamento de rotas.
+- `siteConfig.ts` concentra metadados globais.
+- `getApiConfig()` deve priorizar dados injetados pelo PHP antes de variaveis de ambiente quando isso existir no projeto.
+- Mudanca de rota publica precisa sincronizar `scripts/routes-data.json`.
+
+## Pontos de cuidado
+
+- `getLocalizedRoute()` e a forma segura de compor URLs canonicas.
+- `routes.ts` e a SSOT de rotas para a SPA.
+- Qualquer alteracao aqui afeta SEO, sitemap e prerender.
+
+## Observacao
+
+Se houver conflito entre este arquivo e o indice canonico, vale o indice canonico.

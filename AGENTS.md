@@ -17,9 +17,10 @@
 
 1. `AI_CONTEXT_INDEX.md` — regras globais, stack canônica, endpoints, bugs conhecidos
 2. Este arquivo (`AGENTS.md`) — regras operacionais e checklists
-3. Skill `djzeneyer-context` em `.agents/skills/djzeneyer-context/` — contexto completo do projeto
-4. Para tarefas de WP/PHP: skill `wp-project-triage` antes de mudanças estruturais
-5. Para tarefas de SEO: skill `seo-audit` antes de criar/modificar rotas públicas
+3. `docs/AI_LEARNINGS.md` — aprendizados consolidados de PRs e revisoes para evitar repetir erros
+4. Skill `djzeneyer-context` em `.agents/skills/djzeneyer-context/` — contexto completo do projeto
+5. Para tarefas de WP/PHP: skill `wp-project-triage` antes de mudanças estruturais
+6. Para tarefas de SEO: skill `seo-audit` antes de criar/modificar rotas públicas
 
 ---
 

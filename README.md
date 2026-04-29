@@ -1,82 +1,42 @@
-# 🎧 DJ Zen Eyer — Experiência Digital Headless
+# DJ Zen Eyer
 
-![Status](https://img.shields.io/badge/status-ativo-success.svg)
-![React](https://img.shields.io/badge/React-19-blue)
-![Vite](https://img.shields.io/badge/Vite-8-purple)
-![Tailwind](https://img.shields.io/badge/Tailwind-4-38bdf8)
-![WordPress](https://img.shields.io/badge/WordPress-Headless-21759b)
+Projeto oficial de DJ Zen Eyer, nome publico de Marcelo Eyer Fernandes.
+Arquitetura: WordPress headless + React SPA.
 
-> **A experiência digital oficial do DJ Zen Eyer — Bicampeão Mundial de Brazilian Zouk.**
->
-> Uma SPA de alto desempenho inspirada em interfaces de MMORPG moderno, unindo estética premium a uma arquitetura WordPress Headless.
+## Stack atual
 
-🌐 **Site:** [djzeneyer.com](https://djzeneyer.com)
+| Camada | Versao atual |
+|---|---|
+| Frontend | React 19.2.5, TypeScript 6.0.3, Vite 8.0.9, Tailwind 4.2.1, React Query 5.99.2, React Router 7.14.1, i18next 26.0.6 |
+| Build | ESLint 10.2.1, Prettier 3.8.2, Puppeteer 24.42.0 |
+| Backend | WordPress 6.9+, PHP 8.3+, WooCommerce 10.5+ com HPOS ativo, GamiPress |
+| Infra | Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions |
 
----
+## O que existe no repo
 
-## ✨ Funcionalidades
+- `src/` - frontend React
+- `inc/` - tema e integracao WordPress
+- `plugins/` - plugins customizados
+- `scripts/` - build, prerender e utilitarios
+- `docs/` - documentacao tecnica e operacional
 
-- **🚀 Ultra Rápido:** React 19 + Vite 8, navegação quase instantânea.
-- **🌍 Bilíngue:** Suporte nativo a **Inglês** e **Português** via `i18next`.
-- **🛒 E-Commerce:** Integração completa com **WooCommerce** para venda de músicas e ingressos.
-- **🎮 Gamificação:** XP, Ranks e Conquistas (via **ZenGame**) sincronizados globalmente.
-- **🎵 Música & Descoberta:** Curadoria de sets e releases integrada com Spotify e SoundCloud (sem player interno).
-- **🧠 SEO Otimizado:** Sitemaps dinâmicos, JSON-LD, tags canônicas e SSG.
+## Documentos principais
 
----
+- [AI_CONTEXT_INDEX.md](AI_CONTEXT_INDEX.md)
+- [AGENTS.md](AGENTS.md)
+- [CLAUDE.md](CLAUDE.md)
+- [GEMINI.md](GEMINI.md)
+- [docs/AI_LEARNINGS.md](docs/AI_LEARNINGS.md)
+- [docs/AI_GOVERNANCE.md](docs/AI_GOVERNANCE.md)
 
-## 🛠️ Stack Técnica
-
-### Frontend
-- **Framework:** React 19 + TypeScript (strict)
-- **Build:** Vite 8 (OXC/Rolldown)
-- **Estilo:** Tailwind 4 + Framer Motion
-- **Estado:** React Query (TanStack Query v5) + Context API
-- **Roteamento:** React Router 7
-
-### Backend
-- **CMS:** WordPress (Modo Headless)
-- **API:** REST API com endpoints customizados (`/djzeneyer/v1`)
-- **Plugins Customizados:**
-  - **ZenEyer Auth** (JWT + Google OAuth)
-  - **Zen-SEO** (SEO Headless)
-  - **Zen BIT** (Bandsintown)
-  - **ZenGame** (Gamificação)
-
----
-
-## 🔄 Workflow de Deploy
-
-O deploy é automático via GitHub Actions no push para a branch `main`.
-
-1. ✅ Build TypeScript + Vite
-2. ✅ Geração de sitemaps
-3. ✅ Prerender de páginas (SSG)
-4. ✅ Deploy via SSH para o servidor
-5. ✅ Limpeza de cache LiteSpeed + OPcache
-
----
-
-## 🚀 Quick Start
+## Comandos basicos
 
 ```bash
 npm install
-npm run dev
+npm run lint
+npm run build
 ```
 
----
+## Observacao
 
-## 📂 Estrutura do Projeto
-
-```
-djzeneyer/
-├── src/                    # Frontend React
-├── inc/                    # PHP do tema WordPress
-├── plugins/                # Plugins customizados
-├── scripts/                # Scripts de build
-└── docs/                   # Documentação
-```
-
----
-
-*Feito com ❤️ e 🎶 pela Tribo Zen.*
+Se houver conflito entre qualquer documentacao e o codigo real, o codigo real vale primeiro.

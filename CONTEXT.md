@@ -1,42 +1,34 @@
-# DJ Zen Eyer — Central Context
+# CONTEXT.md - DJ Zen Eyer
 
-> Resumo operacional. Documento canônico completo: `AI_CONTEXT_INDEX.md`.
-> Idioma padrão: Português Brasileiro.
+> Resumo operacional curto do repositorio.
+> O documento canonico completo e `AI_CONTEXT_INDEX.md`.
+> O arquivo mais completo para Claude e `CLAUDE.md`.
 
-## 🏗️ Arquitetura Completa
+## Funcoes dos arquivos
 
-```mermaid
-graph TD
-    A[React 19 SPA] <--> B[Vite 8 / OXC]
-    A <--> C[WordPress REST API]
-    C <--> D[ZenGame Pro Plugin]
-    C <--> E[ZenEYER Auth Plugin]
-    C <--> F[WooCommerce HPOS]
-    A <--> G[Cloudflare / Hostinger]
-```
+- `AI_CONTEXT_INDEX.md` - regras globais, precedencia, baseline tecnico e SSOT.
+- `AGENTS.md` - onboarding e operacao diaria dos agentes.
+- `CLAUDE.md` - contexto local rico para Claude Code.
+- `GEMINI.md` - override enxuto para Gemini / Jules.
+- `docs/AI_LEARNINGS.md` - memoria operacional consolidada.
+- `docs/AI_LEARNINGS_LOG.md` - historico legado.
 
-## 🛠️ Stack Baseline (2026-03-26)
-- **Frontend:** React 19, Vite 8 (OXC), Tailwind 4, React Query v5, i18next.
-- **Backend:** WordPress 6.9+, PHP 8.3, WooCommerce (HPOS), GamiPress.
-- **CI/CD:** GitHub Actions (fetch-depth: 2, plugin detection) → SSH rsync.
+## Stack atual
 
-## 🗺️ Mapa de Arquivos Chave
+- Frontend: React 19.2.5, TypeScript 6.0.3, Vite 8.0.9, Tailwind 4.2.1, React Query 5.99.2, React Router 7.14.1, i18next 26.0.6
+- Build: ESLint 10.2.1, Prettier 3.8.2, Puppeteer 24.42.0
+- Backend: WordPress 6.9+, PHP 8.3+, WooCommerce 10.5+ com HPOS ativo, GamiPress
+- Infra: Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions
 
-| Arquivo/Pasta | Responsabilidade |
-|---|---|
-| `src/hooks/useQueries.ts` | **SSOT Data Fetching**. Centralizador de todas as queries. |
-| `src/contexts/UserContext.tsx` | Gerenciamento de Sessão e Auth (JWT/Google). |
-| `plugins/zengame/` | Engine de gamificação (Stats, Ranks, Leaderboard). |
-| `plugins/zeneyer-auth/` | Autenticação master e validação de tokens Bearer. |
-| `src/locales/` | Traduções PT/EN em arquivos JSON UTF-8. |
-| `.github/workflows/deploy.yml` | Pipeline de deploy automatizado. |
-| `scripts/prerender.js` | Geração de HTML estático por rota para SEO. |
+## Regras repetidas com maior valor pratico
 
-## 🕹️ ZenGame Contracts
-- **Leaderboard:** Cache 1h. Invalidado em toda premiação.
-- **Dashboard:** Cache 24h. Invalidado via `clear_user_cache()`.
-- **Ranks:** Usar `array_values(gamipress_get_rank_types())` para evitar bug de array associativo no GamiPress.
-- **WP-CLI Deploy:** Cache clearing via `wp transient delete --search="..."`.
+- Strings visiveis usam i18n.
+- Fetch em componente nao e padrao.
+- SEO por rota usa `HeadlessSEO`.
+- Rotas privadas usam `noindex`.
+- Mudanca em dependencia exige lockfile sincronizado.
+- PR duplicado deve ser consolidado em um branch canonico.
 
----
-*Para execução técnica detalhada, consulte `AI_CONTEXT_INDEX.md`.*
+## Quando este arquivo ajuda
+
+Use este arquivo quando a tarefa precisar de um mapa rapido do ecossistema de contexto, sem entrar no nivel completo do indice canonico.
