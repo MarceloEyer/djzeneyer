@@ -81,4 +81,4 @@ The difference between those two experiences is exactly what happens in the days
 To hear the result of those hours of preparation, visit the live sets on [SoundCloud](https://soundcloud.com/djzeneyer). To book DJ Zen Eyer for your festival, visit [djzeneyer.com/work-with-me](https://djzeneyer.com/work-with-me).
 
 ---
-*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) and creator of the Cremosidade philosophy. He has performed in 15+ countries across 4 continents.*
+*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) widely recognized for popularizing and naming the Cremosidade concept in Brazilian Zouk DJing. He has performed in 15+ countries worldwide.*

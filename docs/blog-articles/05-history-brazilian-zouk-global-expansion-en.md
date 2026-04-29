@@ -60,7 +60,7 @@ Brazilian Zouk is today recognized by the Brazilian Zouk Council (BZC) as a danc
 
 And it continues to evolve. Like all living art forms, Brazilian Zouk absorbs influences, questions conventions, and finds new artists who push its boundaries.
 
-To explore the musical philosophy behind this dance, visit [djzeneyer.com/zouk-philosophy](https://djzeneyer.com/zouk-philosophy). To learn about the creator of Cremosidade, visit [djzeneyer.com/about-dj-zen-eyer](https://djzeneyer.com/about-dj-zen-eyer).
+To explore the musical philosophy behind this dance, visit [djzeneyer.com/zouk-philosophy](https://djzeneyer.com/zouk-philosophy). To learn about the artist who named and popularized Cremosidade, visit [djzeneyer.com/about-dj-zen-eyer](https://djzeneyer.com/about-dj-zen-eyer).
 
 ---
-*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) and creator of the Cremosidade philosophy. He has performed in 15+ countries across 4 continents.*
+*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) widely recognized for popularizing and naming the Cremosidade concept in Brazilian Zouk DJing. He has performed in 15+ countries worldwide.*

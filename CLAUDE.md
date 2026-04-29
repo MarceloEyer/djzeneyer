@@ -84,7 +84,7 @@ Estas decisões foram tomadas pelo dono do projeto em abril de 2026. Bots de cod
 |---|---|
 | **Manter Soundrop** (não migrar para DistroKid) | Pagamento único + licença de covers simplificada — modelo ideal para DJ de remixes de Zouk |
 | **Google Knowledge Panel já reivindicado** | KGMID `/g/11ff3mhh10` ativo. Não sugerir criação ou reivindicação |
-| **País count = 15+** | SSOT: `ARTIST.stats.countriesPlayed` em `artistData.ts`. Nunca usar 11 ou 11+ |
+| **País count = 15+** | SSOT: `ARTIST.stats.countriesPlayed` em `artistData.ts`. Nunca usar 11 ou 11+. Não afirmar "4 continents" — não tem SSOT e não está verificado; usar "worldwide" ou "15+ countries" |
 | **PR.com/IssueWire não são fontes credíveis** | São press releases pagos sem revisão editorial — não contam para Wikipedia nem Knowledge Graph |
 | **Wikipedia requer fontes primeiro** | Sem 3–5 fontes editoriais independentes, a página seria deletada. Estratégia: EverybodyWiki → fontes → Wikipedia PT → Wikipedia EN |
 | **EverybodyWiki já existe (PT + EN)** | Ação é completar/atualizar, não criar |

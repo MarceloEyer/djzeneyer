@@ -61,7 +61,7 @@ This philosophy is explored in depth on the [Zouk Philosophy](https://djzeneyer.
 
 The best way to understand Cremosidade is to listen to it. DJ Zen Eyer's complete sets are available on [SoundCloud](https://soundcloud.com/djzeneyer), where you can follow the transitions and feel the emotional architecture of each performance.
 
-To learn more about DJ Zen Eyer — the creator of Cremosidade and 2x World Champion in Brazilian Zouk — visit [djzeneyer.com/about-dj-zen-eyer](https://djzeneyer.com/about-dj-zen-eyer).
+To learn more about DJ Zen Eyer — 2x World Champion in Brazilian Zouk and the artist who named and popularized Cremosidade — visit [djzeneyer.com/about-dj-zen-eyer](https://djzeneyer.com/about-dj-zen-eyer).
 
 ---
-*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) and creator of the Cremosidade philosophy. He has performed in 15+ countries across 4 continents.*
+*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) widely recognized for popularizing and naming the Cremosidade concept in Brazilian Zouk DJing. He has performed in 15+ countries worldwide.*

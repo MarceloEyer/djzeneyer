@@ -73,4 +73,4 @@ Understanding the differences between these styles not only helps you choose whi
 To explore the philosophy behind these concepts further, visit [djzeneyer.com/zouk-philosophy](https://djzeneyer.com/zouk-philosophy).
 
 ---
-*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) and creator of the Cremosidade philosophy. He has performed in 15+ countries across 4 continents.*
+*DJ Zen Eyer is the 2x World Champion in Brazilian Zouk (Best DJ Performance and Best Remix, Ilha do Zouk Championship 2022) widely recognized for popularizing and naming the Cremosidade concept in Brazilian Zouk DJing. He has performed in 15+ countries worldwide.*
