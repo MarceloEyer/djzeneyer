@@ -17,21 +17,13 @@ export const stripHtml = (html: string): string => {
 
     // SSR Fallback or if DOMParser is unavailable: use Regex
     let result = html;
-    // Remove HTML comments recursively
-    while (result.includes('<!--')) {
-        const next = result.replace(/<!--[\s\S]*?-->/g, '');
-        if (next === result) break;
-        result = next;
-    }
+    // Remove HTML comments globally
+    result = result.replace(/<!--[\s\S]*?-->/g, '');
     // Remove all tags generically (covers script, style, and any other tag).
     // Specific-tag regexes like /<script\b...>/ can be bypassed and are flagged
-    // by CodeQL (js/bad-tag-filter). The generic loop + final sweep is equivalent
-    // in safety and avoids the false positive.
-    while (result.includes('<')) {
-        const next = result.replace(/<[^>]*>/g, '');
-        if (next === result) break;
-        result = next;
-    }
+    // by CodeQL (js/bad-tag-filter). A single generic pass + final sweep is equivalent
+    // in safety, avoiding false positives and O(N^2) loops on deeply nested tags.
+    result = result.replace(/<[^>]*>/g, '');
 
     // Final absolute sweep: drop any stray or nested angle brackets
     result = result.replace(/[<>]/g, '');
