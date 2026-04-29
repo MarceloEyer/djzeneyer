@@ -83,10 +83,12 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - `CONTEXT.md` - resumo rapido do ecossistema de contexto.
 - `README.md` - visao publica do projeto.
 - `docs/README.md` - indice da documentacao tecnica.
+- `docs/ARCHITECTURE.md` - mapa operacional da arquitetura para IA.
+- `docs/API.md` - mapa curto e curado das rotas da API.
 - `docs/AI_LEARNINGS.md` - memoria operacional ativa.
 - `docs/AI_LEARNINGS_LOG.md` - historico legado.
 - `docs/CONFIGURATION.md` - configuracao canonica atual.
-- `docs/config.md` - snapshot historico de configuracao.
+- `docs/api-endpoints.md` - inventario exaustivo de rotas.
 
 ## Regra de Locales
 - Arquivos alvo: `src/locales/en/*.json` e `src/locales/pt/*.json`
@@ -96,7 +98,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 ## Checklist de atualizacao de contexto
 - Atualizou versões de stack? sincronizar `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `GEMINI.md`, `README.md`, `CLAUDE.md` e `SKILL.md` do djzeneyer-context
-- Mudou endpoint/namespace? sincronizar `docs/API.md`, `CONTEXT.md` e skills relacionadas
+- Mudou endpoint/namespace? sincronizar `docs/API.md`, `docs/api-endpoints.md`, `CONTEXT.md` e skills relacionadas
 - Mudou regra de arquitetura? sincronizar `CONTEXT.md` + skill `djzeneyer-context`
 - Mudou contrato ZenGame (cache keys, TTLs, campos da API)? sincronizar `plugins/zengame/CONTEXT.md`
 

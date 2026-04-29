@@ -1,35 +1,41 @@
 # DJ Zen Eyer
 
-Projeto oficial de DJ Zen Eyer, nome publico de Marcelo Eyer Fernandes.
-Arquitetura: WordPress headless + React SPA.
+Official repository for `https://djzeneyer.com`.
 
-## Stack atual
+Headless WordPress + React SPA. The repository is organized for both humans and AI agents.
+Canonical rules live in `AI_CONTEXT_INDEX.md`; task instructions live in `AGENTS.md`; local Claude context lives in `CLAUDE.md`.
 
-| Camada | Versao atual |
+## Stack
+
+| Layer | Current |
 |---|---|
 | Frontend | React 19.2.5, TypeScript 6.0.3, Vite 8.0.9, Tailwind 4.2.1, React Query 5.99.2, React Router 7.14.1, i18next 26.0.6 |
 | Build | ESLint 10.2.1, Prettier 3.8.2, Puppeteer 24.42.0 |
-| Backend | WordPress 6.9+, PHP 8.3+, WooCommerce 10.5+ com HPOS ativo, GamiPress |
+| Backend | WordPress 6.9+, PHP 8.3+, WooCommerce 10.5+ with HPOS, GamiPress |
 | Infra | Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions |
 
-## O que existe no repo
+## Main areas
 
-- `src/` - frontend React
-- `inc/` - tema e integracao WordPress
-- `plugins/` - plugins customizados
-- `scripts/` - build, prerender e utilitarios
-- `docs/` - documentacao tecnica e operacional
+- `src/` - React frontend
+- `inc/` - theme bootstrap and theme REST routes
+- `plugins/` - custom WordPress plugins
+- `scripts/` - build, prerender, sitemap, and validation scripts
+- `docs/` - technical and operational documentation
 
-## Documentos principais
+## Key docs
 
 - [AI_CONTEXT_INDEX.md](AI_CONTEXT_INDEX.md)
 - [AGENTS.md](AGENTS.md)
 - [CLAUDE.md](CLAUDE.md)
 - [GEMINI.md](GEMINI.md)
+- [docs/README.md](docs/README.md)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/API.md](docs/API.md)
+- [docs/api-endpoints.md](docs/api-endpoints.md)
+- [docs/CONFIGURATION.md](docs/CONFIGURATION.md)
 - [docs/AI_LEARNINGS.md](docs/AI_LEARNINGS.md)
-- [docs/AI_GOVERNANCE.md](docs/AI_GOVERNANCE.md)
 
-## Comandos basicos
+## Local validation
 
 ```bash
 npm install
@@ -37,6 +43,6 @@ npm run lint
 npm run build
 ```
 
-## Observacao
+## Rule
 
-Se houver conflito entre qualquer documentacao e o codigo real, o codigo real vale primeiro.
+If the docs and the code disagree, the code wins.

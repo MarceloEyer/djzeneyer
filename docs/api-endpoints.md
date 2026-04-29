@@ -10,6 +10,7 @@ Esta é a lista completa de rotas disponíveis na API do site `https://djzeneyer
 ## Namespace: `djzeneyer/v1`
 
 - **GET** `/djzeneyer/v1`
+- **GET** `/djzeneyer/v1/ai-context`
 - **GET** `/djzeneyer/v1/menu`
 - **GET** `/djzeneyer/v1/shop/page`
 - **GET** `/djzeneyer/v1/products`

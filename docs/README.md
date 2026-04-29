@@ -8,6 +8,7 @@
 
 - [Architecture](ARCHITECTURE.md)
 - [API](API.md)
+- [API Endpoints](api-endpoints.md)
 - [Configuration](CONFIGURATION.md)
 - [Setup](SETUP.md)
 - [Developer Guide](DEV_GUIDE.md)
