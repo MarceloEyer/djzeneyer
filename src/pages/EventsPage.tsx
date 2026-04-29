@@ -244,7 +244,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
-          const [y, m] = key.split('-');
+          const y = key.slice(0, 4);
+          const m = key.slice(5, 7);
           const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
           const monthShort = MONTH_NAMES[Number(m) - 1];
           const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
