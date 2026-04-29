@@ -133,7 +133,7 @@ Fontes já disponíveis para embasar o artigo:
 A entidade Q136551855 já existe. Adicionar:
 - `P1344` (performerIn): Dutch Zouk 2026, Polish Zouk Festival 2025, Slovenian Zouk Marathon 2026, Zouk in Rio 2026
 - `P1303` (instrumento): DJ equipment / Turntables
-- `P569` (data de nascimento): 1989-08-30 (se não estiver)
+- `P569` (data de nascimento): 1985-08-20 ✅ já existe e está correto no Wikidata
 - `P19` (local de nascimento): Rio de Janeiro (se não estiver)
 - `P27` (cidadania): Brasil (se não estiver)
 

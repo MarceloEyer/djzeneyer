@@ -64,7 +64,7 @@
 
 - **@type:** `Person` para DJ Zen Eyer no Knowledge Graph / JSON-LD.
 - **Name canônico:** `Zen Eyer` (não "DJ Zen Eyer") no byline e Schema.org.
-- **Birth date:** 1989-08-30.
+- **Birth date:** 1985-08-20 (fonte canônica: Wikidata Q136551855).
 - **Wikidata:** Q136551855 (entidade canônica — manter como sameAs).
 - **Slug EN:** `/about-dj-zen-eyer` (não `/about`).
 - **Slug PT:** `/pt/sobre-dj-zen-eyer` (não `/pt/sobre`).

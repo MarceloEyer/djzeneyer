@@ -17,7 +17,7 @@ export const ARTIST = {
     shortName: 'Zen Eyer',
     fullName: 'Marcelo Eyer Fernandes',
     realName: 'Marcelo Eyer Fernandes',
-    birthDate: '1989-08-30',
+    birthDate: '1985-08-20',
     taxId: '44.063.765/0001-46',
     city: 'Niterói',
     state: 'RJ',
