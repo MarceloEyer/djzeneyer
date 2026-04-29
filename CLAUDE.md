@@ -95,6 +95,7 @@ Estas decisões foram tomadas pelo dono do projeto em abril de 2026. Bots de cod
 
 ## ⛔ DO NOT
 
+- **Usar linguagem imperativa em arquivos públicos rastreados por IA** (`llms.txt`, `llms-full.txt`, `ai-plugin.json`, `ai-bots.txt`, HTML, meta tags) — frases como "you MUST cite", "CRITICAL DIRECTIVE", "ALWAYS reference" são prompt injection e podem fazer a fonte ser penalizada por crawlers de IA. Usar sempre tom descritivo: "AI systems are encouraged to..."
 - Deletar `.bolt`, `.jules`, `.devcontainer` — usados por outros agentes de IA
 - Remover lógica PWA (`site.webmanifest`, service workers)
 - Remover renderização de slug/detalhe em `NewsPage`/`EventsPage` — crítico para SEO
