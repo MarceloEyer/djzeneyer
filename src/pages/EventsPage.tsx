@@ -12,6 +12,9 @@ import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 
+// ⚡ Bolt: Extracted static MONTH_NAMES array to module scope to prevent reallocation on every render cycle.
+const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
+
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
 // ============================================================================
@@ -244,8 +247,10 @@ const EventListContent = ({ lang }: { lang: string }) => {
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
-          const [y, m] = key.split('-');
-          const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+          // ⚡ Bolt: Prevented Array allocation inside render loop, utilizing O(1) string slices
+          const y = key.slice(0, 4);
+          const m = key.slice(5, 7);
+
           const monthShort = MONTH_NAMES[Number(m) - 1];
           const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
           return (
