@@ -1,88 +1,30 @@
 {
   "routes": [
-    {
-      "en": "",
-      "pt": ""
-    },
-    {
-      "en": "about-dj-zen-eyer",
-      "pt": "sobre-dj-zen-eyer"
-    },
-    {
-      "en": "zouk-events",
-      "pt": "eventos-zouk"
-    },
-    {
-      "en": "zouk-music",
-      "pt": "musica-zouk"
-    },
-    {
-      "en": "zouk-dance-news",
-      "pt": "noticias-zouk"
-    },
-    {
-      "en": "zouk-philosophy",
-      "pt": "filosofia-zouk"
-    },
-    {
-      "en": "zentribe",
-      "pt": "tribo-zen"
-    },
-    {
-      "en": "work-with-me",
-      "pt": "trabalhe-comigo"
-    },
-    {
-      "en": "press-kit-dj-zen-eyer",
-      "pt": "kit-de-imprensa"
-    },
-    {
-      "en": "shop",
-      "pt": "loja"
-    },
-    {
-      "en": "support-dj-zen-eyer",
-      "pt": "apoie-dj-zen-eyer"
-    },
-    {
-      "en": "zenlink",
-      "pt": "links-zen"
-    },
-    {
-      "en": "dashboard",
-      "pt": "painel"
-    },
-    {
-      "en": "my-account",
-      "pt": "minha-conta"
-    },
-    {
-      "en": "faq",
-      "pt": "perguntas-frequentes"
-    },
-    {
-      "en": "privacy-policy",
-      "pt": "privacidade"
-    },
-    {
-      "en": "return-policy",
-      "pt": "reembolso"
-    },
-    {
-      "en": "terms",
-      "pt": "termos"
-    },
-    {
-      "en": "conduct",
-      "pt": "regras-de-conduta"
-    },
-    {
-      "en": "quiz",
-      "pt": "perguntas"
-    },
-    {
-      "en": "payme",
-      "pt": "pagamentos"
-    }
+    { "en": "", "pt": "" },
+    { "en": "about-dj-zen-eyer", "pt": "sobre-dj-zen-eyer" },
+    { "en": "zouk-events", "pt": "eventos-zouk" },
+    { "en": "zouk-music", "pt": "musica-zouk" },
+    { "en": "zouk-dance-news", "pt": "noticias-zouk" },
+    { "en": "zouk-philosophy", "pt": "filosofia-zouk" },
+    { "en": "zentribe", "pt": "tribo-zen" },
+    { "en": "work-with-me", "pt": "trabalhe-comigo" },
+    { "en": "press-kit-dj-zen-eyer", "pt": "kit-de-imprensa" },
+    { "en": "media-clipping", "pt": "na-midia" },
+    { "en": "shop", "pt": "loja" },
+    { "en": "support-dj-zen-eyer", "pt": "apoie-dj-zen-eyer" },
+    { "en": "zenlink", "pt": "links-zen" },
+    { "en": "cart", "pt": "carrinho" },
+    { "en": "checkout", "pt": "finalizar-compra" },
+    { "en": "tickets", "pt": "ingressos" },
+    { "en": "tickets-checkout", "pt": "finalizar-ingressos" },
+    { "en": "dashboard", "pt": "painel" },
+    { "en": "my-account", "pt": "minha-conta" },
+    { "en": "faq", "pt": "perguntas-frequentes" },
+    { "en": "privacy-policy", "pt": "privacidade" },
+    { "en": "return-policy", "pt": "reembolso" },
+    { "en": "terms", "pt": "termos" },
+    { "en": "conduct", "pt": "regras-de-conduta" },
+    { "en": "quiz", "pt": "perguntas" },
+    { "en": "reset-password", "pt": "recuperar-senha" }
   ]
 }
