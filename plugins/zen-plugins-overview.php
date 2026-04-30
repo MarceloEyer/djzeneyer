@@ -278,8 +278,6 @@ class Zen_Plugins_Overview
         </div>
 
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&display=swap');
-
             :root {
                 --zc-bg: #06080f;
                 --zc-surface: rgba(13, 16, 32, 0.7);
@@ -290,8 +288,8 @@ class Zen_Plugins_Overview
                 --zc-neon-cyan: #00d4ff;
                 --zc-neon-green: #00ff88;
                 --zc-neon-red: #ff5555;
-                --zc-font: 'Inter', sans-serif;
-                --zc-mono: 'JetBrains Mono', monospace;
+                --zc-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                --zc-mono: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
             }
 
             .zc-hud {

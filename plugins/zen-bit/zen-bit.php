@@ -62,7 +62,6 @@ if (!class_exists('Zen_BIT')) {
         {
             add_action('init', [$this, 'load_textdomain']);
             add_action('rest_api_init', [$this, 'register_rest_routes']);
-            add_action('wp_enqueue_scripts', [$this, 'register_public_assets']);
             register_activation_hook(__FILE__, [$this, 'activate']);
             register_deactivation_hook(__FILE__, [$this, 'deactivate']);
 
@@ -83,22 +82,6 @@ if (!class_exists('Zen_BIT')) {
         public function load_textdomain(): void
         {
             load_plugin_textdomain('zen-bit', false, dirname(plugin_basename(__FILE__)) . '/languages');
-        }
-
-        public function register_public_assets(): void
-        {
-            wp_register_style(
-                'zen-bit-public',
-                ZEN_BIT_PLUGIN_URL . 'public/css/zen-bit-public.css',
-                [],
-                ZEN_BIT_VERSION
-            );
-
-            // Enfileira se o post atual contiver o shortcode
-            global $post;
-            if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'zen_bit_events')) {
-                wp_enqueue_style('zen-bit-public');
-            }
         }
 
         // =====================================================================

@@ -11,8 +11,10 @@ Eventos, schema MusicEvent, sitemap de eventos, cache e integracao Bandsintown.
 
 - Namespace atual: `zen-bit/v2`.
 - A SPA consome a API; nao faz fetch direto do provider externo.
+- O plugin nao enfileira assets publicos automaticamente no frontend; o uso publico deve ficar restrito a chamadas REST e, se existir shortcode legado, ele nao deve puxar CSS/JS do plugin por padrao.
 - URL canonica de evento vem do normalizer, nao de alias curto.
 - Schema precisa manter os campos obrigatorios do MusicEvent quando a pagina for publica.
+- A interface administrativa do plugin deve usar apenas estilos internos/sistema, sem dependencias de Google Fonts ou otimizacoes visuais para usuario final.
 
 ## Contratos principais
 
