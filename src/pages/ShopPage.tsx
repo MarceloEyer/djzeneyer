@@ -380,12 +380,17 @@ const ShopPage: React.FC = () => {
       : getCurrencyFormatter(locale, currency).format(numPrice);
   }, [isPortuguese]);
 
-  const featuredProduct = Array.isArray(shopData?.featured) 
-    ? shopData.featured[0] 
+  const featuredProduct = Array.isArray(shopData?.featured)
+    ? shopData.featured[0]
     : (shopData?.featured || null);
   const newReleases = shopData?.new_releases || [];
   const bestSellers = shopData?.best_sellers || [];
   const curatedSelection = shopData?.curated || [];
+
+  const newReleasesIds = useMemo(() => new Set(newReleases.map(p => p.id)), [newReleases]);
+  const bestSellersIds = useMemo(() => new Set(bestSellers.map(p => p.id)), [bestSellers]);
+  const curatedSelectionIds = useMemo(() => new Set(curatedSelection.map(p => p.id)), [curatedSelection]);
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
@@ -448,7 +453,7 @@ const ShopPage: React.FC = () => {
               title={t('shop.new_releases')}
               products={newReleases}
               onAddToCart={handleAddToCart}
-              isAdding={newReleases.some(p => p.id === addingToCart)}
+              isAdding={addingToCart !== null && newReleasesIds.has(addingToCart)}
               activeProductId={addingToCart}
               formatPrice={formatPrice}
               productBasePath={productBasePath}
@@ -458,7 +463,7 @@ const ShopPage: React.FC = () => {
               title={t('badge_sale')}
               products={bestSellers}
               onAddToCart={handleAddToCart}
-              isAdding={bestSellers.some(p => p.id === addingToCart)}
+              isAdding={addingToCart !== null && bestSellersIds.has(addingToCart)}
               activeProductId={addingToCart}
               formatPrice={formatPrice}
               productBasePath={productBasePath}
@@ -468,7 +473,7 @@ const ShopPage: React.FC = () => {
               title={t('shop.top_picks')}
               products={curatedSelection}
               onAddToCart={handleAddToCart}
-              isAdding={curatedSelection.some(p => p.id === addingToCart)}
+              isAdding={addingToCart !== null && curatedSelectionIds.has(addingToCart)}
               activeProductId={addingToCart}
               formatPrice={formatPrice}
               productBasePath={productBasePath}
