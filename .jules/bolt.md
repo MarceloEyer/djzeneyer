@@ -117,3 +117,7 @@
 
 **Learning:** Allocating a static array (`['jan', 'feb', ...]`) and performing string splitting (`key.split('-')`) inside the callback of a `.map()` iteration forces continuous garbage collection overhead on every React rendering cycle, significantly impacting performance on large lists.
 **Action:** Always extract static array configurations to the module scope (outside the component) and replace allocating string operations like `split()` with non-allocating alternatives like `slice()` when iterating over datasets in render loops.
+
+## 2024-05-18 - Replacing `String.prototype.split()` with zero-allocation alternatives
+**Learning:** `String.prototype.split()` creates an intermediate array, which adds overhead and garbage collection pressure, particularly in hot paths like routing maps or render loops.
+**Action:** When extracting substrings or indices in performance-critical code paths, utilize zero-allocation native string methods like `indexOf()` combined with `slice()` instead of chained `.split()` calls. Focus primarily on hot paths and leave isolated, infrequent calls alone.
