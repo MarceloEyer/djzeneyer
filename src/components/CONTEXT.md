@@ -1,19 +1,41 @@
 # Components Context - /src/components
 
-> **Philosophy:** Visual Excellence & Premium Feel.
+> Contexto local dos componentes de frontend.
+> Base canonica: `AI_CONTEXT_INDEX.md`.
 
-## Rules
-1. **No Ad-hoc Styles:** Usar tokens do Tailwind definidos em `tailwind.config.js`.
-2. **Organization:**
-   - `Layout/`: Componentes globais (Navbar, Footer).
-   - `Common/`: Botões, inputs e elementos reutilizáveis.
-   - `[Feature]/`: Componentes específicos de domínio (ex: `Events/`).
-3. **Animations:** Usar `Framer Motion` para interações suaves.
-4. **I18n:** Todas as strings devem vir de `t()` via `react-i18next`.
+## Regras centrais
 
-## Key Components
-- `HeadlessSEO.tsx`: Obrigatório em todas as páginas.
-- `Auth/`: Dialogs e lógica de login JWT.
+- Estilo visual do projeto usa Tailwind 4 sem depender de convencoes antigas de `tailwind.config.js` class-based.
+- Strings visiveis usam i18n.
+- `HeadlessSEO.tsx` continua obrigatorio nas paginas publicas.
+- `Framer Motion` precisa preservar estabilidade de referencia quando a animacao for reutilizada.
+- Icones de marca nao dependem de `lucide-react` quando a biblioteca nao cobre o caso.
 
----
-*Detalhes importam. Se não impressionar o usuário, refaça.*
+## SEO e acessibilidade
+
+- Paginas publicas precisam manter `HeadlessSEO` com metadados consistentes.
+- Rotas privadas continuam `noindex` e usam imagem OG generica.
+- Componentes devem manter estrutura semantica e texto alternativo quando houver midia ou icone informativo.
+
+## Mobile first
+
+- O layout precisa se adaptar sem depender de largura de desktop.
+- Estados de menu, listas e cards devem funcionar em telas pequenas sem quebra de fluxo.
+
+## Estrutura util
+
+- `Layout/` - shell e navegacao.
+- `Common/` - componentes reutilizaveis.
+- `Auth/` - fluxo de login e conta.
+- `BrandIcons.tsx` - icones de marca locais.
+
+## Pontos de cuidado
+
+- Variants estaticos devem viver no escopo de modulo quando a estabilidade importa.
+- O componente nao deve carregar texto hardcoded se a chave de i18n ja existe.
+- Layout e SEO nao devem puxar dados direto do provider externo.
+- Se existir componente memoizado, evite recriar objetos pesados de props por render.
+
+## Observacao
+
+Se houver conflito entre este arquivo e o indice canonico, vale o indice canonico.

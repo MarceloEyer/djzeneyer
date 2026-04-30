@@ -1,21 +1,25 @@
 # Hooks Context - /src/hooks
 
-> **Primary Hook:** `useQueries.ts`
+> Contexto local dos hooks do frontend.
+> Base canonica: `AI_CONTEXT_INDEX.md`.
 
-## Rules
-1. **Single Source of Truth:** toda query/mutation de dados deve estar em `useQueries.ts`.
-2. **No Direct Fetch:** componentes/páginas não podem fazer `fetch` direto.
-3. **Backend Filters, Frontend Renders:** filtros e agregações devem vir do plugin/BFF.
-4. **Types First:** tipar payload/resposta (ex.: `WCOrder`, `ZenGameUserData`).
-5. **Cache Discipline:** usar `QUERY_KEYS` e `STALE_TIME` centralizados.
+## Regra principal
 
-## Endpoints privados atuais (SPA)
-- `zeneyer-auth/v1/profile`
-- `zeneyer-auth/v1/newsletter`
-- `zengame/v1/me`
-- `zeneyer-auth/v1/orders` (via `useUserOrdersQuery`)
+`useQueries.ts` e o ponto central de data fetching do frontend.
 
----
-*Se um endpoint novo aparecer na UI, o hook correspondente deve nascer aqui primeiro.*
+## Regras centrais
 
+- Nenhum componente faz `fetch()` direto quando existe hook apropriado.
+- Queries e mutations usam chaves centralizadas.
+- Novos endpoints usados pela UI devem nascer como hook aqui antes de espalhar consumo pela tela.
+- Tipos de resposta precisam acompanhar o contrato real do backend.
 
+## Pontos de cuidado
+
+- `QUERY_KEYS` e `STALE_TIME` ficam centralizados.
+- Dados estaveis devem respeitar cache e invalidacao coerentes.
+- Hook novo sem SSOT costuma virar duplicacao de logica.
+
+## Observacao
+
+Se houver conflito entre este arquivo e o indice canonico, vale o indice canonico.

@@ -1,129 +1,39 @@
-# 👨‍💻 Guia do Desenvolvedor
+# Guia do Desenvolvedor
 
-Referência rápida para desenvolvedores que trabalham no projeto DJ Zen Eyer.
+> Referencia pratica para quem trabalha no projeto.
+> Se houver conflito com a implementacao real, vale o codigo real e o `AI_CONTEXT_INDEX.md`.
 
----
+## Arquitetura
 
-## 🏗️ Arquitetura
+O projeto usa WordPress headless como backend e React SPA como frontend.
 
-```
-                    ┌─────────────────┐
-                    │   Navegador     │
-                    │  (React SPA)    │
-                    └───────┬─────────┘
-                            │ REST API
-                    ┌───────▼─────────┐
-                    │   WordPress     │
-                    │  (Headless)     │
-                    └─────────────────┘
-```
+## Onde mexer
 
-**Fluxo:** React SPA busca dados via REST API do WordPress. WordPress **nunca** renderiza HTML para o frontend.
+| Tarefa | Arquivo principal |
+|---|---|
+| Nova pagina | `src/pages/` + rotas em `src/components/AppRoutes.tsx` |
+| Hook de dados | `src/hooks/useQueries.ts` |
+| Traducao | `src/locales/en/translation.json` e `src/locales/pt/translation.json` |
+| Endpoint REST | `inc/api.php` ou plugin apropriado |
+| Plugin customizado | `plugins/` |
+| Deploy | `.github/workflows/deploy.yml` |
 
----
+## Regras centrais
 
-## 📂 Onde Fica Cada Coisa
+- Paginas usam `React.lazy()` + `Suspense`.
+- Data fetching passa por React Query e pelo hook central.
+- Texto visivel usa i18n.
+- PHP usa namespaces, sanitizacao e queries preparadas.
+- ESLint atual do projeto e v10.
 
-| Precisa | Vá para |
-|---------|---------|
-| Adicionar página | `src/pages/` + registrar em `src/components/AppRoutes.tsx` |
-| Adicionar hook de dados | `src/hooks/useQueries.ts` |
-| Adicionar tradução | `src/locales/en/translation.json` + `src/locales/pt/translation.json` |
-| Adicionar endpoint REST | `inc/api.php` |
-| Adicionar plugin | `plugins/` |
-| Configurar deploy | `.github/workflows/deploy.yml` |
-
----
-
-## 🔧 Convenções
-
-### React / TypeScript
-- Todas as páginas usam `React.lazy()` + `Suspense`
-- Data fetching **só** via `useQueries.ts` (React Query)
-- Strings visíveis **sempre** com `t('chave')` (i18next)
-- Tipagem TypeScript estrita
-
-### PHP / WordPress
-- Namespaces obrigatórios para plugins
-- `$wpdb->prepare()` para toda query SQL
-- Sanitização: `sanitize_text_field()`, `esc_html()`, `esc_url()`
-
-### Git
-- Prefixos semânticos: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
-- Branch principal: `main` (deploy automático)
-
----
-
-## 🚀 Deploy
-
-Deploy é 100% automático viaGitHub Actions:
+## Build e validacao
 
 ```bash
-git add .
-git commit -m "fix: corrigir X"
-git push origin main
-```
-
-**Pipeline automático:**
-1. Build (TypeScript + Vite)
-2. Prerender (SSG com Puppeteer)
-3. Rsync para VPS via SSH
-4. Purge de cache (LiteSpeed + OPcache)
-5. Health check
-
-**Duração:** ~2-3 minutos
-
----
-
-## 🧩 Adicionando uma Nova Página
-
-1. Crie o componente em `src/pages/NovaPagina.tsx`
-2. Registre a rota em `src/components/AppRoutes.tsx`:
-   ```tsx
-   const NovaPagina = lazy(() => import('../pages/NovaPagina'));
-   ```
-3. Adicione tradução do slug em `src/config/routes.ts`
-4. Adicione strings i18n em ambos os idiomas
-5. Adicione `<HeadlessSEO />` para SEO
-6. Teste: `npm run dev`
-7. Deploy: `git push origin main`
-
----
-
-## 🧪 Testes
-
-```bash
-npm run build    # Verifica se compila sem erros
-npm run lint     # ESLint 9 (NÃO atualizar para 10)
-```
-
-> **ESLint:** Manter na v9. Plugins React não suportam v10 (ver [Análise ESLint](ESLINT_ANALYSIS.md)).
-
----
-
-**Atualizado:** Fevereiro 2026
-
----
-
-## Performance Budget (Novo)
-
-Este projeto agora possui verificacao automatica de regressao de bundle.
-
-Comandos locais:
-
-```bash
-npm run perf:baseline
+npm run lint
+npm run build
 npm run perf:budget
 ```
 
-O que cada comando faz:
-- `perf:baseline`: gera `.agents/perf-baseline.json` com tamanhos de bundles (raw/gzip/brotli).
-- `perf:budget`: falha o processo se os limites de performance forem ultrapassados.
+## Nota sobre docs antigas
 
-Limites padrao atuais:
-- `maxInitialJsGzip`: 181 KB
-- `maxLargestChunkGzip`: 120 KB
-- `maxEntryJsGzip`: 130 KB
-- `maxI18nChunkGzip`: 55 KB
-
-Esses checks tambem rodam no CI (workflow de deploy), para evitar regressao silenciosa.
+Esse guia e um resumo operacional. Detalhes de stack e memoria consolidada ficam em `AI_CONTEXT_INDEX.md`, `CLAUDE.md` e `docs/AI_LEARNINGS.md`.

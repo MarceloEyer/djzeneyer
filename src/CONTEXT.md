@@ -1,40 +1,45 @@
 # Frontend Context - /src
 
-> **Tech Stack:** React 19, Vite 8, Framer Motion, Tailwind 4, React Query v5, i18next.
+> Contexto rapido para o frontend React.
+> Regras globais: `AI_CONTEXT_INDEX.md`.
+> Aprendizados de PRs: `docs/AI_LEARNINGS.md`.
 
-## Standards
+## Stack do frontend
 
-- **Fetch Strategy:** React Query centralizado em `hooks/useQueries.ts`. Nunca `fetch()` direto em componentes.
-- **Styling:** Tailwind 4 utilitário. Visual premium + mobile-first obrigatório. Sem gradientes chamativos em títulos principais.
-- **i18n:** Todo texto visível usa `t('chave')` via `useTranslation()`. Strings hardcoded são BUG. Adicionar em PT e EN simultaneamente.
-- **Data:** Backend filtra, frontend renderiza. Usar `_fields` nas queries para performance.
-- **Lazy Loading:** Todas as páginas via `React.lazy()` + `Suspense`.
+- React 19.2.5
+- TypeScript 6.0.3
+- Vite 8.0.9
+- Tailwind 4.2.1
+- React Query 5.99.2
+- React Router 7.14.1
+- i18next 26.0.6
+- Framer Motion 12.38.0
 
-## Structure Guide
+## Regras de maior valor pratico
 
-- `assets/`: Imagens e SVGs otimizados.
-- `components/`: Componentes UI reutilizáveis. Ícones de redes sociais em `components/icons/BrandIcons.tsx` (lucide-react 1.x removeu Facebook/Instagram/YouTube).
-- `config/`: Configurações de rotas (`routes.ts`, `routes-slugs.json`) e API. `routes-slugs.json` é o SSOT de slugs EN/PT.
-- `contexts/`: Providers globais. Valores de Provider sempre em `useMemo`, funções em `useCallback`.
-- `hooks/`: Lógica de estado e fetching. `useQueries.ts` é o cubo central.
-- `layouts/`: Master templates (MainLayout).
-- `pages/`: Componentes de página (Lazy Loaded). Páginas não devem filtrar ou processar dados complexos.
-- `schemas/`: Zod schemas para validação de API. Campos de imagem/URL usam `.catch('')`, nunca `z.union([z.string(), z.literal(false)])`.
-- `utils/`: Funções puras. `safeUrl(url, fallback)` — sempre passar fallback explícito (default '#' é truthy).
+- Strings visiveis usam `t('chave')`.
+- Fetching centralizado em `src/hooks/useQueries.ts`.
+- Paginas usam `React.lazy()` + `Suspense`.
+- Providers usam `useMemo` quando a estabilidade importa.
+- Rotas publicas usam `<HeadlessSEO />`.
+- Rotas privadas usam `noindex` e imagem OG generica.
 
-## SEO & Accessibility
+## Estrutura relevante
 
-- Toda página pública usa `<HeadlessSEO />` com schema JSON-LD adequado ao tipo de página.
-- Rotas privadas (`dashboard`, `my-account`) usam `<HeadlessSEO noindex />` com OG image genérica.
-- URL canônica: sempre via `getLocalizedRoute()` — nunca hardcodar paths.
-- `AboutPage` → schema `ProfilePage`; `MusicPage` listagem → `CollectionPage` + `MusicGroup`; `PhilosophyPage` → `Article`.
+- `components/` - UI e SEO.
+- `config/` - rotas e configuracoes.
+- `hooks/` - acesso a dados e queries.
+- `pages/` - paginas lazy loaded.
+- `locales/` - JSONs PT/EN.
+- `utils/` - funcoes puras.
 
-## Mobile-First
+## Regras curtas que evitam regressao
 
-- Gauge SVG: `viewBox` + `w-full max-w-[Xpx] aspect-square` — nunca tamanho fixo em px.
-- Grids: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-N` — nunca começar com colunas fixas sem breakpoint mobile.
-- Alturas fixas (`h-[500px]`): substituir por `max-h-[Xpx] overflow-y-auto` em listas/feeds.
-- Texto truncado em containers flex: sempre `min-w-0` no elemento com `truncate`.
+- `safeUrl(url, fallback)` precisa de fallback explicito.
+- `loadingInitial` e o estado certo para guardas de rota privada.
+- `lucide-react` 1.x nao cobre todos os icones de marca; `BrandIcons.tsx` segue como fonte local.
+- Campos de imagem/URL em schemas usam `.catch('')`.
 
----
-*Visual premium + mobile-first são obrigatórios. Backend filtra, frontend renderiza.*
+## Observacao
+
+O nivel de detalhe maior deve ficar em `src/hooks/CONTEXT.md`, `src/pages/CONTEXT.md` e `src/components/CONTEXT.md` quando necessario.

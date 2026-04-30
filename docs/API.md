@@ -1,29 +1,36 @@
-# API.md - Referencia Canonica de Endpoints
+# API.md - Curated API map
 
-> **Nota:** Este arquivo é um resumo de namespaces e rotas principais.
-> Para a documentação completa com parâmetros, payloads, schemas e exemplos, ver:
-> **[`docs/api-endpoints.md`](api-endpoints.md)** — fonte completa de endpoints.
+> Short map for AI agents and contributors.
+> The exhaustive route inventory lives in `docs/api-endpoints.md`.
+> If there is any conflict, the real code and `register_rest_route()` win first.
 
 Base REST: `https://djzeneyer.com/wp-json`
 
-## Namespaces oficiais
-- `djzeneyer/v1` (tema/headless)
-- `zeneyer-auth/v1` (auth JWT)
-- `zen-bit/v2` (eventos)
-- `zengame/v1` (gamificacao)
-- `zen-seo/v1` (SEO headless)
+## Scope
 
-## Tema (`djzeneyer/v1`)
+Only the project-owned namespaces and the theme routes that AI agents need most often are listed here.
+Theme REST routes live in `inc/api.php` and `inc/ai-llm.php`.
+
+## Project namespaces
+
+- `djzeneyer/v1` - theme and AI context
+- `zeneyer-auth/v1` - JWT auth
+- `zen-bit/v2` - events and schema
+- `zengame/v1` - gamification
+- `zen-seo/v1` - headless SEO
+
+## Theme routes (`djzeneyer/v1`)
+
+- `GET /ai-context`
 - `GET /menu?lang=pt|en`
 - `GET /shop/page`
 - `GET /products`
 - `GET /products/collections`
-- `GET /stats`
 - `POST /subscribe`
 - `POST /user/update-profile`
 
 ## Auth (`zeneyer-auth/v1`)
-Aliases:
+
 - `POST /login`
 - `POST /register`
 - `POST /google`
@@ -31,7 +38,8 @@ Aliases:
 - `POST /logout`
 - `GET /session`
 
-Rotas completas tambem suportadas:
+Alias endpoints also exist under `/auth/*`:
+
 - `POST /auth/login`
 - `POST /auth/register`
 - `POST /auth/google`
@@ -43,8 +51,11 @@ Rotas completas tambem suportadas:
 - `GET|POST /profile`
 - `GET|POST /newsletter`
 - `GET /orders`
+- `POST /auth/password/reset`
+- `POST /auth/password/set`
 
-## Eventos (`zen-bit/v2`)
+## Events (`zen-bit/v2`)
+
 - `GET /events`
 - `GET /events/schema`
 - `GET /events/{event_id}`
@@ -53,19 +64,28 @@ Rotas completas tambem suportadas:
 - `POST /admin/clear-cache` (admin)
 - `GET /admin/health` (admin)
 
-## Gamificacao (`zengame/v1`)
+## Gamification (`zengame/v1`)
+
 - `GET /me`
 - `GET /leaderboard`
+- `POST /track`
 
 ## SEO (`zen-seo/v1`)
+
 - `GET /meta`
 - `GET /settings`
+- `GET /profile`
 - `GET /sitemap`
 - `POST /cache/clear`
 
-## Regras de consumo
-1. Priorizar parametros de filtro no backend
-2. Evitar over-fetch; usar campos necessarios sempre que houver suporte
-3. `zen-ra` foi removido do projeto e nao deve aparecer em rotas, exemplos ou integracoes
-4. Em caso de duvida, validar no codigo com `register_rest_route`
+## Divergences resolved
 
+- `theme-config` and `/stats` were removed from this summary because they are not registered in the current code.
+- `GET /ai-context` was added because it exists in `inc/ai-llm.php`.
+
+## Consumption rules
+
+1. Prefer backend filtering.
+2. Avoid over-fetch when a route supports fields or filters.
+3. `docs/api-endpoints.md` is the exhaustive inventory.
+4. Use `register_rest_route()` in code to verify anything that looks stale.

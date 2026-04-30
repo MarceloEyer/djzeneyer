@@ -130,7 +130,7 @@ Executar a cada 30 dias ou após mudança arquitetural, de endpoint ou de fluxo 
 - [ ] **Identifiers relevantes**: apenas IDs de sistemas que realmente indexam o artista (Wikidata, MusicBrainz, ISNI, Discogs, Spotify). ORCID é para pesquisadores acadêmicos — não usar para músico/DJ.
 - [ ] **`sameAs` canônico**: lista aprovada em `ARTIST_SCHEMA_SAME_AS` em `src/data/artistData.ts`. Não adicionar URLs sem aprovação explícita do dono.
 - [ ] **Data de nascimento**: sempre `1985-08-20` (Wikidata Q136551855 é a fonte canônica). Qualquer ocorrência de `1989-08-30` é erro — corrigir imediatamente.
-- [ ] **Contagem de países**: sempre `15+`. SSOT: `ARTIST.stats.countriesPlayed` em `artistData.ts`.
+- [ ] **Contagem de países**: sempre `15+`. **Continentes**: 4. SSOT: `ARTIST.stats.countriesPlayed` e `ARTIST.stats.continentsPlayed` em `artistData.ts`.
 
 ### Regra rápida de revisão
 
