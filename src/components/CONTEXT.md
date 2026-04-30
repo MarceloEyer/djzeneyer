@@ -1,4 +1,4 @@
-﻿# Components Context - /src/components
+# Components Context - /src/components
 
 > Contexto local dos componentes de frontend.
 > Base canonica: `AI_CONTEXT_INDEX.md`.
@@ -10,6 +10,17 @@
 - `HeadlessSEO.tsx` continua obrigatorio nas paginas publicas.
 - `Framer Motion` precisa preservar estabilidade de referencia quando a animacao for reutilizada.
 - Icones de marca nao dependem de `lucide-react` quando a biblioteca nao cobre o caso.
+
+## SEO e acessibilidade
+
+- Paginas publicas precisam manter `HeadlessSEO` com metadados consistentes.
+- Rotas privadas continuam `noindex` e usam imagem OG generica.
+- Componentes devem manter estrutura semantica e texto alternativo quando houver midia ou icone informativo.
+
+## Mobile first
+
+- O layout precisa se adaptar sem depender de largura de desktop.
+- Estados de menu, listas e cards devem funcionar em telas pequenas sem quebra de fluxo.
 
 ## Estrutura util
 
@@ -23,6 +34,7 @@
 - Variants estaticos devem viver no escopo de modulo quando a estabilidade importa.
 - O componente nao deve carregar texto hardcoded se a chave de i18n ja existe.
 - Layout e SEO nao devem puxar dados direto do provider externo.
+- Se existir componente memoizado, evite recriar objetos pesados de props por render.
 
 ## Observacao
 

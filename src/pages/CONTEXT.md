@@ -1,4 +1,4 @@
-﻿# Pages Context - /src/pages
+# Pages Context - /src/pages
 
 > Contexto local das rotas e paginas.
 > Base canonica: `AI_CONTEXT_INDEX.md`.

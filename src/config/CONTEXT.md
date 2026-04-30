@@ -1,4 +1,4 @@
-﻿# Config Context - /src/config
+# Config Context - /src/config
 
 > Contexto local de rotas e configuracao da aplicacao.
 > Base canonica: `AI_CONTEXT_INDEX.md`.

@@ -1,4 +1,4 @@
-﻿# SEO Plugin Context - /plugins/zen-seo-lite
+# SEO Plugin Context - /plugins/zen-seo-lite
 
 > Contexto local do plugin de SEO headless.
 > Base canonica: `AI_CONTEXT_INDEX.md`.
@@ -19,7 +19,8 @@ Metadados, canonical URLs, schema, sitemap e rotas de SEO do site headless.
 
 - Canonical URL precisa refletir a SPA publica.
 - `sameAs` e `identifier` devem seguir a SSOT do artista.
-- Sitemap e cache precisam ser coerentes com `routes-data.json`.
+- O sitemap PHP cobre apenas conteudo WordPress; rotas React sao geradas no build frontend.
+- `routes-data.json` nao e consumido pelo `Zen_SEO_Sitemap`.
 
 ## Observacao
 

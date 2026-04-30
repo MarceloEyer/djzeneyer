@@ -1,4 +1,4 @@
-﻿# BandsInTown Plugin Context - /plugins/zen-bit
+# BandsInTown Plugin Context - /plugins/zen-bit
 
 > Contexto local do plugin de eventos e schema.
 > Base canonica: `AI_CONTEXT_INDEX.md`.
@@ -14,17 +14,30 @@ Eventos, schema MusicEvent, sitemap de eventos, cache e integracao Bandsintown.
 - URL canonica de evento vem do normalizer, nao de alias curto.
 - Schema precisa manter os campos obrigatorios do MusicEvent quando a pagina for publica.
 
+## Contratos principais
+
+- `GET /events`
+- `GET /events/schema`
+- `GET /events/{event_id}`
+- `GET /events/{event_id}/schema`
+- `POST /admin/fetch-now`
+- `POST /admin/clear-cache`
+- `GET /admin/health`
+
 ## Cache
 
 - Upcoming: 6h
 - Detail: 24h
 - Past: 7d
+- O sitemap usa fetch direto para eventos futuros e nao depende do pool SWR.
+- `Zen_BIT_Cache::clear_all()` e o ponto de invalidacao central para cache, sitemap e estado derivado.
 
 ## Pontos de cuidado
 
 - Evitar double-fetch.
 - Usar cache e lock para impedir stampede.
 - `build_event_schema()` e a fonte da verdade para JSON-LD do evento.
+- Os campos obrigatorios de MusicEvent devem permanecer presentes em qualquer pagina publica.
 
 ## Observacao
 

@@ -1,4 +1,4 @@
-﻿# Auth Plugin Context - /plugins/zeneyer-auth
+# Auth Plugin Context - /plugins/zeneyer-auth
 
 > Contexto local do plugin de autenticacao headless.
 > Base canonica: `AI_CONTEXT_INDEX.md`.
@@ -23,6 +23,8 @@ Autenticacao JWT, Google OAuth, session, profile, newsletter e reset de senha.
 - `POST /logout`
 - `GET /session`
 - `GET /auth/me`
+- `POST /auth/password/reset`
+- `POST /auth/password/set`
 - `GET|POST /profile`
 - `GET|POST /newsletter`
 - `GET /orders`

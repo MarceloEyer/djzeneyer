@@ -1,4 +1,4 @@
-﻿# AI_LEARNINGS.md - Aprendizados consolidados
+# AI_LEARNINGS.md - Aprendizados consolidados
 
 > Memoria operacional para bots de IA que trabalham neste repositorio.
 > Objetivo: evitar repeticao de erros, manter padroes canonicamente aceitos e reutilizar decisoes ja validadas em PRs fechados, reviews e portagens manuais.
@@ -42,6 +42,7 @@
 - Quando existir uma PR canonica para o mesmo tema, portagem manual e fechamento da duplicada e preferivel a manter branches paralelos.
 - PRs automatizados de bots devem ser tratados como sinais, nao como verdade final.
 - Em bursts de PR, espere rate limit de review e reduza duplicacao de triggers.
+- Antes de classificar um PR, ler descricao, diff, comments, review threads e reviews automatizados.
 
 ### Workflow de bots
 

@@ -5,6 +5,12 @@ Official repository for `https://djzeneyer.com`.
 Headless WordPress + React SPA. The repository is organized for both humans and AI agents.
 Canonical rules live in `AI_CONTEXT_INDEX.md`; task instructions live in `AGENTS.md`; local Claude context lives in `CLAUDE.md`.
 
+## Project view
+
+- Public site: DJ Zen Eyer official web presence and headless content hub.
+- Runtime split: WordPress provides JSON; React renders the public experience.
+- Documentation split: canonical rules live in `AI_CONTEXT_INDEX.md`, local overrides in `CLAUDE.md`, operational memory in `docs/AI_LEARNINGS.md`.
+
 ## Stack
 
 | Layer | Current |
@@ -43,6 +49,12 @@ npm run dev
 npm run lint
 npm run build
 ```
+
+## Delivery
+
+- `npm run build` produces the prerendered frontend output.
+- Sitemap and prerender steps run as part of the build pipeline.
+- GitHub Actions publishes the generated frontend to the VPS deployment target.
 
 ## Rule
 
