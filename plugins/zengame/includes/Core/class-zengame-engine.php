@@ -166,11 +166,16 @@ final class Engine
                 // Deduplicate: check product categories only once per unique product_id.
                 // wp_get_post_terms() caches internally after first call per product.
                 $unique_pids = \array_unique(\array_column($rows, 'product_id'));
-                $is_event = [];
-                foreach ($unique_pids as $pid) {
-                    $terms = \wp_get_post_terms((int) $pid, 'product_cat', ['fields' => 'slugs']);
-                    $is_event[(int) $pid] = !\is_wp_error($terms)
-                        && !empty(\array_intersect($terms, $target_slugs));
+                $is_event = \array_fill_keys($unique_pids, false);
+
+                $terms = \wp_get_object_terms($unique_pids, 'product_cat', ['fields' => 'all_with_object_id']);
+                if (!\is_wp_error($terms) && !empty($terms)) {
+                    $target_slugs_lookup = \array_flip($target_slugs);
+                    foreach ($terms as $term) {
+                        if (isset($target_slugs_lookup[$term->slug])) {
+                            $is_event[(int) $term->object_id] = true;
+                        }
+                    }
                 }
 
                 foreach ($rows as $row) {
