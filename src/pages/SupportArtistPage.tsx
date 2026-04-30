@@ -122,7 +122,7 @@ const SupportArtistPage: React.FC = () => {
       <div className="container mx-auto px-4 max-w-5xl relative z-10">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
-            <Heart size={16} /> {t('payme.subtitle')}
+            <Heart size={16} /> {t('common.footer_support_artist')}
           </div>
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-white tracking-tighter uppercase leading-[0.9]">
             <Trans i18nKey="support.header.title">

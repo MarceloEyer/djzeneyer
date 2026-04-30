@@ -79,7 +79,6 @@ const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
 const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
-const PayMePage = lazy(() => import('../pages/PayMePage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 import routesSlugs from './routes-slugs.json';
@@ -300,12 +299,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: slug('reset-password', 'en') as string, pt: slug('reset-password', 'pt') as string },
   },
 
-  // PayMe / Pagamentos
-  {
-    key: 'payme',
-    component: PayMePage,
-    paths: { en: slug('payme', 'en') as string, pt: slug('payme', 'pt') as string },
-  },
 ];
 
 /**

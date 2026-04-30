@@ -98,6 +98,8 @@
             "key": "zenlink",
             "en": "zenlink",
             "pt": "links-zen",
+            "noindex": true,
+            "excludeFromSitemap": true,
             "aliases": {
                 "en": [
                     "links"
@@ -184,11 +186,6 @@
             "pt": "recuperar-senha",
             "excludeFromSitemap": true,
             "excludeFromPrerender": true
-        },
-        {
-            "key": "payme",
-            "en": "payme",
-            "pt": "pagamentos"
         }
     ]
 }

@@ -196,6 +196,25 @@ CacheKeyModify -qs:_ga
 Options -Indexes
 
 # ==============================================================================
+# 7.1 CANONICAL REDIRECTS
+# ==============================================================================
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Legacy payment hub -> canonical support page
+RewriteRule ^payme/?$ /support-dj-zen-eyer/ [R=301,L]
+RewriteRule ^pt/pagamentos/?$ /pt/apoie-dj-zen-eyer/ [R=301,L]
+
+# Legacy media route -> canonical clipping pages
+RewriteRule ^media/?$ /media-clipping/ [R=301,L]
+RewriteRule ^pt/media/?$ /pt/na-midia/ [R=301,L]
+
+# Duplicate index files -> canonical home pages
+RewriteRule ^index\.html$ / [R=301,L]
+RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
+</IfModule>
+
+# ==============================================================================
 # 8. ROTEAMENTO PADRÃO DO WORDPRESS
 # ==============================================================================
 # (bloco "# BEGIN WordPress" abaixo — gerado e gerenciado pelo WordPress core;
