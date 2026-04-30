@@ -31,6 +31,14 @@
 - Se o deploy usa `npm ci`, package.json e lockfile precisam ficar sincronizados.
 - Overrides de dependencia devem ser limitados ao major esperado, nunca com faixa aberta que permita upgrade futuro acidental.
 
+### Infra, cache e auth
+
+- Em producao single-site, nao definir `DOMAIN_CURRENT_SITE`.
+- O JWT canonico do `zeneyer-auth` usa `ZENEYER_JWT_SECRET`; `JWT_AUTH_SECRET_KEY` e `SIMPLE_JWT_PRIVATE_KEY` ficam apenas como compatibilidade legada.
+- O registro protegido do `zeneyer-auth` depende de `ZEN_TURNSTILE_SITE_KEY` e `ZEN_TURNSTILE_SECRET_KEY` no `wp-config.php`.
+- Em LiteSpeed Cache, manter conservador o caminho de SPA: `optm-js_min=false`, `optm-css_min=false`, `optm-js_defer=1`, exclusoes de `react`, `react-dom`, `framer-motion` e bundles do tema.
+- Quando a configuracao do LiteSpeed ja estiver estável em producao, nao ligar minificacao/combinacao por impulso; teste antes de mudar.
+
 ### Performance e SEO tecnico
 
 - Em sitemaps, listas e transformacoes de schema, prefira single-pass e priming de cache para evitar N+1.

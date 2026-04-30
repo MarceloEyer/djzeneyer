@@ -27,7 +27,7 @@ Secure JWT authentication and user management for headless WordPress application
 1. Upload the `zeneyer-auth` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Configure your Google Client ID and Token settings in the ZenEyer Auth menu.
-4. **Important**: Add your Turnstile keys to `wp-config.php`.
+4. **Important**: Add `ZENEYER_JWT_SECRET`, `ZEN_TURNSTILE_SITE_KEY`, and `ZEN_TURNSTILE_SECRET_KEY` to `wp-config.php`.
 
 == Frequently Asked Questions ==
 

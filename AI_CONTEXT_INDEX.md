@@ -26,10 +26,12 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 ## Baseline tecnico canonico (2026-03-26)
 - Arquitetura: WordPress Headless (REST API) + React SPA
 - Frontend: React 19 + TypeScript + Vite 8 + Tailwind 4 + React Query v5 + React Router 7 + i18next
-- Backend: WordPress 6.0+ (recomendado 6.9+), PHP **8.1+** (zengame exige 8.1), WooCommerce, GamiPress
+- Backend: WordPress 6.0+ (recomendado 6.9+; producao atual 6.9.4), PHP **8.1+** (zengame exige 8.1; producao atual 8.3.30), WooCommerce, GamiPress
 - Node: 20+
+- Instalação: single-site (`multisite: false`)
 - Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: **1985-08-20** (fonte canônica: Wikidata Q136551855 — não usar 1989-08-30, que é incorreto).
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
+- Cache em producao: LiteSpeed Cache 7.8.1 ativo, `WP_CACHE=true`, REST cache habilitado, ESI desabilitado, minificação CSS/JS desabilitada no provedor e defer de JS ativo
 - Deploy de frontend: o `dist/` deve ser publicado via pasta de staging (`dist-next`) e trocado de forma atomica para evitar tela branca durante rollout
 - Deploy de plugins: `plugins/` nao deve ser republicado em pushes que nao alterem `plugins/**`, para nao sobrescrever hotfixes ou reintroduzir backend quebrado
 
@@ -59,6 +61,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - `zen-ra` foi removido do projeto; qualquer referencia deve ser tratada como erro de documentacao
 - `zen-bit/v1` legado; usar `zen-bit/v2`
 - Namespace SEO canonico: `zen-seo/v1` (nao `zen-seo-lite/v1`)
+- Auth canonico de chaves: `ZENEYER_JWT_SECRET` para JWT e `ZEN_TURNSTILE_SITE_KEY` / `ZEN_TURNSTILE_SECRET_KEY` para Turnstile. `JWT_AUTH_SECRET_KEY` e `SIMPLE_JWT_PRIVATE_KEY` ficam apenas como compatibilidade legada.
 - `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
 - Tailwind canonico do projeto: v4; convencoes de v3 (ex: `tailwind.config.js` class-based) nao se aplicam
 - SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
