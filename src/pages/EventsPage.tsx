@@ -10,6 +10,7 @@ import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
+import NotFoundPage from './NotFoundPage';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 
 // ⚡ Bolt: Extracted static MONTH_NAMES array to module scope to prevent reallocation on every render cycle.
@@ -55,7 +56,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const { data: event } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
 
-  if (!event) return <div className="text-center py-20 text-white/40">{t('events_not_found')}</div>;
+  if (!event) return <NotFoundPage />;
 
   const eventDate = new Date(event.starts_at);
   const isValidDate = !isNaN(eventDate.getTime());
@@ -340,7 +341,7 @@ const EventsPage: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
             <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <Link to={getLocalizedRoute('presskit', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">Press Kit</Link>
+            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">Press Kit</Link>
           </div>
         </section>
       </div>

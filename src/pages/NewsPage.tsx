@@ -16,6 +16,7 @@ import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { getDateTimeFormatter } from '../utils/date';
+import NotFoundPage from './NotFoundPage';
 
 // ============================================================================
 // HELPERS
@@ -73,6 +74,10 @@ const NewsPage: React.FC = () => {
   };
 
   // --- RENDERIZAÇÃO DE POST ÚNICO ---
+  if (!loading && slug && !singlePost) {
+    return <NotFoundPage />;
+  }
+
   if (!loading && slug && singlePost) {
     const postImage = safeUrl(
       singlePost.featured_image_src_full ||

@@ -16,7 +16,7 @@
  * - About: about-dj-zen-eyer / sobre-dj-zen-eyer
  * - Music: zouk-music / musica-zouk
  * - Support: support-dj-zen-eyer / apoie-dj-zen-eyer
- * - PressKit: press-kit-dj-zen-eyer / kit-de-imprensa
+ * - Booking: work-with-me / trabalhe-comigo
  * - ZenLink: zenlink / links-zen
  */
 
@@ -50,8 +50,9 @@ export interface RouteConfig {
 // LAZY LOADED COMPONENTS
 // ============================================================================
 
-// HomePage não é lazy (carrega imediatamente)
-import HomePage from '../pages/HomePage';
+// HomePage também é lazy para reduzir o bundle inicial e aliviar o custo de parse/execução
+// no carregamento da primeira tela.
+const HomePage = lazy(() => import('../pages/HomePage'));
 
 // Demais páginas são lazy loaded
 const AboutPage = lazy(() => import('../pages/AboutPage'));
@@ -229,13 +230,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: slug('philosophy', 'en') as string, pt: slug('philosophy', 'pt') as string },
   },
 
-  // Press Kit (EPK)
-  {
-    key: 'presskit',
-    component: PressKitPage,
-    paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
-  },
-  
   // Media / Clipping
   {
     key: 'media',

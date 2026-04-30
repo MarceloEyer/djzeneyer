@@ -31,13 +31,9 @@
     "en": "/work-with-me",
     "pt": "/pt/trabalhe-comigo"
   },
-  "presskit": {
-    "en": "/press-kit-dj-zen-eyer",
-    "pt": "/pt/kit-de-imprensa"
-  },
-  "media": {
-    "en": "/media-clipping",
-    "pt": "/pt/na-midia"
+    "media": {
+      "en": "/media-clipping",
+      "pt": "/pt/na-midia"
   },
   "shop": {
     "en": "/shop",

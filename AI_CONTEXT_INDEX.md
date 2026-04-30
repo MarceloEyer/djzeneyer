@@ -121,6 +121,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. ORCID nao deve entrar no schema do artista.
 - FAQ expansivel: quando adicionar `q4`/`q5`, validar existencia com i18n antes de renderizar e manter paridade PT/EN.
 - Copy defensiva: `PressKit` e similares devem tratar erro de clipboard e resetar estado local no `catch`.
+- Rota canônica de booking: `work-with-me` / `trabalhe-comigo`; qualquer variação `press-kit-dj-zen-eyer` / `kit-de-imprensa` é legado e deve redirecionar.
 - Portagem canonica: se um PR duplicar outro branch mais completo, portar as mudancas validas para o PR canonicamente escolhido e fechar o duplicado.
 - Dependencias de seguranca: PRs automatizados de pacote precisam atualizar `package-lock.json` junto com `package.json`; caso contrario a remediacao nao entra no deploy.
 - Performance de loop: em SEO, sitemap e listas, preferir single-pass, cache priming e reducao de alocacoes para evitar N+1.

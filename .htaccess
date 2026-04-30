@@ -204,6 +204,18 @@ RewriteEngine On
 RewriteRule ^payme/?$ /support-dj-zen-eyer/ [R=301,L]
 RewriteRule ^pt/pagamentos/?$ /pt/apoie-dj-zen-eyer/ [R=301,L]
 
+# Legacy press kit route -> canonical booking page
+RewriteRule ^press-kit-dj-zen-eyer/?$ /work-with-me/ [R=301,L]
+RewriteRule ^pt/kit-de-imprensa/?$ /pt/trabalhe-comigo/ [R=301,L]
+RewriteRule ^pt/press-kit/?$ /pt/trabalhe-comigo/ [R=301,L]
+
+# Legacy support and philosophy aliases -> canonical pages
+RewriteRule ^support-the-artist/?$ /support-dj-zen-eyer/ [R=301,L]
+RewriteRule ^pt/apoie-o-artista/?$ /pt/apoie-dj-zen-eyer/ [R=301,L]
+RewriteRule ^pt/contrate/?$ /pt/trabalhe-comigo/ [R=301,L]
+RewriteRule ^pt/minha-filosofia/?$ /pt/filosofia-zouk/ [R=301,L]
+RewriteRule ^pt/privacy-policy-2/?$ /pt/privacidade/ [R=301,L]
+
 # Legacy media route -> canonical clipping pages
 RewriteRule ^media/?$ /media-clipping/ [R=301,L]
 RewriteRule ^pt/media/?$ /pt/na-midia/ [R=301,L]

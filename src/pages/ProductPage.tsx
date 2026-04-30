@@ -5,11 +5,12 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useTranslation } from 'react-i18next';
-import { Loader2, ShoppingCart, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { getCurrencyFormatter } from '../utils/currency';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { useAddToCartMutation, useProductQuery, type WCProductDetail } from '../hooks/useQueries';
+import NotFoundPage from './NotFoundPage';
 
 interface ProductGalleryProps {
   product: WCProductDetail;
@@ -105,21 +106,7 @@ const ProductPage: React.FC = () => {
   }
 
   if (error || !product) {
-    const errorMessage = error instanceof Error ? error.message : t('shop.product_not_found');
-
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-white p-6">
-        <div className="text-center max-w-md">
-          <AlertCircle className="mx-auto mb-4 text-error" size={48} />
-          <h2 className="text-2xl font-bold mb-2">{t('shop.product_not_found')}</h2>
-          <p className="opacity-70">{errorMessage}</p>
-          <Link to={shopPath} className="mt-6 btn btn-primary inline-flex items-center gap-2">
-            <ArrowLeft size={18} />
-            {t('common.checkout.back_shop')}
-          </Link>
-        </div>
-      </div>
-    );
+    return <NotFoundPage />;
   }
 
   return (

@@ -60,23 +60,23 @@ const Footer: React.FC = () => {
                 <span className="text-primary">DJ</span> Zen Eyer
               </span>
             </Link>
-            <p className="text-white/70 mb-4 text-sm leading-relaxed">
+            <p className="text-white/75 mb-4 text-sm leading-relaxed">
               {t('footer_bio')}
             </p>
             <div className="flex space-x-4">
-              <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Instagram">
+              <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Instagram">
                 <InstagramIcon size={22} />
               </a>
-              <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="SoundCloud">
+              <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="SoundCloud">
                 <Music2 size={22} />
               </a>
-              <a href={ARTIST.social.youtube.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Youtube">
+              <a href={ARTIST.social.youtube.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Youtube">
                 <YoutubeIcon size={22} />
               </a>
-              <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="Facebook">
+              <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Facebook">
                 <FacebookIcon size={22} />
               </a>
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-primary transition-colors" aria-label="WhatsApp">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="WhatsApp">
                 <MessageCircle size={22} />
               </a>
             </div>
@@ -92,11 +92,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.events')}</Link></li>
-              <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.music')}</Link></li>
-              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
-              <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
-              <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
+              <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.events')}</Link></li>
+              <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.music')}</Link></li>
+              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
+              <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
+              <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
             </ul>
           </div>
 
@@ -104,11 +104,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
-              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('news.label')}</Link></li>
-              <li><Link to={getLocalizedRoute('philosophy', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('philosophy.page_title')}</Link></li>
-              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/70 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
-              <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/70 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
+              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
+              <li><Link to={getLocalizedRoute('philosophy', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('philosophy.page_title')}</Link></li>
+              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
+              <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/75 hover:text-primary transition-colors">FAQ</Link></li>
             </ul>
           </div>
 
@@ -146,7 +146,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar - Simplified */}
-        <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
+        <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/60 text-sm">
           <p>{t('footer_copyright', { year: CURRENT_YEAR })}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
@@ -157,7 +157,7 @@ const Footer: React.FC = () => {
             <Link to={getLocalizedRoute('conduct', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_conduct')}</Link>
           </div>
 
-          <div className="mt-4 text-xs opacity-30 flex justify-center gap-4">
+          <div className="mt-4 text-xs opacity-50 flex justify-center gap-4">
             <a href={ARTIST.identifiers.wikidataUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Wikidata
             </a>
