@@ -80,8 +80,8 @@ const CurrencyAccordion = memo(({
 CurrencyAccordion.displayName = 'CurrencyAccordion';
 
 const DetailCard = ({ label, value }: { label: string; value: string }) => (
-  <div className="bg-surface/50 p-4 rounded-xl border border-white/5 group hover:border-primary/30 transition-all shadow-lg">
-    <div className="text-xs text-white/40 uppercase tracking-widest mb-1 group-hover:text-primary/70 transition-colors font-bold">{label}</div>
+    <div className="bg-surface/50 p-4 rounded-xl border border-white/5 group hover:border-primary/30 transition-all shadow-lg">
+    <div className="text-xs text-white/55 uppercase tracking-widest mb-1 group-hover:text-primary/70 transition-colors font-bold">{label}</div>
     <div className="font-mono text-white font-bold break-all select-all selection:bg-primary/30">{value}</div>
   </div>
 );
@@ -129,7 +129,7 @@ const SupportArtistPage: React.FC = () => {
                Apoie a <span className="text-primary">Música</span>
             </Trans>
           </h1>
-          <p className="text-base sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             {t('support.header.description')}
           </p>
         </motion.div>
@@ -285,7 +285,7 @@ const SupportArtistPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-white mb-1 uppercase tracking-tighter">{reason.title}</h4>
-                    <p className="text-white/50 text-sm leading-relaxed">{reason.description}</p>
+                    <p className="text-white/65 text-sm leading-relaxed">{reason.description}</p>
                   </div>
                 </div>
               ))}
@@ -300,7 +300,7 @@ const SupportArtistPage: React.FC = () => {
           >
             <Banknote className="mx-auto mb-6 text-primary" size={56} />
             <h3 className="text-3xl font-black font-display mb-6 uppercase tracking-tighter text-white">{t('support.business.title')}</h3>
-            <p className="text-white/70 mb-8 leading-relaxed italic">
+            <p className="text-white/80 mb-8 leading-relaxed italic">
               {t('support.business.description')}
             </p>
             <a 
@@ -314,7 +314,7 @@ const SupportArtistPage: React.FC = () => {
         </div>
 
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
-          <p className="text-2xl text-white/40 italic font-display lowercase tracking-tighter">
+          <p className="text-2xl text-white/55 italic font-display lowercase tracking-tighter">
             {t('support.thankYou')}
           </p>
         </motion.div>

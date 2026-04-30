@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
-import { EventsList } from '../components/EventsList';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
@@ -66,6 +65,10 @@ const ITEM_VARIANTS: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
 };
+
+const LazyEventsList = React.lazy(() =>
+  import('../components/EventsList').then((module) => ({ default: module.EventsList }))
+);
 
 // ============================================================================
 // 3. SUB-COMPONENTES MEMOIZADOS
@@ -291,7 +294,17 @@ const HomePage: React.FC = () => {
             </motion.h2>
 
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
-              <EventsList limit={3} showTitle={false} variant="compact" />
+              <React.Suspense
+                fallback={
+                  <div className="space-y-3" aria-hidden="true">
+                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
+                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
+                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
+                  </div>
+                }
+              >
+                <LazyEventsList limit={3} showTitle={false} variant="compact" />
+              </React.Suspense>
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">

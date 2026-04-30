@@ -92,12 +92,12 @@ const MediaPage: React.FC = () => {
                         <span className="px-3 py-1 rounded-full bg-white/5 text-primary text-xs font-bold uppercase tracking-widest border border-white/5 group-hover:bg-primary/20 transition-colors">
                           {item.type}
                         </span>
-                        <span className="text-white/40 text-xs font-mono">{item.date}</span>
+                        <span className="text-white/55 text-xs font-mono">{item.date}</span>
                       </div>
                       <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-primary transition-colors tracking-tight">
                         {item.title}
                       </h3>
-                      <p className="text-white/60 text-sm mb-4 line-clamp-2 leading-relaxed">
+                      <p className="text-white/70 text-sm mb-4 line-clamp-2 leading-relaxed">
                         {item.description}
                       </p>
                       <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-primary/70">
@@ -126,14 +126,14 @@ const MediaPage: React.FC = () => {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-bold text-white text-sm uppercase">{asset.title}</h4>
-                        <p className="text-white/40 text-xs line-clamp-1">{asset.description}</p>
+                        <p className="text-white/55 text-xs line-clamp-1">{asset.description}</p>
                       </div>
                       {asset.available ? (
                         <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-3 min-h-[44px] text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold uppercase">
                           {t('media_page.download')} <Download size={18} />
                         </a>
                       ) : (
-                        <span className="text-xs text-white/20 uppercase font-black">{t('media_page.coming_soon')}</span>
+                        <span className="text-xs text-white/35 uppercase font-black">{t('media_page.coming_soon')}</span>
                       )}
                     </div>
                   ))}
@@ -164,7 +164,7 @@ const MediaPage: React.FC = () => {
                 <h3 className="text-xl font-black font-display text-white uppercase tracking-tight mb-4">
                   {t('media_page.press_inquiries')}
                 </h3>
-                <p className="text-white/60 text-sm mb-6 leading-relaxed">
+                <p className="text-white/70 text-sm mb-6 leading-relaxed">
                   {t('media_page.press_inquiries_desc')}
                 </p>
                 <a
@@ -178,7 +178,7 @@ const MediaPage: React.FC = () => {
           </div>
 
           {/* Social Proof / Footer IDs */}
-          <div className="mt-32 pt-16 border-t border-white/5 flex flex-wrap justify-center gap-8 md:gap-16 opacity-40 hover:opacity-100 transition-opacity">
+          <div className="mt-32 pt-16 border-t border-white/5 flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 hover:opacity-100 transition-opacity">
             <a href={ARTIST.identifiers.wikidataUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
               <span className="font-display font-black text-xl tracking-tighter">Wikidata</span>
               <ExternalLink size={14} />

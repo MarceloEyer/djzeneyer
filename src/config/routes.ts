@@ -50,9 +50,8 @@ export interface RouteConfig {
 // LAZY LOADED COMPONENTS
 // ============================================================================
 
-// HomePage também é lazy para reduzir o bundle inicial e aliviar o custo de parse/execução
-// no carregamento da primeira tela.
-const HomePage = lazy(() => import('../pages/HomePage'));
+// HomePage permanece eager porque é a rota inicial e precisa entrar na primeira pintura.
+import HomePage from '../pages/HomePage';
 
 // Demais páginas são lazy loaded
 const AboutPage = lazy(() => import('../pages/AboutPage'));
