@@ -159,6 +159,7 @@ Additional cache behavior currently in place:
 - Cache exclusions: `/cart/`, `/checkout/`, `/my-account/`, `/wp-admin/`, `/wp-login.php`, `/dashboard/`, `/painel/`, `/minha-conta/`, `/oauth2callback`
 - Vary by mobile and role is configured in LiteSpeed itself; `WP_CACHE` only enables the plugin layer
 - `optm-js_exc` excludes `react`, `react-dom`, `framer-motion`, and the theme bundle path
+- Object cache remains disabled because the current Hostinger plan does not provide Redis or Memcached. This is intentional and not a missing optimization step.
 
 Note:
 

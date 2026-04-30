@@ -38,6 +38,7 @@
 - O registro protegido do `zeneyer-auth` depende de `ZEN_TURNSTILE_SITE_KEY` e `ZEN_TURNSTILE_SECRET_KEY` no `wp-config.php`.
 - Em LiteSpeed Cache, manter conservador o caminho de SPA: `optm-js_min=false`, `optm-css_min=false`, `optm-js_defer=1`, exclusoes de `react`, `react-dom`, `framer-motion` e bundles do tema.
 - Quando a configuracao do LiteSpeed ja estiver estável em producao, nao ligar minificacao/combinacao por impulso; teste antes de mudar.
+- Se o plano de hospedagem nao oferece Redis ou Memcached, manter `object=false` e documentar isso como limitacao da plataforma, nao como omissao de configuracao.
 
 ### Performance e SEO tecnico
 
