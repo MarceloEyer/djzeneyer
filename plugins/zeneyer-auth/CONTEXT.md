@@ -9,7 +9,7 @@ Autenticacao JWT, Google OAuth, session, profile, newsletter e reset de senha.
 
 ## Regras centrais
 
-- Contratos do frontend passam por `src/hooks/useQueries.ts`.
+- Flows de autenticacao (login, register, google, logout) sao gerenciados por `UserContext.tsx`. Consultas de dados (profile, orders) passam por `src/hooks/useQueries.ts`.
 - `logout()` continua sincrona.
 - JWT secret nao fica em arquivo versionado.
 - Mudanca de contrato precisa refletir em `CLAUDE.md`, `AI_CONTEXT_INDEX.md` e `docs/AI_LEARNINGS.md` quando relevante.
@@ -22,7 +22,7 @@ Autenticacao JWT, Google OAuth, session, profile, newsletter e reset de senha.
 - `POST /refresh`
 - `POST /logout`
 - `GET /session`
-- `GET /me`
+- `GET /auth/me`
 - `GET|POST /profile`
 - `GET|POST /newsletter`
 - `GET /orders`

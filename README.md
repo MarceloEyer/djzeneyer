@@ -39,6 +39,7 @@ Canonical rules live in `AI_CONTEXT_INDEX.md`; task instructions live in `AGENTS
 
 ```bash
 npm install
+npm run dev
 npm run lint
 npm run build
 ```

@@ -1,4 +1,4 @@
-﻿# Hooks Context - /src/hooks
+# Hooks Context - /src/hooks
 
 > Contexto local dos hooks do frontend.
 > Base canonica: `AI_CONTEXT_INDEX.md`.
