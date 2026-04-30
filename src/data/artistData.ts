@@ -552,8 +552,8 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'WebPage',
-      url: 'https://slovenianzoukmarathon.com/',
-      name: 'Slovenian Zouk Marathon — DJs',
+      url: 'https://slovenianzoukmarathon.com/mood-makers/',
+      name: 'Slovenian Zouk Marathon — Mood Makers & DJs',
     },
     {
       '@type': 'WebPage',
