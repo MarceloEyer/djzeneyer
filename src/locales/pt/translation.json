@@ -181,7 +181,9 @@
   },
   "events": {
     "title_part1": "Agenda de",
-    "title_part2": "Eventos"
+    "title_part2": "Eventos",
+    "press_kit": "Press Kit",
+    "featured": "Evento em Destaque"
   },
   "gamification": {
     "zenTribe": "Zen Tribe",
