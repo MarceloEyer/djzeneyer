@@ -70,18 +70,34 @@ const MusicPage: React.FC = () => {
     const baseUrl = ARTIST.site.baseUrl;
     const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
 
+    // Known artist profile URLs — must NOT be used as sameAs for individual releases/tracks
+    const ARTIST_PROFILE_URLS = new Set([
+      'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+      'https://music.apple.com/artist/1439280950',
+      'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
+      'https://soundcloud.com/djzeneyer',
+      'https://www.youtube.com/@djzeneyer',
+      'https://www.deezer.com/artist/52900762',
+      'https://tidal.com/artist/10492592',
+      'https://music.amazon.com/artists/B07JKCDCG8',
+    ]);
+
+    const isReleaseSpecificUrl = (url: string | undefined): url is string =>
+      !!url && !ARTIST_PROFILE_URLS.has(url);
+
     // ItemList: cada release vira um ListItem apontando para MusicRecording/MusicAlbum
     const releaseListItems = DISCOGRAPHY.map((release, index) => {
-      const releaseUrl = `${baseUrl}/release/${release.id}`;
+      // Usar âncoras na própria MusicPage em vez de rotas /release/:id inexistentes
+      const releaseAnchor = `${pageUrl}#release-${release.id}`;
       const schemaType = release.type === 'album' ? 'MusicAlbum'
         : release.type === 'ep' ? 'MusicAlbum'
         : 'MusicRecording';
 
       const releaseNode: Record<string, unknown> = {
         '@type': schemaType,
-        '@id': `${releaseUrl}#release`,
+        '@id': releaseAnchor,
         name: release.name,
-        url: releaseUrl,
+        url: pageUrl,
         image: release.image,
         datePublished: release.releaseDate,
         byArtist: { '@id': `${baseUrl}/#musicgroup` },
@@ -89,13 +105,13 @@ const MusicPage: React.FC = () => {
 
       if (release.description) releaseNode.description = release.description;
 
-      // sameAs: links de streaming disponíveis
+      // sameAs: ONLY release-specific URLs (not artist profile pages)
       const sameAsLinks = [
         release.spotifyUrl,
         release.appleMusicUrl,
         release.youtubeMusicUrl,
         release.soundcloudUrl,
-      ].filter(Boolean) as string[];
+      ].filter(isReleaseSpecificUrl);
       if (sameAsLinks.length > 0) releaseNode.sameAs = sameAsLinks;
 
       // Faixas (MusicRecording dentro do álbum/EP)
@@ -104,11 +120,12 @@ const MusicPage: React.FC = () => {
           const trackNode: Record<string, unknown> = {
             '@type': 'MusicRecording',
             name: track.name,
-            duration: track.duration,
             byArtist: { '@id': `${baseUrl}/#musicgroup` },
           };
+          // Only emit duration if it's a real value (not placeholder)
+          if (track.duration) trackNode.duration = track.duration;
           if (track.isrcCode) trackNode.isrcCode = track.isrcCode;
-          const trackSameAs = [track.spotifyUrl, track.youtubeMusicUrl].filter(Boolean);
+          const trackSameAs = [track.spotifyUrl, track.youtubeMusicUrl].filter(isReleaseSpecificUrl);
           if (trackSameAs.length > 0) trackNode.sameAs = trackSameAs;
           return trackNode;
         });
@@ -117,7 +134,8 @@ const MusicPage: React.FC = () => {
       // Para single: a faixa principal é o próprio nó
       if (schemaType === 'MusicRecording' && release.tracks[0]) {
         const t0 = release.tracks[0];
-        releaseNode.duration = t0.duration;
+        // Only emit duration if it's a real value
+        if (t0.duration) releaseNode.duration = t0.duration;
         if (t0.isrcCode) releaseNode.isrcCode = t0.isrcCode;
       }
 
