@@ -129,15 +129,7 @@ const HomePage: React.FC = () => {
         "name": seoSettings?.real_name || "DJ Zen Eyer - Official Website",
         "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
-        "inLanguage": ["en", "pt-BR"],
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": `${ARTIST.site.baseUrl}/zouk-events?q={search_term_string}`
-          },
-          "query-input": "required name=search_term_string"
-        }
+        "inLanguage": ["en", "pt-BR"]
       },
       ARTIST_SCHEMA_BASE,
       MUSICGROUP_SCHEMA,

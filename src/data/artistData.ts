@@ -742,7 +742,7 @@ export const ARTIST_SCHEMA_BASE = {
 
 export interface ReleaseTrack {
   name: string;
-  duration: string; // ISO 8601 — ex: PT4M30S
+  duration?: string; // ISO 8601 — ex: PT4M30S (optional: omit if not verified)
   isrcCode?: string;
   spotifyUrl?: string;
   youtubeMusicUrl?: string;
@@ -877,7 +877,7 @@ export const DISCOGRAPHY: Release[] = [
     amazonMusicUrl: 'https://music.amazon.com/artists/B07JKCDCG8',
     youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
     soundcloudUrl: 'https://soundcloud.com/djzeneyer',
-    description: 'Brazilian Zouk remix featuring Kaysha, bridging Brazil and Africa. Covered by MyZA Entertainment and IssueWire.',
+    description: 'Brazilian Zouk remix featuring Kaysha, bridging Brazil and Africa. Covered by MyZA Entertainment.',
     tracks: [
       {
         name: 'Diamonds (Zouk Remix feat. Kaysha)',
