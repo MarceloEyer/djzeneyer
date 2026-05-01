@@ -12,6 +12,7 @@ Autenticacao JWT, Google OAuth, session, profile, newsletter e reset de senha.
 - Flows de autenticacao (login, register, google, logout) sao gerenciados por `UserContext.tsx`. Consultas de dados (profile, orders) passam por `src/hooks/useQueries.ts`.
 - `logout()` continua sincrona.
 - JWT secret nao fica em arquivo versionado.
+- `ZENEYER_JWT_SECRET` e a constante canonica do wp-config. `JWT_AUTH_SECRET_KEY` e `SIMPLE_JWT_PRIVATE_KEY` sao aliases legados aceitos por compatibilidade, mas nao devem ser o padrao novo.
 - Mudanca de contrato precisa refletir em `CLAUDE.md`, `AI_CONTEXT_INDEX.md` e `docs/AI_LEARNINGS.md` quando relevante.
 
 ## Endpoints de uso comum

@@ -124,7 +124,7 @@ async function generateSitemaps() {
 
     let pageCount = 0;
     for (const route of routesData.routes) {
-      if (route.excludeFromSitemap) {
+      if (route.excludeFromSitemap || route.noindex) {
         continue;
       }
 

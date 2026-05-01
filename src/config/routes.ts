@@ -16,7 +16,7 @@
  * - About: about-dj-zen-eyer / sobre-dj-zen-eyer
  * - Music: zouk-music / musica-zouk
  * - Support: support-dj-zen-eyer / apoie-dj-zen-eyer
- * - PressKit: press-kit-dj-zen-eyer / kit-de-imprensa
+ * - Booking: work-with-me / trabalhe-comigo
  * - ZenLink: zenlink / links-zen
  */
 
@@ -50,7 +50,7 @@ export interface RouteConfig {
 // LAZY LOADED COMPONENTS
 // ============================================================================
 
-// HomePage não é lazy (carrega imediatamente)
+// HomePage permanece eager porque é a rota inicial e precisa entrar na primeira pintura.
 import HomePage from '../pages/HomePage';
 
 // Demais páginas são lazy loaded
@@ -79,7 +79,6 @@ const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
 const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
-const PayMePage = lazy(() => import('../pages/PayMePage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 import routesSlugs from './routes-slugs.json';
@@ -230,13 +229,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: slug('philosophy', 'en') as string, pt: slug('philosophy', 'pt') as string },
   },
 
-  // Press Kit (EPK)
-  {
-    key: 'presskit',
-    component: PressKitPage,
-    paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
-  },
-  
   // Media / Clipping
   {
     key: 'media',
@@ -300,12 +292,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: slug('reset-password', 'en') as string, pt: slug('reset-password', 'pt') as string },
   },
 
-  // PayMe / Pagamentos
-  {
-    key: 'payme',
-    component: PayMePage,
-    paths: { en: slug('payme', 'en') as string, pt: slug('payme', 'pt') as string },
-  },
 ];
 
 /**

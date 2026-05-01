@@ -1009,24 +1009,6 @@
     "acceptance_p1": "By using this website, you acknowledge that you have read and understood these Terms of Use",
     "acceptance_p2": "and agree to be bound by them."
   },
-  "payme": {
-    "title": "Support DJ Zen Eyer",
-    "description": "Support DJ Zen Eyer through donations and collaborations.",
-    "heading": "Support DJ Zen Eyer",
-    "subtitle": "Connect, Support & Collaborate",
-    "method_selection": "Choose your preferred payment method...",
-    "sections": {
-      "contractors": {
-        "desc": "payme.sections.contractors.desc",
-        "title": "payme.sections.contractors.title"
-      },
-      "donors": {
-        "desc": "payme.sections.donors.desc",
-        "title": "payme.sections.donors.title"
-      }
-    },
-    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
-  },
   "footer_rights": "All rights reserved.",
   "footer_about": "About",
   "footer_news": "News",

@@ -283,19 +283,28 @@ class JWT_Manager
      */
     private static function get_secret_key()
     {
-        // Priority 1: wp-config.php constant
+        // Priority 1: canonical wp-config.php constant
         if (defined('ZENEYER_JWT_SECRET') && !empty(ZENEYER_JWT_SECRET)) {
             return ZENEYER_JWT_SECRET;
         }
 
-        // Priority 2: Database option
+        // Priority 2: legacy compatibility aliases
+        if (defined('JWT_AUTH_SECRET_KEY') && !empty(JWT_AUTH_SECRET_KEY)) {
+            return JWT_AUTH_SECRET_KEY;
+        }
+
+        if (defined('SIMPLE_JWT_PRIVATE_KEY') && !empty(SIMPLE_JWT_PRIVATE_KEY)) {
+            return SIMPLE_JWT_PRIVATE_KEY;
+        }
+
+        // Priority 3: Database option
         $secret = get_option('zeneyer_auth_jwt_secret');
 
         if (!empty($secret)) {
             return $secret;
         }
 
-        // Priority 3: Generate new secret
+        // Priority 4: Generate new secret
         $new_secret = wp_generate_password(64, true, true);
         update_option('zeneyer_auth_jwt_secret', $new_secret);
 

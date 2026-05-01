@@ -16,6 +16,8 @@
 - Para a entidade publica do artista, mantenha uma unica entidade `Person` em `ARTIST_SCHEMA_BASE`.
 - Nao crie um no `MusicGroup` separado para a pessoa fisica.
 - Nao use ORCID no grafo do artista; use apenas identificadores aprovados e verificaveis.
+- Em `sameAs`, prefira anchors fortes e oficiais: Wikidata, MusicBrainz, Discogs e perfis principais de streaming/social. Evite LinkedIn, Mixcloud e perfis fracos sem utilidade clara.
+- Quando uma entrada em `subjectOf` comprovar a presenca do artista, a URL deve apontar para a pagina exata de evidencia, nao para o root do site.
 - Em paginas com FAQ expansivel, `q4` e `q5` so entram quando a chave existir no locale atual.
 - Quando o texto for visivel ao usuario, use `t('chave')` e nao string hardcoded.
 
@@ -30,6 +32,15 @@
 - PRs de seguranca em dependencias so contam quando `package-lock.json` tambem e atualizado.
 - Se o deploy usa `npm ci`, package.json e lockfile precisam ficar sincronizados.
 - Overrides de dependencia devem ser limitados ao major esperado, nunca com faixa aberta que permita upgrade futuro acidental.
+
+### Infra, cache e auth
+
+- Em producao single-site, nao definir `DOMAIN_CURRENT_SITE`.
+- O JWT canonico do `zeneyer-auth` usa `ZENEYER_JWT_SECRET`; `JWT_AUTH_SECRET_KEY` e `SIMPLE_JWT_PRIVATE_KEY` ficam apenas como compatibilidade legada.
+- O registro protegido do `zeneyer-auth` depende de `ZEN_TURNSTILE_SITE_KEY` e `ZEN_TURNSTILE_SECRET_KEY` no `wp-config.php`.
+- Em LiteSpeed Cache, manter conservador o caminho de SPA: `optm-js_min=false`, `optm-css_min=false`, `optm-js_defer=1`, exclusoes de `react`, `react-dom`, `framer-motion` e bundles do tema.
+- Quando a configuracao do LiteSpeed ja estiver estável em producao, nao ligar minificacao/combinacao por impulso; teste antes de mudar.
+- Se o plano de hospedagem nao oferece Redis ou Memcached, manter `object=false` e documentar isso como limitacao da plataforma, nao como omissao de configuracao.
 
 ### Performance e SEO tecnico
 

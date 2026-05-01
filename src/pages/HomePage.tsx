@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
-import { EventsList } from '../components/EventsList';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
@@ -66,6 +65,10 @@ const ITEM_VARIANTS: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
 };
+
+const LazyEventsList = React.lazy(() =>
+  import('../components/EventsList').then((module) => ({ default: module.EventsList }))
+);
 
 // ============================================================================
 // 3. SUB-COMPONENTES MEMOIZADOS
@@ -291,7 +294,17 @@ const HomePage: React.FC = () => {
             </motion.h2>
 
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
-              <EventsList limit={3} showTitle={false} variant="compact" />
+              <React.Suspense
+                fallback={
+                  <div className="space-y-3" aria-hidden="true">
+                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
+                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
+                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
+                  </div>
+                }
+              >
+                <LazyEventsList limit={3} showTitle={false} variant="compact" />
+              </React.Suspense>
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
@@ -366,11 +379,11 @@ const HomePage: React.FC = () => {
       <section className="py-12 bg-background border-t border-white/5">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-white/40 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
+            <p className="text-xs font-semibold text-white/55 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
-              <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
-              <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
+              <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
+              <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
+              <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
             </div>
           </motion.div>
         </div>

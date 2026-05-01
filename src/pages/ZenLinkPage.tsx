@@ -153,6 +153,7 @@ const ZenLinkPageComponent = () => {
         title="Zen Link | DJ Zen Eyer"
         description="Página oficial de links do DJ Zen Eyer para Instagram bio."
         url={`${artist.site.baseUrl}/zenlink`}
+        robots="noindex, follow"
       />
 
       <main className="min-h-screen bg-transparent text-zinc-100 font-sans selection:bg-primary/30">

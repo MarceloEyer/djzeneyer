@@ -4,55 +4,71 @@
     "pt": "/"
   },
   "about": {
-    "en": "/about",
-    "pt": "/sobre"
+    "en": "/about-dj-zen-eyer",
+    "pt": "/pt/sobre-dj-zen-eyer"
   },
   "events": {
-    "en": "/events",
-    "pt": "/eventos"
+    "en": "/zouk-events",
+    "pt": "/pt/eventos-zouk"
   },
   "music": {
-    "en": "/music",
-    "pt": "/musica"
+    "en": "/zouk-music",
+    "pt": "/pt/musica-zouk"
   },
   "news": {
-    "en": "/news",
-    "pt": "/noticias"
+    "en": "/zouk-dance-news",
+    "pt": "/pt/noticias-zouk"
+  },
+  "philosophy": {
+    "en": "/zouk-philosophy",
+    "pt": "/pt/filosofia-zouk"
   },
   "zentribe": {
     "en": "/zentribe",
-    "pt": "/tribo-zen"
+    "pt": "/pt/tribo-zen"
   },
-  "workWithMe": {
+  "booking": {
     "en": "/work-with-me",
-    "pt": "/trabalho"
+    "pt": "/pt/trabalhe-comigo"
+  },
+    "media": {
+      "en": "/media-clipping",
+      "pt": "/pt/na-midia"
   },
   "shop": {
     "en": "/shop",
-    "pt": "/loja"
+    "pt": "/pt/loja"
   },
-  "media": {
-    "en": "/media",
-    "pt": "/midia"
+  "support": {
+    "en": "/support-dj-zen-eyer",
+    "pt": "/pt/apoie-dj-zen-eyer"
+  },
+  "zenlink": {
+    "en": "/zenlink",
+    "pt": "/pt/links-zen"
+  },
+  "tickets": {
+    "en": "/tickets",
+    "pt": "/pt/ingressos"
   },
   "faq": {
     "en": "/faq",
-    "pt": "/perguntas-frequentes"
-  },
-  "philosophy": {
-    "en": "/my-philosophy",
-    "pt": "/minha-filosofia"
+    "pt": "/pt/perguntas-frequentes"
   },
   "privacy": {
     "en": "/privacy-policy",
-    "pt": "/politica-de-privacidade"
+    "pt": "/pt/privacidade"
+  },
+  "returns": {
+    "en": "/return-policy",
+    "pt": "/pt/reembolso"
   },
   "terms": {
     "en": "/terms",
-    "pt": "/termos"
+    "pt": "/pt/termos"
   },
   "conduct": {
     "en": "/conduct",
-    "pt": "/conduta"
+    "pt": "/pt/regras-de-conduta"
   }
 }

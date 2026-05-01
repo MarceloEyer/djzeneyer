@@ -69,6 +69,7 @@ interface HeadlessSEOProps {
   type?: string;
   hrefLang?: HrefLang[];
   noindex?: boolean;
+  robots?: string;
   keywords?: string;
   isHomepage?: boolean;
   preload?: PreloadItem[];
@@ -114,6 +115,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   type = 'website',
   hrefLang = [],
   noindex = false,
+  robots,
   keywords,
   isHomepage = false,
   preload = [],
@@ -183,6 +185,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl), defaultImage);
 
   const shouldNoIndex = data?.noindex || noindex;
+  const robotsContent = robots || (shouldNoIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
 
   // Determinação inteligente do idioma para a tag <html lang="">
   // Se não foi passado via prop, usa o idioma atual do i18n (SSOT)
@@ -525,7 +528,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       {/* Robots */}
       <meta
         name="robots"
-        content={shouldNoIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+        content={robotsContent}
       />
 
       {/* Open Graph (Facebook/LinkedIn) */}
