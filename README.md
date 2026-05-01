@@ -11,6 +11,19 @@ Canonical rules live in `AI_CONTEXT_INDEX.md`; task instructions live in `AGENTS
 - Runtime split: WordPress provides JSON; React renders the public experience.
 - Documentation split: canonical rules live in `AI_CONTEXT_INDEX.md`, local overrides in `CLAUDE.md`, operational memory in `docs/AI_LEARNINGS.md`.
 
+## Repository shape
+
+This repository is a hybrid WordPress theme + React SPA workspace:
+
+- `src/` contains the React application.
+- `public/` contains public assets and SEO files copied into the final build.
+- `inc/` contains theme bootstrap, CSP and lightweight theme routes.
+- `plugins/` contains custom WordPress plugins.
+- `gamipress/` contains GamiPress template overrides when email branding needs to be customized.
+- `scripts/` contains build, prerender, sitemap and validation scripts.
+- `tmp/` and temporary root files are working artifacts and should stay out of Git.
+- Files that must be served from the site root in production should live in `public/` and be published from there, not duplicated at the repository root.
+
 ## Stack
 
 | Layer | Current |

@@ -8,6 +8,24 @@
 
 Este documento existe para explicar como o sistema funciona na pratica e onde cada responsabilidade mora. Ele nao substitui o indice canonico nem a documentacao especifica de configuracao ou endpoints.
 
+## Estrutura da raiz do repositório
+
+A raiz mistura responsabilidades de tema WordPress, app React e arquivos operacionais. Isso é intencional no modelo atual do projeto.
+
+| Caminho | Papel |
+|---|---|
+| `src/` | Frontend React SPA, rotas, hooks, i18n e componentes |
+| `public/` | Assets e arquivos públicos copiados para o build |
+| `inc/` | Bootstrap do tema WordPress, CSP, integrações leves e rotas do tema |
+| `plugins/` | Plugins customizados do WordPress |
+| `gamipress/` | Override de templates de email do GamiPress quando necessário |
+| `scripts/` | Build, prerender, sitemap e validações |
+| `docs/` | Documentação técnica, operativa e histórica |
+| `tmp/` | Saída temporária de trabalho local; nao deve ser versionada |
+
+Arquivos temporários de trabalho, como `comments_200.txt`, nao fazem parte da arquitetura da aplicação e devem permanecer fora do Git.
+Arquivos que precisam ficar na raiz do site em produção devem ter origem em `public/`; a raiz do repositório não deve manter cópias paralelas desses assets.
+
 ## Resumo do sistema
 
 - Frontend: React SPA em Vite.

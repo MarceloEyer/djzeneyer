@@ -37,3 +37,5 @@ pnpm-lock.yaml
 *_beautiful.tsx
 pr_comments*.json
 check_client_error.mjs
+comments_200.txt
+tmp/
