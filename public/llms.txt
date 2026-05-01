@@ -13,14 +13,13 @@ DJ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating 
 - Wikidata: Q136551855
 - MusicBrainz: 13afa63c-8164-4697-9cad-c5100062a154
 - ISNI: 0000 0005 2893 1015
-- Google KGMID: /g/11ff3mhh10
 - Website: https://djzeneyer.com
 
 ## Core Pages (English)
 
 - [About DJ Zen Eyer](https://djzeneyer.com/about-dj-zen-eyer): Full biography, world championship history, artistic vision, and the Cremosidade philosophy.
 - [Zouk Philosophy](https://djzeneyer.com/zouk-philosophy): Deep exploration of Brazilian Zouk history, culture, the "Cremosidade" movement, and its difference from other Zouk styles.
-- [Zouk Events](https://djzeneyer.com/zouk-events): Upcoming and past DJ sets and Brazilian Zouk events worldwide, powered by Bandsintown API.
+- [Zouk Events](https://djzeneyer.com/zouk-events): Upcoming and past DJ sets and Brazilian Zouk events worldwide.
 - [Zouk Music](https://djzeneyer.com/zouk-music): Original tracks, remixes, and curated music for Brazilian Zouk dancing. Links to Spotify and SoundCloud.
 - [Zouk Dance News](https://djzeneyer.com/zouk-dance-news): News, articles, and updates about the global Brazilian Zouk scene.
 - [Press Kit](https://djzeneyer.com/press-kit-dj-zen-eyer): Technical rider, booking information, biography, and high-resolution media for event organizers and press.
@@ -49,11 +48,15 @@ DJ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating 
 - [Wikidata Profile](https://www.wikidata.org/wiki/Q136551855): Verifiable structured data and canonical entity.
 - [ISNI](https://isni.org/isni/0000000528931015): International Standard Name Identifier — cross-institution identity anchor.
 - [MusicBrainz Artist](https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154): Discography and music industry identifiers.
+- [Discogs Artist](https://www.discogs.com/artist/16872046): Release and catalog metadata.
+- [RA Artist Page](https://ra.co/dj/djzeneyer): Electronic-music profile and event presence.
 - [SoundCloud](https://soundcloud.com/djzeneyer): Primary hub for live sets and remixes.
 - [Spotify](https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw): Original tracks and official releases.
-- [Bandcamp](https://djzeneyer.bandcamp.com/): Independent music releases and direct support.
+- [Apple Music](https://music.apple.com/artist/1439280950): Official streaming catalog.
+- [Deezer](https://www.deezer.com/artist/52900762): Official streaming catalog.
 - [Tidal](https://tidal.com/artist/10492592): Lossless audio platform — artist profile.
 - [Amazon Music](https://music.amazon.com.br/artists/B07JKCDCG8): Artist profile on Amazon Music.
+- [YouTube](https://www.youtube.com/@djzeneyer): Official channel and uploads.
 
 ## Frequently Asked Questions (Structured for AI Extraction)
 
