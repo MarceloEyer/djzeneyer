@@ -13,8 +13,7 @@
 
 ### Schema e SEO
 
-- Para a entidade publica do artista, mantenha uma unica entidade `Person` em `ARTIST_SCHEMA_BASE`.
-- Nao crie um no `MusicGroup` separado para a pessoa fisica.
+- Arquitetura de identidade híbrida: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) representa o indivíduo biográfico; `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) representa a marca artística. Os dois nós coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` suporta `album`/`track` — propriedades ausentes em `Person`. Nunca fundir em um único nó com `@type: ['Person', 'MusicGroup']`.
 - Nao use ORCID no grafo do artista; use apenas identificadores aprovados e verificaveis.
 - Em `sameAs`, prefira anchors fortes e oficiais: Wikidata, MusicBrainz, Discogs e perfis principais de streaming/social. Evite LinkedIn, Mixcloud e perfis fracos sem utilidade clara.
 - Quando uma entrada em `subjectOf` comprovar a presenca do artista, a URL deve apontar para a pagina exata de evidencia, nao para o root do site.
@@ -67,7 +66,7 @@
 - `#317`: em `ZenLinkPage`, toda string visivel ainda precisa vir de i18n, inclusive subtitulos, titulos e mensagens de WhatsApp.
 - `#317`: em `paymentMethods`, os campos financeiros devem refletir exatamente o significado da SSOT. Nao trocar `swiftCode`, `achRouting` e `wireRouting`.
 - `#379` e `#412`: validar keys de FAQ com `i18n.exists()` antes de renderizar.
-- `#412` e `#413`: manter `@type: 'Person'` para Zen Eyer e remover `ORCID` do schema.
+- `#412` e `#413`: remover `ORCID` do schema (identificador acadêmico, irrelevante para DJ/produtor).
 - `#371`: nao aceitar remediacao de dependencia sem lockfile sincronizado.
 - `#399`, `#400`, `#401`, `#366`: preferir batch priming, single-pass loops e referencias estaveis.
 - `#407`: quando um documento de especificacao virar redundante, consolidar o que e util em arquivos canonicos e encerrar a duplicata.
@@ -77,7 +76,7 @@
 
 ### Antes de mexer em SEO / Schema
 
-- [ ] Conferir se a entidade continua como `Person` unica.
+- [ ] Confirmar que `ARTIST_SCHEMA_BASE` (Person `/#artist`) e `MUSICGROUP_SCHEMA` (MusicGroup `/#musicgroup`) estão ambos no `@graph` e ligados por `member`/`memberOf`.
 - [ ] Confirmar se o identificador usado ja foi validado no `sameAs` ou no grafo canonico.
 - [ ] Validar se a pagina privada continua `noindex` e sem avatar do usuario em OG.
 - [ ] Verificar se `llms.txt`, `llms-full.txt` e `ai-plugin.json` continuam descritivos, nao imperativos.

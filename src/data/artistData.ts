@@ -476,12 +476,16 @@ export const ARTIST_SCHEMA_BASE = {
     name: 'Niterói',
     addressCountry: 'BR',
   },
-  memberOf: {
-    '@type': 'Organization',
-    name: 'Mensa International',
-    url: 'https://www.mensa.org',
-    description: 'High-IQ society for individuals in the top 2% of intelligence.',
-  },
+  memberOf: [
+    {
+      '@type': 'Organization',
+      name: 'Mensa International',
+      url: 'https://www.mensa.org',
+      description: 'High-IQ society for individuals in the top 2% of intelligence.',
+    },
+    // Ligação bidirecional com o nó MusicGroup do projeto artístico
+    { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+  ],
   award: [
     'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, 2022',
@@ -726,6 +730,136 @@ export const ARTIST_SCHEMA_BASE = {
         url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
         availability: 'https://schema.org/Discontinued',
       },
+    },
+  ],
+};
+
+// ============================================================================
+// 🎵 DISCOGRAFIA — SSOT
+// Fonte: Spotify / MusicBrainz / Discogs
+// Campos: name, type, releaseDate, spotifyId, spotifyUrl, image, tracks[]
+// ============================================================================
+
+export interface ReleaseTrack {
+  name: string;
+  duration: string; // ISO 8601 — ex: PT4M30S
+  isrcCode?: string;
+  spotifyUrl?: string;
+  youtubeMusicUrl?: string;
+  youtubeUrl?: string;
+}
+
+export interface Release {
+  id: string;           // slug único, usado em rotas futuras /release/:id
+  name: string;
+  type: 'single' | 'ep' | 'album' | 'remix';
+  releaseDate: string;  // YYYY-MM-DD
+  image: string;        // URL absoluta da capa
+  spotifyId?: string;
+  spotifyUrl?: string;
+  appleMusicUrl?: string;
+  deezerUrl?: string;
+  tidalUrl?: string;
+  amazonMusicUrl?: string;
+  youtubeMusicUrl?: string;
+  youtubeUrl?: string;
+  soundcloudUrl?: string;
+  description?: string;
+  tracks: ReleaseTrack[];
+}
+
+export const DISCOGRAPHY: Release[] = [
+  {
+    id: 'diamonds-zouk-remix',
+    name: 'Diamonds (Zouk Remix)',
+    type: 'single',
+    releaseDate: '2024-08-01',
+    image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
+    spotifyId: '68SHKGndTlq3USQ2LZmyLw',
+    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
+    deezerUrl: 'https://www.deezer.com/artist/52900762',
+    tidalUrl: 'https://tidal.com/artist/10492592',
+    amazonMusicUrl: 'https://music.amazon.com/artists/B07JKCDCG8',
+    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
+    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
+    description: 'Brazilian Zouk remix of Diamonds featuring Kaysha, bridging Brazil and Africa.',
+    tracks: [
+      {
+        name: 'Diamonds (Zouk Remix feat. Kaysha)',
+        duration: 'PT4M30S',
+        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+        youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
+        youtubeUrl: 'https://www.youtube.com/@djzeneyer',
+      },
+    ],
+  },
+];
+
+// ============================================================================
+// 🎸 MUSICGROUP — nó separado do grafo Knowledge Graph
+// Representa o projeto artístico "Zen Eyer" como entidade musical.
+// Coexiste com ARTIST_SCHEMA_BASE (Person) — ligados por member/memberOf.
+// @id: /#musicgroup  (distinto de /#artist que é a Person)
+// ============================================================================
+
+export const MUSICGROUP_SCHEMA = {
+  '@type': 'MusicGroup',
+  '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
+  name: 'Zen Eyer',
+  alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
+  description:
+    'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Ilha do Zouk DJ Championship (2022). Known for the cremoso style of DJing.',
+  url: ARTIST.site.baseUrl,
+  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
+  foundingDate: String(ARTIST.stats.startingYear),
+  foundingLocation: {
+    '@type': 'Place',
+    name: 'Rio de Janeiro, Brazil',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Rio de Janeiro',
+      addressCountry: 'BR',
+    },
+  },
+  // Ligação bidirecional com a entidade Person
+  member: {
+    '@type': 'OrganizationRole',
+    member: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+    roleName: 'DJ & Music Producer',
+    startDate: String(ARTIST.stats.startingYear),
+  },
+  award: [
+    'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
+    'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
+  ],
+  sameAs: ARTIST_SCHEMA_SAME_AS,
+  identifier: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Wikidata',
+      value: 'Q136551855',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'MusicBrainz',
+      value: '13afa63c-8164-4697-9cad-c5100062a154',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'ISNI',
+      value: '0000000528931015',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Discogs',
+      value: '16872046',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Spotify',
+      value: '68SHKGndTlq3USQ2LZmyLw',
     },
   ],
 };
