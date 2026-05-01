@@ -95,7 +95,7 @@ Overrides atualmente presentes em `package.json`:
 
 Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser re-sugeridos como novidade sem motivo concreto:
 
-- A entidade publica do artista em JSON-LD fica como `Person` apenas.
+- Arquitetura de identidade híbrida: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) representa o indivíduo biográfico; `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) representa a marca artística/projeto musical. Os dois nós coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` suporta `album`/`track` — propriedades ausentes em `Person`. Nunca fundir em um único nó com `@type: ['Person', 'MusicGroup']`.
 - ORCID nao entra no grafo do artista.
 - `sameAs` usa apenas URLs oficiais aprovadas.
 - O canal YouTube oficial e o unico canal de YouTube em `sameAs`.
@@ -124,7 +124,7 @@ Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser
 
 ## Aprendizados recentes refletidos em contexto
 
-- `ARTIST_SCHEMA_BASE` ficou centrado em `Person`.
+- `ARTIST_SCHEMA_BASE` (`Person`, `/#artist`) e `MUSICGROUP_SCHEMA` (`MusicGroup`, `/#musicgroup`) são os dois nós canônicos de identidade — ambos exportados de `artistData.ts`. A `MusicPage` usa `MUSICGROUP_SCHEMA` + `ItemList` gerado de `DISCOGRAPHY`. A homepage injeta os dois no `@graph`.
 - FAQ expansivel ficou dependente de `i18n.exists()` para evitar render de chave ausente.
 - Copy de clipboard em Press Kit precisa de `catch` e reset de estado.
 - Dependencia vulneravel sem lockfile sincronizado nao e remediacao completa.

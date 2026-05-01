@@ -64,7 +64,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Auth canonico de chaves: `ZENEYER_JWT_SECRET` para JWT e `ZEN_TURNSTILE_SITE_KEY` / `ZEN_TURNSTILE_SECRET_KEY` para Turnstile. `JWT_AUTH_SECRET_KEY` e `SIMPLE_JWT_PRIVATE_KEY` ficam apenas como compatibilidade legada.
 - `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
 - Tailwind canonico do projeto: v4; convencoes de v3 (ex: `tailwind.config.js` class-based) nao se aplicam
-- SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
+- SEO Identidade: Arquitetura híbrida — `MusicGroup` como contêiner da marca artística (`@id: /#musicgroup`) + `Person` como o indivíduo (`@id: /#artist`), ligados por `member`/`memberOf`. Ver seção "Person Schema Canônico" abaixo.
 - **Hybrid Prerender Architecture (2026-03)**:
   - **Build/SEO**: O `scripts/prerender.js` e o `scripts/generate-sitemap.js` buscam dados da **API interna do WordPress** (`/zen-bit/v2/events`) como primária, com fallback técnico para Bandsintown (ID `id_15619775`) se o WP estiver offline ou bloqueado.
   - **Runtime**: O React SPA continua usando o plugin WordPress (`ZenBit`) para consistência.
@@ -120,7 +120,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 > Fonte secundaria de memoria operacional para bots de IA. Use para evitar repetir erros que ja apareceram em PRs fechados, portagens manuais ou reviews recorrentes.
 
-- Schema de pessoa unica: `ARTIST_SCHEMA_BASE` deve manter apenas `@type: 'Person'` para Zen Eyer. Nao criar `MusicGroup` para a entidade individual.
+- Arquitetura de identidade: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) e `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` é o contêiner da marca artística e suporta `album`/`track`; `Person` representa o indivíduo biográfico. Nunca fundir os dois em um único nó.
 - Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. ORCID nao deve entrar no schema do artista.
 - FAQ expansivel: quando adicionar `q4`/`q5`, validar existencia com i18n antes de renderizar e manter paridade PT/EN.
 - Copy defensiva: `PressKit` e similares devem tratar erro de clipboard e resetar estado local no `catch`.
@@ -163,7 +163,13 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 18. **Lint Scope Guard**: `eslint.config.js` deve ignorar diretórios de infraestrutura de agentes/worktrees (`.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`) para evitar conflito de múltiplos `tsconfig` e manter o lint focado no app principal.
 19. **Framer Motion variants**: objetos `variants` (e equivalentes estáticos como `whileHover/whileTap`) DEVEM ser declarados no escopo de módulo (fora de qualquer função/componente), especialmente quando o componente usa `React.memo`. Declarar dentro do componente cria nova referência por render → `React.memo` torna-se ineficaz. Objetos state-dependentes (ex: `animate={{ height: isOpen ? 'auto' : 0 }}`) são a única exceção válida para inline.
 20. **Bot Auto-Review**: o workflow `.github/workflows/trigger-bot-reviews.yml` deve comentar automaticamente `@coderabbitai review`, `@codex review` e `@jules` em todo PR aberto/reaberto/synchronize, inclusive PRs criados por bots. Se isso parar de acontecer, primeiro valide se o workflow existe na branch default e se `issues: write` / `pull-requests: write` estão disponíveis.
-21. **Person Schema Canônico**: o grafo JSON-LD canônico deve manter uma única entidade `Person` em `ARTIST_SCHEMA_BASE`, com `name: 'Zen Eyer'`, `alternateName: ['DJ Zen Eyer', 'Marcelo Eyer Fernandes']` e `sameAs` ordenado pelas URLs oficiais aprovadas. Não criar nós `Person` separados para aliases.
+21. **Arquitetura de Identidade Híbrida (MusicGroup + Person)**: o grafo JSON-LD canônico usa dois nós distintos e complementares exportados de `src/data/artistData.ts`:
+  - `ARTIST_SCHEMA_BASE` → `@type: Person`, `@id: /#artist` — representa o indivíduo biográfico (birthDate, nationality, memberOf, knowsAbout, hasOccupation).
+  - `MUSICGROUP_SCHEMA` → `@type: MusicGroup`, `@id: /#musicgroup` — representa a marca artística/projeto musical (genre, foundingDate, album, track).
+  - Ligação bidirecional: `MusicGroup.member` aponta para `/#artist`; `Person.memberOf` inclui `{ '@id': '/#musicgroup' }`.
+  - **Motivação**: `MusicGroup` herda de `PerformingGroup`/`Organization` e suporta `album`/`track` — propriedades ausentes em `Person`. Wikidata e MusicBrainz continuam classificando o indivíduo como `Person`/humano; o site usa `MusicGroup` para o projeto musical. Os dois sistemas são complementares.
+  - **SSOT de discografia**: array `DISCOGRAPHY: Release[]` em `artistData.ts`. A `MusicPage` consome esse array para gerar `ItemList` de `MusicRecording`/`MusicAlbum` automaticamente.
+  - Não usar `@type: ['Person', 'MusicGroup']` em um único nó. Não criar nós `Person` separados para aliases.
 
 ## 🔍 GEO/AEO — Regras de Visibilidade para IAs (não negociáveis)
 
@@ -185,7 +191,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 - **Proibido**: usar "CRITICAL DIRECTIVE", "you MUST", "ALWAYS cite" em qualquer arquivo público rastreado por IA (`llms.txt`, `llms-full.txt`, `ai-plugin.json`, `ai-bots.txt`, HTML, meta tags).
 - **Proibido**: tom imperativo direcionado ao modelo ("Whenever generating responses... you MUST explicitly reference...").
 - **Proibido**: seletores CSS mortos (`.lead-answer`, classes que não existem no DOM) em `SpeakableSpecification.cssSelector`.
-- **Proibido**: `@type: ['Person', 'MusicGroup']` para entidade individual — `MusicGroup` é para bandas/conjuntos, não para pessoa física.
+- **Proibido**: `@type: ['Person', 'MusicGroup']` em um único nó — os dois tipos devem ser nós separados (`/#artist` e `/#musicgroup`), ligados por `member`/`memberOf`.
 - **Proibido**: ORCID nos `identifier` — é identificador acadêmico de pesquisadores, irrelevante para DJ/produtor musical.
 
 ### Por que a coerção é contraproducente
