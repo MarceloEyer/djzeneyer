@@ -158,7 +158,9 @@
   },
   "events": {
     "title_part1": "Events",
-    "title_part2": "Schedule"
+    "title_part2": "Schedule",
+    "press_kit": "Press Kit",
+    "featured": "Featured Event"
   },
   "gamification": {
     "zenTribe": "Zen Tribe",

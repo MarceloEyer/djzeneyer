@@ -10,7 +10,7 @@ import {
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
@@ -132,6 +132,7 @@ const HomePage: React.FC = () => {
         "inLanguage": ["en", "pt-BR"]
       },
       ARTIST_SCHEMA_BASE,
+      MUSICGROUP_SCHEMA,
       {
         "@type": "WebPage",
         "@id": `${currentUrl}#webpage`,

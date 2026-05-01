@@ -7,7 +7,7 @@ import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
 import { YoutubeIcon } from '../components/icons/BrandIcons';
 import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-import { ARTIST } from '../data/artistData';
+import { ARTIST, MUSICGROUP_SCHEMA, DISCOGRAPHY } from '../data/artistData';
 import { safeUrl } from '../utils/sanitize';
 
 // --- SVG Icons for music platforms ---
@@ -69,22 +69,99 @@ const MusicPage: React.FC = () => {
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
     const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
+
+    // Known artist profile URLs — must NOT be used as sameAs for individual releases/tracks
+    const ARTIST_PROFILE_URLS = new Set([
+      'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+      'https://music.apple.com/artist/1439280950',
+      'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
+      'https://soundcloud.com/djzeneyer',
+      'https://www.youtube.com/@djzeneyer',
+      'https://www.deezer.com/artist/52900762',
+      'https://tidal.com/artist/10492592',
+      'https://music.amazon.com/artists/B07JKCDCG8',
+    ]);
+
+    const isReleaseSpecificUrl = (url: string | undefined): url is string =>
+      !!url && !ARTIST_PROFILE_URLS.has(url);
+
+    // ItemList: cada release vira um ListItem apontando para MusicRecording/MusicAlbum
+    const releaseListItems = DISCOGRAPHY.map((release, index) => {
+      // Usar âncoras na própria MusicPage em vez de rotas /release/:id inexistentes
+      const releaseAnchor = `${pageUrl}#release-${release.id}`;
+      const schemaType = release.type === 'album' ? 'MusicAlbum'
+        : release.type === 'ep' ? 'MusicAlbum'
+        : 'MusicRecording';
+
+      const releaseNode: Record<string, unknown> = {
+        '@type': schemaType,
+        '@id': releaseAnchor,
+        name: release.name,
+        url: pageUrl,
+        image: release.image,
+        datePublished: release.releaseDate,
+        byArtist: { '@id': `${baseUrl}/#musicgroup` },
+      };
+
+      if (release.description) releaseNode.description = release.description;
+
+      // sameAs: ONLY release-specific URLs (not artist profile pages)
+      const sameAsLinks = [
+        release.spotifyUrl,
+        release.appleMusicUrl,
+        release.youtubeMusicUrl,
+        release.soundcloudUrl,
+      ].filter(isReleaseSpecificUrl);
+      if (sameAsLinks.length > 0) releaseNode.sameAs = sameAsLinks;
+
+      // Faixas (MusicRecording dentro do álbum/EP)
+      if (release.tracks.length > 0 && schemaType === 'MusicAlbum') {
+        releaseNode.track = release.tracks.map((track) => {
+          const trackNode: Record<string, unknown> = {
+            '@type': 'MusicRecording',
+            name: track.name,
+            byArtist: { '@id': `${baseUrl}/#musicgroup` },
+          };
+          // Only emit duration if it's a real value (not placeholder)
+          if (track.duration) trackNode.duration = track.duration;
+          if (track.isrcCode) trackNode.isrcCode = track.isrcCode;
+          const trackSameAs = [track.spotifyUrl, track.youtubeMusicUrl].filter(isReleaseSpecificUrl);
+          if (trackSameAs.length > 0) trackNode.sameAs = trackSameAs;
+          return trackNode;
+        });
+      }
+
+      // Para single: a faixa principal é o próprio nó
+      if (schemaType === 'MusicRecording' && release.tracks[0]) {
+        const t0 = release.tracks[0];
+        // Only emit duration if it's a real value
+        if (t0.duration) releaseNode.duration = t0.duration;
+        if (t0.isrcCode) releaseNode.isrcCode = t0.isrcCode;
+      }
+
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        item: releaseNode,
+      };
+    });
+
+    // VideoObject: canal oficial do YouTube como recurso de vídeo
+    const videoObject = {
+      '@type': 'VideoObject',
+      name: `${ARTIST.identity.stageName} — Official YouTube Channel`,
+      description: `Official YouTube channel of ${ARTIST.identity.stageName}. DJ sets, remixes, and Brazilian Zouk music videos.`,
+      thumbnailUrl: `${baseUrl}/images/zen-eyer-og-image.png`,
+      uploadDate: `${ARTIST.stats.startingYear}-01-01`,
+      url: ARTIST.social.youtube.url,
+      embedUrl: `https://www.youtube.com/embed?listType=user_uploads&list=djzeneyer`,
+      author: { '@id': `${baseUrl}/#musicgroup` },
+    };
+
     return {
       '@context': 'https://schema.org',
       '@graph': [
-        {
-          '@type': 'MusicGroup',
-          '@id': `${baseUrl}/#artist`,
-          name: ARTIST.identity.stageName,
-          url: baseUrl,
-          genre: ['Brazilian Zouk', 'Zouk'],
-          sameAs: [
-            ARTIST.social.spotify.url,
-            ARTIST.social.appleMusic.url,
-            ARTIST.social.soundcloud.url,
-            ARTIST.social.youtube.url,
-          ].filter(Boolean),
-        },
+        MUSICGROUP_SCHEMA,
         {
           '@type': 'CollectionPage',
           '@id': `${pageUrl}#webpage`,
@@ -92,7 +169,7 @@ const MusicPage: React.FC = () => {
           name: t('music_page_title'),
           description: t('music_page_meta_desc'),
           isPartOf: { '@id': `${baseUrl}/#website` },
-          about: { '@id': `${baseUrl}/#artist` },
+          about: { '@id': `${baseUrl}/#musicgroup` },
           breadcrumb: {
             '@type': 'BreadcrumbList',
             itemListElement: [
@@ -101,6 +178,17 @@ const MusicPage: React.FC = () => {
             ],
           },
         },
+        // ItemList de releases — conecta o catálogo ao grafo
+        ...(releaseListItems.length > 0 ? [{
+          '@type': 'ItemList',
+          '@id': `${pageUrl}#discography`,
+          name: `${ARTIST.identity.stageName} — Discography`,
+          description: `Official releases by ${ARTIST.identity.stageName}: singles, remixes, and EPs for Brazilian Zouk dancing.`,
+          url: pageUrl,
+          numberOfItems: releaseListItems.length,
+          itemListElement: releaseListItems,
+        }] : []),
+        videoObject,
       ],
     };
   }, [t, currentLang]);
