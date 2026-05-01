@@ -16,6 +16,8 @@
 - Para a entidade publica do artista, mantenha uma unica entidade `Person` em `ARTIST_SCHEMA_BASE`.
 - Nao crie um no `MusicGroup` separado para a pessoa fisica.
 - Nao use ORCID no grafo do artista; use apenas identificadores aprovados e verificaveis.
+- Em `sameAs`, prefira anchors fortes e oficiais: Wikidata, MusicBrainz, Discogs e perfis principais de streaming/social. Evite LinkedIn, Mixcloud e perfis fracos sem utilidade clara.
+- Quando uma entrada em `subjectOf` comprovar a presenca do artista, a URL deve apontar para a pagina exata de evidencia, nao para o root do site.
 - Em paginas com FAQ expansivel, `q4` e `q5` so entram quando a chave existir no locale atual.
 - Quando o texto for visivel ao usuario, use `t('chave')` e nao string hardcoded.
 
