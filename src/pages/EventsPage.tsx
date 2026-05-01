@@ -341,7 +341,7 @@ const EventsPage: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
             <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">Press Kit</Link>
+            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</Link>
           </div>
         </section>
       </div>
