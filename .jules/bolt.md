@@ -121,3 +121,8 @@
 ## 2024-05-18 - Replacing `String.prototype.split()` with zero-allocation alternatives
 **Learning:** `String.prototype.split()` creates an intermediate array, which adds overhead and garbage collection pressure, particularly in hot paths like routing maps or render loops.
 **Action:** When extracting substrings or indices in performance-critical code paths, utilize zero-allocation native string methods like `indexOf()` combined with `slice()` instead of chained `.split()` calls. Focus primarily on hot paths and leave isolated, infrequent calls alone.
+
+## 2024-05-18 - Stable empty array fallback
+
+**Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
+**Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.

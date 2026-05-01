@@ -28,6 +28,9 @@ import {
 // --- Interfaces (Idealmente em src/types/index.ts) ---
 type Product = WCProduct;
 
+// ⚡ Bolt: Define static empty array to prevent unnecessary reallocation and preserve reference equality on empty states
+const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];
+
 // --- Componente de Carrossel Horizontal ---
 // --- Netflix-style Paging Indicator ---
 interface PagingIndicatorProps {
@@ -383,9 +386,9 @@ const ShopPage: React.FC = () => {
   const featuredProduct = Array.isArray(shopData?.featured)
     ? shopData.featured[0]
     : (shopData?.featured || null);
-  const newReleases = shopData?.new_releases || [];
-  const bestSellers = shopData?.best_sellers || [];
-  const curatedSelection = shopData?.curated || [];
+  const newReleases = shopData?.new_releases || EMPTY_PRODUCT_ARRAY;
+  const bestSellers = shopData?.best_sellers || EMPTY_PRODUCT_ARRAY;
+  const curatedSelection = shopData?.curated || EMPTY_PRODUCT_ARRAY;
 
   const newReleasesIds = useMemo(() => new Set(newReleases.map(p => p.id)), [newReleases]);
   const bestSellersIds = useMemo(() => new Set(bestSellers.map(p => p.id)), [bestSellers]);

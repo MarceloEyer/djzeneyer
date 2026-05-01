@@ -89,7 +89,6 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     }, [isMenuOpen]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMenuOpen(false);
     }, [location.pathname]);
 
@@ -109,11 +108,34 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         return menuItems.map(item => {
             const rawUrl = item.url || '/';
             const isExternal = /^https?:\/\//i.test(rawUrl);
-            const localizedPath = isExternal ? rawUrl : getLocalizedRoute(rawUrl.split(/[#?]/)[0], currentLang);
             
-            // Re-add query and hash
-            const queryPart = rawUrl.includes('?') ? '?' + rawUrl.split('?')[1].split('#')[0] : '';
-            const hashPart = rawUrl.includes('#') ? '#' + rawUrl.split('#')[1] : '';
+            // ⚡ Bolt: Replaced allocating split() calls with zero-allocation indexOf/slice for URL parsing
+            let basePath = rawUrl;
+            let queryPart = '';
+            let hashPart = '';
+
+            const queryIndex = rawUrl.indexOf('?');
+            const hashIndex = rawUrl.indexOf('#');
+
+            if (queryIndex !== -1 && hashIndex !== -1) {
+                if (queryIndex < hashIndex) {
+                    basePath = rawUrl.slice(0, queryIndex);
+                    queryPart = rawUrl.slice(queryIndex, hashIndex);
+                    hashPart = rawUrl.slice(hashIndex);
+                } else {
+                    basePath = rawUrl.slice(0, hashIndex);
+                    hashPart = rawUrl.slice(hashIndex, queryIndex);
+                    queryPart = rawUrl.slice(queryIndex);
+                }
+            } else if (queryIndex !== -1) {
+                basePath = rawUrl.slice(0, queryIndex);
+                queryPart = rawUrl.slice(queryIndex);
+            } else if (hashIndex !== -1) {
+                basePath = rawUrl.slice(0, hashIndex);
+                hashPart = rawUrl.slice(hashIndex);
+            }
+
+            const localizedPath = isExternal ? rawUrl : getLocalizedRoute(basePath, currentLang);
 
             const fullUrl = isExternal ? rawUrl : `${localizedPath}${queryPart}${hashPart}`;
             let safeUrl = isExternal ? fullUrl : sanitizePath(fullUrl);
