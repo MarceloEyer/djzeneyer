@@ -918,42 +918,9 @@ export const MUSICGROUP_SCHEMA = {
     },
   },
   // Ligação bidirecional com a entidade Person
-  member: {
-    '@type': 'OrganizationRole',
-    member: { '@id': `${ARTIST.site.baseUrl}/#artist` },
-    roleName: 'DJ & Music Producer',
-    startDate: String(ARTIST.stats.startingYear),
-  },
+  member: { '@id': `${ARTIST.site.baseUrl}/#artist` },
   award: [
     'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
-  ],
-  sameAs: ARTIST_SCHEMA_SAME_AS,
-  identifier: [
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Wikidata',
-      value: 'Q136551855',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'MusicBrainz',
-      value: '13afa63c-8164-4697-9cad-c5100062a154',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'ISNI',
-      value: '0000000528931015',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Discogs',
-      value: '16872046',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Spotify',
-      value: '68SHKGndTlq3USQ2LZmyLw',
-    },
   ],
 };

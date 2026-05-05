@@ -97,7 +97,7 @@ const MusicPage: React.FC = () => {
         '@type': schemaType,
         '@id': releaseAnchor,
         name: release.name,
-        url: pageUrl,
+        url: releaseAnchor,
         image: release.image,
         datePublished: release.releaseDate,
         byArtist: { '@id': `${baseUrl}/#musicgroup` },
