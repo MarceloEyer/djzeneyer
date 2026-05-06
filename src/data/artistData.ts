@@ -159,8 +159,8 @@ export const ARTIST = {
 
   // 📱 Redes Sociais / Plataformas
   social: {
-    instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
-    facebook: { handle: 'djzeneyer', url: 'https://facebook.com/djzeneyer' },
+    instagram: { handle: '@djzeneyer', url: 'https://www.instagram.com/djzeneyer/' },
+    facebook: { handle: 'djzeneyer', url: 'https://www.facebook.com/djzeneyer/' },
     youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
     tiktok: { handle: '@djzeneyer', url: 'https://www.tiktok.com/@djzeneyer' },
     twitter: { handle: '@djzeneyer', url: 'https://x.com/djzeneyer' },
@@ -172,7 +172,7 @@ export const ARTIST = {
       id: '68SHKGndTlq3USQ2LZmyLw',
       url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
     },
-    appleMusic: { url: 'https://music.apple.com/artist/1439280950' },
+    appleMusic: { url: 'https://music.apple.com/us/artist/1439280950' },
     youtubeMusic: { url: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg' },
     deezer: { url: 'https://www.deezer.com/artist/52900762' },
     bandsintown: { url: 'https://www.bandsintown.com/a/15619775' },
@@ -406,6 +406,7 @@ export const getWhatsAppUrl = (message?: string) => {
 };
 
 // Schema.org Person base (consolidated for Knowledge Graph)
+// Order: authoritative databases → social profiles → streaming → live/touring
 export const ARTIST_SCHEMA_SAME_AS = [
   // Authoritative databases (semantically rich first)
   'https://www.wikidata.org/wiki/Q136551855',
@@ -413,20 +414,26 @@ export const ARTIST_SCHEMA_SAME_AS = [
   'https://www.discogs.com/artist/16872046',
   // Academic / authority identifiers
   'https://isni.org/isni/0000000528931015',
+  // Social profiles
+  'https://www.instagram.com/djzeneyer/',
+  'https://www.facebook.com/djzeneyer/',
+  'https://www.youtube.com/@djzeneyer',
+  'https://www.tiktok.com/@djzeneyer',
+  'https://x.com/djzeneyer',
+  'https://www.linkedin.com/in/eyermarcelo',
   // Streaming / music platforms
   'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
   'https://music.apple.com/us/artist/1439280950',
-  'https://www.deezer.com/artist/72153362',
+  'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
+  'https://www.deezer.com/artist/52900762',
   'https://tidal.com/artist/10492592',
   'https://music.amazon.com/artists/B07JKCDCG8',
   'https://soundcloud.com/djzeneyer',
-  // Social / video
-  'https://www.instagram.com/djzeneyer/',
-  'https://www.facebook.com/djzeneyer/',
-  // Official channel (youtube.com/@djzeneyer) — will become OAC; Topic channel excluded intentionally
-  'https://www.youtube.com/@djzeneyer',
+  'https://www.mixcloud.com/djzeneyer',
   // Live / touring platforms
   'https://ra.co/dj/djzeneyer',
+  'https://www.songkick.com/artists/8815204-zen-eyer',
+  'https://www.bandsintown.com/a/15619775',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
@@ -845,7 +852,7 @@ export const DISCOGRAPHY: Release[] = [
     tracks: [
       {
         name: 'Porta Do Sol - Cover',
-        duration: 'PT5M07S',
+        duration: 'PT5M7S',
       },
     ],
   },
@@ -884,14 +891,31 @@ export const MUSICGROUP_SCHEMA = {
     'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
   ],
+  // MusicGroup.sameAs: todos os perfis oficiais — redes sociais + plataformas de música
   sameAs: [
-    ARTIST.social.spotify.url,
-    ARTIST.social.appleMusic.url,
-    ARTIST.social.youtubeMusic.url,
-    ARTIST.social.soundcloud.url,
-    ARTIST.social.youtube.url,
-    ARTIST.identifiers.musicbrainzUrl,
-    ARTIST.identifiers.discogsUrl,
+    // Authoritative databases
+    'https://www.wikidata.org/wiki/Q136551855',
+    'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+    'https://www.discogs.com/artist/16872046',
+    // Social profiles
+    'https://www.instagram.com/djzeneyer/',
+    'https://www.facebook.com/djzeneyer/',
+    'https://www.youtube.com/@djzeneyer',
+    'https://www.tiktok.com/@djzeneyer',
+    'https://x.com/djzeneyer',
+    // Streaming / music platforms
+    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+    'https://music.apple.com/us/artist/1439280950',
+    'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
+    'https://www.deezer.com/artist/52900762',
+    'https://tidal.com/artist/10492592',
+    'https://music.amazon.com/artists/B07JKCDCG8',
+    'https://soundcloud.com/djzeneyer',
+    'https://www.mixcloud.com/djzeneyer',
+    // Live / touring
+    'https://ra.co/dj/djzeneyer',
+    'https://www.songkick.com/artists/8815204-zen-eyer',
+    'https://www.bandsintown.com/a/15619775',
   ],
   identifier: [
     {
