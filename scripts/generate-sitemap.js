@@ -130,8 +130,10 @@ async function generateSitemaps() {
 
       const enSlug = route.en === '' ? '' : route.en.replace(/^\/+/, '');
       const ptSlug = route.pt === '' ? '' : route.pt.replace(/^\/+/, '');
-      const enUrl = enSlug === '' ? `${BASE_URL}/` : `${BASE_URL}/${enSlug}/`;
-      const ptUrl = ptSlug === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${ptSlug}/`;
+      
+      // Sanitizar caminhos para evitar barras duplas e garantir trailing slash
+      const enUrl = enSlug === '' ? `${BASE_URL}/` : `${BASE_URL}/${enSlug}/`.replace(/\/+$/, '/');
+      const ptUrl = ptSlug === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${ptSlug}/`.replace(/\/+$/, '/');
       const priority = enSlug === '' ? '1.0' : '0.8';
 
       // EN entry: x-default points to EN
@@ -146,6 +148,12 @@ async function generateSitemaps() {
 
     // 2. Events Sitemap
     const events = await fetchEvents();
+    
+    // Obter slugs canônicos de eventos do routes-slugs.json
+    const eventsRoute = routesData.routes.find(r => r.key === 'events');
+    const eventsSlugEn = (eventsRoute?.en || 'zouk-events').replace(/^\/+|\/+$/g, '');
+    const eventsSlugPt = (eventsRoute?.pt || 'eventos-zouk').replace(/^\/+|\/+$/g, '');
+
     let eventCount = 0;
     if (events.length > 0) {
       let eventsXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -156,15 +164,18 @@ async function generateSitemaps() {
       for (const event of events) {
         // Determinamos o slug independente do idioma
         const eventId = event.event_id;
+        
+        // Extração robusta do slug final (YYYY-MM-DD-title-ID)
+        // Remove prefixos comuns legados ou atuais para isolar o path do evento
         const relativePath = event.canonical_path
-          ? event.canonical_path.replace(/^\/events\//, '')
+          ? event.canonical_path.replace(/^\/(zouk-events|events|eventos-zouk|eventos)\//, '').replace(/^\/+/, '')
           : eventId;
 
         if (!relativePath) continue;
 
-        // Construímos os URLs conforme as rotas definidas no routes.ts
-        const enEventUrl = `${BASE_URL}/events/${relativePath}/`;
-        const ptEventUrl = `${BASE_URL}/pt/eventos/${relativePath}/`;
+        // Construímos os URLs usando os slugs REAIS da configuração SSOT
+        const enEventUrl = `${BASE_URL}/${eventsSlugEn}/${relativePath}/`;
+        const ptEventUrl = `${BASE_URL}/pt/${eventsSlugPt}/${relativePath}/`;
 
         // Adicionamos ambos ao sitemap com link alternativo e imagem do evento
         eventsXml += buildUrlEntry(enEventUrl, date, '0.7', ptEventUrl, event.image, true);

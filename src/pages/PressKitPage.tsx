@@ -20,19 +20,12 @@ import {
   MapPin,
   PlayCircle,
   Radio,
-  Database,
   ExternalLink,
   Copy,
   Check
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../data/artistData';
-
-const PRESS_LINKS = {
-  photos: ARTIST.site.media.photosUrl,
-  epk: ARTIST.site.media.epkPdf,
-  logos: ARTIST.site.media.logosZip,
-};
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
   ({ icon, number, label, color }) => (
@@ -79,12 +72,20 @@ const MediaKitCard = memo<{
 MediaKitCard.displayName = 'MediaKitCard';
 
 const PressKitPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { artist } = useBranding();
   const location = useLocation();
 
   const currentPath = location.pathname;
   const currentUrl = `https://djzeneyer.com${currentPath}`;
+  const isPortuguese = i18n.language?.startsWith('pt');
+
+  const pressLinks = useMemo(() => ({
+    photos: ARTIST.site.media.photosUrl,
+    epk: isPortuguese ? ARTIST.site.media.epkPdfPt : ARTIST.site.media.epkPdfEn,
+    epkMd: isPortuguese ? ARTIST.site.media.epkMdPt : ARTIST.site.media.epkMdEn,
+    logos: ARTIST.site.media.logosZip,
+  }), [isPortuguese]);
 
   const [isCopied, setIsCopied] = useState(false);
   const handleCopyBio = useCallback(() => {
@@ -102,13 +103,6 @@ const PressKitPage: React.FC = () => {
       { name: t('social.youtube'), url: artist.social.youtube?.url, icon: <Radio size={20} /> },
       { name: t('social.spotify'), url: artist.social.spotify?.url, icon: <PlayCircle size={20} /> },
       { name: t('social.apple_music'), url: artist.social.appleMusic?.url, icon: <PlayCircle size={20} /> },
-      {
-        name: t('social.musicbrainz'),
-        url: `https://musicbrainz.org/artist/${artist.identifiers.musicbrainz}`,
-        icon: <Database size={20} />
-      },
-      { name: t('social.wikidata'), url: `https://www.wikidata.org/wiki/${artist.identifiers.wikidata}`, icon: <Globe size={20} /> },
-      { name: t('social.discogs'), url: artist.social.discogs?.url, icon: <Database size={20} /> },
       { name: t('social.resident_advisor'), url: artist.social.residentAdvisor?.url, icon: <ExternalLink size={20} /> }
     ].filter(l => !!l.url),
     [t, artist]
@@ -180,26 +174,33 @@ const PressKitPage: React.FC = () => {
       {
         title: t('presskit.media.photos'),
         desc: t('presskit.media.photos_desc'),
-        path: PRESS_LINKS.photos,
+        path: pressLinks.photos,
         icon: <ImageIcon size={32} />,
         isExternal: true
       },
       {
         title: t('presskit.media.bio'),
         desc: t('presskit.media.bio_desc'),
-        path: PRESS_LINKS.epk,
+        path: pressLinks.epk,
+        icon: <FileText size={32} />,
+        isExternal: false
+      },
+      {
+        title: t('presskit.media.markdown'),
+        desc: t('presskit.media.markdown_desc'),
+        path: pressLinks.epkMd,
         icon: <FileText size={32} />,
         isExternal: false
       },
       {
         title: t('presskit.media.logos'),
         desc: t('presskit.media.logos_desc'),
-        path: PRESS_LINKS.logos,
+        path: pressLinks.logos,
         icon: <Music2 size={32} />,
         isExternal: false
       }
     ],
-    [t]
+    [t, pressLinks]
   );
 
   return (
@@ -431,13 +432,13 @@ const PressKitPage: React.FC = () => {
 
               <div className="mt-12 text-center">
                 <a
-                  href={PRESS_LINKS.photos}
+                  href={pressLinks.photos}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-primary btn-lg inline-flex items-center gap-2 px-10"
                 >
                   <ImageIcon size={20} />
-                  Acessar Todas as Fotos
+                  {t('presskit.gallery.cta')}
                 </a>
               </div>
             </motion.div>

@@ -371,7 +371,12 @@ export const ARTIST = {
       'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at Ilha do Zouk DJ Championship.',
     media: {
       photosUrl: 'https://photos.djzeneyer.com',
-      epkPdf: '/media/dj-zen-eyer-bio.pdf',
+      epkPdf: '/assets/press/dj-zen-eyer-presskit.pdf',
+      epkPdfEn: '/assets/press/dj-zen-eyer-presskit-en.pdf',
+      epkPdfPt: '/assets/press/dj-zen-eyer-presskit-pt.pdf',
+      epkMd: '/assets/press/dj-zen-eyer-presskit.md',
+      epkMdEn: '/assets/press/dj-zen-eyer-presskit-en.md',
+      epkMdPt: '/assets/press/dj-zen-eyer-presskit-pt.md',
       logosZip: '/media/dj-zen-eyer-logos.zip',
     },
     pages: {
@@ -380,7 +385,7 @@ export const ARTIST = {
       events: '/events',
       music: '/music',
       tribe: '/zentribe',
-      presskit: '/work-with-me',
+      presskit: '/press-kit-dj-zen-eyer',
       shop: '/shop',
       faq: '/faq',
       media: '/na-midia',
@@ -742,7 +747,7 @@ export const ARTIST_SCHEMA_BASE = {
 
 export interface ReleaseTrack {
   name: string;
-  duration?: string; // ISO 8601 — ex: PT4M30S (optional: omit if not verified)
+  duration?: string; // ISO 8601; omit if not verified.
   isrcCode?: string;
   spotifyUrl?: string;
   youtubeMusicUrl?: string;
@@ -750,14 +755,16 @@ export interface ReleaseTrack {
 }
 
 export interface Release {
-  id: string;           // slug único, usado em rotas futuras /release/:id
+  id: string;
   name: string;
   type: 'single' | 'ep' | 'album' | 'remix';
-  releaseDate: string;  // YYYY-MM-DD
-  image: string;        // URL absoluta da capa
+  releaseDate?: string; // YYYY-MM-DD; omit if not verified.
+  releaseYear?: string;
+  image: string;
   spotifyId?: string;
   spotifyUrl?: string;
   appleMusicUrl?: string;
+  musicBrainzUrl?: string;
   deezerUrl?: string;
   tidalUrl?: string;
   amazonMusicUrl?: string;
@@ -771,24 +778,17 @@ export interface Release {
 export const DISCOGRAPHY: Release[] = [
   {
     id: 'dont-stop-zen-eyer-remix',
-    name: "Don't Stop - Zen Eyer Remix",
+    name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
     type: 'remix',
-    releaseDate: '2024-01-01',
+    releaseDate: '2018-10-25',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    deezerUrl: 'https://www.deezer.com/artist/52900762',
-    tidalUrl: 'https://tidal.com/artist/10492592',
-    amazonMusicUrl: 'https://music.amazon.com/artists/B07JKCDCG8',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
-    description: "Brazilian Zouk remix of Don't Stop. Most streamed track by Zen Eyer on Spotify (228k+ plays).",
+    appleMusicUrl: 'https://music.apple.com/us/song/1596290116',
+    musicBrainzUrl: 'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154?va=1',
+    description: "Brazilian Zouk remix of Kaysha's Don't Stop. Apple Music lists the track in Don't Stop (Remixes) - Single, released October 25, 2018.",
     tracks: [
       {
-        name: "Don't Stop - Zen Eyer Remix",
+        name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
         duration: 'PT3M39S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-        youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
       },
     ],
   },
@@ -796,35 +796,28 @@ export const DISCOGRAPHY: Release[] = [
     id: 'na-ponta-ela-fica-cover',
     name: 'Na Ponta Ela Fica - Cover',
     type: 'single',
-    releaseDate: '2024-01-01',
+    releaseDate: '2026-01-09',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
+    appleMusicUrl: 'https://music.apple.com/us/album/na-ponta-ela-fica-cover-single/1867840116',
+    musicBrainzUrl: 'https://musicbrainz.org/release/7b0c16b2-24a8-4923-b3e1-f3b852e5b064',
     tracks: [
       {
         name: 'Na Ponta Ela Fica - Cover',
         duration: 'PT2M22S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
       },
     ],
   },
   {
     id: 'still-loving-you-sax-cover',
-    name: 'Still Loving You - Sax Cover',
+    name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
     type: 'single',
-    releaseDate: '2024-01-01',
+    releaseDate: '2026-01-27',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
+    appleMusicUrl: 'https://music.apple.com/us/album/still-loving-you-feat-walter-xavier-sax-cover-single/1872468504',
     tracks: [
       {
-        name: 'Still Loving You - Sax Cover',
+        name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
         duration: 'PT4M24S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
       },
     ],
   },
@@ -832,59 +825,27 @@ export const DISCOGRAPHY: Release[] = [
     id: 'baila-flaquita',
     name: 'Baila Flaquita',
     type: 'single',
-    releaseDate: '2024-01-01',
+    releaseYear: '2026',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
     soundcloudUrl: 'https://soundcloud.com/djzeneyer',
     tracks: [
       {
         name: 'Baila Flaquita',
-        duration: 'PT1M44S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
       },
     ],
   },
   {
     id: 'porta-do-sol-cover',
-    name: 'Porta do Sol - Cover',
+    name: 'Porta Do Sol - Cover',
     type: 'single',
-    releaseDate: '2024-01-01',
+    releaseDate: '2026-01-06',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
+    appleMusicUrl: 'https://music.apple.com/us/album/porta-do-sol-cover-single/1867002457',
+    musicBrainzUrl: 'https://musicbrainz.org/release/b1c9f977-3642-4c86-a66d-b7b5a4564064',
     tracks: [
       {
-        name: 'Porta do Sol - Cover',
+        name: 'Porta Do Sol - Cover',
         duration: 'PT5M07S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-      },
-    ],
-  },
-  {
-    id: 'diamonds-zouk-remix',
-    name: 'Diamonds (Zouk Remix feat. Kaysha)',
-    type: 'remix',
-    releaseDate: '2024-08-01',
-    image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    deezerUrl: 'https://www.deezer.com/artist/52900762',
-    tidalUrl: 'https://tidal.com/artist/10492592',
-    amazonMusicUrl: 'https://music.amazon.com/artists/B07JKCDCG8',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
-    description: 'Brazilian Zouk remix featuring Kaysha, bridging Brazil and Africa. Covered by MyZA Entertainment.',
-    tracks: [
-      {
-        name: 'Diamonds (Zouk Remix feat. Kaysha)',
-        duration: 'PT3M39S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-        youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-        youtubeUrl: 'https://www.youtube.com/@djzeneyer',
       },
     ],
   },
@@ -901,9 +862,9 @@ export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
+  alternateName: [ARTIST.identity.stageName],
   description:
-    'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Ilha do Zouk DJ Championship (2022). Known for the cremoso style of DJing.',
+    'Zen Eyer is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
@@ -923,22 +884,20 @@ export const MUSICGROUP_SCHEMA = {
     'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
   ],
-  sameAs: ARTIST_SCHEMA_SAME_AS,
+  sameAs: [
+    ARTIST.social.spotify.url,
+    ARTIST.social.appleMusic.url,
+    ARTIST.social.youtubeMusic.url,
+    ARTIST.social.soundcloud.url,
+    ARTIST.social.youtube.url,
+    ARTIST.identifiers.musicbrainzUrl,
+    ARTIST.identifiers.discogsUrl,
+  ],
   identifier: [
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Wikidata',
-      value: 'Q136551855',
-    },
     {
       '@type': 'PropertyValue',
       propertyID: 'MusicBrainz',
       value: '13afa63c-8164-4697-9cad-c5100062a154',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'ISNI',
-      value: '0000000528931015',
     },
     {
       '@type': 'PropertyValue',

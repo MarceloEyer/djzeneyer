@@ -59,7 +59,7 @@ class Zen_BIT_Normalizer
     public static function build_canonical_path(string $event_id, string $datetime, string $title): string
     {
         if ($event_id === '')
-            return '/events/unknown';
+            return '/zouk-events/unknown';
 
         $date_part = '';
         if ($datetime !== '') {
@@ -71,10 +71,10 @@ class Zen_BIT_Normalizer
         $slug = self::slugify($title, 55);
 
         if ($date_part !== '' && $slug !== '') {
-            return '/events/' . $date_part . '-' . $slug . '-' . $event_id;
+            return '/zouk-events/' . $date_part . '-' . $slug . '-' . $event_id;
         }
 
-        return '/events/' . $event_id;
+        return '/zouk-events/' . $event_id;
     }
 
     // =========================================================================
