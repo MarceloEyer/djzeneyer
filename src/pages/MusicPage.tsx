@@ -68,18 +68,11 @@ const MusicPage: React.FC = () => {
 
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
-    const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
-
-    // Known artist profile URLs — must NOT be used as sameAs for individual releases/tracks
-    const ARTIST_PROFILE_URLS = new Set([
-      'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-      'https://music.apple.com/artist/1439280950',
-      'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-      'https://soundcloud.com/djzeneyer',
-      'https://www.youtube.com/@djzeneyer',
-      'https://www.deezer.com/artist/52900762',
-      'https://tidal.com/artist/10492592',
-      'https://music.amazon.com/artists/B07JKCDCG8',
+    const canonicalMusicUrl = `${baseUrl}${getLocalizedRoute('music', 'en')}`;
+    const ARTIST_PROFILE_URLS = new Set<string>([
+      ...Object.values(ARTIST.social)
+        .map((social) => social?.url)
+        .filter((url): url is string => !!url),
     ]);
 
     const isReleaseSpecificUrl = (url: string | undefined): url is string =>
@@ -87,8 +80,12 @@ const MusicPage: React.FC = () => {
 
     // ItemList: cada release vira um ListItem apontando para MusicRecording/MusicAlbum
     const releaseListItems = DISCOGRAPHY.map((release, index) => {
-      // Usar âncoras na própria MusicPage em vez de rotas /release/:id inexistentes
-      const releaseAnchor = `${pageUrl}#release-${release.id}`;
+      // Use forced English anchor for @id to prevent entity duplication across languages
+      const releaseAnchor = `${canonicalMusicUrl}#release-${release.id}`;
+      // Use current localized URL for visual/clickable links
+      const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
+      const releaseUrl = `${pageUrl}#release-${release.id}`;
+
       const schemaType = release.type === 'album' ? 'MusicAlbum'
         : release.type === 'ep' ? 'MusicAlbum'
         : 'MusicRecording';
@@ -97,11 +94,15 @@ const MusicPage: React.FC = () => {
         '@type': schemaType,
         '@id': releaseAnchor,
         name: release.name,
-        url: releaseAnchor,
+        url: releaseUrl,
         image: release.image,
-        datePublished: release.releaseDate,
         byArtist: { '@id': `${baseUrl}/#musicgroup` },
       };
+
+      // Only emit datePublished if it's NOT the 2024-01-01 placeholder
+      if (release.releaseDate && release.releaseDate !== '2024-01-01') {
+        releaseNode.datePublished = release.releaseDate;
+      }
 
       if (release.description) releaseNode.description = release.description;
 
@@ -146,17 +147,7 @@ const MusicPage: React.FC = () => {
       };
     });
 
-    // VideoObject: canal oficial do YouTube como recurso de vídeo
-    const videoObject = {
-      '@type': 'VideoObject',
-      name: `${ARTIST.identity.stageName} — Official YouTube Channel`,
-      description: `Official YouTube channel of ${ARTIST.identity.stageName}. DJ sets, remixes, and Brazilian Zouk music videos.`,
-      thumbnailUrl: `${baseUrl}/images/zen-eyer-og-image.png`,
-      uploadDate: `${ARTIST.stats.startingYear}-01-01`,
-      url: ARTIST.social.youtube.url,
-      embedUrl: `https://www.youtube.com/embed?listType=user_uploads&list=djzeneyer`,
-      author: { '@id': `${baseUrl}/#musicgroup` },
-    };
+
 
     return {
       '@context': 'https://schema.org',
@@ -181,14 +172,13 @@ const MusicPage: React.FC = () => {
         // ItemList de releases — conecta o catálogo ao grafo
         ...(releaseListItems.length > 0 ? [{
           '@type': 'ItemList',
-          '@id': `${pageUrl}#discography`,
+          '@id': `${baseUrl}${getLocalizedRoute('music', currentLang)}#discography`,
           name: `${ARTIST.identity.stageName} — Discography`,
           description: `Official releases by ${ARTIST.identity.stageName}: singles, remixes, and EPs for Brazilian Zouk dancing.`,
-          url: pageUrl,
+          url: `${baseUrl}${getLocalizedRoute('music', currentLang)}`,
           numberOfItems: releaseListItems.length,
           itemListElement: releaseListItems,
         }] : []),
-        videoObject,
       ],
     };
   }, [t, currentLang]);

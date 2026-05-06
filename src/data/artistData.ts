@@ -798,15 +798,11 @@ export const DISCOGRAPHY: Release[] = [
     type: 'single',
     releaseDate: '2024-01-01',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
+    image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
     tracks: [
       {
         name: 'Na Ponta Ela Fica - Cover',
         duration: 'PT2M22S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
       },
     ],
   },
@@ -816,15 +812,10 @@ export const DISCOGRAPHY: Release[] = [
     type: 'single',
     releaseDate: '2024-01-01',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
     tracks: [
       {
         name: 'Still Loving You - Sax Cover',
         duration: 'PT4M24S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
       },
     ],
   },
@@ -834,15 +825,10 @@ export const DISCOGRAPHY: Release[] = [
     type: 'single',
     releaseDate: '2024-01-01',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
     tracks: [
       {
         name: 'Baila Flaquita',
         duration: 'PT1M44S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
       },
     ],
   },
@@ -852,15 +838,10 @@ export const DISCOGRAPHY: Release[] = [
     type: 'single',
     releaseDate: '2024-01-01',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
     tracks: [
       {
         name: 'Porta do Sol - Cover',
-        duration: 'PT5M07S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+        duration: 'PT5M7S',
       },
     ],
   },
@@ -870,21 +851,11 @@ export const DISCOGRAPHY: Release[] = [
     type: 'remix',
     releaseDate: '2024-08-01',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    appleMusicUrl: 'https://music.apple.com/artist/1439280950',
-    deezerUrl: 'https://www.deezer.com/artist/52900762',
-    tidalUrl: 'https://tidal.com/artist/10492592',
-    amazonMusicUrl: 'https://music.amazon.com/artists/B07JKCDCG8',
-    youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
     description: 'Brazilian Zouk remix featuring Kaysha, bridging Brazil and Africa. Covered by MyZA Entertainment.',
     tracks: [
       {
         name: 'Diamonds (Zouk Remix feat. Kaysha)',
         duration: 'PT3M39S',
-        spotifyUrl: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-        youtubeMusicUrl: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg',
-        youtubeUrl: 'https://www.youtube.com/@djzeneyer',
       },
     ],
   },
@@ -922,33 +893,5 @@ export const MUSICGROUP_SCHEMA = {
   award: [
     'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
-  ],
-  sameAs: ARTIST_SCHEMA_SAME_AS,
-  identifier: [
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Wikidata',
-      value: 'Q136551855',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'MusicBrainz',
-      value: '13afa63c-8164-4697-9cad-c5100062a154',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'ISNI',
-      value: '0000000528931015',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Discogs',
-      value: '16872046',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Spotify',
-      value: '68SHKGndTlq3USQ2LZmyLw',
-    },
   ],
 };
