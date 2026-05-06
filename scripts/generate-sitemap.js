@@ -163,6 +163,9 @@ async function generateSitemaps() {
     
     // Obter slugs canônicos de eventos do routes-slugs.json
     const eventsRoute = routesData.routes.find(r => r.key === 'events');
+    if (!eventsRoute) {
+      console.warn('⚠️ routes-slugs.json: chave "events" não encontrada. Usando fallback "zouk-events".');
+    }
     const eventsSlugEn = (eventsRoute?.en || 'zouk-events').replace(/^\/+|\/+$/g, '');
     const eventsSlugPt = (eventsRoute?.pt || 'eventos-zouk').replace(/^\/+|\/+$/g, '');
 
