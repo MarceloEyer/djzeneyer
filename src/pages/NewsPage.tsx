@@ -96,7 +96,9 @@ const NewsPage: React.FC = () => {
       "dateModified": singlePost.modified || singlePost.date,
       "author": [{
         "@type": "Person",
-        "name": singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')
+        "name": singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author'),
+        "url": ARTIST.site.baseUrl,
+        "@id": `${ARTIST.site.baseUrl}/#artist`
       }],
       "url": postUrl
     };

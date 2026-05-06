@@ -229,7 +229,12 @@ The following decisions have been made by the project owner and must NOT be re-s
 ### speakable schema architecture: verboso but working
 - The `speakable` SpeakableSpecification is implemented directly in custom schema objects on AboutPage, PhilosophyPage, and HomePage, rather than via a generic HeadlessSEO prop merge. This is intentional. Do NOT suggest refactoring HeadlessSEO to auto-inject speakable into arbitrary custom schemas.
 
-Last updated: April 2026
+### Identity Architecture: MusicGroup + Person (Strategic Duplication)
+- The project uses a dual-node architecture: `Person` (`/#artist`) and `MusicGroup` (`/#musicgroup`).
+- **Identifiers MUST be maintained in BOTH nodes.** Wikidata, MusicBrainz, ISNI, Discogs, ORCID, Spotify, Apple Music, and YouTube are authoritative signals for the entire project.
+- **Do NOT attempt to "clean up" or "separate" these identifiers.** This is a strategic decision to ensure maximum reconciliability and authority across the Knowledge Graph.
+
+Last updated: May 2026
 
 ## AI System Notes
 

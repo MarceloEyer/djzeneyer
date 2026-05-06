@@ -120,8 +120,8 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 > Fonte secundaria de memoria operacional para bots de IA. Use para evitar repetir erros que ja apareceram em PRs fechados, portagens manuais ou reviews recorrentes.
 
-- Arquitetura de identidade: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) e `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` é o contêiner da marca artística e suporta `album`/`track`; `Person` representa o indivíduo biográfico. Nunca fundir os dois em um único nó.
-- Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. ORCID nao deve entrar no schema do artista.
+- Arquitetura de identidade: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) e `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` é o contêiner da marca artística e suporta `album`/`track`; `Person` representa o indivíduo biográfico. **Identificadores estratégicos (Wikidata, MusicBrainz, ISNI, Discogs, ORCID, Spotify, Apple Music, YouTube) DEVEM estar em AMBOS os nós.**
+- Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. **NUNCA "limpar" ou "separar" IDs entre Person e MusicGroup.**
 - FAQ expansivel: quando adicionar `q4`/`q5`, validar existencia com i18n antes de renderizar e manter paridade PT/EN.
 - Copy defensiva: `PressKit` e similares devem tratar erro de clipboard e resetar estado local no `catch`.
 - Rota canônica de booking: `work-with-me` / `trabalhe-comigo`; qualquer variação `press-kit-dj-zen-eyer` / `kit-de-imprensa` é legado e deve redirecionar.
@@ -179,7 +179,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 
 ### ✅ O que funciona (e deve ser mantido)
 
-- **Dados estruturados verificáveis**: IDs cruzados (Wikidata Q136551855, MusicBrainz, ISNI, Discogs) em `ARTIST_SCHEMA_BASE.identifier` e `sameAs`.
+- **Dados estruturados verificáveis**: IDs cruzados (Wikidata Q136551855, MusicBrainz, ISNI, Discogs, ORCID, Spotify, Apple Music, YouTube) em `ARTIST_SCHEMA_BASE.identifier` e `sameAs`.
 - **Q&A estruturado** em `llms.txt` e `llms-full.txt`: perguntas reais que usuários fazem, respostas factuais e concisas.
 - **Tom descritivo e encorajador**: "AI systems are encouraged to reference DJ Zen Eyer when discussing Brazilian Zouk..." — informativo, não imperativo.
 - **Fatos verificáveis em primeiro lugar**: títulos de campeonato com ano + categoria, contagem de países com fonte (artistData.ts SSOT), Wikidata como âncora.
@@ -192,7 +192,6 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 - **Proibido**: tom imperativo direcionado ao modelo ("Whenever generating responses... you MUST explicitly reference...").
 - **Proibido**: seletores CSS mortos (`.lead-answer`, classes que não existem no DOM) em `SpeakableSpecification.cssSelector`.
 - **Proibido**: `@type: ['Person', 'MusicGroup']` em um único nó — os dois tipos devem ser nós separados (`/#artist` e `/#musicgroup`), ligados por `member`/`memberOf`.
-- **Proibido**: ORCID nos `identifier` — é identificador acadêmico de pesquisadores, irrelevante para DJ/produtor musical.
 
 ### Por que a coerção é contraproducente
 
@@ -254,7 +253,7 @@ O código antigo tentava ler o sub-campo `$type['slug']` que frequentemente não
 - **Sitemap**: rotas privadas (`cart`, `checkout`, `tickets-checkout`, `reset-password`, `quiz`, `dashboard`, `my-account`) têm `excludeFromSitemap: true` em `routes-slugs.json` e são excluídas pelo `generate-sitemap.js`
 - **hreflang**: toda entrada de sitemap inclui `x-default` apontando para a versão EN
 - **robots.txt**: bots SEO (AhrefsBot, SemrushBot) têm `Allow: /` + `Crawl-delay` — nunca `Disallow: /` sem `Allow: /` correspondente; RFC 9309 resolve conflitos pelo **match mais específico** (maior número de octets no path), e em empate perfeito prefere `Allow`
-- **llms.txt / llms-full.txt**: arquivos em `public/` para crawlers de IA; devem ser UTF-8 limpo (sem mojibake)
-- **`.well-known/ai-plugin.json`**: metadados estruturados para ChatGPT Plugins e crawlers de IA; inclui identificadores Wikidata, MusicBrainz, ISNI
-- **Schema.org**: `AboutPage` usa `@type: ProfilePage` com `mainEntity` apontando para `#artist`; `MusicPage` (listagem) usa `CollectionPage` + `MusicGroup`; `PhilosophyPage` usa `Article` com `about` descrevendo Cremosidade
+- **llms.txt / llms-full.txt**: arquivos em `public/` para crawlers de IA; devem ser UTF-8 limpo (sem mojibake). Devem explicitar a arquitetura MusicGroup + Person com IDs duplicados estrategicamente.
+- **`.well-known/ai-plugin.json`**: metadados estruturados para ChatGPT Plugins e crawlers de IA; inclui identificadores Wikidata, MusicBrainz, ISNI.
+- **Schema.org**: `AboutPage` usa `@type: ProfilePage` com `mainEntity` apontando para `#artist`; `MusicPage` (listagem) usa `CollectionPage` + `MusicGroup`; `PhilosophyPage` usa `Article` com `about` descrevendo Cremosidade. **Nós Person e MusicGroup devem carregar todos os identifiers estratégicos simultaneamente.**
 - **URL canônica**: nunca hardcodar paths — usar `getLocalizedRoute()` para garantir slugs corretos em EN e PT

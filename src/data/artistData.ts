@@ -164,7 +164,8 @@ export const ARTIST = {
     youtube: {
       handle: '@djzeneyer',
       url: 'https://www.youtube.com/@djzeneyer',
-      playlistId: 'UUJ_5oAEFTG18jga_JFxG00w'
+      playlistId: 'UUJ_5oAEFTG18jga_JFxG00w',
+      embedUrl: 'https://www.youtube.com/embed/videoseries?list=UUJ_5oAEFTG18jga_JFxG00w'
     },
     tiktok: { handle: '@djzeneyer', url: 'https://www.tiktok.com/@djzeneyer' },
     twitter: { handle: '@djzeneyer', url: 'https://x.com/djzeneyer' },
@@ -409,7 +410,7 @@ export const getWhatsAppUrl = (message?: string) => {
   )}`;
 };
 
-// Schema.org Person base (consolidated for Knowledge Graph)
+// Schema.org sameAs list (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
   // Authoritative databases (semantically rich first)
   'https://www.wikidata.org/wiki/Q136551855',
@@ -417,6 +418,7 @@ export const ARTIST_SCHEMA_SAME_AS = [
   'https://www.discogs.com/artist/16872046',
   // Academic / authority identifiers
   'https://isni.org/isni/0000000528931015',
+  'https://orcid.org/0009-0006-2948-2148',
   // Streaming / music platforms
   'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
   'https://music.apple.com/us/artist/1439280950',
@@ -431,19 +433,51 @@ export const ARTIST_SCHEMA_SAME_AS = [
   'https://www.youtube.com/@djzeneyer',
   // Live / touring platforms
   'https://ra.co/dj/djzeneyer',
+  'https://www.mixcloud.com/djzeneyer',
+  'https://djzeneyer.bandcamp.com',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
+  alternateName: [
+    'Zen Eyer',
+    'Zen Ayer',
+    'DJ Zen Eyer',
+    'DJ Zen Ayer',
+    'djzeneyer',
+    'zeneyer',
+  ],
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-  sameAs: ARTIST_SCHEMA_SAME_AS,
+  knowsLanguage: ['pt-BR', 'en'],
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q136551855',
+    'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+    'https://www.discogs.com/artist/16872046',
+    'https://isni.org/isni/0000000528931015',
+    'https://orcid.org/0009-0006-2948-2148',
+    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+    'https://music.apple.com/us/artist/1439280950',
+    'https://www.youtube.com/@djzeneyer',
+    'https://www.instagram.com/djzeneyer/',
+    'https://www.facebook.com/djzeneyer/',
+    'https://www.linkedin.com/in/eyermarcelo',
+    'https://soundcloud.com/djzeneyer',
+    'https://www.deezer.com/artist/72153362',
+    'https://tidal.com/artist/10492592',
+    'https://djzeneyer.bandcamp.com',
+    'https://music.amazon.com/artists/B07JKCDCG8',
+    'https://www.mixcloud.com/djzeneyer',
+    'https://www.last.fm/music/Zen+Eyer',
+    'https://www.songkick.com/artists/10255140-zen-eyer',
+    'https://www.bandsintown.com/a/15619775-zen-eyer',
+    'https://ra.co/dj/djzeneyer',
+  ],
   identifier: [
     {
       '@type': 'PropertyValue',
@@ -467,8 +501,28 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'PropertyValue',
+      propertyID: 'ORCID',
+      value: '0009-0006-2948-2148',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Google KG ID',
+      value: '/g/11ff3mhh10',
+    },
+    {
+      '@type': 'PropertyValue',
       propertyID: 'Spotify',
       value: '68SHKGndTlq3USQ2LZmyLw',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Apple Music',
+      value: '1439280950',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'YouTube',
+      value: 'djzeneyer',
     },
   ],
   nationality: {
@@ -787,7 +841,7 @@ export const DISCOGRAPHY: Release[] = [
     releaseDate: '2018-10-25',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
     appleMusicUrl: 'https://music.apple.com/us/song/1596290116',
-    musicBrainzUrl: 'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154?va=1',
+    musicBrainzUrl: 'https://musicbrainz.org/release/4ca05fa2-a3c0-4de3-818c-e64cd147dca3',
     description: "Brazilian Zouk remix of Kaysha's Don't Stop. Apple Music lists the track in Don't Stop (Remixes) - Single, released October 25, 2018.",
     tracks: [
       {
@@ -899,7 +953,78 @@ export const MUSICGROUP_SCHEMA = {
   // Ligação bidirecional com a entidade Person
   member: { '@id': `${ARTIST.site.baseUrl}/#artist` },
   award: [
-    'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
-    'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
+    'World Champion 2022 (DJ) at Ilha do Zouk',
+    'World Champion 2022 (Remix) at Ilha do Zouk',
+  ],
+  influencedBy: ['Lambada'],
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q136551855',
+    'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+    'https://www.discogs.com/artist/16872046',
+    'https://isni.org/isni/0000000528931015',
+    'https://orcid.org/0009-0006-2948-2148',
+    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+    'https://music.apple.com/us/artist/1439280950',
+    'https://www.youtube.com/@djzeneyer',
+    'https://www.instagram.com/djzeneyer/',
+    'https://www.facebook.com/djzeneyer/',
+    'https://www.linkedin.com/in/eyermarcelo',
+    'https://soundcloud.com/djzeneyer',
+    'https://www.deezer.com/artist/72153362',
+    'https://tidal.com/artist/10492592',
+    'https://djzeneyer.bandcamp.com',
+    'https://music.amazon.com/artists/B07JKCDCG8',
+    'https://www.mixcloud.com/djzeneyer',
+    'https://www.last.fm/music/Zen+Eyer',
+    'https://www.songkick.com/artists/10255140-zen-eyer',
+    'https://www.bandsintown.com/a/15619775-zen-eyer',
+    'https://ra.co/dj/djzeneyer',
+  ],
+  identifier: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Wikidata',
+      value: 'Q136551855',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'MusicBrainz',
+      value: '13afa63c-8164-4697-9cad-c5100062a154',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'ISNI',
+      value: '0000000528931015',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Discogs',
+      value: '16872046',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'ORCID',
+      value: '0009-0006-2948-2148',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Google KG ID',
+      value: '/g/11ff3mhh10',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Spotify',
+      value: '68SHKGndTlq3USQ2LZmyLw',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Apple Music',
+      value: '1439280950',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'YouTube',
+      value: 'djzeneyer',
+    },
   ],
 };

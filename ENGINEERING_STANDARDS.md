@@ -20,6 +20,8 @@ Every piece of data, configuration, or route definition MUST have **exactly one 
 | Schema.org MusicGroup | `src/data/artistData.ts` → `MUSICGROUP_SCHEMA` | HomePage, MusicPage |
 | Translation strings (EN) | `src/locales/en/translation.json` | All components via `t()` |
 | Translation strings (PT) | `src/locales/pt/translation.json` | All components via `t()` |
+| Identity Architecture | `src/data/artistData.ts` | Person & MusicGroup Schemas |
+
 
 ### Documented SSOT Exceptions
 
@@ -75,6 +77,13 @@ Every piece of data, configuration, or route definition MUST have **exactly one 
 4. **`SearchAction` or `potentialAction` must only be declared when the target page implements the described capability.** If the events page doesn't support `?q=` search, don't declare a `SearchAction`.
 
 5. **Use fragment identifiers (`#release-id`) for sub-entities** that don't have dedicated pages. Example: `https://djzeneyer.com/zouk-music#release-diamonds`.
+
+6. **Identity Architecture (Strategic Duplication):**
+   - The project uses a dual-node architecture: `Person` (`/#artist`) and `MusicGroup` (`/#musicgroup`).
+   - **Identifiers MUST be maintained in BOTH nodes.** Wikidata, MusicBrainz, ISNI, Discogs, ORCID, Spotify, Apple Music, and YouTube are not just "personal" or "group" attributes; they are authoritative signals for the entire project entity.
+   - Any attempt by AI to "clean up" or "separate" these identifiers between Person and MusicGroup is a **CRITICAL ERROR** that fragments the Knowledge Graph.
+   - `sameAs` lists MUST contain all authoritative profiles (Wikidata, MusicBrainz, Amazon, Apple, Spotify, YouTube, etc.) in both entities to ensure maximum reconciliability by search engines and LLMs.
+
 
 ---
 
