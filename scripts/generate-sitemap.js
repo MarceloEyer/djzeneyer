@@ -122,19 +122,31 @@ async function generateSitemaps() {
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
+    /**
+     * Constrói URL canônica sem barras duplas e com trailing slash (exceto root)
+     */
+    const getSitemapUrl = (lang, slug) => {
+      const parts = [BASE_URL];
+      if (lang === 'pt') parts.push('pt');
+      
+      const cleanSlug = (slug || '').replace(/^\/+|\/+$/g, '');
+      if (cleanSlug) parts.push(cleanSlug);
+      
+      let url = parts.join('/');
+      // Garante trailing slash em tudo (padrão do projeto)
+      if (!url.endsWith('/')) url += '/';
+      return url;
+    };
+
     let pageCount = 0;
     for (const route of routesData.routes) {
       if (route.excludeFromSitemap || route.noindex) {
         continue;
       }
 
-      const enSlug = route.en === '' ? '' : route.en.replace(/^\/+/, '');
-      const ptSlug = route.pt === '' ? '' : route.pt.replace(/^\/+/, '');
-      
-      // Sanitizar caminhos para evitar barras duplas e garantir trailing slash
-      const enUrl = enSlug === '' ? `${BASE_URL}/` : `${BASE_URL}/${enSlug}/`.replace(/\/+$/, '/');
-      const ptUrl = ptSlug === '' ? `${BASE_URL}/pt/` : `${BASE_URL}/pt/${ptSlug}/`.replace(/\/+$/, '/');
-      const priority = enSlug === '' ? '1.0' : '0.8';
+      const enUrl = getSitemapUrl('en', route.en);
+      const ptUrl = getSitemapUrl('pt', route.pt);
+      const priority = (route.en === '' || route.en === '/') ? '1.0' : '0.8';
 
       // EN entry: x-default points to EN
       pagesXml += buildUrlEntry(enUrl, date, priority, ptUrl, DEFAULT_IMAGE, true);
@@ -144,7 +156,7 @@ async function generateSitemaps() {
     }
     pagesXml += '\n</urlset>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), pagesXml);
-    console.log(`✅ sitemap-pages.xml created (${pageCount} URLs with images)`);
+    console.log(`✅ sitemap-pages.xml created (${pageCount} URLs)`);
 
     // 2. Events Sitemap
     const events = await fetchEvents();
@@ -162,20 +174,20 @@ async function generateSitemaps() {
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
       for (const event of events) {
-        // Determinamos o slug independente do idioma
-        const eventId = event.event_id;
+        // Extração robusta do slug final (ID ou path real)
+        let relativePath = event.canonical_path || String(event.event_id);
         
-        // Extração robusta do slug final (YYYY-MM-DD-title-ID)
-        // Remove prefixos comuns legados ou atuais para isolar o path do evento
-        const relativePath = event.canonical_path
-          ? event.canonical_path.replace(/^\/(zouk-events|events|eventos-zouk|eventos)\//, '').replace(/^\/+/, '')
-          : eventId;
+        // Remove prefixos conhecidos para isolar o ID/Slug final do evento
+        relativePath = relativePath
+          .replace(/^https?:\/\/[^\/]+/, '') // Remove domínio se vier absoluto
+          .replace(/^\/(zouk-events|events|eventos-zouk|eventos|pt\/eventos-zouk|pt\/eventos)\//, '')
+          .replace(/^\/+|\/+$/g, '');
 
         if (!relativePath) continue;
 
         // Construímos os URLs usando os slugs REAIS da configuração SSOT
-        const enEventUrl = `${BASE_URL}/${eventsSlugEn}/${relativePath}/`;
-        const ptEventUrl = `${BASE_URL}/pt/${eventsSlugPt}/${relativePath}/`;
+        const enEventUrl = getSitemapUrl('en', `${eventsSlugEn}/${relativePath}`);
+        const ptEventUrl = getSitemapUrl('pt', `${eventsSlugPt}/${relativePath}`);
 
         // Adicionamos ambos ao sitemap com link alternativo e imagem do evento
         eventsXml += buildUrlEntry(enEventUrl, date, '0.7', ptEventUrl, event.image, true);
