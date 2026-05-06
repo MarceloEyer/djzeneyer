@@ -15,7 +15,7 @@ Every piece of data, configuration, or route definition MUST have **exactly one 
 |------|---------------|-----------|
 | Route slugs (EN/PT) | `src/config/routes-slugs.json` | `routes.ts`, Polylang (WP), `llms.txt` |
 | Artist identity & stats | `src/data/artistData.ts` → `ARTIST` | All pages, schemas, SEO |
-| Discography | `src/data/artistData.ts` → `DISCOGRAPHY` | MusicPage, NewsPage, schemas |
+| Discography | `src/data/artistData.ts` → `DISCOGRAPHY` | MusicPage, schemas |
 | Schema.org Person | `src/data/artistData.ts` → `ARTIST_SCHEMA_BASE` | HomePage, AboutPage |
 | Schema.org MusicGroup | `src/data/artistData.ts` → `MUSICGROUP_SCHEMA` | HomePage, MusicPage |
 | Translation strings (EN) | `src/locales/en/translation.json` | All components via `t()` |
@@ -154,10 +154,6 @@ The Navbar consumes menu items from the WordPress Polylang REST API. This create
 - The Navbar component must normalize all incoming URLs through `getLocalizedRoute()` before rendering links.
 
 ---
-
-## 9. AI Agent Governance
-
-Referenced from `AI_GOVERNANCE/AGENTS.md`:
 
 1. AI-generated code must follow all standards in this document.
 2. AI agents must use `getLocalizedRoute()` for all internal URLs.

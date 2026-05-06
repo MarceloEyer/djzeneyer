@@ -161,7 +161,11 @@ export const ARTIST = {
   social: {
     instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
     facebook: { handle: 'djzeneyer', url: 'https://facebook.com/djzeneyer' },
-    youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
+    youtube: {
+      handle: '@djzeneyer',
+      url: 'https://www.youtube.com/@djzeneyer',
+      playlistId: 'UUJ_5oAEFTG18jga_JFxG00w'
+    },
     tiktok: { handle: '@djzeneyer', url: 'https://www.tiktok.com/@djzeneyer' },
     twitter: { handle: '@djzeneyer', url: 'https://x.com/djzeneyer' },
     twitch: { handle: 'djzeneyer', url: 'https://www.twitch.tv/djzeneyer' },
@@ -827,10 +831,10 @@ export const DISCOGRAPHY: Release[] = [
     type: 'single',
     releaseYear: '2026',
     image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
-    soundcloudUrl: 'https://soundcloud.com/djzeneyer',
     tracks: [
       {
         name: 'Baila Flaquita',
+        duration: 'PT1M44S',
       },
     ],
   },
@@ -845,7 +849,21 @@ export const DISCOGRAPHY: Release[] = [
     tracks: [
       {
         name: 'Porta Do Sol - Cover',
-        duration: 'PT5M07S',
+        duration: 'PT5M7S',
+      },
+    ],
+  },
+  {
+    id: 'diamonds-zouk-remix',
+    name: 'Diamonds (Zouk Remix feat. Kaysha)',
+    type: 'remix',
+    releaseDate: '2024-08-01',
+    image: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
+    description: 'Brazilian Zouk remix featuring Kaysha, bridging Brazil and Africa. Covered by MyZA Entertainment.',
+    tracks: [
+      {
+        name: 'Diamonds (Zouk Remix feat. Kaysha)',
+        duration: 'PT3M39S',
       },
     ],
   },
@@ -883,31 +901,5 @@ export const MUSICGROUP_SCHEMA = {
   award: [
     'World Champion Brazilian Zouk DJ - Best DJ Performance, Ilha do Zouk 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, Ilha do Zouk 2022',
-  ],
-  sameAs: [
-    ARTIST.social.spotify.url,
-    ARTIST.social.appleMusic.url,
-    ARTIST.social.youtubeMusic.url,
-    ARTIST.social.soundcloud.url,
-    ARTIST.social.youtube.url,
-    ARTIST.identifiers.musicbrainzUrl,
-    ARTIST.identifiers.discogsUrl,
-  ],
-  identifier: [
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'MusicBrainz',
-      value: '13afa63c-8164-4697-9cad-c5100062a154',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Discogs',
-      value: '16872046',
-    },
-    {
-      '@type': 'PropertyValue',
-      propertyID: 'Spotify',
-      value: '68SHKGndTlq3USQ2LZmyLw',
-    },
   ],
 };
