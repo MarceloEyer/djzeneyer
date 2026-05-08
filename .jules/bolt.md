@@ -126,3 +126,6 @@
 
 **Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
 **Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.
+## 2026-05-08 - Stable array fallbacks
+**Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render. If passed to `useMemo` or child components, this defeats memoization and causes unnecessary re-evaluations.
+**Action:** Always extract stable empty arrays to module-scoped constants (e.g., `const EMPTY_TICKETS_ARRAY: WCProduct[] = [];`) to provide consistent reference equality across React render loops.

@@ -9,7 +9,7 @@ import {
   Clock, 
   Hash,
 } from 'lucide-react';
-import { useNewsQuery, useNewsBySlug } from '../hooks/useQueries';
+import { useNewsQuery, useNewsBySlug, type WPPost } from '../hooks/useQueries';
 import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
@@ -46,6 +46,8 @@ const LIVE_FEED_ANIMATE = { opacity: 1, x: 0 };
 const ARTICLE_INITIAL = { opacity: 0, y: 20 };
 const ARTICLE_ANIMATE = { opacity: 1, y: 0 };
 
+const EMPTY_NEWS_ARRAY: WPPost[] = [];
+
 // ============================================================================
 // COMPONENT
 // ============================================================================
@@ -65,7 +67,7 @@ const NewsPage: React.FC = () => {
   const { data: postsData, isLoading: loadingList } = useNewsQuery(normalizedLanguage, { enabled: !slug });
   const { data: singlePost, isLoading: loadingDetail } = useNewsBySlug(slug, normalizedLanguage);
 
-  const posts = postsData || [];
+  const posts = postsData || EMPTY_NEWS_ARRAY;
   const loading = slug ? loadingDetail : loadingList;
 
   // Helper para rotas localizadas usando SSOT

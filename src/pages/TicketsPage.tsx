@@ -7,8 +7,10 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
-import { useProductsQuery } from '../hooks/useQueries';
+import { useProductsQuery, type WCProduct } from '../hooks/useQueries';
 import { getCurrencyFormatter } from '../utils/currency';
+
+const EMPTY_TICKETS_ARRAY: WCProduct[] = [];
 
 const TicketsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -20,7 +22,7 @@ const TicketsPage: React.FC = () => {
   const { data: ticketsData, isLoading: loading } = useProductsQuery(currentLang);
 
   // ⚡ Bolt: Memoize the fallback array to maintain a stable reference and prevent unnecessary re-renders.
-  const tickets = useMemo(() => ticketsData || [], [ticketsData]);
+  const tickets = useMemo(() => ticketsData || EMPTY_TICKETS_ARRAY, [ticketsData]);
 
   const formatPrice = (price: string) => {
     if (!price) return t('price_free');
