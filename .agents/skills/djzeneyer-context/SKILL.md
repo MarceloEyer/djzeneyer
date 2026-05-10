@@ -273,6 +273,17 @@ export const useEventsList = (status?: string) => {
 **Causa:** Node `spawn` no Windows requer `.cmd` e `shell: true`.
 **Solução:** Use `process.platform === 'win32'` para ajustar o comando de `npx` para `npx.cmd` no script `prerender.js`.
 
+### Erro ao clicar em links apos deploy (`ChunkLoadError`)
+
+**Sintoma:** Navegacao client-side mostra `Something went wrong` no primeiro clique, mas a mesma URL abre depois de atualizar a pagina.
+**Causa:** A aba ainda esta executando o bundle Vite anterior ou recebeu HTML cacheado. Ao clicar numa rota lazy, o app tenta baixar um chunk hashado antigo que foi removido de `dist/assets`.
+**Solucao:**
+
+1. Manter `src/utils/lazyWithRetry.ts` e `src/utils/chunkRecovery.ts` nas rotas lazy.
+2. No deploy, antes de trocar `dist-next` para `dist`, copiar assets hashados antigos com `rsync --ignore-existing`.
+3. Nao apagar imediatamente chunks antigos de `dist/assets`; hashes evitam conflito com a build nova.
+4. Quando usar URLs absolutas `/assets/...`, garantir que `public/assets/` seja copiado para o webroot.
+
 ### Verificar se WordPress está online: `curl https://djzeneyer.com/wp-json/wp/v2/posts`
 
 ### Deploy bem-sucedido, mas 404 no site

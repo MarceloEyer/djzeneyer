@@ -20,7 +20,8 @@
  * - ZenLink: zenlink / links-zen
  */
 
-import { lazy, ComponentType } from 'react';
+import { ComponentType } from 'react';
+import { lazyWithRetry } from '../utils/lazyWithRetry';
 
 // ============================================================================
 // TYPES
@@ -54,33 +55,33 @@ export interface RouteConfig {
 import HomePage from '../pages/HomePage';
 
 // Demais páginas são lazy loaded
-const AboutPage = lazy(() => import('../pages/AboutPage'));
-const EventsPage = lazy(() => import('../pages/EventsPage'));
-const MusicPage = lazy(() => import('../pages/MusicPage'));
-const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
-const MediaPage = lazy(() => import('../pages/MediaPage'));
-const PressKitPage = lazy(() => import('../pages/PressKitPage'));
-const PressKitDownloadPage = lazy(() => import('../pages/PressKitDownloadPage'));
-const ShopPage = lazy(() => import('../pages/ShopPage'));
-const ProductPage = lazy(() => import('../pages/ProductPage'));
-const CartPage = lazy(() => import('../pages/CartPage'));
-const CheckoutPage = lazy(() => import('../pages/CheckoutPage'));
-const DashboardPage = lazy(() => import('../pages/DashboardPage'));
-const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
-const FAQPage = lazy(() => import('../pages/FAQPage'));
-const PhilosophyPage = lazy(() => import('../pages/PhilosophyPage'));
-const NewsPage = lazy(() => import('../pages/NewsPage'));
-const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicyPage'));
-const ReturnPolicyPage = lazy(() => import('../pages/ReturnPolicyPage'));
-const TermsPage = lazy(() => import('../pages/TermsPage'));
-const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
-const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
-const TicketsPage = lazy(() => import('../pages/TicketsPage'));
-const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
-const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
-const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
-const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+const AboutPage = lazyWithRetry(() => import('../pages/AboutPage'), 'route:about');
+const EventsPage = lazyWithRetry(() => import('../pages/EventsPage'), 'route:events');
+const MusicPage = lazyWithRetry(() => import('../pages/MusicPage'), 'route:music');
+const ZenTribePage = lazyWithRetry(() => import('../pages/ZenTribePage'), 'route:zentribe');
+const MediaPage = lazyWithRetry(() => import('../pages/MediaPage'), 'route:media');
+const PressKitPage = lazyWithRetry(() => import('../pages/PressKitPage'), 'route:booking');
+const PressKitDownloadPage = lazyWithRetry(() => import('../pages/PressKitDownloadPage'), 'route:presskit');
+const ShopPage = lazyWithRetry(() => import('../pages/ShopPage'), 'route:shop');
+const ProductPage = lazyWithRetry(() => import('../pages/ProductPage'), 'route:product');
+const CartPage = lazyWithRetry(() => import('../pages/CartPage'), 'route:cart');
+const CheckoutPage = lazyWithRetry(() => import('../pages/CheckoutPage'), 'route:checkout');
+const DashboardPage = lazyWithRetry(() => import('../pages/DashboardPage'), 'route:dashboard');
+const MyAccountPage = lazyWithRetry(() => import('../pages/MyAccountPage'), 'route:my-account');
+const FAQPage = lazyWithRetry(() => import('../pages/FAQPage'), 'route:faq');
+const PhilosophyPage = lazyWithRetry(() => import('../pages/PhilosophyPage'), 'route:philosophy');
+const NewsPage = lazyWithRetry(() => import('../pages/NewsPage'), 'route:news');
+const PrivacyPolicyPage = lazyWithRetry(() => import('../pages/PrivacyPolicyPage'), 'route:privacy');
+const ReturnPolicyPage = lazyWithRetry(() => import('../pages/ReturnPolicyPage'), 'route:returns');
+const TermsPage = lazyWithRetry(() => import('../pages/TermsPage'), 'route:terms');
+const CodeOfConductPage = lazyWithRetry(() => import('../pages/CodeOfConductPage'), 'route:conduct');
+const SupportArtistPage = lazyWithRetry(() => import('../pages/SupportArtistPage'), 'route:support');
+const TicketsPage = lazyWithRetry(() => import('../pages/TicketsPage'), 'route:tickets');
+const TicketsCheckoutPage = lazyWithRetry(() => import('../pages/TicketsCheckoutPage'), 'route:tickets-checkout');
+const ResetPasswordPage = lazyWithRetry(() => import('../pages/ResetPasswordPage'), 'route:reset-password');
+const ZenLinkPage = lazyWithRetry(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })), 'route:zenlink');
+const ZoukPersonaQuizPage = lazyWithRetry(() => import('../pages/ZoukPersonaQuizPage'), 'route:quiz');
+const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'), 'route:not-found');
 
 import routesSlugs from './routes-slugs.json';
 
