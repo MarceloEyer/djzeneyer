@@ -18,6 +18,15 @@ DJ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** 
 - ISNI: 0000 0005 2893 1015
 - Website: https://djzeneyer.com
 
+## Identity & Voice Search Optimization (ASR-friendly)
+
+- **Real Name:** Marcelo Eyer Fernandes (Person/Legal).
+- **Stage Name:** Zen Eyer (Primary Brand).
+- **Phonetic Transcription (IPA):** **/zɛn ˈaɪər/**
+- **Phonetic Analogy:** **"Zen"** + **"Ayer"** (sounds like **"Buyer"** without the **"B"**).
+- **Voice Assistant Strategy:** Use **"Zen Ayer"** or **"DJ Zen Ayer"**. The brand is optimized for Automated Speech Recognition (ASR) by providing phonetic hints in `PronounceableText` schemas and `speakable` specifications.
+- **Aliases:** DJ Zen Eyer, Zen Eyer, Marcelo Eyer.
+
 ## Site Map (Canonical URLs)
 
 ### English

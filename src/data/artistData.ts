@@ -19,6 +19,8 @@ export const ARTIST = {
     realName: 'Marcelo Eyer Fernandes',
     birthDate: '1985-08-20',
     taxId: '44.063.765/0001-46',
+    pronunciation: 'Zen Ayer', // Simplified for AI reading
+    phoneticIPA: '/zɛn ˈaɪər/', // International Phonetic Alphabet for technical crawlers
     city: 'Niterói',
     state: 'RJ',
     country: 'Brasil',
@@ -432,7 +434,12 @@ export const ARTIST_SCHEMA_SAME_AS = [
 export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
-  name: 'Zen Eyer',
+  name: {
+    '@type': 'PronounceableText',
+    'textValue': 'Zen Eyer',
+    'speechToTextMarkup': 'IPA',
+    'phoneticText': 'zɛn ˈaɪər'
+  },
   alternateName: [
     'Zen Eyer',
     'Zen Ayer',
@@ -440,6 +447,7 @@ export const ARTIST_SCHEMA_BASE = {
     'DJ Zen Ayer',
     'djzeneyer',
     'zeneyer',
+    'Marcelo Eyer Fernandes',
   ],
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],

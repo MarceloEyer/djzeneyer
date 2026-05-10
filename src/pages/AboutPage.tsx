@@ -107,7 +107,7 @@ const AboutPage: React.FC = () => {
         mainEntity: { '@id': `${artist.site.baseUrl}/#artist` },
         speakable: {
           '@type': 'SpeakableSpecification',
-          cssSelector: ['h1', '[data-speakable]'],
+          cssSelector: ['h1', '#artist-voice-bio', '#pronunciation-faq-summary'],
         },
         breadcrumb: {
           '@type': 'BreadcrumbList',
@@ -225,8 +225,9 @@ const AboutPage: React.FC = () => {
                   The <span className="text-primary">Journey</span>
                 </Trans>
               </h1>
-              <p className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
+              <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
                 {t('about.hero.subtitle')}
+                <span id="pronunciation-faq-summary" className="sr-only"> (Phonetic: /zɛn ˈaɪər/. Pronounced: Zen Ayer, like 'Buyer' without the B).</span>
               </p>
             </motion.div>
           </div>

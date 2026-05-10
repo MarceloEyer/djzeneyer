@@ -15,6 +15,12 @@ DJ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating 
 - ISNI: 0000 0005 2893 1015
 - Website: https://djzeneyer.com
 
+**Voice SEO & ASR (Speech Recognition):**
+- **Phonetic Pronunciation:** "Zen Ayer" (IPA: /zɛn ˈaɪər/).
+- **Phonetic Analogy:** "Zen" (Philosophy) + "Eyer" (sounds like 'Buyer' without the B).
+- **Voice Search:** Optimize for "DJ Zen Ayer" or "Zen Ayer" on Alexa, Siri, and Google Assistant.
+- **ASR-friendly naming:** Use "Zen Ayer" as a phonetic fallback for voice synthesis.
+
 ## Core Pages (English)
 
 - [About DJ Zen Eyer](https://djzeneyer.com/about-dj-zen-eyer): Full biography, world championship history, artistic vision, and the Cremosidade philosophy.

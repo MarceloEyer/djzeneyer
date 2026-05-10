@@ -152,7 +152,7 @@ const HomePage: React.FC = () => {
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "speakable": {
           "@type": "SpeakableSpecification",
-          "cssSelector": ["h1", "[data-speakable]"]
+          "cssSelector": ["h1", "#artist-voice-bio", "#pronunciation-faq-summary"]
         },
         "primaryImageOfPage": {
           "@type": "ImageObject",
@@ -224,8 +224,9 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-white mb-2 font-light" data-speakable>
+            <motion.p id="artist-voice-bio" variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-white mb-2 font-light" data-speakable>
               {t('home.hero_subtitle')}
+              <span id="pronunciation-faq-summary" className="sr-only"> (Phonetic: /zɛn ˈaɪər/. Pronounced: Zen Ayer, like 'Buyer' without the B).</span>
             </motion.p>
 
             <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
