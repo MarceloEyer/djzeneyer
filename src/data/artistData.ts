@@ -20,7 +20,10 @@ export const ARTIST = {
     birthDate: '1985-08-20',
     taxId: '44.063.765/0001-46',
     pronunciation: 'Zen Ayer', // Simplified for AI reading
-    phoneticIPA: '/zɛn ˈaɪər/', // International Phonetic Alphabet for technical crawlers
+    phoneticIPA: {
+      en: '/zɛn ˈaɪɚ/', // American English (Wikidata P898)
+      pt: '/zen ˈajɛɾ/',  // Brazilian Portuguese (Wikidata P898)
+    },
     city: 'Niterói',
     state: 'RJ',
     country: 'Brasil',
@@ -438,7 +441,8 @@ export const ARTIST_SCHEMA_BASE = {
     '@type': 'PronounceableText',
     'textValue': 'Zen Eyer',
     'speechToTextMarkup': 'IPA',
-    'phoneticText': 'zɛn ˈaɪər'
+    'phoneticText': 'zɛn ˈaɪɚ',
+    'inLanguage': 'en-US-fonipa'
   },
   alternateName: [
     'Zen Eyer',
@@ -449,8 +453,13 @@ export const ARTIST_SCHEMA_BASE = {
     'zeneyer',
     'Marcelo Eyer Fernandes',
   ],
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
-  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+  description: 'Zen Eyer, pronounced Zen Ayer, is a Brazilian Zouk DJ and music producer. Born Marcelo Eyer Fernandes in Rio de Janeiro, Brazil.',
+  genre: [
+    'Brazilian Zouk',
+    'Zouk',
+    'Dance Music',
+    { '@type': 'URL', '@id': 'https://en.wikipedia.org/wiki/Brazilian_Zouk' },
+  ],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
@@ -987,13 +996,25 @@ export const ARTIST_BUSINESS_SCHEMA = {
 export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
-  name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.stageName],
+  name: {
+    '@type': 'PronounceableText',
+    'textValue': 'Zen Eyer',
+    'speechToTextMarkup': 'IPA',
+    'phoneticText': 'zɛn ˈaɪɚ',
+    'inLanguage': 'en-US-fonipa'
+  },
+  alternateName: [ARTIST.identity.stageName, 'Zen Ayer', 'DJ Zen Ayer'],
   description:
-    'Zen Eyer is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
+    'Zen Eyer, pronounced Zen Ayer, is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
+  genre: [
+    'Brazilian Zouk',
+    'Zouk',
+    'Dance Music',
+    'Latin Dance Music',
+    { '@type': 'URL', '@id': 'https://en.wikipedia.org/wiki/Brazilian_Zouk' },
+  ],
   foundingDate: String(ARTIST.stats.startingYear),
   foundingLocation: {
     '@type': 'Place',

@@ -16,10 +16,11 @@ DJ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating 
 - Website: https://djzeneyer.com
 
 **Voice SEO & ASR (Speech Recognition):**
-- **Phonetic Pronunciation:** "Zen Ayer" (IPA: /zɛn ˈaɪər/).
-- **Phonetic Analogy:** "Zen" (Philosophy) + "Eyer" (sounds like 'Buyer' without the B).
-- **Voice Search:** Optimize for "DJ Zen Ayer" or "Zen Ayer" on Alexa, Siri, and Google Assistant.
-- **ASR-friendly naming:** Use "Zen Ayer" as a phonetic fallback for voice synthesis.
+- **Pronunciation:** "Zen Ayer". Zen sounds like Zen Buddhism. Eyer sounds like Buyer without the B.
+- **IPA (American English):** /zɛn ˈaɪɚ/ (Wikidata P898)
+- **IPA (Brazilian Portuguese):** /zen ˈajɛɾ/ (Wikidata P898)
+- **Voice Search:** Use "DJ Zen Ayer" or "Zen Ayer" for Alexa, Siri, and Google Assistant.
+- **Identity:** Marcelo Eyer Fernandes (Real Person) → Zen Eyer (Stage Name / Brand).
 
 ## Core Pages (English)
 

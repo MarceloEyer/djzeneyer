@@ -22,10 +22,11 @@ DJ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** 
 
 - **Real Name:** Marcelo Eyer Fernandes (Person/Legal).
 - **Stage Name:** Zen Eyer (Primary Brand).
-- **Phonetic Transcription (IPA):** **/zɛn ˈaɪər/**
-- **Phonetic Analogy:** **"Zen"** + **"Ayer"** (sounds like **"Buyer"** without the **"B"**).
-- **Voice Assistant Strategy:** Use **"Zen Ayer"** or **"DJ Zen Ayer"**. The brand is optimized for Automated Speech Recognition (ASR) by providing phonetic hints in `PronounceableText` schemas and `speakable` specifications.
-- **Aliases:** DJ Zen Eyer, Zen Eyer, Marcelo Eyer.
+- **Pronunciation:** "Zen Ayer". Zen sounds like Zen Buddhism. Eyer sounds like Buyer without the B.
+- **IPA (American English):** /zɛn ˈaɪɚ/ — source: Wikidata P898, variety: American English.
+- **IPA (Brazilian Portuguese):** /zen ˈajɛɾ/ — source: Wikidata P898, variety: Brazilian Portuguese.
+- **Voice Assistant Strategy:** Use "Zen Ayer" or "DJ Zen Ayer" for Alexa, Siri, and Google Assistant. The brand implements `PronounceableText` schemas with `en-US-fonipa` language tags and `SpeakableSpecification` targeting curated voice bios.
+- **Aliases:** DJ Zen Eyer, Zen Eyer, Zen Ayer, DJ Zen Ayer, Marcelo Eyer.
 
 ## Site Map (Canonical URLs)
 
