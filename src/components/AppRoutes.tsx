@@ -1,8 +1,12 @@
-import React, { lazy } from 'react';
 import { useRoutes, RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import ErrorBoundary from './common/ErrorBoundary';
-const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
+import { lazyWithRetry } from '../utils/lazyWithRetry';
+
+const ZenLinkPage = lazyWithRetry(
+  () => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })),
+  'route:zenlink-standalone'
+);
 // CORREÇÃO: Apontando para o local correto onde você definiu suas rotas
 import {
   ROUTES_CONFIG,

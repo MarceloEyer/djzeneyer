@@ -95,7 +95,7 @@ Produção: https://djzeneyer.com
 - **`safeUrl(null)`** retorna `'#'` (truthy) → `safeUrl(url) || fallback` NUNCA executa. Sempre: `safeUrl(url, '/fallback.svg')`.
 - **`loadingInitial` vs `loading`** no UserContext: usar `loadingInitial` em guards de rota privada — `loading` é para ações, default `false`, e causa tela branca no CTRL+F5.
 - **lucide-react 1.x**: ícones Facebook, Instagram, Youtube foram removidos → usar `src/components/icons/BrandIcons.tsx`.
-- **Vite base path**: assets em `public/` raiz NÃO chegam ao webroot em produção. Usar `public/images/` para assets que precisam ficar na raiz.
+- **Vite base path / assets públicos**: URLs absolutas como `/images/...` e `/assets/...` só chegam ao webroot quando `public/images/` ou `public/assets/` são copiadas pelo deploy. Não assumir que qualquer arquivo solto em `public/` vai para a raiz; confira `Prepare public assets` em `.github/workflows/deploy.yml`.
 - **Class components**: não podem usar `useTranslation()` → usar `withTranslation()` HOC.
 - **Zod v4 + PHP false returns**: `z.union([z.string(), z.literal(false)])` quebra em `null`/`undefined`. Padrão correto: `z.string().catch('')` (campos obrigatórios) ou `z.string().catch('').optional()` (campos opcionais). Nunca usar o padrão union+literal para campos de imagem/URL.
 - **`rankProgress` ZenGame**: o fallback de progresso por posição de rank retornava `0.0` nos dois lados do ternário — corrigido. Ao alterar lógica de rank, sempre testar o caminho sem `gamipress_get_rank_requirements_progress()`.
@@ -123,6 +123,7 @@ Produção: https://djzeneyer.com
 ### Build e Deploy
 - Minificador: OXC (padrão Vite 8) — nunca `minify: 'esbuild'`.
 - Prerender: `scripts/prerender.js` via Puppeteer — nunca remover.
+- Deploy SPA: preservar assets Vite hashados antigos em `dist/assets` durante a troca `dist-next` → `dist`; abas abertas podem pedir chunks lazy da build anterior.
 - ESLint ignores obrigatórios: `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`.
 - `fetch-depth: 2` no CI — nunca `0`.
 

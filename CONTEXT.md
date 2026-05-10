@@ -30,6 +30,7 @@
 - Rotas privadas usam `noindex`.
 - Mudanca em dependencia exige lockfile sincronizado.
 - PR duplicado deve ser consolidado em um branch canonico.
+- Deploy SPA preserva assets Vite hashados antigos para abas abertas e HTML cacheado.
 
 ## Quando este arquivo ajuda
 

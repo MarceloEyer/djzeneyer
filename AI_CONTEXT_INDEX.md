@@ -33,6 +33,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
 - Cache em producao: LiteSpeed Cache 7.8.1 ativo, `WP_CACHE=true`, REST cache habilitado, ESI desabilitado, minificação CSS/JS desabilitada no provedor e defer de JS ativo
 - Deploy de frontend: o `dist/` deve ser publicado via pasta de staging (`dist-next`) e trocado de forma atomica para evitar tela branca durante rollout
+- Deploy de frontend: antes de ativar `dist-next`, preservar assets Vite hashados antigos em `dist/assets` com `rsync --ignore-existing`; abas abertas e HTML cacheado podem pedir chunks lazy da build anterior, e remover esses arquivos causa `ChunkLoadError`/tela de erro ate o usuario atualizar
 - Deploy de plugins: `plugins/` nao deve ser republicado em pushes que nao alterem `plugins/**`, para nao sobrescrever hotfixes ou reintroduzir backend quebrado
 
 ## Regras globais (SSOT)

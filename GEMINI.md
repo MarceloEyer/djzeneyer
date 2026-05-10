@@ -36,6 +36,7 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 - Rotas publicas usam `<HeadlessSEO />`.
 - Rotas privadas usam `noindex` e OG image generica.
 - `package-lock.json` acompanha `package.json` em mudancas de dependencia.
+- Deploy Vite preserva assets hashados antigos para evitar `ChunkLoadError` em abas abertas apos troca de build.
 - Review de bots e triagem, nao veredito final.
 
 ## O que este arquivo nao faz
