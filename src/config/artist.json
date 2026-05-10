@@ -6,14 +6,15 @@
   "instagram": "https://www.instagram.com/djzeneyer",
   "presskit_url": "https://djzeneyer.com/dj-zen-eyer-presskit.pdf",
   "photos": [
-    "https://seusite.com/assets/press/photos/zen-01.jpg",
-    "https://seusite.com/assets/press/photos/zen-02.jpg"
+    "https://djzeneyer.com/images/artist/dj-zen-eyer-official-hero.jpg",
+    "https://djzeneyer.com/images/artist/dj-zen-eyer-performing-live.jpg",
+    "https://djzeneyer.com/images/artist/dj-zen-eyer-club-performance.jpg"
   ],
   "logos": {
-    "svg": "https://seusite.com/assets/press/logo.svg",
-    "png": "https://seusite.com/assets/press/logo.png"
+    "svg": "https://djzeneyer.com/images/zen-eyer-og-image.svg",
+    "png": "https://djzeneyer.com/images/zen-eyer-og-image.png"
   },
-  "audio_highlight": "https://soundcloud.com/djzeneyer/your-highlight",
+  "audio_highlight": "https://soundcloud.com/djzeneyer",
   "short_bio_pt": "Toco Zouk Brasileiro com cremosidade: remixes, edições e sets para festivais e encontros sociais. Uma faixa autoral. Viagens leves, música pensada para o par.",
   "short_bio_en": "I play Brazilian Zouk with cremosidade: remixes, edits and festival/social sets. One original release. Travel light, dance-first programming.",
   "taglines": {
