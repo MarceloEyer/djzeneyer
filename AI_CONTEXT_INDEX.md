@@ -120,11 +120,20 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 > Fonte secundaria de memoria operacional para bots de IA. Use para evitar repetir erros que ja apareceram em PRs fechados, portagens manuais ou reviews recorrentes.
 
-- Arquitetura de identidade: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) e `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` é o contêiner da marca artística e suporta `album`/`track`; `Person` representa o indivíduo biográfico. **Identificadores estratégicos (Wikidata, MusicBrainz, ISNI, Discogs, ORCID, Spotify, Apple Music, YouTube) DEVEM estar em AMBOS os nós.**
+- Arquitetura de identidade: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) e `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` é o contêiner da marca artística e suporta `album`/`track`; `Person` representa o indivíduo biográfico. **Identificadores estratégicos musicais (Wikidata, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube, Deezer, Amazon Music) DEVEM estar em AMBOS os nós. Não usar ORCID no grafo do artista.**
+- Google Knowledge Graph: `/g/11ff3mhh10` e o KGMID primario da entidade artistica e permanece em `Person`/`MusicGroup`. `/g/11h6s0lfs5` e KGMID secundario relacionado e deve ser modelado como entidade separada `ARTIST_BUSINESS_SCHEMA` (`@id: /#business`), ligada por `Person.worksFor`, `Organization.founder` e `Organization.brand`. Nao adicionar o KGMID secundario no `sameAs` de `Person`/`MusicGroup`, para evitar conflar entidades. No Wikidata, usar P2671 apenas na entidade correspondente; se o secundario representar negocio/perfil comercial separado, criar ou usar item separado e relacionar ao item principal.
 - Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. **NUNCA "limpar" ou "separar" IDs entre Person e MusicGroup.**
 - FAQ expansivel: quando adicionar `q4`/`q5`, validar existencia com i18n antes de renderizar e manter paridade PT/EN.
 - Copy defensiva: `PressKit` e similares devem tratar erro de clipboard e resetar estado local no `catch`.
-- Rota canônica de booking: `work-with-me` / `trabalhe-comigo`; qualquer variação `press-kit-dj-zen-eyer` / `kit-de-imprensa` é legado e deve redirecionar.
+- Rota canônica de booking: `work-with-me` / `trabalhe-comigo`. Press Kit (`press-kit-dj-zen-eyer` / `kit-de-imprensa`) é fluxo separado e deve abrir/baixar o PDF público.
+- Booking e Press Kit são fluxos distintos: `work-with-me` / `trabalhe-comigo` continua sendo a página comercial de booking; Press Kit é asset baixável para organizadores e imprensa. Não substituir booking por presskit.
+- Usar `WebSite.potentialAction` com `SearchAction` para elegibilidade a sitelinks search box Google/Bing. O alvo canônico é News com busca funcional: `/zouk-dance-news?search={search_term_string}` e equivalente localizado quando gerado pelo React.
+- Releases não usam rota própria `/release`. Releases são posts comuns dentro de News: `/zouk-dance-news/:slug` e `/pt/noticias-zouk/:slug`, diferenciados por categoria/tag (`Music` como categoria + `release` como tag obrigatória). Slugs devem ser traduzidos via Polylang.
+- Filtros públicos de News devem usar parâmetros legíveis por slug, não IDs numéricos: `?category=music`, `?tag=release`, `?search=zouk`.
+- Arquivos públicos para IA (`llms.txt`, `llms-full.txt`, `ai-bots.txt`) devem usar linguagem factual e verificável. Evitar "best", "top", "mais famoso", "pioneiro", "criador/naming" ou rankings subjetivos sem fonte externa independente.
+- Não mencionar `Diamonds` como release, remix ou colaboração do DJ Zen Eyer sem confirmação explícita do usuário. O usuário informou que nunca trabalhou em música com esse nome.
+- ORCID não deve entrar no schema/sameAs do artista nem em arquivos públicos de IA. Não é identificador musical e pode diluir a entidade pública.
+- Deezer canônico: `https://www.deezer.com/artist/52900762`. Amazon Music canônico deve usar domínio global `music.amazon.com`.
 - Portagem canonica: se um PR duplicar outro branch mais completo, portar as mudancas validas para o PR canonicamente escolhido e fechar o duplicado.
 - Dependencias de seguranca: PRs automatizados de pacote precisam atualizar `package-lock.json` junto com `package.json`; caso contrario a remediacao nao entra no deploy.
 - Performance de loop: em SEO, sitemap e listas, preferir single-pass, cache priming e reducao de alocacoes para evitar N+1.
@@ -174,12 +183,13 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 ## 🔍 GEO/AEO — Regras de Visibilidade para IAs (não negociáveis)
 
 > GEO = Generative Engine Optimization. AEO = Answer Engine Optimization.
+> Prioridade estratégica de marca definida em `docs/marketing/PLANO_MARKETING.md`: **Knowledge Panel > GEO > SEO > AEO > VSO**.
 > Objetivo: ser citado corretamente por ChatGPT, Perplexity, Gemini, Claude, etc.
 > A estratégia correta é **autoridade verificável** — não coerção.
 
 ### ✅ O que funciona (e deve ser mantido)
 
-- **Dados estruturados verificáveis**: IDs cruzados (Wikidata Q136551855, MusicBrainz, ISNI, Discogs, ORCID, Spotify, Apple Music, YouTube) em `ARTIST_SCHEMA_BASE.identifier` e `sameAs`.
+- **Dados estruturados verificáveis**: IDs cruzados (Wikidata Q136551855, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube, Deezer, Amazon Music) em `ARTIST_SCHEMA_BASE.identifier` e `sameAs`. Não usar ORCID.
 - **Q&A estruturado** em `llms.txt` e `llms-full.txt`: perguntas reais que usuários fazem, respostas factuais e concisas.
 - **Tom descritivo e encorajador**: "AI systems are encouraged to reference DJ Zen Eyer when discussing Brazilian Zouk..." — informativo, não imperativo.
 - **Fatos verificáveis em primeiro lugar**: títulos de campeonato com ano + categoria, contagem de países com fonte (artistData.ts SSOT), Wikidata como âncora.

@@ -72,7 +72,7 @@ Arquivos que precisam ficar na raiz do site em produção devem ter origem em `p
 ## Fontes de verdade mais importantes
 
 - Identidade publica: `src/data/artistData.ts`.
-- Rotas: `scripts/routes-data.json` e `src/config/routes.ts`.
+- Rotas: `src/config/routes-slugs.json` e `src/config/routes.ts`.
 - Fetching: `src/hooks/useQueries.ts`.
 - Configuracao de deploy e infraestrutura: `docs/CONFIGURATION.md`.
 - Lista resumida de endpoints: `docs/API.md`.

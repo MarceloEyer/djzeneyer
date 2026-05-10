@@ -51,31 +51,6 @@
             }
         },
         {
-            "key": "release-dont-stop-zen-eyer-remix",
-            "en": "zouk-dance-news/dont-stop-zen-eyer-remix",
-            "pt": "noticias-zouk/dont-stop-zen-eyer-remix"
-        },
-        {
-            "key": "release-na-ponta-ela-fica-cover",
-            "en": "zouk-dance-news/na-ponta-ela-fica-cover",
-            "pt": "noticias-zouk/na-ponta-ela-fica-cover"
-        },
-        {
-            "key": "release-still-loving-you-sax-cover",
-            "en": "zouk-dance-news/still-loving-you-sax-cover",
-            "pt": "noticias-zouk/still-loving-you-sax-cover"
-        },
-        {
-            "key": "release-baila-flaquita",
-            "en": "zouk-dance-news/baila-flaquita",
-            "pt": "noticias-zouk/baila-flaquita"
-        },
-        {
-            "key": "release-porta-do-sol-cover",
-            "en": "zouk-dance-news/porta-do-sol-cover",
-            "pt": "noticias-zouk/porta-do-sol-cover"
-        },
-        {
             "key": "philosophy",
             "en": "zouk-philosophy",
             "pt": "filosofia-zouk"
@@ -102,7 +77,9 @@
         {
             "key": "presskit",
             "en": "press-kit-dj-zen-eyer",
-            "pt": "kit-de-imprensa"
+            "pt": "kit-de-imprensa",
+            "noindex": true,
+            "excludeFromSitemap": true
         },
         {
             "key": "media",

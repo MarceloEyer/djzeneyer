@@ -27,7 +27,7 @@ export interface ZenBitEventListItem {
     starts_at: string;   // ISO 8601
     timezone?: string;
     location: EventLocation;
-    canonical_path: string;   // ex: /events/2025-06-20-dj-zen-eyer-at-club-x-15619775
+    canonical_path: string;   // ex: /zouk-events/2025-06-20-dj-zen-eyer-at-club-x-15619775
     canonical_url: string;
     source_url?: string;   // URL Bandsintown
 }

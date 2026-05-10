@@ -169,16 +169,16 @@ curl -X POST https://yoursite.com/wp-json/zen-seo/v1/cache/clear \
 **Old format** (still works):
 ```
 /, /pt/
-/about, /pt/sobre
+/about-dj-zen-eyer, /pt/sobre-dj-zen-eyer
 ```
 
 **New format** (recommended):
 ```
 /, /pt/
-/about, /pt/sobre
-/events, /pt/eventos
-/music, /pt/musica
-/tribe, /pt/tribo
+/about-dj-zen-eyer, /pt/sobre-dj-zen-eyer
+/zouk-events, /pt/eventos-zouk
+/zouk-music, /pt/musica-zouk
+/zentribe, /pt/tribo-zen
 /shop, /pt/loja
 /dashboard, /pt/painel
 /my-account, /pt/minha-conta

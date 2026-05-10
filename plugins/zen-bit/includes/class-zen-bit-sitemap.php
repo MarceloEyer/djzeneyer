@@ -7,7 +7,7 @@
  * CRITICAL FIX (v3.1.0):
  *   The sitemap previously pointed to `/events/{event_id}` — a URL that only
  *   exists as a short-form alias and is NOT what the React router renders.
- *   The canonical URL is `/events/{yyyy-mm-dd}-{slug}-{event_id}`, built by
+ *   The canonical URL is `/zouk-events/{yyyy-mm-dd}-{slug}-{event_id}`, built by
  *   Zen_BIT_Normalizer::normalize_list_item(). Feeding search engines the wrong
  *   URL caused index misses and potential duplicate-content signals.
  *
@@ -144,7 +144,7 @@ class Zen_BIT_Sitemap
      * CANONICAL URL FIX:
      *   Each raw event is passed through Zen_BIT_Normalizer::normalize_list_item()
      *   which calls build_canonical_path() internally:
-     *     /events/{yyyy-mm-dd}-{slug}-{event_id}
+     *     /zouk-events/{yyyy-mm-dd}-{slug}-{event_id}
      *
      *   This is the EXACT URL the React router renders — search engines will find
      *   a live page at that address. Previously the sitemap pointed to

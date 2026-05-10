@@ -73,7 +73,7 @@ Overrides atualmente presentes em `package.json`:
 - Rotas publicas usam `<HeadlessSEO />`.
 - Rotas privadas, como `dashboard` e `my-account`, usam `noindex` e OG image generica.
 - Avatar do usuario nao aparece em OG tags.
-- Nova rota publica exige atualizacao em `scripts/routes-data.json` e sincronizacao de locales.
+- Nova rota publica exige atualizacao em `src/config/routes-slugs.json` e sincronizacao de locales.
 - URLs canonicas usam `getLocalizedRoute()`; paths hardcoded como `/about` viram divida tecnica.
 
 ### Performance

@@ -64,7 +64,7 @@ Consolidar melhorias para os arquivos de contexto/instruÃ§Ã£o (`AGENTS.md`, 
 |---|---|---:|---:|---|
 | Uso estrito de `_fields` + paginação API | Tamanho médio de payload REST | Medir endpoints `wp/v2/posts` e `wp/v2/remixes` | 25–45% menor | DevTools Network (HAR) + comparação por endpoint |
 | `staleTime`/cache mais agressivo | Requests repetidas por sessão | Medir navegação Home -> News -> Home -> News | 30–70% menor | DevTools Network com cache limpo e script de navegação fixo |
-| Prefetch em hover para rotas de alta intenção | Tempo até conteúdo visível na navegação interna | Medir rotas `/music`, `/events`, `/news` | 15–35% melhor | Lighthouse Navigation + trace de transição entre rotas |
+| Prefetch em hover para rotas de alta intenção | Tempo até conteúdo visível na navegação interna | Medir rotas `/zouk-music`, `/zouk-events`, `/zouk-dance-news` | 15–35% melhor | Lighthouse Navigation + trace de transição entre rotas |
 | Orçamento de bundle por rota lazy | JS carregado na primeira visita por rota | Levantar bytes iniciais por rota | 10–30% menor | `vite build` + analyzer por chunk/rota |
 | Auditoria de chaves i18n não usadas | Tamanho de dicionários i18n | Medir `src/locales/en/translation.json` e `pt/translation.json` | 5–15% menor | Script de inventário de chaves + diff de arquivos |
 

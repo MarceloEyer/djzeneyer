@@ -39,7 +39,7 @@ Countries represented in the booking footprint: BR, PT, ES, NL, CZ, CH, PL, SI, 
 Official music profiles, remixes and releases are available on the main streaming platforms. For booking decisions, the strongest assets are the artist profile, selected tracks, live performance context and recent festival references.
 
 - Spotify: https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw
-- Apple Music: https://music.apple.com/artist/1439280950
+- Apple Music: https://music.apple.com/us/artist/1439280950
 - YouTube: https://youtube.com/@djzeneyer
 - Instagram: https://www.instagram.com/djzeneyer/
 - Photos: https://photos.djzeneyer.com

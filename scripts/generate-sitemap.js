@@ -163,11 +163,25 @@ async function generateSitemaps() {
     
     // Obter slugs canônicos de eventos do routes-slugs.json
     const eventsRoute = routesData.routes.find(r => r.key === 'events');
-    if (!eventsRoute) {
-      console.warn('⚠️ routes-slugs.json: chave "events" não encontrada. Usando fallback "zouk-events".');
+    if (!eventsRoute?.en || !eventsRoute?.pt) {
+      throw new Error('routes-slugs.json precisa conter a rota "events" com slugs EN/PT antes de gerar o sitemap.');
     }
-    const eventsSlugEn = (eventsRoute?.en || 'zouk-events').replace(/^\/+|\/+$/g, '');
-    const eventsSlugPt = (eventsRoute?.pt || 'eventos-zouk').replace(/^\/+|\/+$/g, '');
+    const eventsSlugEn = eventsRoute.en.replace(/^\/+|\/+$/g, '');
+    const eventsSlugPt = eventsRoute.pt.replace(/^\/+|\/+$/g, '');
+    const normalizePathSegment = value => String(value || '').replace(/^\/+|\/+$/g, '');
+    const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const eventRouteAliases = [
+      eventsSlugEn,
+      eventsSlugPt,
+      ...(eventsRoute.aliases?.en ?? []),
+      ...(eventsRoute.aliases?.pt ?? []),
+    ].map(normalizePathSegment).filter(Boolean);
+    const removableEventPrefixes = [...new Set([
+      ...eventRouteAliases,
+      ...eventRouteAliases.map(routePath => `en/${routePath}`),
+      ...eventRouteAliases.map(routePath => `pt/${routePath}`),
+    ])].sort((a, b) => b.length - a.length);
+    const eventPrefixRegex = new RegExp(`^/?(?:${removableEventPrefixes.map(escapeRegex).join('|')})(?:/|$)`, 'i');
 
     let eventCount = 0;
     if (events.length > 0) {
@@ -183,7 +197,7 @@ async function generateSitemaps() {
         // Remove prefixos conhecidos para isolar o ID/Slug final do evento
         relativePath = relativePath
           .replace(/^https?:\/\/[^\/]+/, '') // Remove domínio se vier absoluto
-          .replace(/^\/(zouk-events|events|eventos-zouk|eventos|pt\/eventos-zouk|pt\/eventos)\//, '')
+          .replace(eventPrefixRegex, '')
           .replace(/^\/+|\/+$/g, '');
 
         if (!relativePath) continue;

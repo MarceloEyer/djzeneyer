@@ -78,7 +78,7 @@ const PressKitPage: React.FC = () => {
 
   const currentPath = location.pathname;
   const currentUrl = `https://djzeneyer.com${currentPath}`;
-  const isPortuguese = i18n.language?.startsWith('pt');
+  const isPortuguese = i18n.language?.toLowerCase().startsWith('pt') ?? false;
 
   const pressLinks = useMemo(() => ({
     photos: ARTIST.site.media.photosUrl,

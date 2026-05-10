@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useParams, Link, generatePath } from 'react-router-dom';
+import React, { useCallback, useMemo } from 'react';
+import { useParams, Link, generatePath, useSearchParams } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { 
@@ -8,8 +8,9 @@ import {
   ArrowRight, 
   Clock, 
   Hash,
+  Search,
 } from 'lucide-react';
-import { useNewsQuery, useNewsBySlug } from '../hooks/useQueries';
+import { useNewsQuery, useNewsBySlug, useNewsTaxonomiesQuery, type WPPost } from '../hooks/useQueries';
 import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
@@ -45,6 +46,7 @@ const LIVE_FEED_INITIAL = { opacity: 0, x: -20 };
 const LIVE_FEED_ANIMATE = { opacity: 1, x: 0 };
 const ARTICLE_INITIAL = { opacity: 0, y: 20 };
 const ARTICLE_ANIMATE = { opacity: 1, y: 0 };
+const EMPTY_NEWS_ARRAY: WPPost[] = [];
 
 // ============================================================================
 // COMPONENT
@@ -52,6 +54,7 @@ const ARTICLE_ANIMATE = { opacity: 1, y: 0 };
 const NewsPage: React.FC = () => {
   const params = useParams();
   const slug = params.slug;
+  const [searchParams, setSearchParams] = useSearchParams();
   const { i18n, t } = useTranslation();
   const normalizedLanguage = normalizeLanguage(i18n.language);
 
@@ -62,16 +65,65 @@ const NewsPage: React.FC = () => {
     newsDetailRoute: getLocalizedRoute('news-detail', normalizedLanguage)
   }), [normalizedLanguage]);
 
-  const { data: postsData, isLoading: loadingList } = useNewsQuery(normalizedLanguage, { enabled: !slug });
+  const selectedFilterSlugs = useMemo(() => ({
+    category: searchParams.get('category') || undefined,
+    tag: searchParams.get('tag') || undefined,
+    search: searchParams.get('search') || undefined,
+  }), [searchParams]);
+  const hasActiveFilter = Boolean(selectedFilterSlugs.category || selectedFilterSlugs.tag || selectedFilterSlugs.search);
+
+  const { data: taxonomiesData } = useNewsTaxonomiesQuery(normalizedLanguage);
+  const selectedFilters = useMemo(() => {
+    const selectedCategory = taxonomiesData?.categories.find(term => term.slug === selectedFilterSlugs.category);
+    const selectedTag = taxonomiesData?.tags.find(term => term.slug === selectedFilterSlugs.tag);
+
+    return {
+      category: selectedCategory ? String(selectedCategory.id) : undefined,
+      tag: selectedTag ? String(selectedTag.id) : undefined,
+      search: selectedFilterSlugs.search,
+    };
+  }, [selectedFilterSlugs.category, selectedFilterSlugs.search, selectedFilterSlugs.tag, taxonomiesData]);
+  const waitsForTaxonomyLookup = Boolean(
+    (selectedFilterSlugs.category || selectedFilterSlugs.tag) && !taxonomiesData
+  );
+  const { data: postsData, isLoading: loadingList } = useNewsQuery(normalizedLanguage, {
+    enabled: !slug && !waitsForTaxonomyLookup,
+    filters: selectedFilters,
+  });
   const { data: singlePost, isLoading: loadingDetail } = useNewsBySlug(slug, normalizedLanguage);
 
-  const posts = postsData || [];
+  const posts = postsData || EMPTY_NEWS_ARRAY;
   const loading = slug ? loadingDetail : loadingList;
 
   // Helper para rotas localizadas usando SSOT
   const getRouteForKey = (key: string): string => {
     return getLocalizedRoute(key, normalizedLanguage);
   };
+
+  const handleFilterChange = useCallback((kind?: 'category' | 'tag', termSlug?: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('category');
+    nextParams.delete('tag');
+    if (kind && termSlug) {
+      nextParams.set(kind, termSlug);
+    } else {
+      nextParams.delete('search');
+    }
+    setSearchParams(nextParams);
+  }, [searchParams, setSearchParams]);
+
+  const handleSearchSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const searchValue = String(formData.get('news-search') || '').trim();
+    const nextParams = new URLSearchParams(searchParams);
+    if (searchValue) {
+      nextParams.set('search', searchValue);
+    } else {
+      nextParams.delete('search');
+    }
+    setSearchParams(nextParams);
+  }, [searchParams, setSearchParams]);
 
   // --- RENDERIZAÇÃO DE POST ÚNICO ---
   if (!loading && slug && !singlePost) {
@@ -86,6 +138,25 @@ const NewsPage: React.FC = () => {
       '/images/zen-eyer-og-image.png'
     );
     const postUrl = `${ARTIST.site.baseUrl}${generatePath(newsDetailRoute, { slug: singlePost.slug })}`;
+    const authorName = singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author');
+    const isCanonicalAuthor = [
+      t('news.default_author'),
+      ARTIST.identity.stageName,
+      ARTIST.identity.fullName,
+      'Zen Eyer',
+      'Equipe Zen Eyer',
+    ].includes(authorName);
+    const authorSchema = isCanonicalAuthor
+      ? {
+          "@type": "Person",
+          "name": authorName,
+          "url": ARTIST.site.baseUrl,
+          "@id": `${ARTIST.site.baseUrl}/#artist`
+        }
+      : {
+          "@type": "Person",
+          "name": authorName
+        };
 
     const articleSchema = {
       "@context": "https://schema.org",
@@ -94,12 +165,7 @@ const NewsPage: React.FC = () => {
       "image": [postImage],
       "datePublished": singlePost.date,
       "dateModified": singlePost.modified || singlePost.date,
-      "author": [{
-        "@type": "Person",
-        "name": singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author'),
-        "url": ARTIST.site.baseUrl,
-        "@id": `${ARTIST.site.baseUrl}/#artist`
-      }],
+      "author": [authorSchema],
       "url": postUrl
     };
 
@@ -118,6 +184,26 @@ const NewsPage: React.FC = () => {
             <Link to={getRouteForKey('news')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-8 font-bold">
               <ArrowLeft size={20} /> {t('news.back_to_list')}
             </Link>
+
+            <nav aria-label="Breadcrumb" className="mb-8 text-sm text-white/45">
+              <ol className="flex flex-wrap items-center gap-2">
+                <li>
+                  <Link to={getLocalizedRoute('home', normalizedLanguage)} className="hover:text-primary transition-colors">
+                    {t('nav.home')}
+                  </Link>
+                </li>
+                <li aria-hidden="true">/</li>
+                <li>
+                  <Link to={getRouteForKey('news')} className="hover:text-primary transition-colors">
+                    {t('footer_news')}
+                  </Link>
+                </li>
+                <li aria-hidden="true">/</li>
+                <li className="max-w-full truncate text-white/70" aria-current="page">
+                  {stripHtml(singlePost?.title?.rendered || '')}
+                </li>
+              </ol>
+            </nav>
 
             <article>
               <header className="mb-10 text-center">
@@ -196,6 +282,70 @@ const NewsPage: React.FC = () => {
               <p>{getDateTimeFormatter(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</p>
             </div>
           </header>
+
+          {!slug && taxonomiesData && (
+            <section className="mb-10 space-y-5" aria-label={t('news.filters_label')}>
+              <form onSubmit={handleSearchSubmit} className="relative max-w-md">
+                <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35" size={16} aria-hidden="true" />
+                <input
+                  type="search"
+                  name="news-search"
+                  defaultValue={selectedFilterSlugs.search || ''}
+                  placeholder={t('news.search_placeholder')}
+                  className="min-h-[44px] w-full rounded-full border border-white/10 bg-white/5 py-2 pl-11 pr-4 text-sm text-white outline-none transition-colors placeholder:text-white/35 focus:border-primary"
+                  aria-label={t('news.search_label')}
+                />
+              </form>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleFilterChange()}
+                  className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+                    !hasActiveFilter
+                      ? 'border-primary bg-primary text-background'
+                      : 'border-white/10 bg-white/5 text-white/70 hover:border-primary hover:text-white'
+                  }`}
+                >
+                  {t('news.filters_all')}
+                </button>
+                {taxonomiesData.categories.map(term => (
+                  <button
+                    key={term.id}
+                    type="button"
+                    onClick={() => handleFilterChange('category', term.slug)}
+                    className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+                      selectedFilterSlugs.category === term.slug
+                        ? 'border-primary bg-primary text-background'
+                        : 'border-white/10 bg-white/5 text-white/70 hover:border-primary hover:text-white'
+                    }`}
+                  >
+                    {term.name}
+                  </button>
+                ))}
+              </div>
+              {taxonomiesData.tags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-widest text-white/35">
+                    {t('news.tags')}
+                  </span>
+                  {taxonomiesData.tags.map(term => (
+                    <button
+                      key={term.id}
+                      type="button"
+                      onClick={() => handleFilterChange('tag', term.slug)}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        selectedFilterSlugs.tag === term.slug
+                          ? 'border-primary bg-primary/90 text-background'
+                          : 'border-white/10 bg-white/5 text-white/55 hover:border-primary hover:text-white'
+                      }`}
+                    >
+                      #{term.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
 
           {loading ? (
             <div className="animate-pulse space-y-8">
@@ -306,6 +456,11 @@ const NewsPage: React.FC = () => {
                   </motion.article>
                 ))}
               </div>
+              {!featuredPost && (
+                <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-12 text-center text-white/60">
+                  {t('news.no_posts_for_filter')}
+                </div>
+              )}
             </>
           )}
 

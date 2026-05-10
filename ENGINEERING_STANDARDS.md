@@ -1,7 +1,7 @@
 # Engineering Standards — djzeneyer
 
-> Canonical reference for all coding rules, architectural decisions, and quality standards.
-> **This document is the SSOT for engineering practices in this repository.**
+> Supplemental engineering checklist for this repository.
+> Canonical precedence remains `AI_CONTEXT_INDEX.md` -> `AGENTS.md` -> `docs/` -> skills.
 
 Last updated: May 2026
 
@@ -76,11 +76,11 @@ Every piece of data, configuration, or route definition MUST have **exactly one 
 
 4. **`SearchAction` or `potentialAction` must only be declared when the target page implements the described capability.** If the events page doesn't support `?q=` search, don't declare a `SearchAction`.
 
-5. **Use fragment identifiers (`#release-id`) for sub-entities** that don't have dedicated pages. Example: `https://djzeneyer.com/zouk-music#release-diamonds`.
+5. **Use fragment identifiers (`#release-id`) for sub-entities** that don't have dedicated pages. Example: `https://djzeneyer.com/zouk-music#release-baila-flaquita`.
 
 6. **Identity Architecture (Strategic Duplication):**
    - The project uses a dual-node architecture: `Person` (`/#artist`) and `MusicGroup` (`/#musicgroup`).
-   - **Identifiers MUST be maintained in BOTH nodes.** Wikidata, MusicBrainz, ISNI, Discogs, ORCID, Spotify, Apple Music, and YouTube are not just "personal" or "group" attributes; they are authoritative signals for the entire project entity.
+   - **Identifiers MUST be maintained in BOTH nodes.** Wikidata, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, and YouTube are not just "personal" or "group" attributes; they are authoritative signals for the entire project entity.
    - Any attempt by AI to "clean up" or "separate" these identifiers between Person and MusicGroup is a **CRITICAL ERROR** that fragments the Knowledge Graph.
    - `sameAs` lists MUST contain all authoritative profiles (Wikidata, MusicBrainz, Amazon, Apple, Spotify, YouTube, etc.) in both entities to ensure maximum reconciliability by search engines and LLMs.
 

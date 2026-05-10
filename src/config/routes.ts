@@ -60,6 +60,7 @@ const MusicPage = lazy(() => import('../pages/MusicPage'));
 const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
 const MediaPage = lazy(() => import('../pages/MediaPage'));
 const PressKitPage = lazy(() => import('../pages/PressKitPage'));
+const PressKitDownloadPage = lazy(() => import('../pages/PressKitDownloadPage'));
 const ShopPage = lazy(() => import('../pages/ShopPage'));
 const ProductPage = lazy(() => import('../pages/ProductPage'));
 const CartPage = lazy(() => import('../pages/CartPage'));
@@ -95,6 +96,12 @@ const slug = (key: string, lang: Language): string | string[] => {
   return aliases.length > 0 ? [base, ...aliases] : base;
 };
 
+const withParam = (paths: string | string[], param: string): string | string[] => {
+  return Array.isArray(paths)
+    ? paths.map(path => `${path}/${param}`)
+    : `${paths}/${param}`;
+};
+
 // ============================================================================
 // ROUTES CONFIGURATION
 // ============================================================================
@@ -124,7 +131,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     key: 'events-detail',
     component: EventsPage,
-    paths: { en: `${slug('events', 'en')}/:id`, pt: `${slug('events', 'pt')}/:id` },
+    paths: { en: withParam(slug('events', 'en'), ':id'), pt: withParam(slug('events', 'pt'), ':id') },
   },
 
   // Music (com rota dinâmica :slug)
@@ -133,7 +140,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: MusicPage,
     paths: { en: slug('music', 'en') as string, pt: slug('music', 'pt') as string },
   },
-
   // News / Blog
   {
     key: 'news',
@@ -143,7 +149,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     key: 'news-detail',
     component: NewsPage,
-    paths: { en: `${slug('news', 'en')}/:slug`, pt: `${slug('news', 'pt')}/:slug` },
+    paths: { en: withParam(slug('news', 'en'), ':slug'), pt: withParam(slug('news', 'pt'), ':slug') },
   },
 
   // Zen Tribe (com aliases)
@@ -161,7 +167,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   },
   {
     key: 'presskit',
-    component: PressKitPage,
+    component: PressKitDownloadPage,
     paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
   },
 
@@ -395,8 +401,10 @@ ROUTES_CONFIG.forEach(route => {
 
   for (const p of [...enPaths, ...ptPaths]) {
     if (!p) continue;
+    const dynamicIdx = p.indexOf('/:');
+    const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
     // remove leading slash if it exists
-    let cleanP = p.startsWith('/') ? p.slice(1) : p;
+    let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     // remove trailing slash if it exists
     cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
 
@@ -533,7 +541,7 @@ export const getAlternateLinks = (
   const detailRoute = KEY_ROUTE_MAP.get(key) ?? route;
   const allCurrentLangPaths = getLocalizedPaths(detailRoute, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
   for (const p of allCurrentLangPaths) {
-    // Extrai apenas o prefixo estático: "/events/:slug" → "/events"
+    // Extrai apenas o prefixo estático: "zouk-events/:slug" -> "zouk-events"
     const dynamicIdx = p.indexOf('/:');
     const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
     let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;

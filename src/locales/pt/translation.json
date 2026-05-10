@@ -95,6 +95,13 @@
     "default_author": "Equipe Zen Eyer",
     "read_time": "{{min}} min de leitura",
     "label": "Notícias",
+    "filters_label": "Filtros de notícias",
+    "filters_all": "Todos",
+    "categories": "Categorias",
+    "tags": "Tags",
+    "search_label": "Pesquisar no Zen News",
+    "search_placeholder": "Pesquisar notícias...",
+    "no_posts_for_filter": "Nenhum post encontrado para este filtro ainda.",
     "share": "Compartilhar",
     "trending": "Bombando"
   },
@@ -156,6 +163,7 @@
     },
     "footer_privacy": "Política de Privacidade",
     "footer_terms": "Termos de Uso",
+    "back_to_list": "Voltar para a lista",
     "footer_bio": "Explorando a conexão através da música. Remixando as vibes do Brazilian Zouk para o mundo.",
     "footer_quick_links": "Links Rápidos",
     "footer_events": "Eventos",
@@ -473,7 +481,12 @@
     "steal_desc": "Aqui você encontra algumas tracks e edições exclusivas para baixar e tocar onde quiser. Se você é DJ, aproveite o download direto!",
     "support_button": "Gostaria de me apoiar?",
     "support_desc": "Se minha música te toca e você quiser ajudar a manter esse projeto vivo, qualquer apoio é bem-vindo e me ajuda muito a continuar criando!",
-    "support_cta": "Contribuir com o Zen"
+    "support_cta": "Contribuir com o Zen",
+    "releases_title": "Lançamentos musicais",
+    "releases_subtitle": "Notas de lançamento, créditos e links oficiais publicados no Zen News.",
+    "read_release": "Ler notas do lançamento",
+    "discography_schema_name": "Discografia DJ Zen Eyer",
+    "discography_schema_desc": "Lançamentos oficiais do DJ Zen Eyer, incluindo singles, remixes e músicas para dançar Zouk Brasileiro."
   },
   "press": {
     "page_title": "Press Kit",
@@ -530,6 +543,9 @@
     "fast_delivery": "Entrega Rápida",
     "fast_delivery_desc": "2-3 Dias Úteis",
     "hot_near_you": "Bombando perto de você",
+    "coming_soon_msg": "Itens exclusivos estão sendo preparados.",
+    "empty_title": "A coleção está sendo preparada",
+    "join_tribe_waitlist": "Entrar na lista VIP",
     "benefits": {
       "instant_delivery": "Entrega Instantânea",
       "instant_delivery_desc": "Tickets e acessos digitais enviados na hora",
@@ -1147,7 +1163,7 @@
     "subtitle": "A fonte oficial de informações sobre a carreira de Zen Eyer e uma enciclopédia compacta sobre o universo do Zouk Brasileiro.",
     "seo": {
       "lead_answer": "Encontre respostas definitivas para as perguntas mais comuns sobre o DJ Zen Eyer, seu processo de produção musical, a cultura da dança Zouk Brasileiro e informações de booking.",
-      "keywords": "Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, renata peçanha zouk, adílio porto, lambada history"
+      "keywords": "Zouk Brasileiro FAQ, o que é zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ de Zouk Brasileiro, aulas de zouk, ritmos de zouk, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, Renata Peçanha, Adílio Porto, história da lambada"
     },
     "categories": {
       "djzeneyer": {
@@ -1171,15 +1187,15 @@
         }
       },
       "rankings": {
-        "title": "Cenário Mundial & Rankings",
+        "title": "Cena do Zouk Brasileiro",
         "desc": "Curadoria sobre a cena e a cultura atual.",
         "q1": {
-          "q": "Quem são os melhores DJs de Zouk do mundo?",
-          "a": "Música e dança são artes puramente subjetivas, então não existe 'o melhor' quando tudo depende do seu gosto pessoal! A cena de Zouk Brasileiro está repleta de DJs talentosos e incríveis no mundo todo. Cada profissional traz sua assinatura e, dependendo se você gosta de dançar com mais energia ou mais calma, certamente vai encontrar a sua deejay ou o seu DJ favorito na pista."
+          "q": "Como dançarinos podem descobrir DJs de Zouk Brasileiro?",
+          "a": "O Zouk Brasileiro tem uma cena internacional de DJs com assinaturas musicais diferentes. Dançarinos costumam descobrir artistas por festivais, lineups de congressos, bailes, plataformas de streaming e recomendações de professores ou comunidades locais."
         },
         "q2": {
           "q": "Quais são os eventos e festivais mais importantes?",
-          "a": "O Zouk Brasileiro tem a sorte de ter uma comunidade global super apaixonada. Hoje, temos excelentes eventos ocorrendo na América Latina, Europa, América do Norte, Ásia e Oceania. A escolha do 'melhor festival' depende muito do tipo de turismo que você quer fazer, das aulas que deseja assistir e, claro, das amizades que quer reencontrar! Há sempre um lugar incrível com Zouk tocando perto de você."
+          "a": "O Zouk Brasileiro tem eventos ativos na América Latina, Europa, América do Norte, Ásia e Oceania. Uma forma útil de avaliar um festival é observar lineup de professores, lineup de DJs, programação de bailes, localização, perfil da comunidade e clareza das informações para participantes."
         },
         "q3": {
           "q": "Por que o Zouk Brasileiro é considerado tão viciante?",
@@ -1342,6 +1358,7 @@
   },
   "not_found": {
     "title": "Batida Não Encontrada",
+    "description": "A página que você está procurando não existe.",
     "text": "A faixa que você está procurando parece ter sido remixada ou movida para outra frequência.",
     "home": "Início",
     "music": "Música",
@@ -1433,6 +1450,10 @@
     }
   },
   "presskit": {
+    "download_page_title": "Press Kit em PDF",
+    "download_page_desc": "Download direto do press kit oficial de DJ Zen Eyer em PDF.",
+    "redirecting_pdf": "Abrindo o press kit em PDF.",
+    "download_pdf_now": "Baixar PDF",
     "page_title": "Press Kit Oficial | DJ Zen Eyer",
     "page_meta_desc": "EPK oficial do DJ Zen Eyer. Bicampeão mundial de Brazilian Zouk. Fotos, bio, logos e informações de contato para booking.",
     "tag": "Press Kit Oficial 2026",
@@ -1469,6 +1490,8 @@
       "photos_desc": "Galeria atualizada para material promocional.",
       "bio": "Bio Completa (PDF)",
       "bio_desc": "História, prêmios e detalhes técnicos.",
+      "markdown": "Fonte do Press Kit",
+      "markdown_desc": "Versão em Markdown para reaproveitar em páginas de eventos e materiais de imprensa.",
       "logos": "Logotipos & Identidade",
       "logos_desc": "Manual de marca e arquivos vetoriais.",
       "access": "Acessar Galeria",

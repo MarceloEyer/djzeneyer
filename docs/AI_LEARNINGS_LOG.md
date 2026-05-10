@@ -37,7 +37,7 @@ Linha consolidada:
 ### 4) Schema.org - erros recorrentes que ja foram eliminados
 
 - `@type: ['Person', 'MusicGroup']` nao representa a entidade individual corretamente
-- `identifier: { propertyID: 'ORCID' }` nao se aplica ao perfil do DJ
+- Identificadores academicos nao se aplicam ao perfil publico do DJ/produtor musical.
 - `sameAs` precisa usar a lista canonica completa
 - `genre` deve permanecer especifico, nao generico
 

@@ -134,7 +134,8 @@ export const QUERY_KEYS = {
   /** Notícias/Posts */
   posts: {
     all: ['posts'] as const,
-    list: (lang?: string) => ['posts', 'list', lang] as const,
+    list: (lang?: string, filters?: unknown) => ['posts', 'list', lang, filters] as const,
+    taxonomies: (lang?: string) => ['posts', 'taxonomies', lang] as const,
     detail: (slug: string) => ['posts', 'detail', slug] as const,
   },
 

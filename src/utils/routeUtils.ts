@@ -18,8 +18,8 @@ export const normalizePath = (p: string) => {
 
 /**
  * Try simple dynamic conversions for common patterns:
- * - events/:id  <-> /pt/eventos/:id
- * - music/:slug  <-> /pt/musica/:slug
+ * - zouk-events/:id  <-> /pt/eventos-zouk/:id
+ * - zouk-music/:slug  <-> /pt/musica-zouk/:slug
  * - shop/product/:id  <-> /pt/loja/produto/:id  (example)
  */
 export const tryDynamicMapping = (path: string, newLang: 'pt'|'en') => {
@@ -31,13 +31,13 @@ export const tryDynamicMapping = (path: string, newLang: 'pt'|'en') => {
   const restSuffix = rest ? '/' + rest : '';
 
   // events
-  if (seg0 === 'events' || seg0 === 'eventos') {
-    return newLang === 'pt' ? `/pt/eventos${restSuffix}` : `/events${restSuffix}`;
+  if (seg0 === 'zouk-events' || seg0 === 'events' || seg0 === 'eventos-zouk' || seg0 === 'eventos') {
+    return newLang === 'pt' ? `/pt/eventos-zouk${restSuffix}` : `/zouk-events${restSuffix}`;
   }
 
   // music
-  if (seg0 === 'music' || seg0 === 'musica') {
-    return newLang === 'pt' ? `/pt/musica${restSuffix}` : `/music${restSuffix}`;
+  if (seg0 === 'zouk-music' || seg0 === 'music' || seg0 === 'musica-zouk' || seg0 === 'musica') {
+    return newLang === 'pt' ? `/pt/musica-zouk${restSuffix}` : `/zouk-music${restSuffix}`;
   }
 
   // shop product example: /shop/product/123 -> /pt/loja/produto/123

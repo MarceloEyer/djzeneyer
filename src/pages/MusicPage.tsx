@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
 import { YoutubeIcon } from '../components/icons/BrandIcons';
-import { Link } from 'react-router-dom';
+import { Link, generatePath } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST, MUSICGROUP_SCHEMA, DISCOGRAPHY } from '../data/artistData';
 import { safeUrl } from '../utils/sanitize';
@@ -66,9 +66,18 @@ const MusicPage: React.FC = () => {
   const currentLang = normalizeLanguage(i18n.language);
   const prefersReducedMotion = useReducedMotion();
 
+  const releaseCards = useMemo(() => {
+    const newsDetailRoute = getLocalizedRoute('news-detail', currentLang);
+    return DISCOGRAPHY.map((release) => ({
+      ...release,
+      path: generatePath(newsDetailRoute, { slug: release.newsSlugs?.[currentLang] || release.id }),
+    }));
+  }, [currentLang]);
+
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
-    const canonicalMusicUrl = `${baseUrl}${getLocalizedRoute('music', 'en')}`;
+    const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
+    const newsDetailRoute = getLocalizedRoute('news-detail', currentLang);
     const ARTIST_PROFILE_URLS = new Set<string>([
       ...Object.values(ARTIST.social)
         .map((social) => social?.url)
@@ -80,11 +89,9 @@ const MusicPage: React.FC = () => {
 
     // ItemList: cada release vira um ListItem apontando para MusicRecording/MusicAlbum
     const releaseListItems = DISCOGRAPHY.map((release, index) => {
-      // Use forced English anchor for @id to prevent entity duplication across languages
-      const releaseAnchor = `${canonicalMusicUrl}#release-${release.id}`;
-      // Use current localized URL for visual/clickable links
-      const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
-      const releaseUrl = `${pageUrl}#release-${release.id}`;
+      const newsSlug = release.newsSlugs?.[currentLang] || release.id;
+      const releasePath = generatePath(newsDetailRoute, { slug: newsSlug });
+      const releaseUrl = `${baseUrl}${releasePath}`;
 
       const schemaType = release.type === 'album' ? 'MusicAlbum'
         : release.type === 'ep' ? 'MusicAlbum'
@@ -92,12 +99,14 @@ const MusicPage: React.FC = () => {
 
       const releaseNode: Record<string, unknown> = {
         '@type': schemaType,
-        '@id': releaseAnchor,
+        '@id': `${releaseUrl}#recording`,
         name: release.name,
         url: releaseUrl,
         image: release.image,
-        byArtist: { '@id': `${baseUrl}/#musicgroup` },
+        byArtist: release.byArtist || { '@id': `${baseUrl}/#musicgroup` },
       };
+
+      if (release.contributor) releaseNode.contributor = release.contributor;
 
       // Only emit datePublished if it's NOT the 2024-01-01 placeholder
       if (release.releaseDate && release.releaseDate !== '2024-01-01') {
@@ -110,7 +119,12 @@ const MusicPage: React.FC = () => {
       const sameAsLinks = [
         release.spotifyUrl,
         release.appleMusicUrl,
+        release.musicBrainzUrl,
+        release.deezerUrl,
+        release.tidalUrl,
+        release.amazonMusicUrl,
         release.youtubeMusicUrl,
+        release.youtubeUrl,
         release.soundcloudUrl,
       ].filter(isReleaseSpecificUrl);
       if (sameAsLinks.length > 0) releaseNode.sameAs = sameAsLinks;
@@ -172,10 +186,10 @@ const MusicPage: React.FC = () => {
         // ItemList de releases — conecta o catálogo ao grafo
         ...(releaseListItems.length > 0 ? [{
           '@type': 'ItemList',
-          '@id': `${baseUrl}${getLocalizedRoute('music', currentLang)}#discography`,
-          name: `${ARTIST.identity.stageName} — Discography`,
-          description: `Official releases by ${ARTIST.identity.stageName}: singles, remixes, and EPs for Brazilian Zouk dancing.`,
-          url: `${baseUrl}${getLocalizedRoute('music', currentLang)}`,
+          '@id': `${pageUrl}#discography`,
+          name: t('music.discography_schema_name'),
+          description: t('music.discography_schema_desc'),
+          url: pageUrl,
           numberOfItems: releaseListItems.length,
           itemListElement: releaseListItems,
         }] : []),
@@ -269,6 +283,49 @@ const MusicPage: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {releaseCards.length > 0 && (
+            <section className="mb-16" aria-labelledby="music-releases-title">
+              <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 id="music-releases-title" className="text-2xl font-black font-display text-white">
+                    {t('music.releases_title')}
+                  </h2>
+                  <p className="mt-1 text-sm text-white/50">{t('music.releases_subtitle')}</p>
+                </div>
+                <Link to={getLocalizedRoute('news', currentLang)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
+                  {t('news.title')} <ExternalLink size={14} />
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {releaseCards.map((release) => (
+                  <Link
+                    key={release.id}
+                    to={release.path}
+                    className="group flex min-h-[132px] gap-4 rounded-2xl border border-white/10 bg-surface/35 p-4 transition-colors hover:border-primary/50 hover:bg-surface/60"
+                  >
+                    <img
+                      src={safeUrl(release.image, '/images/zen-eyer-og-image.png')}
+                      alt={release.name}
+                      className="h-24 w-24 flex-none rounded-xl object-cover"
+                      width="96"
+                      height="96"
+                      loading="lazy"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+                        {release.type}
+                      </div>
+                      <h3 className="line-clamp-2 text-lg font-black text-white transition-colors group-hover:text-primary">
+                        {release.name}
+                      </h3>
+                      <p className="mt-2 text-sm text-white/50">{t('music.read_release')}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Download / Grab & Go Card */}

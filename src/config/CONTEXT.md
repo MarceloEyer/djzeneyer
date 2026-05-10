@@ -13,7 +13,7 @@ API URLs, rotas localizadas e configuracoes globais do frontend.
 - `routes.ts` continua sendo a base para mapeamento de rotas.
 - `siteConfig.ts` concentra metadados globais.
 - `getApiConfig()` deve priorizar dados injetados pelo PHP antes de variaveis de ambiente quando isso existir no projeto.
-- Mudanca de rota publica precisa sincronizar `scripts/routes-data.json`.
+- Mudanca de rota publica precisa sincronizar `src/config/routes-slugs.json`.
 
 ## Pontos de cuidado
 
