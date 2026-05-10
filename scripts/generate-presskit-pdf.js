@@ -24,7 +24,7 @@ const shared = {
   whatsapp: '+55 21 98741-3091',
   instagram: '@djzeneyer',
   spotify: 'open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-  appleMusic: 'music.apple.com/artist/1439280950',
+  appleMusic: 'music.apple.com/us/artist/1439280950',
   youtube: 'youtube.com/@djzeneyer',
   photos: 'photos.djzeneyer.com',
   countries: [
@@ -65,7 +65,7 @@ const documents = {
     ],
     page2Title: 'Why Book Zen Eyer',
     bookingValue:
-      'Zen Eyer is a dance-floor-first Brazilian Zouk DJ. His sets are built around long transitions, emotional continuity and precise floor reading, with a style he calls Cremosidade: smooth, immersive and never rushed.',
+      'Zen Eyer is a dance-floor-first Brazilian Zouk DJ. His sets are built around long transitions, emotional continuity and precise floor reading, with Cremosidade frequently associated with his public artist materials: smooth, immersive and never rushed.',
     promoterFitTitle: 'Fit for festivals and marathons',
     promoterFit: [
       'Experienced with international Brazilian Zouk rooms, late-night socials and long-form dance floors.',
@@ -121,7 +121,7 @@ const documents = {
     ],
     page2Title: 'Por que contratar Zen Eyer',
     bookingValue:
-      'Zen Eyer e um DJ de Zouk Brasileiro com foco total na pista. Seus sets sao construidos com transicoes longas, continuidade emocional e leitura precisa da pista, dentro do estilo que ele chama de Cremosidade: suave, imersivo e sem pressa.',
+      'Zen Eyer e um DJ de Zouk Brasileiro com foco total na pista. Seus sets sao construidos com transicoes longas, continuidade emocional e leitura precisa da pista, com Cremosidade frequentemente associada aos seus materiais publicos: suave, imersivo e sem pressa.',
     promoterFitTitle: 'Ideal para festivais e maratonas',
     promoterFit: [
       'Experiencia com salas internacionais de Zouk Brasileiro, sociais noturnos e pistas de longa duracao.',

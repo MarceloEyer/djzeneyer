@@ -205,8 +205,8 @@ RewriteEngine On
 RewriteRule ^payme/?$ /support-dj-zen-eyer/ [R=301,L]
 RewriteRule ^pt/pagamentos/?$ /pt/apoie-dj-zen-eyer/ [R=301,L]
 
-# Legacy press kit route -> canonical booking page
-# REMOVIDO: press-kit agora é uma rota válida apontando para PressKitPage
+# Legacy press kit route -> canonical press kit download route
+# REMOVIDO: press-kit agora é uma rota válida apontando para PressKitDownloadPage
 # RewriteRule ^press-kit-dj-zen-eyer/?$ /work-with-me/ [R=301,L]
 # RewriteRule ^pt/kit-de-imprensa/?$ /pt/trabalhe-comigo/ [R=301,L]
 RewriteRule ^pt/press-kit/?$ /pt/kit-de-imprensa/ [R=301,L]

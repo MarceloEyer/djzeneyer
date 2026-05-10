@@ -387,7 +387,7 @@ Destino recomendado no repositorio e no webroot:
 - Producao/webroot: `/dj-zen-eyer-presskit.pdf`
 - URL final: `https://djzeneyer.com/dj-zen-eyer-presskit.pdf`
 
-Se voce quiser gerenciar pelo WordPress puro, o padrao WordPress e subir em `Media > Add New`, que normalmente gera URL em `/wp-content/uploads/{ano}/{mes}/arquivo.pdf`. Isso e normal para WordPress, mas nao e ideal para URL permanente curta. Para Press Kit profissional, prefiro o caminho fixo `/assets/press/` porque e previsivel, facil de linkar e nao depende da estrutura de uploads por data.
+Se voce quiser gerenciar pelo WordPress puro, o padrao WordPress e subir em `Media > Add New`, que normalmente gera URL em `/wp-content/uploads/{ano}/{mes}/arquivo.pdf`. Isso e normal para WordPress, mas nao e ideal para URL permanente curta. Para Press Kit profissional, prefiro o caminho fixo `/dj-zen-eyer-presskit.pdf` porque e previsivel, facil de linkar e nao depende da estrutura de uploads por data.
 
 PDF unico e suficiente agora. PNG/JPG cria manutencao extra e so vale a pena se um organizador pedir arte pronta para redes sociais.
 

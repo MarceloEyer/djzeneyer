@@ -370,8 +370,8 @@ export const ARTIST = {
     media: {
       photosUrl: 'https://photos.djzeneyer.com',
       epkPdf: '/dj-zen-eyer-presskit.pdf',
-      epkPdfEn: '/dj-zen-eyer-presskit.pdf',
-      epkPdfPt: '/dj-zen-eyer-presskit.pdf',
+      epkPdfEn: '/assets/press/dj-zen-eyer-presskit-en.pdf',
+      epkPdfPt: '/assets/press/dj-zen-eyer-presskit-pt.pdf',
       epkMd: '/assets/press/dj-zen-eyer-presskit.md',
       epkMdEn: '/assets/press/dj-zen-eyer-presskit-en.md',
       epkMdPt: '/assets/press/dj-zen-eyer-presskit-pt.md',
