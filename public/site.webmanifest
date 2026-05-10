@@ -73,7 +73,7 @@
       "name": "Events",
       "short_name": "Events",
       "description": "Upcoming DJ events",
-      "url": "/events",
+      "url": "/zouk-events",
       "icons": [
         {
           "src": "/favicon-96x96.png",

@@ -10,7 +10,7 @@ import {
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST, ARTIST_BUSINESS_SCHEMA, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
@@ -115,6 +115,7 @@ const HomePage: React.FC = () => {
     booking: getLocalizedRoute('booking', currentLang),
     events: getLocalizedRoute('events', currentLang),
     music: getLocalizedRoute('music', currentLang),
+    news: getLocalizedRoute('news', currentLang),
     zentribe: getLocalizedRoute('zentribe', currentLang),
   }), [currentLang]);
 
@@ -129,9 +130,19 @@ const HomePage: React.FC = () => {
         "name": seoSettings?.real_name || "DJ Zen Eyer - Official Website",
         "description": "Official website of DJ Zen Eyer, 2× World Champion Brazilian Zouk DJ & Producer",
         "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
-        "inLanguage": ["en", "pt-BR"]
+        "inLanguage": ["en", "pt-BR"],
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${ARTIST.site.baseUrl}${routes.news}?search={search_term_string}`
+          },
+          "query-input": "required name=search_term_string"
+        }
       },
       ARTIST_SCHEMA_BASE,
+      ARTIST_BUSINESS_SCHEMA,
+      MUSICGROUP_SCHEMA,
       {
         "@type": "WebPage",
         "@id": `${currentUrl}#webpage`,
@@ -155,7 +166,7 @@ const HomePage: React.FC = () => {
         }
       }
     ],
-  }), [seoSettings, t, currentUrl]);
+  }), [seoSettings, t, currentUrl, routes.news]);
 
   return (
     <>

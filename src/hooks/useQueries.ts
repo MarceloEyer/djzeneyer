@@ -136,6 +136,8 @@ export interface WPPost {
   title: { rendered: string };
   excerpt: { rendered: string };
   content?: { rendered: string };
+  categories?: number[];
+  tags?: number[];
   featured_image_src?: string | null;
   featured_image_src_full?: string | null;
   author_name?: string;
@@ -143,6 +145,14 @@ export interface WPPost {
     'wp:featuredmedia'?: Array<{ source_url: string }>;
     author?: Array<{ name: string }>;
   };
+}
+
+export interface WPTerm {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+  taxonomy: 'category' | 'post_tag';
 }
 
 export interface ArtistProfile {
@@ -310,18 +320,46 @@ export const fetchEventsFn = async ({
   }
 };
 
-export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
+export interface NewsFilters {
+  category?: string;
+  tag?: string;
+  search?: string;
+}
+
+export const fetchNewsFn = async (lang?: string, filters: NewsFilters = {}): Promise<WPPost[]> => {
+  const hasFilters = Boolean(filters.category || filters.tag || filters.search);
   const prerenderNews = getPrerenderNews(lang);
-  if (prerenderNews && prerenderNews.length > 0) return prerenderNews;
+  if (!hasFilters && prerenderNews && prerenderNews.length > 0) return prerenderNews;
 
   const apiUrl = buildApiUrl('wp/v2/posts', {
     per_page: '10',
     ...(lang ? { lang } : {}),
+    ...(filters.category ? { categories: filters.category } : {}),
+    ...(filters.tag ? { tags: filters.tag } : {}),
+    ...(filters.search ? { search: filters.search } : {}),
     // OPTIMIZATION: Replaced _embed=true with targeted fields
-    _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
+    _fields: 'id,date,slug,title,excerpt,categories,tags,featured_image_src,featured_image_src_full,author_name',
   });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch news posts');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
+
+const fetchWpTermsFn = async (
+  taxonomy: 'categories' | 'tags',
+  lang?: string
+): Promise<WPTerm[]> => {
+  const apiUrl = buildApiUrl(`wp/v2/${taxonomy}`, {
+    per_page: '100',
+    hide_empty: 'true',
+    orderby: 'count',
+    order: 'desc',
+    ...(lang ? { lang } : {}),
+    _fields: 'id,name,slug,count,taxonomy',
+  });
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error(`Failed to fetch ${taxonomy}`);
   const data = await res.json();
   return Array.isArray(data) ? data : [];
 };
@@ -430,12 +468,30 @@ export const useEventsQuery = (
 // NEWS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useNewsQuery = (lang?: string, options: { enabled?: boolean } = {}) => {
+export const useNewsQuery = (
+  lang?: string,
+  options: { enabled?: boolean; filters?: NewsFilters } = {}
+) => {
+  const filters = options.filters || {};
   return useQuery({
-    queryKey: QUERY_KEYS.posts.list(lang),
-    queryFn: () => fetchNewsFn(lang),
+    queryKey: QUERY_KEYS.posts.list(lang, filters),
+    queryFn: () => fetchNewsFn(lang, filters),
     staleTime: STALE_TIME.POSTS,
-    ...options,
+    enabled: options.enabled,
+  });
+};
+
+export const useNewsTaxonomiesQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.posts.taxonomies(lang),
+    queryFn: async () => {
+      const [categories, tags] = await Promise.all([
+        fetchWpTermsFn('categories', lang),
+        fetchWpTermsFn('tags', lang),
+      ]);
+      return { categories, tags };
+    },
+    staleTime: STALE_TIME.POSTS,
   });
 };
 

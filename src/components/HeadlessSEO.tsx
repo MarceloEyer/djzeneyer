@@ -5,9 +5,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS } from '../data/artistData';
+import { ARTIST_BUSINESS_SCHEMA, ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
-import { getAlternateLinks, normalizeLanguage } from '../config/routes';
+import { getAlternateLinks, getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { ensureTrailingSlash } from '../utils/seo';
 import { stripHtml } from '../utils/text';
@@ -130,6 +130,14 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const { i18n } = useTranslation();
   const location = useLocation();
   const currentLang = normalizeLanguage(i18n.language || 'en');
+  const siteSearchAction = React.useMemo(() => ({
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${baseUrl}${getLocalizedRoute('news', currentLang)}?search={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  }), [baseUrl, currentLang]);
 
   // 1. Automatic Hreflang Generation
   const computedHrefLang = React.useMemo(() => {
@@ -217,8 +225,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           description: artist.site.defaultDescription,
           publisher: { '@id': `${baseUrl}/#artist` },
           inLanguage: ['en', 'pt-BR'],
+          potentialAction: siteSearchAction,
         },
         ARTIST_SCHEMA_BASE,
+        ARTIST_BUSINESS_SCHEMA,
         {
           '@type': 'WebPage',
           '@id': `${finalUrl}#webpage`,
@@ -341,9 +351,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           eventOffers = {
             ...baseOffer,
             url: (event.event_ticket as string) || canonicalUrl || finalUrl,
-            availability: isPast
-              ? 'https://schema.org/Discontinued'
-              : (event.event_ticket ? 'https://schema.org/InStock' : 'https://schema.org/LimitedAvailability'),
+            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
           };
         }
 
@@ -352,7 +360,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           eventOffers = {
             ...baseOffer,
             url: canonicalUrl || finalUrl,
-            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/LimitedAvailability',
+            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
           };
         }
 
@@ -361,7 +369,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         const eventCountry = event.location?.country || '';
         const isOnline = locName.toLowerCase().includes('online');
         const addressObj: Record<string, string> = { '@type': 'PostalAddress' };
-        if (!isOnline && locName && locName !== 'TBA') addressObj['streetAddress'] = locName;
         if (eventCity) addressObj['addressLocality'] = eventCity;
         if (eventCountry) addressObj['addressCountry'] = eventCountry;
 
@@ -468,8 +475,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
               url: baseUrl,
               name: 'DJ Zen Eyer',
               publisher: { '@id': `${baseUrl}/#artist` },
+              potentialAction: siteSearchAction,
             },
-            ARTIST_SCHEMA_BASE
+            ARTIST_SCHEMA_BASE,
+            ARTIST_BUSINESS_SCHEMA
           ] : []),
           webPageSchema,
           ...dynamicGraph
@@ -488,8 +497,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             description: artist.site.defaultDescription,
             publisher: { '@id': `${baseUrl}/#artist` },
             inLanguage: ['en', 'pt-BR'],
+            potentialAction: siteSearchAction,
           },
           ARTIST_SCHEMA_BASE,
+          ARTIST_BUSINESS_SCHEMA,
           webPageSchema,
         ],
       };

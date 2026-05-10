@@ -154,11 +154,14 @@
     "footer_subscribe_error": "Error during subscription.",
     "footer_copyright": "Â© {{year}} DJ Zen Eyer. All rights reserved.",
     "friend": "Zen Friend",
-    "all": "All"
+    "all": "All",
+    "back_to_list": "Back to list"
   },
   "events": {
     "title_part1": "Events",
-    "title_part2": "Schedule"
+    "title_part2": "Schedule",
+    "press_kit": "Press Kit",
+    "featured": "Featured Event"
   },
   "gamification": {
     "zenTribe": "Zen Tribe",
@@ -417,13 +420,21 @@
     "by": "By",
     "read_full": "READ FULL STORY",
     "latest_stories": "Latest Stories",
+    "latest_stories_title": "Trending News",
     "read_more": "Read More",
     "end_reached": "You've reached the end of recent updates.",
     "view_archive": "View Full Archive",
     "featured": "Featured",
     "default_author": "Zen Eyer",
     "read_time": "{{min}} min read",
-    "label": "News"
+    "label": "News",
+    "filters_label": "News filters",
+    "filters_all": "All",
+    "categories": "Categories",
+    "tags": "Tags",
+    "search_label": "Search Zen News",
+    "search_placeholder": "Search news...",
+    "no_posts_for_filter": "No posts found for this filter yet."
   },
   "music_page_title": "Music Hub",
   "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
@@ -471,7 +482,12 @@
     "support_button": "Would you like to support me?",
     "support_desc": "If my music touches you and you want to help keep this project alive, any support is welcome and helps me a lot to keep creating!",
     "support_cta": "Support the Zen",
-    "listen_now": "Listen Now"
+    "listen_now": "Listen Now",
+    "releases_title": "Music releases",
+    "releases_subtitle": "Release notes, credits, and official links published in Zen News.",
+    "read_release": "Read release notes",
+    "discography_schema_name": "DJ Zen Eyer Discography",
+    "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing."
   },
   "press": {
     "page_title": "Press Kit",
@@ -528,6 +544,9 @@
     "fast_delivery": "Fast Delivery",
     "fast_delivery_desc": "2-3 Business Days",
     "hot_near_you": "New on Zen Shop",
+    "coming_soon_msg": "Exclusive items are being prepared.",
+    "empty_title": "The collection is being prepared",
+    "join_tribe_waitlist": "Join the VIP List",
     "benefits": {
       "instant_delivery": "Instant Delivery",
       "instant_delivery_desc": "Tickets and digital access sent immediately",
@@ -1075,7 +1094,7 @@
     "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
     "seo": {
       "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
-      "keywords": "Zouk Brasileiro FAQ, o que ? zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ, aulas de zouk, best zouk djs, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, Renata Peçanha zouk, Adílio Porto, lambada history"
+      "keywords": "Brazilian Zouk FAQ, what is zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, zouk musicality, book Brazilian Zouk DJ, zouk classes, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bonus zouk, Renata Peçanha, Adílio Porto, lambada history"
     },
     "categories": {
       "djzeneyer": {
@@ -1099,15 +1118,15 @@
         }
       },
       "rankings": {
-        "title": "World Scene & Rankings",
+        "title": "Brazilian Zouk Scene",
         "desc": "Curatorship about the current scene and culture.",
         "q1": {
-          "q": "Who are the best Zouk DJs in the world?",
-          "a": "Music and dance are purely subjective arts, so there is no such thing as 'the best' when everything depends on your personal taste! The Brazilian Zouk scene is full of incredibly talented DJs worldwide. Each professional brings their own signature, and whether you like dancing with more energy or more calmness, you will certainly find your favorite DJ on the dance floor."
+          "q": "How can dancers discover Brazilian Zouk DJs?",
+          "a": "Brazilian Zouk has an international DJ scene with different musical signatures. Dancers usually discover artists through festivals, congress lineups, social dance events, streaming platforms, and recommendations from teachers or local communities."
         },
         "q2": {
           "q": "What are the most important events and festivals?",
-          "a": "Brazilian Zouk is lucky to have a super passionate global community. Today, we have excellent events happening in Latin America, Europe, North America, Asia, and Oceania. Choosing the 'best festival' depends heavily on the kind of tourism you want to do, the classes you wish to take, and, of course, the friends you want to reunite with! There's always an amazing place with Zouk playing near you."
+          "a": "Brazilian Zouk has active events in Latin America, Europe, North America, Asia, and Oceania. A useful way to evaluate a festival is to check the teacher lineup, DJ lineup, dance floor schedule, location, community fit, and whether the event publishes clear information for participants."
         },
         "q3": {
           "q": "Why is Brazilian Zouk considered so addictive?",
@@ -1263,6 +1282,7 @@
   },
   "not_found": {
     "title": "Beat Not Found",
+    "description": "The page you are looking for does not exist.",
     "text": "The track you're looking for seems to have been remixed or moved to another frequency.",
     "home": "Home",
     "music": "Music",
@@ -1354,6 +1374,10 @@
     }
   },
   "presskit": {
+    "download_page_title": "Press Kit PDF",
+    "download_page_desc": "Direct download of DJ Zen Eyer's official press kit PDF.",
+    "redirecting_pdf": "Opening the press kit PDF.",
+    "download_pdf_now": "Download PDF",
     "page_title": "Official Press Kit | DJ Zen Eyer",
     "page_meta_desc": "Official EPK of DJ Zen Eyer. Two-time Brazilian Zouk world champion. Photos, bio, logos, and contact information for booking.",
     "tag": "Official Press Kit 2026",
@@ -1390,6 +1414,8 @@
       "photos_desc": "Updated gallery for promotional material.",
       "bio": "Complete Bio (PDF)",
       "bio_desc": "History, awards, and technical details.",
+      "markdown": "Press Kit Source",
+      "markdown_desc": "Markdown version for reuse in event pages and press material.",
       "logos": "Logos & Identity",
       "logos_desc": "Brand guidelines and vector files.",
       "access": "Access Gallery",

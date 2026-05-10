@@ -53,13 +53,13 @@ class Zen_BIT_Normalizer
     }
 
     /**
-     * Canonical path: /events/{yyyy-mm-dd}-{slug}-{event_id}
-     * Fallback: /events/{event_id}
+     * Canonical path: /zouk-events/{yyyy-mm-dd}-{slug}-{event_id}
+     * Fallback: /zouk-events/{event_id}
      */
     public static function build_canonical_path(string $event_id, string $datetime, string $title): string
     {
         if ($event_id === '')
-            return '/events/unknown';
+            return '/zouk-events/unknown';
 
         $date_part = '';
         if ($datetime !== '') {
@@ -71,10 +71,10 @@ class Zen_BIT_Normalizer
         $slug = self::slugify($title, 55);
 
         if ($date_part !== '' && $slug !== '') {
-            return '/events/' . $date_part . '-' . $slug . '-' . $event_id;
+            return '/zouk-events/' . $date_part . '-' . $slug . '-' . $event_id;
         }
 
-        return '/events/' . $event_id;
+        return '/zouk-events/' . $event_id;
     }
 
     // =========================================================================
@@ -260,8 +260,6 @@ class Zen_BIT_Normalizer
 
         // Endereço — emitir apenas sub-campos não-vazios para evitar erros do Google
         $address = ['@type' => 'PostalAddress'];
-        if (!$is_online && $venue_name && $venue_name !== 'TBA')
-            $address['streetAddress'] = $venue_name;
         if ($city)    $address['addressLocality'] = $city;
         if ($region)  $address['addressRegion']   = $region;
         if ($country) $address['addressCountry']  = $country;
@@ -284,11 +282,12 @@ class Zen_BIT_Normalizer
         $description = substr($description, 0, 300);
 
         // image: fallback OG padrão do site
-        $default_image = home_url('/og-image.jpg');
+        $default_image = home_url('/images/zen-eyer-og-image.png');
         $image = !empty($event['image']) ? $event['image'] : $default_image;
 
         // canonical url para offers
-        $canonical_url = !empty($event['canonical_url']) ? $event['canonical_url'] : home_url('/eventos/');
+        $fallback_events_path = str_starts_with((string) get_locale(), 'pt') ? '/pt/eventos-zouk/' : '/zouk-events/';
+        $canonical_url = !empty($event['canonical_url']) ? $event['canonical_url'] : home_url($fallback_events_path);
 
         // offers: usar dados reais quando disponíveis, senão fallback
         if (!empty($event['offers']) && is_array($event['offers'])) {
@@ -316,7 +315,7 @@ class Zen_BIT_Normalizer
                 'url'          => $canonical_url,
                 'availability' => $is_past
                     ? 'https://schema.org/Discontinued'
-                    : 'https://schema.org/LimitedAvailability',
+                    : 'https://schema.org/InStock',
             ];
         }
 
@@ -356,7 +355,7 @@ class Zen_BIT_Normalizer
     {
         return [
             '@type' => 'MusicGroup',
-            '@id' => home_url('/') . '#djzeneyer',
+            '@id' => home_url('/') . '#musicgroup',
             'name' => 'DJ Zen Eyer',
             'genre' => 'Brazilian Zouk',
             'url' => home_url('/'),

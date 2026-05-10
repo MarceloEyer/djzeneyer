@@ -9,7 +9,7 @@
 | 1. Criar página | `src/pages/<NovaPagina>.tsx` | Sim | Componente exportado e renderizando sem erros |
 | 2. Registrar rota | `src/config/routes.ts` (fonte única) + `src/components/AppRoutes.tsx` (consumo) | Sim | Slugs EN/PT definidos e roteamento funcionando |
 | 3. Garantir i18n | `src/locales/en/translation.json` e `src/locales/pt/translation.json` | Sim | Chaves usadas na página existem nos dois idiomas |
-| 4. Incluir no prerender/SSG | `scripts/routes-config.json` | Sim (rotas estáticas) | Rota canônica EN e PT presente para pré-render |
+| 4. Incluir no prerender/SSG | `src/config/routes-slugs.json` | Sim (rotas estáticas) | Rota canônica EN e PT presente para pré-render |
 | 5. Validar build | `npm run build` | Sim | Build final sem erro |
 
 ---
@@ -20,7 +20,7 @@ Escopo auditado:
 - `src/pages/*.tsx`
 - `src/config/routes.ts`
 - `src/components/AppRoutes.tsx`
-- `scripts/routes-config.json`
+- `src/config/routes-slugs.json`
 - `src/locales/en/translation.json`
 - `src/locales/pt/translation.json`
 
@@ -30,7 +30,7 @@ Escopo auditado:
 |---|---:|---:|---|
 | Componentes de página em `src/pages` | 27 | 27 | ✅ |
 | Páginas mapeadas em rotas (exceto 404) | 26/26 | 26/26 | ✅ |
-| Rotas estáticas no prerender (`scripts/routes-config.json`) | 26 | 55 | ✅ Melhorado |
+| Rotas estáticas no prerender (`src/config/routes-slugs.json`) | 26 | 55 | ✅ Melhorado |
 | Cobertura de idioma no prerender (EN + PT) | Parcial | Completa para rotas estáticas | ✅ Melhorado |
 
 ### Diferença principal aplicada
@@ -56,7 +56,7 @@ Foi ampliada a lista de SSG para cobrir as rotas estáticas canônicas em **EN e
 
 Sempre que uma nova página for criada (ou uma rota for alterada), o PR deve incluir:
 1. atualização de `src/config/routes.ts`;
-2. atualização de `scripts/routes-config.json` (para rotas estáticas);
+2. atualização de `src/config/routes-slugs.json` (para rotas estáticas);
 3. atualização de traduções EN/PT quando houver textos localizáveis;
 4. evidência de build (`npm run build`);
 5. atualização desta documentação (ou de auditoria equivalente) quando houver impacto estrutural.

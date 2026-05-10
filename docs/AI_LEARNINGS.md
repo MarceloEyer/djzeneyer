@@ -13,13 +13,20 @@
 
 ### Schema e SEO
 
-- Para a entidade publica do artista, mantenha uma unica entidade `Person` em `ARTIST_SCHEMA_BASE`.
-- Nao crie um no `MusicGroup` separado para a pessoa fisica.
+- Arquitetura de identidade híbrida: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) representa o indivíduo biográfico; `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) representa a marca artística. Os dois nós coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` suporta `album`/`track` — propriedades ausentes em `Person`. Nunca fundir em um único nó com `@type: ['Person', 'MusicGroup']`.
+- Google KGMID primario: `/g/11ff3mhh10` fica em `Person`/`MusicGroup`. Google KGMID secundario relacionado: `/g/11h6s0lfs5` fica em `ARTIST_BUSINESS_SCHEMA` (`@id: /#business`) e se conecta por `worksFor`/`founder`/`brand`. Nao colocar o KGMID secundario no `sameAs` da entidade artistica principal.
 - Nao use ORCID no grafo do artista; use apenas identificadores aprovados e verificaveis.
 - Em `sameAs`, prefira anchors fortes e oficiais: Wikidata, MusicBrainz, Discogs e perfis principais de streaming/social. Evite LinkedIn, Mixcloud e perfis fracos sem utilidade clara.
 - Quando uma entrada em `subjectOf` comprovar a presenca do artista, a URL deve apontar para a pagina exata de evidencia, nao para o root do site.
 - Em paginas com FAQ expansivel, `q4` e `q5` so entram quando a chave existir no locale atual.
 - Quando o texto for visivel ao usuario, use `t('chave')` e nao string hardcoded.
+- Adicionar `WebSite.potentialAction`/`SearchAction` para elegibilidade a sitelinks search box; o alvo deve ser uma busca funcional em News com URL legivel (`/zouk-dance-news?search=...`).
+- Booking (`work-with-me` / `trabalhe-comigo`) e Press Kit sao fluxos separados. Press Kit e asset baixavel direto em PDF, mas nao substitui a pagina comercial de booking.
+- Releases publicos devem ser posts comuns dentro de News (`/zouk-dance-news/:slug` e `/pt/noticias-zouk/:slug`), com categoria `Music` e tag obrigatoria `release`. Nao criar rota separada `/release`.
+- Filtros publicos de News devem usar slugs legiveis em query string (`?category=music`, `?tag=release`, `?search=zouk`), convertendo para IDs da REST API apenas internamente.
+- Arquivos de IA/LLM devem usar apenas fatos verificaveis e linguagem neutra. Evitar rankings subjetivos, "best/top/mais famoso" e alegacoes como pioneiro/criador sem fonte independente.
+- Nao listar `Diamonds` como release/remix do DJ Zen Eyer sem confirmacao explicita do usuario.
+- ORCID nao deve ser usado no schema/sameAs do artista; Deezer canonico e `52900762`; Amazon Music deve usar `music.amazon.com`.
 
 ### i18n e UI
 
@@ -67,7 +74,7 @@
 - `#317`: em `ZenLinkPage`, toda string visivel ainda precisa vir de i18n, inclusive subtitulos, titulos e mensagens de WhatsApp.
 - `#317`: em `paymentMethods`, os campos financeiros devem refletir exatamente o significado da SSOT. Nao trocar `swiftCode`, `achRouting` e `wireRouting`.
 - `#379` e `#412`: validar keys de FAQ com `i18n.exists()` antes de renderizar.
-- `#412` e `#413`: manter `@type: 'Person'` para Zen Eyer e remover `ORCID` do schema.
+- `#412` e `#413`: remover `ORCID` do schema (identificador acadêmico, irrelevante para DJ/produtor).
 - `#371`: nao aceitar remediacao de dependencia sem lockfile sincronizado.
 - `#399`, `#400`, `#401`, `#366`: preferir batch priming, single-pass loops e referencias estaveis.
 - `#407`: quando um documento de especificacao virar redundante, consolidar o que e util em arquivos canonicos e encerrar a duplicata.
@@ -77,7 +84,7 @@
 
 ### Antes de mexer em SEO / Schema
 
-- [ ] Conferir se a entidade continua como `Person` unica.
+- [ ] Confirmar que `ARTIST_SCHEMA_BASE` (Person `/#artist`) e `MUSICGROUP_SCHEMA` (MusicGroup `/#musicgroup`) estão ambos no `@graph` e ligados por `member`/`memberOf`.
 - [ ] Confirmar se o identificador usado ja foi validado no `sameAs` ou no grafo canonico.
 - [ ] Validar se a pagina privada continua `noindex` e sem avatar do usuario em OG.
 - [ ] Verificar se `llms.txt`, `llms-full.txt` e `ai-plugin.json` continuam descritivos, nao imperativos.

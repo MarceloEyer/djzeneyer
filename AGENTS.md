@@ -76,7 +76,7 @@ Produção: https://djzeneyer.com
 - Toda nova rota usa `<HeadlessSEO />` com parâmetros corretos.
 - Rotas privadas (`dashboard`, `my-account`) usam `<HeadlessSEO noindex />` com OG image genérica.
 - Avatar do usuário nunca deve aparecer em OG tags.
-- Ao criar nova rota pública: atualizar `scripts/routes-data.json` (SSOT de rotas).
+- Ao criar nova rota pública: atualizar `src/config/routes-slugs.json` (SSOT de rotas).
 
 ### Performance
 - Páginas: lazy loading via `React.lazy()` + `Suspense`.
@@ -100,7 +100,7 @@ Produção: https://djzeneyer.com
 - **`rankProgress` ZenGame**: o fallback de progresso por posição de rank retornava `0.0` nos dois lados do ternário — corrigido. Ao alterar lógica de rank, sempre testar o caminho sem `gamipress_get_rank_requirements_progress()`.
 - **URL canônica em páginas**: nunca hardcodar paths como `/about` — usar `getLocalizedRoute('about', currentLang)` para garantir o slug correto (`/about-dj-zen-eyer` em EN, `/pt/sobre-dj-zen-eyer` em PT).
 - **robots.txt AhrefsBot**: `Disallow: /` seguido de `Allow: /` no mesmo bloco — a primeira regra vence (RFC 9309). Sempre colocar `Allow: /` antes dos `Disallow` específicos.
-- **Sitemap**: rotas de checkout/privadas devem ter `excludeFromSitemap: true` em `scripts/routes-data.json`. O `generate-sitemap.js` lê esse campo — não editar o XML manualmente.
+- **Sitemap**: rotas de checkout/privadas devem ter `excludeFromSitemap: true` em `src/config/routes-slugs.json`. O `generate-sitemap.js` lê esse campo — não editar o XML manualmente.
 - **llms-full.txt**: arquivo deve ser UTF-8 limpo. Double-encoding (latin-1 re-encodado como UTF-8) produz mojibake silencioso — validar com `python3 -c "open('public/llms-full.txt').read()"` após edições.
 - **MusicEvent Schema.org — campos OBRIGATÓRIOS** (Google Search Console rejeita eventos sem eles):
   Toda vez que criar ou editar schema MusicEvent — em `HeadlessSEO.tsx`, em `build_event_schema()` (PHP) ou em qualquer outro lugar — os campos abaixo devem estar presentes. Usar fallback, nunca omitir:
@@ -111,7 +111,7 @@ Produção: https://djzeneyer.com
   | `endDate` | Obrigatório. Fallback: `startDate` + 4 horas. |
   | `location.address` | `PostalAddress` com sub-campos preenchidos. **Nunca emitir string vazia** — omitir sub-campo se vazio. Não usar nome do venue como `streetAddress`. |
   | `description` | Obrigatório. Fallback: `"Live Brazilian Zouk DJ set by DJ Zen Eyer at {venue}."` |
-  | `image` | Obrigatório. Fallback: OG image padrão do site (`/og-image.jpg`). |
+  | `image` | Obrigatório. Fallback: OG image padrão do site (`/images/zen-eyer-og-image.png`). |
   | `offers` | Obrigatório. Fallback: `Offer` com `url = canonical_url`, `availability = InStock` (futuro) ou `Discontinued` (passado). |
   | `performer` | Sempre presente — entidade `MusicGroup` DJ Zen Eyer. |
 
@@ -236,7 +236,7 @@ Todas as skills estão em `.agents/skills/` (28 skills). Todas têm um arquivo `
 
 ## Checklist: nova rota pública
 
-1. Adicionar entrada em `scripts/routes-data.json` com `excludeFromSitemap: false`
+1. Adicionar entrada em `src/config/routes-slugs.json` com `excludeFromSitemap: false`
 2. Criar chaves i18n em `src/locales/pt/translation.json` **e** `src/locales/en/translation.json`
 3. Adicionar `<HeadlessSEO />` com `title`, `description`, `url` e `schema` corretos
 4. Usar `React.lazy()` + `Suspense` para a página (lazy loading obrigatório)
