@@ -437,16 +437,11 @@ export const ARTIST_SCHEMA_SAME_AS = [
 export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
-  name: {
-    '@type': 'PronounceableText',
-    'textValue': 'Zen Eyer',
-    'speechToTextMarkup': 'IPA',
-    'phoneticText': 'zɛn ˈaɪɚ',
-    'inLanguage': 'en-US-fonipa'
-  },
+  name: 'Zen Eyer',
   alternateName: [
     'Zen Eyer',
     'Zen Ayer',
+    'Zen Áier',
     'DJ Zen Eyer',
     'DJ Zen Ayer',
     'djzeneyer',
@@ -996,14 +991,8 @@ export const ARTIST_BUSINESS_SCHEMA = {
 export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
-  name: {
-    '@type': 'PronounceableText',
-    'textValue': 'Zen Eyer',
-    'speechToTextMarkup': 'IPA',
-    'phoneticText': 'zɛn ˈaɪɚ',
-    'inLanguage': 'en-US-fonipa'
-  },
-  alternateName: [ARTIST.identity.stageName, 'Zen Ayer', 'DJ Zen Ayer'],
+  name: 'Zen Eyer',
+  alternateName: [ARTIST.identity.stageName, 'Zen Ayer', 'Zen Áier', 'DJ Zen Ayer'],
   description:
     'Zen Eyer, pronounced Zen Ayer, is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
   url: ARTIST.site.baseUrl,
