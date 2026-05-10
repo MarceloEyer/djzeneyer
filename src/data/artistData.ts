@@ -5,6 +5,7 @@
 // ============================================================================
 
 import type { Festival, SocialLink } from '../types';
+import i18n from '../i18n';
 
 const START_YEAR = 2015;
 export const CURRENT_YEAR = new Date().getFullYear();
@@ -979,10 +980,11 @@ export const ARTIST_BUSINESS_SCHEMA = {
 export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
-  name: 'Zen Eyer',
+  name: i18n.t('musicgroup.name', { defaultValue: 'Zen Eyer' }),
   alternateName: [ARTIST.identity.stageName],
-  description:
-    'Zen Eyer is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
+  description: i18n.t('musicgroup.desc', {
+    defaultValue: 'Zen Eyer is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.'
+  }),
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],

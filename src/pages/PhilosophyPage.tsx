@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { Heart, Music2, Sparkles } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { useTranslation, Trans } from 'react-i18next';
@@ -105,6 +106,9 @@ const PhilosophyPage: React.FC = () => {
             animate="visible"
             variants={HERO_VARIANTS}
           >
+            <div className="flex justify-center mb-6">
+              <Breadcrumb items={[{ label: t('philosophy.page_title') }]} />
+            </div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-bold uppercase tracking-[0.2em] mb-8">
               <Sparkles className="w-3.5 h-3.5" />
               {t('philosophy_page.manifesto_badge')}

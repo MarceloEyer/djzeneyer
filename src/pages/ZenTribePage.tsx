@@ -14,6 +14,7 @@ import React, { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
@@ -274,7 +275,20 @@ const ZenTribePage: React.FC = () => {
         url={currentUrl}
         image="https://djzeneyer.com/images/zen-tribe-og.jpg"
         ogType="website"
-        schema={schema}
+        schema={[
+          schema,
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": t('nav.home'), "item": `https://djzeneyer.com/${currentLang === 'pt' ? 'pt' : ''}` },
+                { "@type": "ListItem", "position": 2, "name": t('tribe_page_title'), "item": currentUrl }
+              ]
+            }
+          }
+        ]}
         keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, DJ Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
       />
 
@@ -292,6 +306,9 @@ const ZenTribePage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
+              <div className="flex justify-center mb-6">
+                <Breadcrumb items={[{ label: t('nav.tribe') }]} />
+              </div>
               <div className="inline-block mb-4">
                 <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
                   {t('zenTribe.badge')}

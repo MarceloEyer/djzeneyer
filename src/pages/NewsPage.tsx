@@ -13,6 +13,7 @@ import {
 import { useNewsQuery, useNewsBySlug, useNewsTaxonomiesQuery, type WPPost } from '../hooks/useQueries';
 import { normalizeLanguage, getLocalizedRoute } from '../config/routes';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
@@ -185,25 +186,12 @@ const NewsPage: React.FC = () => {
               <ArrowLeft size={20} /> {t('news.back_to_list')}
             </Link>
 
-            <nav aria-label="Breadcrumb" className="mb-8 text-sm text-white/45">
-              <ol className="flex flex-wrap items-center gap-2">
-                <li>
-                  <Link to={getLocalizedRoute('home', normalizedLanguage)} className="hover:text-primary transition-colors">
-                    {t('nav.home')}
-                  </Link>
-                </li>
-                <li aria-hidden="true">/</li>
-                <li>
-                  <Link to={getRouteForKey('news')} className="hover:text-primary transition-colors">
-                    {t('footer_news')}
-                  </Link>
-                </li>
-                <li aria-hidden="true">/</li>
-                <li className="max-w-full truncate text-white/70" aria-current="page">
-                  {stripHtml(singlePost?.title?.rendered || '')}
-                </li>
-              </ol>
-            </nav>
+            <Breadcrumb 
+              items={[
+                { label: t('footer_news'), path: getRouteForKey('news') },
+                { label: stripHtml(singlePost?.title?.rendered || '') }
+              ]} 
+            />
 
             <article>
               <header className="mb-10 text-center">
@@ -259,6 +247,7 @@ const NewsPage: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
+          <Breadcrumb items={[{ label: t('footer_news') }]} />
 
           <header className="mb-16 border-b border-white/10 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>

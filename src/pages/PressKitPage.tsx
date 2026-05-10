@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { useBranding } from '../contexts/BrandingContext';
 import { sanitizeHtml } from '../utils/sanitize';
 import {
@@ -210,6 +211,17 @@ const PressKitPage: React.FC = () => {
         description={t('presskit.page_meta_desc')}
         url={currentUrl}
         image={`${artist.site.baseUrl}/images/artist/dj-zen-eyer-official-hero.jpg`}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": t('nav.home'), "item": `https://djzeneyer.com/${isPortuguese ? 'pt' : ''}` },
+              { "@type": "ListItem", "position": 2, "name": t('presskit.page_title'), "item": currentUrl }
+            ]
+          }
+        }}
       />
 
       <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -221,6 +233,9 @@ const PressKitPage: React.FC = () => {
               transition={{ duration: 0.7 }}
               className="mx-auto max-w-4xl text-center"
             >
+              <div className="flex justify-center mb-6">
+                <Breadcrumb items={[{ label: t('nav.presskit') }]} />
+              </div>
               <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-xs font-bold uppercase tracking-[0.28em] text-primary">
                 {t('presskit.tag')}
               </div>

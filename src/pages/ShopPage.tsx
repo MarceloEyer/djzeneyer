@@ -9,6 +9,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { Toast } from '../components/common/Toast';
 import { getCurrencyFormatter } from '../utils/currency';
 import {
@@ -412,6 +413,17 @@ const ShopPage: React.FC = () => {
         title={`${t('shop.page_title')} | ${t('common.artist_name')}`}
         description={t('shop.page_meta_desc')}
         url={canonicalUrl}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": t('nav.home'), "item": `https://djzeneyer.com/${currentLang === 'pt' ? 'pt' : ''}` },
+              { "@type": "ListItem", "position": 2, "name": t('shop.page_title'), "item": canonicalUrl }
+            ]
+          }
+        }}
       />
 
       <Toast
@@ -419,6 +431,10 @@ const ShopPage: React.FC = () => {
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />
+
+      <div className="absolute top-24 left-6 md:left-12 lg:left-20 z-50 pointer-events-auto">
+        <Breadcrumb items={[{ label: t('nav.shop') }]} />
+      </div>
 
       {/* --- Billboard (Netflix Hero) --- */}
       {featuredProduct ? (
