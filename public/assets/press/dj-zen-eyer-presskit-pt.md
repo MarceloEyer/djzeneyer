@@ -4,7 +4,7 @@ DJ e produtor musical de Zouk Brasileiro para festivais, congressos e maratonas 
 
 ## Por que contratar Zen Eyer
 
-Zen Eyer e um DJ de Zouk Brasileiro com foco total na pista. Seus sets sao construidos com transicoes longas, continuidade emocional e leitura precisa da pista, com Cremosidade frequentemente associada aos seus materiais publicos: suave, imersivo e sem pressa.
+Zen Eyer é um DJ de Zouk Brasileiro com foco total na pista. Seus sets sao construidos com transicoes longas, continuidade emocional e leitura precisa da pista, com Cremosidade frequentemente associada aos seus materiais publicos: suave, imersivo e sem pressa.
 
 ## Ideal para festivais e maratonas
 
