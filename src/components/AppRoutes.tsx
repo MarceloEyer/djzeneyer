@@ -4,8 +4,7 @@ import ErrorBoundary from './common/ErrorBoundary';
 import { lazyWithRetry } from '../utils/lazyWithRetry';
 
 const ZenLinkPage = lazyWithRetry(
-  () => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })),
-  'route:zenlink-standalone'
+  () => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage }))
 );
 // CORREÇÃO: Apontando para o local correto onde você definiu suas rotas
 import {

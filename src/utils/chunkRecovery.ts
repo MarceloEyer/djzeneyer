@@ -53,10 +53,7 @@ const shouldReloadForChunkError = (marker: string): boolean => {
   }
 };
 
-export const recoverFromChunkLoadError = (
-  error: unknown,
-  source: string
-): boolean => {
+export const recoverFromChunkLoadError = (error: unknown): boolean => {
   if (typeof window === 'undefined' || !isChunkLoadError(error)) {
     return false;
   }
@@ -65,7 +62,6 @@ export const recoverFromChunkLoadError = (
     getCurrentEntryMarker(),
     window.location.pathname,
     window.location.search,
-    source,
   ].join('|');
 
   if (!shouldReloadForChunkError(marker)) {

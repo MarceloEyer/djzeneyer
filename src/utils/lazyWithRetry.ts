@@ -6,12 +6,11 @@ type LazyComponentModule<T extends ComponentType<object>> = {
 };
 
 export const lazyWithRetry = <T extends ComponentType<object>>(
-  factory: () => Promise<LazyComponentModule<T>>,
-  source: string
+  factory: () => Promise<LazyComponentModule<T>>
 ): LazyExoticComponent<T> =>
   lazy(() =>
     factory().catch((error) => {
-      if (recoverFromChunkLoadError(error, source)) {
+      if (recoverFromChunkLoadError(error)) {
         return new Promise<LazyComponentModule<T>>(() => undefined);
       }
 
