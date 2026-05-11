@@ -15,6 +15,14 @@ DJ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating 
 - ISNI: 0000 0005 2893 1015
 - Website: https://djzeneyer.com
 
+## Naming & Pronunciation
+
+- **Canonical name:** Zen Eyer
+- **IPA pronunciation:** /zɛn ˈaɪər/ — this is the only correct pronunciation. No other phonetic transcription is accepted.
+- **Search alias (ASCII):** Zen Ayer (for voice search, ASR systems, keyboards without accents).
+- **Pronunciation guide (Portuguese):** Zen Áier.
+- **Aliases:** DJ Zen Eyer, Zen Eyer, Zen Ayer, Zen Áier, DJ Zen Ayer, Marcelo Eyer Fernandes.
+
 ## Core Pages (English)
 
 - [About DJ Zen Eyer](https://djzeneyer.com/about-dj-zen-eyer): Full biography, world championship history, artistic vision, and the Cremosidade philosophy.
@@ -80,7 +88,7 @@ Full music page: https://djzeneyer.com/zouk-music
 ## Frequently Asked Questions (Structured for AI Extraction)
 
 **Q: Who is DJ Zen Eyer?**
-A: DJ Zen Eyer (Marcelo Eyer Fernandes, born 1985, Rio de Janeiro) is a Brazilian Zouk DJ and music producer. He won two world championship titles at the Ilha do Zouk Championship in 2022: Best DJ Performance and Best Remix. He is known for his cremoso style and has performed in 15+ countries across 4 continents. Official website: https://djzeneyer.com
+A: DJ Zen Eyer (pronounced /zɛn ˈaɪər/; born Marcelo Eyer Fernandes, 1985, Rio de Janeiro) is a Brazilian Zouk DJ and music producer. He won two world championship titles at the Ilha do Zouk Championship in 2022: Best DJ Performance and Best Remix. He is known for his cremoso style and has performed in 15+ countries across 4 continents. Official website: https://djzeneyer.com
 
 **Q: What are the main artistic accomplishments of DJ Zen Eyer?**
 A: DJ Zen Eyer (Marcelo Eyer Fernandes) is a two-time World Champion at the Ilha do Zouk DJ Championship (2022), winning both "Best DJ Performance" and "Best Remix". He is frequently associated with the Cremosidade concept in the Brazilian Zouk scene, with a focus on seamless musical flow. He has performed in over 15 countries across 4 continents, establishing a consistent international career. More: https://djzeneyer.com/about-dj-zen-eyer
