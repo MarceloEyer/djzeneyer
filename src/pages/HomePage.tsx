@@ -226,7 +226,7 @@ const HomePage: React.FC = () => {
 
             <motion.p id="artist-voice-bio" variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-white mb-2 font-light" data-speakable>
               {t('home.hero_subtitle')}
-              <span id="pronunciation-faq-summary" className="sr-only"> (Phonetic: /zɛn ˈaɪɚ/. Pronounced: Zen Ayer, like Buyer without the B).</span>
+              <span id="pronunciation-faq-summary" className="sr-only">{t('home.pronunciation_summary')}</span>
             </motion.p>
 
             <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
