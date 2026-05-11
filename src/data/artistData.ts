@@ -24,6 +24,8 @@ export const ARTIST = {
     country: 'Brasil',
     isni: '0000 0005 2893 1015',
     cnpj: '44.063.765/0001-46',
+    // Pronúncia canônica (IPA) — única forma correta. Nenhuma outra é aceita.
+    pronunciationIPA: '/zɛn ˈaɪər/',
   },
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
