@@ -107,7 +107,7 @@ const AboutPage: React.FC = () => {
         mainEntity: { '@id': `${artist.site.baseUrl}/#artist` },
         speakable: {
           '@type': 'SpeakableSpecification',
-          cssSelector: ['h1', '#artist-voice-bio', '#pronunciation-faq-summary'],
+          cssSelector: ['h1', '#artist-voice-bio'],
         },
         breadcrumb: {
           '@type': 'BreadcrumbList',

@@ -152,7 +152,7 @@ const HomePage: React.FC = () => {
         "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
         "speakable": {
           "@type": "SpeakableSpecification",
-          "cssSelector": ["h1", "#artist-voice-bio", "#pronunciation-faq-summary"]
+          "cssSelector": ["h1", "#artist-voice-bio"]
         },
         "primaryImageOfPage": {
           "@type": "ImageObject",
