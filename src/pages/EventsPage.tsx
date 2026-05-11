@@ -247,29 +247,32 @@ const EventListContent = ({ lang }: { lang: string }) => {
           <p className="text-white/40">{t('events_no_results_filter')}</p>
         </div>
       ) : (
-        groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
-          // ⚡ Bolt: Prevented Array allocation inside render loop, utilizing O(1) string slices
-          const y = key.slice(0, 4);
-          const m = key.slice(5, 7);
+        (() => {
+          // ⚡ Bolt: Precomputed route base to avoid O(N) recalculations of getLocalizedRoute in nested loops
+          const eventsDetailRouteBase = getLocalizedRoute('events-detail', lang as Language);
+          return groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
+            // ⚡ Bolt: Prevented Array allocation inside render loop, utilizing O(1) string slices
+            const y = key.slice(0, 4);
+            const m = key.slice(5, 7);
 
-          const monthShort = MONTH_NAMES[Number(m) - 1];
-          const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
-          return (
-            <section key={key}>
-              <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
-                {name} <span className="text-white/60 drop-shadow-sm">{y}</span>
-                <div className="h-px flex-1 bg-white/5" />
-              </h2>
-              <div className="space-y-3">
-                {monthEvents.map((e) => {
-                  // ⚡ Bolt: Prevented Date instantiation inside rendering loop, utilizing O(1) string slice
-                  const dayStr = e.starts_at && e.starts_at.length >= 10 ? e.starts_at.substring(8, 10) : '??';
-                  const identifier = e.canonical_path
-                    ? e.canonical_path.split('/').pop() || e.event_id
-                    : e.event_id;
+            const monthShort = MONTH_NAMES[Number(m) - 1];
+            const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
+            return (
+              <section key={key}>
+                <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
+                  {name} <span className="text-white/60 drop-shadow-sm">{y}</span>
+                  <div className="h-px flex-1 bg-white/5" />
+                </h2>
+                <div className="space-y-3">
+                  {monthEvents.map((e) => {
+                    // ⚡ Bolt: Prevented Date instantiation inside rendering loop, utilizing O(1) string slice
+                    const dayStr = e.starts_at && e.starts_at.length >= 10 ? e.starts_at.substring(8, 10) : '??';
+                    const identifier = e.canonical_path
+                      ? e.canonical_path.split('/').pop() || e.event_id
+                      : e.event_id;
 
-                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang as Language), { id: identifier });
-                  const loc = e.location;
+                    const detailHref = generatePath(eventsDetailRouteBase, { id: identifier });
+                    const loc = e.location;
 
                   return (
                     <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
@@ -292,7 +295,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
               </div>
             </section>
           );
-        })
+          });
+        })()
       )}
 
       <Toast
