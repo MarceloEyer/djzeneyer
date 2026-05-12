@@ -100,14 +100,18 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setUser({ ...parsedUser, token, isLoggedIn: true });
 
           // Validação silenciosa
-          fetch(`${API_URL}/auth/validate`, {
-            method: 'POST',
+          fetch(`${API_URL}/session`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
             .then(res => res.json())
             .then(data => {
-              if (!data.success) {
+              if (!data.authenticated) {
                 logout();
+                return;
+              }
+
+              if (data.user) {
+                saveSession(data.user, token);
               }
             })
             .catch(err => {
@@ -123,7 +127,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     init();
-  }, [API_URL, logout]);
+  }, [API_URL, logout, saveSession]);
 
 
 
